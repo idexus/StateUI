@@ -20,6 +20,7 @@ extension WinUIElement {
     static let unmeasuredProperties = Set<Prop>([
         .opacity, .background, .textColor, .isEnabled,
         .isOn, .value, .minimum, .maximum,
+        .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
     ]).union(transformProperties)
 
     /// Properties that move, turn and scale the view where its layout put it.
@@ -76,6 +77,7 @@ extension WinUIElement {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
+                case .background: (view as? WinUILayoutView)?.setBackground(value(.background))
                 case .padding where type == .page:
                     let sides = value(.padding)?.numbers ?? []
                     (view as? WinUISingleChildView)?.padding =
@@ -84,9 +86,22 @@ extension WinUIElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if let layers = view as? WinUIZStackView { layers.placement = placement }
         }
 
-        if !changed.isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// The layout's own placement run, where a state drives one: it moves the children without changing
+    /// what the layout measures.
+    var ownPlacementRun: Set<Prop> {
+        element.driven[.area]?.kind == .placement ? [.area] : []
+    }
+
+    /// The places an engine gives this layout's children, one each; nil while no state drives them.
+    var placement: HostPlacementRun? {
+        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.area) else { return nil }
+        return StateUIHost.placements(from: carried)
     }
 
     /// Forgets the sizes kept by this element's layout and every one above it, and asks WinUI to measure again.

@@ -147,6 +147,15 @@ extension WinUIView {
         return (frame.x.rounded(), frame.y.rounded(), frame.width.rounded(), frame.height.rounded())
     }
 
+    /// The colours WinUI draws the element in at `points`, in DIPs of it, as ARGB - premultiplied, so a colour
+    /// drawn half opaque reads half as bright.
+    func pixels(at points: [(Double, Double)]) -> [UInt32] {
+        let flat = points.flatMap { [$0.0, $0.1] }
+        var argb = [UInt32](repeating: 0, count: points.count)
+        XCTAssertTrue(stateui_winui_pixels(handle, flat, Int32(points.count), &argb), "WinUI rendered nothing")
+        return argb
+    }
+
     /// The opacity WinUI draws the element at.
     var drawnOpacity: Double {
         stateui_winui_opacity(handle)

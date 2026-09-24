@@ -17,6 +17,19 @@ extern "C" {
 
 typedef struct StateUIObject *StateUIObjectRef;
 
+/// A brush as the host hands it: its kind - 0 none, 1 solid, 2 linear, 3 radial - its geometry in fractions of
+/// the painted box (a line's two points, or a centre and a radius), then a colour and an offset for each stop.
+typedef struct {
+    int32_t kind;
+    double geometry[4];
+    int32_t count;
+    uint32_t const *colors;
+    double const *offsets;
+} StateUIBrush;
+
+/// An outline: 0 a rectangle, 1 one rounded by `radius` DIPs, 2 an ellipse.
+typedef enum { StateUIOutlineRectangle, StateUIOutlineRounded, StateUIOutlineEllipse } StateUIOutline;
+
 /// What the relay calls on the UI thread. Every one is set: the relay calls them unchecked.
 typedef struct {
     /// WinUI stands on the thread: the host's first render.
@@ -87,6 +100,16 @@ void stateui_winui_frame(StateUIObjectRef element, double *frame);
 /// A control's IsEnabled.
 void stateui_winui_set_enabled(StateUIObjectRef control, bool enabled);
 
+/// Cuts what the element shows to `outline` over `width` by `height` DIPs; `cuts` false shows it whole.
+void stateui_winui_set_clip(StateUIObjectRef element, bool cuts, StateUIOutline outline, double radius,
+                            double width, double height);
+
+/// Whether the element takes clicks and touches; one that does not lets them through to what is behind it.
+void stateui_winui_set_hit_testable(StateUIObjectRef element, bool testable);
+
+/// Where the element is drawn among its panel's children: a higher one over a lower, equal ones in order.
+void stateui_winui_set_z_index(StateUIObjectRef element, int32_t z);
+
 /// Asks WinUI to arrange the element again - a place in the air lands only in a pass.
 void stateui_winui_invalidate_arrange(StateUIObjectRef element);
 
@@ -144,6 +167,20 @@ void stateui_winui_slider_move(StateUIObjectRef slider, double value);
 StateUIObjectRef stateui_winui_field_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
+
+/// A shape drawn behind a layout's children: a rectangle, rounded or not, or an ellipse, filled and outlined.
+StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline);
+void stateui_winui_shape_set(StateUIObjectRef shape, double radius, StateUIBrush fill, StateUIBrush stroke,
+                             double strokeWidth);
+
+/// A ColorBox: a Border filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
+/// bottom left.
+StateUIObjectRef stateui_winui_color_box_make(void);
+void stateui_winui_color_box_set(StateUIObjectRef box, uint32_t argb, double const *corners);
+
+/// Renders the element and reads the colour, as ARGB, at each of `count` points given as x and y in DIPs of it -
+/// what a test reads of the screen; whether it rendered.
+bool stateui_winui_pixels(StateUIObjectRef element, double const *points, int32_t count, uint32_t *argb);
 
 #ifdef __cplusplus
 }

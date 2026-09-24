@@ -19,8 +19,27 @@ class WinUILayoutView: WinUIView {
         didSet { if direction != oldValue { invalidateMeasurements() } }
     }
 
+    /// The layout's own box: what fills it, its outline, its shape and whether it cuts what it shows.
+    struct Box: Equatable {
+        var fill: HostValue?
+        var stroke: HostValue?
+        var width: Double?
+        var shape: HostValue?
+        var clips = false
+    }
+
+    /// The box as the element says it.
+    private(set) var box = Box()
+
+    /// The shape drawn behind the children; nil while the box paints nothing.
+    private(set) var boxView: WinUIShapeView?
+
+    /// The cut last written, over the size it was written at.
+    private var cut: (outline: WinUIOutline, width: Double, height: Double)?
+
     /// The elements the panel holds, in the order it draws them, back to front.
     private var held: [WinUIView] = []
+    private var heldBox: WinUIShapeView?
 
     init() {
         super.init { number in stateui_winui_panel_make(number) }
@@ -40,13 +59,50 @@ class WinUILayoutView: WinUIView {
         return true
     }
 
-    /// Holds `views` in the panel in this order, the one it draws them in.
+    /// Holds `views` in the panel in this order, the one it draws them in, over the box.
     func setChildren(_ views: [WinUIView]) {
-        guard views.count != held.count || !zip(views, held).allSatisfy({ $0 === $1 }) else { return }
+        guard boxView !== heldBox || views.count != held.count || !zip(views, held).allSatisfy({ $0 === $1 })
+        else { return }
 
-        let handles: [StateUIObjectRef?] = views.map(\.handle)
+        let handles: [StateUIObjectRef?] = (boxView.map { [$0.handle] } ?? []) + views.map(\.handle)
         stateui_winui_panel_set_children(handle, handles, Int32(handles.count))
         held = views
+        heldBox = boxView
+    }
+
+    /// What fills the box: a colour or a brush; nil for nothing.
+    func setBackground(_ value: HostValue?) {
+        box.fill = value
+        paintBox()
+    }
+
+    /// The box's outline, its shape, and whether it cuts what the layout shows to that shape.
+    func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+        box.stroke = stroke
+        box.width = width
+        box.shape = shape
+        box.clips = clips
+        paintBox()
+    }
+
+    /// Paints the box behind the children, made, remade for another outline, or let go of, and asks for an
+    /// arrangement to place it and its cut.
+    /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
+    private func paintBox() {
+        let outline = WinUIOutline(container: box.shape)
+        let fill = WinUIBrush(box.fill)
+        let stroke = WinUIBrush(box.stroke)
+        let width = box.stroke == nil ? 0 : max(0, box.width ?? 1)
+
+        if fill == .none, stroke == .none || width == 0 {
+            boxView = nil
+        } else {
+            let ellipse = outline == .ellipse
+            if boxView?.isEllipse != ellipse { boxView = WinUIShapeView(ellipse: ellipse) }
+            boxView?.paint(radius: outline.relay.radius, fill: fill, stroke: stroke, width: width)
+        }
+        setChildren(held)
+        invalidateArrange()
     }
 
     /// Asks WinUI to arrange the children again: a place in the air lands in the pass it asks for.
@@ -69,15 +125,28 @@ class WinUILayoutView: WinUIView {
     /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     func measure(width: Double, height: Double) -> LayoutSize {
         forgetMeasurements()
+        _ = boxView?.measure(width: width, height: height)
         let offered = width.isFinite ? width : nil
         return measurements.size(offering: offered) { contentSize(width: offered) }
     }
 
-    /// Answers WinUI's arrange: places every child in `width` by `height` DIPs, inside the pass.
+    /// Answers WinUI's arrange: places the box and every child in `width` by `height` DIPs, inside the pass.
     func arrange(width: Double, height: Double) {
         WinUIView.arranging += 1
         defer { WinUIView.arranging -= 1 }
+        boxView?.layout(Rect(x: 0, y: 0, width: width, height: height))
+        writeCut(width: width, height: height)
         arrange(in: Rect(x: 0, y: 0, width: width, height: height))
+    }
+
+    /// Cuts what the layout shows to its outline at its size, written only where it differs.
+    private func writeCut(width: Double, height: Double) {
+        let outline = WinUIOutline(container: box.shape)
+        let wanted = box.clips ? (outline, width, height) : nil
+        guard wanted?.0 != cut?.outline || wanted?.1 != cut?.width || wanted?.2 != cut?.height else { return }
+
+        cut = wanted
+        stateui_winui_set_clip(handle, box.clips, outline.relay.outline, outline.relay.radius, width, height)
     }
 
     /// The room the children take for the width offered, in DIPs.

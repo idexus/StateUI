@@ -6,11 +6,14 @@ library: it applies the typed sparse patches of the
 [host contract](host-contract.md) directly and calls WinUI through a C++/WinRT
 relay behind plain C functions.
 
-It presents `Label`, `Button`, `Switch`, `Slider`, `TextField`, `VStack` and
-`HStack` in a window's page, over the runtime every host shares: a state's
-journey moves every control tied to it on the display's frames, a property's
-transition and a stack's children animate, and a user who turns Windows'
-animation effects off sees everything arrive at once. Any other control shows
+It presents `Label`, `Button`, `Switch`, `Slider`, `TextField`, `ColorBox`,
+`VStack`, `HStack`, `Grid` and `ZStack` in a window's page, over the runtime
+every host shares: a layout paints its box - its background, outline and
+shape - and cuts what it holds to it; a state's journey moves every control
+tied to it on the display's frames, a property's transition and a layout's
+children animate, an engine's placement run stands and draws a ZStack's
+children, and a user who turns Windows' animation effects off sees
+everything arrive at once. Any other control shows
 its name in red where it belongs, so a gap is visible rather than silent.
 
 ```text

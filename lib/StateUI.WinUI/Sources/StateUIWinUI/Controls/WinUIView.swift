@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 import CStateUIWinUI
+import ucrt
 
 /// A WinUI element Swift holds, and the number the relay calls back with.
 /// Design: docs/design/platforms/winui/relay.md#a-view-and-its-number
@@ -29,6 +30,14 @@ class WinUIView {
 
     /// How the view's own properties move, turn and scale it.
     private var transform = HostDrawingTransform.identity
+
+    /// How a placing layout draws the view over the place it gave, and how opaque; nil and 1 for as the view says.
+    private var placedDrawing: HostDrawingTransform?
+    private var placedOpacity = 1.0
+
+    /// The opacity and the drawing order last written.
+    private var writtenOpacity = 1.0
+    private var writtenZIndex: Int32 = 0
 
     private static var nextNumber: Int64 = 0
     private static var live: [Int64: Weak] = [:]
@@ -62,11 +71,37 @@ class WinUIView {
         stateui_winui_set_shown(handle, shown)
     }
 
-    /// How opaque the view is drawn, written only where it differs from what was.
+    /// How opaque the view's own property draws it, with a placing layout's opacity over it; written only where
+    /// it differs from what was.
     func setOpacity(_ opacity: Double) {
-        guard opacity != self.opacity else { return }
         self.opacity = opacity
-        stateui_winui_set_opacity(handle, opacity)
+        let drawn = opacity * placedOpacity
+        guard drawn != writtenOpacity else { return }
+        writtenOpacity = drawn
+        stateui_winui_set_opacity(handle, drawn)
+    }
+
+    /// How a placing layout draws the view over the place it gave, and how opaque; nil and 1 for as the view says.
+    /// Design: docs/design/platforms/winui/drawing.md#a-placed-child
+    func setPlacedDrawing(_ drawing: HostDrawingTransform?, opacity: Double) {
+        guard drawing != placedDrawing || opacity != placedOpacity else { return }
+
+        placedDrawing = drawing
+        placedOpacity = opacity
+        writeTransform()
+        setOpacity(self.opacity)
+    }
+
+    /// Whether clicks and touches go through the view to what is behind it.
+    func setIgnoresInput(_ ignores: Bool) {
+        stateui_winui_set_hit_testable(handle, !ignores)
+    }
+
+    /// Where the view is drawn among its layout's children, written only where it differs.
+    func setZIndex(_ z: Int32) {
+        guard z != writtenZIndex else { return }
+        writtenZIndex = z
+        stateui_winui_set_z_index(handle, z)
     }
 
     /// Moves, turns and scales the view where its layout put it, in DIPs and degrees.
@@ -75,12 +110,26 @@ class WinUIView {
         writeTransform()
     }
 
-    /// Writes the transform, about its pivot in the size the view was last placed at.
+    /// Writes the view's own transform, with a placing layout's over it, about its pivot in the size the view was
+    /// last placed at - the centre under a placing layout's drawing.
     private func writeTransform() {
+        var drawn = transform
+        if let placed = placedDrawing {
+            let angle = placed.rotation * .pi / 180
+            let x = transform.translationX * placed.scaleX
+            let y = transform.translationY * placed.scaleY
+            drawn.translationX = placed.translationX + x * cos(angle) - y * sin(angle)
+            drawn.translationY = placed.translationY + x * sin(angle) + y * cos(angle)
+            drawn.rotation += placed.rotation
+            drawn.scaleX *= placed.scaleX
+            drawn.scaleY *= placed.scaleY
+            drawn.pivotX = 0.5
+            drawn.pivotY = 0.5
+        }
         let size = placed ?? Rect(x: 0, y: 0, width: 0, height: 0)
         stateui_winui_set_transform(
-            handle, transform.translationX, transform.translationY, transform.rotation,
-            transform.scaleX, transform.scaleY, transform.pivotX * size.width, transform.pivotY * size.height)
+            handle, drawn.translationX, drawn.translationY, drawn.rotation,
+            drawn.scaleX, drawn.scaleY, drawn.pivotX * size.width, drawn.pivotY * size.height)
     }
 
     /// Asks WinUI to measure this element again, and every panel above it.
@@ -107,7 +156,7 @@ class WinUIView {
         } else {
             placingLayout?.invalidateArrange()
         }
-        if resized, transform != .identity { writeTransform() }
+        if resized, transform != .identity || placedDrawing != nil { writeTransform() }
     }
 
     /// Where WinUI laid the element out in its parent, in DIPs.

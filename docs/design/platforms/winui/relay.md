@@ -9,7 +9,7 @@ the host's library.
 
 The relay holds only what Swift cannot do: WinUI's subclasses - the
 application and the panel every layout is - the events, the post onto the UI
-thread's queue, and the frame's event. Measured on the first probe, a call
+thread's queue, the frame's event, and what a test reads of the screen. Measured on the first probe, a call
 from Swift into C costs a nanosecond, and a setter through the relay a few
 hundred more than the same setter in C++: the crossing is nothing next to the
 work it asks for.

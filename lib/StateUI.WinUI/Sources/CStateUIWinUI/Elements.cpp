@@ -6,8 +6,11 @@
 
 #include "Relay.h"
 
+#include <algorithm>
 #include <cstring>
 
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Xaml.Hosting.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 
@@ -79,6 +82,50 @@ extern "C" void stateui_winui_invalidate_arrange(StateUIObjectRef handle) {
         as<xaml::UIElement>(handle).InvalidateArrange();
     } catch (winrt::hresult_error const &error) {
         report(error, "invalidating an arrangement");
+    }
+}
+
+extern "C" void stateui_winui_set_clip(
+    StateUIObjectRef handle, bool cuts, StateUIOutline outline, double radius, double width, double height
+) {
+    try {
+        auto visual = xaml::Hosting::ElementCompositionPreview::GetElementVisual(as<xaml::UIElement>(handle));
+        if (!cuts) {
+            visual.Clip(nullptr);
+            return;
+        }
+        auto compositor = visual.Compositor();
+        auto w = static_cast<float>(width), h = static_cast<float>(height);
+        if (outline == StateUIOutlineEllipse) {
+            auto ellipse = compositor.CreateEllipseGeometry();
+            ellipse.Center({w / 2, h / 2});
+            ellipse.Radius({w / 2, h / 2});
+            visual.Clip(compositor.CreateGeometricClip(ellipse));
+        } else {
+            auto rectangle = compositor.CreateRoundedRectangleGeometry();
+            auto r = outline == StateUIOutlineRounded ? std::min(static_cast<float>(radius), std::min(w, h) / 2) : 0.0f;
+            rectangle.Size({w, h});
+            rectangle.CornerRadius({r, r});
+            visual.Clip(compositor.CreateGeometricClip(rectangle));
+        }
+    } catch (winrt::hresult_error const &error) {
+        report(error, "cutting an element to its outline");
+    }
+}
+
+extern "C" void stateui_winui_set_hit_testable(StateUIObjectRef handle, bool testable) {
+    try {
+        as<xaml::UIElement>(handle).IsHitTestVisible(testable);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "letting clicks through");
+    }
+}
+
+extern "C" void stateui_winui_set_z_index(StateUIObjectRef handle, int32_t z) {
+    try {
+        controls::Canvas::SetZIndex(as<xaml::UIElement>(handle), z);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "ordering an element among its panel's children");
     }
 }
 
