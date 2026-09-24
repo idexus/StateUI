@@ -65,13 +65,11 @@ and this table maps the two.
 | inputs (`Input`) | props | a view's stored values, compared to decide whether to carry it |
 | placeholder (`Node.Stateful`) | lazy node | a composed view not built yet |
 | producer | deferred children | a container's content, run when the element is described |
-| shape (recycling) | reuse identifier | what says two rows have the same structure |
 | generation, baseline | version | the tree a patch was computed against |
 | drift | desync | a patch that does not match the tree the host holds |
 | mount, mounted element | mounted node | the host's live instance of an element; `mount` is its instance number |
 | realization | native adapter | how a host implements an element with its toolkit's control |
 | described property | declared value | a property value the patch carries |
-| recycling | view reuse | a list row's native views kept and given to the next row of the same shape |
 | closed vocabulary, open vocabulary (`Name`) | enumeration, interned name | a fixed set of numbered choices, and a set an author names |
 | kind first (`Kind`) | tagged value | a structured value whose first part says which shape follows |
 | state image, carried value | state buffer | a bound state's value as the host reads and writes it |

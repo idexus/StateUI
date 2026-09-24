@@ -145,7 +145,7 @@
         }
     }
 
-    /// Forgets the place of an element that leaves the tree, or is adopted and then arrives.
+    /// Forgets the place of an element that leaves the tree.
     public func remove(mount: UInt64) {
         seats[mount] = nil
         animator.halt(.placed(mount))

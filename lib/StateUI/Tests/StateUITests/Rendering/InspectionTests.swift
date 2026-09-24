@@ -204,13 +204,13 @@ final class InspectionTests: XCTestCase {
 
         Inspection.applied(
             generation: 7,
-            InspectedHost(apply: 352, nodes: 5, made: 2, kept: 3, adopted: 0))
+            InspectedHost(apply: 352, nodes: 5, made: 2, kept: 3))
 
         let lines = Inspection.takeLog().split(separator: "\n").map(String.init)
         let head = try XCTUnwrap(lines.first)
 
         XCTAssertTrue(head.hasPrefix("StateUI inspect #\(first.number) build at "), head)
-        XCTAssertTrue(head.contains(" · host 352 µs, 5 nodes, 2 made, 3 kept, 0 adopted · 3 built · 0 carried"), head)
+        XCTAssertTrue(head.contains(" · host 352 µs, 5 nodes, 2 made, 3 kept · 3 built · 0 carried"), head)
         XCTAssertEqual(lines.dropFirst().map { $0.components(separatedBy: " · ")[0] }, [
             "  ● Holds — first time",
             "    ● Titled — first time",
@@ -357,7 +357,7 @@ final class InspectionTests: XCTestCase {
         Inspection.applied(generation: 6, scene: 1, micros: 30)
         Inspection.applied(
             generation: 6,
-            InspectedHost(apply: 40, nodes: 3, made: 1, kept: 2, adopted: 0))
+            InspectedHost(apply: 40, nodes: 3, made: 1, kept: 2))
 
         XCTAssertEqual(Inspection.passes.first?.host?.apply, 40)
         XCTAssertEqual(Inspection.passes.first?.host?.scenes, [0, 30])

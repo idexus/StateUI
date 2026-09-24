@@ -128,7 +128,7 @@
         }
     }
 
-    /// Drops every animation of an element that leaves or is adopted.
+    /// Drops every animation of an element that leaves.
     public func remove(mount: UInt64) {
         transitions = transitions.filter { $0.key.mount != mount }
         outputs.removeAll { $0.key.mount == mount }

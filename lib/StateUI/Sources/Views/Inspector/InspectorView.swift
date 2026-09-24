@@ -256,8 +256,7 @@ struct InspectorView: ContentView {
     private func host(_ host: InspectedHost?) -> String {
         guard let host else { return "Host  not reported yet" }
 
-        return "Host  apply \(Look.micros(host.apply)) · "
-            + "\(host.nodes) nodes · \(host.made) made · \(host.kept) kept · \(host.adopted) adopted"
+        return "Host  apply \(Look.micros(host.apply)) · \(host.nodes) nodes · \(host.made) made · \(host.kept) kept"
     }
 }
 

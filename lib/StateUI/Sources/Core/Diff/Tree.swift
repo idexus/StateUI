@@ -108,13 +108,6 @@ final class RenderedNode {
     /// The elements under it, in the order the host has them.
     var children: [RenderedNode]
 
-    /// What this subtree looks like with values left out, for a recycled layout's
-    /// children; zero elsewhere (Recycling.swift).
-    var shape: UInt64 = 0
-
-    /// Whether its children are recycled, kept so the flag is sent when it changes.
-    var recycles = false
-
     /// How its children were last told to animate; nil until said.
     var motion: Motion?
 
@@ -127,7 +120,6 @@ final class RenderedNode {
         type: NodeType,
         props: [Prop: PropValue],
         events: [Event: Int],
-        recycles: Bool = false,
         motion: Motion? = nil,
         lanes: MotionLanes = .all,
         key: String? = nil,
@@ -147,7 +139,6 @@ final class RenderedNode {
         readings: [Sampling] = [],
         children: [RenderedNode]
     ) {
-        self.recycles = recycles
         self.motion = motion
         self.lanes = lanes
         self.views = views
@@ -197,8 +188,6 @@ extension HostPatch {
             && properties.isEmpty
             && clearedProperties.isEmpty
             && events == nil
-            && shape == nil
-            && recycles == nil
             && driven == nil
             && !children.hasChange
     }
@@ -235,8 +224,6 @@ extension HostPatch {
         merged.motion = later.motion ?? motion
         merged.driven = later.driven ?? driven
         merged.events = later.events ?? events
-        merged.shape = later.shape ?? shape
-        merged.recycles = later.recycles ?? recycles
         merged.children = HostChildrenUpdate.merging(children, with: later.children)
 
         return merged

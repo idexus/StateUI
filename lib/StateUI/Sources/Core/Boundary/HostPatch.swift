@@ -64,13 +64,6 @@
     /// sent when it changed and only by an element that places children.
     public var motion: HostLayoutMotion?
 
-    /// Whether this element's children are recycled, or nil when unchanged.
-    public var recycles: Bool?
-
-    /// The recyclable subtree shape, or nil when unchanged. Zero means the
-    /// subtree cannot be recycled.
-    public var shape: UInt64?
-
     /// The sparse or complete change to this element's children.
     public var children: HostChildrenUpdate = .unchanged
 }

@@ -301,11 +301,6 @@ public struct Node {
     /// under numbers the element keeps (Engine.swift).
     var engines: [EngineDeclaration] = []
 
-    /// Set on a layout whose children are rows the host may keep and hand to a row
-    /// of the same shape - by this library's own list alone (Recycling.swift).
-    var recycles = false
-
-
     /// Set on a placeholder for a composed view whose body is not built yet
     /// (Stateful.swift).
     var stateful: Stateful?

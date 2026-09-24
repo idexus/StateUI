@@ -36,8 +36,6 @@ struct HostPatch {
     var driven: HostDrivenUpdate?
     var events: HostEventUpdate?
     var motion: HostLayoutMotion?
-    var recycles: Bool?
-    var shape: UInt64?
     var children: HostChildrenUpdate = .unchanged
 }
 
@@ -83,33 +81,23 @@ Explicit `.id()` wins, then a `ForEach` item identity, then builder path, then
 position. Swift owns matching and diffing; a host does not infer identity from
 native objects.
 
-`recycles` and `shape` make native reuse explicit. `recycles` tells a layout
-whether children that leave its arrangement may be retained. Each eligible
-child then carries a deterministic `shape` over its subtree's node types,
-property keys, event keys, and child structure; property values are omitted.
-A shape of zero forbids reuse. Two equal nonzero shapes let the host adopt a
-retained native subtree, but the arriving complete patch must still restamp
-every element identity, authored property, event, and state attachment. The
-host never computes or guesses a shape itself.
-
 ## Apply order
 
 A host applies one generation as one transaction:
 
 1. validate the generation before changing the mounted tree;
-2. find the mounted element by `ElementId`, adopt an explicitly compatible
-   recycled subtree, or create the native object for a new complete patch;
+2. find the mounted element by `ElementId`, or create the native object for
+   a new complete patch;
 3. replace an element only when `replace` says so;
-4. apply `recycles` and `shape` bookkeeping when those fields are present;
-5. clear `clearedProperties`, then apply changed `properties` and their
+4. clear `clearedProperties`, then apply changed `properties` and their
    `transitions`;
-6. replace driven bindings and event subscriptions only when their optional
+5. replace driven bindings and event subscriptions only when their optional
    update is present;
-7. apply the changed layout-motion rule;
-8. reconcile children according to `changed` or `arranged`;
-9. detach every external subscription, recognizer, menu, timer, and native
+6. apply the changed layout-motion rule;
+7. reconcile children according to `changed` or `arranged`;
+8. detach every external subscription, recognizer, menu, timer, and native
    object belonging to an element that left;
-10. retain the generation only after the transaction is complete.
+9. retain the generation only after the transaction is complete.
 
 `HostChildrenUpdate.changed` is a sparse path to descendants. It never changes
 the sibling arrangement. `arranged` is the complete ordered list and is the

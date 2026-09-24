@@ -5,10 +5,10 @@
 /// Design: docs/design/host/tree.md#the-mounted-tree
 @_spi(Host) @MainActor public final class MountedElement {
     /// The element's key.
-    public private(set) var id: ElementId
+    public let id: ElementId
 
     /// The element's node type.
-    public private(set) var type: NodeType
+    public let type: NodeType
 
     /// The element's instance number, which its animations are filed under.
     public let mount: UInt64
@@ -22,12 +22,6 @@
 
     /// Each child's place in the order the last arrangement wrote them.
     private var writingOrder: [ElementId: Int] = [:]
-
-    /// The rows a recycling layout keeps for the next row of the same shape.
-    public private(set) var recycledChildren: [MountedElement] = []
-
-    /// Whether this layout keeps the rows it drops for reuse.
-    public private(set) var recycles = false
 
     /// The properties the patches described.
     public private(set) var properties: [Prop: HostValue] = [:]
@@ -48,7 +42,6 @@
     public private(set) var native: (any NativeElement)!
 
     private weak var tree: MountedTree?
-    private var shape: UInt64 = 0
     private var wornStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
     private var created = false
@@ -63,88 +56,44 @@
         native = nil
         native = tree.makeNative(self)
         tree.tally?.made += 1
-        apply(patch, adopting: false)
+        apply(patch)
     }
 
     /// Applies a patch of this element.
     public func apply(_ patch: HostPatch) {
-        apply(patch, adopting: false)
-    }
-
-    /// Applies a patch; when `adopting`, a kept row takes another row's complete description.
-    /// Design: docs/design/host/tree.md#recycling
-    private func apply(_ patch: HostPatch, adopting: Bool) {
         guard let tree else { return }
 
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
-        if adopting { tree.tally?.adopted += 1 }
         defer {
             if let sceneBegan { tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan }
         }
 
         native.willApply()
-        var changed: Set<Prop>
-
-        if adopting {
-            changed = Set(properties.keys)
-            changed.formUnion(patch.properties.keys)
+        var changed = Set(patch.clearedProperties)
+        changed.formUnion(patch.properties.keys)
+        if case .replace(let replacement) = patch.driven {
             changed.formUnion(driven.keys)
-            if case .replace(let replacement)? = patch.driven {
-                changed.formUnion(replacement.keys)
-            }
-        } else {
-            changed = Set(patch.clearedProperties)
-            changed.formUnion(patch.properties.keys)
-            if case .replace(let replacement) = patch.driven {
-                changed.formUnion(driven.keys)
-                changed.formUnion(replacement.keys)
-            }
+            changed.formUnion(replacement.keys)
         }
 
         let standing = Dictionary(uniqueKeysWithValues: changed.compactMap { property in
             standingValue(property, target: patch.properties[property]).map { (property, $0) }
         })
 
-        if adopting {
-            tree.removeMotions(mount: mount)
-            id = patch.id
-        }
-        type = patch.type
-
-        if adopting {
-            properties = patch.properties
-            if case .replace(let replacement)? = patch.events {
-                events = replacement
-            } else {
-                events = [:]
-            }
-            if case .replace(let replacement)? = patch.driven {
-                driven = replacement
-            } else {
-                driven = [:]
-            }
-            drivenValues.removeAll(keepingCapacity: true)
-            created = false
-            described = false
-            native.adopted()
-            for child in recycledChildren { child.leave() }
-            recycledChildren.removeAll(keepingCapacity: true)
-        } else {
-            for property in patch.clearedProperties {
-                properties[property] = nil
-            }
-
-            for (property, value) in patch.properties {
-                properties[property] = value
-            }
-
-            if case .replace(let events) = patch.events {
-                self.events = events
-            }
+        for property in patch.clearedProperties {
+            properties[property] = nil
         }
 
-        if !adopting, case .replace(let driven) = patch.driven {
+        for (property, value) in patch.properties {
+            properties[property] = value
+        }
+
+        if case .replace(let events) = patch.events {
+            self.events = events
+        }
+
+        if case .replace(let driven) = patch.driven {
             self.driven = driven
             drivenValues = drivenValues.filter { driven[$0.key] != nil }
         }
@@ -154,16 +103,10 @@
             drivenValues[property] = tree.core.value(for: binding)
         }
 
-        if let recycles = patch.recycles { self.recycles = recycles }
-        if let shape = patch.shape { self.shape = shape }
         if let motion = patch.motion {
             self.motion = motion
             // The application says its motion once; every layout that says none animates under it.
             if type == .application { tree.layoutMotion.applicationMotion = motion.motion }
-        }
-        if !recycles, !recycledChildren.isEmpty {
-            for child in recycledChildren { child.leave() }
-            recycledChildren.removeAll(keepingCapacity: true)
         }
 
         switch patch.children {
@@ -172,7 +115,7 @@
 
         case .arranged(let childPatches):
             writingOrder = Dictionary(childPatches.enumerated().map { ($1.id, $0) }) { first, _ in first }
-            arrange(childPatches, tree: tree, adopting: adopting)
+            arrange(childPatches, tree: tree)
 
         case .changed(let childPatches):
             for childPatch in childPatches {
@@ -202,7 +145,7 @@
                 property: property,
                 standing: standing[property],
                 target: resolvedValue(property),
-                motion: adopting || hasDrivenPresentation || !native.animates(property)
+                motion: hasDrivenPresentation || !native.animates(property)
                     ? nil
                     : patch.transitions[property]?.motion)
         }
@@ -214,55 +157,15 @@
         described = true
     }
 
-    /// Reconciles a complete child arrangement: by key, and by position while adopting.
-    private func arrange(_ patches: [HostPatch], tree: MountedTree, adopting: Bool) {
-        if adopting {
-            let previous = children
-            children = patches.enumerated().map { index, patch in
-                guard index < previous.count,
-                      previous[index].type == patch.type,
-                      !patch.replace
-                else {
-                    return MountedElement(patch, tree: tree, parent: self)
-                }
-
-                let child = previous[index]
-                child.parent = self
-                child.apply(patch, adopting: true)
-                return child
-            }
-            leave(previous)
-            return
-        }
-
+    /// Reconciles a complete child arrangement by key.
+    private func arrange(_ patches: [HostPatch], tree: MountedTree) {
         let before = children
         let previous = Dictionary(uniqueKeysWithValues: children.map { ($0.id, $0) })
-
-        if recycles {
-            let named = Set(patches.map(\.id))
-            for child in children where !named.contains(child.id) {
-                guard child.shape != 0,
-                      recycledChildren.count < Self.recyclingCapacity
-                else { continue }
-                child.native.setRecycled(true)
-                child.park()
-                recycledChildren.append(child)
-            }
-        }
 
         children = patches.map { patch in
             if let child = previous[patch.id], child.type == patch.type, !patch.replace {
                 child.parent = self
                 child.apply(patch)
-                return child
-            }
-
-            if recycles, let shape = patch.shape, shape != 0,
-               let index = recycledChildren.lastIndex(where: { $0.shape == shape }) {
-                let child = recycledChildren.remove(at: index)
-                child.parent = self
-                child.native.setRecycled(false)
-                child.apply(patch, adopting: true)
                 return child
             }
 
@@ -294,9 +197,9 @@
     /// The layouts whose children can overlap, drawn in `zIndex` order.
     private static let layered: Set<NodeType> = [.grid, .zStack]
 
-    /// Detaches every one of `previous` that is no longer a child or a kept row.
+    /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {
-        let staying = Set((children + recycledChildren).map(ObjectIdentifier.init))
+        let staying = Set(children.map(ObjectIdentifier.init))
         for child in previous where !staying.contains(ObjectIdentifier(child)) {
             child.leave()
         }
@@ -315,24 +218,13 @@
     /// Detaches this element and everything under it from the runtime as it leaves the tree.
     /// Design: docs/design/host/tree.md#leaving
     public func leave() {
-        letGo()
-        native.leave()
-        for child in children + recycledChildren { child.leave() }
-    }
-
-    /// Lets go of what a kept row no longer shows, while its views wait to be adopted.
-    private func park() {
-        letGo()
-        for child in children { child.park() }
-    }
-
-    private func letGo() {
-        native.letGo()
         if let tree {
             for state in wornStates { tree.stateChannels.detach(state) }
             tree.removeMotions(mount: mount)
         }
         wornStates = []
+        native.leave()
+        for child in children { child.leave() }
     }
 
     /// The first element of `type` in this subtree, this one first.
@@ -599,9 +491,6 @@
 
         return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
     }
-
-    /// Several visible windows' worth of kept rows, never an unbounded history.
-    private static let recyclingCapacity = 32
 
     private static let colorProperties: Set<Prop> = [
         .background, .barBackgroundColor, .barForegroundColor, .borderColor, .color,

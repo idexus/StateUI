@@ -361,10 +361,6 @@ extension Differ {
             }
         }
 
-        if node.recycles != (describeAll ? false : (previous?.recycles ?? false)) {
-            patch.recycles = node.recycles
-        }
-
         // Nothing is cleared on an element described from scratch.
         patch.clearedProperties = replace ? [] : lost
 
@@ -492,7 +488,6 @@ extension Differ {
             type: node.type,
             props: node.props,
             events: events,
-            recycles: node.recycles,
             motion: patch.motion?.motion ?? previous?.motion ?? .inherited,
             lanes: patch.motion?.lanes ?? previous?.lanes ?? .all,
             key: key,

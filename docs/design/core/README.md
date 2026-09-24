@@ -15,7 +15,7 @@ The core's sources stand in one folder per topic, one element to a file, and
 | --- | --- |
 | [render.md](render.md) | the renderer, the three roads of a render, generations, handlers in the message, starting a handler |
 | [invalidation.md](invalidation.md) | reads and changes, live readers, writes during a render, `debugInfo()` |
-| [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries, recycling |
+| [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries |
 | [state.md](state.md) | storage and box, bindings, model state, carried state, kept and scene-kept state, the environment |
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
 | [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |

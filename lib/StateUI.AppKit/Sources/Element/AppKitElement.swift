@@ -81,8 +81,6 @@ final class AppKitElement: NSObject, NativeElement {
     var mount: UInt64 { element.mount }
     var parent: AppKitElement? { element.parent?.appKit }
     var children: [AppKitElement] { element.children.map(\.appKit) }
-    var recycledChildren: [AppKitElement] { element.recycledChildren.map(\.appKit) }
-    var recycles: Bool { element.recycles }
     var events: [Event: Int32] { element.events }
     var driven: [Prop: HostStateBinding] { element.driven }
     var motion: HostLayoutMotion? { element.motion }
@@ -101,14 +99,6 @@ final class AppKitElement: NSObject, NativeElement {
 
     func willApply() {
         previouslyShown = shownChildren.map(\.element)
-    }
-
-    func adopted() {
-        leaving = false
-        lastFrameReport = nil
-        reportedFocus = false
-        pagePresented = false
-        pendingTabFallback = nil
     }
 
     func standingValue(_ property: Prop) -> HostValue? {
@@ -145,11 +135,8 @@ final class AppKitElement: NSObject, NativeElement {
         reportTabFallback()
     }
 
-    func letGo() {
-        leaving = false
-    }
-
     func leave() {
+        leaving = false
         releaseNativeAttachments()
     }
 
@@ -223,10 +210,6 @@ final class AppKitElement: NSObject, NativeElement {
                 leaving || ignores || value(.letsInputThrough)?.bool == true,
                 cascades: leaving || ignores)
         }
-    }
-
-    func setRecycled(_ recycled: Bool) {
-        for native in presentableViews { native.isHidden = recycled }
     }
 
     func releaseNativeAttachments() {

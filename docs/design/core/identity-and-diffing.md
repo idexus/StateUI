@@ -345,42 +345,6 @@ aim of its own on its root, which is the same element and takes the same key.
 A reading asked for with `.samples` is held by the element and keyed by its
 target, so a view described again replaces its own reading.
 
-## Recycling
-
-A list scrolling by one row builds a row's controls and throws another row's
-away, and building controls is what makes a scroll judder. The row leaving and
-the row arriving usually have the same shape, so the leaving control could
-stand in for the arriving one - if the host knew they were alike.
-
-`Recycling.shape` is that knowledge: a number over the subtree's types,
-property keys and event keys, values left out. Two rows share a shape exactly
-when they name the same properties on the same controls in the same places, so
-a control adopted under a matching shape is given a value for every property
-it carries and has nothing left over to clear. A conditional property splits
-the shape in two, which is correct: those two rows are not interchangeable.
-
-```text
-  shape = FNV-1a over   type name
-                        property keys, sorted
-                        ""              (a separator: props vs events)
-                        event keys, sorted
-                        children, recursively
-                        ""              (so depth changes the number)
-  every piece ends with 0xff, so "ab"+"c" never reads as "a"+"bc"
-  0 means "may not be recycled"
-```
-
-The hash is written out rather than taken from Swift's hashing, which is
-seeded per process: two runs must number a shape alike for a test, and two
-instances in one run must, or nothing would be adopted. The keys are sorted
-because a dictionary's order differs between two instances in one run.
-
-`Recycling.poolable` is an inclusion list: a control whose whole state is in
-the tree. Text inputs and pickers hold a caret, a selection or an open list;
-a scroller its offset; a web view and a map a history and a region; a canvas its cached
-surface. None of that is a property, so none of it is in the shape, and every
-type added later is outside the list until someone puts it in.
-
 ## Merging patches
 
 A render whose handlers wrote state before the message left sends its own

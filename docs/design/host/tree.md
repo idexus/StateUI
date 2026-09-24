@@ -9,10 +9,10 @@ runtime](runtime.md) draws where the tree sits in a turn and a frame.
 ```text
   MountedTree                         the root, the numbers, the patch's clock
     |
-    MountedElement  (host layer)      key, type, children, kept rows,
+    MountedElement  (host layer)      key, type, children,
     |   |                             described properties, bound states,
     |   |                             event handlers, layout motion,
-    |   |                             drift, recycling, leaving, the frame walk
+    |   |                             drift, leaving, the frame walk
     |   |
     |   native: NativeElement  ---->  AppKitElement (toolkit half)
     |                                  NSView, constraints, gestures,
@@ -55,20 +55,10 @@ then the bound or described value. Where none exists but the toolkit animates
 the property, the property's resting value is the start: no margin, no turn,
 a scale of one, a corner radius of the target's shape.
 
-## Recycling
-
-A layout that recycles keeps a row it drops, up to a few windows' worth, and
-gives it to the next row of the same shape. The kept row lets go of its states
-and animations and keeps its views. Adopted, it takes the new row's complete
-description: its key, every property, event and binding, and its children by
-position, because one shape guarantees the same structure. An adopted row
-arrives where its layout puts it rather than animating from its last life.
-
 ## Leaving
 
 An element leaves by every road out of the tree - dropped from an arrangement,
-replaced, a new root, a kept row the layout no longer keeps - and everything
-under it leaves with it. It lets go of the states it wears, so a channel's
+replaced, a new root - and everything under it leaves with it. It lets go of the states it wears, so a channel's
 last wearer takes the channel with it once it lands; its property and layout
 animations end; and its native half detaches what it attached outside the
 tree: observers, recognizers, a scroller's hold on the frame clock. Nothing

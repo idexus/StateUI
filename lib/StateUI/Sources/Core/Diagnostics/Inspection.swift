@@ -99,9 +99,6 @@ struct InspectedHost {
     /// Controls found already standing where the message describes them.
     var kept: Int
 
-    /// Controls taken out of a pool and stamped again.
-    var adopted: Int
-
     /// Microseconds each scene's apply took, in the order the application
     /// lists them.
     var scenes: [Double] = []
@@ -394,8 +391,7 @@ enum Inspection {
         head += " · Swift \(whole(pass.describe))"
 
         if let host = pass.host {
-            head += " · host \(whole(host.apply)), \(host.nodes) nodes,"
-                + " \(host.made) made, \(host.kept) kept, \(host.adopted) adopted"
+            head += " · host \(whole(host.apply)), \(host.nodes) nodes, \(host.made) made, \(host.kept) kept"
         }
 
         var lines = [head + " · \(built) built · \(carried) carried"]

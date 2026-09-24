@@ -4,7 +4,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The mounted tree every Swift runtime shares: patches, drift, leaving, recycling and the frame walk.
+/// The mounted tree every Swift runtime shares: patches, drift, leaving and the frame walk.
 final class MountedTreeTests: XCTestCase {
     /// An arranged patch mounts every child in order, each with its native half applied once.
     @MainActor
@@ -79,38 +79,28 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.stateChannels.count, 0, "the last wearer took the channel along")
     }
 
-    /// A recycling layout keeps a dropped row and gives it to the next row of the same shape.
+    /// A row arriving after another of its kind left is mounted anew: the tree keeps nothing an arrangement dropped.
     @MainActor
-    func testARecyclingLayoutAdoptsAKeptRowOfTheSameShape() {
+    func testARowArrivingAfterOneOfItsKindLeftIsMountedAnew() {
         let (tree, log) = Self.tree()
-        func list(_ rows: [String]) -> HostPatch {
-            var list = HostPatch(id: .manual("list"), type: .zStack)
-            list.recycles = true
-            list.children = .arranged(rows.map { id in
-                var row = HostPatch(id: .manual(id), type: .label)
-                row.shape = 7
-                row.properties = [.text: .string(id)]
-                return row
-            })
-            return list
+        func layers(_ rows: [String]) -> HostPatch {
+            var layers = HostPatch(id: .manual("layers"), type: .zStack)
+            layers.children = .arranged(rows.map { HostPatch(id: .manual($0), type: .label) })
+            return layers
         }
-        tree.apply(list(["a"]), complete: true)
-        let kept = tree.root?.children.first
+        tree.apply(layers(["a"]), complete: true)
+        let first = tree.root?.children.first
 
-        tree.apply(list([]), complete: false)
-        XCTAssertTrue(tree.root?.recycledChildren.first === kept)
-        XCTAssertEqual(log.recycled, ["a"])
+        tree.apply(layers([]), complete: false)
+        XCTAssertEqual(log.left, ["a"])
 
-        tree.apply(list(["b"]), complete: false)
-        XCTAssertTrue(tree.root?.children.first === kept, "the kept row is adopted")
-        XCTAssertEqual(kept?.id, .manual("b"))
-        XCTAssertEqual(kept?.string(.text), "b")
-        XCTAssertEqual(log.adopted, ["b"])
-        XCTAssertTrue(log.left.isEmpty, "a kept row does not leave")
+        tree.apply(layers(["b"]), complete: false)
+        XCTAssertFalse(tree.root?.children.first === first)
+        XCTAssertEqual(tree.root?.children.first?.id, .manual("b"))
     }
 
     /// While an inspector records, a message applied tells it the host's half on the pass of its generation:
-    /// the elements walked, made, kept and adopted, and each scene's part by its place in the application.
+    /// the elements walked, made and kept, and each scene's part by its place in the application.
     @MainActor
     func testAMessageAppliedTellsTheInspectorWhatItCost() throws {
         Scenes.shared.reset()
@@ -132,13 +122,7 @@ final class MountedTreeTests: XCTestCase {
             return patch
         }
         func list(_ rows: [String]) -> HostPatch {
-            var list = patch("list", .zStack, .arranged(rows.map { id in
-                var row = patch(id, .label)
-                row.shape = 7
-                return row
-            }))
-            list.recycles = true
-            return list
+            patch("list", .zStack, .arranged(rows.map { patch($0, .label) }))
         }
         func secondScene(_ rows: [String]) -> HostPatch {
             patch("application", .application, .changed([patch("2", .scene, .changed([list(rows)]))]))
@@ -155,7 +139,7 @@ final class MountedTreeTests: XCTestCase {
 
         let hosts = try Inspection.passes.map { try XCTUnwrap($0.host, "no host half for #\($0.generation)") }
         XCTAssertEqual(
-            hosts.map { [$0.nodes, $0.made, $0.kept, $0.adopted] }, [[6, 6, 0, 0], [3, 0, 3, 0], [4, 0, 3, 1]])
+            hosts.map { [$0.nodes, $0.made, $0.kept] }, [[6, 6, 0], [3, 0, 3], [4, 1, 3]])
         XCTAssertTrue(hosts.allSatisfy { $0.apply > 0 })
         XCTAssertEqual(hosts.map { $0.scenes.map { $0 > 0 } }, [[true, true], [false, true], [false, true]])
     }
@@ -357,8 +341,6 @@ private final class NativeLog {
     var applied: [String] = []
     var arranged: [String] = []
     var left: [String] = []
-    var recycled: [String] = []
-    var adopted: [String] = []
 }
 
 /// A native half that records what the tree asks of it.
@@ -382,7 +364,6 @@ private final class RecordingNative: NativeElement {
     }
 
     func willApply() {}
-    func adopted() { log.adopted.append(name) }
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }
@@ -390,7 +371,5 @@ private final class RecordingNative: NativeElement {
         FrameImpact(content: true, arrangement: changed.contains(.width))
     }
     func arrangeChildren() { log.arranged.append(name) }
-    func letGo() {}
     func leave() { log.left.append(name) }
-    func setRecycled(_ recycled: Bool) { if recycled { log.recycled.append(name) } }
 }

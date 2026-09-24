@@ -40,9 +40,6 @@
     /// A patch is about to apply to the element.
     func willApply()
 
-    /// A kept row took another row's description; the native half's own marks start over.
-    func adopted()
-
     /// The value `property` stands at natively before a change animates it; nil where the tree's stands.
     func standingValue(_ property: Prop) -> HostValue?
 
@@ -58,14 +55,8 @@
     /// Places the element's children again.
     func arrangeChildren()
 
-    /// The element leaves or parks as a kept row: it lets go of what its animations hold natively.
-    func letGo()
-
     /// The element leaves the tree: everything it attached outside the tree lets go of it.
     func leave()
-
-    /// A kept row hides while it waits, and shows again when adopted.
-    func setRecycled(_ recycled: Bool)
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.
@@ -195,7 +186,7 @@
         return nextMount
     }
 
-    /// Drops the animations of an element that leaves or is adopted: its properties' and its place's.
+    /// Drops the animations of an element that leaves: its properties' and its place's.
     func removeMotions(mount: UInt64) {
         describedMotion.remove(mount: mount)
         layoutMotion.remove(mount: mount)

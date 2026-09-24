@@ -33,9 +33,7 @@
         }
         Inspection.applied(
             generation: generation,
-            InspectedHost(
-                apply: apply, nodes: tally.nodes, made: tally.made,
-                kept: tally.nodes - tally.made - tally.adopted, adopted: tally.adopted))
+            InspectedHost(apply: apply, nodes: tally.nodes, made: tally.made, kept: tally.nodes - tally.made))
     }
 
     // MARK: - The display cycle

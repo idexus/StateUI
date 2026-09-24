@@ -52,11 +52,6 @@ final class AndroidElement: NativeElement {
         previouslyShown = shownChildren.map(\.element)
     }
 
-    func adopted() {
-        leaving = false
-        pagePresented = false
-    }
-
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
         case (_, .opacity): view.map { .number($0.opacity) }
@@ -95,17 +90,10 @@ final class AndroidElement: NativeElement {
         return impact
     }
 
-    func letGo() {
-        leaving = false
-    }
-
     func leave() {
+        leaving = false
         view?.detach()
         host?.follow(self, readsFrame: false)
-    }
-
-    func setRecycled(_ recycled: Bool) {
-        view?.setShown(!recycled && value(.isVisible)?.bool != false)
     }
 }
 

@@ -7,7 +7,6 @@ struct RenderTally {
     let began = ContinuousClock.now
     var nodes = 0
     var made = 0
-    var adopted = 0
 
     /// Each scene's part, by the scene's key.
     var scenes: [ElementId: Duration] = [:]

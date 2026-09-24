@@ -66,10 +66,7 @@ extension AppKitElement {
         }
 
         if let layers = view as? AppKitZStackView {
-            layers.setItems(
-                items,
-                retaining: recycledChildren.compactMap(\.layoutItem),
-                preservesSubviewOrder: recycles)
+            layers.setItems(items)
             return
         }
 

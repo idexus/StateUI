@@ -47,10 +47,7 @@ enum PatchDump {
 
         var head = indent + patch.type.name + " " + spelled(patch.id)
         if patch.replace { head += " replace" }
-        if let recycles = patch.recycles { head += recycles ? " recycles" : " recycles(no)" }
         if let placement = patch.motion { head += moving(placement) }
-        // In hex: a reader checks that two rows share a number, not what it is.
-        if let shape = patch.shape { head += " shape=\(String(shape, radix: 16))" }
         if case .arranged(let children) = patch.children { head += " arranged(\(children.count))" }
         out += head + "\n"
 

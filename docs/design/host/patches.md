@@ -32,9 +32,8 @@ opens.
 
 While an inspector records, the runtime tells it its half of every message,
 on the pass of the message's generation: how long applying it took, the
-elements it walked, how many it mounted anew, how many kept rows took another
-row's description, and how many it found standing - the rest - and how long
-each scene's part took, by the scene's place in the application's list. The
+elements it walked, how many it mounted anew and how many it found standing -
+the rest - and how long each scene's part took, by the scene's place in the application's list. The
 mounted tree keeps that tally, `RenderTally`, for the message the intake is
 applying, and tells it through the core link once the message is in. A typed
 patch is read off no buffer, so its read time is nothing. While no inspector

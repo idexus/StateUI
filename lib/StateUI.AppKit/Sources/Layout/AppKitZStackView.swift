@@ -14,37 +14,14 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         didSet { needsLayout = true }
     }
     private var items: [AppKitLayoutItem] = []
-    private var retainedViews: [ObjectIdentifier] = []
     private var drawingOrder: [ObjectIdentifier] = []
 
     override var isFlipped: Bool { true }
 
-    func setItems(
-        _ items: [AppKitLayoutItem],
-        retaining retained: [AppKitLayoutItem] = [],
-        preservesSubviewOrder: Bool = false
-    ) {
-        let retainedViews = retained.map { ObjectIdentifier($0.view) }
-        guard !AppKitLayoutItem.sameArrangement(self.items, items)
-            || retainedViews != self.retainedViews
-        else { return }
+    func setItems(_ items: [AppKitLayoutItem]) {
+        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
 
-        self.retainedViews = retainedViews
-        let all = items + retained
-
-        if preservesSubviewOrder {
-            let wanted = Set(all.map { ObjectIdentifier($0.view) })
-            for child in subviews where !wanted.contains(ObjectIdentifier(child)) {
-                child.removeFromSuperview()
-            }
-            for item in all where item.view.superview !== self {
-                item.view.translatesAutoresizingMaskIntoConstraints = true
-                addSubview(item.view)
-            }
-        } else {
-            replaceSubviews(with: all.map(\.view))
-        }
-
+        replaceSubviews(with: items.map(\.view))
         self.items = items
         drawingOrder = []
         invalidateMeasurements()

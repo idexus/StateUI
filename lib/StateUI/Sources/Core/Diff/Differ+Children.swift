@@ -79,22 +79,8 @@ extension Differ {
 
             used.insert(id)
 
-            var (child, childPatch) = element(
+            let (child, childPatch) = element(
                 id: id, rendered: match, node: childNode, sizesArrive: sizesArrive)
-
-            // What this row looks like, under a layout whose rows are recycled; sent when
-            // it moved.
-            // Design: docs/design/core/identity-and-diffing.md#recycling
-            if node.recycles {
-                child.shape = Recycling.shape(of: child)
-
-                // Against the host's default on a complete description.
-                let had = describeAll ? Recycling.none : (match?.shape ?? Recycling.none)
-
-                if child.shape != had {
-                    childPatch.shape = child.shape
-                }
-            }
 
             children.append(child)
             patches.append(childPatch)

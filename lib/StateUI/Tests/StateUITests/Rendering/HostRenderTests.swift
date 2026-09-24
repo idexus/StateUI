@@ -32,8 +32,6 @@ final class HostRenderTests: XCTestCase {
             .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property),
         ])
         patch.events = .replace([.clicked: 23])
-        patch.shape = 42
-        patch.recycles = true
         patch.children = .arranged([child])
 
         XCTAssertEqual(patch.id, .manual("save"))
@@ -58,8 +56,6 @@ final class HostRenderTests: XCTestCase {
             return XCTFail("expected a complete event replacement")
         }
         XCTAssertEqual(events[.clicked], 23)
-        XCTAssertEqual(patch.shape, 42)
-        XCTAssertEqual(patch.recycles, true)
 
         guard case .arranged(let children) = patch.children else {
             return XCTFail("expected a complete child arrangement")

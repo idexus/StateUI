@@ -8,8 +8,8 @@ import AppKit
 extension AppKitRegistrations {
     /// The stacks and the grid: the room a layout leaves around and between
     /// its children. What ARRANGES the children is not here - a layout walks
-    /// its own rows and keeps the ones it recycles, which is the host's work,
-    /// and a registration describes one view.
+    /// its own rows, which is the host's work, and a registration describes
+    /// one view.
     static func layouts(_ registry: Registry<NSView>) {
         registry.add(VStackContract.self, create: { _ in AppKitStackView(axis: .vertical) }) { stack in
             stack.applies(Self.stackMembers) { view, values in
