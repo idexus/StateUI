@@ -129,4 +129,4 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native |  |  |  |  |  |  |  |
+| `padding` | property | `Insets` | native | ✅ |  |  | ✅ |  |  |  |

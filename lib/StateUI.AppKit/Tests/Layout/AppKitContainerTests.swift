@@ -480,6 +480,41 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 19, y: 45, width: 10, height: 10))
     }
 
+    /// A ZStack's subviews stand in its children's drawing order - by `zIndex`, ties as written - restacked by a
+    /// described `zIndex` and by a bound one in the frame.
+    @MainActor
+    func testAZStacksSubviewsFollowTheDrawingOrder() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let binding = HostStateBinding(state: 72, mode: .inOut, kind: .property)
+        func layers(front: String) -> HostPatch {
+            var layers = HostPatch(id: .manual("layers"), type: .zStack)
+            layers.children = .arranged(["red", "blue", "bound"].map { id in
+                var layer = box(id, [.width: .number(20), .height: .number(20)])
+                layer.properties[.zIndex] = .number(id == front ? 1 : 0)
+                if id == "bound" { layer.driven = .replace([.zIndex: binding]) }
+                return layer
+            })
+            return layers
+        }
+        func drawn() throws -> [String] {
+            let views = ["red", "blue", "bound"].map { renderer.viewForTesting(id: .manual($0)) }
+            return try XCTUnwrap(renderer.viewForTesting(id: .manual("layers"))).subviews.map { subview in
+                ["red", "blue", "bound"][views.firstIndex { $0 === subview } ?? 0]
+            }
+        }
+
+        renderer.applyForTesting(tree(layers(front: "red")))
+        XCTAssertEqual(try drawn(), ["blue", "bound", "red"])
+
+        renderer.applyForTesting(changedTree(layers(front: "blue")))
+        XCTAssertEqual(try drawn(), ["red", "bound", "blue"])
+
+        let raised = HostJourney(value: [5], destination: [5], velocity: [0], motion: .none, completion: nil, stopped: 0)
+        renderer.applyStateForTesting(72, value: StateUIHost.value(of: raised))
+        XCTAssertEqual(try drawn(), ["red", "blue", "bound"])
+    }
+
     /// A row whose direction is right to left fills from the right, its padding swapped; the direction is its
     /// parent's, and the parent turning lays the row out again.
     @MainActor
@@ -617,6 +652,27 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(
             renderer.viewForTesting(id: .manual("proportional"))?.frame,
             NSRect(x: 75, y: 50, width: 50, height: 50))
+    }
+
+    /// A ZStack's padding narrows the room its children stand in: the whole room, and an area counted from
+    /// inside it.
+    @MainActor
+    func testAZStacksPaddingNarrowsItsRoom() throws {
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
+        layout.properties = [.padding: .numbers([10, 5, 20, 15])]
+        layout.children = .arranged([
+            box("whole", [:]),
+            box("fixed", [.area: Area.absolute(10, 20, 30, 40).propValue]),
+        ])
+        let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("whole"))?.frame,
+            NSRect(x: 10, y: 5, width: 170, height: 80))
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("fixed"))?.frame,
+            NSRect(x: 20, y: 25, width: 30, height: 40))
     }
 
     /// A border keeps its padding between its outline and what it holds, and

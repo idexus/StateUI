@@ -455,7 +455,7 @@ Every control, and every part an application, its windows and its pages are made
 | [TitleBar](controls/TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 72 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [ZStack](controls/ZStack.md) | 71 | 53 ✅ · 2 ☑️ |  |  | 53 ✅ · 1 ☑️ |  |  |
+| [ZStack](controls/ZStack.md) | 71 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 
 ### Application structure
 
@@ -512,7 +512,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` |  |  |  |  |  |  |
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | ✅ |  |  | ✅ |  |  |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | ✅ |  |  | ✅ |  |  |
-| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` |  |  |  |  |  |  |
+| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | ✅ |  |  | ✅ |  |  |
 | [BorderElement](controls/tiers/BorderElement.md) | `borderColor`, `borderWidth`, `cornerRadius` |  |  |  |  |  |  |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | ☑️ |  |  | ☑️ |  |  |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ |  |  |  |  |  |

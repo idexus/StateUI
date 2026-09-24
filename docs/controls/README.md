@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TitleBar](TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](VStack.md) | 72 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
 | [WebView](WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [ZStack](ZStack.md) | 71 | 53 ✅ · 2 ☑️ |  |  | 53 ✅ · 1 ☑️ |  |  |
+| [ZStack](ZStack.md) | 71 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 <!-- controls:end -->
 
 ## Application structure

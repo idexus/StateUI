@@ -22,6 +22,11 @@ final class AndroidZStackView: AndroidTravellingLayout {
         }
     }
 
+    /// The room inside the ZStack's own edge, in points.
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
+    }
+
     @discardableResult
     override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
         defer { holdInDrawingOrder() }
@@ -29,7 +34,7 @@ final class AndroidZStackView: AndroidTravellingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: Insets(0), width: width)
+        ZStackArithmetic.size(of: items, padding: padding, width: width)
     }
 
     override func arrange(in bounds: Rect) {
@@ -40,7 +45,7 @@ final class AndroidZStackView: AndroidTravellingLayout {
         beginArrangement(width: bounds.width)
         for item in items { item.view.setPlacedDrawing(nil, opacity: 1) }
         let room = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
-        let places = ZStackArithmetic.places(of: items, in: room, padding: Insets(0), direction: direction)
+        let places = ZStackArithmetic.places(of: items, in: room, padding: padding, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: place) }
         }

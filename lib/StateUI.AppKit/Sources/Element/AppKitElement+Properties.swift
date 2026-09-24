@@ -183,6 +183,7 @@ extension AppKitElement {
 
         if let layers = view as? AppKitZStackView {
             layers.placement = placement(.area)
+            layers.padding = insets(.padding)
         }
 
         if let border = view as? AppKitBorderView {

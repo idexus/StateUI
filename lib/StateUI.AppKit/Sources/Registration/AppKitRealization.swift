@@ -157,5 +157,6 @@ enum AppKitRealization {
         .complete("Window", "y"),
         .complete("ZStack", "accessibilityIdentifier"),
         .complete("ZStack", "ignoresInput"),
+        .complete("ZStack", "padding"),
     ]
 }

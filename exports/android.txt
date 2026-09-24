@@ -288,6 +288,7 @@ WebView
   processTerminated()
 ZStack
   ignoresInput
+  padding
 (every element)
   accessibilityHint
   accessibilityIdentifier

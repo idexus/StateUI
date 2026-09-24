@@ -33,6 +33,7 @@ extension AndroidRegistrations {
         }
 
         registry.add(ZStackContract.self, create: { _ in AndroidZStackView() }) { layout in
+            layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
