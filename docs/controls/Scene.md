@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `deactivated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `activated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `deactivated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `destroying` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `stopped` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `stopped` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `windowClosed` | event | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 | `windowRestored` | event | `(String, String?)` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 

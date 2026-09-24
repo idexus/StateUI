@@ -24,6 +24,10 @@ enum AndroidRegistrations {
         return registry
     }()
 
+    /// The acts this host performs, whichever element each is aimed at: none yet - the renderer
+    /// refuses every act by name.
+    static let acts: [any ContractMember] = []
+
     /// What `AndroidElement` puts on every view wearing each member's contract.
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)

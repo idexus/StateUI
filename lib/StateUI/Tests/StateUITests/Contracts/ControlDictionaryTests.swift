@@ -148,6 +148,33 @@ final class ControlDictionaryTests: XCTestCase {
     }
 
     /// No host records one member of one contract twice.
+    /// A tier's mark promises every wearer: a member a host realizes on only some of its elements wearing the
+    /// tier declaring it is marked on those alone, and one it realizes on all of them on the tier.
+    func testAMemberRealizedOnSomeWearersIsMarkedOnThoseAlone() {
+        let declaration = HostDeclaration(elements: [
+            "Label": HostDeclaration.Element(members: ["text", "textCase"]),
+            "TextField": HostDeclaration.Element(members: ["text"]),
+        ])
+        let records = Set(ControlDictionary.records(of: declaration).map { "\($0.owner).\($0.member)" })
+
+        XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
+        XCTAssertTrue(records.contains("Label.textCase"), "\(records.sorted())")
+        XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
+    }
+
+    /// A written note about a tier's member judges it on every wearer: the export naming the member on one
+    /// element does not replace the note with a bare mark.
+    func testAWrittenNoteOnATierStaysOnAnElementTheExportNames() {
+        let written = ControlDictionary.Declaration(
+            host: "AppKit", source: "",
+            records: [.init(owner: "VisualElement", member: "background", missing: "A colour alone.")],
+            unrealized: [], viewless: [])
+        let declaration = written.and([.init(owner: "Button", member: "background", missing: nil)])
+
+        XCTAssertEqual(
+            declaration.mark(of: "background", on: "Button", from: "VisualElement").note, "A colour alone.")
+    }
+
     func testEveryRecordIsWrittenOnce() throws {
         for declaration in try ControlDictionary.declarations() {
             var seen: Set<String> = []

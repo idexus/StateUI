@@ -55,6 +55,73 @@
         self.acts = acts
     }
 
+    /// What a runtime's registry declares: the library's elements it makes a view for, each with the
+    /// members and events of its own, the shared machinery said once, and the acts it performs.
+    ///
+    /// An application's own elements are the application's to declare, so they are left out.
+    ///
+    /// - Parameters:
+    ///   - realization: the registry's realization, the shared machinery spread over every wearer.
+    ///   - shared: the names the shared machinery realizes and raises, `Registry.sharedNames`.
+    ///   - acts: the names of the acts the host performs.
+    public init(realization: HostRealization, shared: [String], acts: [String]) {
+        let shared = Set(shared)
+        let library = Set(LibraryContracts.elements.map { $0.nodeType.name })
+        var byElement: [String: Set<String>] = [:]
+
+        for element in realization.elements where library.contains(element) {
+            byElement[element] = []
+        }
+        for member in realization.members where byElement[member.element] != nil {
+            byElement[member.element, default: []].insert(member.member)
+        }
+
+        var elements: [String: Element] = [:]
+        for (element, members) in byElement {
+            elements[element] = HostDeclaration.split(members.subtracting(shared))
+        }
+        self.init(elements: elements, shared: HostDeclaration.split(shared), acts: Set(acts))
+    }
+
+    /// The export's readable half, which a review reads in the diff: one line per element, its members
+    /// and then its events under it, an event told by the parentheses a handler is called with.
+    public var sidecar: String {
+        func under(_ element: Element) -> [String] {
+            element.members.sorted().map { "  \($0)" } + element.events.sorted().map { "  \($0)()" }
+        }
+
+        var lines: [String] = []
+        for element in elements.keys.sorted() {
+            lines.append(element)
+            lines += under(elements[element] ?? Element())
+        }
+        lines.append("(every element)")
+        lines += under(shared)
+        lines.append("(acts)")
+        lines += acts.sorted().map { "  \($0)()" }
+
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    /// Names split into what a view takes and what it raises, as the contracts declare each; a name no
+    /// contract knows stays a member, where `undeclared` names it.
+    private static func split(_ names: Set<String>) -> Element {
+        Element(
+            members: names.filter { !events.contains($0) },
+            events: names.filter { events.contains($0) })
+    }
+
+    /// The name of every event the contracts declare.
+    private static let events: Set<String> = {
+        var events: Set<String> = []
+        for contract in LibraryContracts.all {
+            for case let member as any DeclaredMember in contract.members where member.facts.kind == .event {
+                events.insert(member.name)
+            }
+        }
+        return events
+    }()
+
     /// What this declaration means against the contracts: the same members, each
     /// under the contract declaring it - the element's own, or the nearest tier it
     /// wears that declares a member of that name. A member no contract declares is

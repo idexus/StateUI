@@ -156,6 +156,11 @@
         everyElement.append((owner: Owner.self, member: event.name))
     }
 
+    /// The names of the members the shared machinery realizes and raises, as they were registered.
+    public var sharedNames: [String] {
+        everyElement.map(\.member)
+    }
+
     /// An event of the application's - one no element raises - the host
     /// raises through `StateUIHost.raise` or the export: recorded on the
     /// application element, so the core knows the host reports it.

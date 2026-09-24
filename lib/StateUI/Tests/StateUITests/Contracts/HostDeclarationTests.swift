@@ -103,6 +103,42 @@ final class HostDeclarationTests: XCTestCase {
             HostRealizedMember(element: "Image", owner: "ImageElement", member: "aspect")))
     }
 
+    /// A registry's realization says each member on every element; its declaration says an element's
+    /// own there, the shared machinery once, and leaves an application's own element to the application.
+    func testARegistryDeclaresTheSharedMachineryOnce() {
+        let realization = HostRealization(
+            elements: ["Label", "Slider", "Doodle"],
+            members: [
+                HostRealizedMember(element: "Label", owner: "Label", member: "maximumLines"),
+                HostRealizedMember(element: "Label", owner: "VisualElement", member: "opacity"),
+                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
+                HostRealizedMember(element: "Slider", owner: "VisualElement", member: "opacity"),
+                HostRealizedMember(element: "Slider", owner: "View", member: "tapped"),
+                HostRealizedMember(element: "Doodle", owner: "Doodle", member: "ink"),
+            ])
+
+        let declaration = HostDeclaration(realization: realization, shared: ["opacity", "tapped"], acts: ["focus"])
+
+        XCTAssertEqual(declaration.elements, [
+            "Label": HostDeclaration.Element(members: ["maximumLines"]),
+            "Slider": HostDeclaration.Element(events: ["valueChanged"]),
+        ])
+        XCTAssertEqual(declaration.shared, HostDeclaration.Element(members: ["opacity"], events: ["tapped"]))
+        XCTAssertEqual(declaration.acts, ["focus"])
+        XCTAssertEqual(declaration.sidecar, """
+            Label
+              maximumLines
+            Slider
+              valueChanged()
+            (every element)
+              opacity
+              tapped()
+            (acts)
+              focus()
+
+            """)
+    }
+
     // MARK: - Support
 
     /// `exports/maui.bin`, written by the MAUI suite from its registrations.

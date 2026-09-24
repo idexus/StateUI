@@ -24,7 +24,7 @@ final class AppKitDeclarationExportTests: XCTestCase {
     func testWhatThisHostDeclaresIsWhatItExports() throws {
         let declaration = Self.declaration()
         let bytes = Wire.encodeDeclaration(declaration)
-        let sidecar = Self.sidecar(of: declaration)
+        let sidecar = declaration.sidecar
         let binary = Self.exports.appendingPathComponent("appkit.bin")
         let text = Self.exports.appendingPathComponent("appkit.txt")
 
@@ -69,49 +69,6 @@ final class AppKitDeclarationExportTests: XCTestCase {
                 + unknown.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
     }
 
-    /// Every member the export calls SHARED is one the registry realizes on
-    /// every element wearing the contract declaring it.
-    ///
-    /// The two halves are written twice - the registry takes a member typed,
-    /// one call each, while the export takes names - so this holds the reading
-    /// half to the registered one. It cannot be asked the other way round: a
-    /// registry does not keep WHERE a member came from, so a tier whose every
-    /// wearer is registered - `InputView` over the three fields, `Shape` over
-    /// the six shapes - looks exactly like shared machinery from here, and is
-    /// not.
-    @MainActor
-    func testEverySharedMemberIsRealizedOnEveryWearer() {
-        let realization = AppKitRegistrations.registry.realization
-
-        for member in AppKitRegistrations.sharedMembers + AppKitRegistrations.sharedEvents {
-            guard let contract = LibraryContracts.all.first(where: { owner in
-                owner.members.contains { $0.name == member.name }
-            }) else {
-                XCTFail("no contract declares the shared member `\(member.name)`")
-                continue
-            }
-
-            let wearers = Self.ofTheLibrary(realization.elements).filter { element in
-                LibraryContracts.elements
-                    .first { $0.nodeType.name == element }?
-                    .worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) } == true
-            }
-            // Both sides of the comparison are the LIBRARY's elements. The
-            // registry spreads a shared member over everything wearing its
-            // contract, an application's own element included, and that one is
-            // not this host's to declare.
-            let realized = Self.ofTheLibrary(Set(
-                realization.members
-                    .filter { $0.owner == contract.name && $0.member == member.name }
-                    .map(\.element)))
-
-            XCTAssertEqual(
-                realized, wearers,
-                "`\(contract.name).\(member.name)` is declared shared, and the registry realizes "
-                    + "it on \(realized.count) of the \(wearers.count) elements wearing it")
-        }
-    }
-
     /// The declaration carries the three kinds apart: what a control takes,
     /// what it raises, and what the host performs.
     @MainActor
@@ -141,102 +98,13 @@ final class AppKitDeclarationExportTests: XCTestCase {
             .appendingPathComponent("exports")
     }
 
-    /// Which kind each member of each contract is, by name - what tells a
-    /// property from an event once a realization holds only names.
-    private static let kinds: [String: MemberFacts.Kind] = {
-        var kinds: [String: MemberFacts.Kind] = [:]
-
-        for contract in LibraryContracts.all {
-            for case let member as any DeclaredMember in contract.members {
-                kinds[member.name] = member.facts.kind
-            }
-        }
-
-        return kinds
-    }()
-
     /// What this host declares, read off its registry.
-    ///
-    /// The registry answers a REALIZATION - the shared machinery already
-    /// spread over every element wearing it. A declaration is the other shape:
-    /// presence per element, with the shared half said once. So the shared
-    /// half is READ from where it was declared, and what is left on each
-    /// element is that element's own.
-    ///
-    /// It cannot be worked out from the realization instead - "a member every
-    /// element has" is empty here, because `Page` and `SplitView` wear no
-    /// `ViewContract` and take none of the view tier at all.
-    /// What an export is ABOUT: the elements of the LIBRARY. An application
-    /// registers elements of its own with this host too - a control it wrote,
-    /// realized by a view it wrote - and those are the application's, not this
-    /// host's to declare. They are left out here rather than filtered where
-    /// the bytes are written, because this is where the question belongs: an
-    /// export says which of the library's elements this host presents.
-    private static func ofTheLibrary(_ elements: Set<String>) -> Set<String> {
-        elements.filter { element in
-            LibraryContracts.elements.contains { $0.nodeType.name == element }
-        }
-    }
-
     @MainActor
     private static func declaration() -> HostDeclaration {
-        let realization = AppKitRegistrations.registry.realization
-        let shared = Set(
-            (AppKitRegistrations.sharedMembers + AppKitRegistrations.sharedEvents).map(\.name))
-        var byElement: [String: Set<String>] = [:]
-
-        for element in ofTheLibrary(realization.elements) {
-            byElement[element] = []
-        }
-
-        for member in realization.members where byElement[member.element] != nil {
-            byElement[member.element, default: []].insert(member.member)
-        }
-
-        var declaration = HostDeclaration()
-        declaration.shared = split(shared)
-
-        for (element, members) in byElement {
-            declaration.elements[element] = split(members.subtracting(shared))
-        }
-
-        declaration.acts = Set(AppKitRegistrations.acts.map(\.name))
-        return declaration
-    }
-
-    /// Names split into what a view takes and what it raises, as the contracts
-    /// declare each. A name no contract knows is kept as a member, where
-    /// `undeclared` names it rather than losing it quietly.
-    private static func split(_ names: Set<String>) -> HostDeclaration.Element {
-        HostDeclaration.Element(
-            members: names.filter { kinds[$0] != .event },
-            events: names.filter { kinds[$0] == .event })
-    }
-
-    /// The readable half a review diff reads: one line per element, its
-    /// members and then its events under it, an event told from a property by
-    /// the parentheses every handler is called with.
-    private static func sidecar(of declaration: HostDeclaration) -> String {
-        var lines: [String] = []
-
-        for element in declaration.elements.keys.sorted() {
-            lines.append(element)
-            lines += under(declaration.elements[element] ?? HostDeclaration.Element())
-        }
-
-        lines.append("(every element)")
-        lines += under(declaration.shared)
-
-        lines.append("(acts)")
-        lines += declaration.acts.sorted().map { "  \($0)()" }
-
-        return lines.joined(separator: "\n") + "\n"
-    }
-
-    /// One indented line per member and then per event, each sorted.
-    private static func under(_ element: HostDeclaration.Element) -> [String] {
-        element.members.sorted().map { "  \($0)" }
-            + element.events.sorted().map { "  \($0)()" }
+        let registry = AppKitRegistrations.registry
+        return HostDeclaration(
+            realization: registry.realization, shared: registry.sharedNames,
+            acts: AppKitRegistrations.acts.map(\.name))
     }
 }
 

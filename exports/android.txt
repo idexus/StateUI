@@ -1,0 +1,137 @@
+AbsoluteLayout
+  ignoresInput
+ActivityIndicator
+  isRunning
+  tint
+Border
+  ignoresInput
+  padding
+  shape
+  stroke
+  strokeWidth
+Button
+  fontAttributes
+  fontSize
+  isEnabled
+  padding
+  text
+  textCase
+  textColor
+  clicked()
+CheckBox
+  isEnabled
+  isOn
+  tint
+  toggled()
+ColorBox
+  color
+  cornerRadius
+Grid
+  columnSpacing
+  columns
+  ignoresInput
+  padding
+  rowSpacing
+  rows
+HStack
+  ignoresInput
+  padding
+  spacing
+Image
+  aspect
+  source
+Label
+  characterSpacing
+  fontAttributes
+  fontSize
+  horizontalTextAlignment
+  lineBreak
+  lineHeight
+  maximumLines
+  padding
+  text
+  textCase
+  textColor
+  textDecorations
+  verticalTextAlignment
+ProgressBar
+  progress
+  tint
+ScrollView
+  horizontalScrollBarVisibility
+  orientation
+  padding
+  scrollOffset
+  verticalScrollBarVisibility
+  scrollStopped()
+  scrollXChanged()
+  scrollYChanged()
+Slider
+  isEnabled
+  maximum
+  minimum
+  tint
+  value
+  dragCompleted()
+  dragStarted()
+  valueChanged()
+Stepper
+  isEnabled
+  maximum
+  minimum
+  step
+  value
+  valueChanged()
+Switch
+  isEnabled
+  isOn
+  toggled()
+TextField
+  cursorPosition
+  fontAttributes
+  fontSize
+  isEnabled
+  isPassword
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
+VStack
+  ignoresInput
+  padding
+  spacing
+(every element)
+  absoluteLayoutBounds
+  absoluteLayoutProportions
+  background
+  gridColumn
+  gridColumnSpan
+  gridRow
+  gridRowSpan
+  height
+  horizontalAlignment
+  isVisible
+  margin
+  maximumHeight
+  maximumWidth
+  minimumHeight
+  minimumWidth
+  opacity
+  pivotX
+  pivotY
+  rotation
+  rotationX
+  rotationY
+  scale
+  scaleX
+  scaleY
+  translationX
+  translationY
+  verticalAlignment
+  width
+  tapped()
+(acts)

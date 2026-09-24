@@ -7,6 +7,10 @@
 #
 # USAGE:
 #   test-android.sh [serial]
+#
+# The suite also writes what the host declares - its registry, as exports/
+# holds it for the control dictionary. The run is held to exports/android.bin
+# and .txt; STATEUI_UPDATE_EXPORTS=1 writes them instead.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -44,3 +48,16 @@ echo "$output"
 summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing - read: $ADB -s $serial logcat -s StateUI"; exit 1; }
 [[ "$summary" == *" with 0 failures" ]]
+
+declared="$(mktemp -d)"
+trap 'rm -rf "$declared"' EXIT
+for name in android.bin android.txt; do
+  "$ADB" -s "$serial" exec-out run-as "$package" cat "files/$name" > "$declared/$name"
+  if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
+    cp "$declared/$name" "$repository_dir/exports/$name"
+  elif ! cmp -s "$declared/$name" "$repository_dir/exports/$name"; then
+    echo "ERROR: exports/$name is not what the host declares - a registration changed, or something"
+    echo "stopped being realized. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."
+    exit 1
+  fi
+done

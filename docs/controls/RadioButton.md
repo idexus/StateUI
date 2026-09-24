@@ -162,6 +162,6 @@ The line around a control's own box, and how round its corners are.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `borderColor` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `borderWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `cornerRadius` | property | `Int` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `borderColor` | property | `Color` | native | ✅ |  |  |  |  |  |  |  |
+| `borderWidth` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
+| `cornerRadius` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |

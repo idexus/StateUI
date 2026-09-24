@@ -15,7 +15,7 @@
 // serves itself, and every judgement: what a realization is missing, what a
 // host realizes none of, and what it presents with no view of its own.
 //
-// The rest is read as text: `AppKitRealization`, which has no export yet; the
+// The rest is read as text: `AppKitRealization` and `AndroidRealization`; the
 // doc comments over the contracts and over `ElementLayer`'s cases; the platform
 // contract's "Native control mapping", the one hand-written input; and, from
 // the sources declaring them, the `on…` modifiers events are heard through.
@@ -105,13 +105,20 @@ struct ControlDictionary {
         /// export rather than added behind it: one member of one contract is
         /// recorded ONCE, and the record that says more is the one kept.
         ///
+        /// A written record about a TIER's member judges it on every element
+        /// wearing that tier, so the export's record of one such element goes
+        /// as well: a note that a brush is not drawn stays on the button too.
+        ///
         /// - Parameter runtime: what the host's runtime says it realizes.
         func and(_ runtime: [Record]) -> Declaration {
             let written = Set(records.map { "\($0.owner).\($0.member)" })
+            let exported = runtime.filter { record in
+                !written.contains("\(record.owner).\(record.member)")
+                    && !records.contains { $0.member == record.member && ControlDictionary.wears(record.owner, $0.owner) }
+            }
 
             return Declaration(
-                host: host, source: source,
-                records: records + runtime.filter { !written.contains("\($0.owner).\($0.member)") },
+                host: host, source: source, records: records + exported,
                 unrealized: unrealized, viewless: viewless)
         }
 
@@ -622,7 +629,7 @@ struct ControlDictionary {
 
     // MARK: - What the pages are rendered from
 
-    /// What AppKit and MAUI declare they realize.
+    /// What AppKit, MAUI and Android Views declare they realize.
     ///
     /// MAUI's is read twice over: what its RUNTIME wrote to `exports/maui.bin`
     /// - every element it registers, with the owner of each member worked out
@@ -645,9 +652,17 @@ struct ControlDictionary {
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
 
+        let android = try Declaration(
+            host: "Android Views",
+            reading: "lib/StateUI.Android/Sources/StateUIAndroid/Registration/AndroidRealization.swift",
+            records: #"\.(complete|partial)"# + record,
+            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
+            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
+
         return [
             try appKit.and(exported("exports/appkit.bin")),
             try maui.and(exported("exports/maui.bin")),
+            try android.and(exported("exports/android.bin")),
         ]
     }
 
@@ -666,13 +681,41 @@ struct ControlDictionary {
                 + "`dotnet test lib/StateUI.Maui/Tests` or `swift test --package-path lib/StateUI.AppKit`.")
         }
 
-        // The elements' own, and then the tiers': a shared member and an act
-        // belong to a CONTRACT, so they are taken straight from it. Through
-        // the elements they would reach only the ones this host registers, and
-        // a tier worn by the elements its renderer still serves itself -
-        // `Layout`, worn by the layouts - would lose every mark it has.
-        var pairs = Set(declaration.realization.members.map { Pair(owner: $0.owner, member: $0.member) })
+        return records(of: declaration)
+    }
 
+    /// The records a declaration makes.
+    ///
+    /// A tier's record marks every element wearing the tier, so a member is
+    /// recorded on its tier only where the host realizes it on EVERY element
+    /// it registers that wears that tier; realized on some of them, it is a
+    /// record of each of those elements, and the others stay unmarked.
+    static func records(of declaration: HostDeclaration) -> [Declaration.Record] {
+        let realization = declaration.realization
+        var realizedOn: [Pair: Set<String>] = [:]
+
+        for member in realization.members {
+            realizedOn[Pair(owner: member.owner, member: member.member), default: []].insert(member.element)
+        }
+
+        var pairs: Set<Pair> = []
+        for (pair, elements) in realizedOn {
+            let wearers = realization.elements.filter { element in
+                LibraryContracts.elements.first { $0.nodeType.name == element }?
+                    .worn.contains { $0.name == pair.owner } == true
+            }
+            if elements.isSuperset(of: wearers) {
+                pairs.insert(pair)
+            } else {
+                for element in elements { pairs.insert(Pair(owner: element, member: pair.member)) }
+            }
+        }
+
+        // The shared members and the acts, then: they belong to a CONTRACT, so
+        // they are taken straight from it. Through the elements they would
+        // reach only the ones this host registers, and a tier worn by the
+        // elements its renderer still serves itself - `Layout`, worn by the
+        // layouts - would lose every mark it has.
         for tier in declaration.tierMembers {
             pairs.insert(Pair(owner: tier.owner, member: tier.member))
         }
@@ -682,8 +725,13 @@ struct ControlDictionary {
             .map { Declaration.Record(owner: $0.owner, member: $0.member, missing: nil) }
     }
 
-    /// One owner and one member, to reduce a join's per-element members to the
-    /// records a dictionary reads.
+    /// Whether `element` wears `tier` - a contract other than its own.
+    static func wears(_ element: String, _ tier: String) -> Bool {
+        element != tier && LibraryContracts.elements.first { $0.nodeType.name == element }?
+            .worn.contains { $0.name == tier } == true
+    }
+
+    /// One owner and one member: a record, before it is one.
     private struct Pair: Hashable {
         let owner: String
         let member: String

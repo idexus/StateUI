@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barForegroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
@@ -51,5 +51,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |

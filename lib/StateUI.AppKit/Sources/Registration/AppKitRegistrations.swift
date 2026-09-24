@@ -45,49 +45,6 @@ enum AppKitRegistrations {
         ApplicationContract.persistValue, ApplicationContract.persistSceneValue,
     ]
 
-    /// The members the shared machinery takes on every element wearing the
-    /// contract declaring each - the same members `shared(_:)` registers, as a
-    /// list something can READ.
-    ///
-    /// Two readers, one source: the registry takes them typed, one call each,
-    /// because it infers the owner from the member; the export takes their
-    /// names. `AppKitRegistrationTests` holds the two halves equal, so a
-    /// member added to one and not the other fails rather than drifts.
-    static let sharedMembers: [any ContractMember] = [
-        PropertyContainerContract.accessibilityIdentifier, TintElementContract.tint,
-
-        VisualElementContract.accessibilityHeadingLevel, VisualElementContract.accessibilityHint,
-        VisualElementContract.accessibilityLabel,
-        VisualElementContract.automationExcludedWithChildren, VisualElementContract.frame,
-        VisualElementContract.height, VisualElementContract.ignoresInput,
-        VisualElementContract.isAccessibilityHidden, VisualElementContract.isVisible,
-        VisualElementContract.maximumHeight, VisualElementContract.maximumWidth,
-        VisualElementContract.minimumHeight, VisualElementContract.minimumWidth,
-        VisualElementContract.opacity, VisualElementContract.pivotX,
-        VisualElementContract.pivotY, VisualElementContract.rotation,
-        VisualElementContract.rotationX, VisualElementContract.rotationY,
-        VisualElementContract.scale, VisualElementContract.scaleX,
-        VisualElementContract.scaleY, VisualElementContract.translationX,
-        VisualElementContract.translationY, VisualElementContract.width,
-
-        ViewContract.absoluteLayoutBounds, ViewContract.absoluteLayoutProportions,
-        ViewContract.gridColumn, ViewContract.gridColumnSpan, ViewContract.gridRow,
-        ViewContract.gridRowSpan, ViewContract.horizontalAlignment, ViewContract.margin,
-        ViewContract.verticalAlignment, ViewContract.panXChannel, ViewContract.panYChannel,
-        ViewContract.swipeDirection, ViewContract.swipeThreshold, ViewContract.tapCount,
-
-        LayoutContract.letsInputThrough,
-    ]
-
-    /// The events the shared machinery raises on every element wearing the
-    /// contract declaring each - the reading half of `shared(_:)`.
-    static let sharedEvents: [any ContractMember] = [
-        ViewContract.frameChanged, ViewContract.panUpdated, ViewContract.pinchUpdated,
-        ViewContract.pointerEntered, ViewContract.pointerExited, ViewContract.pointerMoved,
-        ViewContract.pointerPressed, ViewContract.pointerReleased, ViewContract.swiped,
-        ViewContract.tapped, VisualElementContract.isFocusedChanged,
-    ]
-
     static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
         guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }
 

@@ -100,13 +100,16 @@ Treat one control, property, event, or host action as one vertical change:
 5. Add focused core tests and direct native-host tests.
 6. Add or update the smallest Gallery demonstration and handbook section.
 7. Let the host say what it realizes, only after its tests pass. A member a
-   MAUI registration takes or raises records itself: `STATEUI_UPDATE_EXPORTS=1
-   dotnet test lib/StateUI.Maui/Tests` writes `exports/maui.bin` and its
-   readable sidecar, and the contracts name each member's owner when the
-   documents are rendered. What a registry cannot know stays written by hand -
-   an element the renderer serves itself, and every judgement: a partial record
-   saying what is missing, what a host realizes none of, and what it presents
-   with no view of its own. `AppKitRealization` is written that way in full.
+   registration takes or raises records itself: with `STATEUI_UPDATE_EXPORTS=1`,
+   `dotnet test lib/StateUI.Maui/Tests`, `swift test --package-path
+   lib/StateUI.AppKit` and `.scripts/Android/test-android.sh <serial>` write
+   `exports/maui.bin`, `appkit.bin` and `android.bin` and their readable
+   sidecars, and the contracts name each member's owner when the documents are
+   rendered. What a registry cannot know stays written by hand, in
+   `MauiRealization`, `AppKitRealization` and `AndroidRealization` - an element
+   the renderer serves itself, and every judgement: a partial record saying
+   what is missing, what a host realizes none of, and what it presents with no
+   view of its own.
    Then `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests`
    writes `docs/controls/` and the tables of `platform-contract.md`.
 

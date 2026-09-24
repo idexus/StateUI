@@ -42,7 +42,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `textCase` | property | `TextCase` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -63,7 +63,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
 | `fontFamily` | property | `Name` | native | ✅ |  |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
+| `fontSize` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |  |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 

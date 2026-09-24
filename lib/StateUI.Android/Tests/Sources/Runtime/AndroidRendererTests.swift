@@ -25,6 +25,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testASecondActivityShowsTheSceneTheFirstShowed", testASecondActivityShowsTheSceneTheFirstShowed),
+            ("testTheActivitysLifecycleMovesTheWindowAndTheScene", testTheActivitysLifecycleMovesTheWindowAndTheScene),
         ]
     }
 
@@ -73,5 +74,33 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
+    }
+
+    /// The activity's pause, resume and stop move the application's phase, and the window's and the scene's
+    /// with it, each rendered before the next is heard.
+    func testTheActivitysLifecycleMovesTheWindowAndTheScene() {
+        onMainActor {
+            let host = AndroidRenderer.running { PhaseLabel() }
+            var said: String { host.views(AndroidLabelView.self).map(\.text).joined() }
+
+            host.setPhase(.inactive)
+            XCTAssertEqual(said, "deactivated inactive")
+
+            host.setPhase(.active)
+            XCTAssertEqual(said, "activated active")
+
+            host.setPhase(.background)
+            XCTAssertEqual(said, "stopped background")
+        }
+    }
+}
+
+/// The window's phase and the scene's, as a page reads them.
+private struct PhaseLabel: ContentView {
+    @Environment private var window: WindowSession
+    @Environment private var scene: SceneSession
+
+    var content: any View {
+        Label("\(window.phase) \(scene.phase)")
     }
 }
