@@ -29,3 +29,44 @@ is arranged at once. Between passes, as a display frame moves a travelling
 child, the view asks the layout that placed it to arrange again
 (`InvalidateArrange`); WinUI runs that arrangement before it draws the frame,
 and the layout's arrangement gives the child the place it keeps.
+
+## No room asked
+
+WinUI arranges an element at no less than the size it last asked for in
+`Measure`, and cuts it to the place it was given - so a child placed smaller
+than its content would be laid out at its content's size and clipped, where
+StateUI places it at its place and lets it draw past its edges. A StateUI
+layout that another StateUI layout places therefore asks WinUI for no room:
+its parent reads its size from the core's arithmetic (`naturalSize`), and
+WinUI arranges it exactly where the parent puts it. A layout WinUI itself
+places - the window's content, a scroller's document - answers with the room
+its children take, within the room offered. A native control keeps its own
+measure, and WinUI clips it as it clips any control given too little room.
+
+Measuring a child again inside an arrangement, at its place, is no answer: the
+child's new size tells its parent to measure again, the next measure asks for
+the whole content, and the pass never settles.
+
+## Scrolling
+
+A ScrollView is a StateUI layout holding WinUI's `ScrollViewer`, which holds
+the document the core's scroll arithmetic lays out - never smaller than the
+viewport, and several children stacked down. The scroller is measured with no
+room in the directions it scrolls: it measures its document without bound
+there itself, so the extent is the document's, and asking for no room it
+stands exactly where the layout places it.
+
+The scroller says where its view stands through `ViewChanged`, and that the
+user holds it through `DirectManipulationStarted` and `Completed`. The user's
+movement is joined up to the display's next frame, which reports it to its
+state and its handlers, and rests once it has stood still, as on every host
+([a scroller's movement](../../host/runtime.md#a-scrollers-movement)).
+
+## The program's move
+
+`ChangeView` moves the view in a later frame, and its `ViewChanged` comes long
+after the program's write has ended, so `ProgramWrite` cannot know it. The
+host keeps the target it moved to - kept within the scroller's reach, as the
+scroller keeps it - and takes the view arriving there as the program's; a
+target the view already stands at is not moved to at all, as the scroller
+would say nothing of it, and a user's hold forgets the target.

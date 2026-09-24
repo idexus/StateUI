@@ -37,6 +37,7 @@ extension WinUIElement {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            if let scroll = registered as? WinUIScrollView { follow(scroll) }
             return registered
         }
 
@@ -128,6 +129,15 @@ extension WinUIElement {
             scaleY: scale * (value(.scaleY)?.number ?? 1),
             pivotX: value(.pivotX)?.number ?? 0.5,
             pivotY: value(.pivotY)?.number ?? 0.5)
+    }
+
+    /// Hands the scroller's reports to this element, and its wish for the display's frames to the renderer.
+    private func follow(_ scroll: WinUIScrollView) {
+        scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
+        scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.onFramesWanted = { [weak self, weak scroll] in
+            if let scroll { self?.host?.requestFrames(for: scroll) }
+        }
     }
 
     /// The view of this element or the nearest one above it.

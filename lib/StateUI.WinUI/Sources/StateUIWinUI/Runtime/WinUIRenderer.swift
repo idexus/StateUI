@@ -60,9 +60,17 @@ final class WinUIRenderer {
     /// How deep the user's transactions stand; their events wait for the outermost to end.
     private var transactionDepth = 0
 
-    /// A runtime on the performance counter or on `clock`, with the motion `reducesMotion` allows.
+    /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
+    private var scrollers: [Int64: WeakScroller] = [:]
+
+    private struct WeakScroller {
+        weak var view: WinUIScrollView?
+    }
+
+    /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
+    /// the motion `reducesMotion` allows.
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
-        let frameClock = clock.map { WinUIFrameClock(now: $0) } ?? WinUIFrameClock()
+        let frameClock = clock.map { WinUIFrameClock(now: $0, ticksWithWinUI: false) } ?? WinUIFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
         stateChannels = StateChannels(animator: animator)
@@ -260,10 +268,35 @@ final class WinUIRenderer {
     }
 }
 
-extension WinUIRenderer: FramePresenter {
-    var wantsFrames: Bool { false }
+extension WinUIRenderer {
+    /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
+    func requestFrames(for scroller: WinUIScrollView) {
+        scrollers[scroller.number] = WeakScroller(view: scroller)
+        displayCycle.hold()
+    }
+}
 
-    func commitUserReports(now: Double) {}
+extension WinUIRenderer: FramePresenter {
+    var wantsFrames: Bool {
+        scrollers.values.contains { $0.view?.wantsFrames == true }
+    }
+
+    /// Lets every moving scroller say what the frame saw it do, in the order they were made, as one user's
+    /// transaction.
+    func commitUserReports(now: Double) {
+        guard !scrollers.isEmpty else { return }
+
+        performUserTransaction {
+            for number in scrollers.keys.sorted() {
+                guard let view = scrollers[number]?.view else {
+                    scrollers[number] = nil
+                    continue
+                }
+                view.frame(now: now)
+                if !view.wantsFrames { scrollers[number] = nil }
+            }
+        }
+    }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
         tree.present(states: states, properties: properties)

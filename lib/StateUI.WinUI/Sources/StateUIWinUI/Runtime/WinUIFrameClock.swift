@@ -17,21 +17,30 @@ final class WinUIFrameClock: FrameClock {
 
     /// Whether something holds the clock. Frames come only while it does.
     var held = false {
-        didSet { if held != oldValue { stateui_winui_hold_frames(held) } }
+        didSet { if held != oldValue, ticksWithWinUI { stateui_winui_hold_frames(held) } }
     }
+
+    /// Whether WinUI's composed frames drive the clock; a clock a test winds gets its frames from the test.
+    let ticksWithWinUI: Bool
 
     /// The one clock, which the relay's frame reaches.
     static var current: WinUIFrameClock?
 
-    /// A clock telling `now`'s time: the performance counter's, or a test's hand-wound one.
-    init(now: @escaping () -> Double = WinUIFrameClock.monotonic) {
+    /// A clock on the performance counter, whose frames are WinUI's.
+    convenience init() {
+        self.init(now: WinUIFrameClock.monotonic, ticksWithWinUI: true)
+    }
+
+    /// A clock telling `now`'s time, its frames WinUI's where `ticksWithWinUI`, and otherwise whoever tells its time.
+    init(now: @escaping () -> Double, ticksWithWinUI: Bool) {
         self.now = now
+        self.ticksWithWinUI = ticksWithWinUI
         Self.current = self
     }
 
-    /// A frame WinUI composes: the frame's work at this moment.
+    /// A frame WinUI composes: the frame's work at this moment, on a clock WinUI's frames drive.
     func frame() {
-        guard held else { return }
+        guard held, ticksWithWinUI else { return }
         onFrame?(now())
     }
 

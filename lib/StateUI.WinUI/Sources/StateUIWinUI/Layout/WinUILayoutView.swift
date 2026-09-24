@@ -121,13 +121,20 @@ class WinUILayoutView: WinUIView {
         measurements.invalidate()
     }
 
-    /// Answers WinUI's measure: the room the children take for the room offered, every child measured again.
-    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    /// Answers WinUI's measure, every child measured again: no room where a StateUI layout places this one, which
+    /// reads its size from `naturalSize(width:)`, and otherwise the room the children take, within the room offered.
+    /// Design: docs/design/platforms/winui/layout.md#no-room-asked
     func measure(width: Double, height: Double) -> LayoutSize {
         forgetMeasurements()
         _ = boxView?.measure(width: width, height: height)
-        let offered = width.isFinite ? width : nil
-        return measurements.size(offering: offered) { contentSize(width: offered) }
+        let size = naturalSize(width: width.isFinite ? width : nil)
+        guard placingLayout == nil else { return .zero }
+        return LayoutSize(width: min(size.width, width), height: min(size.height, height))
+    }
+
+    /// The room the children take for the width offered, in DIPs, kept for the pass under way.
+    func naturalSize(width: Double?) -> LayoutSize {
+        measurements.size(offering: width) { contentSize(width: width) }
     }
 
     /// Answers WinUI's arrange: places the box and every child in `width` by `height` DIPs, inside the pass.

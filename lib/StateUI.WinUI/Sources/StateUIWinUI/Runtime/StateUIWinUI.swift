@@ -65,6 +65,12 @@ enum WinUICallbacks {
             },
             submitted: { view in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextFieldView)?.onSubmitted?() }
+            },
+            scrolled: { view, x, y in
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIScrollerView)?.onScrolled?(Point(x: x, y: y)) }
+            },
+            held: { view, holding in
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIScrollerView)?.onHeld?(holding) }
             })
     }
 }

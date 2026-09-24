@@ -7,9 +7,10 @@ library: it applies the typed sparse patches of the
 relay behind plain C functions.
 
 It presents `Label`, `Button`, `Switch`, `Slider`, `TextField`, `ColorBox`,
-`VStack`, `HStack`, `Grid` and `ZStack` in a window's page, over the runtime
-every host shares: a layout paints its box - its background, outline and
-shape - and cuts what it holds to it; a state's journey moves every control
+`VStack`, `HStack`, `Grid`, `ZStack` and `ScrollView` in a window's page,
+over the runtime every host shares: a layout paints its box - its background,
+outline and shape - and cuts what it holds to it; a scroller reports where the
+user moved it on the display's frames and moves where its state says; a state's journey moves every control
 tied to it on the display's frames, a property's transition and a layout's
 children animate, an engine's placement run stands and draws a ZStack's
 children, and a user who turns Windows' animation effects off sees

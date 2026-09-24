@@ -40,6 +40,38 @@ extension WinUIRegistrations {
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
+
+        // Where the user moves it is reported by the element, on the display's frames.
+        // Design: docs/design/platforms/winui/layout.md#scrolling
+        registry.add(ScrollViewContract.self, create: { _ in WinUIScrollView() }) { scroll in
+            scroll.applies([
+                ScrollViewContract.orientation, ScrollViewContract.verticalScrollBarVisibility,
+                ScrollViewContract.horizontalScrollBarVisibility, ScrollViewContract.scrollOffset,
+                PaddingElementContract.padding,
+            ]) { view, values in
+                view.apply(
+                    orientation: values[ScrollViewContract.orientation] ?? .vertical,
+                    padding: values[PaddingElementContract.padding] ?? Insets(0),
+                    verticalBar: values[ScrollViewContract.verticalScrollBarVisibility] ?? .default,
+                    horizontalBar: values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default,
+                    offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
+            }
+            scroll.applies([
+                VisualElementContract.background,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                // A scroller always cuts what it shows to its bounds; a shape cuts it to the shape.
+                view.setBackground(values[VisualElementContract.background]?.propValue)
+                view.setOutline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    width: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue,
+                    clips: values[BorderElementContract.shape] != nil)
+            }
+            scroll.raises(ScrollViewContract.scrollXChanged)
+            scroll.raises(ScrollViewContract.scrollYChanged)
+            scroll.raises(ScrollViewContract.scrollStopped)
+        }
     }
 
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.

@@ -56,7 +56,7 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 10, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 12, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")

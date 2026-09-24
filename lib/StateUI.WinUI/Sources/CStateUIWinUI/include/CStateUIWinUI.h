@@ -61,6 +61,12 @@ typedef struct {
 
     /// A single-line field's Enter.
     void (*submitted)(int64_t view);
+
+    /// A scroller's view changed: where it stands now, in DIPs.
+    void (*scrolled)(int64_t view, double x, double y);
+
+    /// The user took hold of a scroller, or let go of it.
+    void (*held)(int64_t view, bool holding);
 } StateUIWinUICallbacks;
 
 /// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
@@ -181,6 +187,19 @@ void stateui_winui_color_box_set(StateUIObjectRef box, uint32_t argb, double con
 /// Renders the element and reads the colour, as ARGB, at each of `count` points given as x and y in DIPs of it -
 /// what a test reads of the screen; whether it rendered.
 bool stateui_winui_pixels(StateUIObjectRef element, double const *points, int32_t count, uint32_t *argb);
+
+/// A ScrollView's scroller: a ScrollViewer around `content`, scrolling down (0), across (1), both ways (2) or not at
+/// all (3); each bar shown as WinUI decides (0), always (1) or never (2).
+StateUIObjectRef stateui_winui_scroller_make(int64_t view);
+void stateui_winui_scroller_set(StateUIObjectRef scroller, StateUIObjectRef content, int32_t orientation,
+                                int32_t verticalBar, int32_t horizontalBar);
+
+/// Moves the scroller's view to `x`, `y` DIPs at once; the scroller keeps it within what it can reach, and says where
+/// it stands through `scrolled` once it has moved.
+void stateui_winui_scroller_move(StateUIObjectRef scroller, double x, double y);
+
+/// Where the scroller's view stands, then the farthest it reaches across and down, in DIPs: four values.
+void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
 
 #ifdef __cplusplus
 }

@@ -31,7 +31,8 @@ struct WinUILayoutItem: LayoutChild {
         } else {
             [available, values.maximumWidth].compactMap(\.self).min()
         }
-        let measured = view.measure(width: offer, height: nil)
+        var measured = view.measure(width: offer, height: nil)
+        if let layout = view as? WinUILayoutView { measured = layout.naturalSize(width: offer) }
 
         return LayoutSize(
             width: values.boundedWidth(values.width ?? measured.width),
