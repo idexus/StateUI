@@ -126,7 +126,7 @@ host that creates or interprets it.
 | `TextField` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `TimePicker` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `TitleBar` | adaptive | ✅ | ✅ |  |  |  |  |  |
-| `TitleView` | structure | ✅ | ✅ |  |  |  |  |  |
+| `TitleView` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `ToolbarItem` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `ToolbarItems` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `TrailingContent` | structure | ✅ | ✅ |  |  |  |  |  |

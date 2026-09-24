@@ -54,6 +54,10 @@ enum TestJava {
     static let getWidth = Java.method(JavaAPI.view, "getWidth", "()I")
     static let getHeight = Java.method(JavaAPI.view, "getHeight", "()I")
     static let getChildCount = Java.method(JavaAPI.viewGroup, "getChildCount", "()I")
+    static let indexOfChild = Java.method(JavaAPI.viewGroup, "indexOfChild", "(Landroid/view/View;)I")
+    static let getToolbarTitle = Java.method(
+        Java.findClass("android/widget/Toolbar"), "getTitle", "()Ljava/lang/CharSequence;")
+    static let toText = Java.method(Java.findClass("java/lang/Object"), "toString", "()Ljava/lang/String;")
     static let getClipChildren = Java.method(JavaAPI.viewGroup, "getClipChildren", "()Z")
     static let getClipToPadding = Java.method(JavaAPI.viewGroup, "getClipToPadding", "()Z")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")

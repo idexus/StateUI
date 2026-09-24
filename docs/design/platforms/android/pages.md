@@ -15,8 +15,10 @@ pop changes which page the stack holds; nothing is built again for it.
 
 ## The bar
 
-A stack's bar is Android's own toolbar. It carries the visible page's title,
-the stack's bar colours, and the page's actions: the primary ones beside
+A stack's bar is Android's own toolbar. It carries the visible page's title -
+or its title view, standing across the room between the navigation button and
+the actions in the title's place - the stack's bar colours, and the page's
+actions: the primary ones beside
 the title, by priority and then in their order, the rest behind the
 toolbar's overflow - each an entry of the toolbar's menu, written as
 [menus](menus.md) says. Its navigation button is the way back on a pushed page

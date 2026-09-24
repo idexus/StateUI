@@ -31,6 +31,9 @@ final class AndroidBarView: AndroidView {
     private(set) var content = Content()
     private var shown = false
 
+    /// The view standing in for the title, where one does.
+    private(set) weak var titleView: AndroidView?
+
     init() {
         super.init { number in
             Java.new(JavaAPI.bar, JavaAPI.newBar, .object(AndroidRenderer.context), .long(number))
@@ -80,6 +83,15 @@ final class AndroidBarView: AndroidView {
         AndroidMenu.encoded(actions.map(AndroidMenu.Entry.item)) { kinds, texts, pictures in
             Java.call(reference, JavaAPI.setBarActions, .object(kinds), .object(texts), .object(pictures))
         }
+    }
+
+    /// Shows `view` in place of the title - across the room between the navigation button and the actions -
+    /// or the title again for nil.
+    func showTitleView(_ view: AndroidView?) {
+        guard view !== titleView else { return }
+        titleView = view
+        view?.forgetPlace()
+        Java.call(reference, JavaAPI.setBarTitleView, .object(view?.reference))
     }
 
     /// The user pressed the navigation button.

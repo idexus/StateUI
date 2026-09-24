@@ -346,6 +346,7 @@ enum JavaAPI {
     static let showBar = Java.method(bar, "show", "(Ljava/lang/String;II)V")
     static let setBarNavigation = Java.method(
         bar, "setNavigation", "(ILandroid/graphics/Bitmap;ILjava/lang/String;)V")
+    static let setBarTitleView = Java.method(bar, "setTitleView", "(Landroid/view/View;)V")
     static let setBarActions = Java.method(
         bar, "setActions", "([I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
 

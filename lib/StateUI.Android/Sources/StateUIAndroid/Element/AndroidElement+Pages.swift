@@ -205,8 +205,8 @@ extension AndroidElement {
 
     // MARK: - A stack's bar
 
-    /// Shows on a stack's bar what its visible page says: the title, the colours, the way back or to the
-    /// sidebar, and the page's actions in their order.
+    /// Shows on a stack's bar what its visible page says: the title - or the view standing in for it - the
+    /// colours, the way back or to the sidebar, and the page's actions in their order.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
@@ -238,6 +238,8 @@ extension AndroidElement {
 
         navigation.setShowsBar(page?.value(.hasNavigationBar)?.bool != false)
         navigation.bar.show(content)
+        let titleView = page?.children.first { $0.type == .titleView }?.children.lazy.compactMap(\.layoutItem).first
+        navigation.bar.showTitleView(titleView?.view)
         navigation.bar.onMenuChose = { index in
             guard shown.indices.contains(index) else { return }
             shown[index].send(.clicked, [])

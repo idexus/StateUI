@@ -13,6 +13,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
@@ -163,6 +164,48 @@ final class AndroidPagesTests: XCTestCase {
 }
 
 extension AndroidPagesTests {
+    /// A page's title view stands in the bar in place of its title; a page pushed over it, with none, shows
+    /// its own title and the view leaves the bar; back, and it stands there again.
+    func testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [Int]())
+            let host = AndroidRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    SearchingPage()
+                } destination: { _ in
+                    TitledPage(title: "Result")
+                }
+            }
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            let field = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+            let bar = navigation.bar
+            XCTAssertTrue(bar.titleView === field)
+            XCTAssertGreaterThanOrEqual(Java.callInt(bar.reference, TestJava.indexOfChild, .object(field.reference)), 0)
+            XCTAssertEqual(Self.title(of: bar), "")
+
+            path.wrappedValue = [1]
+            host.pump()
+            XCTAssertNil(bar.titleView)
+            XCTAssertEqual(Java.callInt(bar.reference, TestJava.indexOfChild, .object(field.reference)), -1)
+            XCTAssertEqual(Self.title(of: bar), "Result")
+
+            XCTAssertTrue(host.goBack())
+            host.pump()
+            XCTAssertTrue(bar.titleView === field)
+            XCTAssertEqual(Self.title(of: bar), "")
+        }
+    }
+
+    /// The words the bar shows as its title; none where a view stands in for it.
+    @MainActor
+    private static func title(of bar: AndroidBarView) -> String {
+        Java.frame {
+            Java.callObject(bar.reference, TestJava.getToolbarTitle).map { words in
+                Java.text(Java.callObject(words, TestJava.toText))
+            } ?? ""
+        }
+    }
+
     /// A page the modal stack presents stands over the window's page; back takes it down, the stack hears it,
     /// and the page under it shows again.
     func testAModalStackPresentsOverThePageAndBackTakesItDown() {
@@ -232,6 +275,21 @@ extension AndroidPagesTests {
             host.pump()
             XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["Root"])
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
+        }
+    }
+}
+
+/// A page whose search field stands in its bar in place of its title.
+private struct SearchingPage: ContentView {
+    @Environment private var page: PageSession
+    @State private var query = ""
+
+    var content: any View {
+        let page = self.page
+        let query = $query
+        return Label("Results").onCreated {
+            page.title = "Search"
+            page.titleView = SearchField(query).placeholder("Search")
         }
     }
 }

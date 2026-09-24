@@ -18,7 +18,7 @@ enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
         "Content", "LeadingContent", "Map", "MenuBar", "Overlay", "Pin", "PositionIndicator", "RefreshView",
-        "Setters", "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TitleView", "TrailingContent",
+        "Setters", "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TrailingContent",
         "VisualState", "WebView",
     ]
 

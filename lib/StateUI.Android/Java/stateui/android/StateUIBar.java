@@ -8,8 +8,10 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toolbar;
 
 /**
@@ -24,6 +26,10 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     private final long view;
 
+    /** The page's title, shown while no view stands in for it. */
+    private String title = "";
+    private View titleView;
+
     StateUIBar(Context context, long view) {
         super(context);
         this.view = view;
@@ -31,13 +37,30 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     /** The title and the bar's colours; a colour of 0 leaves Android's own. */
     void show(String title, int background, int foreground) {
-        setTitle(title);
+        this.title = title;
+        setTitle(titleView == null ? title : null);
         if (background != 0) setBackgroundColor(background); else setBackground(null);
         if (foreground != 0) {
             setTitleTextColor(foreground);
             Drawable overflow = getOverflowIcon();
             if (overflow != null) overflow.mutate().setTint(foreground);
         }
+    }
+
+    /**
+     * The view standing in for the title, across the room between the navigation button and the actions - or
+     * none, and the title shows again. The view leaves whatever held it before.
+     */
+    void setTitleView(View standing) {
+        if (standing == titleView) return;
+        if (titleView != null && titleView.getParent() == this) removeView(titleView);
+        titleView = standing;
+        if (standing != null) {
+            if (standing.getParent() instanceof ViewGroup) ((ViewGroup) standing.getParent()).removeView(standing);
+            addView(standing, new Toolbar.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
+        }
+        setTitle(standing == null ? title : null);
     }
 
     /** The navigation button: none, the way back in `tint`, or the sidebar's own picture. */
