@@ -1,7 +1,7 @@
 # Drawing on Android
 
 How the Android Views host paints what a view is drawn with rather than what
-it holds: a shape and the brush that fills it, a border around its child, a
+it holds: a shape and the brush that fills it, a layout's own box, a
 child an engine places, and the application's pictures.
 
 ## A shape and its brush

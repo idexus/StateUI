@@ -7,7 +7,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
     static let id = "iconButton"
     static let title = "Icon button"
-    static let summary = "A button whose content is an icon - with a border, a corner radius and a pressed state."
+    static let summary = "A button whose content is an icon - with an outline, a rounded shape and a pressed state."
 
     static let code = """
         @State private var taps = 0
@@ -90,7 +90,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("It is a button, not an `Image` with a tap recognizer on it: that gives no "
-                + "pressed state, no border and no corner radius.")
+                + "pressed state, no outline and no shape.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

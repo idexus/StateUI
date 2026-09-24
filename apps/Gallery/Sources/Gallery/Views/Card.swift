@@ -103,7 +103,7 @@ struct Card: ContentView {
             .columnSpacing(14)
             // The TEXT is the star column. An Auto column measures a Label at
             // the width it would like - the whole summary on one line - so the
-            // text ran under the chevron and out through the border, with an
+            // text ran under the chevron and out through the outline, with an
             // empty star column beside it holding the space it needed. A star
             // column is given what the others left, and a Label given a width
             // wraps to it.
@@ -111,7 +111,7 @@ struct Card: ContentView {
             .padding(16, 14)
         }
         .style("Card")
-        // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a
+        // A CARD IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
         // control at all: the user who cannot see it would be handed a
         // picture, two Labels and a chevron with nothing saying they act
         // together. So the card says what it is and where it goes, and the

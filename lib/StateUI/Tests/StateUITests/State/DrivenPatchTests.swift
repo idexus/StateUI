@@ -76,12 +76,12 @@ final class DrivenPatchTests: XCTestCase {
                 .opacity(fade.projectedValue)
                 .visualState(.disabled) { $0.opacity(0.1) }
                 .body)
-        let border = try XCTUnwrap(page.at(.auto(3)))
+        let card = try XCTUnwrap(page.at(.auto(3)))
 
-        XCTAssertEqual(border.props["opacity"], .number(0.5), "the stated value crosses as a value")
+        XCTAssertEqual(card.props["opacity"], .number(0.5), "the stated value crosses as a value")
         XCTAssertEqual(ties(page, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
 
-        let disabled = border.children.first { $0.type == .visualState && $0.props["name"] == .name("Disabled") }
+        let disabled = card.children.first { $0.type == .visualState && $0.props["name"] == .name("Disabled") }
         XCTAssertEqual(disabled?.children.first?.props, ["opacity": .number(0.1)], "and the state its own")
     }
 
@@ -133,7 +133,7 @@ final class DrivenPatchTests: XCTestCase {
         let colour = State(wrappedValue: Color("#102030"))
         let inset = State(wrappedValue: Insets(4))
 
-        let border = ZStack {
+        let card = ZStack {
             Label("words")
                 .fontSize(number.projectedValue)
                 .textColor(colour.projectedValue)
@@ -176,7 +176,7 @@ final class DrivenPatchTests: XCTestCase {
         // And the one modifier that is a control's own rather than a tier's.
         let box = ColorBox().color(colour.projectedValue)
 
-        let page = try page(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body)
+        let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).body)
 
         // The number is state 1, the colour 2 and the insets 3, in the walk.
         XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property))

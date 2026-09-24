@@ -116,7 +116,7 @@ class AndroidLayoutView: AndroidView {
         self.box = box
         box.setFill(fill)
         box.setStroke(outline.stroke, width: max(0, outline.width ?? 1) * density)
-        box.setShape(AndroidShapeDrawable.Shape(border: outline.shape), density: density)
+        box.setShape(AndroidShapeDrawable.Shape(container: outline.shape), density: density)
         showBackground(box.object)
         Java.call(reference, JavaAPI.setClipToOutline, .bool(outline.clips))
         Java.call(reference, JavaAPI.invalidateOutline)

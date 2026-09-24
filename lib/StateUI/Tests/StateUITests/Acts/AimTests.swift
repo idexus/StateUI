@@ -360,7 +360,7 @@ private final class Builds {
     var count = 0
 }
 
-/// A view HANDED an aim, putting it on a border of its own.
+/// A view HANDED an aim, putting it on a ZStack of its own.
 private struct Handed: ContentView {
     let panel: Aim<ZStack>
     let builds: Builds
@@ -389,7 +389,7 @@ private struct Handing: ContentView {
 }
 
 /// A view that declares two aims and hands a child one or the other, putting
-/// the one it did not hand on a border of its own.
+/// the one it did not hand on a ZStack of its own.
 private struct Choosing: ContentView {
     @Aim(ZStack.self) var left
     @Aim(ZStack.self) var right

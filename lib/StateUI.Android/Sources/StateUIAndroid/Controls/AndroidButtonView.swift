@@ -68,7 +68,7 @@ final class AndroidButtonView: AndroidTextView {
     func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
         look.stroke = stroke
         look.strokeWidth = width ?? 1
-        look.shape = AndroidShapeDrawable.Shape(border: shape)
+        look.shape = AndroidShapeDrawable.Shape(container: shape)
         drawLook()
     }
 

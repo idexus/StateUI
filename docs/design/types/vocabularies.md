@@ -40,7 +40,7 @@ its parts. A set crosses as one `.enumeration` holding its bits.
 ## A kind first
 
 Some values are one of several kinds, each made of different parts: a grid
-length, a border shape, a brush, a drawing instruction. Such a value crosses
+length, a container's shape, a brush, a drawing instruction. Such a value crosses
 as a list whose first value is the kind's number and whose rest is what that
 kind is made of.
 

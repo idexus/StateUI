@@ -5,7 +5,7 @@
 // gradient out from a point, each crossing as its typed parts.
 // Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 
-/// What a shape, a border or a background is painted with.
+/// What a shape, an outline or a background is painted with.
 ///
 ///     .fill(.solidColor(.tomato))
 ///     .background(.linearGradient([

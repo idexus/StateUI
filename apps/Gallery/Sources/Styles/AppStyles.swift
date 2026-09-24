@@ -94,7 +94,7 @@ enum AppStyles {
             // whatever colour it is painted.
             //
             // So a chrome button is WORDS AND AN ICON and nothing else - no
-            // fill, no border - answering the pointer by brightening rather
+            // fill, no outline - answering the pointer by brightening rather
             // than by growing a frame. The icon is the one its menu row
             // already carries, in the colour of the words beside it: see
             // nav_surprise_chrome.svg. The MARK is left white, the colour of

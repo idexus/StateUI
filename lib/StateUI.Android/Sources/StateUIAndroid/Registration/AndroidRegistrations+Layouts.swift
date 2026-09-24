@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 
 extension AndroidRegistrations {
-    /// The stacks, the grid, the absolute layout and the border: the room a layout leaves around and
-    /// between its children, and a border's shape.
+    /// The stacks, the grid, the ZStack and the scroller: the room a layout leaves around and between its
+    /// children, and the box it paints.
     static func layouts(_ registry: Registry<AndroidView>) {
         registry.add(VStackContract.self, create: { _ in AndroidStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }

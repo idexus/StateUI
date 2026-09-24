@@ -1,6 +1,6 @@
 # Brushes
 
-A brush is what a shape, a border or a background is painted with: one
+A brush is what a shape, an outline or a background is painted with: one
 colour, a gradient along a line, or a gradient out from a point.
 
 ## Three kinds

@@ -13,7 +13,7 @@ public enum ContainerShape: Equatable, Sendable, HostRepresentable {
     /// Rounded corners, by this many device units.
     case roundedRectangle(Double)
 
-    /// An oval filling the border's bounds.
+    /// An oval filling the element's bounds.
     case ellipse
 
     /// Which shape this is, as the number that crosses ahead of its parts.

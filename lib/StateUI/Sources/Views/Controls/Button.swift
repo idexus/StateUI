@@ -65,8 +65,8 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     ///     Button(icon: "trash.png")
     ///     Button(icon: ImageSource(light: "trash.png", dark: "trash_dark.png"))
     ///
-    /// The same button as one with a caption - the same border, corner radius
-    /// and pressed state - with `.aspect` for how its picture fills it.
+    /// The same button as one with a caption - the same outline, shape and
+    /// pressed state - with `.aspect` for how its picture fills it.
     public init(icon: ImageSource) {
         node = Node(contract: ButtonContract.self)
         node.write(ButtonContract.icon, icon)

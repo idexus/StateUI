@@ -23,9 +23,9 @@ final class AndroidInputTests: XCTestCase {
                     ZStack { Label("card") }.onTapped { taps.values.append(1) }
                 }
             }
-            let border = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+            let card = try XCTUnwrap(host.views(AndroidZStackView.self).first)
 
-            border.click()
+            card.click()
             XCTAssertEqual(taps.values, [1])
 
             let label = AndroidLabelView()
@@ -56,11 +56,11 @@ final class AndroidInputTests: XCTestCase {
             host.layOut()
             let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
-            let border = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+            let card = try XCTUnwrap(host.views(AndroidZStackView.self).first)
 
             page.touch(0, x: 200, y: 100)
             XCTAssertTrue(Java.callBool(button.reference, TestJava.isPressed), "the button behind is pressed")
-            XCTAssertFalse(Java.callBool(border.reference, TestJava.isPressed))
+            XCTAssertFalse(Java.callBool(card.reference, TestJava.isPressed))
             page.touch(3, x: 200, y: 100)
         }
     }

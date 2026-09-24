@@ -707,14 +707,14 @@ final class HostContractTests: XCTestCase {
         }
     }
 
-    func testBordersShapesAndDrawingSpeakInPlainWords() throws {
+    func testOutlinesShapesAndDrawingSpeakInPlainWords() throws {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(properties.isSuperset(of: ["strokeWidth", "shape", "strokeDashPattern"]))
         XCTAssertTrue(
             properties.isDisjoint(with: ["strokeThickness", "strokeShape", "strokeDashArray"]),
-            "a line's width, a border's shape or a dash pattern keeps a second name")
+            "a line's width, a layout's shape or a dash pattern keeps a second name")
 
         let color = try SourceTree.text(in: "Color.swift")
         XCTAssertTrue(

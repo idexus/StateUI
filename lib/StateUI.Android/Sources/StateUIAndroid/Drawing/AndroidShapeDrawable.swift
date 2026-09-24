@@ -18,7 +18,7 @@ final class AndroidShapeDrawable {
         case ellipse
 
         /// A layout's shape as it crosses: its kind, then a rectangle's radius.
-        init(border value: HostValue?) {
+        init(container value: HostValue?) {
             guard let parts = value?.values, let kind = parts.first?.enumeration else {
                 self = .rectangle
                 return

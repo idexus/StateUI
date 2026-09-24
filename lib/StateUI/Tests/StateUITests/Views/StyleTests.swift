@@ -1075,7 +1075,7 @@ final class StyleTests: XCTestCase {
             "background": Color("#C8C8C8").propValue, "textColor": Color("#141414").propValue,
         ])
 
-        // A border's style, and the default label's inside it.
+        // A card's style, and the default label's inside it.
         XCTAssertEqual(stack.at(.auto(10))?.props["strokeWidth"], .number(1))
         XCTAssertEqual(stack.at(.auto(10), .auto(11))?.props["fontSize"], .number(14))
 

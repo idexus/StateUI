@@ -6,7 +6,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
     static let id = "brush"
     static let title = "Brushes"
-    static let summary = "Gradients: on a shape's fill, a border's stroke, and behind any view at all."
+    static let summary = "Gradients: on a shape's fill, a layout's outline, and behind any view at all."
 
     static let code = """
         @State private var end = 0

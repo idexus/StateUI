@@ -15,7 +15,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 final class MotionTests: XCTestCase {
-    /// A border of a stated opacity, which is a number with a half-way.
+    /// A panel of a stated opacity, which is a number with a half-way.
     private func panel(_ opacity: Double, id: String = "panel") -> Node {
         ZStack { Label("x") }.opacity(opacity).id(id).body
     }

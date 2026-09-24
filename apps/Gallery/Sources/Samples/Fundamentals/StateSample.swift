@@ -14,8 +14,8 @@ struct StateSample: SampleContent, ExampleContent {
         @State private var counter = 0
         @State private var name = ""
 
-        // A BORDER ROUND EACH CLOSURE, so what a write rebuilds is a rectangle
-        // you can see. The borders are drawing and nothing else: the reader of
+        // AN OUTLINE ROUND EACH CLOSURE, so what a write rebuilds is a rectangle
+        // you can see. The outlines are drawing and nothing else: the reader of
         // a value is the VStack whose braces the get sits in, either way.
         ZStack {
             VStack {
@@ -60,9 +60,9 @@ struct StateSample: SampleContent, ExampleContent {
         """
 
     var content: any View {
-        // THE TWO CLOSURES ARE DRAWN, each inside a border of its own, because
+        // THE TWO CLOSURES ARE DRAWN, each inside an outline of its own, because
         // what a write rebuilds is easier to believe as a rectangle than as a
-        // rule. The borders are decoration: the reader of a value is the VStack
+        // rule. The outlines are decoration: the reader of a value is the VStack
         // whose braces the get sits in, and that is where each reading is
         // taken.
         ZStack {
@@ -148,7 +148,7 @@ struct StateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The two rectangles are those two closures drawn. The borders are "
+            Label("The two rectangles are those two closures drawn. The outlines are "
                 + "decoration: the reader is the VStack whose braces the get sits in. "
                 + "Increment rebuilds the outer closure and the inner one goes with it, "
                 + "which is what `with its parent` means; typing rebuilds the inner "

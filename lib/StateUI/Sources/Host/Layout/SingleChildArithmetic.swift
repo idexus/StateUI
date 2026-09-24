@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The arithmetic of a container with one child - a page, a border, a pane: the child within its padding.
+/// The arithmetic of a container with one child - a page, a pane: the child within its padding.
 /// Design: docs/design/host/layout.md#one-child
 @_spi(Host) public enum SingleChildArithmetic {
     /// The room the child and the padding take for the width offered; the padding alone without a shown child.

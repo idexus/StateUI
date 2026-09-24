@@ -64,8 +64,8 @@ final class AndroidGridViewTests: XCTestCase {
             let line = labels[2].frame.height
             XCTAssertGreaterThan(labels[0].frame.height, line * 3 / 2, "two lines, \(labels[0].frame)")
             XCTAssertLessThan(labels[0].frame.height, line * 5 / 2, "no more than two")
-            let border = try XCTUnwrap(host.views(AndroidZStackView.self).first)
-            XCTAssertGreaterThanOrEqual(border.frame.height, labels[0].frame.height)
+            let card = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+            XCTAssertGreaterThanOrEqual(card.frame.height, labels[0].frame.height)
         }
     }
 
