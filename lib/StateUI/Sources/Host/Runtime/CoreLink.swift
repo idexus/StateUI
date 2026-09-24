@@ -19,8 +19,11 @@
 
     // MARK: - The inspector
 
-    /// Whether an inspector records: the runtime tallies what applying a message costs only while one does.
+    /// Whether an inspector records.
     var inspecting: Bool { Inspection.recording }
+
+    /// Every pass reported on since the last take, as text; the first take starts the recording for good.
+    func takeInspectionLog() -> String { Inspection.takeLog() }
 
     /// Tells the inspector what applying the message of `generation` cost: every scene's part by its place
     /// in the application's list, then the whole.

@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.Os;
 import android.widget.FrameLayout;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
@@ -31,6 +33,7 @@ public class StateUIActivity extends Activity {
                 : android.R.style.Theme_DeviceDefault_Light_NoActionBar);
         super.onCreate(state);
 
+        takeSwitches();
         System.loadLibrary(library());
 
         FrameLayout root = new FrameLayout(this);
@@ -112,6 +115,28 @@ public class StateUIActivity extends Activity {
             return library;
         } catch (PackageManager.NameNotFoundException missing) {
             throw new IllegalStateException(missing);
+        }
+    }
+
+    /**
+     * The {@code STATEUI_} switches the run script passed as extras, set in
+     * this process's environment before the runtime reads it.
+     */
+    private void takeSwitches() {
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            return;
+        }
+        for (String name : extras.keySet()) {
+            String value = extras.getString(name);
+            if (!name.startsWith("STATEUI_") || value == null) {
+                continue;
+            }
+            try {
+                Os.setenv(name, value, true);
+            } catch (ErrnoException ignored) {
+                // A switch the process cannot take is a diagnostic left off.
+            }
         }
     }
 }

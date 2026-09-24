@@ -92,7 +92,9 @@ stripped, with the unstripped copies kept in `.build-android/symbols/` for
 `Resources/Images` are drawn for it as the APK is built: an SVG three times
 over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
 other host. An application's `print` reaches logcat under the
-tag `StateUI`.
+tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
+write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
+to the application's environment.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.
 

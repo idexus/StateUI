@@ -284,12 +284,21 @@ struct EditorScene: Scene {
 
 The inspector shows what caused each pass, whether a composed view was built,
 carried, or walked, the Swift and host costs, and how many native controls were
-made, kept, or adopted. It records nothing while closed, so applications that
-do not use it pay only disabled checks.
+made or kept. It records nothing while closed, so applications that do not use
+it pay only disabled checks.
 
 Set `STATEUI_INSPECT=1` in the host process to emit the same render record as
 diagnostic text from the first pass. Use this for automated runs or a problem
-that happens before the inspector can be opened.
+that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
+running totals instead: messages applied, controls made and kept, renders, and
+the elements alive - the numbers that tell a page left in memory from one let
+go. Both go to the standard error, which an Android application sends to
+logcat; `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the
+shell that runs it to the application:
+
+```bash
+STATEUI_TALLY=1 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554
+```
 
 ## Recovery and resynchronization
 

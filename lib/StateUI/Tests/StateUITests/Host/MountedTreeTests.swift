@@ -144,6 +144,48 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(hosts.map { $0.scenes.map { $0 > 0 } }, [[true, true], [false, true], [false, true]])
     }
 
+    /// With the tally on, a message that stands alone writes the running totals; one right behind it writes
+    /// nothing, and the next after a quiet spell writes them all again.
+    @MainActor
+    func testTheTallyIsWrittenAfterAMessageThatStandsAlone() {
+        var written: [String] = []
+        var clock = 0.0
+        let (tree, _) = Self.tree(
+            diagnostics: DiagnosticText(tallies: true, inspects: false) { written.append($0) }, now: { clock })
+
+        tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
+        tree.apply(Self.stack("stack", ["a", "b", "c"]), complete: false)
+        clock = 400
+        tree.apply(Self.stack("stack", ["a"]), complete: false)
+
+        XCTAssertEqual(written.count, 2, written.joined())
+        XCTAssertTrue(written[0].hasPrefix("StateUI tally: applies 1  nodes 3  made 3  kept 0  renders "), written[0])
+        XCTAssertTrue(written[1].hasPrefix("StateUI tally: applies 3  nodes 9  made 4  kept 5  renders "), written[1])
+        XCTAssertTrue(written[1].hasSuffix(" ms total\n"), written[1])
+    }
+
+    /// With the passes asked for, the tree starts the inspector's recording, and each message applied writes
+    /// the pass it ended as text.
+    @MainActor
+    func testEveryPassIsWrittenAsTextWhenAskedFor() {
+        defer {
+            Inspection.logging = false
+            Inspection.stop()
+        }
+        var written: [String] = []
+        let (tree, _) = Self.tree(diagnostics: DiagnosticText(tallies: false, inspects: true) { written.append($0) })
+        XCTAssertTrue(Inspection.recording, "the tree starts the recording itself")
+
+        Inspection.begin(road: .build, causes: ["count"])
+        Inspection.end(generation: 1, describe: 12, keep: true)
+        tree.intake.take(Self.stack("stack", ["a"]), generation: 1) { tree.apply($0, complete: true) }
+
+        XCTAssertEqual(written.count, 1)
+        XCTAssertTrue(written.first?.contains(" build ") ?? false, written.joined())
+        XCTAssertTrue(written.first?.contains(" for count · Swift 12 µs · host ") ?? false, written.joined())
+        XCTAssertTrue(written.first?.contains(" 2 nodes, 2 made, 0 kept") ?? false, written.joined())
+    }
+
     /// A frame arranges a parent once when a child's place changed; an element without a view passes it up.
     @MainActor
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {
@@ -299,7 +341,11 @@ final class MountedTreeTests: XCTestCase {
     // MARK: - A tree over a recording native half
 
     @MainActor
-    private static func tree(viewless: Set<String> = []) -> (MountedTree, NativeLog) {
+    private static func tree(
+        viewless: Set<String> = [],
+        diagnostics: DiagnosticText = DiagnosticText(tallies: false, inspects: false) { _ in },
+        now: @escaping () -> Double = { 0 }
+    ) -> (MountedTree, NativeLog) {
         let animator = Animator()
         let log = NativeLog()
         let tree = MountedTree(
@@ -308,8 +354,9 @@ final class MountedTreeTests: XCTestCase {
             stateChannels: StateChannels(animator: animator),
             describedMotion: DescribedMotion(animator: animator),
             layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
-            now: { 0 },
+            now: now,
             reducesMotion: { false },
+            diagnostics: diagnostics,
             makeNative: { RecordingNative($0, log: log, viewless: viewless) })
         return (tree, log)
     }

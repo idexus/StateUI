@@ -19,7 +19,8 @@
 #
 # The Swift is built for the device's ABI alone, by build-swift.sh; Gradle
 # packages it with the host's Java layer. Everything a build writes stays under
-# <app-dir>/.build-android.
+# <app-dir>/.build-android. Every STATEUI_ variable of the calling shell -
+# STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches the application's environment.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -57,7 +58,11 @@ package="$("$AAPT2" dump packagename "$apk")"
 
 "$ADB" -s "$serial" install -r "$apk"
 "$ADB" -s "$serial" shell am force-stop "$package"
-"$ADB" -s "$serial" shell am start -W -n "$package/stateui.android.StateUIActivity"
+switches=()
+while IFS= read -r name; do
+  switches+=(-e "$name" "${!name}")
+done < <(compgen -e | grep '^STATEUI_' || true)
+"$ADB" -s "$serial" shell am start -W -n "$package/stateui.android.StateUIActivity" "${switches[@]+"${switches[@]}"}"
 
 process=""
 for _ in 1 2 3 4 5 6 7 8 9 10; do

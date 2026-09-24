@@ -21,7 +21,8 @@ is the other half, what counting live readers spared beside what got through.
 page that was left and still stands in memory shows as a number that does not
 come back down. It tells a leaked page from memory the allocator has not handed
 back yet, which a process's resident size cannot. A host reads the tally
-through `StateUIHost.tally`, and the per-cycle trace through
+through `StateUIHost.tally` - a Swift runtime writes it with its own totals
+under `STATEUI_TALLY=1` (host/patches.md) - and the per-cycle trace through
 `StateUIHost.cycleTrace`, built only when the host's trace switch is on: this
 side has no environment to read.
 
@@ -32,8 +33,8 @@ the differ writes an entry for every composed view it reaches:
 
 ```text
   pass    road (walk, build, complete), causes in the author's names,
-          microseconds describing and encoding, bytes, and the host's half:
-          reading and applying per scene, controls made, kept and adopted
+          microseconds describing, and the host's half: applying, per scene
+          too, and the controls walked, made and kept
   entry   built  - with the reason it could not be carried
           carried - whole: not built, not compared, not sent
           walked  - only as the path to a view below it that was built
