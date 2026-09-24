@@ -130,6 +130,7 @@ final class AndroidRenderer {
         shared = renderer
         renderer.watchLayout()
         AndroidEnvironment.report(to: renderer.core, activity: context.reference)
+        if previous == nil { AndroidPersistence.restore(into: renderer.core, context: context.reference) }
         renderer.show(connectingScene: previous == nil)
         AndroidDoorbell.install { AndroidRenderer.shared?.pump() }
         return renderer
@@ -145,6 +146,15 @@ final class AndroidRenderer {
             Java.call(observer, JavaAPI.addOnScrollChangedListener, .object(listener.reference))
         }
         Java.release(local: observer)
+    }
+
+    /// The acts the application calls, performed and answered.
+    private lazy var acts = AndroidActPerformer(core: core, context: context, root: root)
+
+    /// The user answered a dialog: its act is answered, and what that resumes runs.
+    func answered(ticket: Int64, accepted: Bool, words: String?) {
+        acts.answered(ticket: ticket, accepted: accepted, words: words)
+        pump()
     }
 
     /// Renders the application whole, connecting its scene first where no activity has shown it.
@@ -315,9 +325,7 @@ final class AndroidRenderer {
         }
 
         for call in core.takeActCalls() {
-            if let completion = call.completion {
-                core.fail(completion, reason: "the Android Views host performs no act yet")
-            }
+            acts.perform(call, in: tree)
         }
         refreshBack()
     }

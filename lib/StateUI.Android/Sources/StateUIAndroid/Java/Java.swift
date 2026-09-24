@@ -177,6 +177,16 @@ enum Java {
         return result != 0
     }
 
+    /// Calls a static method returning an int.
+    static func callStaticInt(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+        crossings += 1
+        let result = arguments.withUnsafeBufferPointer {
+            jni.CallStaticIntMethodA(env, owner, method, $0.baseAddress)
+        }
+        check("a static call")
+        return result
+    }
+
     /// Calls a method returning a float.
     static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1
@@ -272,6 +282,14 @@ enum Java {
         let array = jni.NewIntArray(env, jsize(values.count))
         values.withUnsafeBufferPointer { jni.SetIntArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
         return array
+    }
+
+    /// The numbers of a Java int array.
+    static func intsOf(_ array: jobject) -> [Int32] {
+        let count = Int(jni.GetArrayLength(env, array))
+        var values = [Int32](repeating: 0, count: count)
+        values.withUnsafeMutableBufferPointer { jni.GetIntArrayRegion(env, array, 0, jsize(count), $0.baseAddress) }
+        return values
     }
 
     /// The strings of a Java string array.

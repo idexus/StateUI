@@ -11,6 +11,10 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /** What the device, its display and the application are, each read in one call for the Swift host. */
 final class StateUIEnvironment {
@@ -62,5 +66,37 @@ final class StateUIEnvironment {
     static boolean night(Context context) {
         int mode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         return mode == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    /** The local time of day: hour, minute, second and millisecond. */
+    static int[] clock() {
+        Calendar now = Calendar.getInstance();
+        return new int[] {
+            now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND),
+            now.get(Calendar.MILLISECOND),
+        };
+    }
+
+    /** The IANA identifier of the local time zone. */
+    static String zone() {
+        return TimeZone.getDefault().getID();
+    }
+
+    /** How far `zone` - the local one for null - is from UTC at noon of a day - today where year is 0 - in minutes. */
+    static int utcOffset(String zone, int year, int month, int day) {
+        TimeZone timeZone = zone == null ? TimeZone.getDefault() : TimeZone.getTimeZone(zone);
+        Calendar noon = Calendar.getInstance(timeZone);
+        if (year != 0) noon.set(year, month - 1, day, 12, 0, 0);
+        return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
+    }
+
+    /** Takes the keyboard down from whatever holds the focus under `root`; whether anything did. */
+    static boolean hideKeyboard(View root) {
+        View holder = root.findFocus();
+        if (holder == null) return false;
+        InputMethodManager keyboard = root.getContext().getSystemService(InputMethodManager.class);
+        if (keyboard != null) keyboard.hideSoftInputFromWindow(holder.getWindowToken(), 0);
+        holder.clearFocus();
+        return true;
     }
 }

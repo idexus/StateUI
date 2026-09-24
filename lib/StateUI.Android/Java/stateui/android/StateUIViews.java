@@ -125,4 +125,22 @@ final class StateUIViews {
         centred.setLayerSize(0, width, height);
         view.setForeground(centred);
     }
+
+    /**
+     * Puts the focus on `view` - bringing up the keyboard where it takes words - or takes it off; whether the
+     * view took it.
+     */
+    static boolean focus(View view, boolean take) {
+        if (!take) {
+            if (view.hasFocus()) view.clearFocus();
+            return false;
+        }
+        boolean took = view.requestFocus();
+        if (took && view.onCheckIsTextEditor()) {
+            android.view.inputmethod.InputMethodManager keyboard =
+                    view.getContext().getSystemService(android.view.inputmethod.InputMethodManager.class);
+            if (keyboard != null) keyboard.showSoftInput(view, 0);
+        }
+        return took;
+    }
 }

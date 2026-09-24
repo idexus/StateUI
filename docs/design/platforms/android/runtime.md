@@ -88,3 +88,22 @@ and the new one takes the scene over, its controls drawn in the new theme.
 The activity's resume, pause and stop move the application's phase, and
 then the scene's and its window's: activated, deactivated and stopped, each
 rendered before the next is heard.
+
+## Acts
+
+The acts the application calls are performed after each turn's render and
+answered, a reply or a failure with its reason, so no caller waits on an act
+nobody performs. The time of day, the zone and a zone's distance from UTC are
+the platform's, each one call; the screen reader is told through the window's
+root; the focus is put on or taken off the view the act names, a text field
+bringing up the keyboard. A question for the user - an alert, a confirmation,
+a choice of actions, a prompt - is the platform's own dialog: its call waits
+under a ticket the dialog hands back as the user answers, and a dialog
+dismissed any other way answers that it was not accepted.
+
+## Kept values
+
+A kept state's key is in the platform's preferences, as the words its kind
+reads back. Every key the application lists is read before the first scene
+connects, in one call, and handed to the core ahead of the first view; a
+key's new value is written as its save arrives.

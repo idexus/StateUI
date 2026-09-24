@@ -76,6 +76,7 @@ enum TestJava {
     static let getTypeface = Java.method(JavaAPI.textView, "getTypeface", "()Landroid/graphics/Typeface;")
     static let getSelectedView = Java.method(JavaAPI.picker, "getSelectedView", "()Landroid/view/View;")
     static let onDateSet = Java.method(JavaAPI.dateField, "onDateSet", "(Landroid/widget/DatePicker;III)V")
+    static let hasFocus = Java.method(JavaAPI.view, "hasFocus", "()Z")
     static let onTimeSet = Java.method(JavaAPI.dateField, "onTimeSet", "(Landroid/widget/TimePicker;II)V")
     static let onItemSelected = Java.method(
         JavaAPI.picker, "onItemSelected", "(Landroid/widget/AdapterView;Landroid/view/View;IJ)V")

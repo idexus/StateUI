@@ -48,7 +48,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `background` | property | `Background` | native | ✅ | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
-| `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  |  |  |  |  |
+| `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
@@ -73,7 +73,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `translationY` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  |  |  |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI | ✅ |  |  |  |  |  |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `zIndex` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |

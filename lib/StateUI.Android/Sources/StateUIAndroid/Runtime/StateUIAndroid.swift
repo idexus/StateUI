@@ -148,6 +148,13 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidCanvasView)?.touched(phase: phase, at: Point(Double(x), Double(y)))
             }
         }
+        let dialogAnswered: @convention(c) (Environment, jclass?, jlong, jboolean, jstring?) -> Void = {
+            _, _, ticket, accepted, words in
+            nonisolated(unsafe) let words = words
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.answered(ticket: ticket, accepted: accepted != 0, words: words.map { Java.text($0) })
+            }
+        }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.laidOut()
@@ -191,6 +198,7 @@ enum JavaNatives {
             ("fieldChose", "(JIII)V", unsafeBitCast(fieldChose, to: UnsafeMutableRawPointer.self)),
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
+            ("dialogAnswered", "(JZLjava/lang/String;)V", unsafeBitCast(dialogAnswered, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),

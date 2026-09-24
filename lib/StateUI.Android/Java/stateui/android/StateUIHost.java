@@ -75,6 +75,9 @@ final class StateUIHost {
     /** The user chose a picker's option at `index`. */
     static native void chose(long view, int index);
 
+    /** The user answered the dialog under `ticket`: accepted or not, and the words chosen or typed. */
+    static native void dialogAnswered(long ticket, boolean accepted, String words);
+
     /** A finger went down on a canvas - 0 - moved on it - 1 - or was lifted - 2 - at a point in points. */
     static native void canvasTouched(long view, int phase, float x, float y);
 

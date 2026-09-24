@@ -11,6 +11,7 @@ import XCTest
 /// test-android.sh refuses a `func test` that no `allTests` lists.
 nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidRendererTests.allTests),
+    testCase(AndroidActTests.allTests),
     testCase(AndroidLeaveTests.allTests),
     testCase(AndroidMotionTests.allTests),
     testCase(AndroidTextViewTests.allTests),

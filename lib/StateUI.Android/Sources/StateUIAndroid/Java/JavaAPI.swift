@@ -129,6 +129,28 @@ enum JavaAPI {
         compoundButton, "setButtonTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getButtonTintList = Java.method(
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
+    static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
+    static let alert = Java.staticMethod(
+        dialogs, "alert", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
+    static let confirm = Java.staticMethod(
+        dialogs, "confirm",
+        "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
+    static let chooseAction = Java.staticMethod(
+        dialogs, "chooseAction",
+        "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;)V")
+    static let prompt = Java.staticMethod(
+        dialogs, "prompt",
+        "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;)V")
+
+    static let store = Java.findClass("stateui/android/StateUIStore")
+    static let readStore = Java.staticMethod(
+        store, "read", "(Landroid/content/Context;[Ljava/lang/String;)[Ljava/lang/String;")
+    static let writeStore = Java.staticMethod(
+        store, "write", "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V")
+
+    static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
+    static let announceForAccessibility = Java.method(view, "announceForAccessibility", "(Ljava/lang/CharSequence;)V")
+
     static let dateField = Java.findClass("stateui/android/StateUIDateField")
     static let newDateField = Java.method(dateField, "<init>", "(Landroid/content/Context;JZ)V")
     static let setFieldDate = Java.method(dateField, "setDate", "(III)V")
@@ -303,6 +325,10 @@ enum JavaAPI {
     static let newListener = Java.method(listener, "<init>", "(J)V")
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
+    static let clock = Java.staticMethod(environment, "clock", "()[I")
+    static let zone = Java.staticMethod(environment, "zone", "()Ljava/lang/String;")
+    static let utcOffset = Java.staticMethod(environment, "utcOffset", "(Ljava/lang/String;III)I")
+    static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
     static let deviceFacts = Java.staticMethod(environment, "device", "()[Ljava/lang/String;")
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
     static let applicationFacts = Java.staticMethod(

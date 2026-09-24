@@ -28,9 +28,15 @@ enum AndroidRegistrations {
         return registry
     }()
 
-    /// The acts this host performs, whichever element each is aimed at: none yet - the renderer
-    /// refuses every act by name.
-    static let acts: [any ContractMember] = []
+    /// The acts this host performs, whichever element each is aimed at; `AndroidActPerformer` answers
+    /// exactly these, and refuses every other by name.
+    static let acts: [any ContractMember] = [
+        VisualElementContract.focus, VisualElementContract.unfocus,
+        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
+        ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
+        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
+        ApplicationContract.prompt, ApplicationContract.utcOffset,
+    ]
 
     /// What `AndroidElement` puts on every view wearing each member's contract.
     static func shared(_ registry: Registry<AndroidView>) {
