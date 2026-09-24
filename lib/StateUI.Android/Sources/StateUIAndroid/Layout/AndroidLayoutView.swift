@@ -14,6 +14,19 @@ class AndroidLayoutView: AndroidView {
     /// The children, in order.
     private(set) var items: [AndroidLayoutItem] = []
 
+    /// What the layout paints its own box with once it has an outline, a shape or a cut; nil while it has none.
+    private var box: AndroidShapeDrawable?
+    private var fill: HostValue?
+    private var outline = Outline()
+
+    /// The layout's outline, its shape, and whether it cuts what it holds to that shape.
+    struct Outline: Equatable {
+        var stroke: HostValue?
+        var width: Double?
+        var shape: HostValue?
+        var clips = false
+    }
+
     /// The direction the children are laid out in, the element's; a turn lays them out again, their sizes kept.
     var direction = LayoutDirection.leftToRight {
         didSet { if direction != oldValue { requestLayout() } }
@@ -75,6 +88,38 @@ class AndroidLayoutView: AndroidView {
         let indices = order.map { Java.ints($0.map(Int32.init)) }
         Java.call(reference, JavaAPI.setDrawingOrder, .object(indices ?? nil))
         Java.release(local: indices ?? nil)
+    }
+
+    /// The background, painted on the layout's shape where it has one.
+    override func setBackground(_ value: HostValue?) {
+        fill = value
+        paintBox()
+    }
+
+    /// The layout's own box: a plain colour where it has no outline, shape or cut, and a drawable on its shape
+    /// where it has.
+    /// Design: docs/design/platforms/android/drawing.md#a-layouts-own-box
+    func setOutline(_ outline: Outline) {
+        guard outline != self.outline else { return }
+        self.outline = outline
+        paintBox()
+    }
+
+    private func paintBox() {
+        guard outline.stroke != nil || outline.shape != nil || outline.clips else {
+            if box != nil { Java.call(reference, JavaAPI.setClipToOutline, .bool(false)) }
+            box = nil
+            return super.setBackground(fill)
+        }
+
+        let box = self.box ?? AndroidShapeDrawable()
+        self.box = box
+        box.setFill(fill)
+        box.setStroke(outline.stroke, width: max(0, outline.width ?? 1) * density)
+        box.setShape(AndroidShapeDrawable.Shape(border: outline.shape), density: density)
+        showBackground(box.object)
+        Java.call(reference, JavaAPI.setClipToOutline, .bool(outline.clips))
+        Java.call(reference, JavaAPI.invalidateOutline)
     }
 
     /// Makes the layout and everything in it deaf to touches, which go to whatever stands behind it.

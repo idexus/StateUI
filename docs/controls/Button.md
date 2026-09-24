@@ -160,13 +160,16 @@ The space kept inside an element, around what it holds.
 
 ## From [BorderElement](tiers/BorderElement.md)
 
-The line around a control's own box, and how round its corners are.
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `borderColor` | property | `Color` | native | ✅ |  |  | ✅ |  |  |  |
 | `borderWidth` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
 | `cornerRadius` | property | `Int` | native | ✅ |  |  | ✅ |  |  |  |
+| `shape` | property | `BorderShape` | stateUI |  |  |  |  |  |  |  |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  |  |  |  |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  |  |  |  |
 
 ## From [ImageElement](tiers/ImageElement.md)
 

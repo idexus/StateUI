@@ -13,8 +13,10 @@ enum AndroidTransitionSurface {
 
         switch type {
         case .page: return property == .background
-        case .vStack, .hStack: return property == .padding || property == .spacing
-        case .grid: return [.padding, .rowSpacing, .columnSpacing, .rows, .columns].contains(property)
+        case .vStack, .hStack: return [.padding, .spacing, .stroke, .strokeWidth, .shape].contains(property)
+        case .grid: return [.padding, .rowSpacing, .columnSpacing, .rows, .columns, .stroke, .strokeWidth, .shape]
+            .contains(property)
+        case .zStack: return [.padding, .stroke, .strokeWidth, .shape].contains(property)
         case .border: return [.padding, .stroke, .strokeWidth, .shape].contains(property)
         case .colorBox: return property == .color || property == .cornerRadius
         case .label: return [.fontSize, .textColor, .padding, .characterSpacing, .lineHeight].contains(property)

@@ -9,11 +9,13 @@ extension AndroidRegistrations {
     static func layouts(_ registry: Registry<AndroidView>) {
         registry.add(VStackContract.self, create: { _ in AndroidStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(HStackContract.self, create: { _ in AndroidStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
@@ -29,11 +31,13 @@ extension AndroidRegistrations {
                 view.columnSpacing = values[GridContract.columnSpacing] ?? 0
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
+            grid.applies(boxMembers) { view, values in applyBox(view, values) }
             grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(ZStackContract.self, create: { _ in AndroidZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
+            layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
@@ -70,6 +74,20 @@ extension AndroidRegistrations {
             }
             border.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
+    }
+
+    /// What every layout takes of its own box: its outline, its shape and its cut.
+    private static let boxMembers: [any ContractMember] = [
+        BorderElementContract.stroke, BorderElementContract.strokeWidth, BorderElementContract.shape,
+        LayoutContract.clipsContent,
+    ]
+
+    private static func applyBox<Realized: ElementContract>(_ view: AndroidLayoutView, _ values: ElementValues<Realized>) {
+        view.setOutline(AndroidLayoutView.Outline(
+            stroke: values[BorderElementContract.stroke]?.propValue,
+            width: values[BorderElementContract.strokeWidth],
+            shape: values[BorderElementContract.shape]?.propValue,
+            clips: values[LayoutContract.clipsContent] ?? false))
     }
 
     /// What both stacks take: the space between their children, and the space inside their own edge.

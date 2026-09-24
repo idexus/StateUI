@@ -29,6 +29,18 @@ has rounded corners. The outline is drawn inside the view's bounds, half its
 width on either side of the shape's edge being inside, and never pushes the
 child in - that is the padding's work.
 
+## A layout's own box
+
+A stack, a grid or a ZStack paints its own box. A plain colour with no
+outline, shape or cut is the view's plain background, as on any view. An
+outline, a shape or a cut gives the layout a shape drawable instead, made
+the first time one is said: the background fills the shape, the outline is
+drawn inside the bounds, half its width either side of the shape's edge
+being inside, and never pushes a child in - that is the padding's work.
+With `clipsContent` the view clips to the drawable's outline, so a picture in
+a rounded card has rounded corners; without it nothing is cut, the shape
+drawn all the same.
+
 ## A placed child
 
 An engine's placement run stands each child of a ZStack at a

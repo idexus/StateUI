@@ -133,7 +133,7 @@ extension AppKitElement {
         }
 
         applyVisibility()
-        if !(view is AppKitBorderView) && !(view is AppKitColorBoxView) {
+        if !(view is AppKitBorderView) && !(view is AppKitTravellingLayout) && !(view is AppKitColorBoxView) {
             let background = color(.background)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
@@ -192,12 +192,16 @@ extension AppKitElement {
             // until the page's value moved to the registry, where a
             // registration answers for one node type rather than one class.
             border.padding = insets(.padding)
-            border.apply(
-                backgroundColor: color(.background),
-                background: value(.background),
-                stroke: value(.stroke),
-                strokeWidth: value(.strokeWidth)?.number,
-                shape: value(.shape))
+            border.decoration.apply(
+                backgroundColor: color(.background), background: value(.background), stroke: value(.stroke),
+                strokeWidth: value(.strokeWidth)?.number, shape: value(.shape), clips: true, to: border)
+        }
+
+        if let layout = view as? AppKitTravellingLayout {
+            layout.decoration.apply(
+                backgroundColor: color(.background), background: value(.background), stroke: value(.stroke),
+                strokeWidth: value(.strokeWidth)?.number, shape: value(.shape),
+                clips: value(.clipsContent)?.bool ?? false, to: layout)
         }
 
         let minimumWidth = requested(.minimumWidth)

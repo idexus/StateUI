@@ -17,14 +17,14 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [Border](Border.md) | 76 | 56 ✅ · 2 ☑️ |  |  | 57 ✅ · 1 ☑️ |  |  |
-| [Button](Button.md) | 87 | 68 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
+| [Button](Button.md) | 90 | 68 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
 | [Canvas](Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [CheckBox](CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [ColorBox](ColorBox.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [DatePicker](DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
 | [Ellipse](Ellipse.md) | 77 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
-| [Grid](Grid.md) | 75 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
-| [HStack](HStack.md) | 72 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
+| [Grid](Grid.md) | 81 | 62 ✅ · 2 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
+| [HStack](HStack.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [Image](Image.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [Label](Label.md) | 82 | 66 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [Line](Line.md) | 81 | 65 ✅ · 3 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
@@ -35,7 +35,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Polyline](Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
 | [PositionIndicator](PositionIndicator.md) | 75 |  |  |  |  |  |  |
 | [ProgressBar](ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [RadioButton](RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [RadioButton](RadioButton.md) | 85 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [Rectangle](Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ScrollView](ScrollView.md) | 75 | 60 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ |  |  |
 | [SearchField](SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
@@ -46,9 +46,9 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TextField](TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ |  |  |
 | [TimePicker](TimePicker.md) | 79 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [TitleBar](TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
-| [VStack](VStack.md) | 72 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
+| [VStack](VStack.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [WebView](WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [ZStack](ZStack.md) | 71 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [ZStack](ZStack.md) | 77 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -104,7 +104,7 @@ Members many elements share, declared once.
 - [LineHeightElement](tiers/LineHeightElement.md) - How far apart the lines of text are.
 - [DecorableTextElement](tiers/DecorableTextElement.md) - The lines drawn through or under text.
 - [PaddingElement](tiers/PaddingElement.md) - The space kept inside an element, around what it holds.
-- [BorderElement](tiers/BorderElement.md) - The line around a control's own box, and how round its corners are.
+- [BorderElement](tiers/BorderElement.md) - What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 - [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
 - [TintElement](tiers/TintElement.md) - A control's one accent colour.
 - [BarElement](tiers/BarElement.md) - The bar a page arrangement draws: its colour.

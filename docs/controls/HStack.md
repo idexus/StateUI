@@ -6,7 +6,7 @@ Stacks its children left to right, each as wide as it asks to be.
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
 
 Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
@@ -43,7 +43,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
 | `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
-| `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
+| `background` | property | `Background` | native | ✅ |  |  | ✅ |  |  |  |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ |  |  |  |
 | `height` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
@@ -120,7 +120,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `clipsContent` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
 | `letsInputThrough` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 
 ## From [StackBase](tiers/StackBase.md)
@@ -138,3 +138,16 @@ The space kept inside an element, around what it holds.
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `padding` | property | `Insets` | native | ✅ |  |  | ✅ |  |  |  |
+
+## From [BorderElement](tiers/BorderElement.md)
+
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `borderColor` | property | `Color` | native |  |  |  |  |  |  |  |
+| `borderWidth` | property | `Double` | native |  |  |  |  |  |  |  |
+| `cornerRadius` | property | `Int` | native |  |  |  |  |  |  |  |
+| `shape` | property | `BorderShape` | stateUI | ✅ |  |  | ✅ |  |  |  |
+| `stroke` | property | `Brush` | stateUI | ☑️ |  |  | ✅ |  |  | AppKit strokes with a colour; a gradient brush draws no outline. |
+| `strokeWidth` | property | `Double` | stateUI | ✅ |  |  | ✅ |  |  |  |

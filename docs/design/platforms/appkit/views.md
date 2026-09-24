@@ -19,3 +19,15 @@ A host view that wraps one native control hands assistive technology that
 control in its own place, through `AppKitAccessibilityPresenting`. The
 author's words, the role and whether the element takes part are written where
 VoiceOver meets the control, not on the view around it.
+
+## A layout's own box
+
+A stack, a grid or a ZStack paints its own box. A plain colour on a plain
+rectangle is its layer's background colour: the view draws nothing and keeps
+no backing store, which is what almost every layout is. An outline, a
+rounded or oval shape, or a gradient makes the view draw instead - the
+background on the shape, the outline inside the bounds, half its width either
+side of the shape's edge, in a colour alone (AppKit's brush strokes no
+gradient). With `clipsContent` the layer cuts what the layout holds: to its
+bounds, its rounded corners, or an oval mask; without it nothing is cut.
+

@@ -28,10 +28,13 @@ enum AppKitTransitionSurface {
             return borderProperties.contains(property)
 
         case .vStack, .hStack:
-            return stackProperties.contains(property)
+            return stackProperties.contains(property) || layoutBoxProperties.contains(property)
 
         case .grid:
-            return gridProperties.contains(property)
+            return gridProperties.contains(property) || layoutBoxProperties.contains(property)
+
+        case .zStack:
+            return property == .padding || layoutBoxProperties.contains(property)
 
         case .scrollView:
             return property == .padding
@@ -127,6 +130,9 @@ enum AppKitTransitionSurface {
     ]
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
+
+    /// What a layout draws of its own box.
+    private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .strokeWidth, .shape]
 
     private static let gridProperties: Set<Prop> = [
         .padding, .rowSpacing, .columnSpacing, .rows, .columns,

@@ -66,16 +66,24 @@ Ellipse
   strokeMiterLimit
   strokeWidth
 Grid
+  clipsContent
   columnSpacing
   columns
   ignoresInput
   padding
   rowSpacing
   rows
+  shape
+  stroke
+  strokeWidth
 HStack
+  clipsContent
   ignoresInput
   padding
+  shape
   spacing
+  stroke
+  strokeWidth
 Image
   aspect
   source
@@ -275,9 +283,13 @@ TimePicker
   opened()
   timeChanged()
 VStack
+  clipsContent
   ignoresInput
   padding
+  shape
   spacing
+  stroke
+  strokeWidth
 WebView
   source
   userAgent
@@ -287,8 +299,12 @@ WebView
   navigating()
   processTerminated()
 ZStack
+  clipsContent
   ignoresInput
   padding
+  shape
+  stroke
+  strokeWidth
 (every element)
   accessibilityHint
   accessibilityIdentifier

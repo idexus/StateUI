@@ -15,6 +15,9 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
         didSet { if direction != oldValue { needsLayout = true } }
     }
 
+    /// The layout's own box: its background and outline on its shape, and its cut.
+    let decoration = AppKitDecoration()
+
     /// Where the children's places animate; nil places them at once.
     weak var layoutMotion: LayoutMotion?
 
@@ -31,6 +34,23 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
     private var arrangedWidth: CGFloat?
 
     private var arrangement = Arrangement()
+
+    override func layout() {
+        super.layout()
+        decoration.clip(self)
+    }
+
+    /// A plain box is its layer's colour, with no backing store; only a drawn one draws.
+    override var wantsUpdateLayer: Bool { !decoration.draws }
+
+    override func updateLayer() {
+        layer?.backgroundColor = decoration.layerColor
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        decoration.draw(in: bounds)
+    }
 
     /// Notes that a patch reached the layout: its next arrangement places what the patch changed.
     func patchArrived() {

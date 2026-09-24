@@ -4,7 +4,7 @@
 
 What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 
-Wears: [View](View.md) · [PaddingElement](PaddingElement.md)
+Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md)
 
 Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 

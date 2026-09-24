@@ -5,7 +5,7 @@
 public protocol LayoutProperties: ViewProperties {}
 
 /// A view that arranges children.
-public protocol Layout: View, LayoutProperties, PaddingElement {}
+public protocol Layout: View, LayoutProperties, PaddingElement, BorderElement {}
 
 extension LayoutProperties {
     /// Whether a child drawn outside the layout's bounds is cut off at them.

@@ -675,6 +675,102 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 20, y: 25, width: 30, height: 40))
     }
 
+    /// A layout paints its own box: a plain colour is its layer's, with nothing drawn, and a gradient is drawn
+    /// across it from its first stop to its last.
+    @MainActor
+    func testALayoutPaintsItsColourAndGradientBackgrounds() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ZStack().background(.red)
+                ZStack().background(.linearGradient(
+                    [GradientStop(.red, 0), GradientStop(.blue, 1)],
+                    startPoint: Point(0, 0),
+                    endPoint: Point(1, 0)))
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let boxes = renderer.nativeViews(AppKitZStackView.self)
+        XCTAssertEqual(boxes.count, 2)
+        guard boxes.count == 2 else { return }
+        for box in boxes { box.frame = NSRect(x: 0, y: 0, width: 40, height: 20) }
+
+        XCTAssertFalse(boxes[0].decoration.draws, "a plain colour is drawn by no one")
+        let red = try XCTUnwrap(boxes[0].layer?.backgroundColor.flatMap(NSColor.init(cgColor:)))
+        XCTAssertGreaterThan(red.redComponent, 0.9)
+        XCTAssertLessThan(red.blueComponent, 0.1)
+
+        XCTAssertTrue(boxes[1].decoration.draws)
+        let gradient = try bitmap(of: boxes[1])
+        let start = try XCTUnwrap(gradient.colorAt(x: 2, y: 10))
+        let end = try XCTUnwrap(gradient.colorAt(x: 37, y: 10))
+        XCTAssertGreaterThan(start.redComponent, start.blueComponent)
+        XCTAssertGreaterThan(end.blueComponent, end.redComponent)
+    }
+
+    /// A layout that clips cuts what it holds to its shape - a picture in a rounded card has rounded corners, one in
+    /// an ellipse is cut by its outline - and one that does not leaves it whole, its shape drawn all the same.
+    @MainActor
+    func testALayoutThatClipsCutsWhatItHoldsToItsShape() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ZStack { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).clipsContent(true)
+                    .width(100).height(100)
+                ZStack { ColorBox(Color("#FF0000")) }.shape(.ellipse).clipsContent(true).width(100).height(60)
+                ZStack { ColorBox(Color("#FF0000")) }.clipsContent(true).width(100).height(40)
+                ZStack { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(40)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let boxes = renderer.nativeViews(AppKitZStackView.self)
+        XCTAssertEqual(boxes.count, 4)
+        guard boxes.count == 4 else { return }
+        boxes.first?.window?.contentView?.layoutSubtreeIfNeeded()
+
+        let rounded = try XCTUnwrap(boxes[0].layer, "the layout clips on a layer of its own")
+        XCTAssertTrue(rounded.masksToBounds, "what the layout holds is clipped")
+        XCTAssertEqual(rounded.cornerRadius, 16)
+
+        let ellipse = try XCTUnwrap(boxes[1].layer)
+        let outline = try XCTUnwrap(ellipse.mask as? CAShapeLayer, "an ellipse cuts by its outline")
+        XCTAssertEqual(outline.path?.boundingBox, CGRect(x: 0, y: 0, width: 100, height: 60))
+
+        let plain = try XCTUnwrap(boxes[2].layer)
+        XCTAssertTrue(plain.masksToBounds, "a rectangle clips to its bounds")
+        XCTAssertEqual(plain.cornerRadius, 0)
+
+        let whole = try XCTUnwrap(boxes[3].layer)
+        XCTAssertFalse(whole.masksToBounds, "a layout that does not clip cuts nothing")
+        XCTAssertTrue(boxes[3].decoration.draws, "its rounded shape is drawn all the same")
+    }
+
+    /// A layout keeps its padding between its outline and what it holds, and strokes its outline in its stroke's
+    /// colour, as wide as its stroke width.
+    @MainActor
+    func testALayoutPadsWhatItHoldsAndStrokesItsOutline() throws {
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
+        layout.properties = [
+            .padding: .numbers([4, 6, 8, 10]),
+            .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
+            .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+            .strokeWidth: .number(6),
+        ]
+        layout.children = .arranged([box("inside", [:])])
+        let renderer = arranged(layout, in: NSSize(width: 100, height: 60))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("inside"))?.frame,
+            NSRect(x: 4, y: 6, width: 88, height: 44))
+
+        let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("layout"))))
+        let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
+        let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
+        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")
+        XCTAssertLessThan(outline.blueComponent, 0.1)
+        XCTAssertGreaterThan(within.blueComponent, 0.9, "the background beyond the stroke's width")
+        XCTAssertLessThan(within.redComponent, 0.1)
+    }
+
     /// A border keeps its padding between its outline and what it holds, and
     /// strokes its outline in its stroke's colour, as wide as its stroke width.
     @MainActor

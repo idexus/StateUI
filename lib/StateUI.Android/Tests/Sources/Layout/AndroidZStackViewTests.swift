@@ -33,6 +33,8 @@ final class AndroidZStackViewTests: XCTestCase {
             ("testAPlacementRunStandsAndDrawsEachChildAsItSays", testAPlacementRunStandsAndDrawsEachChildAsItSays),
             ("testAZStackHoldsItsChildrenInTheDrawingOrder", testAZStackHoldsItsChildrenInTheDrawingOrder),
             ("testAZStacksPaddingNarrowsItsRoom", testAZStacksPaddingNarrowsItsRoom),
+            ("testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips", testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips),
+            ("testALayoutWithAPlainColourKeepsAPlainBackground", testALayoutWithAPlainColourKeepsAPlainBackground),
         ]
     }
 
@@ -147,6 +149,67 @@ final class AndroidZStackViewTests: XCTestCase {
             XCTAssertEqual(boxes.count, 2)
             XCTAssertTrue(boxes[0].frame == (20, 10, 1080 - 60, 1920 - 40), "\(boxes[0].frame)")
             XCTAssertTrue(boxes[1].frame == (40, 50, 60, 80), "\(boxes[1].frame)")
+        }
+    }
+
+    /// A layout paints its own box - the fill inside the outline, a rounded corner left empty - and cuts what it
+    /// holds to that shape where it clips, and not where it does not.
+    func testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    ZStack { ColorBox(.red) }
+                        .padding(10)
+                        .background(Color("#00FF00"))
+                        .stroke(Color("#0000FF"))
+                        .strokeWidth(2)
+                        .shape(.roundedRectangle(20))
+                        .clipsContent(true)
+                        .width(100)
+                        .height(80)
+                        .horizontalAlignment(.start)
+                    ZStack { ColorBox(.red) }
+                        .shape(.roundedRectangle(20))
+                        .width(100)
+                        .height(80)
+                        .horizontalAlignment(.start)
+                }
+            }
+            host.layOut()
+
+            let layouts = host.views(AndroidZStackView.self)
+            let boxes = host.views(AndroidColorBoxView.self)
+            XCTAssertEqual(layouts.count, 2)
+            guard layouts.count == 2 else { return }
+            XCTAssertTrue(layouts[0].frame == (0, 0, 200, 160), "\(layouts[0].frame)")
+            XCTAssertTrue(boxes[0].frame == (20, 20, 160, 120), "\(boxes[0].frame)")
+
+            let drawn = layouts[0].pixels(at: [(100, 1), (100, 10), (1, 1), (100, 80)])
+            XCTAssertEqual(
+                drawn, [0xFF00_00FF, 0xFF00_FF00, 0, 0xFFFF_0000], drawn.map { String($0, radix: 16) }.description)
+            XCTAssertTrue(Java.callBool(layouts[0].reference, TestJava.getClipToOutline))
+            XCTAssertEqual(layouts[0].outlineRadius, 40, accuracy: 0.01)
+            XCTAssertFalse(
+                Java.callBool(layouts[1].reference, TestJava.getClipToOutline), "a layout that does not clip cuts nothing")
+        }
+    }
+
+    /// A layout with a plain colour and no outline, shape or cut keeps a plain background, and clips nothing.
+    func testALayoutWithAPlainColourKeepsAPlainBackground() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                ZStack { ColorBox(.red).width(10).height(10) }
+                    .background(Color("#00FF00"))
+                    .width(100)
+                    .height(80)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let layout = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+            XCTAssertEqual(layout.pixels(at: [(100, 100)]), [0xFF00_FF00])
+            XCTAssertFalse(Java.callBool(layout.reference, TestJava.getClipToOutline))
         }
     }
 }
