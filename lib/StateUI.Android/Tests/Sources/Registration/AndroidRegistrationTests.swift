@@ -20,7 +20,7 @@ final class AndroidRegistrationTests: XCTestCase {
             XCTAssertEqual(
                 realization.elements,
                 [
-                    "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "ColorBox", "Grid", "HStack", "Image", "Label",
+                    "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "CheckBox", "ColorBox", "Grid", "HStack", "Image", "Label",
                     "ProgressBar", "ScrollView", "Slider", "Stepper",
                     "Switch", "TextField", "VStack",
                 ])
@@ -28,6 +28,8 @@ final class AndroidRegistrationTests: XCTestCase {
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
                 HostRealizedMember(element: "Label", owner: "TextElement", member: "text"),
                 HostRealizedMember(element: "Switch", owner: "Switch", member: "toggled"),
+                HostRealizedMember(element: "CheckBox", owner: "CheckBox", member: "toggled"),
+                HostRealizedMember(element: "CheckBox", owner: "TintElement", member: "tint"),
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "dragCompleted"),
                 HostRealizedMember(element: "TextField", owner: "InputView", member: "textChanged"),

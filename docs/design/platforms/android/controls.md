@@ -94,6 +94,16 @@ cut or truncated is one line and only a truncated one says so; otherwise the
 label wraps, to at most as many lines as it allows. A stated width is the
 width a view is measured at, so wrapped words are as tall as they will stand.
 
+## A button's size
+
+A button is as big as its words and its padding. Android's theme gives every
+button a least size of its own - 88 by 48 density-independent pixels - which
+would widen a short caption and push a row of buttons past a phone's edge;
+the host takes that floor away as it makes the button, and a least size is
+then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
+stepper's buttons keep a square of 48 points, the room a finger needs, as
+the stepper's own choice.
+
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.

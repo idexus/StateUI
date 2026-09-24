@@ -34,6 +34,10 @@ import PackageDescription
 // - through the definition below - completes the code inside `#if APPKIT`.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 
+// And the same for Platforms/Android, the Android Views head:
+// .scripts/Android/build-swift.sh sets STATEUI_ANDROID.
+let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
+
 // What every module of the application is compiled with. In an AppKit build
 // that includes APPKIT, the condition Swift written for that host alone stands
 // under - defined HERE rather than by a compiler flag, so the one variable
@@ -42,6 +46,7 @@ let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasAndroidHead ? [.define("ANDROID")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -114,6 +119,31 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasAndroidHead {
+    // The same gallery module, loaded by Android as a library: its
+    // JNI_OnLoad names the application to the Android Views host.
+    products.append(
+        .library(
+            name: "GalleryAndroid",
+            type: .dynamic,
+            targets: ["GalleryAndroid"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIAndroid", path: "../../lib/StateUI.Android"))
+
+    targets.append(
+        .target(
+            name: "GalleryAndroid",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIAndroid", package: "StateUIAndroid"),
+            ],
+            path: "Platforms/Android/Swift",
             swiftSettings: settings
         ))
 }

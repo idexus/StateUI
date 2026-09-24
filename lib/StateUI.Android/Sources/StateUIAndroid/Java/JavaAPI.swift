@@ -119,6 +119,13 @@ enum JavaAPI {
     static let setOnCheckedChangeListener = Java.method(
         compoundButton, "setOnCheckedChangeListener", "(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V")
 
+    static let setButtonTintList = Java.method(
+        compoundButton, "setButtonTintList", "(Landroid/content/res/ColorStateList;)V")
+    static let getButtonTintList = Java.method(
+        compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
+    static let checkBox = Java.findClass("android/widget/CheckBox")
+    static let newCheckBox = Java.method(checkBox, "<init>", "(Landroid/content/Context;)V")
+
     static let switchView = Java.findClass("android/widget/Switch")
     static let newSwitch = Java.method(switchView, "<init>", "(Landroid/content/Context;)V")
 
@@ -167,6 +174,7 @@ enum JavaAPI {
     static let bitmap = Java.findClass("android/graphics/Bitmap")
     static let bitmapWidth = Java.method(bitmap, "getWidth", "()I")
     static let bitmapHeight = Java.method(bitmap, "getHeight", "()I")
+    static let setBitmapDensity = Java.method(bitmap, "setDensity", "(I)V")
     static let bitmapFactory = Java.findClass("android/graphics/BitmapFactory")
     static let decodeStream = Java.staticMethod(
         bitmapFactory, "decodeStream",
@@ -176,11 +184,17 @@ enum JavaAPI {
     static let inDensity = Java.field(bitmapOptions, "inDensity", "I")
     static let inTargetDensity = Java.field(bitmapOptions, "inTargetDensity", "I")
     static let inScaled = Java.field(bitmapOptions, "inScaled", "Z")
+    static let inSampleSize = Java.field(bitmapOptions, "inSampleSize", "I")
+    static let inJustDecodeBounds = Java.field(bitmapOptions, "inJustDecodeBounds", "Z")
+    static let outWidth = Java.field(bitmapOptions, "outWidth", "I")
+    static let outHeight = Java.field(bitmapOptions, "outHeight", "I")
 
     static let linearLayout = Java.findClass("android/widget/LinearLayout")
     static let newLinearLayout = Java.method(linearLayout, "<init>", "(Landroid/content/Context;)V")
     static let setMinWidth = Java.method(textView, "setMinWidth", "(I)V")
     static let setMinimumWidth = Java.method(view, "setMinimumWidth", "(I)V")
+    static let setMinHeight = Java.method(textView, "setMinHeight", "(I)V")
+    static let setMinimumHeight = Java.method(view, "setMinimumHeight", "(I)V")
     static let setClickable = Java.method(view, "setClickable", "(Z)V")
 
     // MARK: - android.text
@@ -207,6 +221,7 @@ enum JavaAPI {
 
     static let contextClass = Java.findClass("android/content/Context")
     static let getResources = Java.method(contextClass, "getResources", "()Landroid/content/res/Resources;")
+    static let getClassLoader = Java.method(contextClass, "getClassLoader", "()Ljava/lang/ClassLoader;")
     static let resources = Java.findClass("android/content/res/Resources")
     static let getConfiguration = Java.method(
         resources, "getConfiguration", "()Landroid/content/res/Configuration;")

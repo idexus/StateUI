@@ -85,7 +85,7 @@ enum JavaNatives {
         }
         let toggled: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, on in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidSwitchView)?.onToggled?(on != 0)
+                (AndroidView.find(number) as? AndroidToggleView)?.onToggled?(on != 0)
             }
         }
         let moved: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, progress in
@@ -201,6 +201,9 @@ enum JavaNatives {
         MainActor.assumeIsolated {
             AndroidStandardStreams.redirect()
             Java.env = env
+            if Java.classLoader == nil, let loader = Java.callObject(activity, JavaAPI.getClassLoader) {
+                Java.classLoader = JavaObject(loader)
+            }
             AndroidRenderer.start(
                 context: JavaObject(Java.jni.NewLocalRef(env, activity)!),
                 root: JavaObject(Java.jni.NewLocalRef(env, root)!),

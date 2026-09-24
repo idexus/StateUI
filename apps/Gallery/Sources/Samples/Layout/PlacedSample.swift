@@ -232,7 +232,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
-                // read: the switch on this row is the only thing here a build
+                // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
 
@@ -243,29 +243,30 @@ struct PlacedSample: SampleContent, ExampleContent {
                 Button("Next")
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
-
-                SwitchRow(
-                    "Turn by panning",
-                    Binding(
-                        get: { grabbing },
-                        set: { taking in
-                            // ONE NUMBER AT EACH HANDOVER: the two values are
-                            // folded into the scroll alone, so whichever input
-                            // comes next starts from where the ring stands -
-                            // and the scroller, built afresh by the swap, is
-                            // aimed at that card again by the opening aim.
-                            let standing = at.rounded() * 90
-
-                            dragged = 0
-                            $scrolled.journey.snap(to: Point(standing, 0))
-                            aim = standing
-                            opened = taking
-                            grabbing = taking
-                        }))
             }
             .gridRow(1)
+
+            SwitchRow(
+                "Turn by panning",
+                Binding(
+                    get: { grabbing },
+                    set: { taking in
+                        // ONE NUMBER AT EACH HANDOVER: the two values are
+                        // folded into the scroll alone, so whichever input
+                        // comes next starts from where the ring stands -
+                        // and the scroller, built afresh by the swap, is
+                        // aimed at that card again by the opening aim.
+                        let standing = at.rounded() * 90
+
+                        dragged = 0
+                        $scrolled.journey.snap(to: Point(standing, 0))
+                        aim = standing
+                        opened = taking
+                        grabbing = taking
+                    }))
+            .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .auto, .auto)
 
         // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
         // ask for it again. It runs on the display's own frames, reads those
@@ -444,7 +445,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
-                // read: the switch on this row is the only thing here a build
+                // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
                     .margin(4, 0)
@@ -458,32 +459,33 @@ struct PlacedSample: SampleContent, ExampleContent {
                     .margin(4, 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
-
-                SwitchRow(
-                    "Turn by panning",
-                    Binding(
-                        get: { grabbing },
-                        set: { taking in
-                            // ONE NUMBER AT EACH HANDOVER: the two values are
-                            // folded into the scroll alone, so whichever input
-                            // comes next starts from where the ring stands -
-                            // and the scroller, built afresh by the swap,
-                            // is aimed at that card again by the opening aim.
-                            let standing = at.rounded() * Self.reach
-
-                            dragged = 0
-                            $scrolled.journey.snap(to: Point(standing, 0))
-                            aim = standing
-                            opened = taking
-                            grabbing = taking
-                        }))
-                    .margin(4, 0)
             }
             .spacing(8)
             .horizontalAlignment(.center)
             .gridRow(1)
+
+            SwitchRow(
+                "Turn by panning",
+                Binding(
+                    get: { grabbing },
+                    set: { taking in
+                        // ONE NUMBER AT EACH HANDOVER: the two values are
+                        // folded into the scroll alone, so whichever input
+                        // comes next starts from where the ring stands -
+                        // and the scroller, built afresh by the swap,
+                        // is aimed at that card again by the opening aim.
+                        let standing = at.rounded() * Self.reach
+
+                        dragged = 0
+                        $scrolled.journey.snap(to: Point(standing, 0))
+                        aim = standing
+                        opened = taking
+                        grabbing = taking
+                    }))
+            .horizontalAlignment(.center)
+            .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .auto, .auto)
         .rowSpacing(10)
     }
 

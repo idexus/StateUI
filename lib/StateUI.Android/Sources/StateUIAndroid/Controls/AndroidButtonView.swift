@@ -13,8 +13,18 @@ final class AndroidButtonView: AndroidTextView {
     init() {
         super.init { _ in Java.new(JavaAPI.button, JavaAPI.newButton, .object(AndroidRenderer.context)) }
         Java.call(reference, JavaAPI.setAllCaps, .bool(false))
+        setLeastSize(width: 0, height: 0)
 
         listen(JavaAPI.setOnClickListener)
+    }
+
+    /// The least pixels the button takes, in place of its theme's: a button is its words and its padding.
+    /// Design: docs/design/platforms/android/controls.md#a-buttons-size
+    func setLeastSize(width: Int32, height: Int32) {
+        Java.call(reference, JavaAPI.setMinWidth, .int(width))
+        Java.call(reference, JavaAPI.setMinimumWidth, .int(width))
+        Java.call(reference, JavaAPI.setMinHeight, .int(height))
+        Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
     /// A click is the button's own event, and a tap as any view's.

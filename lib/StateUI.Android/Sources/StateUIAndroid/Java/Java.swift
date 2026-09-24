@@ -41,15 +41,38 @@ enum Java {
         AndroidLog.error("a Java exception in \(call())")
     }
 
+    /// The application's class loader, kept as the host starts: it finds the application's classes where no
+    /// Java frame stands on the stack to say whose they are.
+    static var classLoader: JavaObject?
+
     /// A class, held for the life of the process.
+    /// Design: docs/design/platforms/android/jni.md#finding-a-class
     static func findClass(_ name: String) -> jclass {
-        guard let local = jni.FindClass(env, name) else {
+        guard let local = jni.FindClass(env, name) ?? loadClass(name) else {
             check("FindClass \(name)")
             fatalError("StateUI Android: the class \(name) is missing from the application")
         }
 
         defer { jni.DeleteLocalRef(env, local) }
         return jni.NewGlobalRef(env, local)!
+    }
+
+    /// `name` through the application's class loader, where `FindClass` looked in the system's.
+    private static func loadClass(_ name: String) -> jclass? {
+        guard let classLoader else { return nil }
+        jni.ExceptionClear(env)
+
+        let loader = jni.FindClass(env, "java/lang/ClassLoader")
+        let loadClass = jni.GetMethodID(env, loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;")
+        jni.DeleteLocalRef(env, loader)
+        let dotted = string(String(name.map { $0 == "/" ? "." : $0 }))
+        defer { release(local: dotted) }
+        let arguments = [jvalue.object(dotted)]
+        return withExtendedLifetime(classLoader) {
+            arguments.withUnsafeBufferPointer {
+                jni.CallObjectMethodA(env, classLoader.reference, loadClass, $0.baseAddress)
+            }
+        }
     }
 
     /// An instance method of `owner`.
@@ -183,6 +206,11 @@ enum Java {
     /// Reads a float field.
     static func float(_ object: jobject, _ field: jfieldID) -> Float {
         jni.GetFloatField(env, object, field)
+    }
+
+    /// Reads an int field.
+    static func int(_ object: jobject, _ field: jfieldID) -> Int32 {
+        jni.GetIntField(env, object, field)
     }
 
     /// Writes an int field.

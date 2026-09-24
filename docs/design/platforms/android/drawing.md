@@ -57,13 +57,27 @@ A picture crosses as a file name, and the files are the application's
 times over, in sRGB, as `<name>@3x.png`, and copies every other picture as it
 is, into the APK's `images` assets; only what changed is drawn again. At run
 time a name finds its drawing three times over first, then a file of its
-own name, which is kept at one pixel a point. Each is read once, scaled to
-the display's density as it is read, and kept for the life of the process.
+own name, which is kept at one pixel a point.
 
-An image is measured at its picture's own size in points: the bitmap is
-already at the display's density, and Android's own measure would scale it
-a second time. The four aspects are Android's four scale types, and an image
-cuts what it draws to its bounds, since a StateUI layout does not.
+An image is measured at its picture's own size in points, read from the
+file's header alone: the size is at the display's density, and Android's own
+measure would scale it a second time. The four aspects are Android's four
+scale types, and an image cuts what it draws to its bounds, since a StateUI
+layout does not.
+
+A picture's pixels are read when its view is placed, at the fewest the view
+needs: one pixel in two, four, up to sixteen across and down, while that
+still covers the view, scaled to the display's density as it is read. A card
+showing a picture three times smaller than it was drawn holds a quarter of
+its pixels, in memory and on the GPU alike. A StateUI layout measures a
+height it has not settled yet, so the size a view is placed at is the one
+that decides; a size given whole by a parent of Android's decides as well.
+The bitmap says the density a whole one would have, so Android draws it at
+the picture's own size. It is read again only for more pixels, never for
+fewer, so a size in motion does not read it every frame, and a picture
+shown centred, at its own size, is read whole. Views showing the same
+picture at the same thinning share one bitmap, and the last to leave lets it
+go; only a bar's and a tab's icons are kept for as long as the host runs.
 
 A colour box has nothing to show but its colour: it takes the room its layout
 gives it and asks for none of its own.

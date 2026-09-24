@@ -58,6 +58,14 @@ enum TestJava {
     static let getClipToPadding = Java.method(JavaAPI.viewGroup, "getClipToPadding", "()Z")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
+    static let getDefaultColor = Java.method(JavaAPI.colorStateList, "getDefaultColor", "()I")
+    static let getLayout = Java.method(JavaAPI.textView, "getLayout", "()Landroid/text/Layout;")
+    static let textLayout = Java.findClass("android/text/Layout")
+    static let getLineWidth = Java.method(textLayout, "getLineWidth", "(I)F")
+    static let getLayoutHeight = Java.method(textLayout, "getHeight", "()I")
+    static let getDrawable = Java.method(JavaAPI.imageView, "getDrawable", "()Landroid/graphics/drawable/Drawable;")
+    static let bitmapDrawable = Java.findClass("android/graphics/drawable/BitmapDrawable")
+    static let getBitmap = Java.method(bitmapDrawable, "getBitmap", "()Landroid/graphics/Bitmap;")
     static let editable = Java.findClass("android/text/Editable")
     static let insert = Java.method(editable, "insert", "(ILjava/lang/CharSequence;)Landroid/text/Editable;")
     static let motionEvent = Java.findClass("android/view/MotionEvent")
@@ -249,6 +257,16 @@ extension AndroidView {
             let canvas = Java.new(TestJava.canvas, TestJava.newCanvas, .object(bitmap))
             withExtendedLifetime(canvas) { Java.call(reference, TestJava.draw, .object(canvas.reference)) }
             return points.map { UInt32(bitPattern: Java.callInt(bitmap, TestJava.getPixel, .int($0.x), .int($0.y))) }
+        }
+    }
+
+    /// The pixels of the bitmap an image view holds; nil while it holds none.
+    var bitmapSize: (width: Int32, height: Int32)? {
+        Java.frame {
+            guard let drawable = Java.callObject(reference, TestJava.getDrawable),
+                let bitmap = Java.callObject(drawable, TestJava.getBitmap)
+            else { return nil }
+            return (Java.callInt(bitmap, JavaAPI.bitmapWidth), Java.callInt(bitmap, JavaAPI.bitmapHeight))
         }
     }
 

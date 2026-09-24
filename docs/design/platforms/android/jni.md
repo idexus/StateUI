@@ -26,6 +26,15 @@ makes, so it runs inside its own frame of local references
 (`PushLocalFrame`/`PopLocalFrame`). A string made for one call is
 freed right after it, so a render that writes many never fills a frame.
 
+## Finding a class
+
+`FindClass` looks in the class loader of the Java method below it on the
+stack. Called from a turn the looper runs, or from a frame's callback, there
+is none of the application's, and it looks in the system's, which knows no
+class of the host's or the application's. The host keeps the application's
+class loader as it starts, and a class `FindClass` cannot find is asked of
+it; so a class looked up for the first time late, from any turn, is found.
+
 ## Global references
 
 A view Swift keeps is held by a global reference, which is strong: the Java

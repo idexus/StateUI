@@ -7,9 +7,10 @@ library: it applies the typed sparse patches of the
 Wire encoding stands between them.
 
 It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
-`Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,
+`CheckBox`, `Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,
 `ColorBox`, `VStack`, `HStack`, `Grid`, `AbsoluteLayout`, `Border` and
-`ScrollView` - over the runtime every host shares, and
+`ScrollView` - and the pages of a `NavigationStack`, a `SplitView` and a
+`TabbedView`, over the runtime every host shares, and
 shows any other control's name in red where the control belongs, so a gap is
 visible rather than silent.
 
@@ -76,6 +77,7 @@ nothing else: the library itself is built as every host but MAUI builds it.
 ```bash
 .scripts/Android/devices.sh list
 .scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
 
 `run-app.sh` builds the application's Swift for the device's ABI alone, then

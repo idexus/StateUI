@@ -28,8 +28,7 @@ final class AndroidStepperView: AndroidView {
         super.init { _ in Java.new(JavaAPI.linearLayout, JavaAPI.newLinearLayout, .object(AndroidRenderer.context)) }
         for (button, caption) in [(down, "−"), (up, "+")] {
             button.setText(caption)
-            Java.call(button.reference, JavaAPI.setMinWidth, .int(pixels(48)))
-            Java.call(button.reference, JavaAPI.setMinimumWidth, .int(pixels(48)))
+            button.setLeastSize(width: pixels(48), height: pixels(48))
             Java.call(reference, JavaAPI.addView, .object(button.reference), .int(-2), .int(-2))
         }
         down.onClicked = { [weak self] in self?.stepped(by: -1) }
