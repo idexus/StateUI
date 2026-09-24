@@ -130,7 +130,8 @@ extension VisualElementProperties {
     /// The same, vertically: 0 the top edge, 1 the bottom.
     public func pivotY(_ value: Double) -> Modified { setValue(VisualElementContract.pivotY, value) }
 
-    /// Who is drawn on top where views overlap, higher being nearer the front.
+    /// Who is drawn on top where a grid's or an absolute layout's children overlap,
+    /// higher being nearer the front; equals are drawn in the order written.
     public func zIndex(_ value: Int) -> Modified { setValue(VisualElementContract.zIndex, value) }
 }
 

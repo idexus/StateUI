@@ -137,7 +137,7 @@ public enum VisualElementContract: Contract {
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
 
-    /// Which of its siblings the element is drawn over and under.
+    /// Which of its overlapping siblings in a grid or an absolute layout the element is drawn over.
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.

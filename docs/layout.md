@@ -46,8 +46,9 @@ left to right: a row fills from the right, a view aligned to `.start` stands
 at the right, a grid's first column is the rightmost, and padding and margins
 swap sides. A view left at `.inherited`, the default, takes its parent's
 direction, and the top of the tree the direction the user's language is
-written in. `zIndex` orders overlapping siblings without changing their layout
-positions.
+written in. `zIndex` orders the overlapping children of a `Grid` or an
+`AbsoluteLayout` without changing their places: a higher one is drawn over a
+lower one, and children of the same `zIndex` in the order they are written.
 
 ## Visual transforms
 

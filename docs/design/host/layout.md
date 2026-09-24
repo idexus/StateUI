@@ -93,6 +93,17 @@ room left beside the child, so a position of one puts the child against the
 far edge. The layout's natural size is the room its children's bounds reach at
 their natural sizes, whatever width it is offered.
 
+## Drawing order
+
+A grid's and an absolute layout's children can overlap, so their order is
+the order they are drawn in: by `zIndex`, lower first, and children of the same
+`zIndex` in the order the view wrote them. The mounted element keeps
+`children` in that order and remembers the order written, so a sparse change
+or a bound `zIndex` moving in a frame restacks them and arranges the layout
+once; a runtime hands `children` to its toolkit in that order and needs no
+`zIndex` of its own. A stack's children never overlap and keep the order
+written.
+
 ## One child
 
 A page, a border or a pane holds one child within its padding. The child is

@@ -16,8 +16,12 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order.
+    /// The elements this one holds, in order - a grid's and a layered layout's in the order they are
+    /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
+
+    /// Each child's place in the order the last arrangement wrote them.
+    private var writingOrder: [ElementId: Int] = [:]
 
     /// The rows a recycling layout keeps for the next row of the same shape.
     public private(set) var recycledChildren: [MountedElement] = []
@@ -167,6 +171,7 @@
             break
 
         case .arranged(let childPatches):
+            writingOrder = Dictionary(childPatches.enumerated().map { ($1.id, $0) }) { first, _ in first }
             arrange(childPatches, tree: tree, adopting: adopting)
 
         case .changed(let childPatches):
@@ -202,6 +207,7 @@
                     : patch.transitions[property]?.motion)
         }
 
+        restack()
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || children.contains { $0.framesRead }
         native.applied(changed: changed, wasDescribed: described)
@@ -264,6 +270,29 @@
         }
         leave(before)
     }
+
+    /// Puts a grid's or a layered layout's children in the order they are drawn: by `zIndex`, ties in
+    /// the order written. Answers whether the order moved.
+    /// Design: docs/design/host/layout.md#drawing-order
+    @discardableResult
+    private func restack() -> Bool {
+        guard Self.layered.contains(type), children.count > 1 else { return false }
+
+        let drawnBefore = { (lhs: MountedElement, rhs: MountedElement) -> Bool in
+            let (lower, upper) = (lhs.zIndex, rhs.zIndex)
+            if lower != upper { return lower < upper }
+            return (self.writingOrder[lhs.id] ?? .max) < (self.writingOrder[rhs.id] ?? .max)
+        }
+        guard zip(children, children.dropFirst()).contains(where: { drawnBefore($1, $0) }) else { return false }
+        children.sort(by: drawnBefore)
+        return true
+    }
+
+    /// Where this element is drawn among its overlapping siblings, higher nearer the front.
+    private var zIndex: Double { number(.zIndex) ?? 0 }
+
+    /// The layouts whose children can overlap, drawn in `zIndex` order: a grid and a layered layout.
+    private static let layered: Set<NodeType> = [.grid, .absoluteLayout]
 
     /// Detaches every one of `previous` that is no longer a child or a kept row.
     private func leave(_ previous: [MountedElement]) {
@@ -388,7 +417,8 @@
         }
 
         // A child's place is its parent's business; an element with no view passes it up.
-        if own.content || descendants.arrangement { native.arrangeChildren() }
+        let restacked = restack()
+        if own.content || descendants.arrangement || restacked { native.arrangeChildren() }
         guard native.presentsView else { return own.union(descendants) }
         descendants.arrangement = false
         return own.union(descendants)

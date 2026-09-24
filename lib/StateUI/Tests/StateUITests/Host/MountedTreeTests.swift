@@ -179,6 +179,51 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
     }
 
+    /// A grid's children stand in the order they are drawn: by `zIndex`, ties in the order written. A
+    /// sparse change restacks them; a stack's children never overlap and keep the order written.
+    @MainActor
+    func testALayeredLayoutsChildrenStandInTheOrderTheyAreDrawn() {
+        let (tree, _) = Self.tree()
+        func layered(_ type: NodeType, _ children: [HostPatch]) -> HostPatch {
+            var layout = HostPatch(id: .manual("layout"), type: type)
+            layout.children = .arranged(children)
+            return layout
+        }
+        let children = [("a", 0.0), ("b", 2), ("c", 1), ("d", 0)].map(Self.layer)
+
+        tree.apply(layered(.grid, children), complete: true)
+        XCTAssertEqual(Self.names(tree.root?.children), ["a", "d", "c", "b"], "ties in the order written")
+
+        var sparse = HostPatch(id: .manual("layout"), type: .grid)
+        sparse.children = .changed([Self.layer("b", -1)])
+        tree.apply(sparse, complete: false)
+        XCTAssertEqual(Self.names(tree.root?.children), ["b", "a", "d", "c"])
+
+        tree.apply(layered(.vStack, children), complete: true)
+        XCTAssertEqual(Self.names(tree.root?.children), ["a", "b", "c", "d"], "a stack keeps the order written")
+    }
+
+    /// A bound `zIndex` restacks its grid in the frame that moved it, and arranges it once; a frame that
+    /// moves nothing leaves the order and the grid alone.
+    @MainActor
+    func testABoundZIndexRestacksItsLayoutInAFrame() {
+        let (tree, log) = Self.tree()
+        var raised = HostPatch(id: .manual("raised"), type: .label)
+        raised.driven = .replace([.zIndex: HostStateBinding(state: 700, mode: .out, kind: .plain)])
+        var grid = HostPatch(id: .manual("grid"), type: .grid)
+        grid.children = .arranged([raised, Self.layer("still", 1)])
+        tree.apply(grid, complete: true)
+        log.arranged.removeAll()
+
+        tree.present(states: [700: .lanes([5])], properties: [:])
+        XCTAssertEqual(Self.names(tree.root?.children), ["still", "raised"])
+        XCTAssertEqual(log.arranged, ["raised", "grid"])
+
+        log.arranged.removeAll()
+        tree.present(states: [700: .lanes([5])], properties: [:])
+        XCTAssertEqual(log.arranged, ["raised"], "the order did not move")
+    }
+
     /// Each element's `created` handler is taken once, in tree order; a window raises its own.
     @MainActor
     func testCreatedHandlersAreTakenOnceInTreeOrder() {
@@ -271,6 +316,20 @@ final class MountedTreeTests: XCTestCase {
         var stack = HostPatch(id: .manual(id), type: .vStack)
         stack.children = .arranged(children.map { HostPatch(id: .manual($0), type: .label) })
         return stack
+    }
+
+    private static func layer(_ id: String, _ zIndex: Double) -> HostPatch {
+        var label = HostPatch(id: .manual(id), type: .label)
+        label.properties[.zIndex] = .number(zIndex)
+        return label
+    }
+
+    @MainActor
+    private static func names(_ elements: [MountedElement]?) -> [String] {
+        (elements ?? []).map { element in
+            if case .manual(let name) = element.id { return name }
+            return "\(element.id)"
+        }
     }
 }
 
