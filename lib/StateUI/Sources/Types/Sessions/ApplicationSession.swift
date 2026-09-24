@@ -68,11 +68,6 @@ public final class ApplicationSession {
     /// Design: docs/design/types/sessions.md#kept-keys-are-declared
     @State public var persistentKeys: [PersistentKey] = []
 
-    /// Where the kept state lives: the platform's preferences, or a store the
-    /// application registered on the host side with `StateUIStores.Add`.
-    /// Written in `init` with the keys.
-    @State public var persistentStorage: PersistentStorage = .preferences
-
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {}
@@ -92,6 +87,5 @@ public final class ApplicationSession {
         styles = nil
         motion = .standard
         persistentKeys = []
-        persistentStorage = .preferences
     }
 }

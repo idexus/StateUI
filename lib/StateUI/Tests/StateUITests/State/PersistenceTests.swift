@@ -68,18 +68,6 @@ private struct KeepingApp: Application {
     var scene: any Scene { KeepingWindow() }
 }
 
-/// An application that keeps its settings somewhere of its own.
-private struct FiledApp: Application {
-    @Environment private var application: ApplicationSession
-
-    init() {
-        application.persistentStorage = PersistentStorage("Test.Json")
-        application.persistentKeys = [.loud]
-    }
-
-    var scene: any Scene { KeepingWindow() }
-}
-
 /// An application that keeps nothing, which is what most of them are.
 private struct PlainApp: Application {
     var scene: any Scene { KeepingWindow() }
@@ -366,22 +354,12 @@ final class PersistenceTests: XCTestCase {
 
     // MARK: - What the host is told
 
-    /// The host is told the store and every key with its kind, names in
-    /// full, before the first render - what it reads the kept values with.
-    func testTheHostIsToldTheStoreAndEveryKey() {
+    /// The host is told every key with its kind, names in full, before the
+    /// first render - what it reads the platform's settings store with.
+    func testTheHostIsToldEveryKey() {
         Renderer.shared.setApplication(KeepingApp())
 
-        XCTAssertEqual(StateUIHost.persistentStorage.name, "preferences")
         XCTAssertEqual(StateUIHost.persistentKeys, [.count, .name])
-    }
-
-    /// An application that keeps its state somewhere of its own says so - the
-    /// host resolves the name against what it has registered.
-    func testTheHostIsToldAStoreOfTheApplicationsOwn() {
-        Renderer.shared.setApplication(FiledApp())
-
-        XCTAssertEqual(StateUIHost.persistentStorage.name, "Test.Json")
-        XCTAssertEqual(StateUIHost.persistentKeys, [.loud])
     }
 
     /// An application that keeps nothing names no key, and the host then reads

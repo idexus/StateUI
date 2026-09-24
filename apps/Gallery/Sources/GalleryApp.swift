@@ -58,8 +58,7 @@ struct GalleryApp: Application {
         // is read one key at a time and offers no list of what it holds, so
         // this is the only way the host can have the values in memory before
         // the first view asks for one - which is why it is written HERE, as
-        // the application is made. Kept in the platform's own store, which is
-        // what an application that leaves `persistentStorage` alone says.
+        // the application is made. Kept in the platform's own settings store.
         application.persistentKeys = [.visits, .who, .shade]
     }
 

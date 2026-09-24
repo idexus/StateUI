@@ -443,11 +443,9 @@ final class AppKitSessionTests: XCTestCase {
             preferences.removePersistentDomain(forName: suite)
             PersistentStore.shared.forgetAll()
             StandardEnvironment.application.persistentKeys = []
-            StandardEnvironment.application.persistentStorage = .preferences
         }
         let key = PersistentKey("theme", of: String.self)
         let state = State(wrappedValue: "light", persistentKey: key)
-        StandardEnvironment.application.persistentStorage = .preferences
         StandardEnvironment.application.persistentKeys = [key]
         preferences.set("dark", forKey: key.name)
         let renderer = testRenderer(

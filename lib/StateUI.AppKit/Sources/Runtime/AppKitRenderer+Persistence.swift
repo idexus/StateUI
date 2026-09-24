@@ -8,15 +8,6 @@ import AppKit
 /// Kept values: read from the preferences before the first render, and saved.
 extension AppKitRenderer {
     func hydratePersistentState() {
-        guard core.persistentStorage == .preferences else {
-            if !core.persistentKeys.isEmpty {
-                NSLog(
-                    "StateUI AppKit: no store is registered as %@; kept state uses its declared values",
-                    core.persistentStorage.name)
-            }
-            return
-        }
-
         var restored: [String: HostValue] = [:]
 
         for key in core.persistentKeys {
@@ -38,8 +29,7 @@ extension AppKitRenderer {
     }
 
     func savePersistent(_ call: HostActCall) {
-        guard core.persistentStorage == .preferences,
-              call.arguments.count >= 2,
+        guard call.arguments.count >= 2,
               let name = call.arguments[0].name,
               let key = core.persistentKeys.first(where: { $0.name == name })
         else { return }

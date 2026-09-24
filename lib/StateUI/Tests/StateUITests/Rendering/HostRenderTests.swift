@@ -186,14 +186,11 @@ final class HostRenderTests: XCTestCase {
         defer {
             PersistentStore.shared.forgetAll()
             StandardEnvironment.application.persistentKeys = []
-            StandardEnvironment.application.persistentStorage = .preferences
         }
         let key = PersistentKey("host.theme", of: String.self)
         let state = State(wrappedValue: "light", persistentKey: key)
-        StandardEnvironment.application.persistentStorage = .preferences
         StandardEnvironment.application.persistentKeys = [key]
 
-        XCTAssertEqual(StateUIHost.persistentStorage.name, "preferences")
         XCTAssertEqual(StateUIHost.persistentKeys.map(\.name), ["host.theme"])
 
         StateUIHost.restorePersistent(["host.theme": .string("dark")])

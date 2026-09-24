@@ -595,7 +595,7 @@ final class SceneTests: XCTestCase {
         // What each kind of type is told through its session, by the names it
         // could once answer them under.
         let held: [(kind: String, names: [String])] = [
-            ("Application", ["styles", "motion", "persistentKeys", "persistentStorage"]),
+            ("Application", ["styles", "motion", "persistentKeys"]),
             ("Window", [
                 "title", "x", "y", "width", "height",
                 "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",

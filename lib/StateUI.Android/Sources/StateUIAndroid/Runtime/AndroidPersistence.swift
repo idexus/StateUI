@@ -12,7 +12,7 @@ enum AndroidPersistence {
     /// Hands the core every kept value there is, before the first render reads one.
     static func restore(into core: CoreLink, context: jobject) {
         let keys = core.persistentKeys
-        guard core.persistentStorage == .preferences, !keys.isEmpty else { return }
+        guard !keys.isEmpty else { return }
 
         let words: [String?] = Java.frame {
             let names = Java.array(of: JavaAPI.string, keys.map { Java.string($0.name) })
@@ -40,7 +40,7 @@ enum AndroidPersistence {
 
     /// Keeps a key's new value, as the act `persistValue` carries it.
     static func keep(_ call: HostActCall, core: CoreLink, context: jobject) {
-        guard core.persistentStorage == .preferences, call.arguments.count >= 2,
+        guard call.arguments.count >= 2,
               let name = call.arguments[0].name,
               let key = core.persistentKeys.first(where: { $0.name == name })
         else { return }

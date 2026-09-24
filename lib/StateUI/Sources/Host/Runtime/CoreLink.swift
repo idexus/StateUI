@@ -168,10 +168,7 @@
         StateUIHost.connectScene(restoring: values)
     }
 
-    /// The store the application keeps its values in.
-    public var persistentStorage: PersistentStorage { StateUIHost.persistentStorage }
-
-    /// The keys read from that store before the first render.
+    /// The keys read from the platform's settings store before the first render.
     public var persistentKeys: [PersistentKey] { StateUIHost.persistentKeys }
 
     /// Hydrates the kept values found in the store.

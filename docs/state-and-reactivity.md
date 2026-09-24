@@ -343,11 +343,10 @@ holding the last value. A persistent write is still drained when no body reads
 the state; persistence does not depend on description invalidation. Writing the
 same value also schedules a save because the host store may not hold it yet.
 
-`ApplicationSession.persistentStorage` defaults to `.preferences`, the host's
-native settings store. `PersistentStorage("name")` selects a host extension
-point with that name; it is usable only when the active host provides it. No
-host provides a named store yet: AppKit and Android keep the declared values
-and say so in their log.
+Kept state lives in the platform's own settings store - `UserDefaults` on
+AppKit, `SharedPreferences` on Android. An application that keeps something
+in a file or a database of its own reads and writes it in its own code and
+hands the values to ordinary `@State`.
 
 ## State kept with a scene
 

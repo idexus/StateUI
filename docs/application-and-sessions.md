@@ -45,7 +45,6 @@ struct HomePage: ContentView {
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
 | `persistentKeys` | state keys hydrated before the first description |
-| `persistentStorage` | the selected host storage |
 | `openScene()` | asks for another independent scene session |
 
 Configuration needed before the first view is built belongs in the

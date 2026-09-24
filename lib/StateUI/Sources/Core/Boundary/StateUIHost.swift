@@ -90,11 +90,6 @@
         StandardEnvironment.application.phase = phase
     }
 
-    /// The platform store selected by the registered application.
-    public static var persistentStorage: PersistentStorage {
-        StandardEnvironment.application.persistentStorage
-    }
-
     /// The typed keys the host reads before the first application render.
     public static var persistentKeys: [PersistentKey] {
         StandardEnvironment.application.persistentKeys

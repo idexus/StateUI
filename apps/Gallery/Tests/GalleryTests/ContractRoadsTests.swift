@@ -140,6 +140,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = SwipeAction("Delete")"#,
             contract: #"_ = MenuItem("Delete")"#),
         Road(
+            name: "the withdrawn named store",
+            removed: #"_ = PersistentStorage("Notes.Json")"#,
+            contract: #"_ = PersistentKey("notes.draft", of: String.self)"#),
+        Road(
             name: "the withdrawn RefreshView",
             removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
             contract: #"_ = ScrollView { Label("Rows") }"#),

@@ -169,33 +169,6 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
     public var description: String { name }
 }
 
-/// WHERE kept state is kept.
-///
-/// An application says nothing and gets `.preferences`, the platform's own
-/// settings store. Naming any other store names one the host registered under
-/// that name, which is how an application keeps its state somewhere of its
-/// own without this side knowing what a file is. Written into the
-/// application's session as it is made:
-///
-///     application.persistentStorage = PersistentStorage("Gallery.Json")
-public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
-    /// The store's name - what the host resolves it by.
-    public let name: String
-
-    /// A store by name - one the application registered on the host side.
-    /// - Parameter name: the name it was registered under.
-    public init(_ name: String) {
-        self.name = name
-    }
-
-    /// The platform's own settings store, and the answer an application that
-    /// says nothing gets.
-    public static let preferences = PersistentStorage("preferences")
-
-    /// The name, so an interpolated diagnostic prints it plainly.
-    public var description: String { name }
-}
-
 /// Where kept state lives on this side: what the host hydrated, the storage for
 /// each key, and the keys waiting to be saved. Behind its own lock.
 final class PersistentStore: @unchecked Sendable {
