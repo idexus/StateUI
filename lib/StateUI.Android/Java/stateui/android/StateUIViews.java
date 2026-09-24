@@ -5,6 +5,7 @@ package stateui.android;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -125,6 +126,17 @@ final class StateUIViews {
             if (identifier != null) info.setViewIdResourceName(identifier);
             if (hint != null) info.setHintText(hint);
         }
+    }
+
+    /**
+     * A bar's or a tab's picture at Android's icon size: 24 dp tall, as wide as its shape makes it, whatever
+     * size the picture is drawn at elsewhere.
+     */
+    static BitmapDrawable glyph(Resources resources, Bitmap picture) {
+        BitmapDrawable glyph = new BitmapDrawable(resources, picture);
+        float tall = 24 * resources.getDisplayMetrics().density;
+        glyph.setTargetDensity(Math.round(picture.getDensity() * tall / Math.max(1, picture.getHeight())));
+        return glyph;
     }
 
     /** How opaque the theme draws a disabled control. */

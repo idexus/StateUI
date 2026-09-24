@@ -44,7 +44,7 @@ final class StateUITabs extends LinearLayout implements View.OnClickListener {
             int tint = index == chosen ? chosenColor : color;
             if (tint != 0) tab.setTextColor(tint);
             if (pictures[index] != null) {
-                BitmapDrawable picture = new BitmapDrawable(getResources(), pictures[index]);
+                BitmapDrawable picture = StateUIViews.glyph(getResources(), pictures[index]);
                 tab.setCompoundDrawablesWithIntrinsicBounds(null, picture, null, null);
                 tab.setCompoundDrawablePadding((int) (2 * density));
                 if (tint != 0) tab.setCompoundDrawableTintList(ColorStateList.valueOf(tint));

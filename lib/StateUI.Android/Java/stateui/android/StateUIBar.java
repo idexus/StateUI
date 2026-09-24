@@ -6,7 +6,6 @@ package stateui.android;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.Menu;
@@ -72,7 +71,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
             attributes.recycle();
             if (icon != null && tint != 0) icon.mutate().setTint(tint);
         } else if (kind == SIDEBAR && picture != null) {
-            icon = new BitmapDrawable(getResources(), picture);
+            icon = StateUIViews.glyph(getResources(), picture);
         }
         setNavigationIcon(icon);
         setNavigationContentDescription(icon == null ? null : description);

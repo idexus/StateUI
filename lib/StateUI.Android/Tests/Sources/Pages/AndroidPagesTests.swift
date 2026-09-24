@@ -15,6 +15,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
+            ("testATabsAndAnActionsPicturesStandAtTheIconSize", testATabsAndAnActionsPicturesStandAtTheIconSize),
             ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
@@ -227,6 +228,33 @@ extension AndroidPagesTests {
             host.pump()
             XCTAssertEqual(navigation.bar.content.navigation, .back)
             XCTAssertFalse(navigation.showsBar, "a page without a navigation bar")
+        }
+    }
+
+    /// A tab's picture and a bar action's stand at Android's icon size, 24 dp tall, as wide as their shape -
+    /// a picture of 6 by 4 pixels and one of 40 by 20 points alike.
+    func testATabsAndAnActionsPicturesStandAtTheIconSize() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                TabbedView([0, 1]) { number in
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(
+                            title: "Tab \(number)",
+                            actions: [ToolbarItem("Dot").icon("test_dot.png"), ToolbarItem("Wide").icon("test_wide.png")])
+                    } destination: { _ in
+                        TitledPage(title: "Pushed")
+                    }
+                    .icon(number == 0 ? "test_dot.png" : "test_wide.png")
+                }
+            }
+            host.layOut()
+            let row = try XCTUnwrap(host.views(AndroidTabbedView.self).first?.heldViews().last)
+            let bar = try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar
+            let tall = TestPictures.pixels(24)
+            let icons = "\(Int((Double(tall) * 1.5).rounded()))x\(tall), \(tall * 2)x\(tall)"
+
+            XCTAssertEqual(TestPictures.tabs(row), icons)
+            XCTAssertEqual(TestPictures.menu(JavaObject(try XCTUnwrap(Java.callObject(bar.reference, TestMenus.getMenu)))), icons)
         }
     }
 

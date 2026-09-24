@@ -27,6 +27,11 @@ where the sidebar slides over it, it is the sidebar page's picture and opens
 the sidebar. A page without a navigation bar hides it. The bar shows only
 what changed since it last showed.
 
+A picture on the bar - the navigation button's, an action's - and a tab's
+stands at Android's icon size, 24 dp tall and as wide as its shape, whatever
+size the picture is drawn at elsewhere: the platform draws its own at that
+size, and a picture at its own size stood twice as tall as theirs.
+
 ## A split view
 
 Where the room is narrower than 720 points - a phone, a tablet upright - the

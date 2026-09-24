@@ -348,3 +348,27 @@ extension AndroidTextFieldView {
     /// Where the caret stands, in UTF-16 units.
     var caret: Int32 { Java.callInt(reference, JavaAPI.getSelectionStart) }
 }
+
+/// The pictures a bar and a row of tabs stand at: `TestPictures.java`.
+@MainActor
+enum TestPictures {
+    private static let owner = Java.findClass("stateui/android/test/TestPictures")
+    private static let tabSizes = Java.staticMethod(owner, "tabs", "(Landroid/view/ViewGroup;)Ljava/lang/String;")
+    private static let menuSizes = Java.staticMethod(owner, "menu", "(Landroid/view/Menu;)Ljava/lang/String;")
+    private static let inPixels = Java.staticMethod(owner, "pixels", "(Landroid/content/Context;F)I")
+
+    /// Each tab's picture as "width x height" pixels.
+    static func tabs(_ row: AndroidView) -> String {
+        Java.frame { Java.callStaticObject(owner, tabSizes, .object(row.reference)).map { Java.text($0) } ?? "" }
+    }
+
+    /// Each menu item's picture as "width x height" pixels.
+    static func menu(_ menu: JavaObject) -> String {
+        Java.frame { Java.callStaticObject(owner, menuSizes, .object(menu.reference)).map { Java.text($0) } ?? "" }
+    }
+
+    /// `points` density-independent pixels, in this device's pixels.
+    static func pixels(_ points: Float) -> Int {
+        Int(Java.callStaticInt(owner, inPixels, .object(TestContext.context.reference), .float(points)))
+    }
+}
