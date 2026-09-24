@@ -68,16 +68,10 @@ compile Swift for Android only on macOS.
 The CI workflows build with Xcode 27.0 and Swift 6.4.0; on Linux they use the
 `swift:6.4.0-noble` image.
 
-In VS Code, four extensions serve the host:
-
-- **StateUI** (idexus), for "StateUI: Debug" and "StateUI: Release" and the
-  host the editor works as;
-- **.NET MAUI** (Microsoft), for the device picker and the C# debugger;
-- **Swift** (swiftlang), for completion;
-- **LLDB DAP**, for the Swift debugger.
-
-On Linux the StateUI extension debugs C# with the C# extension's `coreclr`
-debugger.
+In VS Code, the **.NET MAUI** extension (Microsoft) runs and debugs a head's C#
+half, **LLDB DAP** attaches to its Swift half, and **Swift** (swiftlang)
+completes the code. The StateUI extension runs AppKit and Android heads, not a
+MAUI one.
 
 ## An application's MAUI head
 
@@ -199,10 +193,7 @@ It becomes:
 
 ## Building and running
 
-In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
-chosen application on the chosen host; see
-[Debugging in VS Code](#debugging-in-vs-code). From a terminal, these commands
-build the Gallery from the repository root. Every head builds the
+These commands build the Gallery from the repository root. Every head builds the
 same way from its own `Platforms/Maui` directory.
 
 ```bash
@@ -279,84 +270,27 @@ accept:
 - **One build at a time.** Two builds share and rewrite the same Swift object
   directories, and the second can silently run stale output.
 
-## Debugging in VS Code
+## Debugging
 
-Debugging runs through the StateUI extension, in `lib/StateUI.VSCode`. Build it
-with `npm ci` and `npm run package` there and install the `.vsix` it writes;
-see [Working in VS Code](getting-started.md#working-in-vs-code). `launch.json`
-offers two launches, "StateUI: Debug" and "StateUI: Release", and three
-choices in the status bar decide what they do:
-
-- **The host**, AppKit or .NET MAUI. The editor works as that host too: code
-  under `#if APPKIT` compiles and completes only while AppKit is chosen.
-- **The application**, remembered for the workspace. A launch asks only when
-  none is chosen, or when the chosen one has no head for the host.
-- **The debugger**, for a MAUI head:
-
-| Debugger | What the launch does | Where |
-| --- | --- | --- |
-| C# | the MAUI extension's launch, on the device its status bar chose | macOS, Windows |
-| C# | `dotnet build`, then `coreclr` on `bin/<Configuration>/net10.0/<App>` | Linux |
-| Swift · iOS Simulator | `run-app.sh ios`, then lldb-dap attaches to the process | macOS |
-| Swift · Mac Catalyst | `run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
-| C# + Swift · Mac Catalyst | the C# launch, then lldb-dap attaches beside it once the process runs | macOS |
-| Swift | `run-app.ps1`, then lldb-dap attaches to `<App>.exe` | Windows |
-| Swift | `dotnet build`, then lldb-dap launches the head | Linux |
-
+A MAUI head is built and started from a terminal, above; the StateUI extension
+runs AppKit and Android heads alone. The .NET MAUI extension's own launches
+debug the C# half. LLDB attaches to the Swift half by process name - the
+application's name, with `.exe` on Windows - and stops it until Continue.
 Android and physical devices have no Swift debugger here: LLDB reaches only
-local processes. For Windows with C# and Swift in one session, use Visual
-Studio with `SwiftDebugFormat=codeview`. "Test: C# (debug)" steps through the
-C# suite; **StateUI: Run Tests** runs every suite as the chosen host.
+local processes.
 
-- **A C# launch names the application's project and no device.** The MAUI
-  extension's status bar chooses the device. The launch builds Release only
-  because `.vscode/settings.json` sets
-  `maui.configuration.useLaunchJsonConfigurations`; without it the extension
-  builds Debug. On Windows a Release launch names its executable,
-  `bin/Release/net10.0-windows10.0.19041.0/<App>.exe`.
-- **Swift attaches by process name**: the application's name, with `.exe` on
-  Windows.
-- **Attaching stops the application; press Continue.** lldb-dap registers
-  breakpoints while the process is stopped.
-- **iOS Simulator.** The simulator's watchdog kills an application a debugger
-  holds stopped, so Swift attaches only after `run-app.sh` has started the
-  application without one. C# and Swift together are not offered there.
-- **Mac Catalyst.** In C# + Swift, the C# session starts the application and
-  Swift attaches when the process appears. The sessions stay separate:
-  stepping in C# does not enter Swift. Stopping one stops both.
-- **Windows.** A process accepts one native debugger. VS Code therefore debugs
-  Swift and C# in separate sessions. Visual Studio debugs both in one, with the
+- **Windows.** A process accepts one native debugger, so VS Code debugs Swift
+  and C# in separate sessions. Visual Studio debugs both in one, with the
   `"nativeDebugging": true` profile in `Properties/launchSettings.json` and a
-  CodeView build. DWARF stays the default because LLDB reads it; a Debug build
-  links with lld-link to keep the DWARF sections LLDB needs.
-- **Linux.** Ubuntu and Debian set `kernel.yama.ptrace_scope = 1`, so the Swift
-  debugger launches the application under LLDB instead of attaching. C#
-  breakpoints do not bind in that session.
+  CodeView build (`SwiftDebugFormat=codeview`). DWARF stays the default because
+  LLDB reads it; a Debug build links with lld-link to keep the DWARF sections
+  LLDB needs.
+- **Linux.** Ubuntu and Debian set `kernel.yama.ptrace_scope = 1`, so LLDB
+  launches the application instead of attaching.
 
-Several tasks in `.vscode/tasks.json` serve the MAUI host:
-
-- **Builds:**
-  - "Build (debug)" prompts for a target framework;
-  - "Build app (Linux)" and "Build app (Release, Linux)" build the Linux head.
-- **Launches and diagnosis:**
-  - "Run app (no debugger)" and "Run app (Release, no debugger)" call the run
-    scripts;
-  - "Diagnose native build" runs `StateUIDiagnose`, described under
-    [Troubleshooting](#troubleshooting).
-- **Cleaning:**
-  - "Clean native artifacts" removes the head's `obj/stateui`;
-  - "Clean app (everything)" removes its `obj/`, its `bin/`, and the
-    application's `.build/`;
-  - "Clean all (app and library)" also removes the host projects' `obj/` and
-    `bin/` and the root `.build/`.
-- **Tests:** "Test StateUI.Maui" runs the C# suite, and "Test (update wire
-  fixtures)" regenerates the Wire fixtures and then runs it.
-
-The build and clean tasks name the Gallery's head. A generated application's
-`.vscode` has the same two launches, "StateUI: Debug" and "StateUI: Release",
-recommends the StateUI extension, and names its own head in its tasks; with
-`--appkit` it adds "Build app (AppKit, Debug)" and "Build app (AppKit,
-Release)".
+In `.vscode/tasks.json`, "Test StateUI.Maui" runs the C# suite and "Test
+(update wire fixtures)" regenerates the Wire fixtures and then runs it; "Test:
+C# (debug)" in `launch.json` steps through the C# suite.
 
 ## Controls, acts, events, and stores registered in C#
 
@@ -1170,5 +1104,5 @@ in the StateUI extension's status bar.
 
 **A VS Code task never reports that it finished.**
 MSBuild's worker processes outlive a build and hold the terminal of the task
-that started it. The build tasks and `run-app.ps1` pass `-nodeReuse:false` for
+that started it. `run-app.ps1` passes `-nodeReuse:false` for
 that reason; keep it on any task that builds.

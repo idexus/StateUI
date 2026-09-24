@@ -31,10 +31,11 @@ directory, the MAUI project, the process and the Swift module (`<Name>UI`).
 
 ## The host
 
-The status bar shows the host - **AppKit**, **.NET MAUI** or **Android**. Click
-it, or run **StateUI: Select Host**. AppKit and Android are offered on macOS
-alone, Android where an application has an Android head (`Platforms/Android`);
-on Windows and Linux the host is .NET MAUI.
+The status bar shows the host - **AppKit** or **Android**. Click it, or run
+**StateUI: Select Host**. Both are offered on macOS, Android where an
+application has an Android head (`Platforms/Android`). On Windows and Linux no
+host runs yet: the status bar says **no host**, a launch says why it runs
+nothing, and the editor and **StateUI: Run Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
@@ -46,12 +47,10 @@ on Windows and Linux the host is .NET MAUI.
   installed it compiles for this Mac, and a warning says so.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the application's
   head is built - with its bundling script where it has one, with SwiftPM
-  otherwise - and started under `lldb-dap`. On .NET MAUI the debugger chosen
-  below decides the launch; with C# on macOS and Windows it is the MAUI
-  extension's launch of the chosen application, on the device that extension's
-  picker chose. On Android `.scripts/Android/run-app.sh` builds the head,
-  installs it on the device chosen below and starts it, and its terminal then
-  follows the application's log, in colour, until the task is stopped. StateUI:
+  otherwise - and started under `lldb-dap`. On Android
+  `.scripts/Android/run-app.sh` builds the head, installs it on the device
+  chosen below and starts it, and its terminal then follows the application's
+  log, in colour, until the task is stopped. StateUI:
   Debug then attaches `lldb-dap` to the application through the NDK's
   `lldb-server`, which the script starts in the application's sandbox: a
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run
@@ -74,31 +73,6 @@ It is remembered for the workspace, so a launch asks only when nothing is
 chosen yet, or when the chosen application has no head for the host. A launch
 configuration naming `"application": "Gallery"` runs that one instead.
 
-## The debugger
-
-For a .NET MAUI head, **StateUI: Select Debugger** chooses how it is debugged,
-and the host item in the status bar shows the choice:
-
-| Debugger | What a launch does | On |
-| --- | --- | --- |
-| C# | the MAUI extension's launch, on the device its picker chose | macOS, Windows |
-| C# | `dotnet build`, then `coreclr` on the Linux head | Linux |
-| Swift · iOS Simulator | `run-app.sh ios`, then lldb-dap attaches | macOS |
-| Swift · Mac Catalyst | `run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
-| C# + Swift · Mac Catalyst | the C# launch, and lldb-dap attaches beside it once the app runs | macOS |
-| Swift | `run-app.ps1`, then lldb-dap attaches | Windows |
-| Swift | `dotnet build`, then lldb-dap launches the head | Linux |
-
-`run-app.sh` and `run-app.ps1` are part of the StateUI build the application's
-project imports - a checkout's `.scripts/Maui`, or the StateUI.Maui package's
-`buildTransitive/Maui` - found by asking MSBuild for the launched framework, so
-they always belong to the library the application builds.
-
-C# on iOS, Android and Mac Catalyst needs the MAUI extension's debugger: those
-heads run on Mono. Swift attaches only to a process this machine runs, and on the
-iOS Simulator only after the app has started, because the simulator's watchdog
-kills an app a debugger holds stopped.
-
 ## Tests
 
 **StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
@@ -106,12 +80,11 @@ them AS THE HOST, one after another, each in a terminal of its own:
 
 - **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_APPKIT=1`, on `.build-appkit`).
-- **.NET MAUI**: the library and each application under `-Xswiftc -DMAUI`, on
-  `.build-maui`, and the C# suites.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `.scripts/Android/test-android.sh`.
+- **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
 failed.
@@ -119,8 +92,8 @@ failed.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build`, `.build-maui/index-build` or
-`.build-android/index-build`, set in the application's
+own, `.build-appkit/index-build` or `.build-android/index-build` - with no
+host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
 
@@ -138,7 +111,6 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
 - For AppKit: macOS 26 or newer and the `lldb-dap` extension.
-- For .NET MAUI: the .NET MAUI extension and the .NET 10 SDK.
 - For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds
   and runs the head; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)

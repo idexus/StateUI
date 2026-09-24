@@ -45,19 +45,19 @@ in the Command Palette and pick that file. Build and install it again after
 pulling changes to the extension.
 
 The extension installs the **Swift** extension (swiftlang) with it. Install
-**LLDB DAP** for the Swift debugger, and **.NET MAUI** (Microsoft) for the MAUI
-host's device picker and C# debugger.
+**LLDB DAP** for the Swift debugger.
 
 ### Running an application
 
 Open the repository folder. The status bar shows two StateUI items:
 
-- **the host** - AppKit, Android, or .NET MAUI, and for MAUI the debugger. The
-  editor works as that host: code under `#if APPKIT` is completed only while
-  AppKit is chosen, and as Android the language server compiles for Android
-  with the Swift SDK for Android. Switching restarts the Swift language server
-  without reloading the window. Android is offered for an application with an
-  Android head.
+- **the host** - AppKit or Android. The editor works as that host: code under
+  `#if APPKIT` is completed only while AppKit is chosen, and as Android the
+  language server compiles for Android with the Swift SDK for Android.
+  Switching restarts the Swift language server without reloading the window.
+  Android is offered for an application with an Android head. Both run on
+  macOS; on Windows and Linux the item says **no host**, and the editor and
+  the suites work as plain Swift.
 - **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
   remembered for the workspace.
 
@@ -68,15 +68,7 @@ Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. On AppKit the application's head is built and started under
 `lldb-dap`. On Android it is built, installed and started on the chosen device,
 and its terminal follows the application's log; a Debug launch then attaches
-`lldb-dap` to it, and a Release one runs without a debugger. On .NET MAUI the launch follows the MAUI extension's device picker,
-and the debugger chosen in the status bar decides how it is debugged:
-
-- **C#** - the MAUI extension's debugger on macOS and Windows, and `coreclr`
-  on Linux;
-- **Swift · iOS Simulator**, **Swift · Mac Catalyst**, and **Swift** on
-  Windows - attached to the process once it runs; **Swift** on Linux launches
-  the head under `lldb-dap`;
-- **C# + Swift · Mac Catalyst** - both at once.
+`lldb-dap` to it, and a Release one runs without a debugger.
 
 `.vscode/launch.json` holds only those two launches. The extension resolves
 each one into the chosen host's own debugger.
@@ -87,10 +79,9 @@ The Command Palette offers the rest under **StateUI:**
 
 | Command | What it does |
 | --- | --- |
-| Select Host | AppKit, Android, or .NET MAUI, as the status bar item does |
+| Select Host | AppKit or Android, as the status bar item does |
 | Select Android Device | the device or emulator an Android head runs on |
 | Select Application | the application F5 runs |
-| Select Debugger | how a MAUI head is debugged |
 | Run Tests | the workspace's suites, run as the chosen host |
 | New Application in apps/ | a new application beside Gallery and HelloWorld, made by `.scripts/new-app.sh` |
 | Clean Index | removes the language server's index and builds it again |
@@ -331,17 +322,14 @@ MAUI workload:
 dotnet workload install maui
 ```
 
-In VS Code, choose **.NET MAUI** and **HelloWorld** in the status bar and press
-**F5**. From a terminal, build and start HelloWorld's MAUI head on Mac
-Catalyst:
+Build and start HelloWorld's MAUI head on Mac Catalyst from a terminal:
 
 ```bash
 .scripts/Maui/run-app.sh maccatalyst apps/HelloWorld/Platforms/Maui/HelloWorld.csproj
 ```
 
-[MAUI host](maui-host.md) covers every platform, the **StateUI: Debug** and
-**StateUI: Release** launches and their debuggers, controls and acts registered
-in C#, and troubleshooting.
+[MAUI host](maui-host.md) covers every platform, its builds and debugging,
+controls and acts registered in C#, and troubleshooting.
 
 ## Next steps
 

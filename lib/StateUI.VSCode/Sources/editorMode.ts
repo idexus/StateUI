@@ -43,26 +43,27 @@ import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { describe, environment, Host, hosts } from "./hosts";
+import { describe, environment, Host, hosts, plainIndexPath } from "./hosts";
 
 let queue: Promise<unknown> = Promise.resolve();
 
 /**
- * Makes the editor work as `host` for the packages in `roots`: this process's
- * environment, each package's index directory, and - where either changed - a
- * restart of the language server once nothing is building where it will build.
+ * Makes the editor work as `host` for the packages in `roots` - as plain Swift
+ * with no host: this process's environment, each package's index directory,
+ * and - where either changed - a restart of the language server once nothing
+ * is building where it will build.
  *
  * Calls are queued, so a second switch waits for the first to finish.
  *
  * @returns whether anything changed.
  */
-export function applyEditorMode(host: Host, roots: readonly string[]): Promise<boolean> {
+export function applyEditorMode(host: Host | undefined, roots: readonly string[]): Promise<boolean> {
     const next = queue.then(() => apply(host, roots));
     queue = next.catch(() => undefined);
     return next;
 }
 
-async function apply(host: Host, roots: readonly string[]): Promise<boolean> {
+async function apply(host: Host | undefined, roots: readonly string[]): Promise<boolean> {
     let changed = false;
     const settings = serverSettings(host, roots.length > 0 ? await installedSwiftSDK(host) : undefined);
 
@@ -85,7 +86,7 @@ async function apply(host: Host, roots: readonly string[]): Promise<boolean> {
     }
 
     if (changed) {
-        await settle(roots.map((root) => path.join(root, describe(host).indexPath)));
+        await settle(roots.map((root) => path.join(root, settings.scratchPath)));
         await vscode.commands.executeCommand("swift.restartLSPServer");
     }
 
@@ -117,7 +118,8 @@ function building(directory: string): Promise<boolean> {
  * build left inconsistent. The language server builds it again when restarted.
  */
 export async function cleanIndex(roots: readonly string[]): Promise<void> {
-    const directories = roots.flatMap((root) => hosts.map((each) => path.join(root, each.indexPath)));
+    const directories = roots.flatMap((root) =>
+        [...hosts.map((each) => each.indexPath), plainIndexPath].map((indexPath) => path.join(root, indexPath)));
 
     await settle(directories);
     for (const directory of directories) {
@@ -155,9 +157,13 @@ export interface ServerConfig {
 /**
  * What the language server is told while the editor works as `host`: the
  * host's index directory and - for a host compiled for another platform, where
- * its Swift SDK `swiftSDK` is installed - that SDK and the triple.
+ * its Swift SDK `swiftSDK` is installed - that SDK and the triple. With no
+ * host, SwiftPM's own index directory and no SDK.
  */
-export function serverSettings(host: Host, swiftSDK?: string): ServerSettings {
+export function serverSettings(host: Host | undefined, swiftSDK?: string): ServerSettings {
+    if (!host) {
+        return { scratchPath: plainIndexPath };
+    }
     const { indexPath, target } = describe(host);
     return target && swiftSDK ? { scratchPath: indexPath, swiftSDK, triple: target.triple } : { scratchPath: indexPath };
 }
@@ -195,8 +201,8 @@ export function swiftSDKOf(release: string | undefined, list: string, family: st
  * The Swift SDK the language server compiles `host` with - or nothing, for a
  * host of this machine and, said in a warning, where none is installed.
  */
-async function installedSwiftSDK(host: Host): Promise<string | undefined> {
-    const { label, target } = describe(host);
+async function installedSwiftSDK(host: Host | undefined): Promise<string | undefined> {
+    const { label, target } = host ? describe(host) : { label: "", target: undefined };
     if (!target) {
         return undefined;
     }

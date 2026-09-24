@@ -10,13 +10,6 @@
   // extension host's own environment. A value here is laid OVER that and would
   // decide the host whatever is chosen.
 
-  // WITHOUT THIS, "StateUI: Release" BUILDS DEBUG ON MAUI: the StateUI
-  // extension hands the MAUI extension `"configuration": "Release"`, and that
-  // extension replaces a launch's "configuration" with its own active one
-  // unless this says launch.json is to be believed. Window-scoped, so the
-  // repository can decide it.
-  "maui.configuration.useLaunchJsonConfigurations": true,
-
   // The solution the C# extension and ".NET MAUI: Select Startup Project" read.
   "dotnet.defaultSolution": "StateUI.slnx",
 

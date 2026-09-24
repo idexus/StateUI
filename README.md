@@ -104,15 +104,12 @@ code --install-extension stateui-*.vsix
 ```
 
 For the .NET MAUI host - Android, iOS, Mac Catalyst, Windows, and Linux -
-install the .NET 10 SDK, the MAUI workload (everywhere except Linux, which has
-none), and the **.NET MAUI** extension (Microsoft), which brings the device
-picker and the C# debugger. The AppKit host needs only Xcode 27, on macOS 26 or
-newer. StateUI builds with one Swift release everywhere, Swift 6.4: Xcode 27's
+install the .NET 10 SDK and the MAUI workload (everywhere except Linux, which
+has none). The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds with one Swift release everywhere, Swift 6.4: Xcode 27's
 on macOS and the swift.org 6.4.0 toolchain on the other platforms.
 
 ```bash
 dotnet workload install maui
-code --install-extension ms-dotnettools.dotnet-maui
 ```
 
 Android asks for more, and builds on macOS only:
@@ -130,7 +127,7 @@ GTK 4 on Linux among them.
 
 Then open the repository in VS Code:
 
-1. Choose the host in the status bar - **AppKit** or **.NET MAUI** - and the
+1. Choose the host in the status bar - **AppKit** or **Android** - and the
    application, **Gallery**.
 2. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
    it under the debugger; **StateUI: Release** runs the optimized build.
@@ -138,8 +135,7 @@ Then open the repository in VS Code:
    host.
 
 [Working in VS Code](docs/getting-started.md#working-in-vs-code) covers the
-extension's hosts, debuggers, and commands, including **StateUI: New
-Application**.
+extension's hosts and commands, including **StateUI: New Application**.
 
 From a terminal, the same builds are:
 

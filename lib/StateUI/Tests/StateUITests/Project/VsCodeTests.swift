@@ -5,10 +5,10 @@
 // anywhere.
 //
 // Everything here is a NAME in one JSON file pointing at a name in another: a
-// launch names its preLaunchTask, a task names a script, a Release launch
-// becomes a field the MAUI extension only believes behind a setting. No build reads any of it, so a rename that misses a file does not
-// fail - the button simply does nothing when pressed, which reads as "the
-// debugger is broken" rather than as a stale string.
+// launch names its preLaunchTask, a task names a script. No build reads any of
+// it, so a rename that misses a file does not fail - the button simply does
+// nothing when pressed, which reads as "the debugger is broken" rather than as
+// a stale string.
 
 import Foundation
 import XCTest
@@ -32,9 +32,9 @@ final class VsCodeTests: XCTestCase {
 
     /// The launches are the StateUI extension's: ONE Debug and ONE Release of
     /// type `stateui`, which the extension resolves into the chosen host's own
-    /// debugger - AppKit, every MAUI platform, Linux's included. No launch
-    /// names a host or an application of its own any more, so none can drift
-    /// from the extension that chooses them.
+    /// debugger - AppKit's or Android's. No launch names a host or an
+    /// application of its own, so none can drift from the extension that
+    /// chooses them.
     func testTheLaunchesAreTheExtensions() throws {
         let launch = try json(at: directory.appendingPathComponent("launch.json"))
         let configurations = array(launch, "configurations")
@@ -52,10 +52,7 @@ final class VsCodeTests: XCTestCase {
                 "launch.json launches \"\(name)\" itself - the extension resolves launches.")
         }
         XCTAssertTrue(array(launch, "compounds").isEmpty,
-                      "launch.json has a compound - C# with Swift is the extension's debugger.")
-
-        let tasks = try String(contentsOf: directory.appendingPathComponent("tasks.json"), encoding: .utf8)
-        XCTAssertTrue(tasks.contains("\"net10.0\""), "the target framework picker does not offer net10.0.")
+                      "launch.json has a compound - a launch is the extension's to resolve.")
     }
 
     /// Every `preLaunchTask` names a task that exists. A launch whose task is
@@ -79,124 +76,16 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// THE RELEASE LAUNCH IS BELIEVED, which takes the extension and a setting
-    /// agreeing: on MAUI "StateUI: Release" becomes a `maui` launch carrying
-    /// `"configuration": "Release"`, which the MAUI extension reads only while
-    /// `maui.configuration.useLaunchJsonConfigurations` is on - a setting that
-    /// defaults to OFF, and with it off the Release launch quietly builds Debug.
-    func testTheReleaseLaunchIsBelieved() throws {
-        let launch = try json(at: directory.appendingPathComponent("launch.json"))
-        XCTAssertNotNil(
-            array(launch, "configurations").first { ($0["configuration"] as? String) == "release" },
-            "launch.json has no launch against the Release build.")
+    /// The editor runs no MAUI head: no task, launch or setting names one or
+    /// the MAUI extension. A head is run by the StateUI extension, on AppKit
+    /// or Android, and a MAUI head is built from a terminal.
+    func testTheEditorRunsNoMauiHead() throws {
+        for file in ["launch.json", "tasks.json", "settings.json"] {
+            let text = try String(contentsOf: directory.appendingPathComponent(file), encoding: .utf8)
 
-        let settings = try json(at: directory.appendingPathComponent("settings.json"))
-        XCTAssertEqual(
-            settings["maui.configuration.useLaunchJsonConfigurations"] as? Bool, true,
-            "settings.json does not turn on maui.configuration.useLaunchJsonConfigurations.")
-    }
-
-    /// AND ON WINDOWS IT FINDS THE EXECUTABLE: the MAUI extension works the
-    /// executable out without the configuration, so the extension names the
-    /// Release program - and the path it builds carries no architecture only
-    /// because the project keeps the runtime identifier out of its output path.
-    /// The extension's own suite asserts the path; this holds the project to it.
-    func testTheWindowsReleaseExecutableHasTheExtensionsPath() throws {
-        let debug = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent("lib/StateUI.VSCode/Sources/debug.ts"),
-            encoding: .utf8)
-        XCTAssertTrue(debug.contains("\"bin\", \"Release\", \"net10.0-windows10.0.19041.0\""),
-                      "the extension no longer names the Windows Release executable.")
-
-        let csproj = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent(
-                "apps/Gallery/Platforms/Maui/Gallery.csproj"),
-            encoding: .utf8)
-
-        XCTAssertTrue(csproj.contains(
-            "<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>"))
-        XCTAssertTrue(csproj.contains("net10.0-windows10.0.19041.0"))
-    }
-
-    /// The Release task passes what the scripts read. run-app.sh takes its
-    /// arguments by SHAPE, so the task says "Release" and the script has to
-    /// recognize that word - and refuse one it does not recognize.
-    func testTheReleaseTaskSpeaksTheScriptsLanguage() throws {
-        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
-        let task = try XCTUnwrap(
-            array(tasks, "tasks").first { ($0["label"] as? String) == "Run app (Release, no debugger)" },
-            "tasks.json has no \"Run app (Release, no debugger)\" task.")
-
-        let osx = ((task["osx"] as? [String: Any])?["args"] as? [String]) ?? []
-        XCTAssertTrue(osx.contains("Release"))
-
-        let windows = ((task["windows"] as? [String: Any])?["args"] as? [String]) ?? []
-        XCTAssertTrue(windows.contains("-Configuration") && windows.contains("Release"))
-
-        let scripts = Fixtures.repository.appendingPathComponent(".scripts/Maui")
-        let sh = try String(contentsOf: scripts.appendingPathComponent("run-app.sh"), encoding: .utf8)
-        XCTAssertTrue(sh.contains("[Rr]elease)"))
-        XCTAssertTrue(sh.contains("unrecognized argument"))
-
-        let ps = try String(contentsOf: scripts.appendingPathComponent("run-app.ps1"), encoding: .utf8)
-        XCTAssertTrue(ps.contains("$Configuration = \"Debug\""))
-    }
-
-    /// THE CLEAN TASK TAKES EVERYTHING AND ASKS NOTHING, which is the only
-    /// thing that makes an edited Info.plist take effect: MAUI merges the plist
-    /// once and never again on an incremental build, and `obj/` is per
-    /// configuration AND per framework, so every narrowing keeps a stale copy.
-    func testTheCleanTaskTakesEverythingAndAsksNothing() throws {
-        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
-        let task = try XCTUnwrap(
-            array(tasks, "tasks").first { ($0["label"] as? String) == "Clean app (everything)" },
-            "tasks.json has no \"Clean app (everything)\" task.")
-
-        let args = (task["args"] as? [String] ?? []).joined(separator: " ")
-        let windows = ((task["windows"] as? [String: Any])?["args"] as? [String] ?? [])
-            .joined(separator: " ")
-
-        for shell in [("rm", args), ("Remove-Item", windows)] {
-            for wanted in ["obj", "bin", ".build"] {
-                XCTAssertTrue(
-                    shell.1.contains("/\(wanted)'") || shell.1.contains("/\(wanted) ")
-                        || shell.1.hasSuffix("/\(wanted)"),
-                    "the clean task does not remove \(wanted)/ whole on its \(shell.0) side.")
+            for spelling in ["Platforms/Maui", "\"maui.", "\"type\": \"maui\"", ".scripts/Maui"] {
+                XCTAssertFalse(text.contains(spelling), "\(file) still says \(spelling).")
             }
-
-            XCTAssertFalse(
-                shell.1.contains("${input:"), "the clean task asks a question on its \(shell.0) side.")
-        }
-    }
-
-    /// AND THE REPOSITORY CARRIES A SECOND, DEEPER CUT: the MAUI host builds in
-    /// its own directories, so a clean named after the app rebuilds one half of
-    /// a pair against a copy of the other from a different moment.
-    func testTheRepositoryCanCleanTheLibraryToo() throws {
-        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
-        let task = try XCTUnwrap(
-            array(tasks, "tasks").first { ($0["label"] as? String) == "Clean all (app and library)" },
-            "the repository has no \"Clean all (app and library)\" task.")
-
-        let args = (task["args"] as? [String] ?? []).joined(separator: " ")
-        let windows = ((task["windows"] as? [String: Any])?["args"] as? [String] ?? [])
-            .joined(separator: " ")
-
-        for shell in [("rm", args), ("Remove-Item", windows)] {
-            for wanted in [
-                "apps/Gallery/Platforms/Maui/obj",
-                "apps/Gallery/Platforms/Maui/bin",
-                "lib/StateUI.Maui/Sources/obj",
-                "lib/StateUI.Maui/Sources/bin",
-                "lib/StateUI.Maui/Linux/obj",
-                "lib/StateUI.Maui/Linux/bin",
-            ] {
-                XCTAssertTrue(
-                    shell.1.contains(wanted),
-                    "the deep clean leaves \(wanted) standing on its \(shell.0) side.")
-            }
-
-            XCTAssertTrue(shell.1.contains("}/.build"))
         }
     }
 

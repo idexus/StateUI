@@ -1,7 +1,7 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit, Android and .NET MAUI.",
+  "description": "Build, run and debug StateUI applications on AppKit and Android.",
   "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
@@ -23,7 +23,6 @@
   "main": "./out/Sources/extension.js",
   "activationEvents": [
     "workspaceContains:**/Platforms/AppKit/main.swift",
-    "workspaceContains:**/Platforms/Maui/*.csproj",
     "workspaceContains:**/Platforms/Android/build.gradle.kts",
     "onDebugResolve:stateui",
     "onDebugDynamicConfigurations:stateui"
@@ -43,11 +42,6 @@
       {
         "command": "stateui.selectAndroidDevice",
         "title": "Select Android Device",
-        "category": "StateUI"
-      },
-      {
-        "command": "stateui.selectDebugger",
-        "title": "Select Debugger",
         "category": "StateUI"
       },
       {

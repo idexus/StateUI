@@ -5,36 +5,32 @@
 // device - the editor working as that host, one Debug and one Release that run
 // the application on it, and the suites run as it.
 
-import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, findApplications, hasHead } from "./applications";
-import { configurations, StateUIDebugConfigurationProvider } from "./debug";
+import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
-import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
+import { availableHosts, describe, Host } from "./hosts";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
-    host(): Host;
+    host(): Host | undefined;
     selectHost(host: Host): Promise<void>;
     application(): string | undefined;
     selectApplication(name: string): Promise<void>;
-    selectDebugger(chosen: MauiDebugger): Promise<void>;
 }
 
 const hostKey = "stateui.host";
 const applicationKey = "stateui.application";
-const debuggerKey = "stateui.debugger";
 
 /** What gives an application each host's head. */
 const heads: Record<Host, string> = {
     appkit: "an AppKit head (Platforms/AppKit/main.swift)",
-    maui: "a MAUI head (Platforms/Maui/*.csproj)",
     android: "an Android head (Platforms/Android/build.gradle.kts)",
 };
 
@@ -50,25 +46,28 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     // The packages whose manifest reads a host's variable: the applications.
     const roots = (): string[] => applications().map((each) => each.directory);
 
-    // The one chosen, where this machine runs it; else AppKit where there is a
-    // head to run on this machine, MAUI otherwise.
-    const host = (): Host => {
+    // The one chosen, where this machine runs it; else the first this machine
+    // runs that an application here has a head for; none where it runs none.
+    const host = (): Host | undefined => {
+        const available = availableHosts();
         const stored = state.get<Host>(hostKey);
-        if (availableHosts().some((each) => each.id === stored)) {
-            return stored!;
+        if (available.some((each) => each.id === stored)) {
+            return stored;
         }
-        return availableHosts().some((each) => each.id === "appkit") && applications().some((each) => each.hasAppKitHead) ? "appkit" : "maui";
+        return (available.find((each) => runnable(each.id).length > 0) ?? available[0])?.id;
     };
 
-    /** How a MAUI head is debugged: the one chosen, where this machine offers it, else C#. */
-    const mauiDebugger = (): MauiDebugger => {
-        const stored = state.get<MauiDebugger>(debuggerKey);
-        return availableMauiDebuggers().some((each) => each.id === stored) ? stored! : "csharp";
+    /** What the suites and the editor run as: the host chosen, or plain Swift. */
+    const runningAs = (): string => {
+        const chosenHost = host();
+        return chosenHost ? describe(chosenHost).label : "plain Swift";
     };
 
     /** The chosen application, where it still has a head for the chosen host. */
-    const chosen = (): Application | undefined =>
-        runnable(host()).find((each) => each.name === state.get<string>(applicationKey));
+    const chosen = (): Application | undefined => {
+        const chosenHost = host();
+        return chosenHost ? runnable(chosenHost).find((each) => each.name === state.get<string>(applicationKey)) : undefined;
+    };
 
     const hostItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
     hostItem.command = "stateui.selectHost";
@@ -79,13 +78,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     context.subscriptions.push(hostItem, applicationItem, deviceItem);
 
     const refresh = (): void => {
-        const described = describe(host());
-        const debuggerLabel = mauiDebuggers.find((each) => each.id === mauiDebugger())?.label;
-        hostItem.text = `$(server-environment) StateUI: ${described.label}${described.id === "maui" ? ` · ${debuggerLabel}` : ""}`;
+        const chosenHost = host();
+        if (!chosenHost) {
+            hostItem.text = "$(server-environment) StateUI: no host";
+            hostItem.tooltip = `StateUI: ${noHost} StateUI: Run Tests and the editor work as plain Swift.`;
+            hostItem.show();
+            applicationItem.hide();
+            deviceItem.hide();
+            return;
+        }
+
+        const described = describe(chosenHost);
+        hostItem.text = `$(server-environment) StateUI: ${described.label}`;
         hostItem.tooltip = `StateUI: Debug, StateUI: Release, StateUI: Run Tests and the editor work as ${described.label} - ${described.detail}. Click to change.`;
         hostItem.show();
 
-        const candidates = runnable(host());
+        const candidates = runnable(chosenHost);
         const application = chosen() ?? (candidates.length === 1 ? candidates[0] : undefined);
         applicationItem.text = `$(window) ${application?.name ?? "Select Application"}`;
         applicationItem.tooltip = `The application StateUI: Debug and StateUI: Release run on ${described.label}. Click to change.`;
@@ -104,11 +112,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         if (await applyEditorMode(picked, roots())) {
             void vscode.window.setStatusBarMessage(`StateUI: the editor works as ${describe(picked).label}`, 4000);
         }
-    };
-
-    const selectDebugger = async (picked: MauiDebugger): Promise<void> => {
-        await state.update(debuggerKey, picked);
-        refresh();
     };
 
     const selectApplication = async (name: string): Promise<void> => {
@@ -150,6 +153,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
     context.subscriptions.push(
         vscode.commands.registerCommand("stateui.selectHost", async () => {
+            if (availableHosts().length === 0) {
+                void vscode.window.showInformationMessage(`StateUI: ${noHost}`);
+                return;
+            }
             const picked = await vscode.window.showQuickPick(
                 // Android is offered where an application has its head.
                 availableHosts().filter((each) => each.id !== "android" || runnable("android").length > 0).map((each) => ({
@@ -163,7 +170,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 await selectHost(picked.id);
             }
         }),
-        vscode.commands.registerCommand("stateui.selectApplication", () => askForApplication(host())),
+        vscode.commands.registerCommand("stateui.selectApplication", async () => {
+            const chosenHost = host();
+            if (!chosenHost) {
+                void vscode.window.showInformationMessage(`StateUI: ${noHost}`);
+                return undefined;
+            }
+            return askForApplication(chosenHost);
+        }),
         vscode.commands.registerCommand("stateui.selectAndroidDevice", async () => {
             const root = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath)
                 .find((directory) => fs.existsSync(androidScript(directory, "devices.sh")));
@@ -174,30 +188,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await askForDevice(root, state);
             refresh();
         }),
-        vscode.commands.registerCommand("stateui.selectDebugger", async () => {
-            const picked = await vscode.window.showQuickPick(
-                availableMauiDebuggers().map((each) => ({
-                    label: each.label,
-                    description: each.id === mauiDebugger() ? "current" : undefined,
-                    detail: each.detail,
-                    id: each.id,
-                })),
-                { placeHolder: "How does StateUI: Debug debug a .NET MAUI head?" });
-            if (picked) {
-                await selectDebugger(picked.id);
-            }
-        }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
             const folder = vscode.workspace.workspaceFolders?.[0];
             const suites = folder ? findSuites(folder.uri.fsPath, host()) : [];
             if (!folder || suites.length === 0) {
-                void vscode.window.showInformationMessage(`StateUI: no test suite here runs on ${describe(host()).label}.`);
+                void vscode.window.showInformationMessage(`StateUI: no test suite here runs as ${runningAs()}.`);
                 return;
             }
 
             const picked = await vscode.window.showQuickPick(
                 suites.map((suite) => ({ label: suite.label, detail: suite.detail, picked: true, suite })),
-                { canPickMany: true, placeHolder: `The suites to run as ${describe(host()).label}` });
+                { canPickMany: true, placeHolder: `The suites to run as ${runningAs()}` });
             if (!picked || picked.length === 0) {
                 return;
             }
@@ -213,10 +214,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
             const failed = await runSuites(folder, chosenSuites);
             if (failed.length === 0) {
-                void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed on ${describe(host()).label}.`);
+                void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed as ${runningAs()}.`);
             } else {
                 void vscode.window.showErrorMessage(
-                    `StateUI: ${failed.length} of ${picked.length} suites failed on ${describe(host()).label}: ${failed.join(", ")}. Their output is in the terminal.`);
+                    `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in the terminal.`);
             }
         }),
         vscode.commands.registerCommand("stateui.newApplicationInApps", async () => {
@@ -260,50 +261,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
-    // The C# sessions that lldb-dap attaches beside once they have started the
-    // application: session name -> process name.
-    const pendingSwift = new Map<string, string>();
-
-    context.subscriptions.push(vscode.debug.onDidStartDebugSession(async (session) => {
-        const processName = session.type === "maui" ? pendingSwift.get(session.name) : undefined;
-        if (processName === undefined) {
-            return;
-        }
-        pendingSwift.delete(session.name);
-
-        // The C# session builds before it starts anything, so the process is
-        // waited for rather than timed - found by its EXACT name, never by a
-        // command line a build also carries.
-        const status = vscode.window.setStatusBarMessage(`$(sync~spin) StateUI: waiting for ${processName} to attach Swift`);
-        const deadline = Date.now() + 600_000;
-        let running = false;
-        while (!running && Date.now() < deadline && vscode.debug.activeDebugSession !== undefined) {
-            running = await new Promise<boolean>((resolve) => execFile("pgrep", ["-x", processName], (error) => resolve(error === null)));
-            if (!running) {
-                await new Promise((resume) => setTimeout(resume, 1000));
-            }
-        }
-        status.dispose();
-
-        if (!running) {
-            void vscode.window.showErrorMessage(`StateUI: ${processName} never started, so Swift was not attached.`);
-            return;
-        }
-
-        await vscode.debug.startDebugging(session.workspaceFolder, {
-            type: "lldb-dap", request: "attach", name: `${session.name} (Swift)`, stopOnEntry: false,
-            attachCommands: [`process attach --name ${processName}`],
-        }, { parentSession: session, lifecycleManagedByParent: true });
-    }));
-
     const provider = new StateUIDebugConfigurationProvider({
         host,
-        debugger: mauiDebugger,
         run: runTask,
         start: startTask,
         ready: (file, task) => readyWhen(file, task),
         device: (folder) => androidDevice(folder.uri.fsPath),
-        attachSwiftWhenStarted: (sessionName, processName) => { pendingSwift.set(sessionName, processName); },
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
 
@@ -360,7 +323,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     refresh();
     await applyEditorMode(host(), roots());
 
-    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectDebugger };
+    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication };
 }
 
 export function deactivate(): void {}

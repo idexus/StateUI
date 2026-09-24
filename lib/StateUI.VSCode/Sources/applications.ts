@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The applications a workspace holds: a StateUI checkout keeps them in apps/,
-// and an application made from the template is the workspace itself.
+// and a workspace may be one itself.
 
 import * as fs from "fs";
 import * as path from "path";
@@ -17,9 +17,6 @@ export interface Application {
     readonly directory: string;
 
     readonly hasAppKitHead: boolean;
-
-    /** The MAUI project - `Platforms/Maui/Gallery.csproj` - where it has a MAUI head. */
-    readonly mauiProject?: string;
 
     /** Whether it has an Android head: the Gradle build in `Platforms/Android`. */
     readonly hasAndroidHead: boolean;
@@ -56,22 +53,18 @@ function describeApplication(root: string, directory: string): Application | und
 
     const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
     const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
-    const project = mauiProject(directory);
 
-    if (!hasAppKitHead && !hasAndroidHead && !project) {
+    if (!hasAppKitHead && !hasAndroidHead) {
         return undefined;
     }
 
-    // The MAUI project names the application; an application without one is
-    // named by its directory.
-    const name = project ? path.basename(project, ".csproj") : path.basename(directory);
+    const name = path.basename(directory);
     const script = path.join(root, ".scripts", "AppKit", `build-${name.toLowerCase()}-appkit.sh`);
 
     return {
         name,
         directory,
         hasAppKitHead,
-        mauiProject: project,
         hasAndroidHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
     };
@@ -81,20 +74,8 @@ function describeApplication(root: string, directory: string): Application | und
 export function hasHead(application: Application, host: Host): boolean {
     switch (host) {
     case "appkit": return application.hasAppKitHead;
-    case "maui": return application.mauiProject !== undefined;
     case "android": return application.hasAndroidHead;
     }
-}
-
-function mauiProject(directory: string): string | undefined {
-    const maui = path.join(directory, "Platforms", "Maui");
-
-    if (!isDirectory(maui)) {
-        return undefined;
-    }
-
-    const project = fs.readdirSync(maui).find((entry) => entry.endsWith(".csproj"));
-    return project ? path.join(maui, project) : undefined;
 }
 
 function isDirectory(candidate: string): boolean {

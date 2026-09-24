@@ -33,8 +33,7 @@ const child = spawn(code, [
     `--user-data-dir=${path.join(profile, "data")}`,
     `--extensions-dir=${path.join(os.homedir(), ".vscode", "extensions")}`,
     "--disable-workspace-trust", "--skip-welcome", "--skip-release-notes", "--new-window",
-    // The suite asks the Swift side and resolves a MAUI launch without running
-    // one. The .NET extensions only load the solution - which, on a profile
+    // The .NET extensions only load the solution - which, on a profile
     // bound to no SDK, they report as "Project load blocked".
     ...["ms-dotnettools.csdevkit", "ms-dotnettools.csharp", "ms-dotnettools.dotnet-maui", "ms-dotnettools.vscode-dotnet-runtime"]
         .map((id) => `--disable-extension=${id}`),

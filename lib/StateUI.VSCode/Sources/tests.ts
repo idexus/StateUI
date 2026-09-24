@@ -28,18 +28,17 @@ export interface Suite {
  * The suites under `root` for `host`, in the order they are best run: the
  * library first, the hosts' packages next, the applications last.
  *
- * - A Swift package with a test target runs with `swift test`. An
- *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build-appkit`, or
- *   `-Xswiftc -DMAUI` on `.build-maui` - and so does the library, whose code
- *   under `#if MAUI` compiles only in a MAUI run.
+ * - A Swift package with a test target runs with `swift test`. For AppKit an
+ *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build-appkit`.
  * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
- * - A C# test project - `lib/StateUI.Maui/Tests` - runs for the MAUI host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
  *   `lib/StateUI.Android/Tests` - run on the device chosen, by
  *   `.scripts/Android/test-android.sh`.
+ * - With no host - a machine that runs none - every package but the hosts'
+ *   own runs as plain Swift.
  */
-export function findSuites(root: string, host: Host): Suite[] {
+export function findSuites(root: string, host: Host | undefined): Suite[] {
     const suites: Suite[] = [];
     const applications = new Set(findApplications(root).map((each) => each.directory));
     const appKitEnvironment = Object.fromEntries(
@@ -53,19 +52,14 @@ export function findSuites(root: string, host: Host): Suite[] {
         }
 
         const name = directory === root ? path.basename(root) : path.relative(root, directory);
-        const hostPackage = path.basename(directory).match(/\.(AppKit|Maui|Android)$/)?.[1]?.toLowerCase();
+        const hostPackage = path.basename(directory).match(/\.(AppKit|Android)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
 
         const base = ["test", "--package-path", directory];
-        if (hostPackage) {
+        if (hostPackage && host) {
             suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
-        } else if (host === "maui") {
-            suites.push({
-                label: name, detail: "swift test -Xswiftc -DMAUI, on .build-maui", command: "swift",
-                args: [...base, "--scratch-path", path.join(directory, ".build-maui"), "-Xswiftc", "-DMAUI"], env: {},
-            });
         } else if (host === "appkit" && applications.has(directory)) {
             suites.push({
                 label: name, detail: "swift test as an AppKit build, on .build-appkit", command: "swift",
@@ -73,15 +67,6 @@ export function findSuites(root: string, host: Host): Suite[] {
             });
         } else {
             suites.push({ label: name, detail: "swift test", command: "swift", args: base, env: {} });
-        }
-    }
-
-    if (host === "maui") {
-        for (const directory of children(path.join(root, "lib"))) {
-            const tests = path.join(directory, "Tests");
-            if (fs.existsSync(tests) && fs.readdirSync(tests).some((entry) => entry.endsWith(".csproj"))) {
-                suites.push({ label: path.relative(root, tests), detail: "dotnet test", command: "dotnet", args: ["test", tests], env: {} });
-            }
         }
     }
 
