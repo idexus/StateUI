@@ -166,7 +166,9 @@ final class StateUIShapeDrawable extends Drawable {
     @Override
     public void setColorFilter(ColorFilter filter) {}
 
+    /** Deprecated since API 29, and still abstract: every drawable answers it. */
     @Override
+    @SuppressWarnings("deprecation")
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }
