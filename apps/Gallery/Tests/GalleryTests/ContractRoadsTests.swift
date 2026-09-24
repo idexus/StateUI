@@ -148,6 +148,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
             contract: #"_ = ScrollView { Label("Rows") }"#),
         Road(
+            name: "a button's withdrawn borderColor",
+            removed: ##"_ = Button("Save").borderColor(Color("#888888"))"##,
+            contract: ##"_ = Button("Save").stroke(Color("#888888"))"##),
+        Road(
+            name: "a button's withdrawn borderWidth",
+            removed: #"_ = Button("Save").borderWidth(1)"#,
+            contract: #"_ = Button("Save").strokeWidth(1)"#),
+        Road(
+            name: "a button's withdrawn cornerRadius",
+            removed: #"_ = Button("Save").cornerRadius(8)"#,
+            contract: #"_ = Button("Save").shape(.roundedRectangle(8))"#),
+        Road(
             name: "the withdrawn Border",
             removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
             contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),

@@ -68,6 +68,8 @@ enum AppKitRealization {
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
         .partial("Button", "aspect", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete("Button", "padding"),
+        .partial("Button", "shape", missing: "AppKit rounds an oval button into a capsule: a layer's corners draw no oval."),
+        .partial("Button", "stroke", missing: "AppKit outlines a button in a colour; a gradient draws none."),
         .complete("Label", "accessibilityIdentifier"),
         .complete("Label", "characterSpacing"),
         .complete("Label", "fontAttributes"),

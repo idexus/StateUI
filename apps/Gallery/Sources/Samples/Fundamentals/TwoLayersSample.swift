@@ -59,7 +59,7 @@ private struct LayerRows: ExampleContent {
                 .fontSize(14)
                 .background(Palette.accent)
                 .textColor(Palette.onAccent)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(22, 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
@@ -204,18 +204,18 @@ private struct LayerCost: ExampleContent {
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(Palette.onAccent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(18, 8)
                     .onClicked { counter += 1 }
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
                     .fontSize(13)
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(18, 8)
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }

@@ -112,7 +112,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
@@ -120,11 +120,11 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
                     .fontSize(13)
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }

@@ -35,7 +35,7 @@ struct TabsPage: ContentView {
                 Button("Push a page onto this tab")
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .horizontalAlignment(.center)
                     .onClicked { path.append(.level(1)) }

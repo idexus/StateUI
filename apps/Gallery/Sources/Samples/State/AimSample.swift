@@ -93,7 +93,7 @@ struct AimSample: SampleContent, ExampleContent {
             HStack {
                 Button("Focus the first")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked {
                         try await field.focus()
@@ -102,7 +102,7 @@ struct AimSample: SampleContent, ExampleContent {
 
                 Button("Focus the second")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked {
                         try await note.focus()
@@ -110,11 +110,11 @@ struct AimSample: SampleContent, ExampleContent {
                     }
 
                 Button("Let go")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked {
                         try await field.unfocus()

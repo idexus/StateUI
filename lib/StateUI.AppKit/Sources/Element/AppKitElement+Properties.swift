@@ -27,7 +27,7 @@ extension AppKitElement {
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
         .pivotX, .pivotY,
         .background, .color, .textColor, .placeholderColor,
-        .tint, .borderColor, .stroke, .fill, .strokeWidth,
+        .tint, .stroke, .fill, .strokeWidth,
         .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
         .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
         .barBackgroundColor, .barForegroundColor,
@@ -169,7 +169,6 @@ extension AppKitElement {
             button.isBordered = background == nil
             button.wantsLayer = background != nil
             button.layer?.backgroundColor = background?.cgColor
-            button.layer?.cornerRadius = value(.cornerRadius)?.number ?? 0
         }
 
         if let split = view as? AppKitSplitView {

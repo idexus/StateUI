@@ -43,7 +43,7 @@ extension ButtonProperties {
 ///     …
 ///     Button("Increment")
 ///         .background(.cornflowerBlue)
-///         .cornerRadius(8)
+///         .shape(.roundedRectangle(8))
 ///         .onClicked { counter += 1 }
 ///
 /// A handler runs on the main actor and may `await`; the interface goes on

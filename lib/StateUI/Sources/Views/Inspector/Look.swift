@@ -24,9 +24,9 @@ enum Look {
             .fontSize(12)
             .textColor(ink)
             .background(.transparent)
-            .borderColor(edge)
-            .borderWidth(1)
-            .cornerRadius(7)
+            .stroke(edge)
+            .strokeWidth(1)
+            .shape(.roundedRectangle(7))
             .padding(10, 2)
             .margin(0, 0, 6, 4)
             .onClicked { run() }

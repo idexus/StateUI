@@ -3,9 +3,6 @@ ActivityIndicator
   tint
 Button
   aspect
-  borderColor
-  borderWidth
-  cornerRadius
   fontAttributes
   fontFamily
   fontSize
@@ -15,6 +12,9 @@ Button
   isEnabled
   lineBreak
   padding
+  shape
+  stroke
+  strokeWidth
   text
   textCase
   textColor

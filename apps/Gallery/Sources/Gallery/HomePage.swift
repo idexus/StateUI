@@ -548,9 +548,9 @@ private struct Steps: ContentView {
             .fontSize(18)
             .textColor(Palette.subtle)
             .background(.transparent)
-            .borderColor(Palette.outline)
-            .borderWidth(1)
-            .cornerRadius(8)
+            .stroke(Palette.outline)
+            .strokeWidth(1)
+            .shape(.roundedRectangle(8))
             .padding(18, 2)
             .isEnabled(to >= 0 && to < count)
             .onClicked { position = to }

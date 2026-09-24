@@ -142,7 +142,7 @@ enum AppKitTransitionSurface {
     private static let textControlProperties: Set<Prop> = [.fontSize, .textColor]
 
     private static let buttonProperties: Set<Prop> = [
-        .padding, .fontSize, .textColor, .borderColor, .borderWidth, .cornerRadius,
+        .padding, .fontSize, .textColor, .stroke, .strokeWidth, .shape,
     ]
 
 

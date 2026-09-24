@@ -110,9 +110,9 @@ struct SemanticsSample: SampleContent, ExampleContent {
                         .aspect(.fit)
                         .width(64)
                         .height(64)
-                        .borderColor(Palette.outline)
-                        .borderWidth(1)
-                        .cornerRadius(12)
+                        .stroke(Palette.outline)
+                        .strokeWidth(1)
+                        .shape(.roundedRectangle(12))
                         .onClicked { taps += 1 }
 
                     Label("A user hears")
@@ -249,9 +249,9 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .aspect(.fit)
             .width(64)
             .height(64)
-            .borderColor(Palette.outline)
-            .borderWidth(1)
-            .cornerRadius(12)
+            .stroke(Palette.outline)
+            .strokeWidth(1)
+            .shape(.roundedRectangle(12))
             .onClicked { taps += 1 }
 
         return described

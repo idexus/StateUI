@@ -23,12 +23,12 @@ extension AndroidRegistrations {
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
             }
             button.applies([
-                BorderElementContract.borderColor, BorderElementContract.borderWidth, BorderElementContract.cornerRadius,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
             ]) { view, values in
                 view.setOutline(
-                    color: values[BorderElementContract.borderColor]?.propValue,
-                    width: values[BorderElementContract.borderWidth],
-                    cornerRadius: values[BorderElementContract.cornerRadius].map(Double.init))
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    width: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(ButtonContract.lineBreak) { view, breaking in
                 view.setLines(breaking: breaking ?? .wordWrap, maximum: nil)

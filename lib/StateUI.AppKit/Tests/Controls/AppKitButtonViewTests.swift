@@ -21,9 +21,9 @@ final class AppKitButtonViewTests: XCTestCase {
             font: .systemFont(ofSize: 15),
             textColor: .systemPurple,
             backgroundColor: .systemYellow,
-            borderColor: .systemBlue,
-            borderWidth: 2,
-            cornerRadius: 6,
+            strokeColor: .systemBlue,
+            strokeWidth: 2,
+            shape: .rounded(6),
             lineBreakMode: .byTruncatingTail,
             enabled: false)
 
@@ -48,9 +48,9 @@ final class AppKitButtonViewTests: XCTestCase {
             font: .systemFont(ofSize: 13),
             textColor: .controlTextColor,
             backgroundColor: nil,
-            borderColor: nil,
-            borderWidth: 0,
-            cornerRadius: 0,
+            strokeColor: nil,
+            strokeWidth: 1,
+            shape: .rectangle,
             lineBreakMode: .byClipping,
             enabled: true)
 
@@ -136,9 +136,9 @@ final class AppKitButtonViewTests: XCTestCase {
             button("padded", [
                 .text: .string("Save"),
                 .padding: .numbers([20, 10, 20, 10]),
-                .borderColor: .color(red: 255, green: 0, blue: 0, alpha: 255),
-                .borderWidth: .number(2),
-                .cornerRadius: .number(6),
+                .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+                .strokeWidth: .number(2),
+                .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
             button("stretched", icon(.stretch)),
             button("centred", icon(.center)),

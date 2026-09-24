@@ -155,7 +155,7 @@ private struct LifetimeCard: ContentView {
             .fontSize(15)
             .textColor(.white)
             .background(Palette.accent)
-            .cornerRadius(10)
+            .shape(.roundedRectangle(10))
             .padding(20, 12)
             .horizontalAlignment(.center)
             .onClicked { taps += 1 }

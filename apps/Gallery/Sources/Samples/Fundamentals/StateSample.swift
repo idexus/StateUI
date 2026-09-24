@@ -81,16 +81,16 @@ struct StateSample: SampleContent, ExampleContent {
                 HStack {
                     Button("Increment")
                         .background(Palette.accent)
-                        .cornerRadius(8)
+                        .shape(.roundedRectangle(8))
                         .padding(20, 10)
                         .onClicked { counter += 1 }
 
                     Button("Reset")
-                        .borderColor(Palette.outline)
-                        .borderWidth(1)
+                        .stroke(Palette.outline)
+                        .strokeWidth(1)
                         .background(.transparent)
                         .textColor(Palette.subtle)
-                        .cornerRadius(8)
+                        .shape(.roundedRectangle(8))
                         .padding(20, 10)
                         .isEnabled(counter != 0)
                         .onClicked { counter = 0 }

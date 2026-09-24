@@ -67,11 +67,11 @@ final class StyleTests: XCTestCase {
     /// handlers anywhere in them.
     func testAStyleCarriesNoHandlers() {
         let style = Style<Button>()
-            .cornerRadius(8)
+            .strokeWidth(2)
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
 
-        XCTAssertEqual(style.props["cornerRadius"], .number(8))
+        XCTAssertEqual(style.props["strokeWidth"], .number(2))
         XCTAssertTrue(style.states.allSatisfy { $0.events.isEmpty })
         XCTAssertTrue(style.states.allSatisfy { $0.children.allSatisfy { $0.events.isEmpty } })
     }
@@ -1017,7 +1017,7 @@ final class StyleTests: XCTestCase {
             Style<Button>()
                 .textColor(.white)
                 .background(Color("#512BD4"))
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(14, 10)
                 .minimumHeight(44)
                 .visualState(.disabled) { $0

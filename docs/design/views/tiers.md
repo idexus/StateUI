@@ -126,13 +126,14 @@ same properties.
 
 ## Borders
 
-`BorderElement` is what an element draws of its own box. A stack, a grid and a
-ZStack wear it through the layout tier: `shape` - a rectangle, a rounded
-rectangle or an ellipse - which their background fills and, with
-`clipsContent`, cuts what they hold to, and `stroke` and `strokeWidth`, their
-outline on it. A dashed outline is a shape's, laid over the layout in a ZStack.
-A Button and a RadioButton wear it too, and still draw their outline from
-`borderColor`, `borderWidth` and a whole-number `cornerRadius`.
+`BorderElement` is what an element draws of its own box: `shape` - a
+rectangle, a rounded rectangle or an ellipse - which its background fills,
+and `stroke` and `strokeWidth`, its outline on it, one wide where no width is
+said. A stack, a grid and a ZStack wear it through the layout tier, their
+`clipsContent` cutting what they hold to the shape; a scroller wears it and
+always cuts what it shows to it; a Button and a RadioButton wear it for the
+outline around themselves. A dashed outline is a shape's, laid over the
+element in a ZStack.
 
 ## Menu items
 

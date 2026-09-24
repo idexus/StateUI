@@ -101,7 +101,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontAttributes(.bold)
                 .background(running ? Palette.disabled : Palette.accent)
                 .textColor(Palette.onAccent)
-                .cornerRadius(10)
+                .shape(.roundedRectangle(10))
                 .padding(22, 12)
                 .isEnabled(!running)
                 .horizontalAlignment(.center)

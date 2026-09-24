@@ -23,7 +23,7 @@ Optional capabilities are modifiers:
 Button("Save")
     .isEnabled(true)
     .padding(18, 10)
-    .cornerRadius(8)
+    .shape(.roundedRectangle(8))
     .onClicked { }
 ```
 

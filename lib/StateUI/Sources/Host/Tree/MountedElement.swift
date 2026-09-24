@@ -509,7 +509,7 @@
     }
 
     private static let colorProperties: Set<Prop> = [
-        .background, .barBackgroundColor, .barForegroundColor, .borderColor, .color,
+        .background, .barBackgroundColor, .barForegroundColor, .color,
         .indicatorColor, .placeholderColor, .selectedIndicatorColor, .textColor, .tint,
     ]
 

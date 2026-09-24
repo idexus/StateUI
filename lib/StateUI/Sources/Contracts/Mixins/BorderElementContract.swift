@@ -10,15 +10,6 @@ public enum BorderElementContract: Contract {
     /// A border is carried as values in the tree.
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
-    /// The colour of the line around the control.
-    public static let borderColor = ElementProperty<Self, Color>("borderColor", layer: .native)
-
-    /// How thick the line around the control is.
-    public static let borderWidth = ElementProperty<Self, Double>("borderWidth", layer: .native, moves: .size)
-
-    /// How round the control's corners are, in device units.
-    public static let cornerRadius = ElementProperty<Self, Int>("cornerRadius", layer: .native, moves: .size)
-
     /// The shape the element's background, its outline and - where it clips - what it holds follow.
     public static let shape = ElementProperty<Self, ContainerShape>("shape", layer: .stateUI)
 
@@ -29,7 +20,5 @@ public enum BorderElementContract: Contract {
     public static let strokeWidth = ElementProperty<Self, Double>("strokeWidth", layer: .stateUI, moves: .size)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        borderColor, borderWidth, cornerRadius, shape, stroke, strokeWidth,
-    ]
+    public static let members: [any ContractMember] = [shape, stroke, strokeWidth]
 }

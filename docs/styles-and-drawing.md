@@ -20,7 +20,7 @@ enum HandbookStyles {
             Style<Button>("Primary")
                 .textColor(.white)
                 .background(.cornflowerBlue)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
 
             Style<Button>("Danger")
                 .basedOn("Primary")

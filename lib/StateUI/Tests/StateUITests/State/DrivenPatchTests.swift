@@ -169,8 +169,7 @@ final class DrivenPatchTests: XCTestCase {
         // A Button for the outline the mixin is about, and a TextField for the
         // placeholder - neither of them a layout's.
         let button = Button("press")
-            .borderColor(colour.projectedValue)
-            .borderWidth(number.projectedValue)
+            .strokeWidth(number.projectedValue)
 
         let entry = TextField("").placeholderColor(colour.projectedValue)
 
@@ -199,8 +198,7 @@ final class DrivenPatchTests: XCTestCase {
             tied(["strokeDashOffset", "strokeMiterLimit", "strokeWidth"], to: 1, .inOut, .property))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(7)),
-            tied(["borderWidth"], to: 1, .inOut, .property)
-                .merging(tied(["borderColor"], to: 2, .inOut, .property)) { $1 })
+            tied(["strokeWidth"], to: 1, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property))
         XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property))
     }

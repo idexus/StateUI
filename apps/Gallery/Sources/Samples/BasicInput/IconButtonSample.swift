@@ -23,9 +23,9 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .aspect(.fit)
                     .width(64)
                     .height(64)
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
-                    .cornerRadius(12)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(12))
                     .onClicked { taps += 1 }
                     .onPressed { pressed = true }
                     .onReleased { pressed = false }
@@ -35,7 +35,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .aspect(.fit)
                     .width(64)
                     .height(64)
-                    .cornerRadius(32)
+                    .shape(.roundedRectangle(32))
                     .onClicked { taps += 1 }
             }
 
@@ -54,9 +54,9 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .width(64)
                     .height(64)
                     .padding(12)
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
-                    .cornerRadius(12)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(12))
                     .onClicked { taps += 1 }
                     .onPressed { pressed = true }
                     .onReleased { pressed = false }
@@ -68,7 +68,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .height(64)
                     .padding(12)
                     .background(Palette.accent)
-                    .cornerRadius(32)
+                    .shape(.roundedRectangle(32))
                     .onClicked { taps += 1 }
             }
             .spacing(12)

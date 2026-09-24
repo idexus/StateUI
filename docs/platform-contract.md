@@ -421,14 +421,14 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [Button](controls/Button.md) | 90 | 68 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
+| [Button](controls/Button.md) | 87 | 66 ✅ · 5 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
 | [Canvas](controls/Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [ColorBox](controls/ColorBox.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [DatePicker](controls/DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
 | [Ellipse](controls/Ellipse.md) | 77 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
-| [Grid](controls/Grid.md) | 81 | 62 ✅ · 2 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
-| [HStack](controls/HStack.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
+| [Grid](controls/Grid.md) | 78 | 62 ✅ · 2 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
+| [HStack](controls/HStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [Image](controls/Image.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [Label](controls/Label.md) | 82 | 66 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [Line](controls/Line.md) | 81 | 65 ✅ · 3 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
@@ -439,9 +439,9 @@ Every control, and every part an application, its windows and its pages are made
 | [Polyline](controls/Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 75 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [RadioButton](controls/RadioButton.md) | 85 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [RadioButton](controls/RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [Rectangle](controls/Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [ScrollView](controls/ScrollView.md) | 81 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [ScrollView](controls/ScrollView.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [SearchField](controls/SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [Slider](controls/Slider.md) | 74 | 60 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ |  |  |
 | [Stepper](controls/Stepper.md) | 72 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
@@ -450,9 +450,9 @@ Every control, and every part an application, its windows and its pages are made
 | [TextField](controls/TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ |  |  |
 | [TimePicker](controls/TimePicker.md) | 79 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [TitleBar](controls/TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
+| [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [ZStack](controls/ZStack.md) | 77 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
+| [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
 
 ### Application structure
 
@@ -510,7 +510,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | ✅ |  |  | ✅ |  |  |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | ✅ |  |  | ✅ |  |  |
 | [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | ✅ |  |  | ✅ |  |  |
-| [BorderElement](controls/tiers/BorderElement.md) | `borderColor`, `borderWidth`, `cornerRadius`, `shape`, `stroke`, `strokeWidth` |  |  |  |  |  |  |
+| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` |  |  |  |  |  |  |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | ☑️ |  |  | ☑️ |  |  |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ |  |  |  |  |  |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ |  |  |  |  |  |
@@ -589,15 +589,14 @@ realizes the element and each of its members.
 `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityIdentifier`,
 `accessibilityLabel`, `address`, `allowDrop`, `area`, `aspect`,
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
-`background`, `barBackgroundColor`, `barForegroundColor`, `borderColor`,
-`borderWidth`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
-`columns`, `columnSpacing`, `cornerRadius`, `count`, `currentPage`,
-`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
-`floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
-`fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`,
-`gridRowSpan`, `group`, `groupName`, `growsWithText`, `hasBackButton`,
-`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
-`horizontalAlignment`, `horizontalScrollBarVisibility`,
+`background`, `barBackgroundColor`, `barForegroundColor`, `canDrag`,
+`characterSpacing`, `clipsContent`, `color`, `columns`, `columnSpacing`,
+`cornerRadius`, `count`, `currentPage`, `cursorPosition`, `data`, `date`,
+`dragText`, `drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `format`, `frame`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
+`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
+`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,

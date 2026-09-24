@@ -63,21 +63,21 @@ final class AndroidButtonView: AndroidTextView {
         drawLook()
     }
 
-    /// The button's outline and corners, in points; none of them, and no fill, keeps the theme's look.
-    func setOutline(color: HostValue?, width: Double?, cornerRadius: Double?) {
-        look.stroke = color
-        look.strokeWidth = width ?? 0
-        look.cornerRadius = cornerRadius ?? 0
+    /// The button's outline and shape, the width in points and one where none is said; no outline, a plain
+    /// rectangle and no fill keep the theme's look.
+    func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
+        look.stroke = stroke
+        look.strokeWidth = width ?? 1
+        look.shape = AndroidShapeDrawable.Shape(border: shape)
         drawLook()
     }
 
     /// One shape under the platform's pressed ripple, or the theme's background where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     private func drawLook() {
-        guard look.fill != nil || look.stroke != nil || look.cornerRadius > 0 else { return showBackground(nil) }
+        guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else { return showBackground(nil) }
 
-        let corners: AndroidShapeDrawable.Shape =
-            look.cornerRadius > 0 ? .rounded(Array(repeating: look.cornerRadius, count: 4)) : .rectangle
+        let corners = look.shape
         let shape = AndroidShapeDrawable()
         shape.setShape(corners, density: density)
         shape.setFill(look.fill)
@@ -196,8 +196,8 @@ final class AndroidButtonView: AndroidTextView {
     private struct Look {
         var fill: HostValue?
         var stroke: HostValue?
-        var strokeWidth: Double = 0
-        var cornerRadius: Double = 0
+        var strokeWidth: Double = 1
+        var shape = AndroidShapeDrawable.Shape.rectangle
     }
 
     /// A button's icon.

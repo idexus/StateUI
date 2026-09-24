@@ -102,7 +102,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             HStack {
                 Button("Grow")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked {
                         try await $width.journey.move(to: 300, .eased(1600, .cubicOut))
@@ -110,18 +110,18 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
                 Button("Shrink")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked {
                         try await $width.journey.move(to: 60, .eased(1600, .cubicIn))
                     }
 
                 Button("Stop")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked { $width.journey.stop() }
             }

@@ -100,8 +100,6 @@ extension NodeType {
     static let growsWithText = TextEditorContract.growsWithText.token
     static let background = VisualElementContract.background.token
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token
-    static let borderColor = BorderElementContract.borderColor.token
-    static let borderWidth = BorderElementContract.borderWidth.token
     static let canDrag = ViewContract.canDrag.token
     static let characterSpacing = TextStyleElementContract.characterSpacing.token
     static let shape = BorderElementContract.shape.token
@@ -111,7 +109,7 @@ extension NodeType {
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token
     static let iconSpacing = ButtonContract.iconSpacing.token
-    static let cornerRadius = BorderElementContract.cornerRadius.token
+    static let cornerRadius = ColorBoxContract.cornerRadius.token
     static let count = PositionIndicatorContract.count.token
     static let currentPage = TabbedViewContract.currentPage.token
     static let cursorPosition = InputViewContract.cursorPosition.token

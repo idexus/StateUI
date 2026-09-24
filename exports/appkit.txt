@@ -3,9 +3,6 @@ ActivityIndicator
 Button
   aspect
   background
-  borderColor
-  borderWidth
-  cornerRadius
   fontAttributes
   fontFamily
   fontSize
@@ -13,6 +10,9 @@ Button
   iconPosition
   isEnabled
   lineBreak
+  shape
+  stroke
+  strokeWidth
   text
   textColor
   clicked()

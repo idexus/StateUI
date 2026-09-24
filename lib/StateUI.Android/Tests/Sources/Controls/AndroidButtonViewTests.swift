@@ -72,19 +72,22 @@ final class AndroidButtonViewTests: XCTestCase {
         }
     }
 
-    /// A fill and corners are one shape under Android's own pressed ripple; nothing said keeps the theme's.
+    /// A fill, an outline and a shape are one shape under Android's own pressed ripple - an outline alone draws
+    /// one too; nothing said keeps the theme's.
     func testALookIsOneShapeUnderThePlatformsRipple() {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("Plain")
-                    Button("Drawn").background(.firebrick).cornerRadius(8)
+                    Button("Drawn").background(.firebrick).shape(.roundedRectangle(8))
+                    Button("Outlined").stroke(.navy)
                 }
             }
             let buttons = host.views(AndroidButtonView.self)
 
             XCTAssertEqual(Self.backgroundClass(of: buttons[1]), "android.graphics.drawable.RippleDrawable")
             XCTAssertEqual(Self.underTheRipple(of: buttons[1]), "stateui.android.StateUIShapeDrawable")
+            XCTAssertEqual(Self.underTheRipple(of: buttons[2]), "stateui.android.StateUIShapeDrawable")
             XCTAssertNotEqual(Self.underTheRipple(of: buttons[0]), "stateui.android.StateUIShapeDrawable")
         }
     }

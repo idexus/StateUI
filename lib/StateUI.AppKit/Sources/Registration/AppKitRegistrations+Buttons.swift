@@ -26,8 +26,8 @@ extension AppKitRegistrations {
                 TextElementContract.text, ButtonContract.icon, ButtonContract.iconPosition,
                 ImageElementContract.aspect, ButtonContract.lineBreak,
                 TextStyleElementContract.textColor, VisualElementContract.background,
-                BorderElementContract.borderColor, BorderElementContract.borderWidth,
-                BorderElementContract.cornerRadius, VisualElementContract.isEnabled,
+                BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.strokeWidth, VisualElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize,
                 FontElementContract.fontAttributes,
             ]) { view, values in
@@ -46,8 +46,8 @@ extension AppKitRegistrations {
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background: NSColor? = values[VisualElementContract.background]
                     .flatMap { nsColor($0.propValue) }
-                let borderColor: NSColor? = values[BorderElementContract.borderColor]
-                    .flatMap { nsColor($0.propValue) }
+                let strokeColor: NSColor? = if case .solid(let colour)? = AppKitBrush(
+                    values[BorderElementContract.stroke]?.propValue)?.kind { colour } else { nil }
                 let breaking: NSLineBreakMode = Self.lineBreakMode(
                     values[ButtonContract.lineBreak] ?? .wordWrap)
 
@@ -59,12 +59,9 @@ extension AppKitRegistrations {
                     font: Self.font(values),
                     textColor: textColor,
                     backgroundColor: background,
-                    borderColor: borderColor,
-                    borderWidth: values[BorderElementContract.borderWidth] ?? 0,
-
-                    // A corner radius is declared as a WHOLE number of points,
-                    // and a layer measures in fractions of one.
-                    cornerRadius: Double(values[BorderElementContract.cornerRadius] ?? 0),
+                    strokeColor: strokeColor,
+                    strokeWidth: values[BorderElementContract.strokeWidth] ?? 1,
+                    shape: AppKitDecoration.Shape(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }

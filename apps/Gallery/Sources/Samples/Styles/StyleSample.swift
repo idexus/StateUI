@@ -25,7 +25,7 @@ struct StyleSample: SampleContent, ExampleContent {
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
-                .cornerRadius(10)
+                .shape(.roundedRectangle(10))
                 .padding(16, 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)

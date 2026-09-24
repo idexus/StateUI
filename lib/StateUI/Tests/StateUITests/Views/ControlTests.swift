@@ -114,9 +114,9 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Button", source: "Button.swift",
                 Button("Increment")
-                    .borderColor(.gray)
-                    .borderWidth(1)
-                    .cornerRadius(8)
+                    .stroke(.gray)
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(8))
                     .lineBreak(.noWrap)
                     .icon("tab_list.png")
                     .iconPosition(.leading)
@@ -197,9 +197,9 @@ final class ControlTests: XCTestCase {
                     .isOn(true)
                     .groupName("size")
                     .textCase(.uppercase)
-                    .borderColor(.gray)
-                    .borderWidth(1)
-                    .cornerRadius(8)
+                    .stroke(.gray)
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(8))
                     .onToggled { _ in }),
 
             ControlCase("Slider", source: "Slider.swift",
@@ -679,7 +679,7 @@ final class ControlTests: XCTestCase {
 
             read += declared.count
 
-            // A test writes `.borderColor(`, and the anchors are what keep
+            // A test writes `.strokeWidth(`, and the anchors are what keep
             // `text` from being answered by `textColor`.
             for key in declared.sorted() where !rendered.contains(key) && !tests.contains(".\(key)(") {
                 missing.append("\(source) declares \(key)")

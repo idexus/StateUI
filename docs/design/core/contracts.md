@@ -143,7 +143,7 @@ realized and says nothing.
 A `HostDeclaration` is what a host declares, read off its own runtime: the
 elements it makes a view for and, on each, the members it takes and the events
 it raises. It says presence and never ownership: a runtime does not hold the
-contracts, and `borderColor` on a button is the same call whether the button
+contracts, and `strokeWidth` on a button is the same call whether the button
 or a tier it wears declares it. `realization` names each owner against the
 contracts themselves, so an owner is never written by hand.
 

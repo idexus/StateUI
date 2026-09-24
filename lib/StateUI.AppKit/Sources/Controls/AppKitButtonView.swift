@@ -39,9 +39,9 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         font: NSFont,
         textColor: NSColor,
         backgroundColor: NSColor?,
-        borderColor: NSColor?,
-        borderWidth: Double,
-        cornerRadius: Double,
+        strokeColor: NSColor?,
+        strokeWidth: Double,
+        shape: AppKitDecoration.Shape,
         lineBreakMode: NSLineBreakMode,
         enabled: Bool
     ) {
@@ -56,13 +56,30 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         self.imagePosition = image == nil ? .noImage : imagePosition
         self.imageScaling = imageScaling
 
-        wantsLayer = backgroundColor != nil || borderColor != nil
-            || borderWidth > 0 || cornerRadius > 0
+        outlineShape = shape
+        let shaped: Bool = if case .rectangle = shape { false } else { true }
+        wantsLayer = backgroundColor != nil || strokeColor != nil || shaped
         layer?.backgroundColor = backgroundColor?.cgColor
-        layer?.borderColor = borderColor?.cgColor
-        layer?.borderWidth = max(0, borderWidth)
-        layer?.cornerRadius = max(0, cornerRadius)
-        isBordered = backgroundColor == nil && borderColor == nil && borderWidth <= 0
+        layer?.borderColor = strokeColor?.cgColor
+        layer?.borderWidth = strokeColor == nil ? 0 : max(0, strokeWidth)
+        roundCorners()
+        isBordered = backgroundColor == nil && strokeColor == nil
+    }
+
+    /// The shape the corners follow - an oval rounded into a capsule, which is what a layer's corners can draw.
+    private var outlineShape = AppKitDecoration.Shape.rectangle
+
+    private func roundCorners() {
+        switch outlineShape {
+        case .rectangle: layer?.cornerRadius = 0
+        case .rounded(let radius): layer?.cornerRadius = radius
+        case .ellipse: layer?.cornerRadius = min(bounds.width, bounds.height) / 2
+        }
+    }
+
+    override func layout() {
+        super.layout()
+        roundCorners()
     }
 
     override func mouseDown(with event: NSEvent) {

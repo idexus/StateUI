@@ -14,9 +14,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `borderColor` | property | `Color` | native |
-| `borderWidth` | property | `Double` | native |
-| `cornerRadius` | property | `Int` | native |
 | `shape` | property | `ContainerShape` | stateUI |
 | `stroke` | property | `Brush` | stateUI |
 | `strokeWidth` | property | `Double` | stateUI |

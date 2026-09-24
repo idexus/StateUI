@@ -135,9 +135,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `borderColor` | property | `Color` | native |  |  |  |  |  |  |  |
-| `borderWidth` | property | `Double` | native |  |  |  |  |  |  |  |
-| `cornerRadius` | property | `Int` | native |  |  |  |  |  |  |  |
 | `shape` | property | `ContainerShape` | stateUI | ✅ |  |  | ✅ |  |  |  |
 | `stroke` | property | `Brush` | stateUI | ☑️ |  |  | ✅ |  |  | AppKit outlines a scroller in a colour on a rectangle or a rounded one; an oval, or a gradient, draws none. |
 | `strokeWidth` | property | `Double` | stateUI | ✅ |  |  | ✅ |  |  |  |

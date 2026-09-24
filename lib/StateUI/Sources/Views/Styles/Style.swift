@@ -11,7 +11,7 @@
 ///     Style<Button>()
 ///         .textColor(.white)
 ///         .background(AppColors.primary)
-///         .cornerRadius(8)
+///         .shape(.roundedRectangle(8))
 ///         .padding(14, 10)
 ///         .visualState(.disabled) { $0
 ///             .textColor(AppColors.gray950)
