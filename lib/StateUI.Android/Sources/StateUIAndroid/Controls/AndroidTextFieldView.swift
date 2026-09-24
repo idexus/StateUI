@@ -4,10 +4,26 @@
 @_spi(Host) import StateUI
 import CStateUIAndroid
 
-/// A TextField: an `android.widget.EditText` on one line, whose typing reaches Swift through its `StateUIListener`.
+/// A TextField, a SearchField or a TextEditor: an `android.widget.EditText` on one line or several, whose typing
+/// reaches Swift through its `StateUIListener`.
 /// Design: docs/design/platforms/android/controls.md#a-field-and-its-words
 @MainActor
 final class AndroidTextFieldView: AndroidTextView {
+    /// Which of the three the field is.
+    enum Kind {
+        /// One line, its return key submitting it.
+        case field
+
+        /// One line, its return key captioned for a search.
+        case search
+
+        /// Several lines, its return key starting a new one.
+        case editor
+    }
+
+    /// Which of the three the field is.
+    let kind: Kind
+
     /// What the field does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)?
 
@@ -20,10 +36,47 @@ final class AndroidTextFieldView: AndroidTextView {
     private(set) var isPassword = false
     private var madeHintColors: JavaObject?
 
-    init() {
+    init(_ kind: Kind = .field) {
+        self.kind = kind
         super.init { _ in Java.new(JavaAPI.editText, JavaAPI.newEditText, .object(AndroidRenderer.context)) }
-        Java.call(reference, JavaAPI.setInputType, .int(ViewConstants.textInput))
+        Java.call(reference, JavaAPI.setInputType, .int(inputType))
+        switch kind {
+        case .field:
+            break
+        case .search:
+            setReturnKey(nil)
+        case .editor:
+            Java.call(reference, JavaAPI.setGravity, .int(0x0080_0003 | 0x30))
+            Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(false))
+            setGrows(false)
+        }
         listen(JavaAPI.addTextChangedListener, JavaAPI.setOnEditorActionListener)
+    }
+
+    /// The field's kind of input: one line or several, and hiding what is typed.
+    private var inputType: Int32 {
+        ViewConstants.textInput | (kind == .editor ? ViewConstants.multiLineInput : 0)
+            | (isPassword ? ViewConstants.passwordInput : 0)
+    }
+
+    /// What the keyboard's return key does; nil for the kind's own - the platform's, or a search.
+    func setReturnKey(_ key: ReturnKey?) {
+        // EditorInfo.IME_ACTION_UNSPECIFIED, _GO, _SEARCH, _SEND, _NEXT and _DONE.
+        let action: Int32 = switch key ?? (kind == .search ? .search : .default) {
+        case .default: 0
+        case .go: 2
+        case .search: 3
+        case .send: 4
+        case .next: 5
+        case .done: 6
+        }
+        Java.call(reference, JavaAPI.setImeOptions, .int(action))
+    }
+
+    /// Whether an editor grows as its words do: one that does not is one line tall where nothing gives it
+    /// room, and scrolls within the room it is given.
+    func setGrows(_ grows: Bool) {
+        Java.call(reference, JavaAPI.setMaxLines, .int(grows ? Int32.max : 1))
     }
 
     /// Writes the words where they differ from the field's, with the caret after them.
@@ -72,8 +125,7 @@ final class AndroidTextFieldView: AndroidTextView {
         guard password != isPassword else { return }
 
         isPassword = password
-        let kind = ViewConstants.textInput | (password ? ViewConstants.passwordInput : 0)
-        Java.call(reference, JavaAPI.setInputType, .int(kind))
+        Java.call(reference, JavaAPI.setInputType, .int(inputType))
         setFontAttributes(fontAttributes)
     }
 

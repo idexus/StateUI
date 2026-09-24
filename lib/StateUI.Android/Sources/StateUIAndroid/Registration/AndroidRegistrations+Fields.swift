@@ -4,31 +4,58 @@
 @_spi(Host) import StateUI
 
 extension AndroidRegistrations {
-    /// A TextField: its words are `TextElementContract.text` and the change it reports is
-    /// `InputViewContract.textChanged`. Each member reaches the field only where the tree changed
-    /// it, which keeps the user's typing and caret their own.
+    /// A TextField, a SearchField and a TextEditor: their words are `TextElementContract.text` and the change
+    /// they report is `InputViewContract.textChanged`. Each member reaches the field only where the tree
+    /// changed it, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<AndroidView>) {
         registry.add(TextFieldContract.self, create: { reports in
-            let field = AndroidTextFieldView()
+            let field = AndroidTextFieldView(.field)
             field.onTextChanged = { typed in
                 reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged)
             }
             field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return field
         }, members: { field in
-            field.applies(fieldMembers) { view, values in applyField(view, values) }
+            field.applies(inputMembers + [TextFieldContract.isPassword]) { view, values in applyField(view, values) }
+            field.property(TextFieldContract.returnKey) { view, key in view.setReturnKey(key) }
             field.raises(InputViewContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
+
+        registry.add(SearchFieldContract.self, create: { reports in
+            let search = AndroidTextFieldView(.search)
+            search.onTextChanged = { typed in
+                reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged)
+            }
+            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            return search
+        }, members: { search in
+            search.applies(inputMembers) { view, values in applyField(view, values) }
+            search.property(SearchFieldContract.returnKey) { view, key in view.setReturnKey(key) }
+            search.raises(InputViewContract.textChanged)
+            search.raises(SearchFieldContract.submitted)
+        })
+
+        registry.add(TextEditorContract.self, create: { reports in
+            let editor = AndroidTextFieldView(.editor)
+            editor.onTextChanged = { typed in
+                reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged)
+            }
+            return editor
+        }, members: { editor in
+            editor.applies(inputMembers) { view, values in applyField(view, values) }
+            editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrows(grows ?? false) }
+            editor.raises(InputViewContract.textChanged)
+        })
     }
 
-    /// What a field takes whole.
-    private static let fieldMembers: [any ContractMember] = [
+    /// What every field takes whole.
+    private static let inputMembers: [any ContractMember] = [
         TextElementContract.text, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontFamily, TextStyleElementContract.textColor, InputViewContract.placeholder,
         InputViewContract.placeholderColor,
         InputViewContract.maximumLength, InputViewContract.cursorPosition, InputViewContract.selectionLength,
-        TextFieldContract.isPassword, VisualElementContract.isEnabled,
+        VisualElementContract.isEnabled,
     ]
 
     private static func applyField<Realized: ElementContract>(

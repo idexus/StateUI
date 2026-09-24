@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isPassword` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `returnKey` | property | `ReturnKey` | adaptive | ✅ |  |  |  |  |  |  |  |
+| `returnKey` | property | `ReturnKey` | adaptive | ✅ |  |  |  | ✅ |  |  |  |
 | `showsClearButton` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 

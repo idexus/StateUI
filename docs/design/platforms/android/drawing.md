@@ -81,3 +81,17 @@ go; only a bar's and a tab's icons are kept for as long as the host runs.
 
 A colour box has nothing to show but its colour: it takes the room its layout
 gives it and asks for none of its own.
+
+## Shapes
+
+A shape is one view of the host's, drawn on its own canvas: a rectangle or an
+ellipse fills the view, inset by half its outline so the outline stays
+inside; a line, a path, a polygon or a polyline is its own geometry, placed
+in the view by the shape's aspect - fitted, covering, stretched or at its own
+size, always centred - and then moved by its render transform, as a view is
+moved after its layout. A path's arcs come as the shared parser's cubic
+curves. The geometry crosses as one array of commands in pixels, and the
+brush, the outline and the placement one call each. The fill is the brush
+every shape of the host's paints with; the outline is a colour - a gradient's
+first - and its dashes count in the outline's width, as StateUI's do. A
+shape asks for no room of its own.

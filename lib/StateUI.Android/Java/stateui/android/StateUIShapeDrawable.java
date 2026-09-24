@@ -5,15 +5,12 @@ package stateui.android;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -26,12 +23,6 @@ final class StateUIShapeDrawable extends Drawable {
     static final int ROUNDED = 1;
     static final int ELLIPSE = 2;
 
-    /** The brush's kinds, as StateUI numbers them. */
-    static final int NONE = 0;
-    static final int SOLID = 1;
-    static final int LINEAR = 2;
-    static final int RADIAL = 3;
-
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint stroke = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path path = new Path();
@@ -39,10 +30,7 @@ final class StateUIShapeDrawable extends Drawable {
 
     private int shape = RECTANGLE;
     private float[] radii = new float[8];
-    private int brush = NONE;
-    private int[] colors = new int[0];
-    private float[] offsets = new float[0];
-    private float[] geometry = new float[0];
+    private final StateUIBrush brush = new StateUIBrush();
     private float strokeWidth;
     private int strokeColor;
 
@@ -70,10 +58,7 @@ final class StateUIShapeDrawable extends Drawable {
 
     /** The brush: its kind, its stops' colours and offsets, and its geometry in fractions of the shape. */
     void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] fractions) {
-        brush = kind;
-        colors = stopColors;
-        offsets = stopOffsets;
-        geometry = fractions;
+        brush.set(kind, stopColors, stopOffsets, fractions);
         invalidateSelf();
     }
 
@@ -98,7 +83,7 @@ final class StateUIShapeDrawable extends Drawable {
         }
 
         float opacity = alpha / 255f * (enabled ? 1 : disabledAlpha);
-        if (paint(bounds)) {
+        if (brush.paint(fill, bounds)) {
             fill.setAlpha(Math.round(fill.getAlpha() * opacity));
             canvas.drawPath(path, fill);
         }
@@ -127,38 +112,6 @@ final class StateUIShapeDrawable extends Drawable {
         if (now == enabled) return false;
         enabled = now;
         invalidateSelf();
-        return true;
-    }
-
-    /** Sets the fill's colour or shader for `bounds`; false when there is nothing to fill. */
-    private boolean paint(Rect bounds) {
-        fill.setShader(null);
-        if (brush == SOLID && colors.length > 0) {
-            fill.setColor(colors[0]);
-            return true;
-        }
-        if (colors.length == 0) return false;
-
-        float width = bounds.width();
-        float height = bounds.height();
-        int[] stops = colors.length == 1 ? new int[] { colors[0], colors[0] } : colors;
-        float[] at = colors.length == 1 ? null : offsets;
-        Shader shader = null;
-        if (brush == LINEAR && geometry.length >= 4) {
-            shader = new LinearGradient(
-                    bounds.left + width * geometry[0], bounds.top + height * geometry[1],
-                    bounds.left + width * geometry[2], bounds.top + height * geometry[3],
-                    stops, at, Shader.TileMode.CLAMP);
-        } else if (brush == RADIAL && geometry.length >= 3) {
-            float radius = Math.max(Math.max(width, height) * geometry[2], 0.001f);
-            shader = new RadialGradient(
-                    bounds.left + width * geometry[0], bounds.top + height * geometry[1],
-                    radius, stops, at, Shader.TileMode.CLAMP);
-        }
-        if (shader == null) return false;
-
-        fill.setColor(0xFF000000);
-        fill.setShader(shader);
         return true;
     }
 

@@ -104,6 +104,7 @@ enum JavaAPI {
     static let setHintTextColors = Java.method(
         textView, "setHintTextColor", "(Landroid/content/res/ColorStateList;)V")
     static let setInputType = Java.method(textView, "setInputType", "(I)V")
+    static let setImeOptions = Java.method(textView, "setImeOptions", "(I)V")
     static let getSelectionStart = Java.method(textView, "getSelectionStart", "()I")
     static let getSelectionEnd = Java.method(textView, "getSelectionEnd", "()I")
     static let addTextChangedListener = Java.method(
@@ -128,6 +129,13 @@ enum JavaAPI {
         compoundButton, "setButtonTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getButtonTintList = Java.method(
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
+    static let shapeView = Java.findClass("stateui/android/StateUIShapeView")
+    static let newShapeView = Java.method(shapeView, "<init>", "(Landroid/content/Context;)V")
+    static let setShapeGeometry = Java.method(shapeView, "setGeometry", "(I[F[FZ)V")
+    static let setShapeFill = Java.method(shapeView, "setFill", "(I[I[F[F)V")
+    static let setShapeStroke = Java.method(shapeView, "setStroke", "(IF[FFIIF)V")
+    static let setShapePlacement = Java.method(shapeView, "setPlacement", "(I[F)V")
+
     static let picker = Java.findClass("stateui/android/StateUIPicker")
     static let newPicker = Java.method(picker, "<init>", "(Landroid/content/Context;J)V")
     static let setChoices = Java.method(picker, "setChoices", "([Ljava/lang/String;Ljava/lang/String;I)V")
@@ -336,9 +344,11 @@ enum ViewConstants {
     /// `View.GONE`.
     static let gone: Int32 = 8
 
-    /// `InputType.TYPE_CLASS_TEXT`, and its variation that hides what is typed.
+    /// `InputType.TYPE_CLASS_TEXT`, its variation that hides what is typed, and its flag for several lines.
     static let textInput: Int32 = 0x1
     static let passwordInput: Int32 = 0x80
+    static let multiLineInput: Int32 = 0x20000
+
 
     /// `TypedValue.COMPLEX_UNIT_PX` and `COMPLEX_UNIT_SP`: a text size in pixels, and one the user's font scale applies to.
     static let pixels: Int32 = 0

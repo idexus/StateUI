@@ -37,6 +37,17 @@ CheckBox
 ColorBox
   color
   cornerRadius
+Ellipse
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 Grid
   columnSpacing
   columns
@@ -66,6 +77,33 @@ Label
   textColor
   textDecorations
   verticalTextAlignment
+Line
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+  x1
+  x2
+  y1
+  y2
+Path
+  aspect
+  data
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 Picker
   fontAttributes
   fontFamily
@@ -81,6 +119,32 @@ Picker
   closed()
   opened()
   selectedIndexChanged()
+Polygon
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Polyline
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 ProgressBar
   progress
   tint
@@ -95,6 +159,18 @@ RadioButton
   textCase
   textColor
   toggled()
+Rectangle
+  aspect
+  cornerRadius
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 ScrollView
   horizontalScrollBarVisibility
   orientation
@@ -104,6 +180,21 @@ ScrollView
   scrollStopped()
   scrollXChanged()
   scrollYChanged()
+SearchField
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  returnKey
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
 Slider
   isEnabled
   maximum
@@ -124,6 +215,20 @@ Switch
   isEnabled
   isOn
   toggled()
+TextEditor
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  growsWithText
+  isEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  textChanged()
 TextField
   cursorPosition
   fontAttributes
@@ -134,6 +239,7 @@ TextField
   maximumLength
   placeholder
   placeholderColor
+  returnKey
   selectionLength
   text
   textColor

@@ -17,11 +17,10 @@ enum AndroidRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Canvas", "Content", "ContextMenu", "DatePicker", "Ellipse", "LeadingContent", "Line", "Map", "Menu",
-        "MenuBar", "MenuItem", "MenuSeparator", "ModalStack", "Overlay", "Path", "Pin", "Polygon",
-        "Polyline", "PositionIndicator", "Rectangle", "RefreshView", "SearchField", "Setters",
-        "SwipeAction", "SwipeActions", "SwipeView", "TextEditor", "TimePicker", "TitleBar", "TitleView",
-        "TrailingContent", "VisualState", "WebView",
+        "Canvas", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
+        "MenuSeparator", "ModalStack", "Overlay", "Pin", "PositionIndicator", "RefreshView", "Setters",
+        "SwipeAction", "SwipeActions", "SwipeView", "TimePicker", "TitleBar", "TitleView", "TrailingContent",
+        "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's text - so

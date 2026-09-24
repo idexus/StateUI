@@ -47,6 +47,14 @@ A password field is a field whose input type hides what is typed. Android
 resets the typeface when the input type changes, so the field puts its weight
 back after it.
 
+A text field, a search field and a text editor are one `EditText` of three
+kinds. A search field is a field whose keyboard's return key is captioned for
+a search; a text field's is the platform's until the tree names one. An
+editor takes several lines, standing from its top, and Return starts a new
+one. One that does not grow with its words is one line tall where nothing
+gives it room, and scrolls within the room it is given; one that grows is as
+tall as its lines.
+
 ## Return, once
 
 A keyboard's action reaches the listener with no key event; a hardware Return

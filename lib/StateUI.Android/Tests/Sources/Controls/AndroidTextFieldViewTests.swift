@@ -25,6 +25,9 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testAStateWriteShowsTheWordsAndIsNotHeardAsTyping", testAStateWriteShowsTheWordsAndIsNotHeardAsTyping),
             ("testAPasswordHidesTheWordsAndKeepsThem", testAPasswordHidesTheWordsAndKeepsThem),
             ("testReturnSubmitsOnce", testReturnSubmitsOnce),
+            ("testAReturnKeyIsCaptionedAsTheTreeSays", testAReturnKeyIsCaptionedAsTheTreeSays),
+            ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
+            ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
         ]
     }
 
@@ -130,6 +133,64 @@ final class AndroidTextFieldViewTests: XCTestCase {
             field.press(key: 66)
 
             XCTAssertEqual(submitted.values.count, 2)
+        }
+    }
+
+    /// A field's return key is the platform's where nothing is said, and the tree's choice where it is; a
+    /// search field's is a search.
+    func testAReturnKeyIsCaptionedAsTheTreeSays() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField("")
+                    TextField("").returnKey(.next)
+                    SearchField("")
+                }
+            }
+            let fields = host.views(AndroidTextFieldView.self)
+
+            // EditorInfo.IME_ACTION_UNSPECIFIED, IME_ACTION_NEXT and IME_ACTION_SEARCH.
+            XCTAssertEqual(fields.map { Java.callInt($0.reference, TestJava.getImeOptions) }, [0, 5, 3])
+        }
+    }
+
+    func testASearchFieldSubmitsItsSearch() throws {
+        try onMainActor {
+            let query = State(wrappedValue: "")
+            let searched = Received<String>()
+            let host = AndroidRenderer.running {
+                SearchField(query.projectedValue).onSubmitted { searched.values.append(query.wrappedValue) }
+            }
+            let field = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+
+            field.type("ada")
+            Java.call(field.reference, TestJava.onEditorAction, .int(3))
+
+            XCTAssertEqual(query.wrappedValue, "ada")
+            XCTAssertEqual(searched.values, ["ada"])
+        }
+    }
+
+    /// An editor takes several lines; it grows with them only where the tree says so, and one that does not is
+    /// as tall as its room.
+    func testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold() throws {
+        try onMainActor {
+            let draft = State(wrappedValue: "one\ntwo\nthree")
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextEditor(draft.projectedValue).horizontalAlignment(.start)
+                    TextEditor(draft.projectedValue).growsWithText(true).horizontalAlignment(.start)
+                    TextEditor(draft.projectedValue).height(100).horizontalAlignment(.start)
+                }
+            }
+            host.layOut()
+            let editors = host.views(AndroidTextFieldView.self)
+
+            XCTAssertEqual(editors[0].text, "one\ntwo\nthree")
+            XCTAssertGreaterThan(editors[1].frame.height, editors[0].frame.height * 3 / 2, "three lines against one")
+            XCTAssertEqual(editors[2].frame.height, 200, "its room, at two pixels a point")
+            let multiLine = Java.callInt(editors[0].reference, TestJava.getInputType) & 0x20000
+            XCTAssertEqual(multiLine, 0x20000)
         }
     }
 }

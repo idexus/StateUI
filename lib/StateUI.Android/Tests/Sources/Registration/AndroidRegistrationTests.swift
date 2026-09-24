@@ -20,9 +20,10 @@ final class AndroidRegistrationTests: XCTestCase {
             XCTAssertEqual(
                 realization.elements,
                 [
-                    "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "CheckBox", "ColorBox", "Grid", "HStack", "Image", "Label",
-                    "Picker", "ProgressBar", "RadioButton", "ScrollView", "Slider", "Stepper",
-                    "Switch", "TextField", "VStack",
+                    "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "CheckBox", "ColorBox", "Ellipse", "Grid",
+                    "HStack", "Image", "Label", "Line", "Path", "Polygon", "Polyline", "Rectangle",
+                    "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Stepper",
+                    "Switch", "TextEditor", "TextField", "VStack",
                 ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),

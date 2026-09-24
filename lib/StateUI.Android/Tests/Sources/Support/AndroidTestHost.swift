@@ -58,6 +58,8 @@ enum TestJava {
     static let getClipToPadding = Java.method(JavaAPI.viewGroup, "getClipToPadding", "()Z")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
+    static let getImeOptions = Java.method(JavaAPI.textView, "getImeOptions", "()I")
+    static let getInputType = Java.method(JavaAPI.textView, "getInputType", "()I")
     static let getDefaultColor = Java.method(JavaAPI.colorStateList, "getDefaultColor", "()I")
     static let getFilesDir = Java.method(JavaAPI.contextClass, "getFilesDir", "()Ljava/io/File;")
     static let getForeground = Java.method(JavaAPI.view, "getForeground", "()Landroid/graphics/drawable/Drawable;")

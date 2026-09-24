@@ -68,39 +68,39 @@ final class AndroidShapeDrawable {
         Java.release(local: corners)
     }
 
-    /// What fills the shape: a colour, or a brush as it crosses - its kind, its geometry, then an offset
-    /// and a colour for each stop; nil for nothing.
-    /// Design: docs/design/types/brushes.md#the-wire-form
+    /// What fills the shape: a colour, or a brush as it crosses; nil for nothing.
     func setFill(_ value: HostValue?) {
-        var kind: Int32 = 0
-        var geometry: [Double] = []
-        var stops: [(offset: Double, argb: Int32)] = []
-
-        if let value, let argb = AndroidView.argb(value) {
-            kind = 1
-            stops = [(0, argb)]
-        } else if let parts = value?.values, let brush = parts.first?.enumeration {
-            kind = brush
-            if brush == 1 {
-                stops = parts.value(1).flatMap(AndroidView.argb).map { [(0, $0)] } ?? []
-            } else {
-                geometry = parts.value(1)?.numbers ?? []
-                var index = 2
-                while index + 1 < parts.count, let offset = parts[index].number,
-                      let argb = AndroidView.argb(parts[index + 1]) {
-                    stops.append((min(max(offset, 0), 1), argb))
-                    index += 2
-                }
-            }
-        }
-
-        let colors = Java.ints(stops.map(\.argb))
-        let offsets = Java.floats(stops.map { Float($0.offset) })
-        let fractions = Java.floats(geometry.map(Float.init))
-        Java.call(reference, JavaAPI.setFill, .int(kind), .object(colors), .object(offsets), .object(fractions))
+        let brush = Self.brush(value)
+        let colors = Java.ints(brush.colors)
+        let offsets = Java.floats(brush.offsets)
+        let fractions = Java.floats(brush.geometry)
+        Java.call(reference, JavaAPI.setFill, .int(brush.kind), .object(colors), .object(offsets), .object(fractions))
         Java.release(local: fractions)
         Java.release(local: offsets)
         Java.release(local: colors)
+    }
+
+    /// A brush as the Java side takes it: its kind, then a colour and an offset for each stop, and its
+    /// geometry in fractions of the shape - from a colour, or a brush as it crosses: its kind, its geometry,
+    /// then an offset and a colour for each stop.
+    /// Design: docs/design/types/brushes.md#the-wire-form
+    static func brush(_ value: HostValue?) -> (kind: Int32, colors: [Int32], offsets: [Float], geometry: [Float]) {
+        if let value, let argb = AndroidView.argb(value) { return (1, [argb], [0], []) }
+        guard let parts = value?.values, let brush = parts.first?.enumeration else { return (0, [], [], []) }
+
+        if brush == 1 {
+            let argb = parts.value(1).flatMap(AndroidView.argb)
+            return (1, argb.map { [$0] } ?? [], argb == nil ? [] : [0], [])
+        }
+        var colors: [Int32] = []
+        var offsets: [Float] = []
+        var index = 2
+        while index + 1 < parts.count, let offset = parts[index].number, let argb = AndroidView.argb(parts[index + 1]) {
+            colors.append(argb)
+            offsets.append(Float(min(max(offset, 0), 1)))
+            index += 2
+        }
+        return (brush, colors, offsets, (parts.value(1)?.numbers ?? []).map(Float.init))
     }
 
     /// The outline: a colour, or a brush's first colour, `width` pixels wide; none for nil.
