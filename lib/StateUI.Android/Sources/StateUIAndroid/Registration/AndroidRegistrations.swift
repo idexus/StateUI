@@ -76,6 +76,7 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(ViewContract.absoluteLayoutBounds)
         registry.everyElementRealizes(ViewContract.absoluteLayoutProportions)
         registry.everyElementRaises(ViewContract.tapped)
+        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
         registry.everyElementRealizes(ViewContract.tapCount)
         registry.everyElementRealizes(ViewContract.panXChannel)
         registry.everyElementRealizes(ViewContract.panYChannel)

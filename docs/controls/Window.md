@@ -17,9 +17,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `activated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `created` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `created` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `deactivated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `destroying` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `destroying` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `floatsOnTop` | property | `Bool` | adaptive | ☑️ | ✅ |  |  |  |  |  | MAUI: Only Mac Catalyst keeps the window on top; Windows and Linux leave it among the others. |
 | `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `hidesWhenInactive` | property | `Bool` | adaptive |  | ✅ |  |  |  |  |  |  |
@@ -31,9 +31,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `resumed` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `resumed` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `stopped` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `windowType` | property | `WindowType` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `windowValue` | property | `String` | structure | ✅ | ✅ |  |  |  |  |  |  |

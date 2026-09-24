@@ -330,6 +330,7 @@ WebView
   verticalAlignment
   width
   frameChanged()
+  isFocusedChanged()
   panUpdated()
   pinchUpdated()
   pointerEntered()

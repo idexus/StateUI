@@ -87,7 +87,12 @@ and the new one takes the scene over, its controls drawn in the new theme.
 
 The activity's resume, pause and stop move the application's phase, and
 then the scene's and its window's: activated, deactivated and stopped, each
-rendered before the next is heard.
+rendered before the next is heard. A window shown again after it stopped is
+resumed on its way to active. The window hears it was made after the render
+that first shows it, once; and it is going - then its scene - only when the
+activity finishes, not when Android makes the activity again for a new
+configuration. The window's title is the activity's, and the label its task
+shows among the recent ones.
 
 ## Acts
 

@@ -18,6 +18,7 @@ import android.widget.TextView;
 final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
         View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
+        View.OnFocusChangeListener,
         ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
 
@@ -113,6 +114,11 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
     @Override
     public void onCreateContextMenu(ContextMenu menu, View asked, ContextMenu.ContextMenuInfo information) {
         StateUIHost.menuOpening(view, menu);
+    }
+
+    @Override
+    public void onFocusChange(View focused, boolean hasFocus) {
+        StateUIHost.focusChanged(view, hasFocus);
     }
 
     @Override

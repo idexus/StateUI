@@ -92,6 +92,12 @@ final class StateUIHost {
      */
     static native void gestured(long view, int kind, int phase, float x, float y, float z);
 
+    /** A view took the keyboard's focus, or lost it. */
+    static native void focusChanged(long view, boolean focused);
+
+    /** The activity is finishing - the user left it, or it finished itself: its window is going. */
+    static native void destroying();
+
     /** A web view's navigation started: why, as StateUI numbers it, and where it is going. */
     static native void webNavigating(long view, int cause, String address);
 

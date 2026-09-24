@@ -66,6 +66,13 @@ final class AndroidRenderer {
     private var shownArrangement: AndroidElement? { shownArrangementElement?.android }
     private var handlesBack = false
 
+    /// The window told it was made, and whether the activity stands stopped.
+    private weak var createdWindow: MountedElement?
+    private var stopped = false
+
+    /// The title the activity was last given, as the first window says it; none before any window says.
+    private(set) var windowTitle: String??
+
     /// How deep the user's transactions stand; their events wait for the outermost to end.
     private var transactionDepth = 0
 
@@ -176,6 +183,10 @@ final class AndroidRenderer {
         core.setApplicationPhase(phase)
         pump()
 
+        let resumes = stopped && phase != .background
+        stopped = phase == .background
+        if resumes, let handler = tree.root?.first(type: .window)?.handler(.resumed) { dispatch(handler) }
+
         let event: Event = switch phase {
         case .active: .activated
         case .inactive: .deactivated
@@ -183,6 +194,13 @@ final class AndroidRenderer {
         }
         for element in [tree.root?.first(type: .scene), tree.root?.first(type: .window)] {
             if let handler = element?.handler(event) { dispatch(handler) }
+        }
+    }
+
+    /// The activity is finishing: its window hears it is going, then its scene.
+    func destroying() {
+        for type in [NodeType.window, .scene] {
+            if let handler = tree.root?.first(type: type)?.handler(.destroying) { dispatch(handler) }
         }
     }
 
@@ -364,7 +382,27 @@ final class AndroidRenderer {
         }
 
         displayCycle.presentStateChannels()
+        showWindow()
         showPage()
+    }
+
+    /// Names the activity after the first window, and tells a window it was made, once, in its turn.
+    private func showWindow() {
+        guard let window = tree.root?.first(type: .window) else { return }
+
+        let title = window.value(.title)?.string
+        if windowTitle != .some(title) {
+            windowTitle = .some(title)
+            Java.frame {
+                Java.callStatic(
+                    JavaAPI.environment, JavaAPI.setWindowTitle, .object(context.reference),
+                    .object(title.flatMap(Java.string)))
+            }
+        }
+        if window !== createdWindow {
+            createdWindow = window
+            if let handler = window.handler(.created) { enqueuePhase(handler) }
+        }
     }
 
     /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show,

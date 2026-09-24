@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -88,6 +89,23 @@ final class StateUIEnvironment {
         Calendar noon = Calendar.getInstance(timeZone);
         if (year != 0) noon.set(year, month - 1, day, 12, 0, 0);
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
+    }
+
+    /**
+     * The window's title: the activity's, and the label its task shows among the recent ones - none gives back
+     * the application's own. A context that is no activity takes none.
+     */
+    static void title(Context context, String title) {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+        activity.setTitle(title);
+        activity.setTaskDescription(task(title));
+    }
+
+    @SuppressWarnings("deprecation")
+    private static ActivityManager.TaskDescription task(String label) {
+        if (Build.VERSION.SDK_INT >= 33) return new ActivityManager.TaskDescription.Builder().setLabel(label).build();
+        return new ActivityManager.TaskDescription(label);
     }
 
     /** Takes the keyboard down from whatever holds the focus under `root`; whether anything did. */

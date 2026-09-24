@@ -18,7 +18,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `activated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `deactivated` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `destroying` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `destroying` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `stopped` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `windowClosed` | event | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 | `windowRestored` | event | `(String, String?)` | adaptive | ✅ | ✅ |  |  |  |  |  |  |

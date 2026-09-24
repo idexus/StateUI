@@ -57,6 +57,7 @@ enum AndroidRealization {
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
+        .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
         .complete("Span", "fontSize"),
         .complete("Span", "text"),
@@ -67,8 +68,12 @@ enum AndroidRealization {
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),
+        .complete("Window", "created"),
         .complete("Window", "deactivated"),
+        .complete("Window", "destroying"),
         .complete("Window", "modalPopped"),
+        .complete("Window", "resumed"),
         .complete("Window", "stopped"),
+        .complete("Window", "title"),
     ]
 }

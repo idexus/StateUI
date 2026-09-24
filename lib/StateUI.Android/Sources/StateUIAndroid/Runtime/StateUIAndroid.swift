@@ -88,6 +88,14 @@ enum JavaNatives {
                 view.onGesture?(gesture)
             }
         }
+        let focusChanged: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, focused in
+            MainActor.assumeIsolated {
+                AndroidView.find(number)?.onFocusChanged?(focused != 0)
+            }
+        }
+        let destroying: @convention(c) (Environment, jclass?) -> Void = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.destroying() }
+        }
         let menuOpening: @convention(c) (Environment, jclass?, jlong, jobject?) -> Void = { _, _, number, menu in
             nonisolated(unsafe) let menu = menu
             MainActor.assumeIsolated {
@@ -227,6 +235,8 @@ enum JavaNatives {
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
+            ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
+            ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
             ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),

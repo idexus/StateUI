@@ -58,6 +58,13 @@ public class StateUIActivity extends Activity {
         StateUIHost.phase(StateUIHost.BACKGROUND);
     }
 
+    /** The activity finishing - not one made again for a new configuration - takes its window away. */
+    @Override
+    protected void onDestroy() {
+        if (isFinishing()) StateUIHost.destroying();
+        super.onDestroy();
+    }
+
     /** The display turned or resized: the host reads it again. */
     @Override
     public void onConfigurationChanged(Configuration configuration) {

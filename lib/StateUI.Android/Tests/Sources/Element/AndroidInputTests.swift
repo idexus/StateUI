@@ -10,6 +10,7 @@ final class AndroidInputTests: XCTestCase {
         [
             ("testATapReachesItsHandlerAndLeavesWithIt", testATapReachesItsHandlerAndLeavesWithIt),
             ("testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind", testALayoutThatIgnoresInputLetsTheTouchThroughToWhatIsBehind),
+            ("testAFieldSaysWhenItTakesTheFocusAndLosesIt", testAFieldSaysWhenItTakesTheFocusAndLosesIt),
         ]
     }
 
@@ -61,6 +62,31 @@ final class AndroidInputTests: XCTestCase {
             XCTAssertTrue(Java.callBool(button.reference, TestJava.isPressed), "the button behind is pressed")
             XCTAssertFalse(Java.callBool(border.reference, TestJava.isPressed))
             page.touch(3, x: 200, y: 100)
+        }
+    }
+}
+
+extension AndroidInputTests {
+    /// A field takes the keyboard's focus and says so; another taking it, it says it lost it.
+    func testAFieldSaysWhenItTakesTheFocusAndLosesIt() throws {
+        try onMainActor {
+            let focused = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField("").isFocused(focused.projectedValue)
+                    TextField("")
+                }
+            }
+            let fields = host.views(AndroidTextFieldView.self)
+            XCTAssertEqual(fields.count, 2)
+
+            XCTAssertTrue(Java.callBool(try XCTUnwrap(fields.first).reference, TestJava.requestFocus))
+            host.pump()
+            XCTAssertTrue(focused.wrappedValue)
+
+            XCTAssertTrue(Java.callBool(try XCTUnwrap(fields.last).reference, TestJava.requestFocus))
+            host.pump()
+            XCTAssertFalse(focused.wrappedValue)
         }
     }
 }

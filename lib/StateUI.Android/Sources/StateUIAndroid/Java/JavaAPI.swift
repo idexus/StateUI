@@ -60,6 +60,8 @@ enum JavaAPI {
         view, "setOnScrollChangeListener", "(Landroid/view/View$OnScrollChangeListener;)V")
     static let setOnTouchListener = Java.method(view, "setOnTouchListener", "(Landroid/view/View$OnTouchListener;)V")
     static let setOnHoverListener = Java.method(view, "setOnHoverListener", "(Landroid/view/View$OnHoverListener;)V")
+    static let setOnFocusChangeListener = Java.method(
+        view, "setOnFocusChangeListener", "(Landroid/view/View$OnFocusChangeListener;)V")
     static let setVerticalScrollBarEnabled = Java.method(view, "setVerticalScrollBarEnabled", "(Z)V")
     static let setHorizontalScrollBarEnabled = Java.method(view, "setHorizontalScrollBarEnabled", "(Z)V")
     static let setScrollbarFadingEnabled = Java.method(view, "setScrollbarFadingEnabled", "(Z)V")
@@ -350,6 +352,8 @@ enum JavaAPI {
     static let zone = Java.staticMethod(environment, "zone", "()Ljava/lang/String;")
     static let utcOffset = Java.staticMethod(environment, "utcOffset", "(Ljava/lang/String;III)I")
     static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
+    static let setWindowTitle = Java.staticMethod(
+        environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let deviceFacts = Java.staticMethod(environment, "device", "()[Ljava/lang/String;")
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
     static let applicationFacts = Java.staticMethod(

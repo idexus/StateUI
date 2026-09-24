@@ -83,6 +83,19 @@ class AndroidView {
     /// What the view does with a gesture its element listens for.
     var onGesture: ((Gesture) -> Void)?
 
+    /// What the view does when it takes the keyboard's focus or loses it; nil where nothing listens.
+    private(set) var onFocusChanged: ((Bool) -> Void)?
+    private var listensForFocus = false
+
+    /// Makes the view say when it takes the keyboard's focus and loses it, or say nothing for nil.
+    func setFocusChanged(_ action: ((Bool) -> Void)?) {
+        if action != nil, !listensForFocus {
+            listensForFocus = true
+            listen(JavaAPI.setOnFocusChangeListener)
+        }
+        onFocusChanged = action
+    }
+
     // MARK: - What every view takes
 
     func setShown(_ shown: Bool) {
@@ -308,6 +321,7 @@ class AndroidView {
         onMenuOpening = nil
         onMenuChose = nil
         onGesture = nil
+        onFocusChanged = nil
     }
 
     /// Asks Android to measure and place this view and its ancestors again.

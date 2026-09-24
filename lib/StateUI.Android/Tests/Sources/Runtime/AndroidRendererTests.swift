@@ -26,6 +26,8 @@ final class AndroidRendererTests: XCTestCase {
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testASecondActivityShowsTheSceneTheFirstShowed", testASecondActivityShowsTheSceneTheFirstShowed),
             ("testTheActivitysLifecycleMovesTheWindowAndTheScene", testTheActivitysLifecycleMovesTheWindowAndTheScene),
+            ("testAWindowStoppedComesBackResumedAndHearsItIsGoing", testAWindowStoppedComesBackResumedAndHearsItIsGoing),
+            ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
         ]
     }
 
@@ -91,6 +93,58 @@ final class AndroidRendererTests: XCTestCase {
             host.setPhase(.background)
             XCTAssertEqual(said, "stopped background")
         }
+    }
+}
+
+extension AndroidRendererTests {
+    /// A window stopped and shown again is resumed on its way to active; the activity finishing tells it it is
+    /// going; and it is told it was made once, not again with each render.
+    func testAWindowStoppedComesBackResumedAndHearsItIsGoing() {
+        onMainActor {
+            let log = Received<String>()
+            let host = AndroidRenderer.running { WindowPhaseLog(log: log) }
+
+            host.setPhase(.background)
+            host.setPhase(.active)
+            host.destroying()
+            host.pump()
+
+            XCTAssertEqual(log.values, ["stopped", "resumed", "activated", "destroying"])
+        }
+    }
+}
+
+extension AndroidRendererTests {
+    /// The window's title is what the activity - and its task among the recent ones - is called.
+    func testTheWindowsTitleNamesTheActivity() {
+        onMainActor {
+            let host = AndroidRenderer.running { TitledWindowPage(title: "Notes") }
+            XCTAssertEqual(host.windowTitle, .some("Notes"))
+        }
+    }
+}
+
+/// A page that names its window.
+private struct TitledWindowPage: ContentView {
+    @Environment private var window: WindowSession
+    let title: String
+
+    var content: any View {
+        let window = self.window
+        let title = self.title
+        return Label(title).onCreated { window.title = title }
+    }
+}
+
+/// Each phase the window moves to, in order.
+private struct WindowPhaseLog: ContentView {
+    @Environment private var window: WindowSession
+    let log: Received<String>
+
+    var content: any View {
+        let window = self.window
+        let log = self.log
+        return Label("\(window.phase)").onChanged(window.phase) { log.values.append("\(window.phase)") }
     }
 }
 
