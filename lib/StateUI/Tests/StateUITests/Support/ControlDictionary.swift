@@ -638,24 +638,22 @@ struct ControlDictionary {
     /// realization is missing. A registry knows presence and nothing else, so
     /// a judgement stays written.
     static func declarations() throws -> [Declaration] {
-        let record = #"\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)"#
-
         let maui = try Declaration(
             host: "MAUI", reading: "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs",
-            records: #"\b(Complete|Partial)"# + record,
+            records: #"\b(Complete|Partial)"#,
             unrealized: #"Unrealized = \[([^\]]*)\]"#,
             viewless: nil)
 
         let appKit = try Declaration(
             host: "AppKit", reading: "lib/StateUI.AppKit/Sources/Registration/AppKitRealization.swift",
-            records: #"\.(complete|partial)"# + record,
+            records: #"\.(complete|partial)"#,
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
 
         let android = try Declaration(
             host: "Android Views",
             reading: "lib/StateUI.Android/Sources/StateUIAndroid/Registration/AndroidRealization.swift",
-            records: #"\.(complete|partial)"# + record,
+            records: #"\.(complete|partial)"#,
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
 
@@ -1060,7 +1058,12 @@ extension ControlDictionary.Declaration {
     /// A host's declaration, read out of its source: `records` finds each
     /// record, its groups the kind, the owner, the member and what is missing;
     /// `unrealized` and `viewless` each find one list of names.
-    init(host: String, reading source: String, records: String, unrealized: String, viewless: String?) throws {
+    /// A record's owner, member and what is missing, written on one line after its opening.
+    private static let record = #"\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)"#
+
+    /// A host's declaration, read from its source: `records` opens each record, which then reads as `record`;
+    /// one opened that does not read throws, so no record is lost to how it is written.
+    init(host: String, reading source: String, records opening: String, unrealized: String, viewless: String?) throws {
         let text = ControlDictionary.uncommented(
             try String(contentsOf: Fixtures.repository.appendingPathComponent(source), encoding: .utf8))
 
@@ -1070,13 +1073,18 @@ extension ControlDictionary.Declaration {
             return Set(try ControlDictionary.matches(#""(\w+)""#, in: list).compactMap { $0[1] })
         }
 
-        let found = try ControlDictionary.matches(records, in: text).map { groups in
+        let found = try ControlDictionary.matches(opening + Self.record, in: text).map { groups in
             Record(
                 owner: groups[2] ?? "",
                 member: groups[3] ?? "",
                 missing: groups[1]?.lowercased() == "partial"
                     ? (groups[4] ?? "").replacingOccurrences(of: #"\""#, with: "\"")
                     : nil)
+        }
+        let opened = try ControlDictionary.matches(opening + #"\(\s*""#, in: text).count
+        guard opened == found.count else {
+            throw ControlDictionary.Unreadable(description: "\(source): \(opened - found.count) of its \(opened) records do not read. "
+                + "Write each on one line - (\"Owner\", \"member\"), with its missing: \"...\" where it has one.")
         }
         let unrealizedNames = try names(unrealized)
         let viewlessNames = try names(viewless)
