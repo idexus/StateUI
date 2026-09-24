@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `barForegroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
@@ -43,7 +43,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 

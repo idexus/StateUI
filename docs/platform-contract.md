@@ -402,7 +402,7 @@ which a host serves without a member of its own.
 | `dragText` | [View](controls/tiers/View.md) | property | ✅ |  |  |  |  |  |  |
 | `onDrop` (`drop`) | [View](controls/tiers/View.md) | event | ✅ |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | [View](controls/tiers/View.md) | event | ✅ |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
 | `gridColumn` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `gridColumnSpan` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `gridRow` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
@@ -436,42 +436,42 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
-| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 36 ✅ |  |  |
-| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
-| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
-| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
-| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
-| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 44 ✅ |  |  |
-| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 41 ✅ |  |  |
-| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 37 ✅ |  |  |
-| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
-| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
-| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 45 ✅ |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
+| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 37 ✅ |  |  |
+| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
+| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 36 ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 36 ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
+| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 42 ✅ |  |  |
+| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 38 ✅ |  |  |
+| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
+| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
+| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 46 ✅ |  |  |
+| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 46 ✅ |  |  |
 | [Map](controls/Map.md) | 76 | 68 ✅ · 6 ☑️ |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 42 ✅ |  |  |
-| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 44 ✅ · 1 ☑️ |  |  |
-| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
-| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
+| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
+| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 45 ✅ · 1 ☑️ |  |  |
+| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 44 ✅ |  |  |
+| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 44 ✅ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 76 | 75 ✅ |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
-| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 42 ✅ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 43 ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
 | [RefreshView](controls/RefreshView.md) | 73 | 72 ✅ |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 39 ✅ |  |  |
-| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
-| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 39 ✅ |  |  |
-| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 37 ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
+| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 46 ✅ |  |  |
+| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
+| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 38 ✅ |  |  |
 | [SwipeView](controls/SwipeView.md) | 72 | 71 ✅ |  |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 44 ✅ |  |  |
-| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 46 ✅ |  |  |
-| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
+| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
+| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 47 ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 43 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 42 ✅ |  |  |
+| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
+| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 43 ✅ |  |  |
 
 ### Application structure
 
@@ -486,9 +486,9 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 3 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 5 ✅ |  |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |  |
-| [Page](controls/Page.md) | 12 | 12 ✅ | 12 ✅ |  |  | 7 ✅ |  |  |
+| [Page](controls/Page.md) | 12 | 12 ✅ | 12 ✅ |  |  | 11 ✅ |  |  |
 | [Pin](controls/Pin.md) | 6 | 0 ✅ · 6 ☑️ |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  | 3 ✅ |  |  |
 | [Setters](controls/Setters.md) | 0 |  |  |  |  |  |  |  |
@@ -550,7 +550,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` |  |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | ✅ | ✅ |  |  | ✅ |  |  |
-| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | ✅ | ✅ |  |  |  |  |  |
+| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | ✅ | ✅ |  |  |  |  |  |
 | [Path](controls/Path.md) | `data` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | ✅ | ✅ |  |  | ☑️ |  |  |

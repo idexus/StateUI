@@ -113,6 +113,7 @@ enum TestJava {
     static let getChildAt = Java.method(JavaAPI.viewGroup, "getChildAt", "(I)Landroid/view/View;")
     static let getClipToOutline = Java.method(JavaAPI.view, "getClipToOutline", "()Z")
     static let getBackground = Java.method(JavaAPI.view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
+    static let getColor = Java.method(Java.findClass("android/graphics/drawable/ColorDrawable"), "getColor", "()I")
     static let drawable = Java.findClass("android/graphics/drawable/Drawable")
     static let getOutline = Java.method(drawable, "getOutline", "(Landroid/graphics/Outline;)V")
     static let outline = Java.findClass("android/graphics/Outline")

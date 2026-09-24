@@ -103,7 +103,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | event | `String` | native | ✅ |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native | ✅ |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  |  |  | ✅ |  |  |  |
 | `gridColumn` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |  |
 | `gridRow` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |  |

@@ -18,14 +18,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `appearing` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `backButtonTitle` | property | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `background` | property | `Color` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `disappearing` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `hasNavigationBar` | property | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `navigatedFrom` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `navigatedTo` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `navigatingFrom` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 

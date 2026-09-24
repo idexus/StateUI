@@ -14,6 +14,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
+            ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
@@ -196,6 +197,49 @@ extension AndroidPagesTests {
         }
     }
 
+    /// The stack colours its bar; a page says whether the bar shows and whether it has a way back, and what
+    /// its ground is and how far in its content stands.
+    func testAStackAndItsPagesSayHowTheBarAndThePageLook() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [Int]())
+            let host = AndroidRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    FurnishedPage(title: "Root")
+                } destination: { number in
+                    FurnishedPage(title: "Page \(number)", hasBackButton: number != 1, hasNavigationBar: number != 2)
+                }
+                .barBackgroundColor(.red)
+                .barForegroundColor(.white)
+            }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(Self.colour(of: navigation.bar), 0xFFFF_0000)
+            XCTAssertEqual(navigation.bar.content.foreground.flatMap(AndroidView.argb), Int32(bitPattern: 0xFFFF_FFFF))
+            let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
+            XCTAssertEqual(Self.colour(of: page), 0xFF00_00FF)
+            let words = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            XCTAssertEqual(Java.callInt(words.reference, TestJava.getLeft), 16, "8 points in, at two pixels a point")
+
+            path.wrappedValue = [1]
+            host.pump()
+            XCTAssertEqual(navigation.bar.content.navigation, .none, "a page without a back button")
+            path.wrappedValue = [1, 2]
+            host.pump()
+            XCTAssertEqual(navigation.bar.content.navigation, .back)
+            XCTAssertFalse(navigation.showsBar, "a page without a navigation bar")
+        }
+    }
+
+    /// The colour a view's background is painted in.
+    @MainActor
+    private static func colour(of view: AndroidView) -> UInt32 {
+        Java.frame {
+            Java.callObject(view.reference, TestJava.getBackground).map {
+                UInt32(bitPattern: Java.callInt($0, TestJava.getColor))
+            } ?? 0
+        }
+    }
+
     /// The words the bar shows as its title; none where a view stands in for it.
     @MainActor
     private static func title(of bar: AndroidBarView) -> String {
@@ -275,6 +319,29 @@ extension AndroidPagesTests {
             host.pump()
             XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["Root"])
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
+        }
+    }
+}
+
+/// A page on a blue ground with its words 8 points in, saying whether its bar shows and has a way back.
+private struct FurnishedPage: ContentView {
+    let title: String
+    var hasBackButton = true
+    var hasNavigationBar = true
+
+    @Environment private var page: PageSession
+
+    var content: any View {
+        let page = self.page
+        let title = self.title
+        let back = hasBackButton
+        let bar = hasNavigationBar
+        return Label(title).onCreated {
+            page.title = title
+            page.background = .blue
+            page.padding = Insets(8)
+            page.hasBackButton = back
+            page.hasNavigationBar = bar
         }
     }
 }
