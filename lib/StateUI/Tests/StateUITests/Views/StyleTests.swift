@@ -880,7 +880,7 @@ final class StyleTests: XCTestCase {
     func testTheApplicationsStylesReachTheControlsAndNothingElse() {
         Renderer.shared.setApplication(StyledApp())
 
-        let dump = WireProbe.dumpMessage(Renderer.shared.renderWire(baseline: 0))
+        let dump = PatchDump.text(Renderer.shared.renderHost(baseline: 0).root)
 
         XCTAssertTrue(dump.contains("fontSize: number 14"), dump)
         XCTAssertFalse(dump.contains("ResourceDictionary"), dump)
@@ -897,7 +897,7 @@ final class StyleTests: XCTestCase {
         Renderer.shared.setApplication(Plain())
 
         XCTAssertFalse(
-            WireProbe.dumpMessage(Renderer.shared.renderWire(baseline: 0))
+            PatchDump.text(Renderer.shared.renderHost(baseline: 0).root)
                 .contains("fontSize"))
     }
 

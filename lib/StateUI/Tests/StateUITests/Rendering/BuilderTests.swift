@@ -391,8 +391,7 @@ final class BuilderTests: XCTestCase {
         }
         .body
 
-        let bytes = Wire.encode(Renders().render(tree), generation: 1, dictionary: WireDictionary())
-        let dump = WireProbe.dumpMessage(bytes, names: WireNames())
+        let dump = PatchDump.text(Renders().render(tree))
 
         XCTAssertFalse(dump.contains("key:"), "the builder's path was sent to the host:\n\(dump)")
         XCTAssertTrue(dump.contains("\"turn 1\""), dump)

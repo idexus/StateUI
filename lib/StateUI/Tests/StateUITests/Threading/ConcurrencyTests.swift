@@ -57,7 +57,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(5)
 
         while quiet < 2 && Date() < deadline {
-            let ids = completionIds(in: Renderer.shared.takeActCallsWire())
+            let ids = completionIds(in: drainedActs())
 
             for completion in ids {
                 ReplyBuffer.current = .finished([.bool(true)])
@@ -78,8 +78,8 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// Every completion id in a batch of act calls, in order.
-    private func completionIds(in bytes: [UInt8]) -> [Int] {
-        WireProbe.completions(bytes)
+    private func completionIds(in acts: [HostActCall]) -> [Int] {
+        acts.compactMap(\.completion)
     }
 
     /// The host's whole loop, against a handler whose animations run as child
@@ -90,7 +90,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var finished = 0
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let laps = 40
         let patch = renders.render(
@@ -116,7 +116,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(20)
 
         while finished < laps && Date() < deadline {
-            for completion in completionIds(in: Renderer.shared.takeActCallsWire()) {
+            for completion in completionIds(in: drainedActs()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 XCTAssertTrue(
                     Renderer.shared.dispatch(completion),
@@ -147,7 +147,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             Button("Go")
@@ -163,7 +163,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
+        let first = try XCTUnwrap(completionIds(in: drainedActs()).first)
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(first))
 
@@ -195,7 +195,7 @@ final class ConcurrencyTests: XCTestCase {
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             PressCard(
@@ -205,7 +205,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
+        let first = try XCTUnwrap(completionIds(in: drainedActs()).first)
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(first))
 
@@ -238,7 +238,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             Button("Go")
@@ -257,7 +257,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(20)
 
         while !reached && Date() < deadline {
-            for completion in completionIds(in: Renderer.shared.takeActCallsWire()) {
+            for completion in completionIds(in: drainedActs()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 XCTAssertTrue(
                     Renderer.shared.dispatch(completion),
@@ -280,7 +280,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             Button("Go")
@@ -293,7 +293,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let completion = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
+        let completion = try XCTUnwrap(completionIds(in: drainedActs()).first)
 
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(completion))

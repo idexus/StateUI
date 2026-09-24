@@ -593,7 +593,7 @@ extension StateTests {
             Shown { destination.count += 1; _ = fade.get() }.body,
             Shown { journey.count += 1; _ = fade.projectedValue.journey.value }.body,
         ], id: "root"))
-        _ = Renderer.shared.renderWire(baseline: 0)
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertEqual(destination.count, 1)
         XCTAssertEqual(journey.count, 1)
 
@@ -657,11 +657,11 @@ extension StateTests {
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(0))
                 .body,
         ], id: "root"))
-        _ = Renderer.shared.renderWire(baseline: 0)
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
         XCTAssertTrue(Renderer.shared.needsRender, "the value moved, so the reading did")
-        _ = Renderer.shared.renderWire(baseline: 0)
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         // The same value again: the host says nothing new.
         moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
@@ -798,12 +798,12 @@ extension StateTests {
         let shown = State(1.0)
         let reader = reading { _ = shown.get() }
 
-        _ = Renderer.shared.renderWire(baseline: 0)
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender)
 
         shown.wrappedValue = 0.5
         XCTAssertTrue(Renderer.shared.needsRender)
-        _ = Renderer.shared.renderWire(baseline: 0)
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         shown.wrappedValue = 0.25
         XCTAssertTrue(Renderer.shared.needsRender, "and the next one, at once as well")

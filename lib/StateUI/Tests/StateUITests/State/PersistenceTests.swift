@@ -366,6 +366,34 @@ final class PersistenceTests: XCTestCase {
 
     // MARK: - What the host is told
 
+    /// The host is told the store and every key with its kind, names in
+    /// full, before the first render - what it reads the kept values with.
+    func testTheHostIsToldTheStoreAndEveryKey() {
+        Renderer.shared.setApplication(KeepingApp())
+
+        XCTAssertEqual(StateUIHost.persistentStorage.name, "preferences")
+        XCTAssertEqual(StateUIHost.persistentKeys, [.count, .name])
+    }
+
+    /// An application that keeps its state somewhere of its own says so - the
+    /// host resolves the name against what it has registered.
+    func testTheHostIsToldAStoreOfTheApplicationsOwn() {
+        Renderer.shared.setApplication(FiledApp())
+
+        XCTAssertEqual(StateUIHost.persistentStorage.name, "Test.Json")
+        XCTAssertEqual(StateUIHost.persistentKeys, [.loud])
+    }
+
+    /// An application that keeps nothing names no key, and the host then reads
+    /// no store at all.
+    func testAnApplicationThatKeepsNothingNamesNoKey() {
+        Renderer.shared.setApplication(PlainApp())
+
+        XCTAssertEqual(StateUIHost.persistentKeys, [])
+    }
+
+    // MARK: - As the MAUI host reads and sends it
+
     /// The announcement carries the store and every key, names in full: it is
     /// the first thing either side says, before any message has announced a
     /// dictionary to number them against.

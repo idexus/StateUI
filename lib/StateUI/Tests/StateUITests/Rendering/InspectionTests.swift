@@ -125,7 +125,7 @@ final class InspectionTests: XCTestCase {
         super.tearDown()
     }
 
-    /// One render, opened and closed the way `Renderer.renderWire` does it.
+    /// One render, opened and closed the way `Renderer.renderHost` does it.
     private func pass(
         _ road: InspectedPass.Road = .build,
         generation: Int32 = 1,
@@ -330,7 +330,7 @@ final class InspectionTests: XCTestCase {
         // DECODED, never thrown away: the probe's names are announced once,
         // and a later test decoding a message would meet one it never saw.
         Renderer.shared.setApplication(ShowingApplication())
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         Inspection.ownStates = [ObjectIdentifier(try XCTUnwrap(drawn.$revision.described))]
         Inspection.clear()
@@ -338,7 +338,7 @@ final class InspectionTests: XCTestCase {
 
         // A baseline of nought is a host that holds nothing, which is what the
         // render after a failed apply is.
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertTrue(Inspection.passes.isEmpty)
     }

@@ -61,7 +61,7 @@ final class UIThreadTests: XCTestCase {
     }
 
     /// A job landing on the UI thread's queue wakes the thread the host keeps
-    /// parked in `stateui_wait_work` - which is how MainActor's jobs reach the
+    /// parked in `StateUIHost.waitForWork` - which is how MainActor's jobs reach the
     /// UI thread where the host alone drains it. Proved with an actor of this
     /// test's own on that queue, so it holds on every platform, Apple's
     /// included: the worker thread stands in for the host's, doing exactly what
@@ -71,12 +71,12 @@ final class UIThreadTests: XCTestCase {
 
         let parked = DispatchSemaphore(value: 0)
 
-        // Each turn PARKS - `stateui_wait_work` blocks until something pokes -
+        // Each turn PARKS - `StateUIHost.waitForWork` blocks until something pokes -
         // and what is waited for is a JOB, because the waker also announces a
         // dirty tree and one may be left over from another test.
         DispatchQueue.global().async {
             while UIThreadExecutor.shared.pendingCount == 0 {
-                _ = stateui_wait_work()
+                _ = StateUIHost.waitForWork()
             }
 
             parked.signal()
@@ -94,7 +94,7 @@ final class UIThreadTests: XCTestCase {
 
     /// An act queued from a plain `Task` - the pool, no handler suspended on
     /// it, no job on the executor - still wakes the parked thread: `send`
-    /// pokes it, and the count `stateui_wait_work` returns includes the
+    /// pokes it, and the count `StateUIHost.waitForWork` returns includes the
     /// queued ACTS, so the host drains and takes the act.
     ///
     /// Without the poke this was the gallery's press animation frozen at its
@@ -102,13 +102,13 @@ final class UIThreadTests: XCTestCase {
     /// dip completed, nothing announced it, and the card stayed pressed until
     /// the next event reached the app - on Android, forever.
     func testAnActQueuedFromAPlainTaskWakesTheParkedThread() throws {
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let parked = DispatchSemaphore(value: 0)
 
         DispatchQueue.global().async {
             // WAITS FOR THE WORK, not for a wake - the shape the sleeping test
-            // above uses, and this one only claimed to. `stateui_wait_work`
+            // above uses, and this one only claimed to. `StateUIHost.waitForWork`
             // is fed by a counting semaphore, so a wake another test left
             // behind returns from it at once with nothing queued; exiting on
             // THAT signalled the main thread before the detached Task had
@@ -118,7 +118,7 @@ final class UIThreadTests: XCTestCase {
             // The wake is still what is being proved: with nothing poking it
             // this blocks, and the five-second wait below is what fails.
             while Renderer.shared.actCallsPending == 0 {
-                _ = stateui_wait_work()
+                _ = StateUIHost.waitForWork()
             }
 
             parked.signal()
@@ -145,7 +145,7 @@ final class UIThreadTests: XCTestCase {
     /// drain that follows; a write a `Task.detached` makes from the pool has
     /// nothing following it - no job, no act. Two things keep that write
     /// from waiting for the next touch: the dirty flag counts as work in
-    /// `stateui_wait_work`, and `stateChanged` pokes the parked thread AFTER
+    /// `StateUIHost.waitForWork`, and `stateChanged` pokes the parked thread AFTER
     /// setting it, so the thread cannot wake, read a clean flag, and park
     /// again with the write behind it. This asks the waker's question with
     /// nothing but the write having happened - `waitForWork` BLOCKS until
@@ -153,7 +153,7 @@ final class UIThreadTests: XCTestCase {
     func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
         // Quiet first - and the batch DECODED rather than thrown away, or the
         // names it announced are gone and the next reader dies on them.
-        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
@@ -177,7 +177,7 @@ final class UIThreadTests: XCTestCase {
         XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0, "and lands no job")
 
         XCTAssertGreaterThan(
-            stateui_wait_work(), 0,
+            StateUIHost.waitForWork(), 0,
             "a dirty tree with no job and no act must read as work, and the "
                 + "write alone must have woken the thread that asks")
     }
@@ -187,7 +187,7 @@ final class UIThreadTests: XCTestCase {
     /// nobody reads asks for no render to carry it - so the write wakes the
     /// thread itself, and what is waiting to be saved counts as pending work.
     func testAKeptStateWriteNobodyReadsStillWakesTheHost() async throws {
-        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
@@ -202,10 +202,10 @@ final class UIThreadTests: XCTestCase {
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
         XCTAssertGreaterThan(Renderer.shared.actCallsPending, 0, "but the save is pending work")
         XCTAssertGreaterThan(
-            stateui_wait_work(), 0,
+            StateUIHost.waitForWork(), 0,
             "and the write alone woke the thread that asks")
 
-        let acts = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        let acts = drainedActs()
         XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
@@ -215,7 +215,7 @@ final class UIThreadTests: XCTestCase {
     /// `move(to:)` books its waiter and writes the destination onto the
     /// value's board: no job, no act, and no render where nobody reads the
     /// value. The write waiting for a cycle is the work - counted by
-    /// `stateui_wait_work`, and announced after it lands, so the thread cannot
+    /// `StateUIHost.waitForWork`, and announced after it lands, so the thread cannot
     /// wake, count nothing and park again with the movement behind it. That
     /// was the gallery's analog clock on the MAUI heads: its `async let`
     /// hands started from the pool, and the clock stood on its first second
@@ -266,15 +266,15 @@ final class UIThreadTests: XCTestCase {
     /// host's always is. A thread nothing woke stays parked when this returns
     /// nil, and takes the next wake the suite makes - the failure is already
     /// said by then.
-    private func waitedFor(_ start: () -> Void) -> Int32? {
+    private func waitedFor(_ start: () -> Void) -> Int? {
         UIThreadExecutor.shared.poke()
         _ = UIThreadExecutor.shared.waitForWork()
 
         let counted = DispatchSemaphore(value: 0)
-        nonisolated(unsafe) var work: Int32 = 0
+        nonisolated(unsafe) var work = 0
 
         DispatchQueue.global().async {
-            work = stateui_wait_work()
+            work = StateUIHost.waitForWork()
             counted.signal()
         }
 
@@ -286,7 +286,7 @@ final class UIThreadTests: XCTestCase {
     /// A state a rendered view wears as a driven property, on a board with
     /// nothing waiting and nothing queued anywhere else.
     private func wornOnAQuietBoard() -> State<Double> {
-        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
@@ -333,7 +333,7 @@ final class UIThreadTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             Button("Go")
@@ -371,7 +371,7 @@ final class UIThreadTests: XCTestCase {
     func testAHandlerThatThrowsIsReportedToTheHost() async throws {
         let renders = Renders()
 
-        _ = Renderer.shared.takeActCallsWire()
+        _ = drainedActs()
 
         let patch = renders.render(
             Button("Break")

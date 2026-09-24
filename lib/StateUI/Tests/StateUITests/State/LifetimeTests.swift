@@ -202,12 +202,12 @@ final class LifetimeTests: XCTestCase {
         defer { Scenes.shared.reset() }
         Renderer.shared.setApplication(Titling())
 
-        let first = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        let first = Renderer.shared.renderHost(baseline: 0)
         let window = try XCTUnwrap(first.root.children.first?.children.first)
 
-        XCTAssertEqual(window.type, "Window")
-        XCTAssertTrue(
-            window.props.contains { $0.key == "title" && $0.value == .string("Titled") },
+        XCTAssertEqual(window.type, .window)
+        XCTAssertEqual(
+            window.props["title"], .string("Titled"),
             "the title the page wrote as it came in waited for a render of its own")
         XCTAssertFalse(
             Renderer.shared.needsRender,
@@ -222,7 +222,7 @@ final class LifetimeTests: XCTestCase {
         defer { Scenes.shared.reset() }
         Renderer.shared.setApplication(Chaining())
 
-        let first = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        let first = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertEqual(
             labels(in: first.root), ["\(Renderer.settleLimit)"],
@@ -236,15 +236,14 @@ final class LifetimeTests: XCTestCase {
     }
 
     /// Every label's text under a node, depth first.
-    private func labels(in node: WireProbe.WireNode) -> [String] {
-        let own = node.type == "Label"
-            ? node.props.compactMap { prop -> String? in
-                guard prop.key == "text", case .string(let text) = prop.value else { return nil }
-                return text
-            }
-            : []
+    private func labels(in patch: HostPatch) -> [String] {
+        var own: [String] = []
 
-        return own + node.children.flatMap { labels(in: $0) }
+        if patch.type == .label, case .string(let text)? = patch.props[.text] {
+            own.append(text)
+        }
+
+        return own + patch.children.flatMap { labels(in: $0) }
     }
 }
 

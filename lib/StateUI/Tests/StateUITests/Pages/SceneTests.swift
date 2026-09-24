@@ -313,18 +313,18 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(texts(in: patch.children[0].children[0]), ["blank"])
     }
 
-    /// And the message is rooted the same way on the real road.
-    func testTheMessageIsRootedInTheApplication() throws {
+    /// And the render is rooted the same way on the real road.
+    func testTheRenderIsRootedInTheApplication() throws {
         Renderer.shared.setApplication(Alone())
 
-        let dump = WireProbe.dumpMessage(Renderer.shared.renderWire(baseline: 0))
+        let dump = PatchDump.text(Renderer.shared.renderHost(baseline: 0).root)
         let lines = dump.split(separator: "\n").map(String.init)
 
         let application = try XCTUnwrap(lines.firstIndex { $0.contains("Application ") })
         let scene = try XCTUnwrap(lines.firstIndex { $0.contains("Scene ") })
         let window = try XCTUnwrap(lines.firstIndex { $0.contains("Window ") })
 
-        XCTAssertEqual(application, 1, "the root is the application:\n\(dump)")
+        XCTAssertEqual(application, 0, "the root is the application:\n\(dump)")
         XCTAssertLessThan(application, scene, "with a scene under it:\n\(dump)")
         XCTAssertLessThan(scene, window, "and its window under that:\n\(dump)")
     }
@@ -888,17 +888,15 @@ final class SceneTests: XCTestCase {
     func testQuotingTheGenerationEarnsAPatchAndAStaleNumberTheWholeTree() {
         Renderer.shared.setApplication(Alone())
 
-        let first = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        let first = Renderer.shared.renderHost(baseline: 0)
         XCTAssertTrue(first.complete, "a caller with no tree is sent the whole of it")
 
-        let patch = WireProbe.decodeMessage(
-            Renderer.shared.renderWire(baseline: Int32(first.generation)))
+        let patch = Renderer.shared.renderHost(baseline: first.generation)
 
         XCTAssertFalse(patch.complete, "the generations matched, so a patch is enough")
         XCTAssertEqual(patch.generation, first.generation + 1)
 
-        let resync = WireProbe.decodeMessage(
-            Renderer.shared.renderWire(baseline: Int32(first.generation)))
+        let resync = Renderer.shared.renderHost(baseline: first.generation)
 
         XCTAssertTrue(resync.complete, "a stale generation is answered with the whole tree")
     }

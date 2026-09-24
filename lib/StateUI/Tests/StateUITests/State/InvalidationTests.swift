@@ -569,9 +569,8 @@ final class InvalidationTests: XCTestCase {
         let fromClean = clean.revisit(changed: changed)
 
         XCTAssertEqual(
-            Wire.encode(fromFull, generation: 1, dictionary: WireDictionary()),
-            Wire.encode(fromClean, generation: 1, dictionary: WireDictionary()),
-            "the two paths must be indistinguishable on the wire")
+            PatchDump.text(fromFull), PatchDump.text(fromClean),
+            "the two paths must be indistinguishable to a host")
     }
 
     // MARK: - The renderer's choice of path
@@ -592,7 +591,7 @@ final class InvalidationTests: XCTestCase {
         Renderer.shared.setApplication(WritingApp())
         Renderer.shared.clearInvalidation()
 
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertEqual(page.count.wrappedValue, 1, "the body wrote once")
         XCTAssertTrue(
@@ -617,7 +616,7 @@ final class InvalidationTests: XCTestCase {
         Renderer.shared.setApplication(AsideApp())
         Renderer.shared.clearInvalidation()
 
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertEqual(aside.unread.wrappedValue, 1, "the body wrote once, mid-render")
         XCTAssertTrue(Renderer.shared.needsRender, "and the write asked, readers or none")
@@ -625,7 +624,7 @@ final class InvalidationTests: XCTestCase {
             Renderer.shared.pendingChanges.contains(ObjectIdentifier(aside.unread.storage)),
             "naming the state as any write does")
 
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender, "the render that followed walked to nothing")
 
         aside.unread.wrappedValue = 5
@@ -644,14 +643,14 @@ final class InvalidationTests: XCTestCase {
 
         Renderer.shared.setApplication(ChosenApp())
         Renderer.shared.clearInvalidation()
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertTrue(Renderer.shared.isRead(chosen.first.storage))
         XCTAssertFalse(Renderer.shared.isRead(chosen.other.storage))
 
         chosen.byFirst = false
         Renderer.shared.setNeedsRender()
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
 
         XCTAssertFalse(Renderer.shared.isRead(chosen.first.storage), "the window build no longer reads it")
         XCTAssertTrue(Renderer.shared.isRead(chosen.other.storage))
@@ -671,7 +670,7 @@ final class InvalidationTests: XCTestCase {
         Renderer.shared.setApplication(ChosenApp())
         Renderer.shared.clearInvalidation()
 
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertTrue(
             Renderer.shared.isRead(chosen.first.storage),
             "the window build counted as a reader")
@@ -690,17 +689,16 @@ final class InvalidationTests: XCTestCase {
         page.writes = Int.max
         page.count.wrappedValue = 0
 
-        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        _ = drainedActs()
         Renderer.shared.setApplication(WritingApp())
         Renderer.shared.clearInvalidation()
 
         var generation: Int32 = 0
-        var reported: [WireAct] = []
+        var reported: [HostActCall] = []
 
         for _ in 0 ..< Renderer.selfDirtyLimit {
-            let message = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: generation))
-            generation = Int32(message.generation)
-            reported += WireProbe.decode(Renderer.shared.takeActCallsWire())
+            generation = Renderer.shared.renderHost(baseline: generation).generation
+            reported += drainedActs()
         }
 
         XCTAssertFalse(Renderer.shared.needsRender, "the streak ended with the change dropped")

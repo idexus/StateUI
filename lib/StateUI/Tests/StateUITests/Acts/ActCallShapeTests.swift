@@ -1,42 +1,31 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The act calls' wire format, written down for the host.
+// The act calls a host is handed, written down.
 //
-// `fixtures/act-calls/*.bin` are produced here by the REAL typed calls -
-// `focus`, a dialog, a web view's navigation - and they are what a host's
-// reader of the channel is held to: the view name at 0, then each argument
-// at its own place. One fixture per SHAPE rather than per method where acts
-// share one, as the parameterless web view acts share the Focus shape.
+// `Fixtures/act-calls/` is produced here by the REAL typed calls - `focus`, a
+// dialog, a web view's navigation - and it is what a host's performer is held
+// to: the view at 0, then each argument at its own place. One fixture per
+// SHAPE rather than per method where acts share one, as the parameterless web
+// view acts share the Focus shape.
 //
-// Beside every `.bin` sits a `.txt` sidecar - WireProbe's rendering of the
-// same batch - because a binary fixture is unreadable in a review diff and
-// the readability was half the point of committing fixtures at all. The
-// bytes are the contract; the sidecar is what a human reads.
+// The completion id counts down across the process, so a fixture pins it: the
+// batch is taken typed and its completion normalized to -1.
 //
-// The completion id counts down globally and the navigation's request number
-// counts up, so a fixture pins both: the batch is DECODED, normalized at the
-// value level, and encoded again with the library's own writer - the same
-// bytes a run with those numbers would have produced.
-//
-// Without these, each side of the channel is tested only against itself:
-// swapping two arguments on both sides at once keeps every suite green while
-// a host reads each argument as the other.
+// Without these, each side is tested only against itself: swapping two
+// arguments on both sides at once keeps every suite green while a host reads
+// each argument as the other.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
-final class ActCallWireTests: XCTestCase {
+final class ActCallShapeTests: XCTestCase {
     private typealias Act<Value> = nonisolated(nonsending) () async throws -> Value
 
-    /// Empties the shared queue, so a test starts from nothing - showing the
-    /// bytes to the probe either way, so the session mirror hears every
-    /// announcement, discarded batches included.
+    /// Empties the shared queue, so a test starts from nothing.
     @discardableResult
-    private func drain() -> [UInt8] {
-        let bytes = Renderer.shared.takeActCallsWire()
-        _ = WireProbe.decode(bytes)
-        return bytes
+    private func drain() -> [HostActCall] {
+        drainedActs()
     }
 
     /// Starts an act and lets it reach its suspension - see ActCallTests.
@@ -46,45 +35,27 @@ final class ActCallWireTests: XCTestCase {
     }
 
     /// Reports an act as done, so no test leaves a continuation suspended.
-    private func finish(_ acts: [WireAct]) async {
+    private func finish(_ acts: [HostActCall]) async {
         guard let id = acts.compactMap(\.completion).first else { return }
 
-        ReplyBuffer.current = .finished([.bool(true)])
-        _ = Renderer.shared.dispatch(id)
+        StateUIHost.reply(id, with: [.bool(true)])
         await settle()
     }
 
     /// One act, drained, checked, and finished. Takes Void so the compiler
     /// does not have to prove an arbitrary result Sendable; an animation call
     /// wraps itself in `_ =`.
-    ///
-    /// `pinning` normalizes whatever else a fixture cannot carry - the
-    /// navigation's request number - AFTER the completion id is pinned to -1.
-    private func check(
-        _ fixture: String,
-        pinning: ((inout [WireAct]) -> Void)? = nil,
-        _ body: sending @escaping Act<Void>
-    ) async throws {
+    private func check(_ fixture: String, _ body: sending @escaping Act<Void>) async throws {
         drain()
         let task = await Self.begin(body)
-        let taken = WireProbe.decode(drain())
+        let taken = drain()
 
-        var pinned = taken.map { act in
-            WireAct(
-                name: act.name,
-                arguments: act.arguments,
-                completion: act.completion.map { _ in -1 })
+        let pinned = taken.map { act in
+            HostActCall(ActCall(
+                act: act.act, arguments: act.arguments, completion: act.completion.map { _ in -1 }))
         }
-        pinning?(&pinned)
 
-        try Fixtures.check(
-            Wire.encode(
-                pinned.map {
-                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
-                },
-                dictionary: WireDictionary()),
-            sidecar: WireProbe.dump(pinned),
-            against: "act-calls/\(fixture)")
+        try Fixtures.check(pinned, against: "act-calls/\(fixture)")
 
         await finish(taken)
         _ = try? await task.value
@@ -94,7 +65,7 @@ final class ActCallWireTests: XCTestCase {
     /// as a NUMBER - the other namespace of the same argument, resolved through
     /// `Tracked` where a name goes through `Named`. The box is filled by hand
     /// here because the differ's half is AimTests' business; what this
-    /// pins is the wire.
+    /// pins is the act.
     func testAnActByElementNumberCrossesAsItsFixtureSays() async throws {
         let field = Aim(TextField.self)
         field.box.attach(.auto(7), walk: 1)
@@ -123,8 +94,8 @@ final class ActCallWireTests: XCTestCase {
 
     /// Title, cancel, destruction, then the buttons as ONE argument - the list
     /// of their captions, an argument being one value. An absent caption
-    /// crosses as the wire's own NOTHING, never as an empty string: an empty
-    /// string is a caption someone could have written.
+    /// crosses as NOTHING, never as an empty string: an empty string is a
+    /// caption someone could have written.
     func testAChoiceOfActionsCrossesAsItsFixtureSays() async throws {
         try await check("ChooseAction") {
             _ = try await Dialogs.chooseAction(
@@ -135,8 +106,7 @@ final class ActCallWireTests: XCTestCase {
 
     /// All eight parameters, in their order. An absent limit crosses as
     /// NOTHING, which the HOST turns into whatever its toolkit means by "no
-    /// limit" - a toolkit's sentinel stays in the host and never rides this
-    /// wire.
+    /// limit" - a toolkit's sentinel stays in the host and never crosses.
     func testAPromptCrossesAsItsFixtureSays() async throws {
         try await check("Prompt") {
             _ = try await Dialogs.prompt(
@@ -238,15 +208,7 @@ final class ActCallWireTests: XCTestCase {
         drain()
         Renderer.shared.report(StateUIError(message: "boom"))
 
-        let acts = WireProbe.decode(drain())
-        try Fixtures.check(
-            Wire.encode(
-                acts.map {
-                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
-                },
-                dictionary: WireDictionary()),
-            sidecar: WireProbe.dump(acts),
-            against: "act-calls/HandlerFailed")
+        try Fixtures.check(drain(), against: "act-calls/HandlerFailed")
     }
 
     /// What the screen reader is to say, and a handler waiting until it is
@@ -263,29 +225,17 @@ final class ActCallWireTests: XCTestCase {
         drain()
         PersistentStore.shared.record(PersistentKey("com.example.theme", of: String.self), .string("dusk"))
 
-        let acts = WireProbe.decode(drain())
-        try Fixtures.check(
-            Wire.encode(
-                acts.map {
-                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
-                },
-                dictionary: WireDictionary()),
-            sidecar: WireProbe.dump(acts),
-            against: "act-calls/PersistValue")
+        try Fixtures.check(drain(), against: "act-calls/PersistValue")
     }
 
     /// A scene's kept value on its way to the platform's record of that scene:
     /// the scene and the key as NAMES, then the value, and nobody waiting -
     /// the act `Scenes.takeSaves` queues, which SceneTests reads off a live
-    /// scene. Written with a fresh dictionary, so read back with fresh names:
-    /// the session's mirror learns only the session's numbers.
+    /// scene.
     func testASceneValueCrossesAsItsFixtureSays() throws {
         let call = ActCall(ApplicationContract.persistSceneValue, Name("2"), Name("shade"), PropValue.string("dusk"))
-        let bytes = Wire.encode([call], dictionary: WireDictionary())
 
-        try Fixtures.check(
-            bytes, sidecar: WireProbe.dump(WireProbe.decode(bytes, names: WireNames())),
-            against: "act-calls/PersistSceneValue")
+        try Fixtures.check([HostActCall(call)], against: "act-calls/PersistSceneValue")
     }
 
     /// EVERY ACT OF EVERY CONTRACT IS WRITTEN DOWN: a fixture here names it, so

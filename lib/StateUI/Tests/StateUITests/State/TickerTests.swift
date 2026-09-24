@@ -320,7 +320,7 @@ final class TickerTests: XCTestCase {
 
         // A render is what clears the flag, so this is how a test gets to a
         // state where "needs render" means the tick and nothing before it.
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender)
 
         ticker.start()

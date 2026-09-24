@@ -67,11 +67,10 @@ final class ActCallTests: XCTestCase {
         return found.sorted { $0.path < $1.path }
     }
 
-    /// The queue is on the shared renderer, so a test starts by emptying it -
-    /// and reads what it took through the probe, values already apart.
+    /// The queue is on the shared renderer, so a test starts by emptying it.
     @discardableResult
-    private func drain() -> [WireAct] {
-        WireProbe.decode(Renderer.shared.takeActCallsWire())
+    private func drain() -> [HostActCall] {
+        drainedActs()
     }
 
     /// What a handler's body is, when it gives an answer back.
@@ -92,10 +91,10 @@ final class ActCallTests: XCTestCase {
     }
 
     /// The completion id in a taken batch, which is what the host quotes back.
-    private func completionId(in acts: [WireAct]) throws -> Int {
+    private func completionId(in acts: [HostActCall]) throws -> Int {
         let id = try XCTUnwrap(
             acts.compactMap(\.completion).first,
-            "no completion id in \(WireProbe.dump(acts))")
+            "no completion id in \(PatchDump.text(acts))")
 
         XCTAssertLessThan(id, 0,
                           "negative, so it can never be mistaken for an element's handler id")

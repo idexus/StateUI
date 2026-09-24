@@ -530,7 +530,7 @@ final class ModelStateTests: XCTestCase {
     /// Renders once, so that `needsRender` says something about what the test
     /// does next rather than about whatever ran before it.
     private func settled() {
-        _ = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: 0))
+        _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender)
     }
 }

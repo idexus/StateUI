@@ -44,10 +44,14 @@ extension HostEventUpdate {
     subscript(event: Event) -> Int? { handlers[event].map(Int.init) }
 }
 
-/// The queued acts, taken and decoded - the values already apart, so a test
-/// asserts on an act rather than searching bytes.
-func drainedActs() -> [WireAct] {
-    WireProbe.decode(Renderer.shared.takeActCallsWire())
+/// The queued acts, taken the way a host takes them.
+func drainedActs() -> [HostActCall] {
+    StateUIHost.takeActCalls()
+}
+
+extension HostActCall {
+    /// The act's name, which a test asserts on.
+    var name: String { act.name }
 }
 
 /// A composed view whose body does nothing but READ, through the closure it
@@ -113,7 +117,7 @@ final class Renders {
 
     /// Renders a tree the way the RENDERER sends it: the walk, then the
     /// handlers it found run before the message leaves and what they wrote
-    /// walked into it - see `Renderer.renderWire`. What a page or a window
+    /// walked into it - see `Renderer.renderHost`. What a page or a window
     /// writes into its session from `.onCreated` is in the patch this answers.
     ///
     /// The invalidation is TAKEN, as the renderer takes it: what a test wrote
@@ -136,7 +140,7 @@ final class Renders {
         return result.patch
     }
 
-    /// Renders with NO fresh tree at all - the clean walk `Renderer.renderWire`
+    /// Renders with NO fresh tree at all - the clean walk `Renderer.renderHost`
     /// takes when every cause of the render named the state it wrote. Only the
     /// views whose recorded reads intersect `changed` are built again.
     @discardableResult
@@ -150,7 +154,7 @@ final class Renders {
 
     /// Renders as if the host had lost track - which is what a mismatched
     /// generation does: everything is described, against the tree this side
-    /// still holds, exactly as `Renderer.renderWire` does it. Identity, state
+    /// still holds, exactly as `Renderer.renderHost` does it. Identity, state
     /// and handlers survive; only the message gets bigger.
     @discardableResult
     func renderFromScratch(_ tree: Node) -> HostPatch {
@@ -163,7 +167,7 @@ final class Renders {
     /// Runs what the walk found once it is done, each here and now up to its
     /// first suspension - `Renderer.run`, what a settling pass calls. The
     /// differ's view alone: the renderer also walks what these write into the
-    /// same message, which a test of that renders through `Renderer.renderWire`.
+    /// same message, which a test of that renders through `Renderer.renderHost`.
     private func runFired() {
         for handler in differ.takeFired() {
             Renderer.shared.run(handler)
@@ -199,7 +203,7 @@ extension Differ {
     /// A walk's answer with the renderer's settling passes run over it: the
     /// handlers the walk found run before the message leaves, and what they
     /// wrote is walked and merged into the same patch, up to
-    /// `Renderer.settleLimit` times - `Renderer.renderWire`, for a test that
+    /// `Renderer.settleLimit` times - `Renderer.renderHost`, for a test that
     /// holds a differ of its own. `Renders.settled` is the usual way in.
     ///
     /// The invalidation is taken first, as the renderer takes it before it
@@ -431,16 +435,16 @@ enum Fixtures {
     /// `name.txt` holds the batch's dump and, while the MAUI host lives,
     /// `name.bin` the batch encoded for it.
     static func check(
-        _ calls: [ActCall],
+        _ calls: [HostActCall],
         against name: String,
         file: StaticString = #filePath,
         line: UInt = #line
     ) throws {
-        let bytes = Wire.encode(calls, dictionary: WireDictionary())
+        let bytes = Wire.encode(
+            calls.map { ActCall(act: $0.act, arguments: $0.arguments, completion: $0.completion) },
+            dictionary: WireDictionary())
 
-        try check(
-            bytes, sidecar: PatchDump.text(calls.map(HostActCall.init)),
-            against: name, file: file, line: line)
+        try check(bytes, sidecar: PatchDump.text(calls), against: name, file: file, line: line)
     }
 
     /// Checks a binary message and its readable sidecar against their

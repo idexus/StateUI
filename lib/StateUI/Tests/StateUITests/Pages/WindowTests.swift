@@ -222,17 +222,13 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(node.children.first).type, "Page")
     }
 
-    /// A number crosses as a double's own bits - nothing formatted, nothing
-    /// parsed - and the probe reads the exact values back off the wire.
-    func testTheSizeCrossesAsItsOwnBits() {
+    /// The size a session says is the window's own properties, exactly the
+    /// numbers written.
+    func testTheSessionsSizeIsTheWindowsProperties() {
         let patch = Renders().render(PlainWindow().body(panel: nil, session: desktop()))
-        let root = WireProbe.decodeMessage(
-            Wire.encode(patch, generation: 1, dictionary: WireDictionary()),
-            names: WireNames()).root
 
-        let props = Dictionary(uniqueKeysWithValues: root.props.map { ($0.key, $0.value) })
-        XCTAssertEqual(props["width"], .number(1200))
-        XCTAssertEqual(props["minimumHeight"], .number(400))
+        XCTAssertEqual(patch.props["width"], .number(1200))
+        XCTAssertEqual(patch.props["minimumHeight"], .number(400))
     }
 
     /// A window resized through its session is a property change like any

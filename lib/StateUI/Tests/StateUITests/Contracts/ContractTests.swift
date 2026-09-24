@@ -353,8 +353,8 @@ final class ContractTests: XCTestCase {
     }
 
     /// The completion id in a taken batch, which is what the host quotes back.
-    private func completionId(in acts: [WireAct]) throws -> Int {
-        try XCTUnwrap(acts.compactMap(\.completion).first, "no completion id in \(WireProbe.dump(acts))")
+    private func completionId(in acts: [HostActCall]) throws -> Int {
+        try XCTUnwrap(acts.compactMap(\.completion).first, "no completion id in \(PatchDump.text(acts))")
     }
 
     /// What the host does when it has finished an act: report the outcome, then
