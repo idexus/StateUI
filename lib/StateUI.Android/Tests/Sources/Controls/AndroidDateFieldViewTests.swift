@@ -14,8 +14,8 @@ final class AndroidDateFieldViewTests: XCTestCase {
         ]
     }
 
-    func testAFieldWritesItsDayAndTimeAsItsFormatSays() throws {
-        try onMainActor {
+    func testAFieldWritesItsDayAndTimeAsItsFormatSays() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format("yyyy-MM-dd")

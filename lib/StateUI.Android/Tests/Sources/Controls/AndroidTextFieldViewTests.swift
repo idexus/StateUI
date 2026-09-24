@@ -138,8 +138,8 @@ final class AndroidTextFieldViewTests: XCTestCase {
 
     /// A field's return key is the platform's where nothing is said, and the tree's choice where it is; a
     /// search field's is a search.
-    func testAReturnKeyIsCaptionedAsTheTreeSays() throws {
-        try onMainActor {
+    func testAReturnKeyIsCaptionedAsTheTreeSays() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     TextField("")
@@ -173,8 +173,8 @@ final class AndroidTextFieldViewTests: XCTestCase {
 
     /// An editor takes several lines; it grows with them only where the tree says so, and one that does not is
     /// as tall as its room.
-    func testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold() throws {
-        try onMainActor {
+    func testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold() {
+        onMainActor {
             let draft = State(wrappedValue: "one\ntwo\nthree")
             let host = AndroidRenderer.running {
                 VStack {

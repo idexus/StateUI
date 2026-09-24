@@ -14,8 +14,8 @@ final class AndroidRadioButtonViewTests: XCTestCase {
 
     /// The user checks one radio button of a group: the one checked before reports it is off, then the new one
     /// that it is on, and the tree's choice follows.
-    func testAUsersChoiceTakesTheGroupsOtherCheckAway() throws {
-        try onMainActor {
+    func testAUsersChoiceTakesTheGroupsOtherCheckAway() {
+        onMainActor {
             let choice = State(wrappedValue: "Small")
             let heard = Received<String>()
             let host = AndroidRenderer.running {

@@ -55,8 +55,8 @@ final class AndroidButtonViewTests: XCTestCase {
         }
     }
 
-    func testAnIconBesideWordsStandsWhereItsPositionSays() throws {
-        try onMainActor {
+    func testAnIconBesideWordsStandsWhereItsPositionSays() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("Go").icon("test_wide.png")
@@ -73,8 +73,8 @@ final class AndroidButtonViewTests: XCTestCase {
     }
 
     /// A fill and corners are one shape under Android's own pressed ripple; nothing said keeps the theme's.
-    func testALookIsOneShapeUnderThePlatformsRipple() throws {
-        try onMainActor {
+    func testALookIsOneShapeUnderThePlatformsRipple() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("Plain")
@@ -90,8 +90,8 @@ final class AndroidButtonViewTests: XCTestCase {
     }
 
     /// A button drawn by its own look dims while it is disabled, as the theme's controls do.
-    func testADisabledLookDimsAsTheThemesControlsDo() throws {
-        try onMainActor {
+    func testADisabledLookDimsAsTheThemesControlsDo() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("On").background(.firebrick).horizontalAlignment(.start)
@@ -128,8 +128,8 @@ final class AndroidButtonViewTests: XCTestCase {
         }
     }
 
-    func testAFamilyChangesTheTypeface() throws {
-        try onMainActor {
+    func testAFamilyChangesTheTypeface() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Button("Plain")

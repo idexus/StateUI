@@ -14,8 +14,8 @@ final class AndroidActTests: XCTestCase {
     }
 
     /// `ClockTime.now()` and `TimeZoneInfo.local()` are acts the host answers from the platform's clock and zone.
-    func testTheClockAndTheZoneAnswerFromThePlatform() throws {
-        try onMainActor {
+    func testTheClockAndTheZoneAnswerFromThePlatform() {
+        onMainActor {
             let said = State(wrappedValue: "")
             let host = AndroidRenderer.running {
                 Label(said.wrappedValue).onCreated {

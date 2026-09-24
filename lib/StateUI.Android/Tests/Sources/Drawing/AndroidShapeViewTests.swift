@@ -18,8 +18,8 @@ final class AndroidShapeViewTests: XCTestCase {
     static let red: UInt32 = 0xFFFF_0000
 
     /// A rectangle reaches its corners; an ellipse leaves them and fills its middle.
-    func testARectangleAndAnEllipseFillTheirRoom() throws {
-        try onMainActor {
+    func testARectangleAndAnEllipseFillTheirRoom() {
+        onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
                     Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start)

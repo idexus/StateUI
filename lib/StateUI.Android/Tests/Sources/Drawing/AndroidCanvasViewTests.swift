@@ -58,8 +58,8 @@ final class AndroidCanvasViewTests: XCTestCase {
     }
 
     /// A record that does not read whole - a rectangle with three numbers - is left out, and the rest drawn.
-    func testARecordThatDoesNotReadIsLeftOut() throws {
-        try onMainActor {
+    func testARecordThatDoesNotReadIsLeftOut() {
+        onMainActor {
             let broken = DrawCommand(propValue: .values([.enumeration(12), .number(0), .number(0), .number(5)]))!
             let (ints, numbers, _) = AndroidCanvasView.encoded([
                 broken, Draw.fillColor(.red), Draw.fillRectangle(x: 0, y: 0, width: 5, height: 5),
