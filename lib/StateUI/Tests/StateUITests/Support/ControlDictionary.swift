@@ -9,7 +9,7 @@
 // stand between `<!-- name:begin -->` and `<!-- name:end -->`.
 //
 // A host's column comes from its RUNTIME wherever it can: MAUI writes what it
-// realizes to `exports/maui.bin`, read here and joined with the contracts, so
+// realizes to `exports/maui.txt`, read here and joined with the contracts, so
 // each member is named under the contract declaring it and no owner is typed
 // by hand. What a registry cannot know stays written - the elements a renderer
 // serves itself, and every judgement: what a realization is missing, what a
@@ -631,7 +631,7 @@ struct ControlDictionary {
 
     /// What AppKit, MAUI and Android Views declare they realize.
     ///
-    /// MAUI's is read twice over: what its RUNTIME wrote to `exports/maui.bin`
+    /// MAUI's is read twice over: what its RUNTIME wrote to `exports/maui.txt`
     /// - every element it registers, with the owner of each member worked out
     /// against the contracts - and then what is still said by hand, which is
     /// the elements the renderer serves itself and the notes saying what a
@@ -666,7 +666,7 @@ struct ControlDictionary {
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.
     static let exports = [
-        "AppKit": "exports/appkit.bin", "MAUI": "exports/maui.bin", "Android Views": "exports/android.bin",
+        "AppKit": "exports/appkit.txt", "MAUI": "exports/maui.txt", "Android Views": "exports/android.txt",
     ]
 
     /// The records a host's own export carries: its declaration joined with
@@ -683,7 +683,7 @@ struct ControlDictionary {
     static func export(_ path: String) throws -> HostDeclaration {
         let url = Fixtures.repository.appendingPathComponent(path)
 
-        guard let declaration = Wire.decodeDeclaration([UInt8](try Data(contentsOf: url))) else {
+        guard let declaration = HostDeclaration(sidecar: try String(contentsOf: url, encoding: .utf8)) else {
             throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
                 + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
                 + "`dotnet test lib/StateUI.Maui/Tests` or `swift test --package-path lib/StateUI.AppKit`.")

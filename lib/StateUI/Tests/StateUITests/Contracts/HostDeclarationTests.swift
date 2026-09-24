@@ -13,28 +13,41 @@ import XCTest
 
 final class HostDeclarationTests: XCTestCase {
 
-    /// A declaration crosses and reads back whole.
+    /// A declaration written as text reads back whole, shared machinery and
+    /// acts included.
     func testADeclarationReadsBackAsItWasWritten() {
-        XCTAssertEqual(Wire.decodeDeclaration(Wire.encodeDeclaration(Self.sample)), Self.sample)
+        var sample = Self.sample
+        sample.shared = HostDeclaration.Element(members: ["opacity"], events: ["tapped"])
+        sample.acts = ["focus"]
+
+        XCTAssertEqual(HostDeclaration(sidecar: sample.sidecar), sample)
     }
 
-    /// The bytes are the same whatever order it was gathered in: sets are
-    /// written sorted, the wire's rule.
-    func testTheSameDeclarationIsTheSameBytes() {
+    /// The text is the same whatever order it was gathered in: the sets are
+    /// written sorted.
+    func testTheSameDeclarationIsTheSameText() {
         let same = HostDeclaration(elements: [
             "Slider": HostDeclaration.Element(
                 members: ["value", "minimum", "maximum"], events: ["valueChanged"]),
             "Label": HostDeclaration.Element(members: ["maximumLines", "fontSize"]),
         ])
 
-        XCTAssertEqual(Wire.encodeDeclaration(same), Wire.encodeDeclaration(Self.sample))
+        XCTAssertEqual(same.sidecar, Self.sample.sidecar)
     }
 
-    /// A buffer that will not read is refused whole rather than half read.
-    func testAnUnreadableBufferIsRefused() {
-        XCTAssertNil(Wire.decodeDeclaration([99, 1, 2, 3]))
-        XCTAssertNil(Wire.decodeDeclaration(Array(Wire.encodeDeclaration(Self.sample).dropLast())))
-        XCTAssertNil(Wire.decodeDeclaration(Wire.encodeDeclaration(Self.sample) + [0]))
+    /// A text that is not a declaration is refused whole rather than half read.
+    func testATextThatIsNotADeclarationIsRefused() {
+        let whole = Self.sample.sidecar
+
+        XCTAssertNotNil(HostDeclaration(sidecar: whole))
+        XCTAssertNil(HostDeclaration(sidecar: ""), "no shared machinery and no acts")
+        XCTAssertNil(
+            HostDeclaration(sidecar: whole.replacingOccurrences(of: "(acts)\n", with: "")),
+            "the acts left out")
+        XCTAssertNil(HostDeclaration(sidecar: "  opacity\n" + whole), "a member under nothing")
+        XCTAssertNil(HostDeclaration(sidecar: "Label\n" + whole), "an element said twice")
+        XCTAssertNil(HostDeclaration(sidecar: whole + "Label\n"), "an element after the shared machinery")
+        XCTAssertNil(HostDeclaration(sidecar: whole + "  opacity\n"), "a member among the acts")
     }
 
     /// THE JOIN: a member is named under the contract DECLARING it - the
@@ -82,8 +95,8 @@ final class HostDeclarationTests: XCTestCase {
     /// than becoming a row nobody can explain.
     func testTheMauiExportJoinsWithTheContracts() throws {
         let declaration = try XCTUnwrap(
-            Wire.decodeDeclaration([UInt8](try Data(contentsOf: Self.export))),
-            "exports/maui.bin did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 "
+            HostDeclaration(sidecar: try String(contentsOf: Self.export, encoding: .utf8)),
+            "exports/maui.txt did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 "
             + "dotnet test lib/StateUI.Maui/Tests.")
 
         XCTAssertTrue(
@@ -141,8 +154,8 @@ final class HostDeclarationTests: XCTestCase {
 
     // MARK: - Support
 
-    /// `exports/maui.bin`, written by the MAUI suite from its registrations.
-    private static let export = Fixtures.repository.appendingPathComponent("exports/maui.bin")
+    /// `exports/maui.txt`, written by the MAUI suite from its registrations.
+    private static let export = Fixtures.repository.appendingPathComponent("exports/maui.txt")
 
     /// A host declaring a label with a member of its own and one of a tier it
     /// wears, and a slider with the value a user moves.

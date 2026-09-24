@@ -103,6 +103,61 @@
         return lines.joined(separator: "\n") + "\n"
     }
 
+    /// A declaration read back from its `sidecar`, the text a host's suite
+    /// exports; nil for a text that is not one - a line out of place, an element
+    /// said twice, or the shared machinery or the acts missing.
+    ///
+    /// - Parameter text: the text, as `sidecar` writes it.
+    public init?(sidecar text: String) {
+        enum Section: Equatable { case element(String), shared, acts }
+
+        var elements: [String: Element] = [:]
+        var shared: Element?
+        var acts: Set<String>?
+        var section: Section?
+
+        for whole in text.split(separator: "\n") {
+            let line = whole.hasSuffix("\r") ? whole.dropLast() : whole
+
+            guard line.hasPrefix("  ") else {
+                switch String(line) {
+                case "(every element)" where shared == nil:
+                    shared = Element()
+                    section = .shared
+                case "(acts)" where shared != nil && acts == nil:
+                    acts = []
+                    section = .acts
+                case let name where shared == nil && elements[name] == nil && !name.contains(" "):
+                    elements[name] = Element()
+                    section = .element(name)
+                default:
+                    return nil
+                }
+                continue
+            }
+
+            let said = line.dropFirst(2)
+            let isEvent = said.hasSuffix("()")
+            let name = String(isEvent ? said.dropLast(2) : said)
+
+            guard !name.isEmpty, !name.contains(" ") else { return nil }
+
+            switch section {
+            case .element(let element)?:
+                if isEvent { elements[element]?.events.insert(name) } else { elements[element]?.members.insert(name) }
+            case .shared?:
+                if isEvent { shared?.events.insert(name) } else { shared?.members.insert(name) }
+            case .acts? where isEvent:
+                acts?.insert(name)
+            default:
+                return nil
+            }
+        }
+
+        guard let shared, let acts else { return nil }
+        self.init(elements: elements, shared: shared, acts: acts)
+    }
+
     /// Names split into what a view takes and what it raises, as the contracts declare each; a name no
     /// contract knows stays a member, where `undeclared` names it.
     private static func split(_ names: Set<String>) -> Element {
