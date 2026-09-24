@@ -58,7 +58,6 @@ and this table maps the two.
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |
 | path (builder) | structural key | where a statement stood in its builder: `1.else.0` |
-| window (`ItemsView`) | virtualization window | the items a list describes because they are in view |
 | clean walk (`revisit`) | partial re-render | only the elements whose reads meet the changes are rebuilt |
 | resync (`describeAll`) | full sync | the complete tree sent to a host that lost its generation |
 | settle pass | handler flush | the handlers a render found run, their writes merged into the same message |

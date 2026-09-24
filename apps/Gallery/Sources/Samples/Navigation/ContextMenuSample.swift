@@ -9,11 +9,6 @@ struct ContextMenuSample: SampleContent, ExampleContent {
     static let title = "Context menu"
     static let summary = "A menu on the view itself, opened with a right-click or a long press."
 
-    #if MAUI
-    // MAUI shows a context menu on a desktop alone. The route still remains
-    // reachable on every device even where the sample is not listed.
-    static let formFactors: Set<FormFactor> = [.desktop]
-    #endif
 
     static let code = """
         @State private var items = ["Alpha", "Beta", "Gamma"]

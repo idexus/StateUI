@@ -16,7 +16,7 @@ extension Fixtures {
         "bin", "obj", ".build", ".swiftpm", "Package.resolved", ".DS_Store",
         // A host's own build directories, and the language server's settings
         // the editor extension writes beside each application.
-        ".build-appkit", ".build-maui", ".build-android", ".gradle", ".sourcekit-lsp",
+        ".build-appkit", ".build-android", ".gradle", ".sourcekit-lsp",
         // What the editor extension's own build writes: its packages and its
         // compiled code.
         "node_modules", "out",

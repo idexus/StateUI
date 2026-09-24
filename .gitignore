@@ -2,10 +2,8 @@
 bin/
 obj/
 artifacts/
-.build/
-.build-maui/
-.build-appkit/
-.build-android/
+# SwiftPM's build directories: .build, and one per host's builds.
+.build*/
 # What Gradle keeps beside a head an editor opens; the scripts keep theirs in .build-android.
 .gradle/
 

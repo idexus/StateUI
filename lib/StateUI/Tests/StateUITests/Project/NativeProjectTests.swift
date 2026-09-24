@@ -135,11 +135,11 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The code every host runs names no host. Swift written for one host alone
-    /// stands under the condition named for it - `#if MAUI`, which every MAUI
-    /// build defines, and `#if APPKIT`, which every AppKit build of an
-    /// application defines; see the two tests below - and such a block, up to
-    /// its `#else` or `#endif`, is the one place the library and each
-    /// application's `Sources/` may name that host.
+    /// stands under the condition named for it - `#if APPKIT`, which every
+    /// AppKit build of an application defines; see the two tests below - and
+    /// such a block, up to its `#else` or `#endif`, is the one place the
+    /// library and each application's `Sources/` may name that host. A host
+    /// with no builds any more is named nowhere, under no condition.
     ///
     /// The words are assembled here so this guard does not find itself.
     func testTheSharedSourcesNameAHostOnlyUnderItsCondition() throws {
@@ -150,7 +150,7 @@ final class NativeProjectTests: XCTestCase {
         roots += apps.map { $0.appendingPathComponent("Sources") }
 
         var offenders: [String] = []
-        for word in ["ma" + "ui", "app" + "kit"] {
+        for (word, conditioned) in [("app" + "kit", true), ("ma" + "ui", false)] {
             let condition = "#if " + word.uppercased()
             for root in roots {
                 guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
@@ -176,7 +176,7 @@ final class NativeProjectTests: XCTestCase {
                             continue
                         }
 
-                        if directive == condition {
+                        if conditioned && directive == condition {
                             depth = 1
                         } else if line.lowercased().contains(word) {
                             let relative = String(file.path.dropFirst(repository.path.count + 1))

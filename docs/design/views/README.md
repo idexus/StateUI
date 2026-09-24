@@ -25,7 +25,6 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 | [pages.md](pages.md) | application, scenes, windows, pages, the arrangements and their keys |
 | [styles.md](styles.md) | styles resolved before the patch, visual states, the sheet |
 | [measured-layouts.md](measured-layouts.md) | frame reports, placed layouts, the scroll reader and the gallery |
-| [lists.md](lists.md) | the list that describes only the items in view |
 | [inspector.md](inspector.md) | the in-app inspector of renders |
 
 ## From an application to the tree

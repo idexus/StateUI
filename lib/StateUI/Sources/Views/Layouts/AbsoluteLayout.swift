@@ -53,7 +53,7 @@ public struct AbsoluteLayout: Layout {
 
     /// Says these children are rows the host may keep and hand to the next row
     /// of the same shape - internal, since only this library can promise it.
-    /// Design: docs/design/views/lists.md#recycling
+    /// Design: docs/design/core/identity-and-diffing.md#recycling
     func recycling() -> AbsoluteLayout {
         var copy = self
         copy.node.recycles = true

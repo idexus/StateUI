@@ -151,9 +151,8 @@ swift test --package-path lib/StateUI.AppKit
 swift test --package-path apps/Gallery
 ```
 
-`.scripts/test-native.sh` runs the three Swift suites, then the library and the
-Gallery again as MAUI builds (`-Xswiftc -DMAUI`) and the Gallery as an AppKit
-build (`STATEUI_APPKIT=1`), each on a build directory of its own:
+`.scripts/test-native.sh` runs the three Swift suites, then the Gallery again as
+an AppKit build (`STATEUI_APPKIT=1`), on a build directory of its own:
 
 ```bash
 .scripts/test-native.sh

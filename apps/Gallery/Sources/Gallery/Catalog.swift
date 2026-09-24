@@ -30,23 +30,12 @@ final class Catalog {
         bar: TitleBarState,
         log: WindowLog
     ) {
-        var collections = [
+        let collections = [
             Sample(SwipeViewSample()),
             Sample(RefreshViewSample()),
             Sample(GalleryViewSample()),
             Sample(PositionIndicatorSample()),
         ]
-
-        #if MAUI
-        // The MAUI host's lists, compiled for that host alone.
-        collections.insert(
-            contentsOf: [
-                Sample(ItemsViewSample()),
-                Sample(ChoosingItemsSample()),
-                Sample(LoadingItemsSample()),
-            ],
-            at: 0)
-        #endif
 
         var groups: [SampleGroup] = [
             SampleGroup(
@@ -316,27 +305,6 @@ final class Catalog {
                 ]),
         ]
 
-        #if MAUI
-        // Calling C#, hearing from it, and controls the application registers
-        // with the C# host - each described like the library's own.
-        groups.append(
-            SampleGroup(
-                route: "interop",
-                title: "C# interop",
-                summary: "Calling C#, hearing from it, and controls the app registers - "
-                    + "described like the library's own.",
-                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
-                samples: [
-                    Sample(CustomActsSample()),
-                    Sample(CustomEventsSample()),
-                    Sample(CustomControlSample()),
-                    Sample(CustomContainerSample()),
-                    Sample(CustomBindingSample()),
-                    Sample(CustomStyleSample()),
-                    Sample(CustomAnimationSample()),
-                ]))
-        #endif
 
         #if APPKIT
         // Calling the host, hearing from it, and a control the application

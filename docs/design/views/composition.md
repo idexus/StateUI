@@ -2,7 +2,7 @@
 
 An application builds its interface out of composed views - `ContentView`s -
 and the library builds several of its own the same way: `FrameReader`,
-`PlacedLayout`, `ScrollReader`, `GalleryView`, `ItemsView`, the inspector. A
+`PlacedLayout`, `ScrollReader`, `GalleryView`, the inspector. A
 composed view is a value that says what it is made of; the differ decides when
 that is read.
 

@@ -730,24 +730,6 @@ final class CatalogTests: XCTestCase {
             "an example written in Swift alone draws no second section")
     }
 
-    #if MAUI
-    /// Every interop example shows both halves: the Swift a reader writes, and
-    /// what answers it on the host.
-    ///
-    /// The interop group is the only one whose examples have a second half, so
-    /// losing it would show up nowhere else.
-    func testEveryInteropExampleShowsItsHostHalf() throws {
-        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "interop" })
-
-        for sample in interop.samples {
-            for (index, example) in sample.examples.enumerated() {
-                XCTAssertFalse(
-                    example.hostCode.isEmpty,
-                    "\(sample.id) example \(index + 1) shows no host half")
-            }
-        }
-    }
-    #endif
 
     #if APPKIT
     /// Every example of the AppKit interop group shows both halves, and names

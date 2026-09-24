@@ -14,7 +14,7 @@ enum GalleryElements {
     /// under its own condition, the one element only a single host can.
     static let all: [any ElementContract.Type] = {
         var all: [any ElementContract.Type] = [
-            TrafficLightContract.self, RatingBarContract.self, BadgeContract.self,
+            TrafficLightContract.self, RatingBarContract.self,
         ]
 
         #if APPKIT
