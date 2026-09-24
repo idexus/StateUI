@@ -12,9 +12,9 @@ controls from its platform toolkit.
 
 Three hosts are active: AppKit; .NET MAUI, which already runs StateUI
 applications on Android, iOS, Mac Catalyst, Windows, and Linux; and Android
-Views, a Swift host in the application's process that presents its first
-controls. UIKit, WinUI 3, and GTK 4 follow the same host contract. Web DOM/CSS
-comes after the native contract is settled.
+Views, a Swift host in the application's process. UIKit, WinUI 3, and GTK 4
+follow the same host contract. Web DOM/CSS comes after the native contract is
+settled.
 
 | MAUI - Catalyst, iOS, Android, Windows, Linux | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
