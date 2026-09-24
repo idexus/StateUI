@@ -104,7 +104,7 @@ final class CarriedCostTests: XCTestCase {
             .compactMap { $0.props[.text] }
         XCTAssertEqual(
             text.first, .string("shown 2"),
-            "what the rebuilt view says reaches the wire")
+            "what the rebuilt view says reaches the patch")
     }
 
     func testStateInsideAContainerSurvivesRedescription() {
@@ -187,7 +187,7 @@ final class CarriedCostTests: XCTestCase {
         XCTAssertEqual(blanks.count, 1, "the view beside it read nothing and was built with the same inputs")
         XCTAssertEqual(
             patch.child("row")?.children.first?.props["text"], .string("n7"),
-            "and what the reader now says reaches the wire")
+            "and what the reader now says reaches the patch")
     }
 
     private func texts(in patch: HostPatch) -> [PropValue] {

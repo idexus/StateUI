@@ -23,7 +23,7 @@
     var inspecting: Bool { Inspection.recording }
 
     /// Tells the inspector what applying the message of `generation` cost: every scene's part by its place
-    /// in the application's list, then the whole. A typed patch is read off no buffer.
+    /// in the application's list, then the whole.
     @MainActor
     func inspected(_ tally: RenderTally, generation: Int32) {
         let apply = RenderTally.micros(ContinuousClock.now - tally.began)
@@ -34,7 +34,7 @@
         Inspection.applied(
             generation: generation,
             InspectedHost(
-                read: 0, apply: apply, nodes: tally.nodes, made: tally.made,
+                apply: apply, nodes: tally.nodes, made: tally.made,
                 kept: tally.nodes - tally.made - tally.adopted, adopted: tally.adopted))
     }
 
@@ -42,6 +42,12 @@
 
     /// Whether any state or engine waits for a display cycle.
     public var cyclesPending: Bool { StateUIHost.cyclesPending }
+
+    /// The last display cycle as one line.
+    public var cycleTrace: String { StateUIHost.cycleTrace }
+
+    /// What this process's renders came to - the tally a runtime prints to count leaks.
+    public var tally: HostTally { StateUIHost.tally }
 
     /// Runs the display's cycle at `now` and returns what it published.
     public func cycle(now: Double, reducesMotion: Bool) -> HostCycle {

@@ -180,9 +180,9 @@ is built, and the host hydrates the whole store before the first render. It
 reads a store key by key, each with its kind, so the application lists its keys:
 
 ```text
-  1  the host asks for the keys and the store     stateui_persistent_keys
+  1  the host asks for the keys and the store     StateUIHost.persistentKeys
   2  it reads exactly those from the store
-  3  it hands back what it found                  stateui_set_persistent
+  3  it hands back what it found                  StateUIHost.restorePersistent
 ```
 
 A key the store has nothing under is absent, and the state keeps the value
@@ -232,7 +232,7 @@ type: the annotation is the key, so there is nothing to spell and nothing to
 collide. Nothing about it crosses to the host.
 
 ```text
-  .environment(obj)   stored on the node, outside the wire
+  .environment(obj)   stored on the node, outside the patch
   the differ          keeps a stack of provided objects as it walks, in both
                       walks, and fills each @Environment slot BEFORE the body
                       builds; refilled on every build, never adopted

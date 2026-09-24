@@ -3,21 +3,21 @@
 Reactive path 2 runs without a render. A carried state lives on an image of
 plain bytes that both sides rewrite; once per display frame the host runs a
 cycle in the core, the application's engines work over one snapshot, and what
-moved crosses back as a batch of bytes each way. No build, no diff, no message:
+moved crosses back as typed values each way. No build, no diff, no message:
 this is why a value nobody could afford to render on can be followed frame by
 frame.
 
 ```text
   host frame (now, ms)
     |
-    |  stateui_cycle_write / StateUIHost.report   the user's changes, by lane
+    |  StateUIHost.report                          the user's changes, by lane
     v
   CycleBoard.cycle(now:)
     1 READ      every write waiting since the last cycle is latched into the image
     2 WORK OUT  the engines with a reason run, in order, over that one picture
     3 WRITE     the image is published; what moved is marked dirty
     |
-    |  stateui_cycle_read / HostCycle.changes     ascending state numbers
+    |  HostCycle.changes                           ascending state numbers
     v
   host writes the moved values onto its controls
 ```
@@ -197,21 +197,7 @@ to a fresh process's before each fixture; nothing a running interface could
 survive, since a value whose number is forgotten while the host still quotes it
 would be told about somebody else's movement.
 
-## The state batch
-
-A batch of state writes crosses the same way both directions:
-
-```text
-  [count: U16]
-  per write:  [number: I32][mask: U64, as two U32 halves][length: U32][bytes]
-  little-endian throughout; the mask names the lanes that moved, the bytes are
-  the value whole as the image holds it
-```
-
-`stateui_cycle_write` reads a host's batch and `stateui_cycle_read` answers in
-it, so one layout serves both; `state-batches.txt` holds every other runtime's
-copy to it. Bytes that run out part way are a boundary fault, not a value: the
-writes before the fault are read, and the call answers -1.
+## The image
 
 A value lies on the image as little-endian bit patterns, eight bytes a lane, or
 as a text's own length and UTF-8 (`StateImage`), written by hand because the

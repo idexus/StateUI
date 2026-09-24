@@ -194,8 +194,7 @@ final class HostContractTests: XCTestCase {
     /// `isOpaque` and `textType` have no modifier and no realization, and are
     /// no part of the vocabulary. `Composed`, the differ's placeholder for a
     /// composed view, is expanded before anything is sent - the library's own
-    /// name, not the host's. None of them returns, here or in a host's mirror,
-    /// which the two-way token guard in `WireFormatTests` holds.
+    /// name, not the host's. None of them returns.
     func testNoTokenPromisesWhatNothingWrites() throws {
         let tokenSource = try Fixtures.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
@@ -248,8 +247,7 @@ final class HostContractTests: XCTestCase {
 
     /// The scroller is the platform's: no grid to settle on, no momentum to
     /// tune and no report step. The tokens that carried them were removed by
-    /// decision and do not return; a host member left for one of them fails
-    /// the two-way token guard in `WireFormatTests`.
+    /// decision and do not return.
     func testTheScrollerKeepsNoGridNoMomentumAndNoStep() throws {
         let tokenSource = try Fixtures.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)

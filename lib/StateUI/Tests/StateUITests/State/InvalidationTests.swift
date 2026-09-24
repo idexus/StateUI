@@ -4,7 +4,7 @@
 // A render that knows WHICH state changed rebuilds the views that read it and
 // leaves the rest of the tree alone. These count the builds, because a body
 // that runs when it should not - and one that fails to run when it should -
-// look identical on the wire.
+// look identical in the patch.
 //
 // The mechanism under test is in Invalidation.swift (reads), Renderer
 // (changes and the choice of path) and Differ.revisit (the walk). The promise

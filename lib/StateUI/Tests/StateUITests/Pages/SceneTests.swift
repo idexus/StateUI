@@ -904,15 +904,14 @@ final class SceneTests: XCTestCase {
         Scenes.shared.list[1].windowSession(SceneElement.mainKey).title = "Studio 2"
 
         let differ = Differ()
-        let session = FixtureSession()
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
-        try Fixtures.check(opened.patch, complete: true, in: session, against: "scenes/1-opens")
+        try Fixtures.check(opened.patch, against: "scenes/1-opens")
 
         Scenes.shared.list[0].windows = []
 
         let closed = differ.reconcile(
             opened.node, with: tree(), changed: Renderer.shared.pendingChanges)
-        try Fixtures.check(closed.patch, in: session, against: "scenes/2-closes")
+        try Fixtures.check(closed.patch, against: "scenes/2-closes")
     }
 }

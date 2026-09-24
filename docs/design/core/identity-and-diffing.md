@@ -43,8 +43,8 @@ a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
 `ElementId` has two cases that are two namespaces: `.auto` is a number the
-differ assigns and `.manual` is the author's text. On the wire one is a number
-and the other a string, so they can never collide.
+differ assigns and `.manual` is the author's text. One is a number and the
+other a string, so they can never collide.
 
 ## What a walk keeps
 

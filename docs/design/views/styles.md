@@ -64,9 +64,9 @@ arguments.
 A visual state is a named state a control can be in - Normal, Disabled,
 PointerOver, On - with the property values in force while it is there. Names
 are spelled exactly as the host matches them: a state is matched by its name,
-so unlike an enumeration member on the wire it is not camel-cased, and
+so unlike an enumeration member it is not camel-cased, and
 "PointerOver" is the state while "pointerOver" is nothing. A state's name and
-its group are names on the wire, not text: each repeats on every state sharing
+its group are names in the patch, not text: each repeats on every state sharing
 it, and one spelling means one state wherever it is written.
 
 `VisualState<Target>` carries its control type as a phantom, which makes the
@@ -127,8 +127,7 @@ it declares - a host knows a state only from the list it is sent - so the
 states named there are declared in `CommonStates`, merged into the style's
 without changing how the control looks. Declaring a state can change which one
 the control rests in, so only the states it should react to are named. A
-report carries the state's name as text: an event payload is written without
-a name dictionary, so a name arrives as text however it went out.
+report carries the state's name as text, however it went out.
 
 ## The sheet
 

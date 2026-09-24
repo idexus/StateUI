@@ -10,10 +10,3 @@
 # here, and a rule that names extensions is a rule somebody has to remember to
 # extend.
 * text=auto eol=lf
-
-# The wire fixtures are bytes, not text, and text=auto only leaves alone what
-# git DETECTS as binary - a NUL somewhere in the first 8000 bytes. A tiny
-# fixture can be NUL-free, and one that then contained 0x0D 0x0A adjacent bytes
-# would be silently rewritten at check-in into bytes the Swift writer never
-# produced.
-*.bin binary

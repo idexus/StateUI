@@ -21,7 +21,7 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
                                UIThreadExecutor, installed through Swift's
                                executor factory before the first task; it
                                queues each job, and the host drains the queue
-                               on its UI thread through stateui_run_jobs.
+                               on its UI thread through StateUIHost.runJobs.
 ```
 
 The executor is installed as the renderer is made, before anything here starts a
@@ -51,18 +51,18 @@ every async declaration in the library to one of the two spellings.
 
 Handing each job to a host function pointer is a trap. `resume()` produces its
 job on a cooperative-pool thread, so such a callback enters the host from a
-thread its runtime has never seen. A runtime in another language attaches that
-thread on the way in, and on Android, with a debugger attached, the attach can
-deadlock the UI thread: the app freezes at the first `await` in a handler and
-stops receiving touches, while the same build without a debugger is fine. So
-nothing here calls out; the host asks, through `stateui_run_jobs` and
-`StateUIHost.runJobs()`.
+thread its runtime has never seen. A relay in a platform's own language - Java
+through JNI - attaches that thread on the way in, and on Android, with a
+debugger attached, the attach can deadlock the UI thread: the app freezes at
+the first `await` in a handler and stops receiving touches, while the same
+build without a debugger is fine. So nothing here calls out; the host asks,
+through `StateUIHost.runJobs()`.
 
 ## The doorbell
 
 Work can arrive when no act is in flight at all: `Task.sleep` coming due, a task
 an author started finishing, a stream yielding. So the host parks a thread of
-its own in `stateui_wait_work` (`StateUIHost.waitForWork()`), and that thread is
+its own in `StateUIHost.waitForWork()`, and that thread is
 the doorbell:
 
 ```text

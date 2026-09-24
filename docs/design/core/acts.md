@@ -13,10 +13,10 @@ describes the act and the host performs it.
      |                   (completion ids count down from -1)
      |  the handler suspends; the host is woken
      v
-  host turn: takeActCalls / stateui_take_act_calls_wire     receipt kept: [-7]
+  host turn: StateUIHost.takeActCalls
      |  the host performs each act on its native objects
      v
-  StateUIHost.reply(-7, with:) / stateui_dispatch_wire(-7, reply bytes)
+  StateUIHost.reply(-7, with:)   or   StateUIHost.fail(-7, reason:)
      |
      v  Renderer.dispatch(-7): the continuation resumes on MainActor
   handler: the next line runs with the alert gone
@@ -25,9 +25,9 @@ describes the act and the host performs it.
 ## An act is a member
 
 An act is a member of a contract - the library's are `ApplicationContract`'s and
-its elements' - whose documentation says what the host does for it. On the wire
-it crosses as the session dictionary's number for its name, announced by the
-first batch that uses it (wire.md). An act of an element is aimed through an
+its elements' - whose documentation says what the host does for it. A host
+takes it as its name and the values it declares. An act of an element is aimed
+through an
 `@Aim`; an act of the application aims at nothing and is called with
 `stateUICall` or `stateUISend`. Arguments and answers are the values the
 member declares, checked on the way back: an answer of another shape throws.
@@ -86,20 +86,14 @@ not hold up the one behind it, so answers come back in whatever order the host
 finishes them. What puts one act after another is `await`: a handler that
 awaits the first queues the second only once the answer is in.
 
-## The receipt
+## Every act is answered
 
-Taking a batch keeps its completion ids as a receipt, overwritten by every take.
-A batch the host cannot read at all has lost its ids inside the very bytes that
-would not read; only this side still knows them, and `failTakenActCalls` fails
-each one through the ordinary reply path, so every awaiting handler resumes by
-throwing instead of waiting for ever. It is not a timeout: an act may wait
-without bound - a dialog waits for the user - so the failure is causal, told by
-the side that failed. Failing twice fails nobody twice, and an act answered in
-the meantime is safe, `dispatch` answering false for a completion already gone.
-
-A Swift host never needs the receipt: it takes typed calls and answers each by
-its id (`StateUIHost.reply`, `StateUIHost.fail`). A reply that cannot be read
-resumes its handler with a failure, never a hang.
+A host takes typed calls and answers each by its id: `StateUIHost.reply` with
+the values the act came to, or `StateUIHost.fail` with the reason it could not
+perform it, which the awaiting `stateUICall` throws. There is no timeout: an
+act may wait without bound - a dialog waits for the user - so a failure is
+causal, told by the side that failed. An id answered twice resumes nobody
+twice, `dispatch` answering false for a completion already gone.
 
 ## Saves ride as acts
 
@@ -130,7 +124,7 @@ which is written; a control with `@Aim`, which is called. Which member is which
 follows what the native toolkits share: a value every host can hold and set is a
 property, and something that happens is an act. Focusing, moving a map to a
 region and stepping a web view back are acts - the platforms keep that state
-read-only, or it means "again", which no value can say on a wire where an
+read-only, or it means "again", which no value can say in a patch where an
 absent field means unchanged. A scroller's offset is state both ways instead,
 because this side has an engine to move it with.
 

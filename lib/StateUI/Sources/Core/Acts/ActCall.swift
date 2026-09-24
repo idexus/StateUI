@@ -7,7 +7,7 @@
 
 /// One act for the host to perform.
 struct ActCall {
-    /// The act's token; what crosses is the session dictionary's number for it.
+    /// The act's token, which a host reads by its name.
     let act: Act
 
     /// Its arguments, in the order the act takes them.
@@ -16,7 +16,7 @@ struct ActCall {
     /// The id of the continuation waiting for it - negative, apart from handler ids.
     let completion: Int?
 
-    /// The act's name - what diagnostics and the fixture sidecars read.
+    /// The act's name - what diagnostics and the fixture dumps read.
     var name: String { act.name }
 }
 

@@ -17,9 +17,8 @@ a value as the thing it is, with nothing to parse and nothing to guess.
 
 A `Name` is a word an application chose that repeats across a tree and means
 the same thing every time: a style key, a font family, a radio group, a kept
-value's key. It crosses as `.name`, which rides the session's dictionary as
-a number, announced once and a couple of bytes afterwards. A member holding
-a `String` crosses as text an author wrote. The member's declared type
+value's key. It crosses as `.name`, which a host may match by what it names.
+A member holding a `String` crosses as text an author wrote. The member's declared type
 decides which it is, so a contract declares `Name` or `String` by what the
 words are.
 

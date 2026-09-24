@@ -47,7 +47,7 @@ public enum PropValue: Equatable, Sendable {
     case values([PropValue])
 
     /// A value with a half for each theme, resolved by the differ as the element is
-    /// built. Never on the wire.
+    /// built. Never handed to a host.
     /// Design: docs/design/core/identity-and-diffing.md#themes
     indirect case themed(light: PropValue, dark: PropValue)
 

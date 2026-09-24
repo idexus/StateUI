@@ -103,8 +103,7 @@ differ turns what they describe into a patch.
   themed values resolved: Color(light:dark:), ImageSource(light:dark:)
      │
      ▼
-  HostPatch, typed and sparse ──▶ a Swift host
-  the same patch as Wire bytes ──▶ a runtime in another language
+  HostPatch, typed and sparse ──▶ the host, Swift in the same process
 ```
 
 A value carried on a state crosses once, as a registration, and then moves on

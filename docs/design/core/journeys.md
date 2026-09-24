@@ -11,8 +11,7 @@ stutters, and a truth value has two places and no distance, so none of them is
 ## The journey lanes
 
 A value the host animates lies on its image as `JourneyLanes`, the shape a
-host's animation is fed from and every Wire runtime reads
-(`journey-lanes.txt` holds them to it):
+host's animation is fed from, read through `StateUIHost.journey(from:)`:
 
 ```text
   value        w lanes   where it IS; the host writes it every frame it moves,
@@ -210,9 +209,8 @@ that wrote the conversion does not become a reader of every source.
 ## Motion laws
 
 `HostMotionLaw` gives where an animation stands at a time since it began. Every
-runtime animates with these numbers: a Swift runtime calls it, a runtime in
-another language keeps a line-by-line copy, and the trajectories in
-`Tests/Fixtures/motion-laws.txt` prove the copy.
+runtime animates with these numbers by calling it, and the trajectories in
+`Tests/Fixtures/motion-laws.txt` pin them.
 
 ```text
   closed form in the elapsed time   nothing is integrated frame by frame, so a

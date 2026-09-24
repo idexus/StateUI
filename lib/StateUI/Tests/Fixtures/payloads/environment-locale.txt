@@ -1,8 +1,0 @@
-environment locale
-  string "pl"
-  string "PL"
-  string "pl-PL"
-  string "Europe/Warsaw"
-  true
-  enum 1
-  true

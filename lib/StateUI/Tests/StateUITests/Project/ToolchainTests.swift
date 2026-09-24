@@ -20,7 +20,7 @@ final class ToolchainTests: XCTestCase {
         let repository = Fixtures.repository
         let kinds: Set<String> = ["swift", "md", "yml", "yaml", "sh", "ps1", "json", "kts", "ts"]
 
-        // What a build writes, the wire fixtures, and the pages rendered from
+        // What a build writes, the fixtures, and the pages rendered from
         // the contracts - none of them names a toolchain.
         let skipped: Set<String> = [
             ".build", ".build-appkit", ".build-android", ".git", ".gradle", "bin", "obj", "node_modules", "out",

@@ -21,9 +21,9 @@ is the other half, what counting live readers spared beside what got through.
 page that was left and still stands in memory shows as a number that does not
 come back down. It tells a leaked page from memory the allocator has not handed
 back yet, which a process's resident size cannot. A host reads the tally
-through `stateui_renders` and `stateui_alive`, and the per-cycle trace through
-`stateui_cycle_trace`, which is built only when the host's trace switch is on:
-this side has no environment to read.
+through `StateUIHost.tally`, and the per-cycle trace through
+`StateUIHost.cycleTrace`, built only when the host's trace switch is on: this
+side has no environment to read.
 
 ## The inspector
 

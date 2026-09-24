@@ -12,9 +12,9 @@ struct Row: ContentView {
         let mine = pass.entries.filter { $0.scene == scene }
         let built = mine.filter { if case .built = $0.outcome { return true } else { return false } }.count
         let carried = mine.filter { $0.outcome == .carried }.count
-        let swift = Look.micros(mine.first { $0.depth == 0 }?.micros ?? pass.describe + pass.encode)
+        let swift = Look.micros(mine.first { $0.depth == 0 }?.micros ?? pass.describe)
         let host = pass.host.map { host in
-            Look.micros(Look.scene(host, at: index) ?? host.read + host.apply)
+            Look.micros(Look.scene(host, at: index) ?? host.apply)
         } ?? "…"
 
         return VStack {

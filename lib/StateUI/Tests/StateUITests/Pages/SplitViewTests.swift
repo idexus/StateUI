@@ -3,7 +3,7 @@
 
 // The flyout, as Swift describes it.
 //
-// A SplitView puts two pages on the wire - the pane and the page under it,
+// A SplitView puts two pages in the patch - the pane and the page under it,
 // each wearing the identity of its half - and whether the pane is showing as
 // one property. Coming back there is one report, and it says what is true now.
 

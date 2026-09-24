@@ -155,7 +155,7 @@ final class Navigation {
     /// separate, with nothing in the library deciding it.
     @State var tabsPath: [Route] = []
 
-    /// What the last change to the tab list put on the wire, in one line, for
+    /// What the last change to the tab list sent to the host, in one line, for
     /// `TabsControls` to print. Written by the moves below and by nothing else.
     @State var tabsNote = "nothing has changed the tabs yet"
 
@@ -296,7 +296,7 @@ final class Navigation {
     }
 
     /// Writes the one line `TabsControls` prints, working out what the move put
-    /// on the wire the same way `TabbedView.selection` does.
+    /// to the host the same way `TabbedView.selection` does.
     private func noteTabMove(_ what: String, was: [DemoTab], showing: DemoTab) {
         let before = was.firstIndex(of: showing)
         let after = tabs.firstIndex(of: showing)

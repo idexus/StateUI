@@ -50,7 +50,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                         running = true
 
                         // Plain Swift concurrency, on any platform: the host
-                        // parks a thread in stateui_wait_work and a resume
+                        // parks a thread waiting for work and a resume
                         // wakes it, so a sleep coming due reaches the handler
                         // without a Timer or a RunLoop anywhere.
                         while running && visit == mine && remaining > 0 {
@@ -115,7 +115,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                         running = true
 
                         // Plain Swift concurrency, on any platform: the host
-                        // parks a thread in stateui_wait_work and a resume
+                        // parks a thread waiting for work and a resume
                         // wakes it, so a sleep coming due reaches the handler
                         // without a Timer or a RunLoop anywhere.
                         while running && visit == mine && remaining > 0 {

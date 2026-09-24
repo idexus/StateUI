@@ -44,7 +44,7 @@ public struct Insets: Equatable, Sendable, HostRepresentable {
         self.bottom = bottom
     }
 
-    /// The wire form: an array, in the four-value initializer's order.
+    /// As a host is handed it: an array, in the four-value initializer's order.
     public var propValue: PropValue {
         .numbers([left, top, right, bottom])
     }

@@ -17,9 +17,8 @@ the packages, what crosses between them, and where each part of the work runs.
         v
   StateUI  (lib/StateUI, a dynamic library; no Foundation; every platform)
     Sources/Views, Types, Contracts       what an application writes with
-    Sources/Core                          state, keys, diffing, cycles, the Wire
+    Sources/Core                          state, keys, diffing, cycles, the typed boundary
     Sources/Host                          the host layer, @_spi(Host)
-    Sources/Bridge                        the C exports, for a runtime in another language
         |
         |  typed HostRender / HostPatch
         v
@@ -73,7 +72,7 @@ frame, and never computes again what the core decides.
 ```text
   UI thread                            MainActor: handlers, renders, the host's work
     runs jobs the core queues          main queue on Apple; UIThreadExecutor elsewhere,
-                                       drained by the host (stateui_run_jobs)
+                                       drained by the host (CoreLink.runJobs())
   doorbell thread                      parked in CoreLink.waitForWork();
                                        wakes the UI thread when work arrives
   cooperative pool                     an application's own async work, off MainActor

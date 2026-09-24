@@ -38,7 +38,7 @@ public struct Rect: Equatable, Sendable, HostRepresentable {
         self.init(x, y, width, height)
     }
 
-    /// The wire form: an array, in the initializer's order.
+    /// As a host is handed it: an array, in the initializer's order.
     public var propValue: PropValue {
         .numbers([x, y, width, height])
     }

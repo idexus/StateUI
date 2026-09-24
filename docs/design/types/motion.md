@@ -123,5 +123,5 @@ take their sizes at once and animate only their place.
 
 A layout that animates the way the application does says nothing at all:
 `.inherited` is what it is until told otherwise, on both sides, so the
-common case never reaches the wire. What is said is an override, and its
+common case never reaches a host. What is said is an override, and its
 going away.

@@ -5,8 +5,8 @@
 // twice over one image answer the same bytes.
 //
 // Nothing here needs a host. The board is handed an instant and asked for a
-// cycle, exactly as `stateui_cycle_run` will hand it one, so every number
-// below is exact and none of it depends on a frame ever arriving.
+// cycle, exactly as `StateUIHost.cycle` hands it one, so every number below
+// is exact and none of it depends on a frame ever arriving.
 
 import XCTest
 @_spi(Host) @testable import StateUI

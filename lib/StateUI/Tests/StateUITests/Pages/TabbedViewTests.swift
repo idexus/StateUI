@@ -3,7 +3,7 @@
 
 // The tabs, as Swift describes them.
 //
-// A TabbedView puts its tabs on the wire as its ARRANGED children - one page
+// A TabbedView puts its tabs in the patch as its ARRANGED children - one page
 // per tab, in order - and which one is showing as an INDEX into that same list.
 // That is the whole protocol going out. Coming back there is one report - which
 // page became current - and it writes the bound selection.

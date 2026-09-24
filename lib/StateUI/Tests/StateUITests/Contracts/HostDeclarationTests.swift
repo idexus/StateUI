@@ -20,7 +20,7 @@ final class HostDeclarationTests: XCTestCase {
         sample.shared = HostDeclaration.Element(members: ["opacity"], events: ["tapped"])
         sample.acts = ["focus"]
 
-        XCTAssertEqual(HostDeclaration(sidecar: sample.sidecar), sample)
+        XCTAssertEqual(HostDeclaration(text: sample.text), sample)
     }
 
     /// The text is the same whatever order it was gathered in: the sets are
@@ -32,22 +32,22 @@ final class HostDeclarationTests: XCTestCase {
             "Label": HostDeclaration.Element(members: ["maximumLines", "fontSize"]),
         ])
 
-        XCTAssertEqual(same.sidecar, Self.sample.sidecar)
+        XCTAssertEqual(same.text, Self.sample.text)
     }
 
     /// A text that is not a declaration is refused whole rather than half read.
     func testATextThatIsNotADeclarationIsRefused() {
-        let whole = Self.sample.sidecar
+        let whole = Self.sample.text
 
-        XCTAssertNotNil(HostDeclaration(sidecar: whole))
-        XCTAssertNil(HostDeclaration(sidecar: ""), "no shared machinery and no acts")
+        XCTAssertNotNil(HostDeclaration(text: whole))
+        XCTAssertNil(HostDeclaration(text: ""), "no shared machinery and no acts")
         XCTAssertNil(
-            HostDeclaration(sidecar: whole.replacingOccurrences(of: "(acts)\n", with: "")),
+            HostDeclaration(text: whole.replacingOccurrences(of: "(acts)\n", with: "")),
             "the acts left out")
-        XCTAssertNil(HostDeclaration(sidecar: "  opacity\n" + whole), "a member under nothing")
-        XCTAssertNil(HostDeclaration(sidecar: "Label\n" + whole), "an element said twice")
-        XCTAssertNil(HostDeclaration(sidecar: whole + "Label\n"), "an element after the shared machinery")
-        XCTAssertNil(HostDeclaration(sidecar: whole + "  opacity\n"), "a member among the acts")
+        XCTAssertNil(HostDeclaration(text: "  opacity\n" + whole), "a member under nothing")
+        XCTAssertNil(HostDeclaration(text: "Label\n" + whole), "an element said twice")
+        XCTAssertNil(HostDeclaration(text: whole + "Label\n"), "an element after the shared machinery")
+        XCTAssertNil(HostDeclaration(text: whole + "  opacity\n"), "a member among the acts")
     }
 
     /// THE JOIN: a member is named under the contract DECLARING it - the
@@ -97,7 +97,7 @@ final class HostDeclarationTests: XCTestCase {
     func testEveryHostsExportJoinsWithTheContracts() throws {
         for (host, path) in ControlDictionary.exports.sorted(by: { $0.key < $1.key }) {
             let declaration = try XCTUnwrap(
-                HostDeclaration(sidecar: try String(
+                HostDeclaration(text: try String(
                     contentsOf: Fixtures.repository.appendingPathComponent(path), encoding: .utf8)),
                 "\(path) did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 through \(host)'s suite.")
 
@@ -141,7 +141,7 @@ final class HostDeclarationTests: XCTestCase {
         ])
         XCTAssertEqual(declaration.shared, HostDeclaration.Element(members: ["opacity"], events: ["tapped"]))
         XCTAssertEqual(declaration.acts, ["focus"])
-        XCTAssertEqual(declaration.sidecar, """
+        XCTAssertEqual(declaration.text, """
             Label
               maximumLines
             Slider

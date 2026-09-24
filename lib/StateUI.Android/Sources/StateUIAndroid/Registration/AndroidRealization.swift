@@ -4,7 +4,7 @@
 /// What this host realizes beyond its registry - the pages, the lifecycle, a label's runs - member by
 /// member, for the Android Views column of the control dictionary, `docs/controls/`.
 ///
-/// The registry says the rest itself: `exports/android.bin`, written by this package's suite. A record
+/// The registry says the rest itself: `exports/android.txt`, written by this package's suite. A record
 /// names an entry of the dictionary or a tier; an entry's own record wins over its tier's. A member is
 /// recorded once this host realizes it and a test of this package covers it; `.partial` says what is
 /// still missing. `ControlDictionaryTests`, in the core's suite, reads these records as text.

@@ -198,84 +198,6 @@ extension Renderer {
         return (UInt64(1) << UInt64(count)) - 1
     }
 
-    /// Takes in a batch of state writes from the host, in `StateBatch`'s layout.
-    ///
-    /// - Returns: how many states were written, or -1 where the bytes ran out.
-    func cycleWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
-        let (writes, complete) = StateBatch.decode(batch)
-        var written = 0
-
-        for write in writes {
-            guard let storage = storage(of: write.number) else { continue }
-
-            board(of: storage).told(write.bytes, mask: write.mask, to: storage)
-
-            // After the board has let go: the state's hook may take this renderer's lock.
-            storage.told?(write.mask)
-
-            // Readings asked for with `.samples` see every host write
-            // (Sampling.swift).
-            storage.sampleTaken()
-            written += 1
-        }
-
-        return complete ? written : -1
-    }
-
-    /// Runs one cycle of one board.
-    ///
-    /// - Returns: how many states have lanes waiting, with `0x4000_0000` set where
-    ///   an engine has more to do; -1 for no such board.
-    func cycle(sync: Int32, now: Double, reducesMotion: Bool) -> Int32 {
-        guard sync >= 0, Int(sync) < boards.count else { return -1 }
-
-        let report = boards[Int(sync)].cycle(now: now, reducesMotion: reducesMotion)
-
-        return Int32(report.written.count) | (report.awake ? 0x4000_0000 : 0)
-    }
-
-    /// Reads out what a cycle wrote, in `cycleWritten`'s layout: number 0 for every
-    /// state waiting, or one state whole. Answers the bytes written, 0 for a number
-    /// that has gone, or -1 where the buffer is too small and nothing was cleared.
-    func cycleRead(_ number: Int32, into out: UnsafeMutableBufferPointer<UInt8>) -> Int {
-        var batch: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
-
-        if number == 0 {
-            for board in boards {
-                batch += board.dirty()
-            }
-
-            batch.sort { $0.number < $1.number }
-        } else if let storage = storage(of: number), let bytes = board(of: storage).whole(number) {
-            batch = [(number, ~0, bytes)]
-        } else {
-            return 0
-        }
-
-        let bytes = StateBatch.encode(batch.map {
-            StateBatch.Write(number: $0.number, mask: $0.mask, bytes: $0.bytes)
-        })
-
-        guard bytes.count <= out.count else {
-            // `dirty()` already cleared its bits, so they are put back and the call can be
-            // made again with room.
-            for entry in batch where number == 0 {
-                if let storage = storage(of: entry.number) {
-                    board(of: storage).told([], mask: 0, to: storage)
-                    storage.dirty |= entry.mask
-                }
-            }
-
-            return -1
-        }
-
-        for index in 0..<bytes.count {
-            out[index] = bytes[index]
-        }
-
-        return bytes.count
-    }
-
     /// How many boards have anything waiting for a cycle.
     func cycleAwake() -> Int32 {
         Int32(boards.filter { $0.awake }.count)
@@ -305,7 +227,7 @@ extension Renderer {
     }
 
     /// Puts the numbering back to a fresh process's, for the tests, whose fixtures
-    /// compare bytes. Never while an interface runs.
+    /// compare state numbers. Never while an interface runs.
     func clearStates() {
         let issued = guarded.withLock { () -> [() -> HostStorage?] in
             let held = Array(states.values)

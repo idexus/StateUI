@@ -4,8 +4,8 @@ A runtime is the part of a host that turns the core's patches and cycles into
 native views, and turns what the user does back into state. Every runtime has
 the same elements, one job each, named alike in every language. The
 toolkit-neutral elements are the core's host layer, `lib/StateUI/Sources/Host`,
-behind `@_spi(Host)`: every Swift host uses them as they are, and a runtime in
-another language ports them and proves the port against the same fixtures.
+behind `@_spi(Host)`, and every host - Swift in the application's process -
+uses them as they are.
 Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
 
 ## The layers
@@ -166,18 +166,16 @@ clock reproduces every rest.
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,
 an event, an act call and its answer, a user's report, the application's and
-the scene's reports, the kept values and the doorbell's wait. For a Swift host
-the line is the typed `StateUIHost` SPI; a runtime in another language holds
-the same element over the Wire. The lane codecs - a journey read from its
+the scene's reports, the kept values and the doorbell's wait. The line is the
+typed `StateUIHost` SPI. The lane codecs - a journey read from its
 image and written back, a placement run - are arithmetic on values the runtime
 already holds, and stay the SPI's.
 
 ## Names
 
 An element's name is its stem: `Animator`, `StateChannels`, `PatchIntake`. The
-host layer uses the stem; a Swift host prefixes its toolkit to what only it
-has (`AppKitFrameClock`); a runtime in another language uses the stem in its
-namespace. A native subclass keeps its toolkit's class word
+host layer uses the stem; a host prefixes its toolkit to what only it has
+(`AppKitFrameClock`). A native subclass keeps its toolkit's class word
 (`AppKitScrollView`). Some words are reserved: an **engine** is only
 application frame code, a **channel** only a state's, an **animation** one
 animated value, a **cycle** only the display cycle, a **report** only the

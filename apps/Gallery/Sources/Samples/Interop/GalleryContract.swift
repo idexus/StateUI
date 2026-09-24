@@ -4,7 +4,7 @@
 //
 // PUBLIC, because a host in the same process registers BY TYPE and lives in a
 // module of its own: these declarations are the application's API towards its
-// own host. A host across the wire needs none of it - it registers by name.
+// own host.
 
 import StateUI
 

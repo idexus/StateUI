@@ -223,7 +223,7 @@ final class MotionTests: XCTestCase {
     }
 
     /// A layout says how its children travel, and one that says nothing
-    /// travels the way the application does - which is not on the wire at all.
+    /// travels the way the application does - which is not in the patch at all.
     func testALayoutSaysHowItsChildrenTravelOnlyWhenItDiffers() {
         let renders = Renders()
 
@@ -242,7 +242,7 @@ final class MotionTests: XCTestCase {
             "and a layout that STOPS saying so has to be heard saying it")
     }
 
-    /// A view that says nothing of its own says nothing on the wire: it
+    /// A view that says nothing of its own says nothing in the patch: it
     /// travels the way the application does, and that is one number said once.
     func testAViewWithNoMotionOfItsOwnSaysNothing() {
         let renders = Renders()
@@ -695,13 +695,12 @@ final class MotionTests: XCTestCase {
     /// to.
     func testAValueThatTravelsIsWrittenDown() throws {
         let differ = Differ()
-        let session = FixtureSession()
 
         let first = differ.reconcile(nil, with: panel(1))
-        try Fixtures.check(first.patch, in: session, against: "travelling-first")
+        try Fixtures.check(first.patch, against: "travelling-first")
 
         let moved = differ.reconcile(first.node, with: panel(0.25))
-        try Fixtures.check(moved.patch, in: session, against: "travelling")
+        try Fixtures.check(moved.patch, against: "travelling")
     }
 
     // ---- The vocabulary itself ---------------------------------------------

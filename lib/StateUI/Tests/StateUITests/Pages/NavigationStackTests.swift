@@ -3,7 +3,7 @@
 
 // The navigation stack, as Swift describes it.
 //
-// A NavigationStack puts the whole stack on the wire as its ARRANGED children:
+// A NavigationStack puts the whole stack in the patch as its ARRANGED children:
 // the root, then one page per element of the bound path, in order. That is the
 // whole protocol going out. Coming back there is one report - a pop the user
 // COMPLETED - and it truncates the path.
@@ -130,7 +130,7 @@ final class NavigationStackTests: XCTestCase {
     }
 
     /// Pushing is appending, and what the host is told is one arranged list -
-    /// the order, the count and the removals in one, which is what the wire
+    /// the order, the count and the removals in one, which is what the patch
     /// already says about children.
     func testPushingAppendsAndRearranges() {
         let path = State<[Route]>([.detail("a")])

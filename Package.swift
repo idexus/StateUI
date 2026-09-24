@@ -67,7 +67,7 @@ let package = Package(
             dependencies: ["StateUI"],
             path: "lib/StateUI/Tests",
             exclude: ["Fixtures"],
-            sources: ["StateUITests", "Support"],
+            sources: ["StateUITests"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

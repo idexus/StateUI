@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The typed boundary for a Swift host in this process: the renderer's sparse patch
-// as it is. A runtime in another language receives its Wire encoding.
-// Design: docs/design/core/README.md#two-ways-out
+// as it is.
+// Design: docs/design/core/README.md#the-typed-boundary
 
 /// Operations a native Swift host performs on the StateUI runtime.
 @_spi(Host) public enum StateUIHost {
@@ -250,6 +250,18 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
 
+    /// The last display cycle as one line - what it latched, ran, skipped and
+    /// wrote - for a host that traces its cycles.
+    public static var cycleTrace: String { Renderer.shared.cycleTrace() }
+
+    /// What this process's renders came to, for a host that prints the tally.
+    public static var tally: HostTally {
+        let renderer = Renderer.shared
+        return HostTally(
+            renders: renderer.renders, empty: renderer.emptyRenders,
+            refused: renderer.refusedWrites, alive: renderer.liveNodes)
+    }
+
     /// Reports a native event and runs its handler on StateUI's UI executor.
     @discardableResult
     public static func dispatch(_ handler: Int32, payload: [HostValue] = []) -> Bool {
@@ -260,9 +272,9 @@
     /// Raises an event of the application's - one no control raises - with
     /// the values its contract declares, as the platform reported them: every
     /// `HostEvents.on` subscription to the member hears them, each handler
-    /// queued on this library's executor for the next `runJobs`. The road a
-    /// foreign host's raise takes through the export, typed at the call: the
-    /// values are the member's, so a raise of another shape does not compile.
+    /// queued on this library's executor for the next `runJobs`. Typed at the
+    /// call: the values are the member's, so a raise of another shape does not
+    /// compile.
     ///
     ///     StateUIHost.raise(GalleryContract.batteryChanged, level, charging)
     ///
@@ -279,9 +291,9 @@
         HostEvents.dispatch(event.token.name, MemberValues.encode(repeat each value))
     }
 
-    /// Tells the core what this host realizes - its `Registry.realization`,
-    /// or what a host across the Wire reported - replacing what it said
-    /// before. Until a host says, the core knows of nothing realized.
+    /// Tells the core what this host realizes - its `Registry.realization` -
+    /// replacing what it said before. Until a host says, the core knows of
+    /// nothing realized.
     ///
     /// - Parameter realization: the elements and members this host realizes.
     public static func setRealization(_ realization: HostRealization) {

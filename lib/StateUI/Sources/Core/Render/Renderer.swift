@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The renderer: it holds the application, knows what changed since the last
-// render, and renders the patch a host applies - typed for a Swift host, as
-// Wire bytes for a runtime in another language.
+// render, and renders the typed patch a host applies.
 // Design: docs/design/core/render.md#one-renderer
 
 /// The one renderer: it holds the application and renders what changed for
@@ -67,10 +66,6 @@ public final class Renderer: @unchecked Sendable {
 
     let differ = Differ()
 
-    /// This session's numbering of the names the wire carries
-    /// (WireDictionary.swift).
-    let wireDictionary = WireDictionary()
-
     /// The tree as the host is showing it, as far as this side knows.
     private var rendered: RenderedNode?
 
@@ -103,10 +98,6 @@ public final class Renderer: @unchecked Sendable {
     var completions: [Int: (Reply) -> Void] = [:]
     var nextCompletionId = -1
 
-    /// The completion ids of the last batch taken - its receipt. Behind `guarded`.
-    /// Design: docs/design/core/acts.md#the-receipt
-    var takenCompletions: [Int] = []
-
     /// Resumes reported by the host that have not come back yet. Behind `guarded`.
     var resumes = 0
 
@@ -122,7 +113,7 @@ public final class Renderer: @unchecked Sendable {
     /// Every state issued a number, held weakly: a storage belongs to its view.
     var states: [Int32: () -> HostStorage?] = [:]
 
-    /// The next state number. Never zero, which `cycleRead` reads as "every state".
+    /// The next state number, from one.
     var nextNumber: Int32 = 1
 
     /// Installs the UI thread's executor before anything here starts a task.
@@ -272,36 +263,10 @@ public final class Renderer: @unchecked Sendable {
     /// rather than being called back, so nothing here calls into the host.
     public var needsRender: Bool { guarded.withLock { dirty } }
 
-    /// Renders and serializes the patch against `baseline`, the generation the
-    /// caller holds; any other baseline gets the whole tree.
+    /// Renders the patch against `baseline`, the generation the host holds;
+    /// any other baseline gets the whole tree.
     /// Design: docs/design/core/render.md#generations-and-baseline
-    func renderWire(baseline: Int32) -> [UInt8] {
-        render(baseline: baseline) { rendered in
-            let wire = Wire.encode(
-                rendered.root,
-                generation: rendered.generation,
-                complete: rendered.complete,
-                dictionary: wireDictionary)
-
-            return (wire, wire.count)
-        }
-    }
-
-    /// Renders the same patch typed, for a Swift host.
     func renderHost(baseline: Int32) -> HostRender {
-        render(baseline: baseline) { rendered in
-            (HostRender(
-                generation: rendered.generation,
-                complete: rendered.complete,
-                root: rendered.root), 0)
-        }
-    }
-
-    /// One render, delivered as the caller carries it; delivery is timed as encoding.
-    private func render<Output>(
-        baseline: Int32,
-        deliver: ((generation: Int32, complete: Bool, root: HostPatch)) -> (Output, Int)
-    ) -> Output {
         // The first render is complete although both sides agree at zero.
         let describeAll = baseline != generation || rendered == nil
 
@@ -458,23 +423,16 @@ public final class Renderer: @unchecked Sendable {
             emptyRenders += 1
         }
 
-        let encoding: ContinuousClock.Instant? = inspecting ? .now : nil
-
-        let (output, bytes) = deliver((generation, describeAll, patch))
+        let message = HostRender(generation: generation, complete: describeAll, root: patch)
 
         // A render the inspector's own state alone caused is not kept, whichever road
         // it took.
         // Design: docs/design/core/diagnostics.md#the-inspector
-        if let encoding {
+        if inspecting {
             let own = !changedNow.isEmpty && !untrackedNow
                 && changedNow.isSubset(of: Inspection.ownStates)
 
-            Inspection.end(
-                generation: generation,
-                describe: described,
-                encode: Inspection.micros(since: encoding),
-                bytes: bytes,
-                keep: !own)
+            Inspection.end(generation: generation, describe: described, keep: !own)
         }
 
         // Handlers found with no pass left are queued, not started: started now, their
@@ -484,7 +442,7 @@ public final class Renderer: @unchecked Sendable {
             queue(handler)
         }
 
-        return output
+        return message
     }
 
     /// The whole tree, its styles and its motion, read in one scope, so whatever
@@ -510,17 +468,5 @@ public final class Renderer: @unchecked Sendable {
         let scene = Node(contract: SceneContract.self, id: "1", children: [main])
 
         return Node(contract: ApplicationContract.self, children: [scene])
-    }
-
-    /// The store the application keeps state in and its keys, for the host to read
-    /// before the first render; empty for an application that keeps nothing.
-    func persistentWire() -> [UInt8] {
-        let session = StandardEnvironment.application
-
-        guard application != nil, !session.persistentKeys.isEmpty else { return [] }
-
-        return Wire.encodePersistent(
-            storage: session.persistentStorage,
-            keys: session.persistentKeys)
     }
 }

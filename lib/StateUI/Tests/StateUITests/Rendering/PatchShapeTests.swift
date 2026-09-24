@@ -68,13 +68,10 @@ final class PatchShapeTests: XCTestCase {
         let differ = Differ()
         var rendered: RenderedNode?
 
-        // One session for the whole sequence, the way one host hears it.
-        let session = FixtureSession()
-
         func render(_ tree: Node, complete: Bool = false, against name: String) throws {
             let result = differ.reconcile(rendered, with: tree, describeAll: complete)
             rendered = result.node
-            try Fixtures.check(result.patch, complete: complete, in: session, against: name)
+            try Fixtures.check(result.patch, against: name)
         }
 
         // 1. Everything, because the host has nothing.

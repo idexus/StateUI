@@ -673,7 +673,7 @@ struct ControlDictionary {
     static func export(_ path: String) throws -> HostDeclaration {
         let url = Fixtures.repository.appendingPathComponent(path)
 
-        guard let declaration = HostDeclaration(sidecar: try String(contentsOf: url, encoding: .utf8)) else {
+        guard let declaration = HostDeclaration(text: try String(contentsOf: url, encoding: .utf8)) else {
             throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
                 + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
                 + "`swift test --package-path lib/StateUI.AppKit` or `.scripts/Android/test-android.sh`.")

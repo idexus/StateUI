@@ -6,8 +6,8 @@
 // Design: docs/design/core/cycle.md#engines
 
 
-/// What drives a cycle. This library's own. A board is an index the host is
-/// handed, never a number on the wire.
+/// What drives a cycle. This library's own: a host names the one it runs, and
+/// the board behind it stays the library's.
 public enum Sync: Sendable {
     /// The display's own frame - what every value on screen moves by.
     case display

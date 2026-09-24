@@ -69,9 +69,8 @@ a host is held to.
       |                    whether a change animates, whether a lost value is
       |                    cleared, which group of values it is
       |
-      +--> a host          a Swift host registers each element it realizes, member
-      |                    by member, and tells the core what it realizes; a runtime
-      |                    in another language sends the same declaration over the Wire
+      +--> a host          a host registers each element it realizes, member by
+      |                    member, and tells the core what it realizes
       |
       +--> the dictionary  docs/controls/*.md and the tables of docs/platform-contract.md,
       |                    rendered from the contracts and each host's declaration

@@ -168,7 +168,7 @@ final class JourneyTests: XCTestCase {
     /// `.custom` HANDS THE WALK TO AN ENGINE ON THIS SIDE. A write moves the
     /// destination alone - whoever wears the state or not - and the value
     /// stays where the engine left it; the engine's own write to the value is
-    /// what moves the screen. On the wire the host is handed `.none` and a
+    /// what moves the screen. In the patch the host is handed `.none` and a
     /// destination that is wherever the engine wrote the value, so it wears
     /// every frame as it comes and walks nothing.
     func testACustomLawLeavesTheValueToTheEngine() throws {

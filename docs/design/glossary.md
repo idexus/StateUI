@@ -116,9 +116,7 @@ and this table maps the two.
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | aim (`@Aim`) | control reference | the reference an act is called through |
 | completion id | continuation handle | the negative id an awaited act or animation is answered by |
-| receipt | in-flight call record | what fails the calls of a batch a host could not read |
 | declaration (`HostDeclaration`) | capability manifest | which elements and members a host realizes: presence, not ownership |
-| dictionary, announcement (`WireDictionary`) | interning table | the names the Wire sends once and then by number |
 | tally, pass, complaint | render counters, trace record, logged warning | what the core's diagnostics count, trace and say once |
 | sync (`Sync`) | frame source | the clock a cycle runs on |
 | arrangement (layout) | layout pass | a layout placing its children |
@@ -126,5 +124,4 @@ and this table maps the two.
 | shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
-| Wire | binary protocol | the patch and the cycle as deterministic bytes for a runtime in another language |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |

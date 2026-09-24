@@ -1,15 +1,15 @@
 # Host contract
 
-Same-process Swift hosts consume a typed sparse render. A foreign-language host
-can consume the same model through the deterministic little-endian Wire
-encoding.
+Every host is Swift in the application's process and consumes a typed sparse
+render through `StateUIHost`, behind `@_spi(Host)`. Code in a platform's own
+language - Java through JNI, C++ behind a C ABI - is a relay beneath the host.
 
 ## One process, one host
 
 One process owns one `Renderer.shared` and one host adapter. Every scene and
 window belongs to the renderer's single application tree and shares its render
-generation, state board, handler registry, act queue, display cycle, and
-Wire name dictionary. Multi-window support creates more native windows inside
+generation, state board, handler registry, act queue, and display cycle.
+Multi-window support creates more native windows inside
 that tree; it never starts another renderer or host.
 
 Start the chosen platform host once, after registering the application. A
@@ -96,8 +96,7 @@ host never computes or guesses a shape itself.
 
 A host applies one generation as one transaction:
 
-1. validate the generation and, for Wire, the complete message before changing
-   the mounted tree;
+1. validate the generation before changing the mounted tree;
 2. find the mounted element by `ElementId`, adopt an explicitly compatible
    recycled subtree, or create the native object for a new complete patch;
 3. replace an element only when `replace` says so;
@@ -151,10 +150,6 @@ The renderer still reconciles against its retained tree, so element ids,
 `@State` storage, handlers, and unchanged composed descriptions keep their
 identity. The host reconciles the complete hierarchy from that result; it does
 not ask the application to construct a separate recovery tree.
-
-Malformed or truncated Wire input is rejected as one failed message. A version
-mismatch is an explicit compatibility failure. Neither case is recovered by
-guessing missing fields or partially applying a payload.
 
 ## State cycles
 
@@ -260,52 +255,28 @@ and programmatic-scroll semantics are settled, the base contract exposes no
 native collection control. Richer arrangements remain StateUI compositions
 over the smallest accepted primitives.
 
-## Wire encoding
+## Values a host is handed
 
-Same-process Swift hosts consume `HostRender` directly. Wire carries the same
-contract to a host that cannot share Swift runtime types. The current format is
-version 14 and every multibyte number is little-endian.
+Every carried value is one case of `HostValue`:
 
-A render starts with this envelope:
-
-```text
-[version: U8][complete: U8][generation: I32][announcements][root patch]
-```
-
-Every node starts with its `ElementId` and node-type name id. The remaining
-fields are one-byte tags written only when present; tag zero ends the node.
-Maps and lists carry explicit counts. This is the binary form of the sparse
-rules above: a missing field is unchanged, while an explicit empty replacement
-clears its complete domain.
-
-Node types, properties, events, and acts use a per-session name dictionary.
-Before a message first refers to a name, its head announces
-`[id: U16][length-prefixed UTF-8 name]`; later references use the `UInt16` id.
-Announcements precede every field that can refer to them, so accepting the
-head cannot leave the two dictionaries in a different order.
-
-Every carried value has one type tag:
-
-| Value | Wire meaning |
+| Value | Meaning |
 | --- | --- |
-| boolean | dedicated false or true tag |
-| number | raw `Float64` bits |
-| string | authored text as length-prefixed UTF-8 |
-| numbers or strings | counted homogeneous values |
-| color | four RGBA bytes |
-| values | counted recursively tagged values |
-| enumeration | an `Int32` member of closed StateUI vocabulary |
-| name | a dictionary id for open, author-named vocabulary |
-| nothing | semantic absence with no payload |
+| `.bool` | true or false |
+| `.number` | a `Double` |
+| `.string` | authored text |
+| `.numbers`, `.strings` | homogeneous lists |
+| `.color` | four RGBA channels |
+| `.values` | a list of values of different kinds |
+| `.enumeration` | an `Int32` member of a closed StateUI vocabulary |
+| `.name` | an open, author-named vocabulary |
+| `.nothing` | semantic absence |
 
 `.string`, `.enumeration`, `.name`, and `.nothing` are not interchangeable.
 Authored text remains text; closed library vocabulary has stable StateUI
-numbers; open names use the session dictionary; absence never borrows an empty
-string, sentinel number, or empty list.
+numbers; open names stay names; absence never borrows an empty string,
+sentinel number, or empty list.
 
-Encoding is deterministic. Every dictionary- or set-derived collection is
-sorted by its stable StateUI name before it is written, and subtree shapes use
-a stable hash rather than Swift's randomized `Hashable`. The same patch,
-generation, completeness flag, and equivalent starting name-dictionary state
-produce the same bytes. A host checks the Wire version before first use and
-rejects a message it cannot read in full.
+The patch is deterministic. Every dictionary- or set-derived collection is
+sorted by its stable StateUI name, and subtree shapes use a stable hash rather
+than Swift's randomized `Hashable`, so the same session renders the same
+patches in every run.

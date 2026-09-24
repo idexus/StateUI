@@ -2,7 +2,7 @@
 
 `Renderer` turns the application into the patch a host applies. It holds the
 application, knows what changed since the last render, runs the differ, and
-hands the result to the host either typed (`HostRender`) or as Wire bytes.
+hands the result to the host typed, as a `HostRender`.
 There is one renderer per process, `Renderer.shared`, because there is one
 host per process.
 

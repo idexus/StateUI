@@ -14,7 +14,7 @@ final class AndroidDeclarationExportTests: XCTestCase {
         ]
     }
 
-    /// The registry's declaration, every name one the contracts know, written as bytes and as text.
+    /// The registry's declaration, every name one the contracts know, written as text.
     func testWhatThisHostDeclaresIsWrittenForTheExport() throws {
         try onMainActor {
             let registry = AndroidRegistrations.registry
@@ -26,11 +26,10 @@ final class AndroidDeclarationExportTests: XCTestCase {
                 declaration.undeclared.isEmpty,
                 "the Android export names what no contract declares: "
                     + declaration.undeclared.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
-            XCTAssertEqual(Wire.encodeDeclaration(declaration), Wire.encodeDeclaration(declaration))
+            XCTAssertEqual(declaration.text, declaration.text)
 
             let directory = try XCTUnwrap(Self.filesDirectory)
-            try Self.write(Wire.encodeDeclaration(declaration), to: "\(directory)/android.bin")
-            try Self.write(Array(declaration.sidecar.utf8), to: "\(directory)/android.txt")
+            try Self.write(Array(declaration.text.utf8), to: "\(directory)/android.txt")
         }
     }
 

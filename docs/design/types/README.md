@@ -61,11 +61,10 @@ the member its contract declares, and the differ carries it to the host.
        |  the differ: styles applied, each .themed value resolved to the
        |  half in force, the result compared with the last render
        v
-  HostPatch   (HostValue = PropValue)            Wire   (deterministic bytes)
-       |                                           |
-       v                                           v
-  a Swift host                              a runtime in another language
-  sets its native control                   reads the same values from bytes
+  HostPatch   (HostValue = PropValue)
+       |
+       v
+  a host sets its native control
 ```
 
 ## And back
@@ -103,7 +102,7 @@ back as the types `ApplicationContract.currentTime` declares.
 | `.color` | four channels | `Color` |
 | `.values` | parts of different kinds | `Brush`, `GridLength`, `BorderShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
 | `.nothing` | a position with no value | an optional argument or payload position |
-| `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never on the wire |
+| `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never handed to a host |
 
 ## A state the host carries
 
@@ -138,9 +137,7 @@ writes them into one provider object each, and a view reads a provider with
 ```text
   the platform reports a change
        |
-       |  a Swift host:                     StateUIHost.setDeviceInfo(...) and its kin
-       |  a runtime in another language:    stateui_set_environment(bytes)
-       |                                      -> StandardEnvironment.apply(domain, values)
+       |  StateUIHost.setDeviceInfo(...) and its kin, one per provider
        v
   Battery  Connectivity  DeviceDisplay  LocaleInfo  DeviceInfo  AppInfo  ApplicationSession
        |   each property a @State

@@ -48,7 +48,7 @@ usable platform promise.
 ## Extend or host StateUI
 
 - [Host contract](host-contract.md) specifies typed sparse patches, update
-  order, host-carried state, native ownership, and Wire.
+  order, host-carried state, native ownership, and the values a host is handed.
 - [Platform contract](platform-contract.md) is the checked control, property,
   event, environment, and host-capability matrix. A check mark means native
   implementation plus host tests.

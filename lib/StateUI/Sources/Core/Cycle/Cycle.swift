@@ -305,7 +305,7 @@ final class CycleBoard: @unchecked Sendable {
         return report
     }
 
-    /// Forgets everything - a fresh process's board, for a test's bytes.
+    /// Forgets everything - a fresh process's board, for a test.
     func clear() {
         guarded.withLock {
             storages.removeAll()

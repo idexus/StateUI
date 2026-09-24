@@ -225,7 +225,7 @@ final class CompositionTests: XCTestCase {
         //
         // PER ROOT, using that root's own set: the library counts `ContentView`
         // alone, and taking `Element` there too made `Node` - which conforms by
-        // extension and is the wire's data structure rather than a view - a
+        // extension and is the patch's data structure rather than a view - a
         // composed view with four defaulted initializer parameters.
         var extended: [String: Set<String>] = [:]
 

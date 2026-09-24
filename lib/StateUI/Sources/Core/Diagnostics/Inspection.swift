@@ -47,12 +47,6 @@ struct InspectedPass {
     /// Microseconds the inspector's own views took inside the differ.
     var own: Double = 0
 
-    /// Microseconds writing the message.
-    var encode: Double = 0
-
-    /// How long the message is, in bytes.
-    var bytes = 0
-
     /// The host's half, once it has reported.
     var host: InspectedHost?
 }
@@ -93,9 +87,6 @@ struct InspectedEntry {
 
 /// What the host reported about applying one message.
 struct InspectedHost {
-    /// Microseconds reading the message off the buffer.
-    var read: Double
-
     /// Microseconds applying it to the controls.
     var apply: Double
 
@@ -210,7 +201,7 @@ enum Inspection {
 
     /// Closes the pass, and keeps it unless the inspector's own state alone caused it;
     /// `describe` includes the inspector's own views, taken out here.
-    static func end(generation: Int32, describe: Double, encode: Double, bytes: Int, keep: Bool) {
+    static func end(generation: Int32, describe: Double, keep: Bool) {
         guard var done = pass else { return }
 
         pass = nil
@@ -223,8 +214,6 @@ enum Inspection {
         done.number = numbered
         done.generation = generation
         done.describe = max(0, describe - done.own)
-        done.encode = encode
-        done.bytes = bytes
 
         passes.append(done)
 
@@ -402,10 +391,10 @@ enum Inspection {
             head += " for " + pass.causes.joined(separator: ", ")
         }
 
-        head += " · Swift \(whole(pass.describe + pass.encode)), \(pass.bytes) bytes"
+        head += " · Swift \(whole(pass.describe))"
 
         if let host = pass.host {
-            head += " · host \(whole(host.read + host.apply)), \(host.nodes) nodes,"
+            head += " · host \(whole(host.apply)), \(host.nodes) nodes,"
                 + " \(host.made) made, \(host.kept) kept, \(host.adopted) adopted"
         }
 

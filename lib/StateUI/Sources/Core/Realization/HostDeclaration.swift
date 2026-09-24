@@ -83,9 +83,9 @@
         self.init(elements: elements, shared: HostDeclaration.split(shared), acts: Set(acts))
     }
 
-    /// The export's readable half, which a review reads in the diff: one line per element, its members
+    /// The export as a review reads it in the diff: one line per element, its members
     /// and then its events under it, an event told by the parentheses a handler is called with.
-    public var sidecar: String {
+    public var text: String {
         func under(_ element: Element) -> [String] {
             element.members.sorted().map { "  \($0)" } + element.events.sorted().map { "  \($0)()" }
         }
@@ -103,12 +103,12 @@
         return lines.joined(separator: "\n") + "\n"
     }
 
-    /// A declaration read back from its `sidecar`, the text a host's suite
+    /// A declaration read back from its `text`, what a host's suite
     /// exports; nil for a text that is not one - a line out of place, an element
     /// said twice, or the shared machinery or the acts missing.
     ///
-    /// - Parameter text: the text, as `sidecar` writes it.
-    public init?(sidecar text: String) {
+    /// - Parameter text: the text, as `text` writes it.
+    public init?(text: String) {
         enum Section: Equatable { case element(String), shared, acts }
 
         var elements: [String: Element] = [:]

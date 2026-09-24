@@ -96,7 +96,7 @@ final class AppKitCanvasView: AppKitHitTestView {
     ///
     /// A registration hands a view the value its member declares, so this
     /// takes the typed records and reads them through the one decoder above:
-    /// `DrawCommand` writes itself as the same record the wire carries, and a
+    /// `DrawCommand` writes itself as the same record a host is handed, and a
     /// second table of twenty-three instructions would be a second place to
     /// get one wrong.
     ///

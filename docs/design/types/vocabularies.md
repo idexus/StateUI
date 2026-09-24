@@ -7,27 +7,26 @@ that number onto its own toolkit's member.
 
 ## The numbers belong to StateUI
 
-A case's number is part of StateUI's wire contract, never a toolkit's. What a
+A case's number is part of StateUI's contract, never a toolkit's. What a
 case promises is what its documentation says; the number is only how it
 crosses. A host translates its native value onto this vocabulary on the way
-in and out, so a native enum's numbering never reaches the wire, and a
-platform release cannot reinterpret a stored or transported value.
+in and out, so a native enum's numbering never reaches the patch, and a
+platform release cannot reinterpret a stored or reported value.
 
-A vocabulary that crosses is declared `: Int32`, the width of the wire's
-enumeration tag. It crosses as `.enumeration`, which one line of
+A vocabulary that crosses is declared `: Int32`, the width `.enumeration`
+carries. It crosses as `.enumeration`, which one line of
 `HostRepresentable` conformance gives it.
 
 ## Written out and appended
 
 The numbers follow declaration order from 0, and every case writes its
 number out. A case inserted in the middle would renumber every case after it,
-silently and only in Swift: a host would go on reading the old numbers as the
-new members, and the interface would show values nobody wrote, with nothing
-failing anywhere. Seeing the numbers is what makes that hard to do by
-accident.
+silently: every patch and every dump would say another number for the same
+member, with nothing failing anywhere. Seeing the numbers is what makes that
+hard to do by accident.
 
 Appending a case is free; inserting or reordering one is not.
-`WireVocabularyTests` holds every case of a crossing enum to a written
+`ClosedVocabularyTests` holds every case of a crossing enum to a written
 number, refuses an enum whose raw value is its spelling, and refuses a raw
 value written out as text.
 
@@ -76,8 +75,4 @@ nothing. Each conformance is one line beside the type's other conformances.
 ## An unknown member
 
 A number a vocabulary has no case for reads back as nil, and the property or
-payload holding it is refused. The standard environment is the one place
-that degrades instead: a battery state, a network access or a form factor a
-newer host names reads as `.unknown` (a weekday as `.sunday`, a theme as
-`.system`), so a vocabulary this library does not know yet does not cost the
-whole domain its report.
+payload holding it is refused.

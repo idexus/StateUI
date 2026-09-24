@@ -23,7 +23,7 @@ platform windows to match, so a scene that leaves the list is a scene that
 closes.
 
 A scene's number is the library's - "1", "2", in the order they opened - and
-never the platform's, which keeps the wire the same bytes on every run. The
+never the platform's, which keeps the patch the same on every run. The
 platform's own identity for a scene, the one the system restores it by, stays
 on the host, which keeps the two paired.
 

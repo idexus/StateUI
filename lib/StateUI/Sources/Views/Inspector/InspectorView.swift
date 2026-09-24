@@ -169,8 +169,8 @@ struct InspectorView: ContentView {
         let paused = Inspection.recording ? "" : "paused · "
         let renders = passes.count == 1 ? "1 render" : "\(passes.count) renders"
         let others = all > passes.count ? " (\(all) in all)" : ""
-        let swift = Look.micros(last.describe + last.encode)
-        let host = last.host.map { Look.micros($0.read + $0.apply) } ?? "…"
+        let swift = Look.micros(last.describe)
+        let host = last.host.map { Look.micros($0.apply) } ?? "…"
 
         return "\(paused)\(renders) here\(others) · the last: Swift \(swift) + host \(host)"
     }
@@ -223,11 +223,9 @@ struct InspectorView: ContentView {
                 Look.line(pass.causes.isEmpty
                     ? "caused by nothing named"
                     : "for " + pass.causes.joined(separator: ", "))
+                Look.line("at \(Look.seconds(pass.at)) · generation \(pass.generation)")
                 Look.line(
-                    "at \(Look.seconds(pass.at)) · generation \(pass.generation) · "
-                        + "\(pass.bytes) bytes")
-                Look.line(
-                    "Swift  describe \(Look.micros(pass.describe)) · encode \(Look.micros(pass.encode))"
+                    "Swift  describe \(Look.micros(pass.describe))"
                         + (pass.own > 0 ? " · the inspector's own \(Look.micros(pass.own)), left out" : ""))
                 Look.line(host(pass.host))
                 Look.line(
@@ -258,7 +256,7 @@ struct InspectorView: ContentView {
     private func host(_ host: InspectedHost?) -> String {
         guard let host else { return "Host  not reported yet" }
 
-        return "Host  read \(Look.micros(host.read)) · apply \(Look.micros(host.apply)) · "
+        return "Host  apply \(Look.micros(host.apply)) · "
             + "\(host.nodes) nodes · \(host.made) made · \(host.kept) kept · \(host.adopted) adopted"
     }
 }

@@ -72,5 +72,5 @@ property to give one to.
 
 A chain that never turned is read back without the general arithmetic. The
 square root and the division would hand a written 0.9 back with a last bit
-of noise on it, and a value that is exactly what was written is what the
-wire should carry.
+of noise on it, and a value that is exactly what was written is what a host
+should be handed.

@@ -151,7 +151,7 @@ final class WindowTests: XCTestCase {
     }
 
     /// The other half of that promise is the PATCH: when the slot's `if` flips
-    /// off, the wrapper's leaving rides the wire as an arranged children list
+    /// off, the wrapper's leaving rides the patch as an arranged children list
     /// that no longer carries it - an absent field means unchanged, so only
     /// the arrangement can say "gone".
     func testASlotThatEmptiesRidesThePatchAsAnArrangedRemoval() {

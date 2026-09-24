@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a PAGE puts on the wire, and the guards that keep the list complete.
+// What a PAGE puts in the patch, and the guards that keep the list complete.
 //
 // A page is not a control: it has no fixture in fixtures/controls/, it cannot
 // be styled, and `Fixtures.controlSources()` skips the file it lives in. So
@@ -357,7 +357,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertTrue(missing.isEmpty, """
             PageSession declares \(missing.joined(separator: ", ")), which never \
-            reaches the wire.
+            reaches the patch.
 
             Every property a page's session holds is written into its `props` \
             in PageSession.swift, or hangs off the page as a node in its \
@@ -428,7 +428,7 @@ final class PageTests: XCTestCase {
             """)
     }
 
-    /// And the two spellings are ONE property - the same key on the wire, so
+    /// And the two spellings are ONE property - the same key in the patch, so
     /// the host reads a page's name in one place whichever way it was said.
     func testTheTwoWaysOfNamingAPageAreOneProperty() {
         let path = State<[Int]>([])

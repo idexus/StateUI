@@ -176,17 +176,17 @@ layout is asking. The absolute layout is the one place the prefix gives
 ground: its name followed by the property's would be
 `absoluteLayoutLayoutBounds`, and the doubled word says nothing more, so the
 modifiers are `.absoluteLayoutBounds` and `.absoluteLayoutProportions`. The
-wire uses the same names, so there is one name from the modifier to the host's
+patch uses the same names, so there is one name from the modifier to the host's
 table. A view that says nothing sits at row 0, column 0, spanning one of each.
 
 ## Safe area edges
 
 `avoidsSafeArea` takes one value for all four edges, two for the horizontal
 and the vertical edges, or four. The two-value form is written out to four
-edges before it travels, so the wire carries one shape of the property and the
+edges before it travels, so the patch carries one shape of the property and the
 host reads one thing rather than three spellings of it. The four regions
 travel as members, in order, each a value of its own rather than a run of
-numbers - a member and a quantity are different things on the wire - and the
+numbers - a member and a quantity are different things to a host - and the
 one-value form sends a single `.enumeration`.
 
 ## Environment

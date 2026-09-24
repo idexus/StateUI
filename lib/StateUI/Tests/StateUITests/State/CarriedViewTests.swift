@@ -213,7 +213,7 @@ final class CarriedViewTests: XCTestCase {
                 + "what the parent's closure computed, and that closure ran again")
     }
 
-    func testAChangedModifierOnACarriedViewReachesTheWire() {
+    func testAChangedModifierOnACarriedViewReachesThePatch() {
         let renders = Renders()
         let builds = Builds()
 

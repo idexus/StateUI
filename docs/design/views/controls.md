@@ -39,7 +39,7 @@ different member, silently. A member a host has no case for arrives as
 ## A colour stroke is a solid brush
 
 `Border.stroke(_ value: Color)` is written over the brush form, so a border's
-stroke and a shape's put the same bytes on the wire for the same colour. A bare
+stroke and a shape's put the same value in the patch for the same colour. A bare
 colour written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 
@@ -117,7 +117,7 @@ weight; text in two colours is two runs. It is named `TextSpan` rather than
 `Span` because the standard library's `Span<Element>` is in scope in every file
 without an import: an application writing `Span("…")` would get "no exact
 matches in call to initializer", and a plain `[Span]` "reference to generic
-type 'Span' requires arguments". The node on the wire is `Span` all the same,
+type 'Span' requires arguments". The node in the patch is `Span` all the same,
 the vocabulary's name for a run.
 
 ## Images

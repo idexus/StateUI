@@ -10,7 +10,7 @@ A `Brush` is made by one of three factories: `.solidColor`,
 that kind is drawn over, and its stops. A solid brush is one stop whose offset is never asked for and does
 not travel; it exists for a property that takes only a brush.
 
-## The wire form
+## As a host is handed it
 
 A brush crosses as what it is: a list of typed values, the kind first as the
 number both sides spell, then the geometry as one run of numbers, then an

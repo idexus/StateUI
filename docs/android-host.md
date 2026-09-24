@@ -3,8 +3,7 @@
 The Android Views host renders a StateUI application with Android views. It is
 Swift, in the application's own process, beside the application module and the
 library: it applies the typed sparse patches of the
-[host contract](host-contract.md) directly and calls the views through JNI. No
-Wire encoding stands between them.
+[host contract](host-contract.md) directly and calls the views through JNI.
 
 It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
 `CheckBox`, `Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,

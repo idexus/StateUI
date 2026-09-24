@@ -86,9 +86,8 @@ platform does not know.
 
 `NodeType`, `Prop`, `Event` and `Act` are tokens: structs holding a name, with
 the library's entries as static members. A token is a name and only a name;
-which number it rides under is the transport's, settled per session
-(wire.md). That is what makes the library's tokens and an application's the
-same thing.
+a host reads it by that name. That is what makes the library's tokens and an
+application's the same thing.
 
 Nobody writes a token by hand. A member's token is made from its name, and each
 name is spelled once, where a contract declares its member; the library's
@@ -135,9 +134,9 @@ value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs
 machinery no contract describes, registers its members with `madeByHost`.
 
-A Swift host hands over `Registry.realization`; a runtime in another language
-sends the same record through `stateui_set_realization_wire`. Until a host
-says, the core knows of nothing realized and says nothing.
+A host hands over `Registry.realization` through
+`StateUIHost.setRealization`. Until a host says, the core knows of nothing
+realized and says nothing.
 
 ## Declarations
 

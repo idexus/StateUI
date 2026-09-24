@@ -87,12 +87,4 @@ final class BrushTests: XCTestCase {
             XCTAssertEqual(brush.resolvingTheme(), .values([.enumeration(1), Color.black.propValue]))
         }
     }
-
-    /// A list of values nests, which is the whole of what the tag is for.
-    func testAListOfValuesCrossesAsItsParts() {
-        var out: [UInt8] = []
-        out.value(.values([.number(1), .bool(true)]))
-
-        XCTAssertEqual(out, [9, 2, 0, 3, 0, 0, 0, 0, 0, 0, 240, 63, 2])
-    }
 }

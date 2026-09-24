@@ -2,8 +2,7 @@
 
 The AppKit host renders a StateUI application with AppKit controls on macOS. It
 runs in the same process as the application module and the library, and applies
-the typed sparse patches of the [host contract](host-contract.md) directly - no
-Wire encoding stands between them.
+the typed sparse patches of the [host contract](host-contract.md) directly.
 
 ```text
 lib/StateUI.AppKit/

@@ -122,12 +122,10 @@ private struct DeterminismWindow: Window {
     }
 }
 
-/// One render of the deterministic session: its name, the patch, and whether
-/// it describes the whole tree.
+/// One render of the deterministic session: its name and the patch.
 struct SessionMessage {
     let name: String
     let patch: HostPatch
-    let complete: Bool
 }
 
 final class DeterminismTests: XCTestCase {
@@ -194,7 +192,7 @@ final class DeterminismTests: XCTestCase {
                 // the settling passes take them.
                 changed: Renderer.shared.pendingChanges))
             rendered = result.node
-            messages.append(SessionMessage(name: name, patch: result.patch, complete: complete))
+            messages.append(SessionMessage(name: name, patch: result.patch))
         }
 
         render("1-opens")
@@ -217,7 +215,7 @@ final class DeterminismTests: XCTestCase {
 
         let walked = differ.revisit(rendered!, changed: Renderer.shared.pendingChanges)
         rendered = walked.node
-        messages.append(SessionMessage(name: "5-revisits", patch: walked.patch, complete: false))
+        messages.append(SessionMessage(name: "5-revisits", patch: walked.patch))
 
         // The host lost track: everything again, against the same identities.
         render("6-resync", complete: true)
@@ -339,12 +337,8 @@ final class DeterminismTests: XCTestCase {
     /// Its own directory rather than a name each, because what it pins is the
     /// SEQUENCE: a host reads the renders in order, as one session.
     func testTheSessionIsWrittenDown() throws {
-        let session = FixtureSession()
-
         for message in Self.session() {
-            try Fixtures.check(
-                message.patch, complete: message.complete, in: session,
-                against: "sessions/\(message.name)")
+            try Fixtures.check(message.patch, against: "sessions/\(message.name)")
         }
     }
 }

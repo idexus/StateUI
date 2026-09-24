@@ -18,7 +18,7 @@ public enum StateMode: Int32, Sendable {
 }
 
 /// What a registration is about - which of the host's own doors the value goes
-/// through. This library's own. Declaration order is the number on the wire.
+/// through. This library's own, numbered in declaration order.
 public enum StateKind: Int32, Sendable {
     /// An animated value driving one property of one control.
     case property = 0
@@ -58,7 +58,7 @@ struct StateRegistration {
     let values: MotionValues
 }
 
-/// One registration as the wire carries it: the state by its number, which is
+/// One registration as a host is handed it: the state by its number, which is
 /// what a render compares.
 struct StateEntry: Equatable {
     /// The state, by the number the host quotes it back by.

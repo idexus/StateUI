@@ -26,10 +26,10 @@ costs nothing.
 
 The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
-platform reports a change. A Swift host writes through `StateUIHost`. A
-runtime in another language calls `stateui_set_environment` with one
-provider's values per call: the domain byte (`EnvironmentDomain`), then the
-typed values in the order the provider declares its properties.
+platform reports a change. A host writes through `StateUIHost`, one setter
+per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
+`setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setTheme`, and
+`setApplicationPhase` - each with the whole report, typed.
 
 ## Exactly the readers rebuild
 
@@ -50,22 +50,9 @@ branch, provides its own. The application itself is built outside any render,
 so an `@Environment` slot left unfilled answers with the standard provider
 of its type.
 
-## A push is refused whole
-
-A push for a domain the library does not know, or with a payload of the
-wrong shape, is refused whole, with nothing half applied, and the host
-reports it once as version skew. A member of a vocabulary the library has no
-case for is the exception: it reads as `.unknown`, so a newer host's
-vocabulary does not cost the whole domain its report; see
-[an unknown member](vocabularies.md#an-unknown-member).
-
-The connection profiles are a list of members, so they cross as `.values` of
-`.enumeration`, never as `.numbers`: a run of numbers is a run of
-quantities, and a member is not one.
-
 ## The UI thread
 
-Provider values are written by host pushes and read by builds, both on the
+Provider values are written by the host's reports and read by builds, both on the
 UI thread, which is why the instances can be `nonisolated(unsafe)`.
 
 ## Open sets are text

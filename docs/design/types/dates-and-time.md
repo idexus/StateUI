@@ -32,10 +32,10 @@ date it had. A host reads a time as a length of time since midnight, adding
 the three numbers up, so `ClockTime(hour: 25, minute: 99)` reaches a picker
 as 26 hours and 39 minutes past midnight rather than being refused.
 
-## Whole seconds on the wire
+## Whole seconds
 
 A `TimePicker` picks hours and minutes on every platform and keeps nothing
-finer than a second, so the wire carries whole seconds: a time that crosses,
+finer than a second, so a host is handed whole seconds: a time that crosses,
 or rides a carried state, comes back with a millisecond of 0. The
 millisecond is there for `ClockTime.now()`.
 

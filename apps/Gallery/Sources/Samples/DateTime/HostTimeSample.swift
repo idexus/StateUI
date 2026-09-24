@@ -133,7 +133,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An offset is minutes on the wire, so +05:30 is not a special case, "
+            Label("An offset is a whole number of minutes, so +05:30 is not a special case, "
                 + "and it is asked for a DAY - which is how the same zone answers "
                 + "differently in January than it does in August.")
                 .fontSize(12)

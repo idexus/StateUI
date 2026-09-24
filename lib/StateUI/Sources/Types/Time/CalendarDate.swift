@@ -101,7 +101,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
 }
 
 extension CalendarDate: StateValue {
-    /// Year, month and day as three lanes, in the order the wire says a day.
+    /// Year, month and day as three lanes, in that order.
     public var carried: StateCarried { .lanes([Double(year), Double(month), Double(day)]) }
 
     /// A day from those three lanes. Nil for any other count, so a report that

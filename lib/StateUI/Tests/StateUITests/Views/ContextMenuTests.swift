@@ -126,9 +126,9 @@ final class ContextMenuTests: XCTestCase {
                        "the entry that stayed rides as a stub")
     }
 
-    /// The slot is counted like any other child on the wire; what leaves it out
+    /// The slot is counted like any other child in the patch; what leaves it out
     /// of the arrangement is the host.
-    func testTheSlotIsCountedAmongTheChildrenOnTheWire() throws {
+    func testTheSlotIsCountedAmongTheChildrenInThePatch() throws {
         let renders = Renders()
 
         let patch = renders.render(

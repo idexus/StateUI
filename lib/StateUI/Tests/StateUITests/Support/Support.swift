@@ -251,7 +251,7 @@ extension Differ {
 
 /// An aim filled BY HAND from a named element, for acts that must be sent
 /// without a render: what an act sends is the element's identity, and this
-/// is the named kind - the wire the command fixtures pin. The differ's own
+/// is the named kind - what the act fixtures pin. The differ's own
 /// filling of one is AimTests' business.
 func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
     let aim = Aim(type)
@@ -309,14 +309,6 @@ struct WalkReadAlmostNothing: Error, CustomStringConvertible {
     let read: Int
 
     var description: String { "the walk of \(root) read \(read) files, almost nothing" }
-}
-
-/// The messages of one fixture set, as one host hears them: generations count
-/// from one, and a name is announced by the first message to use it. The
-/// encoded half of `Fixtures.check`, which leaves with the MAUI host.
-final class FixtureSession {
-    fileprivate let dictionary = WireDictionary()
-    fileprivate var generation: Int32 = 0
 }
 
 /// The fixtures, source trees, and test trees used by source-level guards.
@@ -396,81 +388,54 @@ enum Fixtures {
     }
 
     /// Checks a patch against its fixture, or writes it when updating:
-    /// `name.txt` holds the patch's dump, what a review diff reads. While the
-    /// MAUI host lives, `name.bin` holds the same patch encoded for it, the
-    /// messages of one `session` numbered as one host hears them.
+    /// `name.txt` holds the patch's dump, what a review diff reads.
     static func check(
         _ patch: HostPatch,
-        complete: Bool = false,
-        in session: FixtureSession = FixtureSession(),
         against name: String,
         file: StaticString = #filePath,
         line: UInt = #line
     ) throws {
-        session.generation += 1
-
-        let bytes = Wire.encode(
-            patch, generation: session.generation, complete: complete, dictionary: session.dictionary)
-
-        try check(bytes, sidecar: PatchDump.text(patch), against: name, file: file, line: line)
+        try check(PatchDump.text(patch), against: name, file: file, line: line)
     }
 
     /// Checks a batch of acts against its fixture, or writes it when updating:
-    /// `name.txt` holds the batch's dump and, while the MAUI host lives,
-    /// `name.bin` the batch encoded for it.
+    /// `name.txt` holds the batch's dump.
     static func check(
         _ calls: [HostActCall],
         against name: String,
         file: StaticString = #filePath,
         line: UInt = #line
     ) throws {
-        let bytes = Wire.encode(
-            calls.map { ActCall(act: $0.act, arguments: $0.arguments, completion: $0.completion) },
-            dictionary: WireDictionary())
-
-        try check(bytes, sidecar: PatchDump.text(calls), against: name, file: file, line: line)
+        try check(PatchDump.text(calls), against: name, file: file, line: line)
     }
 
-    /// Checks a binary message and its readable sidecar against their
-    /// fixtures, or writes both when updating.
+    /// Checks a dump against its fixture, or writes it when updating.
     ///
     /// `name` carries no extension - `act-calls/Focus` is checked against
-    /// `Focus.bin`, the CONTRACT a host reads, and `Focus.txt`, the
-    /// rendering a review diff reads. It may name a subdirectory, which is
-    /// created if it is not there. Both files are compared: a sidecar that
-    /// drifted from its bytes would lie to exactly the reader it exists for.
-    static func check(
-        _ bytes: [UInt8],
-        sidecar: String,
+    /// `Focus.txt`. It may name a subdirectory, which is created if it is not
+    /// there.
+    private static func check(
+        _ dump: String,
         against name: String,
-        file: StaticString = #filePath,
-        line: UInt = #line
+        file: StaticString,
+        line: UInt
     ) throws {
-        let binary = directory.appendingPathComponent(name + ".bin")
         let text = directory.appendingPathComponent(name + ".txt")
 
         if updating {
             try FileManager.default.createDirectory(
-                at: binary.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try Data(bytes).write(to: binary)
-            try sidecar.write(to: text, atomically: true, encoding: .utf8)
+                at: text.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try dump.write(to: text, atomically: true, encoding: .utf8)
             return
         }
 
-        let hint = """
-            Either something broke, or the format changed on purpose - in which
-            case run the tests again with STATEUI_UPDATE_FIXTURES=1 and inspect
-            both the binary fixture and its readable sidecar.
+        XCTAssertEqual(
+            dump, try String(contentsOf: text, encoding: .utf8),
             """
-
-        XCTAssertEqual(
-            Data(bytes), try Data(contentsOf: binary),
-            "The bytes no longer match \(name).bin.\n\n\(hint)",
-            file: file, line: line)
-
-        XCTAssertEqual(
-            sidecar, try String(contentsOf: text, encoding: .utf8),
-            "The rendering no longer matches \(name).txt.\n\n\(hint)",
+            The dump no longer matches \(name).txt. Either something broke, or the
+            patch changed on purpose - in which case run the tests again with
+            STATEUI_UPDATE_FIXTURES=1 and inspect the diff.
+            """,
             file: file, line: line)
     }
 
@@ -759,8 +724,7 @@ enum Fixtures {
         return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: repository, moreThan: 90)
     }
 
-    /// Every fixture sidecar - the readable half of the deterministic wire
-    /// contract.
+    /// Every fixture dump - what the deterministic patch said.
     static func fixtureSidecars() throws -> [String] {
         let root = directory
         var found: [String] = []

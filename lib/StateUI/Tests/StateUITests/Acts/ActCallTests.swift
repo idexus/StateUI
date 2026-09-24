@@ -15,8 +15,8 @@ import XCTest
 final class ActCallTests: XCTestCase {
     // MARK: - The name
 
-    /// An act is never called a command. The queue, its take and its receipt,
-    /// the C exports, the typed SPI, the hosts and the handbook spell act
+    /// An act is never called a command. The queue and its take,
+    /// the typed SPI, the hosts and the handbook spell act
     /// calls; a drawing's commands are another thing and keep their word.
     func testTheActPathSpellsNoCommand() throws {
         let removed = [
@@ -62,6 +62,22 @@ final class ActCallTests: XCTestCase {
     @discardableResult
     private func drain() -> [HostActCall] {
         drainedActs()
+    }
+
+    /// The acts a resumed handler sends next, taken the way a host's doorbell
+    /// counts them. A resume is counted down as it comes back, a moment before
+    /// the handler reaches its next act, so settling alone can end in between.
+    private func queued(within seconds: Int = 2) async -> [HostActCall] {
+        let deadline = ContinuousClock.now + .seconds(seconds)
+
+        repeat {
+            await settle()
+            let taken = drain()
+            if !taken.isEmpty { return taken }
+            await Task.yield()
+        } while ContinuousClock.now < deadline
+
+        return []
     }
 
     /// What a handler's body is, when it gives an answer back.
@@ -201,7 +217,7 @@ final class ActCallTests: XCTestCase {
 
         await report(try completionId(in: first), .finished([]))
 
-        let second = drain()
+        let second = await queued()
         XCTAssertEqual(second.first?.arguments.first, .string("//second"))
 
         await report(try completionId(in: second), .finished([]))
@@ -350,59 +366,6 @@ final class ActCallTests: XCTestCase {
 
         let again = await report(id, .finished([]))
         XCTAssertFalse(again, "a completion runs once")
-    }
-
-    /// A batch the host could not read is failed back by RECEIPT: the take
-    /// remembers the completion ids it handed out - they are inside the very
-    /// bytes that would not read, so only this side still knows them - and
-    /// cashing the receipt resumes every awaiting handler by THROWING the
-    /// reason. The alternative was a continuation parked forever, with
-    /// nothing anywhere saying why. Deliberately not a timeout: an act may
-    /// wait unboundedly and legitimately - a dialog waits for the user.
-    func testAnUnreadableBatchFailsItsActInsteadOfHangingIt() async throws {
-        drain()
-
-        let navigation = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
-        XCTAssertFalse(drain().isEmpty)
-
-        Renderer.shared.failTakenActCalls("the host could not read the batch")
-        await settle()
-
-        do {
-            try await navigation.value
-            XCTFail("an act in an unreadable batch reported success")
-        } catch {
-            XCTAssertTrue(
-                String(describing: error).contains("could not read the batch"),
-                String(describing: error))
-        }
-    }
-
-    /// The receipt is cashed ONCE - taken and cleared before anything runs -
-    /// so a stale second cashing fails nobody: an act queued afterwards is
-    /// untouched by it and completes normally.
-    func testTheReceiptIsCashedOnce() async throws {
-        drain()
-
-        let first = await Self.begin { try await Dialogs.alert("//list", message: "saved") }
-        XCTAssertFalse(drain().isEmpty)
-
-        Renderer.shared.failTakenActCalls("unreadable")
-        await settle()
-
-        do {
-            try await first.value
-            XCTFail("the failed batch's act reported success")
-        } catch {}
-
-        // Queued but NOT yet taken, so no receipt covers it - the stale
-        // cashing below must leave it alone.
-        let second = await Self.begin { try await Dialogs.alert("//home", message: "saved") }
-        Renderer.shared.failTakenActCalls("stale")
-
-        let acts = drain()
-        await report(try completionId(in: acts), .finished([]))
-        try await second.value
     }
 
     // MARK: - A host in this process

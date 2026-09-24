@@ -1,9 +1,9 @@
 # The core
 
-The core is `lib/StateUI/Sources/Core` and `lib/StateUI/Sources/Bridge`: state,
-invalidation, keys and diffing, the display cycle, acts, the UI thread's
-executor, the Wire and the C exports. It holds the reasons behind the code; the
-code's comments say what a thing is and point here. Every note describes the
+The core is `lib/StateUI/Sources/Core`: state, invalidation, keys and
+diffing, the display cycle, acts, the UI thread's executor and the typed
+boundary a host reads. It holds the reasons behind the code; the code's
+comments say what a thing is and point here. Every note describes the
 current design, its reason and its trap.
 
 The core's sources stand in one folder per topic, one element to a file, and
@@ -18,13 +18,11 @@ The core's sources stand in one folder per topic, one element to a file, and
 | [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries, recycling |
 | [state.md](state.md) | storage and box, bindings, model state, carried state, kept and scene-kept state, the environment |
 | [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
-| [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the state batch, the ticker |
-| [acts.md](acts.md) | acts, completion ids, the receipt, aims, focus, dialogs, host events |
+| [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the ticker |
+| [acts.md](acts.md) | acts, completion ids, aims, focus, dialogs, host events |
 | [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, the lock and its order |
-| [wire.md](wire.md) | the byte layout of every channel, the dictionary, versions, limits, determinism |
 | [contracts.md](contracts.md) | contracts and tiers, member facts, values that cross, tokens, realizations |
 | [scenes.md](scenes.md) | the scene tree, sessions, what the platform keeps, connecting and ending scenes |
-| [bridge.md](bridge.md) | the C exports, memory ownership, answers, jobs asked for rather than pushed |
 | [diagnostics.md](diagnostics.md) | the tally, the inspector, complaints |
 
 ## The core at a glance
@@ -52,10 +50,9 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                                                                        |
   |   act queue, completions        UIThreadExecutor (MainActor), doorbell |
   +------------------------------------------------------------------------+
-        |  typed: HostRender, HostCycle,       |  C: Exports.swift,
-        |  HostActCall (StateUIHost)           |  Wire bytes
-        v                                      v
-  a Swift host in this process           a runtime in another language
+        |  typed: HostRender, HostCycle, HostActCall (StateUIHost)
+        v
+  a Swift host in this process
 ```
 
 Two reactive paths leave the same state. A body that read a state is rebuilt
@@ -63,15 +60,17 @@ when it is written, diffed, and arrives at the host as a patch (reactive path
 1). A state handed on as `$x` is carried by the host on an image both sides
 rewrite; it moves on the display cycle with no rebuild at all (reactive path 2).
 
-## Two ways out
+## The typed boundary
 
-A Swift host links the core's dynamic library and calls `StateUIHost`, behind
-`@_spi(Host)`: `render(baseline:)` answers a typed `HostRender` holding the
-sparse `HostPatch`, `cycle` a `HostCycle`, `takeActCalls` typed `HostActCall`s.
-One process holds one copy of StateUI's types. A runtime in another language
-cannot read Swift types and calls the C exports instead; the Wire is the same
-patch, cycle and acts as deterministic bytes (wire.md, bridge.md). Both roads
-reach the same `Renderer.shared`, and the patch is built once for either.
+Every host is Swift in the application's process. It links the core's dynamic
+library and calls `StateUIHost`, behind `@_spi(Host)`: `render(baseline:)`
+answers a typed `HostRender` holding the sparse `HostPatch`, `cycle` a
+`HostCycle`, `takeActCalls` typed `HostActCall`s, and the reports come back
+the same way - `dispatch`, `report`, `reply`, `raise`, one setter per standard
+provider. One process holds one copy of StateUI's types, and nothing
+serializes the patch between the core and a host. Code in a platform's own
+language - Java through JNI, C++ behind a C ABI - is a relay beneath the Swift
+host and never calls the core.
 
 ## A state write from start to finish
 
@@ -105,7 +104,7 @@ reach the same `Renderer.shared`, and the patch is built once for either.
      v  settle passes: .onDestroying, .onCreated, .onChanged run now,
      |  what they write is walked and merged - up to three passes
      v
-  HostPatch -> HostRender (typed) or Wire bytes with announcements
+  HostPatch -> HostRender
      |
      v  the host applies it and keeps the generation only if it went in whole
 ```
@@ -117,7 +116,7 @@ reach the same `Renderer.shared`, and the patch is built once for either.
      |
      |  the host animates carried values with HostMotionLaw and reports
      |  the user's changes and its frames, lane by lane
-     v                                    stateui_cycle_write / StateUIHost.report
+     v                                    StateUIHost.report
   CycleBoard.cycle(now)
      1  latch     pending writes -> image; reported lanes are never echoed
      2  engines   by ascending priority - a conversion's back (-2) and
@@ -126,7 +125,7 @@ reach the same `Renderer.shared`, and the patch is built once for either.
                   followed write, or awake after answering .again
      3  publish   image -> published; dirty lanes collected
      |
-     v                                    stateui_cycle_read / HostCycle.changes
+     v                                    HostCycle.changes
   the host writes each moved value onto every control bound to that state
      |
      |  a state some body read asks for a render; a journey's frame asks only
@@ -140,13 +139,13 @@ reach the same `Renderer.shared`, and the patch is built once for either.
 ```text
   UI thread (the host's)                       any other thread
   -----------------------------------------    ----------------------------------
-  event   stateui_dispatch_wire(id, bytes)     a Task.detached or async let child
+  event   StateUIHost.dispatch(id, payload)    a Task.detached or async let child
           Renderer.dispatch                      writes @State, sends an act,
           Task.immediate on MainActor            writes a board between cycles
           -> the handler runs to its first           |  poke(), outside every lock
              await, inside the event                 v
                                                doorbell thread (the host made it)
-  turn    stateui_run_jobs: MainActor's jobs     parked in stateui_wait_work
+  turn    StateUIHost.runJobs: MainActor's jobs  parked in waitForWork
           (Apple: the main queue's instead)      wakes, counts the work, posts
           a pending cycle, a render, the acts    ONE turn onto the UI thread
                                                  and parks again
@@ -157,29 +156,6 @@ reach the same `Renderer.shared`, and the patch is built once for either.
 The library never calls the host back: a resume produces its job on a pool
 thread, and entering a runtime from a thread it has never seen can deadlock the
 UI thread under a debugger. The host asks instead (concurrency.md).
-
-## The C bridge
-
-```text
-  runtime in another language              Exports.swift -> core
-  ---------------------------------------  -------------------------------------
-  at start   stateui_wire_version            refuse a version mismatch loudly
-             stateui_set_environment          one standard provider per call
-             stateui_persistent_keys          -> keys; stateui_set_persistent <-
-             stateui_set_realization_wire     what the host realizes
-             stateui_connect_scene            a platform window, before its render
-  each turn  stateui_run_jobs                 MainActor's jobs
-             stateui_cycle_write/run/read     the display cycle
-             stateui_needs_render,
-             stateui_render_wire              the patch against a baseline
-             stateui_take_act_calls_wire      the acts, a receipt kept
-             stateui_fail_taken_act_calls     a batch that would not read
-             stateui_free_buffer/free_string  memory freed where it was made
-  events     stateui_dispatch_wire            an element's event, an act's reply
-             stateui_dispatch_host_event      an event raised by name
-  doorbell   stateui_wait_work                on a thread the host created
-  tally      stateui_renders, stateui_alive, stateui_cycle_trace, stateui_inspect_*
-```
 
 ## Where things live
 
@@ -194,7 +170,7 @@ holds its reasons. A type's extensions stand in its folder, named
                     the attachments, HostStorage's three copies
   Core/Journey      Journey and its lanes, the law on the image, the two  journeys
                     motion laws, readings, conversions, .multi
-  Core/Cycle        the board, engines, the state batch, the ticker       cycle
+  Core/Cycle        the board, engines, the ticker                        cycle
   Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
                     read scopes, debugInfo()                              invalidation
   Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
@@ -202,8 +178,6 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency
-  Core/Wire         the byte layout: its writer, its reader, the          wire
-                    dictionary
   Core/Boundary     the typed SPI: StateUIHost, HostRender, HostPatch     (this note)
                     and the values it carries, SVG path data
   Core/Contract     contracts and tiers, members, their facts and         contracts
@@ -212,5 +186,4 @@ holds its reasons. A type's extensions stand in its folder, named
                     declarations
   Core/Scenes       scenes, their records and element, a value as text    scenes
   Core/Diagnostics  the inspector, complaints                             diagnostics
-  Bridge            Exports.swift: the C exports                          bridge
 ```

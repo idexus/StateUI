@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Styles: what a style is, and what a control wearing one puts on the wire.
+// Styles: what a style is, and what a control wearing one puts in the patch.
 //
 // A style never travels. It is a bag of the same property values a control
 // carries, and the differ merges it into the control it belongs to - so most of
@@ -90,7 +90,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(states.count, 4)
 
         // The name is spelled as a host matches it: states are compared as
-        // strings, so this one is NOT camelCased on the wire.
+        // strings, so this one is NOT camelCased in the patch.
         let disabled = try XCTUnwrap(states.first { $0.props["name"] == .name("Disabled") })
         XCTAssertEqual(disabled.props["group"], .name("CommonStates"))
         XCTAssertEqual(states.last?.props["group"], .name("SwitchStates"))
@@ -876,7 +876,7 @@ final class StyleTests: XCTestCase {
     // MARK: - Where they live
 
     /// The application's sheet reaches the controls under its window, and
-    /// nothing about the sheet itself is on the wire.
+    /// nothing about the sheet itself is in the patch.
     func testTheApplicationsStylesReachTheControlsAndNothingElse() {
         Renderer.shared.setApplication(StyledApp())
 

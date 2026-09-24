@@ -99,7 +99,7 @@ settle, and one order makes the window's children the same list in every run.
 A window and a page hear where they stand in their life - created, activated,
 appearing, navigated to - through one handler written per report. The
 handlers are written out one by one rather than iterated over a collection:
-the wire is deterministic, and a dictionary or a set iterated into a message
+the patch is deterministic, and a dictionary or a set iterated into a message
 can differ between two instances within one run.
 
 ## A page around a view

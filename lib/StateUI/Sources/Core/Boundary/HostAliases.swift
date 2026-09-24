@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The core's own types, under the names a Swift host reads them by.
-// Design: docs/design/core/README.md#two-ways-out
+// Design: docs/design/core/README.md#the-typed-boundary
 
 /// A property value delivered directly to a native Swift host.
 @_spi(Host) public typealias HostValue = PropValue

@@ -12,8 +12,8 @@ nothing the API can express is lost, and equality means the colour rather
 than its spelling: `Color("#ff0000")` and `.red` are one value, so two
 spellings of one colour are not a change and nothing is sent for them.
 
-A colour crosses under the wire's own colour kind as four bytes. It is the
-value a tree carries most of and the cheapest to say exactly, and no host
+A colour crosses as its own kind of value, four channels of a byte. It is
+the value a tree carries most of and the cheapest to say exactly, and no host
 parses a colour or has to know what one may look like. On a state the host
 carries, a colour lies as four lanes from 0 to 1, which is what a colour
 half way between two others is made of.
@@ -64,7 +64,7 @@ says and records that read against the element.
 A theme change therefore builds exactly the elements wearing a pair and
 nothing around them. A pair written outside every build - into a session
 from a handler, or in a style sheet made once - is right in both themes,
-because it is resolved where it is worn. `.themed` never reaches the wire. A
+because it is resolved where it is worn. `.themed` never reaches a host. A
 brush holding a pair among its stops, and a drawing holding one among its
 records, are resolved the same way.
 
@@ -87,6 +87,6 @@ one colour, while a second file keeps artwork of any colours as it was drawn.
 
 ## A background is a colour or a brush
 
-`Background` is one colour or one brush, and the two stay apart on the
-wire: a colour crosses as its four bytes and a brush as its kind and parts,
+`Background` is one colour or one brush, and the two stay apart in the
+patch: a colour crosses as a colour and a brush as its kind and parts,
 so a host paints a plain colour as the plain colour it is.

@@ -133,7 +133,7 @@ final class InspectionTests: XCTestCase {
     ) -> InspectedPass? {
         Inspection.begin(road: road, causes: [])
         render()
-        Inspection.end(generation: generation, describe: 0, encode: 0, bytes: 0, keep: true)
+        Inspection.end(generation: generation, describe: 0, keep: true)
 
         return Inspection.passes.last
     }
@@ -204,7 +204,7 @@ final class InspectionTests: XCTestCase {
 
         Inspection.applied(
             generation: 7,
-            InspectedHost(read: 12, apply: 340, nodes: 5, made: 2, kept: 3, adopted: 0))
+            InspectedHost(apply: 352, nodes: 5, made: 2, kept: 3, adopted: 0))
 
         let lines = Inspection.takeLog().split(separator: "\n").map(String.init)
         let head = try XCTUnwrap(lines.first)
@@ -327,8 +327,6 @@ final class InspectionTests: XCTestCase {
     /// complete render kept here asked the inspector to draw again, for good -
     /// measured as a gallery going round at half a core behind its error page.
     func testACompleteRenderTheInspectorAloneCausedIsNotKept() throws {
-        // DECODED, never thrown away: the probe's names are announced once,
-        // and a later test decoding a message would meet one it never saw.
         Renderer.shared.setApplication(ShowingApplication())
         _ = Renderer.shared.renderHost(baseline: 0)
 
@@ -345,7 +343,7 @@ final class InspectionTests: XCTestCase {
 
     func testAPassTheInspectorCausedIsNotKept() {
         Inspection.begin(road: .walk, causes: ["revision"])
-        Inspection.end(generation: 2, describe: 0, encode: 0, bytes: 0, keep: false)
+        Inspection.end(generation: 2, describe: 0, keep: false)
 
         XCTAssertTrue(Inspection.passes.isEmpty)
     }
@@ -359,7 +357,7 @@ final class InspectionTests: XCTestCase {
         Inspection.applied(generation: 6, scene: 1, micros: 30)
         Inspection.applied(
             generation: 6,
-            InspectedHost(read: 5, apply: 40, nodes: 3, made: 1, kept: 2, adopted: 0))
+            InspectedHost(apply: 40, nodes: 3, made: 1, kept: 2, adopted: 0))
 
         XCTAssertEqual(Inspection.passes.first?.host?.apply, 40)
         XCTAssertEqual(Inspection.passes.first?.host?.scenes, [0, 30])

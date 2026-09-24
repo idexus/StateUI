@@ -176,9 +176,9 @@ the package graph.
 
 ## Fixtures
 
-Binary fixtures under `lib/StateUI/Tests/Fixtures/` pin the deterministic Wire
-contract. Each `.bin` has a readable `.txt` sidecar. When a deliberate protocol
-change makes a fixture test fail, regenerate both with:
+Fixtures under `lib/StateUI/Tests/Fixtures/` pin the deterministic patch as
+readable text. When a deliberate change makes a fixture test fail, regenerate
+them with:
 
 ```bash
 STATEUI_UPDATE_FIXTURES=1 swift test

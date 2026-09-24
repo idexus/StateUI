@@ -27,7 +27,7 @@
 
     /// Whether this render brings the complete element. Renderer-only merge
     /// bookkeeping; it is not part of the host contract and never crosses a
-    /// typed or Wire boundary.
+    /// typed boundary.
     var fresh = false
 
     /// Only the properties that changed. All of them when `replace` is set or

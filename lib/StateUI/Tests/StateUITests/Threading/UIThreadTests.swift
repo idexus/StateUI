@@ -151,8 +151,7 @@ final class UIThreadTests: XCTestCase {
     /// nothing but the write having happened - `waitForWork` BLOCKS until
     /// something signals, so a write that did not signal would hang here.
     func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
-        // Quiet first - and the batch DECODED rather than thrown away, or the
-        // names it announced are gone and the next reader dies on them.
+        // Quiet first.
         _ = drainedActs()
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
@@ -466,9 +465,9 @@ final class UIThreadTests: XCTestCase {
     /// one of them breaks a platform silently and far from the cause, which is
     /// why they are rules rather than preferences, and why a test pins them.
     ///
-    /// - **The LIBRARY never imports Foundation.** `Wire.swift` writes the
-    ///   wire by hand and a date on it is three integers. An application may
-    ///   import it; nothing under `Sources/` may.
+    /// - **The LIBRARY never imports Foundation.** A date in it is three
+    ///   integers, and nothing it does needs a formatter or ICU. An
+    ///   application may import it; nothing under `Sources/` may.
     /// - **`DispatchQueue.main` is banned**, but for the one drain
     ///   UIThread.swift posts there. Nothing drains that queue on Android
     ///   or Windows; MainActor, which the UI thread's own executor serves
@@ -488,7 +487,7 @@ final class UIThreadTests: XCTestCase {
     func testTheLibraryKeepsItsFourNonNegotiables() throws {
         let banned: [(needle: String, why: String)] = [
             ("import Foundation",
-             "the library never imports Foundation - Wire.swift writes the wire by hand"),
+             "the library never imports Foundation - a date in it is three integers"),
             ("DispatchQueue.main",
              "nothing drains libdispatch's main queue on Android or Windows - work for "
                 + "the UI thread goes to MainActor"),

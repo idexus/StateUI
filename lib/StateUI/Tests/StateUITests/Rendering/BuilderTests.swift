@@ -378,7 +378,7 @@ final class BuilderTests: XCTestCase {
     ///
     /// It is not an identity a host can use - two renders of a carried subtree
     /// would report the same path for elements the host has under different
-    /// ids - so it stays in Swift, and the wire is unchanged by all of it.
+    /// ids - so it stays in Swift, and the patch is unchanged by all of it.
     func testThePathNeverReachesTheHost() {
         let tree = VStack {
             if true {

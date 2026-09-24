@@ -259,7 +259,7 @@ final class DiffTests: XCTestCase {
     /// An element that SURVIVES but loses its last handler carries an EMPTY
     /// event set - not nothing. An empty set is "clear what you had"; nothing
     /// at all would read as "unchanged", and the host would keep resolving a
-    /// gesture to a handler StateUI has forgotten. See Wire.swift.
+    /// gesture to a handler StateUI has forgotten. See HostPatch.swift.
     func testAnElementThatLosesItsLastHandlerCarriesAnEmptySet() {
         let renders = Renders()
 
@@ -475,7 +475,7 @@ extension DiffTests {
             "only the label that changed is sent, the repeat left alone")
     }
 
-    /// The two carry DIFFERENT identities on the wire, so the host keeps them
+    /// The two carry DIFFERENT identities in the patch, so the host keeps them
     /// as two controls: the second's is the id with an occurrence number
     /// behind it.
     func testTwoDuplicatesAreTwoIdentities() {

@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The wire's oldest rule, made checkable: a STRING is text someone wrote.
+// The host boundary's oldest rule, made checkable: a STRING is text someone
+// wrote.
 //
-// Everything else that crosses is a number. A closed vocabulary rides the
-// member's own number, an open one rides the session dictionary, a value with
-// parts rides as its parts. These guards are what keeps that true, because the
-// way it slips is one enum at a time, each with a good local reason.
+// Everything else a host is handed is a number or a name. A closed vocabulary
+// rides the member's own number, an open one its `.name`, a value with parts
+// its parts. These guards are what keeps that true, because the way it slips
+// is one enum at a time, each with a good local reason.
 //
 // This file says the SHAPE of a declaration is right. That its NUMBERS mean
 // the same member to a host is for each host to prove, since only a host can
@@ -16,15 +17,14 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-final class WireVocabularyTests: XCTestCase {
+final class ClosedVocabularyTests: XCTestCase {
     /// No closed vocabulary may ride its spelling.
     ///
-    /// `enum LineBreak: String` is what makes a binary wire spend four
-    /// bytes of length and fourteen of UTF-8 saying `tailTruncation`, and a
-    /// host a string comparison per property to read it back. There is no
-    /// exemption list on purpose: nothing in this library needs a
-    /// string-backed enum, and an enum that genuinely never crosses does not
-    /// need a raw type at all.
+    /// `enum LineBreak: String` is what hands a host `tailTruncation` to
+    /// compare as text where a member number would do, and what lets a
+    /// spelling pass for authored words. There is no exemption list on
+    /// purpose: nothing in this library needs a string-backed enum, and an
+    /// enum that genuinely never crosses does not need a raw type at all.
     func testNoEnumInTheLibraryCarriesAStringRawValue() throws {
         var offenders: [String] = []
 
@@ -46,16 +46,16 @@ final class WireVocabularyTests: XCTestCase {
                 + "as `.enumeration(rawValue)`")
     }
 
-    /// Every case of a wire enum states its number out loud.
+    /// Every case of a closed vocabulary states its number out loud.
     ///
     /// Swift numbers an `Int32` enum from 0 in declaration order when nobody
     /// says otherwise, so a case inserted in the middle renumbers every case
-    /// after it - silently, and only in Swift. A host goes on reading the
-    /// old numbers as the new members and the interface fills with
-    /// values nobody wrote. Some values are not declaration order in the first
-    /// place (`AbsoluteLayoutProportions.all` is -1), which is why the rule is that
-    /// EVERY case says its own.
-    func testEveryWireEnumNumbersEveryCaseExplicitly() throws {
+    /// after it, silently. The numbers are the vocabulary's own contract - in
+    /// the patch a host translates and in every dump a test compares - and do
+    /// not move by accident. Some values are not declaration order in the
+    /// first place (`AbsoluteLayoutProportions.all` is -1), which is why the
+    /// rule is that EVERY case says its own.
+    func testEveryClosedVocabularyNumbersEveryCaseExplicitly() throws {
         var offenders: [String] = []
         var checked = 0
 
@@ -98,18 +98,17 @@ final class WireVocabularyTests: XCTestCase {
 
         XCTAssertEqual(
             offenders, [],
-            "a case of an enum that crosses the wire must state its number - "
-                + "an implicit one moves when a case is inserted above it, and "
-                + "a host is still reading the old numbers")
+            "a case of a closed vocabulary must state its number - an implicit "
+                + "one moves when a case is inserted above it")
     }
 
     /// A vocabulary that crosses is declared `: Int32`, never `: Int`.
     ///
-    /// `Int32` is what the wire's enumeration tag carries, so `: Int` needs a
-    /// conversion at every use - but that is the smaller half. The larger half
-    /// is that every guard over these declarations finds a vocabulary by its
-    /// RAW TYPE. One declared the other way is invisible to all of them at
-    /// once: no number of it is checked, and it can ride the wire as a plain
+    /// `Int32` is what `.enumeration` carries, so `: Int` needs a conversion
+    /// at every use - but that is the smaller half. The larger half is that
+    /// every guard over these declarations finds a vocabulary by its RAW
+    /// TYPE. One declared the other way is invisible to all of them at once:
+    /// no number of it is checked, and it can reach a host as a plain
     /// `.number` with nothing to say so.
     func testEveryVocabularyThatCrossesIsDeclaredInt32() throws {
         var offenders: [String] = []

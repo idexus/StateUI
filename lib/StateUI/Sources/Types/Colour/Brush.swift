@@ -3,7 +3,7 @@
 
 // A brush and its three kinds: one colour, a gradient along a line, and a
 // gradient out from a point, each crossing as its typed parts.
-// Design: docs/design/types/brushes.md#the-wire-form
+// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 
 /// What a shape, a border or a background is painted with.
 ///

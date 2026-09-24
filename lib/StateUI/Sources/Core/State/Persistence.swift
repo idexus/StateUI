@@ -11,7 +11,7 @@ public enum PersistentKind: Int32, Sendable {
     /// True or false.
     case boolean = 0
 
-    /// A whole number - exact to 2^53, every number on this wire being a
+    /// A whole number - exact to 2^53, every number a host is handed being a
     /// Double.
     case integer = 1
 
@@ -39,10 +39,10 @@ public protocol PersistentValue {
     /// Which of the four this is - what the host reads the store with.
     static var persistentKind: PersistentKind { get }
 
-    /// The value, as the wire carries it.
+    /// The value, as a host is handed it.
     var persistentValue: PropValue { get }
 
-    /// The value back from the wire, or nil when the store held something
+    /// The value back from the host, or nil when the store held something
     /// else - an entry written by an older version of the application under
     /// the same name. The state then keeps its declared value.
     /// - Parameter persisted: what the host read out of the store.
@@ -53,10 +53,10 @@ extension Bool: PersistentValue {
     /// True or false.
     public static var persistentKind: PersistentKind { .boolean }
 
-    /// The value, as the wire carries it.
+    /// The value, as a host is handed it.
     public var persistentValue: PropValue { .bool(self) }
 
-    /// The value back from the wire, or nil for anything that is not a
+    /// The value back from the host, or nil for anything that is not a
     /// boolean.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
@@ -70,11 +70,11 @@ extension Int: PersistentValue {
     /// A whole number.
     public static var persistentKind: PersistentKind { .integer }
 
-    /// The value, as the wire carries it - a Double, as everything numeric
+    /// The value, as a host is handed it - a Double, as everything numeric
     /// here does.
     public var persistentValue: PropValue { .number(Double(self)) }
 
-    /// The value back from the wire, or nil for anything that is not a number.
+    /// The value back from the host, or nil for anything that is not a number.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
         guard case .number(let value) = persisted else { return nil }
@@ -87,10 +87,10 @@ extension Double: PersistentValue {
     /// A number with a fraction.
     public static var persistentKind: PersistentKind { .number }
 
-    /// The value, as the wire carries it.
+    /// The value, as a host is handed it.
     public var persistentValue: PropValue { .number(self) }
 
-    /// The value back from the wire, or nil for anything that is not a number.
+    /// The value back from the host, or nil for anything that is not a number.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
         guard case .number(let value) = persisted else { return nil }
@@ -103,10 +103,10 @@ extension String: PersistentValue {
     /// Text.
     public static var persistentKind: PersistentKind { .text }
 
-    /// The value, as the wire carries it.
+    /// The value, as a host is handed it.
     public var persistentValue: PropValue { .string(self) }
 
-    /// The value back from the wire, or nil for anything that is not text.
+    /// The value back from the host, or nil for anything that is not text.
     /// - Parameter persisted: what the host read out of the store.
     public init?(persisted: PropValue) {
         guard case .string(let value) = persisted else { return nil }
@@ -120,7 +120,7 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
     /// with.
     public static var persistentKind: PersistentKind { RawValue.persistentKind }
 
-    /// The raw value, as the wire carries it.
+    /// The raw value, as a host is handed it.
     public var persistentValue: PropValue { rawValue.persistentValue }
 
     /// The case the stored raw value names, or nil when it names none - a case

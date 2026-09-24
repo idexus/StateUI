@@ -8,7 +8,7 @@
 ///
 /// Design: docs/design/types/motion.md#layout-lanes
 public struct MotionLanes: OptionSet, Sendable {
-    /// The lane bits carried by `HostLayoutMotion` and its Wire encoding.
+    /// The lane bits carried by `HostLayoutMotion`.
     public let rawValue: UInt8
 
     /// A set from its members' bits.

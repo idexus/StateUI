@@ -83,7 +83,7 @@ final class AndroidShapeDrawable {
     /// A brush as the Java side takes it: its kind, then a colour and an offset for each stop, and its
     /// geometry in fractions of the shape - from a colour, or a brush as it crosses: its kind, its geometry,
     /// then an offset and a colour for each stop.
-    /// Design: docs/design/types/brushes.md#the-wire-form
+    /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
     static func brush(_ value: HostValue?) -> (kind: Int32, colors: [Int32], offsets: [Float], geometry: [Float]) {
         if let value, let argb = AndroidView.argb(value) { return (1, [argb], [0], []) }
         guard let parts = value?.values, let brush = parts.first?.enumeration else { return (0, [], [], []) }

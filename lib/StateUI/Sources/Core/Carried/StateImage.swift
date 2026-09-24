@@ -3,7 +3,7 @@
 
 /// How a value lies on the image: eight little-endian bytes a lane, or text as
 /// its length and UTF-8.
-/// Design: docs/design/core/cycle.md#the-state-batch
+/// Design: docs/design/core/cycle.md#the-image
 enum StateImage {
     /// The bytes a value lies as.
     static func bytes(of carried: StateCarried) -> [UInt8] {

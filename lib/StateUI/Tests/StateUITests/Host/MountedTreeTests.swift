@@ -123,7 +123,7 @@ final class MountedTreeTests: XCTestCase {
         }
         for generation: Int32 in 1...3 {
             Inspection.begin(road: .build, causes: [])
-            Inspection.end(generation: generation, describe: 0, encode: 0, bytes: 0, keep: true)
+            Inspection.end(generation: generation, describe: 0, keep: true)
         }
 
         func patch(_ id: String, _ type: NodeType, _ children: HostChildrenUpdate = .unchanged) -> HostPatch {
@@ -156,7 +156,6 @@ final class MountedTreeTests: XCTestCase {
         let hosts = try Inspection.passes.map { try XCTUnwrap($0.host, "no host half for #\($0.generation)") }
         XCTAssertEqual(
             hosts.map { [$0.nodes, $0.made, $0.kept, $0.adopted] }, [[6, 6, 0, 0], [3, 0, 3, 0], [4, 0, 3, 1]])
-        XCTAssertEqual(hosts.map(\.read), [0, 0, 0], "a typed patch is not read off a buffer")
         XCTAssertTrue(hosts.allSatisfy { $0.apply > 0 })
         XCTAssertEqual(hosts.map { $0.scenes.map { $0 > 0 } }, [[true, true], [false, true], [false, true]])
     }

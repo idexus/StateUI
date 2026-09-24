@@ -66,28 +66,16 @@ final class ColorTests: XCTestCase {
 
     // MARK: - What crosses
 
-    /// Four bytes, in channel order, with the alpha last - written out one at
-    /// a time so there is no word to agree an endianness for.
-    func testAColourCrossesAsFourBytes() {
-        var out: [UInt8] = []
-        out.value(Color("#80204060").propValue)
-
-        XCTAssertEqual(out, [8, 0x20, 0x40, 0x60, 0x80])
-    }
-
-    /// And a themed one crosses as ONE colour: written, it is the pair, and
+    /// A themed colour crosses as ONE colour: written, it is the pair, and
     /// the half in force is picked as the element wearing it is built - so
-    /// the wire never sees two. See Color.swift.
+    /// a host never sees two. See Color.swift.
     func testAThemedColourCrossesAsTheHalfInForce() {
         let themed = Color(light: .white, dark: .black)
 
         XCTAssertEqual(
             themed.propValue,
             .themed(light: Color.white.propValue, dark: Color.black.propValue))
-
-        var out: [UInt8] = []
-        out.value(themed.propValue)
-        XCTAssertEqual(out, [8, 0xFF, 0xFF, 0xFF, 0xFF], "a pair reaching the wire is the half in force")
+        XCTAssertEqual(themed.propValue.resolvingTheme(), Color.white.propValue)
 
         withTheme(.dark) {
             XCTAssertEqual(themed.propValue.resolvingTheme(), Color.black.propValue)

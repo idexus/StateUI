@@ -60,6 +60,26 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertEqual(found, [], "a .NET source or project with no host to build it")
     }
 
+    /// A host calls the library in Swift, in its own process, so the library
+    /// exports no C function: a `@_cdecl` in its sources is a door no host
+    /// opens. An application's own - the registration its Android head calls
+    /// from `JNI_OnLoad` - is the application's.
+    func testTheLibraryExportsNoCFunction() throws {
+        var read = 0
+
+        for (path, text) in try Fixtures.allSources() {
+            read += 1
+            let code = text.split(separator: "\n", omittingEmptySubsequences: false)
+                .map { $0.drop(while: { $0 == " " }) }
+                .filter { !$0.hasPrefix("//") }
+                .joined(separator: "\n")
+
+            XCTAssertFalse(code.contains("@_cdecl(\""), "\(path) exports a C function")
+        }
+
+        XCTAssertGreaterThan(read, 100, "the walk read almost nothing")
+    }
+
     /// The Android Views host is a Swift package beside AppKit's, with its Java
     /// layer, its tests in a package of their own and the scripts under
     /// `.scripts/Android`; and every native method the Java layer declares is

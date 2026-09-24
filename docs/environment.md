@@ -308,8 +308,8 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
   which nothing drains on Android, Windows, or Linux.
 
 An application can convert between its Foundation-rich domain model and these
-small StateUI values at its boundary. That keeps the library's wire,
-description, and native-host contracts deterministic while leaving the
+small StateUI values at its boundary. That keeps the library's description
+and native-host contracts deterministic while leaving the
 application free to use Foundation where its deployment targets provide the
 semantics it needs.
 

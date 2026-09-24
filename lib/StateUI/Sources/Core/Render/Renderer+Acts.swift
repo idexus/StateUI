@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The act queue: the acts the application sends, the completions waiting for an
-// answer, and the receipt of the batch the host took.
+// The act queue: the acts the application sends, and the completions waiting
+// for an answer.
 // Design: docs/design/core/acts.md#completion-ids
 
 extension Renderer {
@@ -102,14 +102,6 @@ extension Renderer {
         send(ApplicationContract.handlerFailed, String(describing: error))
     }
 
-    /// Hands the queued acts to the host as bytes, keeping the batch's completion
-    /// ids as a receipt. An empty queue answers no bytes.
-    /// Design: docs/design/core/acts.md#the-receipt
-    func takeActCallsWire() -> [UInt8] {
-        let batch = takeActCalls()
-        return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
-    }
-
     /// Hands the queued acts over typed; a Swift host answers each by its id.
     func takeActCalls() -> [ActCall] {
         // Saves become acts here, one per key per take with the last value.
@@ -121,28 +113,10 @@ extension Renderer {
         let queued = guarded.withLock {
             let queued = actCalls
             actCalls.removeAll(keepingCapacity: true)
-            takenCompletions = queued.compactMap { $0.completion }
             return queued
         }
 
         // And what the open scenes keep, the same way (Scenes.swift).
         return queued + saves + Scenes.shared.takeSaves()
-    }
-
-    /// Fails every act of the last taken batch, which the host could not read: each
-    /// awaiting handler throws instead of waiting for ever.
-    /// Design: docs/design/core/acts.md#the-receipt
-    func failTakenActCalls(_ reason: String) {
-        let ids = guarded.withLock {
-            let ids = takenCompletions
-            takenCompletions = []
-            return ids
-        }
-
-        for id in ids {
-            // The two steps the export takes for a reply from the host.
-            ReplyBuffer.current = .failed(reason)
-            _ = dispatch(id)
-        }
     }
 }

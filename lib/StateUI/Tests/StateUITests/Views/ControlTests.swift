@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// One control at a time: what each one puts on the wire.
+// One control at a time: what each one puts in the patch.
 //
 // The other tests here are about the MECHANISM - identity, memoization, handler
 // ids - and controls appear in them only as material. This file is about the
@@ -57,7 +57,7 @@ final class ControlTests: XCTestCase {
     /// A turn, a sizing, a lean and a move, STATED rather than computed.
     ///
     /// A fixture is bytes, and a chain like `.rotate(15).scaleX(1.5).skew(10, 5)`
-    /// puts a libm result on the wire: Apple's `tan(5°)` is one unit in the last
+    /// puts a libm result in the patch: Apple's `tan(5°)` is one unit in the last
     /// place below glibc's, so the same source wrote a different file on a Mac
     /// than it does on Linux and CI failed on two platforms for a picture nobody
     /// could tell apart. The host's maths library is not part of this library's
@@ -545,7 +545,7 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;
-                // the four-value form pins its full spelling on the wire.
+                // the four-value form pins its full spelling in the patch.
                 .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
                 .letsInputThrough(true)
@@ -1004,8 +1004,8 @@ final class ControlTests: XCTestCase {
     }
 
     /// A time of day READS AND WRITES its text form, which is a convenience for
-    /// an author and not the form it travels in: on the wire it is its numbers,
-    /// for the reason a date is - a formatter would mean ICU. The wire rule is
+    /// an author and not the form it travels in: in the patch it is its numbers,
+    /// for the reason a date is - a formatter would mean ICU. The patch's rule is
     /// `testATwoWayInputWritesBackWhatArrives`, which fires `timeChanged` with
     /// three numbers, and `fixtures/controls/TimePicker`.
     func testATimeOfDayReadsAndWritesItsTextForm() {

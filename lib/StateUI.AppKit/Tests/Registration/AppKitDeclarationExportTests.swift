@@ -9,7 +9,7 @@
 // contracts answer when the documents are rendered.
 //
 // Run with STATEUI_UPDATE_EXPORTS=1 to write the export instead of checking
-// it, then read the .txt sidecar in the diff.
+// it, then read it in the diff.
 
 #if os(macOS)
 import AppKit
@@ -19,20 +19,16 @@ import Foundation
 import XCTest
 
 final class AppKitDeclarationExportTests: XCTestCase {
-    /// The export is what the registry says, to the byte and to the line.
+    /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {
-        let declaration = Self.declaration()
-        let bytes = Wire.encodeDeclaration(declaration)
-        let sidecar = declaration.sidecar
-        let binary = Self.exports.appendingPathComponent("appkit.bin")
+        let exported = Self.declaration().text
         let text = Self.exports.appendingPathComponent("appkit.txt")
 
         if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
             try FileManager.default.createDirectory(
                 at: Self.exports, withIntermediateDirectories: true)
-            try Data(bytes).write(to: binary)
-            try sidecar.write(to: text, atomically: true, encoding: .utf8)
+            try exported.write(to: text, atomically: true, encoding: .utf8)
             return
         }
 
@@ -44,17 +40,14 @@ final class AppKitDeclarationExportTests: XCTestCase {
             stopped being realized.
             """
 
-        XCTAssertEqual(Data(bytes), try Data(contentsOf: binary), "exports/appkit.bin\(hint)")
         XCTAssertEqual(
-            sidecar, try String(contentsOf: text, encoding: .utf8), "exports/appkit.txt\(hint)")
+            exported, try String(contentsOf: text, encoding: .utf8), "exports/appkit.txt\(hint)")
     }
 
-    /// The export is deterministic: the same registry writes the same bytes.
+    /// The export is deterministic: the same registry writes the same text.
     @MainActor
-    func testTheSameRegistryWritesTheSameBytes() {
-        XCTAssertEqual(
-            Wire.encodeDeclaration(Self.declaration()),
-            Wire.encodeDeclaration(Self.declaration()))
+    func testTheSameRegistryWritesTheSameText() {
+        XCTAssertEqual(Self.declaration().text, Self.declaration().text)
     }
 
     /// Every name in the export is one the contracts declare - a host and the

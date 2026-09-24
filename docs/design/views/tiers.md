@@ -121,7 +121,7 @@ path; `.transform` moves what was drawn, after layout.
 A `Border` carries the same stroke properties on `BorderProperties` rather than
 sharing the shape tier, because that tier also carries `fill`,
 `renderTransform` and `aspect`, a drawn figure's properties and none of them a
-border's. On the wire they are the same properties.
+border's. In the patch they are the same properties.
 
 ## Borders
 
