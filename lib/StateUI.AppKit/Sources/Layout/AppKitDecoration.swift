@@ -81,7 +81,8 @@ final class AppKitDecoration {
         stroke.stroke(path, width: strokeWidth)
     }
 
-    private enum Shape {
+    /// The shape a value names: a rectangle, a rounded one, or an oval.
+    enum Shape {
         case rectangle
         case rounded(CGFloat)
         case ellipse

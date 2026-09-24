@@ -34,7 +34,7 @@ enum AppKitTransitionSurface {
             return property == .padding || layoutBoxProperties.contains(property)
 
         case .scrollView:
-            return property == .padding
+            return property == .padding || layoutBoxProperties.contains(property)
 
         case .label:
             return labelProperties.contains(property)

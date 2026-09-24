@@ -44,7 +44,7 @@ extension ScrollViewProperties {
 /// axis and passes a dominant gesture on the disabled axis to the enclosing
 /// scroller. A horizontal code listing can therefore live inside a vertical
 /// page without interrupting the page's movement.
-public struct ScrollView: View, PaddingElement, ScrollViewProperties {
+public struct ScrollView: View, PaddingElement, BorderElement, ScrollViewProperties {
     /// The node this control describes.
     public var node: Node
 

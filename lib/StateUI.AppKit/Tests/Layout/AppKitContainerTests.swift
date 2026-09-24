@@ -681,6 +681,40 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertTrue(boxes[3].decoration.draws, "its rounded shape is drawn all the same")
     }
 
+    /// A scroller paints its background and outlines itself in its stroke's colour on its shape, cutting what it
+    /// shows to that shape - and keeps all of it through AppKit's own repaint of a scroller's layer.
+    @MainActor
+    func testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ScrollView { Label("code") }
+                    .orientation(.horizontal)
+                    .background(Color("#00FF00"))
+                    .stroke(Color("#FF0000"))
+                    .strokeWidth(2)
+                    .shape(.roundedRectangle(12))
+                    .height(60)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let scroll = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+        scroll.window?.contentView?.layoutSubtreeIfNeeded()
+        // AppKit repaints a scroller's layer as it displays it; the box must come through that.
+        scroll.needsDisplay = true
+        scroll.displayIfNeeded()
+        CATransaction.flush()
+        RunLoop.main.run(until: Date().addingTimeInterval(0.2))
+
+        let layer = try XCTUnwrap(scroll.layer)
+        XCTAssertTrue(layer.masksToBounds)
+        XCTAssertEqual(layer.cornerRadius, 12)
+        XCTAssertEqual(layer.borderWidth, 2)
+        let outline = try XCTUnwrap(layer.borderColor.flatMap(NSColor.init(cgColor:)))
+        XCTAssertGreaterThan(outline.redComponent, 0.9)
+        let ground = try XCTUnwrap(layer.backgroundColor.flatMap(NSColor.init(cgColor:)))
+        XCTAssertGreaterThan(ground.greenComponent, 0.9)
+    }
+
     /// A layout keeps its padding between its outline and what it holds, and strokes its outline in its stroke's
     /// colour, as wide as its stroke width.
     @MainActor

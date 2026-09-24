@@ -26,14 +26,12 @@ struct CodeBlock: ContentView {
     }
 
     var content: any View {
-        ZStack {
-            ScrollView {
-                snippet
-            }
-            .orientation(.horizontal)
-            .verticalScrollBarVisibility(.never)
+        ScrollView {
+            snippet
         }
-        .style("Card")
+        .orientation(.horizontal)
+        .verticalScrollBarVisibility(.never)
+        .background(Palette.raised)
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(8))

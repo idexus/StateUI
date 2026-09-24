@@ -14,6 +14,7 @@ final class AndroidScrollViewTests: XCTestCase {
             ("testAnOffsetTheTreeWritesMovesTheScrollerWithinReach", testAnOffsetTheTreeWritesMovesTheScrollerWithinReach),
             ("testTheUsersScrollingReachesItsStateOnTheFrameAndRestsOnce", testTheUsersScrollingReachesItsStateOnTheFrameAndRestsOnce),
             ("testAViewSaysWhereItStandsOnTheFrameAfterALayout", testAViewSaysWhereItStandsOnTheFrameAfterALayout),
+            ("testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape", testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape),
         ]
     }
 
@@ -156,6 +157,31 @@ final class AndroidScrollViewTests: XCTestCase {
             clock.now = 32
             host.frame()
             XCTAssertEqual(reports.values.count, 1, "a frame that did not move says nothing")
+        }
+    }
+
+    /// A scroller outlines itself on its shape and cuts what it shows to that shape.
+    func testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                ScrollView {
+                    ColorBox(.red).height(400)
+                }
+                .padding(10)
+                .shape(.roundedRectangle(20))
+                .stroke(Color("#0000FF"))
+                .strokeWidth(2)
+                .width(100)
+                .height(80)
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first)
+            XCTAssertEqual(scroll.pixels(at: [(100, 1)]), [0xFF00_00FF], "the outline at the top edge")
+            XCTAssertTrue(Java.callBool(scroll.reference, TestJava.getClipToOutline))
+            XCTAssertEqual(scroll.outlineRadius, 40, accuracy: 0.01)
         }
     }
 }

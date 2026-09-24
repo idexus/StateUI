@@ -6,7 +6,7 @@ What an element draws of its own box: the shape its background, its outline and 
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [RadioButton](../RadioButton.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
+Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Sources/Contracts/Mixins/BorderElementContract.swift`.
 

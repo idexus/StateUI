@@ -195,6 +195,9 @@ ScrollView
   orientation
   padding
   scrollOffset
+  shape
+  stroke
+  strokeWidth
   verticalScrollBarVisibility
   scrollStopped()
   scrollXChanged()

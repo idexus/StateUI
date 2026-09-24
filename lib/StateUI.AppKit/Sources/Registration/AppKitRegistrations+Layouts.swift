@@ -50,6 +50,14 @@ extension AppKitRegistrations {
                         (values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default).rawValue,
                     offset: offset)
             }
+            scroll.applies([
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                view.setBox(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    strokeWidth: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
+            }
         }
 
         registry.add(GridContract.self, create: { _ in AppKitGridView() }) { grid in

@@ -31,3 +31,9 @@ side of the shape's edge, in a colour alone (AppKit's brush strokes no
 gradient). With `clipsContent` the layer cuts what the layout holds: to its
 bounds, its rounded corners, or an oval mask; without it nothing is cut.
 
+A scroller's box is its layer's alone: a colour behind what it shows, a
+colour's outline on a rectangle or a rounded one, and the cut of what it shows
+to its shape, always. AppKit repaints a scroller's layer as it displays it and
+clears its colour and outline, so the scroller puts them back each time it
+updates its layer. An oval scroller cuts and draws no outline.
+

@@ -165,6 +165,7 @@ enum AppKitRealization {
         .complete("ZStack", "shape"),
         .partial("ZStack", "stroke", missing: "AppKit strokes with a colour; a gradient brush draws no outline."),
         .complete("ZStack", "strokeWidth"),
+        .partial("ScrollView", "stroke", missing: "AppKit outlines a scroller in a colour on a rectangle or a rounded one; an oval, or a gradient, draws none."),
         .complete("ZStack", "accessibilityIdentifier"),
         .complete("ZStack", "ignoresInput"),
         .complete("ZStack", "padding"),

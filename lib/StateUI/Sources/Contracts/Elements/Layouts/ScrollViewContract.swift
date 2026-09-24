@@ -10,7 +10,9 @@ public enum ScrollViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A scroller is a view, padded around what it holds.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, PaddingElementContract.self]
+    public static let tiers: [any Contract.Type] = [
+        ViewContract.self, PaddingElementContract.self, BorderElementContract.self,
+    ]
 
     /// Whether the bar along the bottom is drawn.
     public static let horizontalScrollBarVisibility = ElementProperty<Self, ScrollBarVisibility>(

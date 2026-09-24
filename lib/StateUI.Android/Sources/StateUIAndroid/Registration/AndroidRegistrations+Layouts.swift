@@ -56,6 +56,16 @@ extension AndroidRegistrations {
                     horizontalBar: values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default,
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
+            scroll.applies([
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                // A scroller always cuts what it shows to its bounds; a shape cuts it to the shape.
+                view.setOutline(AndroidLayoutView.Outline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    width: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue,
+                    clips: values[BorderElementContract.shape] != nil))
+            }
             scroll.raises(ScrollViewContract.scrollXChanged)
             scroll.raises(ScrollViewContract.scrollYChanged)
             scroll.raises(ScrollViewContract.scrollStopped)

@@ -6,7 +6,7 @@ A scrollable container.
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [PaddingElement](tiers/PaddingElement.md)
+Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
 
 Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
@@ -128,3 +128,16 @@ The space kept inside an element, around what it holds.
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `padding` | property | `Insets` | native | ✅ |  |  | ✅ |  |  |  |
+
+## From [BorderElement](tiers/BorderElement.md)
+
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `borderColor` | property | `Color` | native |  |  |  |  |  |  |  |
+| `borderWidth` | property | `Double` | native |  |  |  |  |  |  |  |
+| `cornerRadius` | property | `Int` | native |  |  |  |  |  |  |  |
+| `shape` | property | `ContainerShape` | stateUI | ✅ |  |  | ✅ |  |  |  |
+| `stroke` | property | `Brush` | stateUI | ☑️ |  |  | ✅ |  |  | AppKit outlines a scroller in a colour on a rectangle or a rounded one; an oval, or a gradient, draws none. |
+| `strokeWidth` | property | `Double` | stateUI | ✅ |  |  | ✅ |  |  |  |
