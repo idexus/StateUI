@@ -660,11 +660,16 @@ struct ControlDictionary {
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
 
         return [
-            try appKit.and(exported("exports/appkit.bin")),
-            try maui.and(exported("exports/maui.bin")),
-            try android.and(exported("exports/android.bin")),
+            try appKit.and(exported(exports["AppKit"]!)),
+            try maui.and(exported(exports["MAUI"]!)),
+            try android.and(exported(exports["Android Views"]!)),
         ]
     }
+
+    /// Where each host's suite writes what its runtime realizes, by the host's name.
+    static let exports = [
+        "AppKit": "exports/appkit.bin", "MAUI": "exports/maui.bin", "Android Views": "exports/android.bin",
+    ]
 
     /// The records a host's own export carries: its declaration joined with
     /// the contracts, so each member is named under the contract DECLARING it.
@@ -673,6 +678,11 @@ struct ControlDictionary {
     /// asks about a tier once - so the join's members are reduced to the pairs
     /// they are made of, which is also what keeps each record written once.
     static func exported(_ path: String) throws -> [Declaration.Record] {
+        records(of: try export(path))
+    }
+
+    /// The declaration a host's export holds.
+    static func export(_ path: String) throws -> HostDeclaration {
         let url = Fixtures.repository.appendingPathComponent(path)
 
         guard let declaration = Wire.decodeDeclaration([UInt8](try Data(contentsOf: url))) else {
@@ -680,8 +690,7 @@ struct ControlDictionary {
                 + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
                 + "`dotnet test lib/StateUI.Maui/Tests` or `swift test --package-path lib/StateUI.AppKit`.")
         }
-
-        return records(of: declaration)
+        return declaration
     }
 
     /// The records a declaration makes.

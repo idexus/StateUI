@@ -147,6 +147,22 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(wrong, [], "a declaration names what the contracts do not")
     }
 
+    /// An element a host's export realizes is never one its records call unrealized: the list would hide it
+    /// from the dictionary.
+    func testNoHostCallsUnrealizedWhatItsExportRealizes() throws {
+        var wrong: [String] = []
+
+        for declaration in try ControlDictionary.declarations() {
+            let path = try XCTUnwrap(ControlDictionary.exports[declaration.host], declaration.host)
+            let realized = Set(try ControlDictionary.export(path).realization.elements)
+            for name in realized.intersection(declaration.unrealized).sorted() {
+                wrong.append("\(declaration.host): \(name), realized, is listed unrealized")
+            }
+        }
+
+        XCTAssertEqual(wrong, [])
+    }
+
     /// No host records one member of one contract twice.
     /// A tier's mark promises every wearer: a member a host realizes on only some of its elements wearing the
     /// tier declaring it is marked on those alone, and one it realizes on all of them on the tier.
