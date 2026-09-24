@@ -196,7 +196,7 @@ final class CompositionTests: XCTestCase {
         var files: [(path: String, source: String)] = []
 
         for (root, _) in roots {
-            for file in swiftFiles(under: repository.appendingPathComponent(root)) {
+            for file in try swiftFiles(under: repository.appendingPathComponent(root)) {
                 let path = file.path.replacingOccurrences(of: repository.path + "/", with: "")
                 files.append((path, sourceWithoutLiterals(try String(contentsOf: file, encoding: .utf8))))
             }
@@ -264,26 +264,14 @@ final class CompositionTests: XCTestCase {
         return found
     }
 
-    /// Every `.swift` file under a directory, `.build` scratch left out - a
-    /// checkout of swift-syntax lives under an app's `.build` and is not this
-    /// repository's code.
-    private func swiftFiles(under directory: URL) -> [URL] {
-        guard let walk = FileManager.default.enumerator(atPath: directory.path) else { return [] }
-
-        var found: [URL] = []
-
-        for case let relative as String in walk {
-            let normalized = relative.replacingOccurrences(of: "\\", with: "/")
-
-            guard normalized.hasSuffix(".swift"),
-                !normalized.contains(".build/"),
-                !normalized.hasSuffix("Package.swift")
-            else { continue }
-
-            found.append(directory.appendingPathComponent(relative))
-        }
-
-        return found
+    /// Every `.swift` file under a directory, never entering one whose name
+    /// starts with a dot: an app's `.build`, `.build-maui` and `.build-appkit`
+    /// hold checkouts and index output that are not this repository's code,
+    /// and walking them costs the suite a minute and more on Windows.
+    private func swiftFiles(under directory: URL) throws -> [URL] {
+        try Fixtures.files(under: directory, entering: { !Fixtures.name(of: $0).hasPrefix(".") })
+            .filter { $0.hasSuffix(".swift") && !$0.hasSuffix("Package.swift") }
+            .map { directory.appendingPathComponent($0) }
     }
 
     /// The source with every multi-line string literal taken out.

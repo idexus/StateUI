@@ -699,7 +699,17 @@ enum Fixtures {
     /// a written path - `hasSuffix("/Exports.swift")`, which is how the
     /// one file allowed to declare `@_cdecl` is recognized - then matches
     /// nothing and names that very file as the offender.
+    ///
+    /// Read once per run: nothing changes the sources while the suite runs,
+    /// and a guard that asks `text(in:)` for each file of a walk would
+    /// otherwise read the whole tree once per file.
     static func allSources() throws -> [(path: String, text: String)] {
+        try librarySources.get()
+    }
+
+    private static let librarySources = Result { try readAllSources() }
+
+    private static func readAllSources() throws -> [(path: String, text: String)] {
         let root = sources
         var found: [(path: String, text: String)] = []
 
