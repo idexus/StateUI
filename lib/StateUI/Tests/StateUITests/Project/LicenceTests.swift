@@ -5,8 +5,8 @@ import Foundation
 import XCTest
 
 final class LicenceTests: XCTestCase {
-    /// Every Swift, Java, Gradle script and TypeScript source under `lib/`
-    /// starts with the two SPDX lines.
+    /// Every Swift, Java, Gradle script, TypeScript, C and C++ source under
+    /// `lib/` starts with the two SPDX lines.
     ///
     /// Outside the rule: `Package.swift`, whose first line must be the tools
     /// version, and what a build writes - `node_modules` and `out` among it,
@@ -24,7 +24,7 @@ final class LicenceTests: XCTestCase {
         for path in try SourceTree.files(under: lib, entering: entered) {
             let name = String(path.split(separator: "/").last ?? "")
             guard !name.hasPrefix("."),
-                  ["swift", "java", "kts", "ts"].contains(URL(fileURLWithPath: name).pathExtension),
+                  ["swift", "java", "kts", "ts", "c", "h", "cpp"].contains(URL(fileURLWithPath: name).pathExtension),
                   name != "Package.swift" else { continue }
 
             read += 1

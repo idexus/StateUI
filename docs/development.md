@@ -8,9 +8,11 @@ lib/StateUI/Sources/               platform-neutral StateUI
 lib/StateUI/Tests/                 core tests and shared test support
 lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
+lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
 lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling
 .scripts/Android/                  Android Views builds, runs, devices and tests
+.scripts/WinUI/                    WinUI builds, runs and tests, and the Windows App SDK
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/Android/    Gallery Android head
@@ -18,6 +20,7 @@ apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
+apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
 ```
 
 The core never imports Foundation or a platform UI framework. Application code
@@ -141,6 +144,16 @@ built, installed and started on a device by one script:
 
 [Android Views host](android-host.md) lists what it needs and what it builds.
 
+The WinUI host builds on Windows with the swift.org toolchain and Visual
+Studio's C++ tools; its script fetches C++/WinRT and the Windows App SDK
+itself. An application's WinUI head is built and started by one script:
+
+```powershell
+.scripts\WinUI\run-app.ps1 -App apps\HelloWorld
+```
+
+[WinUI host](winui-host.md) lists what it needs and what it builds.
+
 ## Test
 
 Each suite lives beside the package whose behavior it verifies:
@@ -167,6 +180,13 @@ The Android Views host's suite runs on a device, in a test APK:
 
 ```bash
 .scripts/Android/test-android.sh emulator-5554
+```
+
+The WinUI host's suite runs on Windows, the Windows App SDK laid beside its
+test runner first:
+
+```powershell
+.scripts\WinUI\test-winui.ps1
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a

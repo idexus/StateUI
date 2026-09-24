@@ -27,13 +27,18 @@ let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 // Views host, asked by .scripts/Android/build-swift.sh.
 let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
 
+// WHETHER THIS BUILD HAS A WINUI HEAD - the same question for the WinUI 3
+// host, asked by .scripts/WinUI/run-app.ps1.
+let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
+
 // What every module of the application is compiled with - in an AppKit build
-// including APPKIT, in an Android Views build ANDROID, each defined here and
-// nowhere else. See apps/Gallery/Package.swift.
+// including APPKIT, in an Android Views build ANDROID, in a WinUI build WINUI,
+// each defined here and nowhere else. See apps/Gallery/Package.swift.
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
+    + (hasWinUIHead ? [.define("WINUI")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -123,6 +128,30 @@ if hasAndroidHead {
                 .product(name: "StateUIAndroid", package: "StateUIAndroid"),
             ],
             path: "Platforms/Android/Swift",
+            swiftSettings: settings
+        ))
+}
+
+if hasWinUIHead {
+    // The same Swift application, an executable its WinUI host runs on
+    // Windows: its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "HelloWorldWinUI",
+            targets: ["HelloWorldWinUI"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldWinUI",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIWinUI", package: "StateUIWinUI"),
+            ],
+            path: "Platforms/WinUI",
             swiftSettings: settings
         ))
 }

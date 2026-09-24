@@ -1,0 +1,39 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+
+/// One child as its WinUI layout places it: its view, and what the layout reads of it.
+@MainActor
+struct WinUILayoutItem: LayoutChild {
+    /// The child's view.
+    let view: WinUIView
+
+    /// What the layout reads of the child.
+    var values = LayoutValues()
+
+    /// Whether the child is shown; a hidden child takes no room.
+    var isShown = true
+
+    /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
+    /// A stated width is the width it is measured at, so words wrap to it; a most width bounds the offer.
+    func size(offered width: Double?) -> LayoutSize {
+        let margin = values.margin
+        let available = width.map { max(0, $0 - margin.left - margin.right) }
+        let offer: Double? = if let stated = values.width {
+            values.boundedWidth(stated)
+        } else {
+            [available, values.maximumWidth].compactMap(\.self).min()
+        }
+        let measured = view.measure(width: offer, height: nil)
+
+        return LayoutSize(
+            width: values.boundedWidth(values.width ?? measured.width),
+            height: values.boundedHeight(values.height ?? measured.height))
+    }
+
+    /// Whether a parent would place this item as it places `other`.
+    func arranges(like other: WinUILayoutItem) -> Bool {
+        view === other.view && values == other.values && isShown == other.isShown
+    }
+}

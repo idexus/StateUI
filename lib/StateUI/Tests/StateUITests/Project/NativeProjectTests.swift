@@ -126,6 +126,77 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertEqual(declared, registered, "the Java layer and the host disagree on the native methods")
     }
 
+    /// The WinUI 3 host is a Swift package beside the others, with its C++/WinRT
+    /// relay as a C++ target of its own and its scripts under `.scripts/WinUI`;
+    /// and every function the relay's header declares is one the relay defines -
+    /// a declaration with nothing behind it is found only when a head links.
+    func testTheWinUIHostIsAHostPackageBesideTheOthers() throws {
+        let repository = SourceTree.repository
+        let host = "lib/StateUI.WinUI"
+        let relay = "\(host)/Sources/CStateUIWinUI"
+        for relative in [
+            "\(host)/Package.swift", "\(relay)/include/CStateUIWinUI.h",
+            ".scripts/WinUI/tools.ps1", ".scripts/WinUI/run-app.ps1", ".scripts/WinUI/test-winui.ps1",
+        ] {
+            XCTAssertTrue(
+                FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
+                "missing \(relative)")
+        }
+
+        func names(_ pattern: String, in texts: [String]) throws -> Set<String> {
+            let expression = try NSRegularExpression(pattern: pattern, options: [.anchorsMatchLines])
+            return Set(texts.flatMap { text in
+                expression.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap {
+                    Range($0.range(at: 1), in: text).map { String(text[$0]) }
+                }
+            })
+        }
+
+        let header = try String(
+            contentsOf: repository.appendingPathComponent("\(relay)/include/CStateUIWinUI.h"), encoding: .utf8)
+        let sources = try SourceTree.files(under: repository.appendingPathComponent(relay), entering: { _ in true })
+            .filter { $0.hasSuffix(".cpp") }
+            .map { try String(contentsOf: repository.appendingPathComponent("\(relay)/\($0)"), encoding: .utf8) }
+        let declared = try names(#"^[\w ]+\*? ?(stateui_winui_\w+)\("#, in: [header])
+        let defined = try names(#"^extern "C" [\w ]+\*? ?(stateui_winui_\w+)\("#, in: sources)
+        XCTAssertGreaterThan(declared.count, 10, "the walk read almost no function of the relay")
+        XCTAssertEqual(
+            declared.symmetricDifference(defined).sorted(), [],
+            "declared by the relay's header or defined by its sources, and not both")
+    }
+
+    /// Every WINUI HEAD is an executable its application declares exactly when a
+    /// build says it is a WinUI one, whose main names the application to the host
+    /// and hands it the thread.
+    func testEveryWinUIHeadRunsTheApplicationsModule() throws {
+        var heads = 0
+
+        for application in try SourceTree.applications() {
+            let head = application.appendingPathComponent("Platforms/WinUI")
+            guard FileManager.default.fileExists(atPath: head.path) else { continue }
+            heads += 1
+            let name = application.lastPathComponent
+            func text(_ relative: String) throws -> String {
+                try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
+            }
+
+            let manifest = try text("Package.swift")
+            for shape in [
+                "environment[\"STATEUI_WINUI\"] == \"1\"", "hasWinUIHead ? [.define(\"WINUI\")] : []",
+                "name: \"\(name)WinUI\"", "name: \"StateUIWinUI\"", "path: \"Platforms/WinUI\"",
+            ] {
+                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
+            }
+
+            let entry = try text("Platforms/WinUI/main.swift")
+            for shape in ["import StateUIWinUI", "stateui_app_register()", "StateUIWinUI.run()"] {
+                XCTAssertTrue(entry.contains(shape), "\(name)'s WinUI head does not say \(shape)")
+            }
+        }
+
+        XCTAssertGreaterThan(heads, 0, "no WinUI head found")
+    }
+
     /// Every ANDROID HEAD is a library Android loads, declared by the
     /// application's manifest exactly when a build says it is an Android one:
     /// its Gradle build, an Android manifest naming the host's activity and the
@@ -181,7 +252,7 @@ final class NativeProjectTests: XCTestCase {
         roots += apps.map { $0.appendingPathComponent("Sources") }
 
         var offenders: [String] = []
-        for (word, conditioned) in [("app" + "kit", true), ("ma" + "ui", false)] {
+        for (word, conditioned) in [("app" + "kit", true), ("win" + "ui", true), ("ma" + "ui", false)] {
             let condition = "#if " + word.uppercased()
             for root in roots {
                 guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)

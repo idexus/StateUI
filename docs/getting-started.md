@@ -17,7 +17,8 @@ the repository root. Neither host has a published package route yet.
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
 [Android Views host](android-host.md#requirements) lists what the Android Views
-host needs as well.
+host needs as well, and [WinUI host](winui-host.md#requirements) what the
+WinUI host needs on Windows.
 
 ## Working in VS Code
 

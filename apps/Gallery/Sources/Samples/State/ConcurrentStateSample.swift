@@ -144,8 +144,8 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
 
             Label("Which is the one move that is forbidden: never post to "
                 + "`DispatchQueue.main` to \"reach the UI thread\". Nothing drains it "
-                + "on Android or Windows - the UI thread turns Android's Looper or the "
-                + "WinUI message pump instead - so what is posted there never runs, "
+                + "on Android or Windows - the UI thread turns the platform's own loop "
+                + "instead - so what is posted there never runs, "
                 + "silently. A handler already runs on `MainActor`, the UI thread; you "
                 + "do not move yourself there, and you do not need to.")
                 .fontSize(12)

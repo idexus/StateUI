@@ -18,7 +18,7 @@
 #   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]
 #
 # It makes apps/HelloWorld under another name: Package.swift, Sources/,
-# Resources/, Platforms/AppKit/ and Platforms/Android/. What HelloWorld's
+# Resources/, Platforms/AppKit/, Platforms/Android/ and Platforms/WinUI/. What HelloWorld's
 # builds wrote is left behind.
 # ---------------------------------------------------------------------------
 param(
@@ -52,7 +52,7 @@ if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a
 $lower = $Name.ToLowerInvariant()
 
 New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Android") -Force | Out-Null
-foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit")) {
+foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit", "Platforms/WinUI")) {
     Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
 }
 
@@ -84,3 +84,4 @@ Write-Host "Created $app"
 Write-Host ""
 Write-Host "Next, from the repository root:"
 Write-Host "  swift build --package-path apps/$Name    # the application's module; its AppKit and Android heads build on macOS"
+Write-Host "  .scripts\WinUI\run-app.ps1 -App apps\$Name    # the WinUI head"

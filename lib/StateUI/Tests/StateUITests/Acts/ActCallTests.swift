@@ -30,7 +30,7 @@ final class ActCallTests: XCTestCase {
         var files = try SourceTree.allSources().map {
             (path: "lib/StateUI/Sources/\($0.path)", text: $0.text)
         }
-        for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Android/Sources", "docs"] {
+        for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Android/Sources", "lib/StateUI.WinUI/Sources", "docs"] {
             files += try Self.files(under: tree)
         }
         files.append((

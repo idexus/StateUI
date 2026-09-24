@@ -178,9 +178,8 @@ struct MapSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("`Map` is an optional provider, drawn by the platform's own map where a "
-                + "host provides one - `MKMapView` on Apple. GTK 4, Android Views and "
-                + "WinUI 3 depend on a map library and a map service, and the Web has no "
-                + "map element.")
+                + "host provides one - `MKMapView` on Apple. Elsewhere a host depends on a "
+                + "map library and a map service, and the Web has no map element.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -9,8 +9,8 @@ identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
 Every host is Swift, in the application's own process. Two are active, AppKit
-and Android Views; WinUI 3 comes next, then GTK 4 and UIKit, on the same host
-contract. Web DOM/CSS comes after the native contract is settled.
+and Android Views, and WinUI 3 has its first controls; GTK 4 and UIKit follow,
+on the same host contract. Web DOM/CSS comes after the native contract is settled.
 
 | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -72,7 +72,7 @@ that is usable now.
   event inventory with verified host coverage.
 - [Control dictionary](docs/controls/README.md) — every control and part of an
   application's structure, member by member, with a mark per platform.
-- [AppKit host](docs/appkit-host.md) and [Android Views host](docs/android-host.md)
+- [AppKit host](docs/appkit-host.md), [Android Views host](docs/android-host.md) and [WinUI host](docs/winui-host.md)
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.

@@ -33,6 +33,7 @@
 #     Resources/            the artwork
 #     Platforms/AppKit/     the macOS head
 #     Platforms/Android/    the Android Views head: its Gradle build and Swift/
+#     Platforms/WinUI/      the WinUI 3 head, built on Windows
 #
 # HelloWorld is copied rather than kept here a second time, so the two never
 # drift; what its builds write is left behind.
@@ -74,7 +75,7 @@ APP="$APPS_DIR/$NAME"
 LOWER="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
 
 mkdir -p "$APP/Platforms/Android"
-for item in Package.swift Sources Resources Platforms/AppKit; do
+for item in Package.swift Sources Resources Platforms/AppKit Platforms/WinUI; do
   cp -R "$MODEL/$item" "$APP/$item"
 done
 
@@ -103,4 +104,5 @@ Created $APP
 Next, from the repository root:
   STATEUI_APPKIT=1 swift run --package-path apps/$NAME ${NAME}AppKit   # the AppKit head
   .scripts/Android/run-app.sh apps/$NAME                                    # the Android head
+  .scripts\\WinUI\\run-app.ps1 -App apps\\$NAME                                # the WinUI head, on Windows
 DONE
