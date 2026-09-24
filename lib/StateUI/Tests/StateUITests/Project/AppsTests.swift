@@ -104,7 +104,7 @@ final class AppsTests: XCTestCase {
         for application in try SourceTree.applications() {
             let name = application.lastPathComponent
             let vectors = SourceTree.files(
-                under: application, leavingOut: SourceTree.byproducts.union([".scripts"]))
+                under: application, leavingOut: { SourceTree.isByproduct($0) || $0 == ".scripts" })
                 .filter { $0.hasSuffix(".svg") }
 
             XCTAssertFalse(
@@ -185,7 +185,7 @@ final class AppsTests: XCTestCase {
         // The same files under the new name, and nothing besides: no build
         // output, no Finder settings, nothing of HelloWorld's left out.
         XCTAssertEqual(
-            SourceTree.files(under: app, leavingOut: []),
+            SourceTree.files(under: app, leavingOut: { _ in false }),
             model.map { $0.replacingOccurrences(of: "HelloWorld", with: "Probe") }.sorted(),
             "the new application's files are not HelloWorld's under the new name.")
 
@@ -204,7 +204,7 @@ final class AppsTests: XCTestCase {
         }
 
         // No file, and no file's text, still names the model - in any spelling.
-        for relative in SourceTree.files(under: app, leavingOut: []) {
+        for relative in SourceTree.files(under: app, leavingOut: { _ in false }) {
             XCTAssertFalse(
                 relative.lowercased().contains("helloworld"),
                 "\(relative) is still named after HelloWorld.")
@@ -244,7 +244,7 @@ final class AppsTests: XCTestCase {
             let made = try newApp(bad, into: root)
             XCTAssertNotEqual(made.status, 0, "'\(bad)' should have been refused: \(made.output)")
             XCTAssertEqual(
-                SourceTree.files(under: root, leavingOut: []), [],
+                SourceTree.files(under: root, leavingOut: { _ in false }), [],
                 "'\(bad)' was refused and still left files behind.")
         }
 
@@ -259,7 +259,7 @@ final class AppsTests: XCTestCase {
         let made = try newApp("Taken", into: root)
         XCTAssertNotEqual(made.status, 0, "an existing directory should be refused.")
         XCTAssertEqual(
-            SourceTree.files(under: taken, leavingOut: []), ["keep.txt"],
+            SourceTree.files(under: taken, leavingOut: { _ in false }), ["keep.txt"],
             "the existing directory was written into.")
         XCTAssertEqual(
             try String(contentsOf: taken.appendingPathComponent("keep.txt"), encoding: .utf8),

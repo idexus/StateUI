@@ -47,10 +47,11 @@ final class NativeProjectTests: XCTestCase {
     /// beneath one - Java through JNI, C++ behind a C ABI. No C# source, .NET
     /// project or solution stands in the tree: there is no host for it.
     func testNoDotNetProjectStandsInTheTree() throws {
-        // Build output never: Gradle's `build/` and the extension's packages
-        // besides what `entersSources` leaves out.
+        // Build output never: Gradle's `build/`, the extension's packages and
+        // its compiled code besides what `entersSources` leaves out.
         let entered = { (relative: String) -> Bool in
-            SourceTree.entersSources(relative) && !["node_modules", "build"].contains(SourceTree.name(of: relative))
+            SourceTree.entersSources(relative)
+                && !["node_modules", "build", "out"].contains(SourceTree.name(of: relative))
         }
         let found = try SourceTree.files(under: SourceTree.repository, entering: entered).filter { path in
             [".cs", ".csproj", ".props", ".targets", ".sln", ".slnx"].contains { path.hasSuffix($0) }
