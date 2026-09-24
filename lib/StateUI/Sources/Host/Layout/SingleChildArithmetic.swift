@@ -21,7 +21,7 @@
     /// Where the child stands in `room`, within `padding`; right to left, turned about the room's middle.
     @MainActor
     public static func place<Child: LayoutChild>(
-        of item: Child, in room: Rect, padding: Insets, direction: LayoutDirection = .leftToRight
+        of item: Child, in room: Rect, padding: Insets, direction: LayoutDirection
     ) -> Rect {
         direction.places(leftToRight(of: item, in: room, padding: padding), in: room)
     }

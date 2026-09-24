@@ -40,7 +40,7 @@
     public static func places<Child: LayoutChild>(
         of items: [Child], rows: [GridLength], columns: [GridLength],
         rowSpacing: Double, columnSpacing: Double, padding: Insets, in bounds: Rect,
-        direction: LayoutDirection = .leftToRight
+        direction: LayoutDirection
     ) -> [Rect?] {
         leftToRight(
             of: items, rows: rows, columns: columns, rowSpacing: rowSpacing,

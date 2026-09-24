@@ -54,7 +54,7 @@
     @MainActor
     public static func places<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect,
-        direction: LayoutDirection = .leftToRight
+        direction: LayoutDirection
     ) -> [Rect?] {
         leftToRight(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
             .map { $0.map { direction.places($0, in: bounds) } }

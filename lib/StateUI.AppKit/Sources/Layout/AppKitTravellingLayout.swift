@@ -9,7 +9,12 @@ import AppKit
 /// It begins each arrangement with `beginArrangement()` and hands every child's place to `place(_:at:)`.
 /// Design: docs/design/host/motion.md#layout-motion
 @MainActor
-class AppKitTravellingLayout: AppKitHitTestView {
+class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
+    /// The direction the children are laid out in; a turn lays them out again.
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue { needsLayout = true } }
+    }
+
     /// Where the children's places animate; nil places them at once.
     weak var layoutMotion: LayoutMotion?
 
@@ -76,4 +81,13 @@ extension NSRect {
         self.init(x: rect.x, y: rect.y, width: rect.width, height: rect.height)
     }
 }
+
+/// A layout that lays its children out left to right, or right to left turned about its middle.
+/// Design: docs/design/host/layout.md#right-to-left
+@MainActor
+protocol AppKitDirectedLayout: NSView {
+    /// The direction the children are laid out in, the element's.
+    var direction: LayoutDirection { get set }
+}
+
 #endif

@@ -10,7 +10,10 @@ told as the runtime starts. The user's locale, the battery and the network are
 told as the application starts and again whenever one changes, for as long as
 it runs: the locale when the user or the time zone changes it, the battery when
 macOS reports its power source or Low Power Mode turns, the network when its
-path moves. The locale's language decides the root's layout direction. A Mac
+path moves. The locale's language decides the root's layout direction. It is
+the locale macOS resolves for the application - its bundle's localization
+nearest the user's languages - so an application localized in no language
+written right to left lays out left to right, as AppKit's own controls do. A Mac
 with no battery reports none - full, on mains - and Low Power Mode as the
 battery saver. The network is reachable when its path is satisfied, local when
 interfaces stand but no route leads out; each interface in use - Wi-Fi, wired,

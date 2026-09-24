@@ -26,13 +26,14 @@
     /// turned about the room's middle.
     @MainActor
     public static func places<Child: LayoutChild>(
-        of items: [Child], in room: Rect, padding: Insets, direction: LayoutDirection = .leftToRight
+        of items: [Child], in room: Rect, padding: Insets, direction: LayoutDirection
     ) -> [Rect?] {
         let content = room.inset(padding)
         return items.map { item in
             guard item.isShown else { return nil }
             let area = rectangle(of: item.values.area, in: content)
-            return direction.places(SingleChildArithmetic.place(of: item, in: area, padding: Insets(0)), in: room)
+            let place = SingleChildArithmetic.place(of: item, in: area, padding: Insets(0), direction: .leftToRight)
+            return direction.places(place, in: room)
         }
     }
 

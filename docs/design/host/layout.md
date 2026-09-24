@@ -125,7 +125,12 @@ The direction is the element's own `layoutDirection`, or - left at
 `.inherited` - its parent's, and at the root the language's, as the host
 reported the locale (`HostLocaleInfo.layoutDirection`). The mounted element
 answers it (`MountedElement.layoutDirection`), and a runtime hands it to the
-arithmetic with the room.
+arithmetic with the room: each layout view keeps the direction its element
+answers as it arranges its children, and the arithmetic takes it on every
+call, with no default to forget. A direction that turns lays out again what
+follows it - an element's own, every layout under it that inherits it; the
+language's, the whole tree (`MountedTree.followTheLanguagesDirection`, which
+a runtime calls after it reports the locale) - and nothing else.
 
 ## Scrolling
 

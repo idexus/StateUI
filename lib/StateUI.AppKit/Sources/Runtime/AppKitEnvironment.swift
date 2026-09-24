@@ -13,6 +13,10 @@ import Network
 @MainActor
 final class AppKitEnvironment {
     private let core: CoreLink
+
+    /// Called after each locale report, so the tree follows the language's direction.
+    var localeReported: () -> Void = {}
+
     private var observers: [NSObjectProtocol] = []
     private var powerSource: CFRunLoopSource?
     private var network: NWPathMonitor?
@@ -75,6 +79,7 @@ final class AppKitEnvironment {
             firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
             isMetric: locale.measurementSystem != .us,
             layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight))
+        localeReported()
     }
 
     func reportBattery() {

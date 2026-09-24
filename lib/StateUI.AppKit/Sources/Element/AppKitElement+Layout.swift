@@ -10,6 +10,7 @@ extension AppKitElement {
     func arrangeChildren() {
         guard let view else { return }
         let items = children.compactMap(\.layoutItem)
+        (view as? AppKitDirectedLayout)?.direction = element.layoutDirection
 
         if let label = view as? AppKitLabelView {
             label.apply(

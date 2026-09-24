@@ -91,6 +91,7 @@
     let makeNative: (MountedElement) -> any NativeElement
     private var nextMount: UInt64 = 0
     private var patchTime: Double?
+    private var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
 
     /// What the message being applied costs, while an inspector records or the tally is written; nil otherwise.
@@ -152,6 +153,15 @@
         } else {
             intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
         }
+    }
+
+    /// Lays the whole tree out again where the language's direction turned since the tree last followed it.
+    /// Design: docs/design/host/layout.md#right-to-left
+    public func followTheLanguagesDirection() {
+        let direction = StandardEnvironment.locale.layoutDirection
+        guard direction != languageDirection else { return }
+        languageDirection = direction
+        root?.directionTurned(arrangingItself: true)
     }
 
     /// Presents one frame's batch in one walk of the tree.

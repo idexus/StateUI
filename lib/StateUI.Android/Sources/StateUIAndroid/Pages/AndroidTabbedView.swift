@@ -85,7 +85,7 @@ final class AndroidTabbedView: AndroidLayoutView {
         guard let page = selectedItem else { return }
 
         let room = Rect(x: 0, y: 0, width: bounds.width, height: max(0, bounds.height - height))
-        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0)))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
     }
 
     private func rowHeight(width: Double?) -> Double {

@@ -144,6 +144,45 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(hosts.map { $0.scenes.map { $0 > 0 } }, [[true, true], [false, true], [false, true]])
     }
 
+    /// An element whose direction turns has every layout under it that inherits the direction arrange its
+    /// children again; one that says its own direction, and what stands under it, is left as it is.
+    @MainActor
+    func testADirectionTurnedArrangesTheLayoutsThatInheritIt() {
+        let (tree, log) = Self.tree()
+        var own = Self.stack("own", ["b"])
+        own.properties = [.layoutDirection: .enumeration(LayoutDirection.leftToRight.rawValue)]
+        var outer = HostPatch(id: .manual("outer"), type: .vStack)
+        outer.children = .arranged([Self.stack("inner", ["a"]), own])
+        tree.apply(outer, complete: true)
+        log.arranged.removeAll()
+
+        var turned = HostPatch(id: .manual("outer"), type: .vStack)
+        turned.properties = [.layoutDirection: .enumeration(LayoutDirection.rightToLeft.rawValue)]
+        tree.apply(turned, complete: false)
+
+        XCTAssertEqual(tree.root?.children.map(\.layoutDirection), [.rightToLeft, .leftToRight])
+        XCTAssertEqual(log.arranged, ["inner"])
+    }
+
+    /// The language's direction turning lays the whole tree out again, and only a turn does.
+    @MainActor
+    func testTheLanguagesDirectionTurningArrangesEveryLayout() {
+        let (tree, log) = Self.tree()
+        let locale = StandardEnvironment.locale
+        defer { locale.layoutDirection = .leftToRight }
+        tree.apply(Self.stack("stack", ["a"]), complete: true)
+        tree.followTheLanguagesDirection()
+        log.arranged.removeAll()
+
+        tree.followTheLanguagesDirection()
+        XCTAssertEqual(log.arranged, [], "the language did not turn")
+
+        locale.layoutDirection = .rightToLeft
+        tree.followTheLanguagesDirection()
+        XCTAssertEqual(tree.root?.layoutDirection, .rightToLeft)
+        XCTAssertEqual(log.arranged, ["stack"])
+    }
+
     /// With the tally on, a message that stands alone writes the running totals; one right behind it writes
     /// nothing, and the next after a quiet spell writes them all again.
     @MainActor

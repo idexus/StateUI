@@ -112,6 +112,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func start() {
+        environment.localeReported = { [weak self] in self?.tree.followTheLanguagesDirection() }
         environment.start()
         startRuntime()
         startDoorbell()

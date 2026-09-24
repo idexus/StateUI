@@ -14,6 +14,11 @@ class AndroidLayoutView: AndroidView {
     /// The children, in order.
     private(set) var items: [AndroidLayoutItem] = []
 
+    /// The direction the children are laid out in, the element's; a turn lays them out again, their sizes kept.
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue { requestLayout() } }
+    }
+
     /// The views the group holds, in the order it draws them, back to front.
     private var held: [AndroidView] = []
 

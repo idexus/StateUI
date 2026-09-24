@@ -18,6 +18,6 @@ class AndroidSingleChildView: AndroidLayoutView {
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
 
-        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, padding: padding))
+        item.view.layout(SingleChildArithmetic.place(of: item, in: bounds, padding: padding, direction: direction))
     }
 }

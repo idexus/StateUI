@@ -151,6 +151,7 @@
         }
 
         restack()
+        if changed.contains(.layoutDirection) { directionTurned(arrangingItself: false) }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || children.contains { $0.framesRead }
         native.applied(changed: changed, wasDescribed: described)
@@ -189,6 +190,21 @@
         guard zip(children, children.dropFirst()).contains(where: { drawnBefore($1, $0) }) else { return false }
         children.sort(by: drawnBefore)
         return true
+    }
+
+    /// The direction this element lays out in turned: it and every layout under it that inherits the direction
+    /// arrange their children again, the element itself when its patch will not.
+    /// Design: docs/design/host/layout.md#right-to-left
+    func directionTurned(arrangingItself: Bool) {
+        if arrangingItself, !children.isEmpty { native.arrangeChildren() }
+        for child in children where child.inheritsDirection {
+            child.directionTurned(arrangingItself: true)
+        }
+    }
+
+    /// Whether this element says no direction of its own.
+    private var inheritsDirection: Bool {
+        LayoutDirection(rawValue: value(.layoutDirection)?.enumeration ?? 0).map { $0 == .inherited } ?? true
     }
 
     /// Where this element is drawn among its overlapping siblings, higher nearer the front.

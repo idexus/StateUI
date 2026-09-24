@@ -212,11 +212,13 @@ final class AndroidRenderer {
     /// The zone, the clock, the battery or the network changed.
     func environmentChanged() {
         AndroidEnvironment.reportChanging(to: core, context: context.reference)
+        tree.followTheLanguagesDirection()
         pump()
     }
 
     func configured() {
         AndroidEnvironment.report(to: core, activity: context.reference)
+        tree.followTheLanguagesDirection()
         Java.call(root.reference, JavaAPI.requestLayout)
         pump()
     }

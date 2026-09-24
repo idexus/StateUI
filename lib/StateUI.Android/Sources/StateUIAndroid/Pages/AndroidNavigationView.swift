@@ -36,7 +36,7 @@ final class AndroidNavigationView: AndroidLayoutView {
         guard let page = items.last else { return }
 
         let room = Rect(x: 0, y: height, width: bounds.width, height: max(0, bounds.height - height))
-        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0)))
+        page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
     }
 
     /// The bar's own height for `width` points, in points; none while it is hidden.

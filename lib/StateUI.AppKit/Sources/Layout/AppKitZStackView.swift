@@ -52,7 +52,8 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
 
         beginArrangement()
         for item in items { drawUnplaced(item) }
-        for (item, place) in zip(items, ZStackArithmetic.places(of: items, in: bounds.placed, padding: Insets(0))) {
+        let places = ZStackArithmetic.places(of: items, in: bounds.placed, padding: Insets(0), direction: direction)
+        for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }
         }
     }

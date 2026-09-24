@@ -8,8 +8,11 @@ import AppKit
 /// A one-child native container used by pages and content-bearing controls.
 @MainActor
 class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
-    AppKitMeasurementCaching {
+    AppKitMeasurementCaching, AppKitDirectedLayout {
     let measurements = MeasurementCache()
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue { needsLayout = true } }
+    }
     var padding = NSEdgeInsets() {
         didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
@@ -51,7 +54,8 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         guard let item, item.isShown else { return }
 
         let room = (insetsBySafeArea ? safeAreaRect : bounds).placed
-        item.view.frame = NSRect(placed: SingleChildArithmetic.place(of: item, in: room, padding: Insets(padding)))
+        item.view.frame = NSRect(
+            placed: SingleChildArithmetic.place(of: item, in: room, padding: Insets(padding), direction: direction))
     }
 }
 

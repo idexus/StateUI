@@ -5,6 +5,26 @@
 @testable import StateUIAndroid
 import XCTest
 
+/// A row of two labels under a column whose direction a button turns.
+struct TurningRow: ContentView {
+    @State private var rightToLeft = true
+
+    var content: any View {
+        VStack {
+            HStack {
+                Label("A").width(30).height(10)
+                Label("B").width(10).height(10)
+            }
+            .spacing(4)
+            .padding(6, 0)
+
+            Button("Turn")
+                .onClicked { rightToLeft.toggle() }
+        }
+        .layoutDirection(rightToLeft ? .rightToLeft : .leftToRight)
+    }
+}
+
 final class AndroidStackViewTests: XCTestCase {
     static var allTests: [(String, (AndroidStackViewTests) -> () throws -> Void)] {
         [
@@ -12,6 +32,7 @@ final class AndroidStackViewTests: XCTestCase {
             ("testAStackWrapsItsChildrenWhereThePageCentresIt", testAStackWrapsItsChildrenWhereThePageCentresIt),
             ("testALayoutDoesNotCutItsChildrenOff", testALayoutDoesNotCutItsChildrenOff),
             ("testAButtonWhoseWordsGrowIsMeasuredWider", testAButtonWhoseWordsGrowIsMeasuredWider),
+            ("testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn", testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn),
         ]
     }
 
@@ -81,6 +102,22 @@ final class AndroidStackViewTests: XCTestCase {
             host.layOut()
 
             XCTAssertGreaterThan(button.frame.width, before + 100, "\(before) -> \(button.frame.width)")
+        }
+    }
+
+    /// A row whose direction is right to left fills from the right; the direction is its parent's, and the
+    /// parent turning lays the row out again.
+    func testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { TurningRow() }
+            host.layOut(width: 1080, height: 1920)
+            let labels = host.views(AndroidLabelView.self)
+            XCTAssertEqual(labels.map { $0.frame.x }, [1080 - 12 - 60, 1080 - 80 - 20], "\(labels.map(\.frame))")
+
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.layOut(width: 1080, height: 1920)
+
+            XCTAssertEqual(host.views(AndroidLabelView.self).map { $0.frame.x }, [12, 80])
         }
     }
 }

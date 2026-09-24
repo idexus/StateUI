@@ -40,7 +40,8 @@ final class AndroidZStackView: AndroidTravellingLayout {
         beginArrangement(width: bounds.width)
         for item in items { item.view.setPlacedDrawing(nil, opacity: 1) }
         let room = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
-        for (item, place) in zip(items, ZStackArithmetic.places(of: items, in: room, padding: Insets(0))) {
+        let places = ZStackArithmetic.places(of: items, in: room, padding: Insets(0), direction: direction)
+        for (item, place) in zip(items, places) {
             if let place { self.place(item, at: place) }
         }
     }

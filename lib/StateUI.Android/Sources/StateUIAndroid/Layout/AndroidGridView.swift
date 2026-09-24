@@ -45,7 +45,7 @@ final class AndroidGridView: AndroidTravellingLayout {
         beginArrangement(width: bounds.width)
         let places = GridArithmetic.places(
             of: items, rows: rows, columns: columns,
-            rowSpacing: rowSpacing, columnSpacing: columnSpacing, padding: padding, in: bounds)
+            rowSpacing: rowSpacing, columnSpacing: columnSpacing, padding: padding, in: bounds, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: place) }
         }

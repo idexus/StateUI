@@ -76,7 +76,8 @@ final class AndroidSplitView: AndroidLayoutView {
 
         if let detail = items.dropFirst().first {
             let room = Rect(x: beside, y: 0, width: bounds.width - beside, height: bounds.height)
-            detail.view.layout(SingleChildArithmetic.place(of: detail, in: room, padding: Insets(0)))
+            detail.view.layout(
+                SingleChildArithmetic.place(of: detail, in: room, padding: Insets(0), direction: direction))
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: 0, y: 0, width: drawerWidth, height: bounds.height))

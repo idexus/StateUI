@@ -480,6 +480,36 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 19, y: 45, width: 10, height: 10))
     }
 
+    /// A row whose direction is right to left fills from the right, its padding swapped; the direction is its
+    /// parent's, and the parent turning lays the row out again.
+    @MainActor
+    func testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn() throws {
+        func outer(_ direction: LayoutDirection, arranging: Bool) -> HostPatch {
+            var outer = HostPatch(id: .manual("outer"), type: .vStack)
+            outer.properties = [.layoutDirection: .enumeration(direction.rawValue)]
+            guard arranging else { return outer }
+            var row = HostPatch(id: .manual("row"), type: .hStack)
+            row.properties = [.padding: .numbers([6, 0, 2, 0]), .spacing: .number(4)]
+            row.children = .arranged([
+                box("first", [.width: .number(30), .height: .number(10)]),
+                box("second", [.width: .number(10), .height: .number(10)]),
+            ])
+            outer.children = .arranged([row])
+            return outer
+        }
+        let renderer = arranged(outer(.rightToLeft, arranging: true), in: NSSize(width: 200, height: 100))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("first"))?.frame.minX, 164)
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("second"))?.frame.minX, 150)
+
+        renderer.applyForTesting(changedTree(outer(.leftToRight, arranging: false)))
+        renderer.viewForTesting(id: .manual("outer"))?.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("first"))?.frame.minX, 6)
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("second"))?.frame.minX, 40)
+    }
+
     /// A child's minimum raises it where it would be smaller, and its maximum
     /// stops it where it would fill.
     @MainActor

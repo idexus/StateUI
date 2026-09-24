@@ -23,7 +23,8 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let size = StackArithmetic.size(of: items, axis: .vertical, spacing: 5, padding: Insets(2), width: nil)
         let places = StackArithmetic.places(
-            of: items, axis: .vertical, spacing: 5, padding: Insets(2), in: Rect(0, 0, 100, 50))
+            of: items, axis: .vertical, spacing: 5, padding: Insets(2), in: Rect(0, 0, 100, 50),
+            direction: .leftToRight)
 
         XCTAssertEqual(size, LayoutSize(width: 24, height: 29))
         XCTAssertEqual(places[0], Rect(2, 2, 96, 10), "a filling child takes the slot's width")
@@ -110,7 +111,7 @@ final class LayoutArithmeticTests: XCTestCase {
             SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0), direction: .rightToLeft),
             Rect(76, 0, 20, 10))
         XCTAssertEqual(
-            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0)),
+            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0), direction: .leftToRight),
             Rect(4, 0, 20, 10))
     }
 
@@ -127,7 +128,7 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [fixed, automatic, shared], rows: [], columns: columns,
-            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 10))
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 10), direction: .leftToRight)
 
         XCTAssertEqual(places.map { $0?.x }, [0, 20, 50])
         XCTAssertEqual(places.map { $0?.width }, [20, 30, 50])
@@ -145,7 +146,7 @@ final class LayoutArithmeticTests: XCTestCase {
 
         let places = GridArithmetic.places(
             of: [icon, words], rows: [.auto], columns: columns,
-            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 120, 200))
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 120, 200), direction: .leftToRight)
         let size = GridArithmetic.size(
             of: [icon, words], rows: [.auto], columns: columns,
             rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: 120)
@@ -170,7 +171,8 @@ final class LayoutArithmeticTests: XCTestCase {
         half.values.area = .proportional(0.5, 0, 0.5, 1)
         let items = [Child(width: 20, height: 10), corner, badge, half, Child(width: 20, height: 10, shown: false)]
 
-        let places = ZStackArithmetic.places(of: items, in: Rect(0, 0, 100, 50), padding: Insets(4))
+        let places = ZStackArithmetic.places(
+            of: items, in: Rect(0, 0, 100, 50), padding: Insets(4), direction: .leftToRight)
 
         XCTAssertEqual(places[0], Rect(4, 4, 92, 42), "the whole room within the padding")
         XCTAssertEqual(places[1], Rect(76, 36, 20, 10), "its natural size, at the room's far corner")
@@ -200,7 +202,8 @@ final class LayoutArithmeticTests: XCTestCase {
     /// A child that fills both ways takes the room within the padding, whatever it would measure.
     @MainActor
     func testASingleFillingChildTakesTheRoom() {
-        let place = SingleChildArithmetic.place(of: Child(width: 5, height: 5), in: Rect(0, 0, 100, 40), padding: Insets(10))
+        let place = SingleChildArithmetic.place(
+            of: Child(width: 5, height: 5), in: Rect(0, 0, 100, 40), padding: Insets(10), direction: .leftToRight)
 
         XCTAssertEqual(place, Rect(10, 10, 80, 20))
     }
