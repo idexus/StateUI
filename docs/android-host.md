@@ -72,6 +72,10 @@ the library it makes and the `StateUIAndroid` dependency, and defines the
 written for this host alone stands under `#if ANDROID`. `build-swift.sh` sets
 nothing else: the library itself is built as every host but MAUI builds it.
 
+A new application made in `apps/` - **StateUI: New Application in apps/**, or
+`.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
+is debugged as soon as it is made. The `stateui-maui` template has none.
+
 ## Running
 
 ```bash
