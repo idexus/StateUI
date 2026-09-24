@@ -62,7 +62,6 @@ extension NodeType {
     static let progressBar = ProgressBarContract.nodeType
     static let radioButton = RadioButtonContract.nodeType
     static let rectangle = RectangleContract.nodeType
-    static let refreshView = RefreshViewContract.nodeType
     static let scene = SceneContract.nodeType
     static let scrollView = ScrollViewContract.nodeType
     static let searchField = SearchFieldContract.nodeType
@@ -70,9 +69,6 @@ extension NodeType {
     static let slider = SliderContract.nodeType
     static let span = SpanContract.nodeType
     static let stepper = StepperContract.nodeType
-    static let swipeAction = SwipeActionContract.nodeType
-    static let swipeActions = SwipeActionsContract.nodeType
-    static let swipeView = SwipeViewContract.nodeType
     static let `switch` = SwitchContract.nodeType
     static let tabbedView = TabbedViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
@@ -165,8 +161,6 @@ extension NodeType {
     static let isPassword = TextFieldContract.isPassword.token
     static let isSidebarVisible = SplitViewContract.isSidebarVisible.token
     static let isReadOnly = InputViewContract.isReadOnly.token
-    static let isRefreshEnabled = RefreshViewContract.isRefreshEnabled.token
-    static let isRefreshing = RefreshViewContract.isRefreshing.token
     static let isRunning = ActivityIndicatorContract.isRunning.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
     static let showsUserLocation = MapContract.showsUserLocation.token
@@ -194,7 +188,6 @@ extension NodeType {
     static let minimumDate = DatePickerContract.minimumDate.token
     static let minimumHeight = VisualElementContract.minimumHeight.token
     static let minimumWidth = VisualElementContract.minimumWidth.token
-    static let mode = SwipeActionsContract.mode.token
     static let name = VisualStateContract.name.token
     static let backButtonTitle = PageContract.backButtonTitle.token
     static let hasBackButton = PageContract.hasBackButton.token
@@ -227,7 +220,6 @@ extension NodeType {
     static let selectedIndex = PickerContract.selectedIndex.token
     static let selectedIndicatorColor = PositionIndicatorContract.selectedIndicatorColor.token
     static let selectionLength = InputViewContract.selectionLength.token
-    static let side = SwipeActionsContract.side.token
     static let source = ImageContract.source.token
     static let spacing = StackBaseContract.spacing.token
     static let stroke = ShapeContract.stroke.token
@@ -239,7 +231,6 @@ extension NodeType {
     static let strokeWidth = ShapeContract.strokeWidth.token
     static let style = VisualElementContract.style.token
     static let subtitle = TitleBarContract.subtitle.token
-    static let swipeBehaviorOnInvoked = SwipeActionsContract.swipeBehaviorOnInvoked.token
     static let swipeDirection = ViewContract.swipeDirection.token
     static let swipeThreshold = ViewContract.swipeThreshold.token
     static let tapCount = ViewContract.tapCount.token
@@ -247,7 +238,6 @@ extension NodeType {
     static let textColor = TextStyleElementContract.textColor.token
     static let textDecorations = DecorableTextElementContract.textDecorations.token
     static let textCase = TextElementContract.textCase.token
-    static let threshold = SwipeViewContract.threshold.token
     static let time = TimePickerContract.time.token
     static let tint = TintElementContract.tint.token
     static let title = PageElementContract.title.token
@@ -282,7 +272,6 @@ extension NodeType {
     static let dateChanged = DatePickerContract.dateChanged.token
     static let pinClicked = PinContract.pinClicked.token
     static let pinDetailsClicked = PinContract.pinDetailsClicked.token
-    static let refreshRequested = RefreshViewContract.refreshRequested.token
     static let submitted = SearchFieldContract.submitted.token
     static let created = WindowContract.created.token
     static let currentPageChanged = TabbedViewContract.currentPageChanged.token
@@ -300,7 +289,6 @@ extension NodeType {
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
     static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
-    static let isRefreshingChanged = RefreshViewContract.isRefreshingChanged.token
     static let mapClicked = MapContract.mapClicked.token
     static let modalPopped = WindowContract.modalPopped.token
     static let navigated = WebViewContract.navigated.token
@@ -326,10 +314,7 @@ extension NodeType {
     static let scrollYChanged = ScrollViewContract.scrollYChanged.token
     static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
     static let stopped = SceneContract.stopped.token
-    static let swipeChanging = SwipeViewContract.swipeChanging.token
     static let swiped = ViewContract.swiped.token
-    static let swipeEnded = SwipeViewContract.swipeEnded.token
-    static let swipeStarted = SwipeViewContract.swipeStarted.token
     static let tapped = ViewContract.tapped.token
     static let textChanged = InputViewContract.textChanged.token
     static let timeChanged = TimePickerContract.timeChanged.token

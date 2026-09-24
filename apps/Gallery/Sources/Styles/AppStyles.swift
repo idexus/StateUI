@@ -13,9 +13,9 @@
 //   - No font family. The gallery ships no fonts, and naming a family that is
 //     not installed is a way to get a different font on every platform.
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
-//     casts it, a SwipeAction is not a style target, a page's appearance is its
-//     `PageSession`'s, and the bars of NavigationStack and TabbedView are
-//     written on the arrangement itself - see MainWindow.detail.
+//     casts it, a page's appearance is its `PageSession`'s, and the bars of
+//     NavigationStack and TabbedView are written on the arrangement itself -
+//     see MainWindow.detail.
 
 import StateUI
 
@@ -288,9 +288,6 @@ enum AppStyles {
             Style<PositionIndicator>()
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-
-            Style<RefreshView>()
-                .tint(Palette.accent)
 
             // MARK: The menu's rows
             //

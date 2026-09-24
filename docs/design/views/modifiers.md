@@ -52,8 +52,8 @@ test of the direction could tell from a real one.
 ## Slot children
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
-context menu, `.visualState` appends states, `Map.pins` writes pins, a
-`TitleBar` fills its content slots and a `SwipeView` its item collections.
+context menu, `.visualState` appends states, `Map.pins` writes pins and a
+`TitleBar` fills its content slots.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it
 out of the arrangement. The slot a `.contextMenu` appended stays last: a

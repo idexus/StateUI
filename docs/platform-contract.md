@@ -110,7 +110,6 @@ host that creates or interprets it.
 | `ProgressBar` | native | ✅ |  |  | ✅ |  |  |
 | `RadioButton` | stateUI | ✅ |  |  | ✅ |  |  |
 | `Rectangle` | stateUI | ✅ |  |  | ✅ |  |  |
-| `RefreshView` | stateUI |  |  |  |  |  |  |
 | `Scene` | structure | ✅ |  |  | ✅ |  |  |
 | `ScrollView` | native | ✅ |  |  | ✅ |  |  |
 | `SearchField` | native | ✅ |  |  | ✅ |  |  |
@@ -120,9 +119,6 @@ host that creates or interprets it.
 | `Spans` | structure | ✅ |  |  | ✅ |  |  |
 | `SplitView` | adaptive | ✅ |  |  | ✅ |  |  |
 | `Stepper` | native | ✅ |  |  | ✅ |  |  |
-| `SwipeAction` | structure |  |  |  |  |  |  |
-| `SwipeActions` | structure |  |  |  |  |  |  |
-| `SwipeView` | stateUI |  |  |  |  |  |  |
 | `Switch` | native | ✅ |  |  | ✅ |  |  |
 | `TabbedView` | adaptive | ✅ |  |  | ✅ |  |  |
 | `TextEditor` | native | ✅ |  |  | ✅ |  |  |
@@ -222,9 +218,6 @@ may still choose another class that preserves the same contract.
 | `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
 | `PositionIndicator` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
-| `RefreshView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
-| `SwipeView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
-| `SwipeActions` / `SwipeAction` | structure | structure | structure | structure | structure | structure |
 | `WebView` | `WKWebView` | `WKWebView` | WebKitGTK `WebKitWebView` | `WebView` | `WebView2` | `<iframe>` (?) |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | libshumate `ShumateMap` / `ShumateMarker` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | — |
 | `ItemsView` | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
@@ -255,8 +248,6 @@ These surfaces lack an honest native counterpart on at least one target:
 - `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
 - `Canvas`: WinUI 3 has no immediate-mode canvas without Win2D.
 - `PositionIndicator`: AppKit, Android Views, and Web have no page indicator.
-- `RefreshView`: AppKit, GTK 4, and Web have no pull-to-refresh control.
-- `SwipeView`: AppKit, UIKit, GTK 4, Android Views, and Web have no standalone swipe-action container.
 - `WebView`: GTK 4 depends on WebKitGTK; Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
 - `Map` / `Pin`: Web has no map element; GTK 4, Android Views, and WinUI 3 depend on libshumate, Google Play services, and a map service.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
@@ -455,12 +446,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ProgressBar](controls/ProgressBar.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
 | [RadioButton](controls/RadioButton.md) | 83 | 64 ✅ · 2 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
 | [Rectangle](controls/Rectangle.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
-| [RefreshView](controls/RefreshView.md) | 73 |  |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | 76 | 61 ✅ · 2 ☑️ |  |  | 61 ✅ · 1 ☑️ |  |  |
 | [SearchField](controls/SearchField.md) | 91 | 71 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ |  |  |
 | [Slider](controls/Slider.md) | 75 | 61 ✅ · 2 ☑️ |  |  | 61 ✅ · 1 ☑️ |  |  |
 | [Stepper](controls/Stepper.md) | 73 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
-| [SwipeView](controls/SwipeView.md) | 72 |  |  |  |  |  |  |
 | [Switch](controls/Switch.md) | 71 | 57 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [TextEditor](controls/TextEditor.md) | 89 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [TextField](controls/TextField.md) | 92 | 71 ✅ · 2 ☑️ |  |  | 68 ✅ · 1 ☑️ |  |  |
@@ -491,8 +480,6 @@ Every control, and every part an application, its windows and its pages are made
 | [Span](controls/Span.md) | 12 | 3 ✅ |  |  | 2 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 | 5 ✅ |  |  | 4 ✅ |  |  |
-| [SwipeAction](controls/SwipeAction.md) | 8 |  |  |  |  |  |  |
-| [SwipeActions](controls/SwipeActions.md) | 3 |  |  |  |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 6 ✅ |  |  | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 7 ✅ |  |  | 8 ✅ |  |  |
@@ -557,7 +544,6 @@ contract's page in [the control dictionary](controls/README.md).
 | [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  |  | ✅ |  |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ |  |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | ✅ |  |  | ✅ |  |  |
-| [RefreshView](controls/RefreshView.md) | `isRefreshEnabled`, `isRefreshing`, `isRefreshingChanged`, `onRefreshRequested` (`refreshRequested`) |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | ✅ |  |  | ✅ |  |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) |  |  |  | ✅ |  |  |
@@ -565,9 +551,6 @@ contract's page in [the control dictionary](controls/README.md).
 | [Span](controls/Span.md) | `background` |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | ✅ |  |  |  |  |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ |  |  |
-| [SwipeAction](controls/SwipeAction.md) | `background`, `isVisible` |  |  |  |  |  |  |
-| [SwipeActions](controls/SwipeActions.md) | `mode`, `side`, `swipeBehaviorOnInvoked` |  |  |  |  |  |  |
-| [SwipeView](controls/SwipeView.md) | `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`), `onSwipeStarted` (`swipeStarted`), `threshold` |  |  |  |  |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ |  |  | ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ |  |  |
@@ -600,12 +583,11 @@ realizes the element and each of its members.
 `Ellipse`, `Grid`, `HStack`, `Image`, `Label`, `LeadingContent`, `Line`, `Map`,
 `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`,
 `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`, `Polyline`,
-`PositionIndicator`, `ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`,
-`Scene`, `ScrollView`, `SearchField`, `Setters`, `Slider`, `Span`, `Spans`,
-`SplitView`, `Stepper`, `SwipeAction`, `SwipeActions`, `SwipeView`, `Switch`,
-`TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
-`WebView`, `Window`.
+`PositionIndicator`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`,
+`ScrollView`, `SearchField`, `Setters`, `Slider`, `Span`, `Spans`, `SplitView`,
+`Stepper`, `Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`,
+`TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`, `TrailingContent`,
+`VisualState`, `VStack`, `WebView`, `Window`.
 
 ### Properties
 
@@ -626,28 +608,26 @@ realizes the element and each of its members.
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
 `isEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`,
-`isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
-`isScrollEnabled`, `isSidebarVisible`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isTrafficEnabled`, `isTranslucent`, `isVisible`,
-`isZoomEnabled`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
-`lineHeight`, `location`, `mapType`, `margin`, `maximum`, `maximumDate`,
-`maximumHeight`, `maximumLength`, `maximumLines`, `maximumVisible`,
-`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
-`mode`, `name`, `opacity`, `options`, `orientation`, `padding`, `panTouchCount`,
-`panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
-`placeholderColor`, `placement`, `points`, `position`, `priority`, `progress`,
-`region`, `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`,
-`rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
-`selectedIndex`, `selectedIndicatorColor`, `selectionLength`, `shape`,
-`showsClearButton`, `showsUserLocation`, `side`, `source`, `spacing`, `step`,
+`isReadOnly`, `isRunning`, `isScrollEnabled`, `isSidebarVisible`,
+`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isTrafficEnabled`,
+`isTranslucent`, `isVisible`, `isZoomEnabled`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreak`, `lineHeight`, `location`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumVisible`, `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumWidth`, `name`, `opacity`, `options`, `orientation`, `padding`,
+`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `position`,
+`priority`, `progress`, `region`, `renderTransform`, `returnKey`, `rotation`,
+`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
+`scrollOffset`, `selectedIndex`, `selectedIndicatorColor`, `selectionLength`,
+`shape`, `showsClearButton`, `showsUserLocation`, `source`, `spacing`, `step`,
 `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
 `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
-`swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `tapCount`,
-`text`, `textCase`, `textColor`, `textDecorations`, `threshold`, `time`, `tint`,
-`title`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
+`textDecorations`, `time`, `tint`, `title`, `translationX`, `translationY`,
+`type`, `userAgent`, `value`, `verticalAlignment`,
+`verticalScrollBarVisibility`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 
@@ -655,16 +635,15 @@ realizes the element and each of its members.
 `closed`, `created`, `currentPageChanged`, `dateChanged`, `deactivated`,
 `destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
-`frameChanged`, `isFocusedChanged`, `isRefreshingChanged`,
-`isSidebarVisibleChanged`, `mapClicked`, `modalPopped`, `navigated`,
-`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
-`panUpdated`, `pinchUpdated`, `pinClicked`, `pinDetailsClicked`,
-`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
-`pointerReleased`, `popped`, `pressed`, `processTerminated`, `refreshRequested`,
+`frameChanged`, `isFocusedChanged`, `isSidebarVisibleChanged`, `mapClicked`,
+`modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`, `navigating`,
+`navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`, `pinClicked`,
+`pinDetailsClicked`, `pointerEntered`, `pointerExited`, `pointerMoved`,
+`pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
 `released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
-`selectedIndexChanged`, `stopped`, `submitted`, `swipeChanging`, `swiped`,
-`swipeEnded`, `swipeStarted`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `visualStateChanged`, `windowClosed`, `windowRestored`.
+`selectedIndexChanged`, `stopped`, `submitted`, `swiped`, `tapped`,
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `visualStateChanged`,
+`windowClosed`, `windowRestored`.
 
 ### Acts
 

@@ -169,7 +169,7 @@ final class HostContractTests: XCTestCase {
         for type in [
             NodeType.checkBox, .ellipse, .grid,
             .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
-            .rectangle, .refreshView, .swipeView,
+            .rectangle,
         ] {
             XCTAssertEqual(Self.layer(of: type), .stateUI)
         }
@@ -184,7 +184,7 @@ final class HostContractTests: XCTestCase {
 
     func testProtocolNodesRemainStructural() {
         for type in [
-            NodeType.application, .scene, .window, .overlay, .swipeAction,
+            NodeType.application, .scene, .window, .overlay,
         ] {
             XCTAssertEqual(Self.layer(of: type), .structure)
         }
@@ -261,6 +261,22 @@ final class HostContractTests: XCTestCase {
             ]),
             "a scroller's grid, momentum or report step is back in the host contract")
         XCTAssertFalse(events.contains("snapItemChanged"), "a scroller reports a grid item again")
+    }
+
+    /// No host provides a swipe view with its actions, or a refresh view, as
+    /// an element of its own: they were withdrawn by decision and do not
+    /// return. Swipe actions come back with the collection's contract, and a
+    /// refresh with the scroller and the collection.
+    func testNoSwipeViewAndNoRefreshViewStandsAlone() {
+        for name in ["SwipeView", "SwipeActions", "SwipeAction", "RefreshView"] {
+            XCTAssertNil(Self.layer(of: NodeType(name)), "\(name) has a contract again")
+        }
+        for name in ["swipeStarted", "swipeChanging", "swipeEnded", "refreshRequested", "isRefreshingChanged"] {
+            XCTAssertNil(Self.facts(of: name, kind: .event), "a withdrawn element's \(name) is back")
+        }
+        for name in ["isRefreshing", "isRefreshEnabled", "swipeBehaviorOnInvoked"] {
+            XCTAssertNil(Self.facts(of: name, kind: .property), "a withdrawn element's \(name) is back")
+        }
     }
 
     /// Every view speaks in plain words: the size it asks for is its width and
@@ -367,9 +383,8 @@ final class HostContractTests: XCTestCase {
 
     /// Every control speaks in plain words: a box of colour is a `ColorBox`, a
     /// drawing surface a `Canvas`, the dots beside a carousel a
-    /// `PositionIndicator`, what a swipe reveals a `SwipeAction`, and a menu is
-    /// a `Menu` at any depth - on the bar or inside another - holding
-    /// `MenuItem`s and `MenuSeparator`s.
+    /// `PositionIndicator`, and a menu is a `Menu` at any depth - on the bar or
+    /// inside another - holding `MenuItem`s and `MenuSeparator`s.
     func testControlsSpeakInPlainWords() throws {
         let tokenSource = try Fixtures.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
@@ -381,7 +396,7 @@ final class HostContractTests: XCTestCase {
         ]
 
         XCTAssertTrue(controls.isSuperset(of: [
-            "ColorBox", "Canvas", "PositionIndicator", "SwipeAction", "SwipeActions",
+            "ColorBox", "Canvas", "PositionIndicator",
             "Menu", "MenuBar", "MenuItem", "MenuSeparator",
         ]))
         XCTAssertTrue(controls.isDisjoint(with: former), "a control keeps its former name")
@@ -390,7 +405,7 @@ final class HostContractTests: XCTestCase {
             events.isDisjoint(with: [
                 "startInteraction", "dragInteraction", "endInteraction", "invoked",
             ]),
-            "a canvas or a swipe action keeps a former event")
+            "a canvas or an item keeps a former event")
 
         let files = try FileManager.default
             .subpathsOfDirectory(atPath: Fixtures.sources.path)
@@ -492,7 +507,7 @@ final class HostContractTests: XCTestCase {
             ("ProgressBar.swift", "ProgressBar"),
             ("ActivityIndicator.swift", "ActivityIndicator"),
             ("CheckBox.swift", "CheckBox"), ("Picker.swift", "Picker"),
-            ("SearchField.swift", "SearchField"), ("RefreshView.swift", "RefreshView"),
+            ("SearchField.swift", "SearchField"),
         ] {
             let source = try Fixtures.text(in: file)
             XCTAssertTrue(source.contains("TintElement"), "\(control) takes no tint")
@@ -641,7 +656,7 @@ final class HostContractTests: XCTestCase {
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(events.isSuperset(of: [
-            "dateChanged", "timeChanged", "refreshRequested", "pinClicked", "pinDetailsClicked",
+            "dateChanged", "timeChanged", "pinClicked", "pinDetailsClicked",
         ]))
         XCTAssertTrue(
             events.isDisjoint(with: [

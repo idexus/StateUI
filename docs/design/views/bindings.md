@@ -134,9 +134,6 @@ is one body and neither is the real one. A value modifier written beside the
 initializer's binding wins for the value, while the binding goes on being
 written back to, which is how the two can then disagree.
 
-`RefreshView` is the exception: its two-way form is the initializer alone,
-`RefreshView($refreshing) { … }`.
-
 ## A report lands before its handler
 
 A control's report lands on a carried state before its event handlers run,

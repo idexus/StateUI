@@ -134,8 +134,8 @@ dash pattern.
 
 ## Menu items
 
-A toolbar item, a menu entry and a swipe action share `MenuItemElement`: text,
-icon, destructive look, enabled, and `onClicked`. They are not views - none of
+A toolbar item and a menu entry share `MenuItemElement`: text, icon,
+destructive look, enabled, and `onClicked`. They are not views - none of
 the view tiers applies to them, and none of this tier applies to a view.
 `Menu` stays outside the tier: a menu has a caption and entries and is never
 clicked, so its `isEnabled` is its own property, and an icon or a destructive

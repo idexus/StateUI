@@ -30,13 +30,6 @@ final class Catalog {
         bar: TitleBarState,
         log: WindowLog
     ) {
-        let collections = [
-            Sample(SwipeViewSample()),
-            Sample(RefreshViewSample()),
-            Sample(GalleryViewSample()),
-            Sample(PositionIndicatorSample()),
-        ]
-
         var groups: [SampleGroup] = [
             SampleGroup(
                 route: "fundamentals",
@@ -198,11 +191,14 @@ final class Catalog {
 
             SampleGroup(
                 route: "collections",
-                title: "Items & cards",
-                summary: "Lists of items, swipe and refresh actions, cards, and position indicators.",
+                title: "Cards",
+                summary: "Cards swiped through one at a time, and the dots that say which one shows.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
-                samples: collections),
+                samples: [
+                    Sample(GalleryViewSample()),
+                    Sample(PositionIndicatorSample()),
+                ]),
 
             SampleGroup(
                 route: "gestures",

@@ -46,12 +46,10 @@ extension StyleBag: PolylineProperties where Target == Polyline {}
 extension StyleBag: ProgressBarProperties where Target == ProgressBar {}
 extension StyleBag: RadioButtonProperties where Target == RadioButton {}
 extension StyleBag: RectangleProperties where Target == Rectangle {}
-extension StyleBag: RefreshViewProperties where Target == RefreshView {}
 extension StyleBag: ScrollViewProperties where Target == ScrollView {}
 extension StyleBag: SearchFieldProperties where Target == SearchField {}
 extension StyleBag: SliderProperties where Target == Slider {}
 extension StyleBag: StepperProperties where Target == Stepper {}
-extension StyleBag: SwipeViewProperties where Target == SwipeView {}
 extension StyleBag: SwitchProperties where Target == Switch {}
 extension StyleBag: TimePickerProperties where Target == TimePicker {}
 extension StyleBag: TitleBarProperties where Target == TitleBar {}

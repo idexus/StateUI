@@ -178,10 +178,10 @@ final class ContractTests: XCTestCase {
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
             InputPurpose(rawValue: 1)!, ReturnKey(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
             PinType(rawValue: 1)!, Aspect(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
-            HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!, SwipeMode(rawValue: 1)!,
-            SwipeBehaviorOnInvoked(rawValue: 1)!, LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
+            HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!,
+            LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!, SwipeSide(rawValue: 1)!,
+            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
             WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
         ]
 

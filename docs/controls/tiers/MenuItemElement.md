@@ -6,7 +6,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item, a sw
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [MenuItem](../MenuItem.md) · [SwipeAction](../SwipeAction.md) · [ToolbarItem](../ToolbarItem.md)
+Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)
 
 Declared in `lib/StateUI/Sources/Contracts/Mixins/MenuItemElementContract.swift`.
 

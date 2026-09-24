@@ -91,7 +91,6 @@ final class ControlTests: XCTestCase {
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
-        let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
 
@@ -386,46 +385,6 @@ final class ControlTests: XCTestCase {
                     .trailingContent {
                         Button("act")
                     }),
-
-            // The binding form, because isRefreshing is the one property here
-            // written from both sides: the pull sets it and the handler clears
-            // it, so the fixture has to carry the watch as well as the event.
-            ControlCase("RefreshView", source: "RefreshView.swift",
-                RefreshView(refreshing.projectedValue) {
-                    Label("Pull me")
-                }
-                .isRefreshing(true)
-                .tint(.cornflowerBlue)
-                .isRefreshEnabled(true)
-                .onRefreshRequested {}),
-
-            // Both halves of a swipe: the view, and the items each side reveals.
-            // SwipeAction is not a control of its own - it is an action the swipe
-            // reveals - so this case is where its modifiers are exercised as
-            // well.
-            ControlCase("SwipeView", source: "SwipeView.swift",
-                SwipeView {
-                    Label("Swipe me")
-                }
-                .threshold(80)
-                .onSwipeStarted { _ in }
-                .onSwipeChanging { _ in }
-                .onSwipeEnded { _ in }
-                .leftItems {
-                    SwipeAction("Favourite")
-                        .icon("tab_list.png")
-                        .background(.gold)
-                        .isDestructive(false)
-                        .isEnabled(true)
-                        .isVisible(true)
-                        .onClicked {}
-                }
-                .rightItems(mode: .execute, swipeBehaviorOnInvoked: .close) {
-                    SwipeAction("Remove")
-                        .text("Delete")
-                        .background(.firebrick)
-                        .onClicked {}
-                }),
 
             // The shapes. What they share is the Shape tier, covered once by the
             // Elements case below; each of these carries only its own.
@@ -780,8 +739,6 @@ final class ControlTests: XCTestCase {
             "barBackgroundColor", "barForegroundColor", "isScrollEnabled", "isZoomEnabled",
             "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",
             "mapType", "avoidsSafeArea",
-            // The two-way form IS the binding form, and it is an initializer's.
-            "isRefreshing",
         ]
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -822,7 +779,7 @@ final class ControlTests: XCTestCase {
             .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
             .sorted()
 
-        XCTAssertGreaterThan(values.count, 150, "the scan read almost nothing")
+        XCTAssertGreaterThan(values.count, 140, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These value modifiers have no binding twin - write one beside \
             its value form, with the other twins of its type:
@@ -977,7 +934,6 @@ final class ControlTests: XCTestCase {
         let servings = State(0.0)
         let query = State("")
         let alarm = State(ClockTime(hour: 0, minute: 0))
-        let refreshing = State(false)
 
         let renders = Renders()
 
@@ -995,7 +951,6 @@ final class ControlTests: XCTestCase {
             Stepper(servings.projectedValue).id("stepper").body,
             SearchField(query.projectedValue).id("search").body,
             TimePicker(alarm.projectedValue).id("time").body,
-            RefreshView(refreshing.projectedValue) { Label("rows") }.id("refresh").body,
         ]))
 
         // What the user TYPES is the HOST's own write onto the text state,
@@ -1003,8 +958,8 @@ final class ControlTests: XCTestCase {
         // same words land on.
         typed(text.number, "Ada")
         typed(text.number, "Notes")
-        // A switch, a picker, a box, a radio button and a refresh view are the
-        // HOST's own writes onto plain ties, not events.
+        // A switch, a picker, a box and a radio button are the HOST's own
+        // writes onto plain ties, not events.
         moved(toggled.number, to: 1)
         // A slider's and a stepper's report is the HOST's own write onto the
         // journey it walks, not an event.
@@ -1018,8 +973,6 @@ final class ControlTests: XCTestCase {
         typed(query.number, "al")
         moved(alarm.number, to: [9, 30, 0], mask: 0b111)
 
-        moved(refreshing.number, to: 1)
-
         XCTAssertEqual(text.wrappedValue, "Notes")
         XCTAssertTrue(toggled.wrappedValue)
         XCTAssertEqual(volume.wrappedValue, 12.5)
@@ -1030,7 +983,6 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(servings.wrappedValue, 4)
         XCTAssertEqual(query.wrappedValue, "al")
         XCTAssertEqual(alarm.wrappedValue, ClockTime(hour: 9, minute: 30))
-        XCTAssertTrue(refreshing.wrappedValue)
     }
 
     /// A radio button hears its own CLEARING as well: a change of mind is
@@ -1166,8 +1118,7 @@ final class ControlTests: XCTestCase {
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
     /// composes" stood written on Button. A ToolbarItem and a Pin
-    /// stand for the family - MenuItem and SwipeAction are the same two
-    /// lines.
+    /// stand for the family - MenuItem is the same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
 

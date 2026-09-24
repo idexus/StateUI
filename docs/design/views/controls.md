@@ -26,7 +26,7 @@ name (bindings.md, both spellings).
 
 ## Closed vocabularies are numbered here
 
-A closed vocabulary a control uses - `IconPosition`, `MapType`, `SwipeSide`,
+A closed vocabulary a control uses - `IconPosition`, `MapType`,
 `WebNavigationEvent`, `WebNavigationResult` - crosses as an `.enumeration`
 whose numbers are the library's own, in declaration order, the rule of
 [closed vocabularies](../types/vocabularies.md#written-out-and-appended). A
@@ -35,10 +35,6 @@ that means the same. A toolkit's own numbers stay out of it: a toolkit release
 free to renumber its enumeration would otherwise make every report read as a
 different member, silently. A member a host has no case for arrives as
 `.unknown` where the vocabulary has one.
-
-`SwipeSide` is not `SwipeDirection`'s bits, however alike they look: the left
-items are what a swipe to the right reveals, so the two vocabularies would
-agree on every name and disagree on every meaning.
 
 ## A colour stroke is a solid brush
 
@@ -138,15 +134,11 @@ is a state the tree describes and a rebuild cannot lose.
 
 ## Items that are not views
 
-A menu, a menu entry, a separator, a toolbar item, a swipe action and a map pin
-are elements but not views: each has a caption, a picture or a point and
-something to run, and no layout of its own. They take none of the modifiers a
-view has, belong in one place - a page's session, a menu, a swipe view's
-collections, a map - and are matched by their `.id()` or their position there.
-The mode and the behaviour after invoking belong to a swipe view's collection
-rather than to an item, so they are parameters of the collection, as a
-gesture's settings are parameters of its handler; each collection is a child
-node that says which side it is, since a node cannot live inside a property.
+A menu, a menu entry, a separator, a toolbar item and a map pin are elements
+but not views: each has a caption, a picture or a point and something to run,
+and no layout of its own. They take none of the modifiers a view has, belong
+in one place - a page's session, a menu, a map - and are matched by their
+`.id()` or their position there.
 
 ## Radio groups
 
@@ -155,12 +147,3 @@ A radio button's group is a name - every button in the set writes the same one
 views are nested. Picking one unchecks the others and reports both changes
 together, which is why a handler acts on `checked` alone. One state for the
 whole group, rather than one flag per button, holds what is chosen.
-
-## Refresh view
-
-A refresh view's spinner shows while its state is true, and nothing clears it
-on its own: the pull sets it, and the handler clears it when the work is done.
-That binding is written from both sides, so its two-way form is the
-initializer rather than a modifier. It goes around the scroller rather than
-inside one, holding a single scrollable view, because a pull is a gesture that
-scroller would otherwise claim.

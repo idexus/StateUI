@@ -50,8 +50,6 @@ extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}
 extension HStack: StyleTarget {}
 extension AbsoluteLayout: StyleTarget {}
-extension RefreshView: StyleTarget {}
-extension SwipeView: StyleTarget {}
 extension Rectangle: StyleTarget {}
 extension Ellipse: StyleTarget {}
 extension Line: StyleTarget {}
@@ -63,5 +61,3 @@ extension PositionIndicator: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
 extension TitleBar: StyleTarget {}
-
-// A SwipeAction is a menu item, not a view, and has nothing to style.

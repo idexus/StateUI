@@ -37,13 +37,13 @@ Swift protocols behind them refine each other.
 ```text
   View               ActivityIndicator, Border, Button, Canvas, CheckBox, ColorBox,
                      DatePicker, Image, Label, Map, Picker, PositionIndicator,
-                     ProgressBar, RadioButton, RefreshView, ScrollView, Slider,
-                     Stepper, SwipeView, Switch, TimePicker, TitleBar, WebView
+                     ProgressBar, RadioButton, ScrollView, Slider, Stepper,
+                     Switch, TimePicker, TitleBar, WebView
   Layout             AbsoluteLayout, Grid
   StackBase          HStack, VStack
   InputView          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle
-  MenuItemElement    MenuItem, SwipeAction, ToolbarItem
+  MenuItemElement    MenuItem, ToolbarItem
   PageElement        Page, NavigationStack, TabbedView, SplitView
   text tiers only    Span
   no tier            Application, Scene, Window, Menu, MenuSeparator, ContextMenu,

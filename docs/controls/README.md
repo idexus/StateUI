@@ -38,12 +38,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ProgressBar](ProgressBar.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
 | [RadioButton](RadioButton.md) | 83 | 64 ✅ · 2 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
 | [Rectangle](Rectangle.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
-| [RefreshView](RefreshView.md) | 73 |  |  |  |  |  |  |
 | [ScrollView](ScrollView.md) | 76 | 61 ✅ · 2 ☑️ |  |  | 61 ✅ · 1 ☑️ |  |  |
 | [SearchField](SearchField.md) | 91 | 71 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ |  |  |
 | [Slider](Slider.md) | 75 | 61 ✅ · 2 ☑️ |  |  | 61 ✅ · 1 ☑️ |  |  |
 | [Stepper](Stepper.md) | 73 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
-| [SwipeView](SwipeView.md) | 72 |  |  |  |  |  |  |
 | [Switch](Switch.md) | 71 | 57 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [TextEditor](TextEditor.md) | 89 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [TextField](TextField.md) | 92 | 71 ✅ · 2 ☑️ |  |  | 68 ✅ · 1 ☑️ |  |  |
@@ -78,8 +76,6 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Span](Span.md) | 12 | 3 ✅ |  |  | 2 ✅ |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](SplitView.md) | 5 | 5 ✅ |  |  | 4 ✅ |  |  |
-| [SwipeAction](SwipeAction.md) | 8 |  |  |  |  |  |  |
-| [SwipeActions](SwipeActions.md) | 3 |  |  |  |  |  |  |
 | [TabbedView](TabbedView.md) | 6 | 6 ✅ |  |  | 5 ✅ |  |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 7 ✅ |  |  | 8 ✅ |  |  |

@@ -7,9 +7,10 @@ import XCTest
 /// An element has ONE public road: its contract.
 ///
 /// Every road the element contract replaced - a token and a list of values
-/// where a member and its declared type now stand - is written here the way an
-/// application would have written it, and must NOT compile against the
-/// library's public module; the road through the contract, beside it, must.
+/// where a member and its declared type now stand - and every element
+/// withdrawn by decision is written here the way an application would have
+/// written it, and must NOT compile against the library's public module; the
+/// road through the contract, beside it, must.
 /// The pair is what makes the refusal mean something: the two listings differ
 /// in that one spelling, so a failure is the spelling's and never a typo's.
 ///
@@ -130,6 +131,18 @@ final class ContractRoadsTests: XCTestCase {
                     static let members: [any ContractMember] = []
                 }
                 """),
+        Road(
+            name: "the withdrawn SwipeView",
+            removed: #"_ = SwipeView { Label("Row") }"#,
+            contract: #"_ = Label("Row").onSwiped { _ in }"#),
+        Road(
+            name: "the withdrawn SwipeAction",
+            removed: #"_ = SwipeAction("Delete")"#,
+            contract: #"_ = MenuItem("Delete")"#),
+        Road(
+            name: "the withdrawn RefreshView",
+            removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
+            contract: #"_ = ScrollView { Label("Rows") }"#),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {

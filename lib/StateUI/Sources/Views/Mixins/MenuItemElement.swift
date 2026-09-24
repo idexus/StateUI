@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a toolbar item, a menu entry and a swipe action all share: `text`,
+/// What a toolbar item and a menu entry share: `text`,
 /// `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what
 /// choosing one does.
 ///
@@ -38,8 +38,7 @@ extension MenuItemElement {
 }
 
 extension MenuItemElement where Modified == Self {
-    /// What it does - run when the item is chosen: clicked, tapped, or, for a
-    /// swipe action under `.execute`, swiped all the way. A second
+    /// What it does - run when the item is chosen, clicked or tapped. A second
     /// `.onClicked` runs beside the first, like every typed event modifier.
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }

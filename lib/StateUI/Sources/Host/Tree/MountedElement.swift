@@ -573,7 +573,7 @@
         .isAnimating, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
         .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
-        .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
+        .isRunning, .isScrollEnabled,
         .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
         .showsClearButton,

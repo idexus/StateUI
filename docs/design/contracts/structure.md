@@ -28,7 +28,6 @@ own.
   TrailingContent
   Spans, Span                        the runs of text a label is made of
   VisualState, Setters               a state a control can be in, and the values it sets there
-  SwipeActions, SwipeAction          a swipe view's four collections of actions
 ```
 
 ## Slots
@@ -42,12 +41,10 @@ again when that state moves.
 ## Collections as one node
 
 A page's toolbar items hang off it as one `ToolbarItems` node holding them
-all, its menus as one `MenuBar`, a label's runs as one `Spans`, a visual
-state's values as one `Setters`, and a swipe view's actions as a
-`SwipeActions` per side. The host has a list to keep in step, and a list
-needs a parent of its own to be matched against. Where the host puts such a
-collection or an item in it - a swipe's side, a toolbar item's placement -
-is a value no default answers for, so its member is not cleared; see
+all, its menus as one `MenuBar`, a label's runs as one `Spans`, and a
+visual state's values as one `Setters`. The host has a list to keep in step,
+and a list needs a parent of its own to be matched against. Where the host
+puts an item of such a collection - a toolbar item's placement - is a value no default answers for, so its member is not cleared; see
 [cleared](member-facts.md#cleared).
 
 ## Visual states

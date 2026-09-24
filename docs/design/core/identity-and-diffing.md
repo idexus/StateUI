@@ -377,8 +377,7 @@ because a dictionary's order differs between two instances in one run.
 
 `Recycling.poolable` is an inclusion list: a control whose whole state is in
 the tree. Text inputs and pickers hold a caret, a selection or an open list;
-a scroller its offset; a swipe view whether it is open; a refresh view its
-spinner; a web view and a map a history and a region; a canvas its cached
+a scroller its offset; a web view and a map a history and a region; a canvas its cached
 surface. None of that is a property, so none of it is in the shape, and every
 type added later is outside the list until someone puts it in.
 

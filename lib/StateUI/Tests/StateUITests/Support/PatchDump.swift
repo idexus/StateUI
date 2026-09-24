@@ -221,15 +221,6 @@ enum PatchDump {
         case Prop.placement.name:
             return spelled(member, as: ToolbarItemPlacement.self)
 
-        // The swipe. The side a set of swipe items sits on is internal to the
-        // library, so it is spelled here, in SwipeView.swift's order.
-        case Prop.mode.name:
-            return spelled(member, as: SwipeMode.self)
-        case Prop.swipeBehaviorOnInvoked.name:
-            return spelled(member, as: SwipeBehaviorOnInvoked.self)
-        case Prop.side.name:
-            return spelled(member, amongst: ["left", "right", "top", "bottom"])
-
         // The shapes and the map.
         case Prop.strokeLineCap.name:
             return spelled(member, as: LineCap.self)

@@ -70,8 +70,8 @@ VStack 1 arranged(3)
     horizontalTextAlignment: enum center(1)
     isAccessibilityHidden: false
     padding: numbers 8,4,8,4
-    panXChannel: number 3
-    panYChannel: number 3
+    panXChannel: number 2
+    panYChannel: number 2
     text: string "Tiers"
     textCase: enum uppercase(3)
     textColor: color FFB22222

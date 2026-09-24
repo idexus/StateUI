@@ -634,7 +634,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
                 + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
                 + "the whole layout: this ring is six lines of arithmetic. `GalleryView`, "
-                + "under Items & cards, is the same layout with the arithmetic for a wheel, "
+                + "under Cards, is the same layout with the arithmetic for a wheel, "
                 + "a fan and a row already written.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

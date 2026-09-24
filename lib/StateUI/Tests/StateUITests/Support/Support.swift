@@ -778,28 +778,16 @@ enum Fixtures {
 
     /// Node types described under Views/ that are not VIEWS.
     ///
-    /// A SwipeAction is an action a swipe reveals - a caption, a picture and
-    /// something to run - and SwipeActions is the collection holding them.
-    /// Neither can be built on its own, placed anywhere else, or styled, so
-    /// neither has a fixture of its own nor a StyleTarget conformance. They are
-    /// described in SwipeView.swift because that is the only place they appear,
-    /// and their modifiers are exercised by the SwipeView case, which builds
-    /// both.
-    ///
-    /// A ToolbarItem and the menu types are items too - a caption, a picture
-    /// and something to run - and they belong to a PAGE rather than sitting in
+    /// A ToolbarItem and the menu types are items - a caption, a picture and
+    /// something to run - and they belong to a PAGE rather than sitting in
     /// one, so they have no fixture and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
     ///
     /// A Span is one run of text inside a Label - text and a font, and no
     /// opacity, no margin, no size - so it can neither be built alone nor
-    /// styled. Spans is the collection holding the runs, exactly as
-    /// SwipeActions holds swipe items. Both are exercised by the Label case,
-    /// which builds them.
+    /// styled. Spans is the collection holding the runs. Both are exercised by
+    /// the Label case, which builds them.
     ///
-    /// The alternative would be leaving SwipeView.swift out of the scan
-    /// altogether, the way the page arrangements are - which would take the
-    /// SwipeView with them.
     /// ContextMenu is the one written by a MODIFIER rather than by a type:
     /// `.contextMenu` on any view appends it. It is a menu, not a view - and
     /// the entries in it are the menu bar's, already here. Covered by
@@ -809,7 +797,6 @@ enum Fixtures {
     /// cannot be built alone or styled, and its modifiers are exercised by the
     /// Map case, which builds both.
     static let notViews: Set<String> = [
-        "SwipeAction", "SwipeActions",
         "Spans", "Span",
         "ToolbarItem", "Menu",
         "MenuItem", "MenuSeparator",
