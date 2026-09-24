@@ -3,6 +3,9 @@
 
 import XCTest
 @_spi(Host) @testable import StateUI
+#if os(Windows)
+import CRT
+#endif
 
 /// The mounted tree every Swift runtime shares: patches, drift, leaving and the frame walk.
 final class MountedTreeTests: XCTestCase {
@@ -225,6 +228,17 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertTrue(written.first?.contains(" 2 nodes, 2 made, 0 kept") ?? false, written.joined())
     }
 
+    /// The switches are read off the process's environment: `1` turns one on, anything else leaves it off.
+    func testTheSwitchesAreReadOffTheProcesssEnvironment() {
+        defer { Self.setEnvironment("STATEUI_TALLY", nil) }
+
+        Self.setEnvironment("STATEUI_TALLY", "1")
+        XCTAssertTrue(DiagnosticText.environment.tallies)
+
+        Self.setEnvironment("STATEUI_TALLY", "0")
+        XCTAssertFalse(DiagnosticText.environment.tallies)
+    }
+
     /// A frame arranges a parent once when a child's place changed; an element without a view passes it up.
     @MainActor
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {
@@ -404,6 +418,15 @@ final class MountedTreeTests: XCTestCase {
         var stack = HostPatch(id: .manual(id), type: .vStack)
         stack.children = .arranged(children.map { HostPatch(id: .manual($0), type: .label) })
         return stack
+    }
+
+    /// Sets `name` in this process's environment, or removes it for nil.
+    private static func setEnvironment(_ name: String, _ value: String?) {
+        #if os(Windows)
+        _ = _putenv_s(name, value ?? "")
+        #else
+        if let value { setenv(name, value, 1) } else { unsetenv(name) }
+        #endif
     }
 
     private static func layer(_ id: String, _ zIndex: Double) -> HostPatch {

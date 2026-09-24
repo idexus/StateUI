@@ -81,7 +81,15 @@ import CRT
     }
 
     private static func switched(_ name: String) -> Bool {
-        getenv(name).map { String(cString: $0) == "1" } ?? false
+        #if os(Windows)
+        var value: UnsafeMutablePointer<CChar>?
+        var count = 0
+        guard _dupenv_s(&value, &count, name) == 0, let value else { return false }
+        defer { free(value) }
+        return String(cString: value) == "1"
+        #else
+        return getenv(name).map { String(cString: $0) == "1" } ?? false
+        #endif
     }
 
     /// Writes to file descriptor 2, which nothing buffers.
