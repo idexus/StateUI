@@ -56,20 +56,22 @@ final class AndroidSplitView: AndroidLayoutView {
         guard presented != isPresented else { return }
 
         isPresented = presented
-        if overlays {
-            showDrawer(animated: true)
-        } else {
-            invalidateMeasurements()
-        }
+        showDrawer(animated: overlays)
+        if !overlays { invalidateMeasurements() }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
         SingleChildArithmetic.size(of: items.dropFirst().first, padding: Insets(0), width: width)
     }
 
+    /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
+    /// the drawer wider, or beside the detail rather than over it - puts it in place at once.
     override func arrange(in bounds: Rect) {
-        overlays = bounds.width < Self.sideBySide
-        drawerWidth = min(320, bounds.width * (overlays ? 0.84 : 0.4))
+        let overlaid = bounds.width < Self.sideBySide
+        let width = min(320, bounds.width * (overlaid ? 0.84 : 0.4))
+        let newRoom = overlaid != overlays || width != drawerWidth
+        overlays = overlaid
+        drawerWidth = width
         let beside = !overlays && isPresented ? drawerWidth : 0
 
         if let detail = items.dropFirst().first {
@@ -78,7 +80,7 @@ final class AndroidSplitView: AndroidLayoutView {
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: 0, y: 0, width: drawerWidth, height: bounds.height))
-        showDrawer(animated: false)
+        if newRoom { showDrawer(animated: false) }
     }
 
     /// Stands the drawer and the shade where the sidebar's state puts them. The shade takes a tap only while the

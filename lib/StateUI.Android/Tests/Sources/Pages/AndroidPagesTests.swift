@@ -11,6 +11,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
+            ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
@@ -110,6 +111,38 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertTrue(host.goBack())
             XCTAssertFalse(open.wrappedValue)
             XCTAssertFalse(split.isPresented)
+        }
+    }
+
+    /// The drawer slides open: a layout while it slides - opening it changes the bar, which lays the page out
+    /// again - leaves it sliding rather than putting it where it ends. The test's frames never come, so a
+    /// drawer still sliding stands where it started, off the leading edge.
+    func testALayoutWhileTheDrawerSlidesLeavesItSliding() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                SplitView(State(wrappedValue: false).projectedValue) {
+                    TitledPage(title: "Menu", icon: "test_dot.png")
+                } detail: {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(title: "Home")
+                    } destination: { _ in
+                        TitledPage(title: "Deeper")
+                    }
+                }
+            }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let drawer = try XCTUnwrap(split.heldViews().last)
+            let closed = Java.callFloat(drawer.reference, TestJava.getTranslationX)
+            XCTAssertLessThan(closed, 0, "a closed drawer stands off the leading edge")
+
+            try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
+            host.pump()
+            Java.call(split.reference, JavaAPI.requestLayout)
+            host.layOut()
+
+            XCTAssertTrue(split.isPresented)
+            XCTAssertEqual(Java.callFloat(drawer.reference, TestJava.getTranslationX), closed)
         }
     }
 

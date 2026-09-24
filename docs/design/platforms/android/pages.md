@@ -39,7 +39,9 @@ sidebar is a drawer sliding over the detail from the leading edge, the
 detail shaded behind it; a tap on the shade closes it. Where the room is
 wider, the sidebar stands beside the detail while it shows. The slide is
 Android's own animation, so the system's "remove animations" setting takes
-it away. Whether the sidebar shows is the split's binding: the user's
+it away. Opening the drawer lays the page out again - the bar changes - and a
+layout leaves a sliding drawer sliding: only a new room, the drawer wider or
+beside the detail, puts it in place at once. Whether the sidebar shows is the split's binding: the user's
 opening and closing are reported into it, and a value the tree writes moves
 the drawer.
 
