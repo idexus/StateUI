@@ -132,6 +132,14 @@
         StateUIHost.raise(event, repeat each value)
     }
 
+    /// Tells the core what this runtime realizes before its first render: its registry's elements and members,
+    /// and every element of the library's but those it names `unrealized`.
+    /// Design: docs/design/core/contracts.md#unrealized-names
+    public func setRealization(_ registry: HostRealization, unrealized: Set<String>) {
+        let library = Set(LibraryContracts.elements.map { $0.nodeType.name }).subtracting(unrealized)
+        StateUIHost.setRealization(HostRealization(elements: library.union(registry.elements), members: registry.members))
+    }
+
     // MARK: - The application, its scenes and its kept values
 
     /// Reports the appearance themed values resolve against.

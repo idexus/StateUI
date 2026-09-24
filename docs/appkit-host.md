@@ -228,3 +228,17 @@ reports it. It answers how many subscriptions heard it: a raise nobody hears is
 an ordinary zero rather than a failure, so an application wires its sources
 unconditionally. The Swift side subscribes with `HostEvents.on`; see
 [Host-extension events](interaction-and-actions.md#host-extension-events).
+
+The head declares each event it raises where it wires the source, before
+`StateUIAppKit.run(resourceDirectory:applicationIcon:)`:
+
+```swift quote
+StateUIEvents.raises(NotesContract.lowPowerChanged)
+```
+
+The host tells the core what it realizes when it starts: every element of the
+library's it shows, the controls the application added, and the events
+declared. A `HostEvents.on` for an event nothing declared is then said once -
+*the host raises no `Notes.LowPowerChanged`: the handler will not hear it* -
+with the declared names nearest to it; so is an element the host shows none
+of, the first time it is described.

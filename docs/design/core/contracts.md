@@ -134,9 +134,13 @@ value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs
 machinery no contract describes, registers its members with `madeByHost`.
 
-A host hands over `Registry.realization` through
-`StateUIHost.setRealization`. Until a host says, the core knows of nothing
-realized and says nothing.
+A runtime hands over its registry's realization before its first render,
+through `CoreLink.setRealization`, with the library's elements it shows none
+of - its `unrealized` judgement, the same the control dictionary reads: every
+other element of the library's is realized, and so is every element and member
+the registry names, the application's own controls and the events its head
+declared among them. Until a host says, the core knows of nothing realized and
+says nothing.
 
 ## Declarations
 

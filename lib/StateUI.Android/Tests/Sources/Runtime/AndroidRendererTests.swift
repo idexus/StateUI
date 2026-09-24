@@ -40,6 +40,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testASecondActivityShowsTheSceneTheFirstShowed", testASecondActivityShowsTheSceneTheFirstShowed),
+            ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheActivitysLifecycleMovesTheWindowAndTheScene", testTheActivitysLifecycleMovesTheWindowAndTheScene),
             ("testAWindowStoppedComesBackResumedAndHearsItIsGoing", testAWindowStoppedComesBackResumedAndHearsItIsGoing),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
@@ -90,6 +91,21 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(second.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
+        }
+    }
+
+    /// A started host tells the core what it realizes: the library's elements it shows, and not those it shows
+    /// as unsupported.
+    func testAStartedHostSaysWhatItRealizes() {
+        onMainActor {
+            _ = AndroidRenderer.running { CounterPage() }
+            StateUIHost.setRealization(HostRealization())
+
+            _ = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+
+            XCTAssertTrue(StateUIHost.realizes(LabelContract.self))
+            XCTAssertTrue(StateUIHost.realizes(ButtonContract.self))
+            XCTAssertFalse(StateUIHost.realizes(MapContract.self))
         }
     }
 

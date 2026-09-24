@@ -120,6 +120,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     func startRuntime() {
         started = true
+        core.setRealization(AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized)
         configureEnvironment()
         let appearance = NSApplication.shared.effectiveAppearance
             .bestMatch(from: [.darkAqua, .aqua])

@@ -129,6 +129,21 @@ public enum StateUIActs {
 /// The events an application raises through this host - the ones no control
 /// raises, heard by every `HostEvents.on`.
 public enum StateUIEvents {
+    /// Declares an event of the application's this host raises, where its
+    /// source is wired: a handler listening for an event nothing declared is
+    /// told, once, that it will not hear it.
+    ///
+    /// Said once, from the application's AppKit head, before
+    /// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`.
+    ///
+    ///     StateUIEvents.raises(GalleryContract.batteryChanged)
+    ///
+    /// - Parameter event: the member, written with its contract.
+    @MainActor
+    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        AppKitRegistrations.registry.raises(event)
+    }
+
     /// Raises an event of the application's - one no control raises - with the
     /// values its contract declares.
     ///

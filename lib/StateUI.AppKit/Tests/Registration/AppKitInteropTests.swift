@@ -21,7 +21,10 @@ private enum InteropTestContract: ApplicationTier {
     /// Raised by the host, with what it said.
     static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
 
-    static let members: [any ContractMember] = [doubled, unregistered, spoke]
+    /// Declared by no test, so a handler listening for it hears nothing.
+    static let unheard = ElementEvent<Self, String>("InteropTest.Unheard")
+
+    static let members: [any ContractMember] = [doubled, unregistered, spoke, unheard]
 }
 
 /// A page that calls the acts and listens for the event, writing whatever
@@ -140,6 +143,24 @@ final class AppKitInteropTests: XCTestCase {
 
         XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")
         XCTAssertEqual(said(renderer), "heard hello")
+    }
+
+    /// A running host tells the core what it realizes: the library's elements
+    /// it shows, not those it shows as unsupported, and the events the
+    /// application declared it raises - so a handler listening for one no
+    /// source raises is told so.
+    @MainActor
+    func testARunningHostSaysWhatItRealizesAndWhatTheApplicationRaises() {
+        StateUIEvents.raises(InteropTestContract.spoke)
+
+        let renderer = AppKitRenderer.running { Calling() }
+        defer { renderer.closeForTesting() }
+
+        XCTAssertTrue(StateUIHost.realizes(LabelContract.self))
+        XCTAssertTrue(StateUIHost.realizes(ButtonContract.self))
+        XCTAssertFalse(StateUIHost.realizes(MapContract.self))
+        XCTAssertNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.spoke.name))
+        XCTAssertNotNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.unheard.name))
     }
 }
 #endif

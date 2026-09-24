@@ -141,6 +141,7 @@ final class AndroidRenderer {
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
         renderer.watchLayout()
+        renderer.core.setRealization(AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unrealized)
         AndroidEnvironment.report(to: renderer.core, activity: context.reference)
         if previous == nil { AndroidPersistence.restore(into: renderer.core, context: context.reference) }
         renderer.show(connectingScene: previous == nil)

@@ -20,8 +20,12 @@ enum GalleryEventSources {
     /// source notifies on far more than a level change.
     nonisolated(unsafe) private static var lastSaid: (level: Double, charging: Bool)?
 
-    /// Starts watching. Said once, before the application runs.
+    /// Declares what the gallery raises and starts watching. Said once,
+    /// before the application runs.
+    @MainActor
     static func start() {
+        StateUIEvents.raises(GalleryContract.batteryChanged)
+
         // Named in full: a C function pointer carries no context at all, and
         // an unqualified call to a static method captures the type implicitly.
         let notify: IOPowerSourceCallbackType = { _ in GalleryEventSources.report() }

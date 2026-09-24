@@ -64,6 +64,19 @@ final class HostRealizationTests: XCTestCase {
                 + "the handler will not hear it.")
     }
 
+    /// A runtime says its registry and the library's elements it shows none
+    /// of: every other element of the library's is realized, and so is what
+    /// the registry names.
+    func testARuntimeRealizesTheLibrarysElementsButThoseItNames() {
+        CoreLink().setRealization(Self.realization, unrealized: ["Map"])
+
+        XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
+        XCTAssertNil(HostRealizations.unrealized(PageContract.nodeType))
+        XCTAssertNil(HostRealizations.unrealized("Test.Lamp"))
+        XCTAssertEqual(HostRealizations.unrealized(MapContract.nodeType), "the host realizes no `Map`.")
+        XCTAssertNil(HostRealizations.unraised(owner: "Test", event: "Test.BatteryChanged"))
+    }
+
     /// A registry records the application's events its host raises, on the
     /// application element - what the core then answers from.
     func testARegistryRecordsTheApplicationsEventsItRaises() {

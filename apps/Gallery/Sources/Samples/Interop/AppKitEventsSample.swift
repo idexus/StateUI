@@ -63,7 +63,12 @@ struct AppKitEventsSample: SampleContent, ExampleContent {
             // from any thread, and a raise nobody hears is an ordinary answer,
             // so the source is wired unconditionally.
             enum GalleryEventSources {
+                @MainActor
                 static func start() {
+                    // What the host raises, declared where its source is
+                    // wired: a handler listening for anything else is told.
+                    StateUIEvents.raises(GalleryContract.batteryChanged)
+
                     // Named in full: a C function pointer carries no context,
                     // and an unqualified call to a static method captures the
                     // type implicitly.
@@ -131,7 +136,9 @@ struct AppKitEventsSample: SampleContent, ExampleContent {
                 + "reports something, from any thread. Every `HostEvents.on` subscription "
                 + "to that member runs like a control's handler: on the library's "
                 + "executor, handed the values the contract declares, free to await and to "
-                + "write `@State`.")
+                + "write `@State`. The head declares each event it raises with "
+                + "`StateUIEvents.raises`, so a handler listening for one nothing raises "
+                + "is told so once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

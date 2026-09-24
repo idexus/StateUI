@@ -272,7 +272,9 @@ StateUIEvents.raise(NotesContract.importFinished, location)
 ```
 
 A raise nobody hears is an ordinary answer rather than a failure, so a host
-wires its sources unconditionally.
+wires its sources unconditionally. The head declares what it raises,
+`StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
+event no head declared is said once, as a misspelled name would be.
 
 ## Accessibility and automation
 
