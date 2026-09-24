@@ -661,6 +661,9 @@ final class UIThreadTests: XCTestCase {
     /// A `Task.yield()` loop is NOT that shape and does not reach the bound -
     /// measured, one pass: its continuation is handed back through the global
     /// executor, so the queue is empty again by the time the next pass looks.
+    ///
+    /// The countdown's own progress counts the passes, one of its jobs in each:
+    /// a job another test left waiting may land in any pass and add none.
     func testADrainIsBoundedSoAJobThatQueuesItselfCannotTakeTheThread() {
         let queued = OnTheUIThreadsQueue()
 
@@ -673,7 +676,8 @@ final class UIThreadTests: XCTestCase {
             Thread.sleep(forTimeInterval: 0.002)
         }
 
-        XCTAssertEqual(stateUIRunJobs(), 64, "a drain ran other than its 64 passes")
+        _ = stateUIRunJobs()
+        XCTAssertEqual(200 - queued.left, 64, "a drain ran other than its 64 passes")
         XCTAssertGreaterThan(
             UIThreadExecutor.shared.pendingCount, 0,
             "the drain stopped without leaving the rest waiting")
