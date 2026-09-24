@@ -1,4 +1,3 @@
-generation 1 names +11
 TitleBar 1 arranged(3)
   barForegroundColor: color FFFFFFFF
   icon: string "stateui_mark.png"

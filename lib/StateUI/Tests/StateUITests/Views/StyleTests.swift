@@ -1054,10 +1054,6 @@ final class StyleTests: XCTestCase {
 
         let result = differ.reconcile(nil, with: tree, styles: sheet)
 
-        let bytes = Wire.encode(result.patch, generation: 1, dictionary: WireDictionary())
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "styled")
+        try Fixtures.check(result.patch, against: "styled")
     }
 }

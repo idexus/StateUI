@@ -1,4 +1,3 @@
-generation 6 complete
 Application 1 moves over 200ms cubicOut arranged(1)
   Scene "1" arranged(1)
     Window "main" arranged(1)

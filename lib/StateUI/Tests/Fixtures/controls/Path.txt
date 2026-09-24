@@ -1,4 +1,3 @@
-generation 1 names +3
 Path 1
   data: string "M 0,40 L 20,0 L 40,40 Z"
   renderTransform: values [number 1.5, number 0.375, number -0.25, number 0.9375, number 6, number 7]

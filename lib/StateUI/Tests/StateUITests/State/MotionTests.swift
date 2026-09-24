@@ -695,24 +695,13 @@ final class MotionTests: XCTestCase {
     /// to.
     func testAValueThatTravelsIsWrittenDown() throws {
         let differ = Differ()
-        let dictionary = WireDictionary()
-        let names = WireNames()
+        let session = FixtureSession()
 
         let first = differ.reconcile(nil, with: panel(1))
-        let opening = Wire.encode(first.patch, generation: 1, dictionary: dictionary)
-
-        try Fixtures.check(
-            opening,
-            sidecar: WireProbe.dumpMessage(opening, names: names),
-            against: "travelling-first")
+        try Fixtures.check(first.patch, in: session, against: "travelling-first")
 
         let moved = differ.reconcile(first.node, with: panel(0.25))
-        let bytes = Wire.encode(moved.patch, generation: 2, dictionary: dictionary)
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: names),
-            against: "travelling")
+        try Fixtures.check(moved.patch, in: session, against: "travelling")
     }
 
     // ---- The vocabulary itself ---------------------------------------------

@@ -917,26 +917,15 @@ final class SceneTests: XCTestCase {
         Scenes.shared.list[1].windowSession(SceneElement.mainKey).title = "Studio 2"
 
         let differ = Differ()
-        let dictionary = WireDictionary()
-        let names = WireNames()
+        let session = FixtureSession()
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
-        let first = Wire.encode(opened.patch, generation: 1, complete: true, dictionary: dictionary)
-
-        try Fixtures.check(
-            first,
-            sidecar: WireProbe.dumpMessage(first, names: names),
-            against: "scenes/1-opens")
+        try Fixtures.check(opened.patch, complete: true, in: session, against: "scenes/1-opens")
 
         Scenes.shared.list[0].windows = []
 
         let closed = differ.reconcile(
             opened.node, with: tree(), changed: Renderer.shared.pendingChanges)
-        let second = Wire.encode(closed.patch, generation: 2, dictionary: dictionary)
-
-        try Fixtures.check(
-            second,
-            sidecar: WireProbe.dumpMessage(second, names: names),
-            against: "scenes/2-closes")
+        try Fixtures.check(closed.patch, in: session, against: "scenes/2-closes")
     }
 }

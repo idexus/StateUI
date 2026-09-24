@@ -307,6 +307,14 @@ struct WalkReadAlmostNothing: Error, CustomStringConvertible {
     var description: String { "the walk of \(root) read \(read) files, almost nothing" }
 }
 
+/// The messages of one fixture set, as one host hears them: generations count
+/// from one, and a name is announced by the first message to use it. The
+/// encoded half of `Fixtures.check`, which leaves with the MAUI host.
+final class FixtureSession {
+    fileprivate let dictionary = WireDictionary()
+    fileprivate var generation: Int32 = 0
+}
+
 /// The fixtures, source trees, and test trees used by source-level guards.
 /// Every walk refuses one that read almost nothing (`WalkReadAlmostNothing`).
 enum Fixtures {
@@ -397,6 +405,42 @@ enum Fixtures {
 
     static var updating: Bool {
         ProcessInfo.processInfo.environment["STATEUI_UPDATE_FIXTURES"] == "1"
+    }
+
+    /// Checks a patch against its fixture, or writes it when updating:
+    /// `name.txt` holds the patch's dump, what a review diff reads. While the
+    /// MAUI host lives, `name.bin` holds the same patch encoded for it, the
+    /// messages of one `session` numbered as one host hears them.
+    static func check(
+        _ patch: HostPatch,
+        complete: Bool = false,
+        in session: FixtureSession = FixtureSession(),
+        against name: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        session.generation += 1
+
+        let bytes = Wire.encode(
+            patch, generation: session.generation, complete: complete, dictionary: session.dictionary)
+
+        try check(bytes, sidecar: PatchDump.text(patch), against: name, file: file, line: line)
+    }
+
+    /// Checks a batch of acts against its fixture, or writes it when updating:
+    /// `name.txt` holds the batch's dump and, while the MAUI host lives,
+    /// `name.bin` the batch encoded for it.
+    static func check(
+        _ calls: [ActCall],
+        against name: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let bytes = Wire.encode(calls, dictionary: WireDictionary())
+
+        try check(
+            bytes, sidecar: PatchDump.text(calls.map(HostActCall.init)),
+            against: name, file: file, line: line)
     }
 
     /// Checks a binary message and its readable sidecar against their

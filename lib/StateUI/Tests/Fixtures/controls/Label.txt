@@ -1,4 +1,3 @@
-generation 1 names +16
 Label 1 arranged(1)
   lineBreak: enum tailTruncation(4)
   lineHeight: number 1.5

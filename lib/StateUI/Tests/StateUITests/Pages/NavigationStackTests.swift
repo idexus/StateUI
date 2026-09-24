@@ -238,12 +238,7 @@ final class NavigationStackTests: XCTestCase {
 
         // As the message that brings the pages carries them - with what each
         // wrote into its session on the way in.
-        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/NavigationStack")
+        try Fixtures.check(Renders().settled(tree), against: "pages/NavigationStack")
     }
 
     // MARK: - What comes back

@@ -1,4 +1,3 @@
-generation 1 names +4
 TextEditor 1
   growsWithText: true
   text: string "Notes"

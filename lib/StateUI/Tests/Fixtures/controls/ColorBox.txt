@@ -1,4 +1,3 @@
-generation 1 names +3
 ColorBox 1
   color: color FF6495ED
   cornerRadius: number 8

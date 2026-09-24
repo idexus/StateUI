@@ -650,11 +650,7 @@ final class ControlTests: XCTestCase {
             let differ = Differ()
             let result = differ.reconcile(nil, with: control.node)
 
-            let bytes = Wire.encode(result.patch, generation: 1, dictionary: WireDictionary())
-            try Fixtures.check(
-                bytes,
-                sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-                against: "controls/\(control.name)")
+            try Fixtures.check(result.patch, against: "controls/\(control.name)")
         }
     }
 

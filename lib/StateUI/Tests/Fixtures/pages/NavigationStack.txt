@@ -1,4 +1,3 @@
-generation 1 names +17
 NavigationStack 1 arranged(3)
   barBackgroundColor: color FF512BD4
   barForegroundColor: color FFFFFFFF

@@ -1,4 +1,3 @@
-generation 1 names +28
 Page 1 arranged(4)
   backButtonTitle: string "Back"
   background: color FFF5F5F5

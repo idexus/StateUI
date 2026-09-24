@@ -220,11 +220,6 @@ final class ModalStackTests: XCTestCase {
         let patch = Renders().settled(
             TestWindow(sheets: sheets.projectedValue, path: path.projectedValue).body)
 
-        let bytes = Wire.encode(patch, generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/ModalStack")
+        try Fixtures.check(patch, against: "pages/ModalStack")
     }
 }

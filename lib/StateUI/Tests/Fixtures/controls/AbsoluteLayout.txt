@@ -1,4 +1,3 @@
-generation 1 names +7
 AbsoluteLayout 1 arranged(2)
   ColorBox 2
     absoluteLayoutBounds: numbers 0,0,1,0.5

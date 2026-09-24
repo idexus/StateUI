@@ -1,4 +1,3 @@
-generation 1 names +16
 TabbedView 1 arranged(2)
   barBackgroundColor: color FF512BD4
   currentPage: number 1

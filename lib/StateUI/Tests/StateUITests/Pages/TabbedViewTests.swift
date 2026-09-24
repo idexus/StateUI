@@ -259,12 +259,7 @@ final class TabbedViewTests: XCTestCase {
 
         // As the message that brings the tabs carries them - with the caption
         // and picture each page wrote into its session on the way in.
-        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/TabbedView")
+        try Fixtures.check(Renders().settled(tree), against: "pages/TabbedView")
     }
 
     // MARK: - What comes back

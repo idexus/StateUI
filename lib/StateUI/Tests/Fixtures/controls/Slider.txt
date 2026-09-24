@@ -1,4 +1,3 @@
-generation 1 names +8
 Slider 1
   maximum: number 100
   minimum: number 0

@@ -149,12 +149,7 @@ final class SplitViewTests: XCTestCase {
 
         // As the message that brings the pages carries them - with the title
         // each wrote into its session on the way in.
-        let bytes = Wire.encode(Renders().settled(tree), generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/SplitView")
+        try Fixtures.check(Renders().settled(tree), against: "pages/SplitView")
     }
 
     // MARK: - What comes back

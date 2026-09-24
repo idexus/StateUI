@@ -1,4 +1,3 @@
-generation 1 names +4
 Button 1
   aspect: enum fit(0)
   icon: string "tab_list.png"

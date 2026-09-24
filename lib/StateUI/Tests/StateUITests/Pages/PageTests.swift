@@ -610,13 +610,7 @@ final class PageTests: XCTestCase {
     /// slot are in the deterministic message that brings it. It lives under
     /// `pages/` because a page is not a styleable control.
     func testThePageIsWrittenDown() throws {
-        let bytes = Wire.encode(
-            Self.arrived(EveryPropertyPage()), generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/Page")
+        try Fixtures.check(Self.arrived(EveryPropertyPage()), against: "pages/Page")
     }
 
     /// The window is written down whole too: every property its session can
@@ -624,12 +618,6 @@ final class PageTests: XCTestCase {
     /// window carrying all of it, as they read the page. Beside the page's,
     /// under `pages/`, a window being no styleable control either.
     func testTheWindowIsWrittenDown() throws {
-        let bytes = Wire.encode(
-            Renders().settled(EveryPropertyWindow.node), generation: 1, dictionary: WireDictionary())
-
-        try Fixtures.check(
-            bytes,
-            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/Window")
+        try Fixtures.check(Renders().settled(EveryPropertyWindow.node), against: "pages/Window")
     }
 }

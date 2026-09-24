@@ -1,4 +1,3 @@
-generation 2
 Border "panel"
   opacity: number 0.25
   opacity travels over 200ms cubicOut(5)

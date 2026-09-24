@@ -1,32 +1,32 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a REGISTRATION looks like on the wire, and the two guards that keep the
+// What a REGISTRATION looks like in a patch, and the two guards that keep the
 // driven surface and the flown surface in step.
 //
-// A registration is the whole of what a driven property ever says: nine
-// bytes, once, and then the value moves on the image where no message can see
-// it. So these fixtures are the contract for the one field that decides
-// whether the host reads a property off its own frames or off the tree.
+// A registration is the whole of what a driven property ever says: once, and
+// then the value moves on the image where no patch can see it. So these
+// fixtures are the contract for the one field that decides whether the host
+// reads a property off its own frames or off the tree.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
-final class DrivenWireTests: XCTestCase {
+final class DrivenPatchTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Renderer.shared.clearInvalidation()
 
-        // The numbering starts over, so these bytes are the same whichever
+        // The numbering starts over, so these patches are the same whichever
         // test read them first: a state's number is issued from a counter the
         // whole process shares. See Renderer+Cycle.swift.
         Renderer.shared.clearStates()
     }
 
-    /// Wraps a view the way a message is rooted - the application, its scene,
-    /// the scene's main window and a page - so the fixture is a whole message
+    /// Wraps a view the way a render is rooted - the application, its scene,
+    /// the scene's main window and a page - so the fixture is a whole render
     /// rather than a fragment.
-    private func message(_ content: Node) -> Node {
+    private func rooted(_ content: Node) -> Node {
         var main = Node(type: "Window", children: [
             Node(type: "Page", children: [content]),
         ])
@@ -39,13 +39,7 @@ final class DrivenWireTests: XCTestCase {
     }
 
     private func check(_ tree: Node, against name: String) throws {
-        let differ = Differ()
-        let dictionary = WireDictionary()
-        let names = WireNames()
-        let result = differ.reconcile(nil, with: tree)
-        let bytes = Wire.encode(result.patch, generation: 1, dictionary: dictionary)
-
-        try Fixtures.check(bytes, sidecar: WireProbe.dumpMessage(bytes, names: names), against: name)
+        try Fixtures.check(Differ().reconcile(nil, with: tree).patch, against: name)
     }
 
     // MARK: - The fixtures
@@ -60,7 +54,7 @@ final class DrivenWireTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
 
         try check(
-            message(
+            rooted(
                 Border { Label("dimmed") }
                     .opacity(0.5)
                     .opacity(fade.projectedValue)
@@ -85,7 +79,7 @@ final class DrivenWireTests: XCTestCase {
         let side = State(wrappedValue: Alignment.center)
 
         try check(
-            message(
+            rooted(
                 VStack {
                     Label("bound")
                         .fontSize(size.projectedValue)
@@ -153,17 +147,17 @@ final class DrivenWireTests: XCTestCase {
         let box = ColorBox().color(colour.projectedValue)
 
         try check(
-            message(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body),
+            rooted(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body),
             against: "state-modifiers")
     }
 
-    /// Text, which has no lanes and no journey: it is written when the bytes
-    /// change and never walked to.
+    /// Text, which has no lanes and no journey: it is written when it changes
+    /// and never walked to.
     func testDrivenTextIsWrittenDown() throws {
         let caption = State(wrappedValue: "60%")
 
         try check(
-            message(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body),
+            rooted(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body),
             against: "state-text")
     }
 
@@ -172,7 +166,7 @@ final class DrivenWireTests: XCTestCase {
         let name = State(wrappedValue: "Ada")
 
         try check(
-            message(VStack {
+            rooted(VStack {
                 // A handler BESIDE the state, so the host side can prove the
                 // state's own words raise no event.
                 TextField(name.projectedValue).onTextChanged { _ in }
@@ -188,7 +182,7 @@ final class DrivenWireTests: XCTestCase {
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30, second: 5))
 
         try check(
-            message(VStack {
+            rooted(VStack {
                 DatePicker(due.projectedValue).onDateChanged { _ in }
                 TimePicker(alarm.projectedValue)
             }.body),
@@ -201,7 +195,7 @@ final class DrivenWireTests: XCTestCase {
         let steps = State(wrappedValue: 3.0)
 
         try check(
-            message(VStack {
+            rooted(VStack {
                 Slider().value(level.projectedValue)
                 Stepper().value(steps.projectedValue)
             }.body),
@@ -218,7 +212,7 @@ final class DrivenWireTests: XCTestCase {
         let level = State(wrappedValue: 0.5)
 
         try check(
-            message(VStack {
+            rooted(VStack {
                 Slider().value(level.projectedValue)
                 ColorBox().width(level.projectedValue)
             }.body),
@@ -237,7 +231,7 @@ final class DrivenWireTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         try check(
-            message(
+            rooted(
                 PlacedLayout(["a", "b"], id: \.self) { Label($0) }
                     .shade(ColorBox(.black))
                     .placement(run.projectedValue)
@@ -250,7 +244,7 @@ final class DrivenWireTests: XCTestCase {
     /// asking a state for its number is what issues one, and a Dictionary has no
     /// order at all - Swift salts its hashing per process, so numbering them as
     /// they happen to be stored would give one tree different numbers in two
-    /// runs, and a fixture's bytes are a contract.
+    /// runs, and a fixture is a contract.
     ///
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.
@@ -261,7 +255,7 @@ final class DrivenWireTests: XCTestCase {
 
         _ = differ.reconcile(
             nil,
-            with: message(Label("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
+            with: rooted(Label("x").translationX(moved.projectedValue).opacity(faded.projectedValue).body))
 
         XCTAssertEqual(faded.number, 1, "opacity sorts before translationX")
         XCTAssertEqual(moved.number, 2)
