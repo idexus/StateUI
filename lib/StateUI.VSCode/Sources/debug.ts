@@ -300,7 +300,10 @@ export interface AndroidDebugger {
  * runs in its sandbox: the device named in the address, whichever others are
  * attached, and the libraries read from the build, which kept them unstripped.
  * The runtime raises SIGSEGV and SIGBUS on purpose - its null and suspend
- * checks - so they pass to it without stopping the session.
+ * checks - so they pass to it without stopping the session. LLDB does not
+ * follow the code the runtime's JIT compiles: announced to it method by
+ * method, each stopping the whole application, over USB it froze the UI
+ * thread for seconds.
  */
 export function androidAttach(name: string, serial: string, server: AndroidDebugger): vscode.DebugConfiguration {
     return {
@@ -309,6 +312,7 @@ export function androidAttach(name: string, serial: string, server: AndroidDebug
         name,
         stopOnEntry: false,
         initCommands: [
+            "settings set plugin.jit-loader.gdb.enable off",
             "platform select remote-android",
             `platform connect unix-abstract-connect://${serial}/${server.socket}`,
             `settings append target.exec-search-paths ${server.symbols}`,

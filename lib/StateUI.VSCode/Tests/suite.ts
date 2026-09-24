@@ -297,6 +297,7 @@ export async function run(): Promise<void> {
                 debugLine.endsWith(`${helloWorld.directory} debug emulator-5554 --debugger`)
                 && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach"
                 && JSON.stringify(debugged.resolved.initCommands) === JSON.stringify([
+                    "settings set plugin.jit-loader.gdb.enable off",
                     "platform select remote-android",
                     "platform connect unix-abstract-connect://emulator-5554/com.stateui.helloworld/stateui-debugger.sock",
                     "settings append target.exec-search-paths /build/symbols/arm64-v8a",

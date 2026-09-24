@@ -113,7 +113,8 @@ it listens and which process to attach to. From a terminal, with the toolchain's
 ```bash
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554 --no-logcat --debugger
 cat apps/Gallery/.build-android/debugger.json
-lldb -o "platform select remote-android" \
+lldb -o "settings set plugin.jit-loader.gdb.enable off" \
+     -o "platform select remote-android" \
      -o "platform connect unix-abstract-connect://emulator-5554/com.stateui.gallery/stateui-debugger.sock" \
      -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build-android/symbols/arm64-v8a" \
      -o "process attach --pid <process from debugger.json>" \
@@ -123,7 +124,10 @@ lldb -o "platform select remote-android" \
 The libraries are read from the build, which kept them unstripped; they must
 be the ones installed, so the application is always run through the script
 before it is attached to. Android's runtime raises SIGSEGV and SIGBUS on purpose,
-and the debugger passes them to it rather than stopping. End a session by
+and the debugger passes them to it rather than stopping. Nor does the debugger
+follow the code the runtime's JIT compiles: the runtime announces each method
+it compiles, and a debugger that reads each announcement stops the whole
+application every time - over USB, opening a page took seconds. End a session by
 detaching - stopping the debugger itself leaves its breakpoints in the
 application, which the next of them then ends.
 
