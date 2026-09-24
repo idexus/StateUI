@@ -140,6 +140,12 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidPickerView)?.onChosen?(Int(index))
             }
         }
+        let canvasTouched: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat) -> Void = {
+            _, _, number, phase, x, y in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidCanvasView)?.touched(phase: phase, at: Point(Double(x), Double(y)))
+            }
+        }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.laidOut()
@@ -181,6 +187,7 @@ enum JavaNatives {
             ("pickerOpened", "(J)V", unsafeBitCast(pickerOpened, to: UnsafeMutableRawPointer.self)),
             ("pickerClosed", "(J)V", unsafeBitCast(pickerClosed, to: UnsafeMutableRawPointer.self)),
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
+            ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),

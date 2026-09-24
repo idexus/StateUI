@@ -19,7 +19,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ActivityIndicator](ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
 | [Border](Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
 | [Button](Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 47 ✅ · 1 ☑️ |  |  |
-| [Canvas](Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  |  |  |  |
+| [Canvas](Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [CheckBox](CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [ColorBox](ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
 | [DatePicker](DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  |  |  |  |

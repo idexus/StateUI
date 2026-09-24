@@ -129,6 +129,10 @@ enum JavaAPI {
         compoundButton, "setButtonTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getButtonTintList = Java.method(
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
+    static let canvasView = Java.findClass("stateui/android/StateUICanvasView")
+    static let newCanvasView = Java.method(canvasView, "<init>", "(Landroid/content/Context;JF)V")
+    static let setDrawing = Java.method(canvasView, "setDrawing", "([I[F[Ljava/lang/String;)V")
+
     static let shapeView = Java.findClass("stateui/android/StateUIShapeView")
     static let newShapeView = Java.method(shapeView, "<init>", "(Landroid/content/Context;)V")
     static let setShapeGeometry = Java.method(shapeView, "setGeometry", "(I[F[FZ)V")

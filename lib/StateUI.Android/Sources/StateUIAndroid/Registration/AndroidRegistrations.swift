@@ -20,6 +20,7 @@ enum AndroidRegistrations {
         layouts(registry)
         pictures(registry)
         shapes(registry)
+        drawing(registry)
         indicators(registry)
         shared(registry)
 

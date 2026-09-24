@@ -29,6 +29,11 @@ Button
   clicked()
   pressed()
   released()
+Canvas
+  drawable
+  dragged()
+  pressed()
+  released()
 CheckBox
   isEnabled
   isOn

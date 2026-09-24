@@ -72,6 +72,9 @@ final class StateUIHost {
     /** The user chose a picker's option at `index`. */
     static native void chose(long view, int index);
 
+    /** A finger went down on a canvas - 0 - moved on it - 1 - or was lifted - 2 - at a point in points. */
+    static native void canvasTouched(long view, int phase, float x, float y);
+
     /** The window's views were laid out or scrolled: what stands where may have moved. */
     static native void laidOut();
 

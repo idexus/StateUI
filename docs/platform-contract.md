@@ -76,7 +76,7 @@ host that creates or interprets it.
 | `Application` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `Border` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Button` | native | ✅ | ✅ |  |  | ✅ |  |  |
-| `Canvas` | native | ✅ | ✅ |  |  |  |  |  |
+| `Canvas` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `CheckBox` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `ColorBox` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Content` | structure | ✅ | ✅ |  |  |  |  |  |
@@ -440,7 +440,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
 | [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
 | [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 47 ✅ · 1 ☑️ |  |  |
-| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  |  |  |  |
+| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
 | [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  |  |  |  |
@@ -540,7 +540,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Border](controls/Border.md) | `shape`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | ✅ |  |  |  |  |  |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  |  | ✅ |  |  |
-| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | ✅ |  |  |  |  |  |
+| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | ✅ |  |  | ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ | ✅ |  |  | ✅ |  |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | ✅ | ✅ |  |  | ✅ |  |  |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | ✅ |  |  |  |  |  |  |

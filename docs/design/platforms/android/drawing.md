@@ -95,3 +95,17 @@ brush, the outline and the placement one call each. The fill is the brush
 every shape of the host's paints with; the outline is a colour - a gradient's
 first - and its dashes count in the outline's width, as StateUI's do. A
 shape asks for no room of its own.
+
+## A canvas
+
+A canvas is one view of the host's that replays the drawing's instructions on
+its own canvas, in the order they were written, inside its bounds, in points:
+the canvas is scaled once by the display's density. The whole drawing
+crosses in one call - each instruction's kind, colours, flags and the index
+of its text as ints, its numbers as floats, its text as strings - so a
+drawing of a thousand instructions is one crossing, not a thousand. A record
+that does not read whole is left out, as every host leaves it out. A path's
+arcs come as the shared parser's curves; an arc of an ellipse is Android's
+own. Text wraps within its rectangle, stands across and down it as the
+instruction says, and is cut at its edges. A finger's press, drag and release
+come back in points; the canvas asks for no room of its own.
