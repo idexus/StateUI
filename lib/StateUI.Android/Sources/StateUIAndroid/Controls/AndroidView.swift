@@ -71,11 +71,17 @@ class AndroidView {
     }
 
     private func listen(on object: jobject, _ setters: [jmethodID]) {
-        let listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
-        withExtendedLifetime(listener) {
-            for setter in setters { Java.call(object, setter, .object(listener.reference)) }
-        }
+        for setter in setters { Java.call(object, setter, .object(listener.reference)) }
     }
+
+    /// The one listener forwarding what the user does to this view, whichever of its interfaces a setter takes.
+    private(set) lazy var listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
+
+    /// The gestures the view's element listens for, as last told to its listener.
+    var gestures = Gestures.none
+
+    /// What the view does with a gesture its element listens for.
+    var onGesture: ((Gesture) -> Void)?
 
     // MARK: - What every view takes
 
@@ -301,6 +307,7 @@ class AndroidView {
         onTapped = nil
         onMenuOpening = nil
         onMenuChose = nil
+        onGesture = nil
     }
 
     /// Asks Android to measure and place this view and its ancestors again.

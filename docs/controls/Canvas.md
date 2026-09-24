@@ -103,19 +103,19 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `margin` | property | `Insets` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `panYChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `tapCount` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  | ✅ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `tapCount` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `onTapped` (`tapped`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  | ✅ |  |  |  |

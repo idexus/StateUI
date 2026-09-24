@@ -78,6 +78,16 @@ enum JavaNatives {
                 AndroidView.find(number)?.menuChose(Int(item))
             }
         }
+        let gestured: @convention(c) (Environment, jclass?, jlong, jint, jint, jfloat, jfloat, jfloat) -> Void = {
+            _, _, number, kind, phase, x, y, z in
+            MainActor.assumeIsolated {
+                guard let view = AndroidView.find(number),
+                      let gesture = AndroidView.Gesture(
+                        kind: kind, phase: phase, x: Double(x), y: Double(y), z: Double(z))
+                else { return }
+                view.onGesture?(gesture)
+            }
+        }
         let menuOpening: @convention(c) (Environment, jclass?, jlong, jobject?) -> Void = { _, _, number, menu in
             nonisolated(unsafe) let menu = menu
             MainActor.assumeIsolated {
@@ -216,6 +226,7 @@ enum JavaNatives {
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
+            ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),

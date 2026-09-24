@@ -218,6 +218,19 @@ final class AndroidRenderer {
         pump()
     }
 
+    /// The number a gesture channel's state stands at; nil for no such state.
+    func standingGestureValue(state: Int32) -> Double? {
+        core.gestureValue(state: state)
+    }
+
+    /// Moves a gesture channel's state to `value`, and draws what that moves; whether it moved.
+    @discardableResult
+    func takeGestureValue(_ value: Double, state: Int32) -> Bool {
+        guard core.moveGestureValue(value, state: state) else { return false }
+        displayCycle.drain(now: frameClock.now())
+        return true
+    }
+
     /// Queues a page's phase: it runs in its turn, and is rendered before anything after it.
     /// Design: docs/design/platforms/android/pages.md#a-pages-phases
     func enqueuePhase(_ handler: Int32) {

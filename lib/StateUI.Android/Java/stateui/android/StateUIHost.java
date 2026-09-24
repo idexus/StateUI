@@ -37,7 +37,7 @@ final class StateUIHost {
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
 
-    /** One of a view's menu entries was chosen - a bar's action, a context menu's item - by its place among the items. */
+    /** One of a view's menu items was chosen - a bar's action, a context menu's item - by its place among them. */
     static native void menuChose(long view, int item);
 
     /** The user asks for a view's context menu - a long press, a secondary click - for Swift to write into `menu`. */
@@ -84,6 +84,13 @@ final class StateUIHost {
      * a script's value as text.
      */
     static native void answered(long ticket, boolean accepted, String words);
+
+    /**
+     * A gesture on a view, as `StateUIGestures` numbers its kind: a tap; a pan's phase and its distance so far;
+     * a swipe's direction; a pinch's phase, its scale since the last and where it is centred; the pointer
+     * entering, moving, pressing, releasing or leaving, and where - all in points.
+     */
+    static native void gestured(long view, int kind, int phase, float x, float y, float z);
 
     /** A web view's navigation started: why, as StateUI numbers it, and where it is going. */
     static native void webNavigating(long view, int cause, String address);

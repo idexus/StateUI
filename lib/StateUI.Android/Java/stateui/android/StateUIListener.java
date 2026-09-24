@@ -17,12 +17,15 @@ import android.widget.TextView;
 /** What the user does to one view, forwarded to the Swift view by its number. */
 final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
-        View.OnScrollChangeListener, View.OnTouchListener, View.OnCreateContextMenuListener,
+        View.OnScrollChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnCreateContextMenuListener,
         ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
 
     /** Whether a finger holds the view, as its touches last said. */
     private boolean holding;
+
+    /** The gestures the view's element listens for; none before it first listens for one. */
+    private StateUIGestures gestures;
 
     StateUIListener(long view) {
         this.view = view;
@@ -80,7 +83,17 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
         StateUIHost.scrolled(view);
     }
 
-    /** Says when a finger takes hold of the view and when it lets go; the view handles the touch itself. */
+    /** Which gestures `touched`'s element listens for; see `StateUIGestures.configure`. */
+    void setGestures(View touched, float density, int taps, int panFingers, int swipeDirections,
+                     float swipeThreshold, boolean pinch, boolean pointer) {
+        if (gestures == null) gestures = new StateUIGestures(touched, view, density);
+        gestures.configure(taps, panFingers, swipeDirections, swipeThreshold, pinch, pointer);
+    }
+
+    /**
+     * Says when a finger takes hold of the view and when it lets go, and follows the gestures its element
+     * listens for; the view handles the touch itself unless a gesture takes it.
+     */
     @Override
     public boolean onTouch(View touched, MotionEvent event) {
         int action = event.getActionMasked();
@@ -89,7 +102,12 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
             holding = !ends;
             StateUIHost.held(view, holding);
         }
-        return false;
+        return gestures != null && gestures.onTouch(event);
+    }
+
+    @Override
+    public boolean onHover(View hovered, MotionEvent event) {
+        return gestures != null && gestures.onHover(event);
     }
 
     @Override

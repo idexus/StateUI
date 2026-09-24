@@ -24,6 +24,9 @@ final class AndroidElement: NativeElement {
     /// Whether a label shows its spans' runs rather than its own words.
     var hasRuns = false
 
+    /// Where the states a pan carries stood as it started.
+    var panFrom = (x: 0.0, y: 0.0)
+
     /// Whether this page tree is shown, as its pages last heard; and what an arrangement showed before a patch.
     var pagePresented = false
     private var previouslyShown: [MountedElement] = []
@@ -69,7 +72,7 @@ final class AndroidElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
-        view?.setTapped(element.handler(.tapped) == nil ? nil : { [weak self] in self?.send(.tapped, []) })
+        configureGestures()
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)

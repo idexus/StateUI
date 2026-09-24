@@ -311,6 +311,9 @@ WebView
   minimumHeight
   minimumWidth
   opacity
+  panTouchCount
+  panXChannel
+  panYChannel
   pivotX
   pivotY
   rotation
@@ -319,11 +322,22 @@ WebView
   scale
   scaleX
   scaleY
+  swipeDirection
+  swipeThreshold
+  tapCount
   translationX
   translationY
   verticalAlignment
   width
   frameChanged()
+  panUpdated()
+  pinchUpdated()
+  pointerEntered()
+  pointerExited()
+  pointerMoved()
+  pointerPressed()
+  pointerReleased()
+  swiped()
   tapped()
 (acts)
   alert()

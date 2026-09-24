@@ -232,10 +232,11 @@ extension AndroidView {
         _ = Java.callBool(reference, JavaAPI.performClick)
     }
 
-    /// Puts a finger down at `x`, `y` pixels of the view, or lifts it there, as the user does.
-    func touch(_ action: Int32, x: Float, y: Float) {
+    /// Puts a finger down at `x`, `y` pixels of the view, moves it there, or lifts it there, `at` milliseconds
+    /// into the touch, as the user does.
+    func touch(_ action: Int32, x: Float, y: Float, at time: Int64 = 0) {
         let event = Java.callStaticObject(
-            TestJava.motionEvent, TestJava.obtain, .long(0), .long(0), .int(action), .float(x), .float(y), .int(0))
+            TestJava.motionEvent, TestJava.obtain, .long(0), .long(time), .int(action), .float(x), .float(y), .int(0))
         _ = Java.callBool(reference, TestJava.dispatchTouchEvent, .object(event))
         Java.call(event!, TestJava.recycle)
         Java.release(local: event)

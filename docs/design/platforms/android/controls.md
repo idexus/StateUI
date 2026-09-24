@@ -198,3 +198,21 @@ made; the rest are the view's own. A view the element says nothing of is as
 it is of itself: a text is met, a layout as Android decides, so its own
 presence is read once, before the element first says. Android marks a
 heading but not its level.
+
+## Gestures
+
+A view has one listener, and the gestures its element listens for are told
+apart there from the touches and the hovering pointer the view gets: taps
+counted, a pan and the fingers it takes, a swipe, a pinch, and the pointer.
+Each reaches Swift through one native, in points. One tap is the view's click,
+which keeps what a click brings; two or more are counted from quick taps near
+each other. A pan is measured on the screen from where the finger went down,
+since a view that follows its pan moves where its own touches are measured;
+it starts past the platform's slop and, once started, takes the rest of the
+touch - the view's own press and click are called off. A view that listens for
+a pan, a swipe or a pinch keeps its touch from a scroller around it, so a drag
+that starts on it is its own. A swipe is the axis the finger moved most along,
+past its threshold, in a direction asked for. A pinch starts once Android
+tells it apart - past its own slop, as a pan does - scales from there, and ends
+where it was last centred. A view with no handling of its own is given the
+whole touch; a control keeps its own.

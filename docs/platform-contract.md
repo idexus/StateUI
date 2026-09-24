@@ -409,20 +409,20 @@ which a host serves without a member of its own.
 | `gridRowSpan` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `horizontalAlignment` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `margin` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
-| `panTouchCount` | [View](controls/tiers/View.md) | property | ✅ | ☑️ |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `panXChannel` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `panYChannel` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `swipeDirection` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `swipeThreshold` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `onSwiped` (`swiped`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  |  |  |  |
-| `tapCount` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  |  |  |  |
+| `panTouchCount` | [View](controls/tiers/View.md) | property | ✅ | ☑️ |  |  | ✅ |  |  |
+| `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `panXChannel` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `panYChannel` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPointerEntered` (`pointerEntered`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPointerExited` (`pointerExited`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPointerMoved` (`pointerMoved`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPointerPressed` (`pointerPressed`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `onPointerReleased` (`pointerReleased`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `swipeDirection` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `swipeThreshold` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `onSwiped` (`swiped`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
+| `tapCount` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `onTapped` (`tapped`) | [View](controls/tiers/View.md) | event | ✅ | ✅ |  |  | ✅ |  |  |
 | `verticalAlignment` | [View](controls/tiers/View.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 <!-- shared:end -->
@@ -436,42 +436,42 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 39 ✅ · 1 ☑️ |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
-| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 43 ✅ · 1 ☑️ |  |  |
-| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 56 ✅ · 2 ☑️ |  |  |
-| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 42 ✅ · 1 ☑️ |  |  |
-| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 42 ✅ · 1 ☑️ |  |  |
-| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
-| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 51 ✅ · 1 ☑️ |  |  |
-| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 48 ✅ · 1 ☑️ |  |  |
-| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 44 ✅ · 1 ☑️ |  |  |
-| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
-| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
-| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
-| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 53 ✅ · 1 ☑️ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 57 ✅ · 1 ☑️ |  |  |
+| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
+| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
+| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
+| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
+| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ |  |  |
+| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
+| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
+| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
+| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [Map](controls/Map.md) | 76 | 68 ✅ · 6 ☑️ |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
-| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 51 ✅ · 2 ☑️ |  |  |
-| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
-| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
+| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 65 ✅ · 2 ☑️ |  |  |
+| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
+| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 76 | 75 ✅ |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
-| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
-| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [RefreshView](controls/RefreshView.md) | 73 | 72 ✅ |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 46 ✅ · 1 ☑️ |  |  |
-| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
-| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 46 ✅ · 1 ☑️ |  |  |
-| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 44 ✅ · 1 ☑️ |  |  |
+| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ |  |  |
+| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
+| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ |  |  |
+| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
 | [SwipeView](controls/SwipeView.md) | 72 | 71 ✅ |  |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
-| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 51 ✅ · 1 ☑️ |  |  |
-| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 53 ✅ · 1 ☑️ |  |  |
-| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
+| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
+| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
+| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ |  |  |
+| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
-| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 49 ✅ · 1 ☑️ |  |  |
+| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ |  |  |
+| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 
 ### Application structure
 

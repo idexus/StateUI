@@ -59,6 +59,7 @@ enum JavaAPI {
     static let setOnScrollChangeListener = Java.method(
         view, "setOnScrollChangeListener", "(Landroid/view/View$OnScrollChangeListener;)V")
     static let setOnTouchListener = Java.method(view, "setOnTouchListener", "(Landroid/view/View$OnTouchListener;)V")
+    static let setOnHoverListener = Java.method(view, "setOnHoverListener", "(Landroid/view/View$OnHoverListener;)V")
     static let setVerticalScrollBarEnabled = Java.method(view, "setVerticalScrollBarEnabled", "(Z)V")
     static let setHorizontalScrollBarEnabled = Java.method(view, "setHorizontalScrollBarEnabled", "(Z)V")
     static let setScrollbarFadingEnabled = Java.method(view, "setScrollbarFadingEnabled", "(Z)V")
@@ -342,6 +343,7 @@ enum JavaAPI {
 
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
+    static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FIIIFZZ)V")
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
     static let clock = Java.staticMethod(environment, "clock", "()[I")
