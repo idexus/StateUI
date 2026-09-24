@@ -6,17 +6,14 @@ import XCTest
 
 final class NativeProjectTests: XCTestCase {
     /// Every application is one Swift package shared by one head per host: the
-    /// AppKit executable in `Platforms/AppKit` and the MAUI project in
-    /// `Platforms/Maui`, both compiling the same `Sources/`.
+    /// AppKit executable in `Platforms/AppKit` and the Android head in
+    /// `Platforms/Android`, both compiling the same `Sources/`.
     func testEveryApplicationSharesItsSourcesBetweenItsHostHeads() throws {
         for name in ["Gallery", "HelloWorld"] {
             let app = Fixtures.repository.appendingPathComponent("apps/\(name)")
             for relative in [
                 "Package.swift", "Sources", "Resources", "Platforms/AppKit/main.swift",
-                "Platforms/Maui/\(name).csproj", "Platforms/Maui/Host/App.cs",
-                "Platforms/Maui/Host/MauiProgram.cs", "Platforms/Maui/Android/MainActivity.cs",
-                "Platforms/Maui/iOS/AppDelegate.cs", "Platforms/Maui/MacCatalyst/AppDelegate.cs",
-                "Platforms/Maui/Windows/App.xaml.cs", "Platforms/Maui/Linux/Program.cs",
+                "Platforms/Android/build.gradle.kts", "Platforms/Android/Swift/\(name)Android.swift",
             ] {
                 XCTAssertTrue(
                     FileManager.default.fileExists(
@@ -37,62 +34,30 @@ final class NativeProjectTests: XCTestCase {
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
             XCTAssertTrue(entry.contains("StateUIAppKit.run("))
 
-            // The MAUI head compiles the same module: StateUI.targets names it
-            // after the project - Gallery becomes GalleryUI - and finds it in
-            // the application's Sources/, two directories up.
-            let project = try String(
-                contentsOf: app.appendingPathComponent("Platforms/Maui/\(name).csproj"),
-                encoding: .utf8)
-            XCTAssertTrue(project.contains(
-                "<Import Project=\"../../../../.scripts/Maui/StateUI.targets\" />"))
-            XCTAssertTrue(project.contains(
-                "../../../../lib/StateUI.Maui/Sources/StateUI.Maui.csproj"))
-            XCTAssertTrue(project.contains("<AndroidProjectFolder>Android/</AndroidProjectFolder>"))
-
             let registration = try String(
                 contentsOf: app.appendingPathComponent("Sources/\(name)App.swift"),
                 encoding: .utf8)
             XCTAssertTrue(
                 registration.contains("@_cdecl(\"stateui_app_register\")"),
-                "\(name)'s module does not register the application for the MAUI head")
+                "\(name)'s module does not register the application for its Android head")
         }
     }
 
-    /// The MAUI host is a host package beside AppKit's: its runtime, its Linux
-    /// platform and its tests, named by one solution, and built by the scripts
-    /// under `.scripts/Maui`.
-    func testTheMauiHostIsAHostPackageBesideAppKit() throws {
-        let repository = Fixtures.repository
-        for relative in [
-            "lib/StateUI.AppKit/Package.swift",
-            "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
-            "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
-            "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
-            ".scripts/Maui/StateUI.targets",
-            ".scripts/Maui/build-apple.sh",
-            ".scripts/Maui/build-android.sh",
-            ".scripts/Maui/build-linux.sh",
-            ".scripts/Maui/build-windows.ps1",
-            ".scripts/AppKit/build-gallery-appkit.sh",
-        ] {
-            XCTAssertTrue(
-                FileManager.default.fileExists(
-                    atPath: repository.appendingPathComponent(relative).path),
-                "missing \(relative)")
+    /// Every host is Swift, and code in a platform's own language is a relay
+    /// beneath one - Java through JNI, C++ behind a C ABI. No C# source, .NET
+    /// project or solution stands in the tree: there is no host for it.
+    func testNoDotNetProjectStandsInTheTree() throws {
+        // Build output never: Gradle's `build/` and the extension's packages
+        // besides what `entersSources` leaves out.
+        let entered = { (relative: String) -> Bool in
+            Fixtures.entersSources(relative) && !["node_modules", "build"].contains(Fixtures.name(of: relative))
+                && relative != "lib/StateUI/Tests/Fixtures"
+        }
+        let found = try Fixtures.files(under: Fixtures.repository, entering: entered).filter { path in
+            [".cs", ".csproj", ".props", ".targets", ".sln", ".slnx"].contains { path.hasSuffix($0) }
         }
 
-        let solution = try String(
-            contentsOf: repository.appendingPathComponent("StateUI.slnx"), encoding: .utf8)
-        let projects = solution.components(separatedBy: "<Project Path=\"").dropFirst()
-            .compactMap { $0.components(separatedBy: "\"").first }
-
-        XCTAssertEqual(Set(projects), [
-            "apps/Gallery/Platforms/Maui/Gallery.csproj",
-            "apps/HelloWorld/Platforms/Maui/HelloWorld.csproj",
-            "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
-            "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
-            "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
-        ])
+        XCTAssertEqual(found, [], "a .NET source or project with no host to build it")
     }
 
     /// The Android Views host is a Swift package beside AppKit's, with its Java
@@ -223,44 +188,6 @@ final class NativeProjectTests: XCTestCase {
         }
 
         XCTAssertEqual(offenders, [], "these name a host in code every host runs")
-    }
-
-    /// Every Swift module the MAUI host compiles is compiled with the MAUI
-    /// condition - the library and the application alike, on every platform -
-    /// so no block under `#if MAUI` is left out of one of its builds.
-    func testEveryMauiSwiftBuildDefinesTheMauiCondition() throws {
-        let scripts = Fixtures.repository.appendingPathComponent(".scripts/Maui")
-
-        // Each command of a script on one line: a shell line continued with a
-        // backslash, and a PowerShell one with a backtick, joined back up.
-        func commands(_ name: String) throws -> [String] {
-            try String(contentsOf: scripts.appendingPathComponent(name), encoding: .utf8)
-                .replacingOccurrences(of: "\\\n", with: " ")
-                .replacingOccurrences(of: "`\n", with: " ")
-                .components(separatedBy: "\n")
-        }
-
-        // SwiftPM compiles the library and the application in one build.
-        for name in ["build-android.sh", "build-linux.sh"] {
-            let builds = try commands(name).filter { $0.contains("\"$SWIFT_BIN\" build") }
-            XCTAssertFalse(builds.isEmpty, "\(name) runs no swift build")
-            for build in builds {
-                XCTAssertTrue(build.contains("-Xswiftc -DMAUI"), "\(name) builds without MAUI: \(build)")
-            }
-        }
-
-        // swiftc compiles each module with one set of arguments.
-        let apple = try String(
-            contentsOf: scripts.appendingPathComponent("build-apple.sh"), encoding: .utf8)
-        let compileArgs = apple.components(separatedBy: "COMPILE_ARGS=(").dropFirst().first?
-            .components(separatedBy: "\n)").first ?? ""
-        XCTAssertTrue(compileArgs.contains("-D MAUI"), "build-apple.sh compiles without MAUI")
-        XCTAssertTrue(apple.contains("swiftc \"${COMPILE_ARGS[@]}\""))
-
-        let windows = try commands("build-windows.ps1")
-            .filter { $0.contains("& swiftc") && $0.contains(" -c ") }
-        XCTAssertEqual(windows.count, 1, "build-windows.ps1 has one compile step")
-        XCTAssertTrue(windows.allSatisfy { $0.contains("-D MAUI") }, "build-windows.ps1 compiles without MAUI")
     }
 
     /// Every application DEFINES THE APPKIT CONDITION IN ITS MANIFEST, for

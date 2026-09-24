@@ -18,7 +18,6 @@ ToolbarItems declares no members of its own.
 
 Realization:
 
-- **MAUI**: `ToolbarItem`
 - **AppKit**: `NSToolbarItem`; `NSMenuToolbarItem` overflow
 - **UIKit**: `UIBarButtonItem`
 - **GTK 4**: `GtkButton` in `GtkHeaderBar`

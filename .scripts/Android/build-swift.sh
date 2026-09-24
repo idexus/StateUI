@@ -5,7 +5,7 @@
 # Builds an application's Swift for Android: the one owner of that build.
 #
 # USAGE:
-#   build-swift.sh <app-package-dir> <product> <out-dir> [condition...]
+#   build-swift.sh <app-package-dir> <product> <out-dir>
 #
 #   app-package-dir  the application's folder, holding Package.swift
 #   product          the dynamic library Android loads, e.g. HelloWorldAndroid
@@ -13,8 +13,6 @@
 #                    stripped - and symbols/<abi>/, the same libraries unstripped
 #                    for ndk-stack and a debugger; and ndk-root, the NDK the
 #                    build used, whose lldb-server the debugger runs
-#   condition        a compilation condition for every module, the library's
-#                    included - MAUI for the MAUI head, none for Android Views
 #
 # Environment:
 #   SWIFT_CONFIG=debug|release   (default: debug)
@@ -30,11 +28,9 @@ set -euo pipefail
 APP_PACKAGE="${1:-}"
 PRODUCT="${2:-}"
 OUT_ROOT="${3:-}"
-shift 3 || true
-CONDITIONS=("$@")
 
 if [[ -z "$APP_PACKAGE" || -z "$PRODUCT" || -z "$OUT_ROOT" ]]; then
-  echo "USAGE: $0 <app-package-dir> <product> <out-dir> [condition...]"
+  echo "USAGE: $0 <app-package-dir> <product> <out-dir>"
   exit 1
 fi
 [[ -f "$APP_PACKAGE/Package.swift" ]] || { echo "ERROR: no Package.swift in $APP_PACKAGE"; exit 1; }
@@ -141,7 +137,7 @@ STRIP="$NDK_BIN/llvm-strip"
 echo "Swift SDK:  $SDK_ID ($SDK_BUILD)"
 echo "compiler:   $SWIFT_BIN"
 echo "NDK:        $NDK_ROOT"
-echo "build:      $PRODUCT, $CONFIG, conditions: ${CONDITIONS[*]:-none}"
+echo "build:      $PRODUCT, $CONFIG"
 
 triple_of () {
   case "$1" in
@@ -158,11 +154,6 @@ ndk_arch_of () {
   esac
 }
 
-condition_flags=()
-for condition in ${CONDITIONS[@]+"${CONDITIONS[@]}"}; do
-  condition_flags+=(-Xswiftc "-D$condition")
-done
-
 swift_build () {
   "$SWIFT_BIN" build \
     --package-path "$APP_PACKAGE" \
@@ -170,7 +161,6 @@ swift_build () {
     --swift-sdk "$SDK_ID" \
     --triple "$1" \
     -c "$CONFIG" \
-    ${condition_flags[@]+"${condition_flags[@]}"} \
     "${@:2}"
 }
 

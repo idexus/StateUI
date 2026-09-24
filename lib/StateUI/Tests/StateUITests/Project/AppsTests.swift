@@ -5,13 +5,11 @@
 // one.
 //
 // An application lives under apps/<Name>/ and states every connection to the
-// repository as a relative path - to the MAUI host's projects, to the build
-// targets, to the library's Swift packages. A path that no longer resolves
-// fails late and platform by platform: NuGet cannot restore, SwiftPM cannot
-// resolve, or the build imports nothing - each with a message about the
-// symptom rather than the move that caused it. These tests read the paths out
-// of the files and resolve them here, so a moved directory names the file that
-// still points at the old place.
+// repository as a relative path - to the library's Swift packages and to the
+// hosts'. A path that no longer resolves fails late: SwiftPM cannot resolve,
+// with a message about the symptom rather than the move that caused it. These
+// tests read the paths out of the manifests and resolve them here, so a moved
+// directory names the file that still points at the old place.
 //
 // The scaffolder - .scripts/new-app.sh, .scripts/new-app.ps1, and the StateUI
 // extension's "New Application in apps/" that runs them - makes an application by copying
@@ -31,13 +29,10 @@ final class AppsTests: XCTestCase {
 
     // MARK: - The layout
 
-    /// Every application under `apps/` is wired to the repository: its MAUI
-    /// project is named after its directory and titled with that name, every
-    /// relative path the project states resolves from `Platforms/Maui`, its
-    /// Swift manifest declares the target MSBuild derives from the project
-    /// name, `<Name>UI`, every package and target path the manifest names
-    /// resolves, and the one export the host calls by name is declared under
-    /// `Sources/`.
+    /// Every application under `apps/` is wired to the repository: its Swift
+    /// manifest declares the application's module, `<Name>UI`, every package
+    /// and target path the manifest names resolves, and the one export a host
+    /// calls by name is declared under `Sources/`.
     ///
     /// A new application is checked the moment it exists, with nothing to
     /// remember.
@@ -52,47 +47,10 @@ final class AppsTests: XCTestCase {
             // Finder reads a directory named Something.App as a bundle.
             XCTAssertFalse(name.contains("."), "\(name): an application's name holds no dot.")
 
-            let head = app.appendingPathComponent("Platforms/Maui")
-            let csproj = head.appendingPathComponent("\(name).csproj")
-
-            guard FileManager.default.fileExists(atPath: csproj.path) else {
-                XCTFail("\(name): no Platforms/Maui/\(name).csproj - the MAUI project is named "
-                    + "after its application.")
-                continue
-            }
-
-            let project = try String(contentsOf: csproj, encoding: .utf8)
-
-            // Forward slashes, always: MSBuild accepts them on Windows, while a
-            // backslash on macOS is an ordinary character in a file name.
-            XCTAssertFalse(
-                project.contains("..\\"), "\(name).csproj: a backslash in a relative path breaks macOS.")
-
-            // The title is the project's name, so the bundle, the process and
-            // the project are one word. A title of StateUI builds a StateUI.app
-            // around another executable, which reads as if the library were the
-            // application, and gives the application two names: the bundle's on
-            // Apple and the assembly's on Windows.
-            XCTAssertTrue(
-                project.contains("<ApplicationTitle>\(name)</ApplicationTitle>"),
-                "\(name).csproj: ApplicationTitle must be \(name), the project's own name.")
-
-            let relatives = Fixtures.relativePaths(in: project)
-            XCTAssertFalse(
-                relatives.isEmpty,
-                "\(name).csproj states no relative path - its build and its artwork are named that way.")
-
-            for relative in relatives {
-                XCTAssertTrue(
-                    Fixtures.resolves(head.appendingPathComponent(relative).standardizedFileURL),
-                    "\(name).csproj names \(relative), which resolves to nothing from Platforms/Maui.")
-            }
-
             let manifestFile = app.appendingPathComponent("Package.swift")
 
             guard FileManager.default.fileExists(atPath: manifestFile.path) else {
-                XCTFail("\(name): no Package.swift - SourceKit, the Android and Linux builds and "
-                    + "the AppKit head all read one.")
+                XCTFail("\(name): no Package.swift - SourceKit and every head read one.")
                 continue
             }
 
@@ -100,8 +58,7 @@ final class AppsTests: XCTestCase {
 
             // The TARGET, not merely the name somewhere in the file: a manifest
             // whose package and product were renamed and whose target was not
-            // builds on Apple, where build-apple.sh globs the sources, and fails
-            // through SwiftPM alone - Android, Linux and the editor.
+            // is refused by SwiftPM.
             XCTAssertTrue(
                 squeezed(manifest).contains(".target(name:\"\(name)UI\""),
                 "\(name): Package.swift declares no target called \(name)UI - SwiftPM refuses "
@@ -129,7 +86,7 @@ final class AppsTests: XCTestCase {
 
             XCTAssertTrue(
                 registers,
-                "\(name): nothing under Sources/ declares stateui_app_register - the MAUI host "
+                "\(name): nothing under Sources/ declares stateui_app_register - the Android head "
                     + "can never start the application.")
         }
     }
@@ -204,45 +161,6 @@ final class AppsTests: XCTestCase {
         }
     }
 
-    /// The icon's name is the same in four places. Resizetizer names what it
-    /// builds after the `MauiIcon`'s own file, and the platform heads name
-    /// that: an asset catalog entry in both Apple plists and a mipmap in the
-    /// Android manifest. A file renamed and a head missed builds an
-    /// application with no icon, or none at all - on the platform that was
-    /// missed, and only there.
-    func testTheAppIconIsCalledTheSameEverywhere() throws {
-        for application in try Fixtures.applications() {
-            let name = application.lastPathComponent
-            let head = application.appendingPathComponent("Platforms/Maui")
-            let project = try String(
-                contentsOf: head.appendingPathComponent("\(name).csproj"), encoding: .utf8)
-
-            let declared = try XCTUnwrap(
-                project.occurrences(between: "<MauiIcon Include=\"", and: "\"").first,
-                "\(name).csproj declares no MauiIcon - the application has no icon anywhere.")
-            let icon = URL(fileURLWithPath: declared).deletingPathExtension().lastPathComponent
-
-            for (file, spelling) in [
-                ("iOS/Info.plist", "Assets.xcassets/\(icon).appiconset"),
-                ("MacCatalyst/Info.plist", "Assets.xcassets/\(icon).appiconset"),
-                ("Android/AndroidManifest.xml", "@mipmap/\(icon)"),
-            ] {
-                let url = head.appendingPathComponent(file)
-
-                guard FileManager.default.fileExists(atPath: url.path) else {
-                    XCTFail("\(name) has no Platforms/Maui/\(file).")
-                    continue
-                }
-
-                let text = try String(contentsOf: url, encoding: .utf8)
-                XCTAssertTrue(
-                    text.contains(spelling),
-                    "\(name)/Platforms/Maui/\(file) does not say \(spelling) - the icon is called "
-                        + "\(icon) in the project file, and this head names another.")
-            }
-        }
-    }
-
     // MARK: - The scaffolder
 
     /// A new application is HelloWorld under another name. new-app.sh copies
@@ -253,14 +171,7 @@ final class AppsTests: XCTestCase {
     /// and a file the rename does not reach is named here rather than in an
     /// application that builds under one name and runs under another.
     ///
-    /// A destination outside the repository's own `apps/` leaves the solution
-    /// alone. StateUI.slnx is compared whole with a snapshot from before the
-    /// run rather than searched for the name: an application of that name
-    /// legitimately in apps/ would fail a search while the scaffolder behaved.
     func testANewAppIsHelloWorldUnderAnotherName() throws {
-        let solution = Fixtures.repository.appendingPathComponent("StateUI.slnx")
-        let before = try String(contentsOf: solution, encoding: .utf8)
-
         let root = try temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: root) }
 
@@ -307,13 +218,10 @@ final class AppsTests: XCTestCase {
                 "\(relative) still says HelloWorld - the rename missed it.")
         }
 
-        let project = try String(
-            contentsOf: app.appendingPathComponent("Platforms/Maui/Probe.csproj"), encoding: .utf8)
+        let gradle = try String(
+            contentsOf: app.appendingPathComponent("Platforms/Android/build.gradle.kts"), encoding: .utf8)
         XCTAssertTrue(
-            project.contains("<ApplicationTitle>Probe</ApplicationTitle>"),
-            "the new application is not titled with its own name.")
-        XCTAssertTrue(
-            project.contains("<ApplicationId>com.example.probe</ApplicationId>"),
+            gradle.contains("applicationId = \"com.stateui.probe\""),
             "the application identifier is not the new name in lower case.")
 
         let application = try String(
@@ -321,72 +229,11 @@ final class AppsTests: XCTestCase {
         XCTAssertTrue(
             application.contains("stateUIUseApp(ProbeApp())"),
             "the new module does not register its own application.")
-
-        XCTAssertEqual(
-            try String(contentsOf: solution, encoding: .utf8), before,
-            "a new application outside apps/ must leave StateUI.slnx alone.")
-    }
-
-    /// A new application made in the repository's own `apps/` joins the
-    /// solution as `apps/<Name>/Platforms/Maui/<Name>.csproj` - the line the
-    /// IDE needs to see its MAUI head - and joins it once: the same name made
-    /// again, after its directory went, adds no second line.
-    ///
-    /// Run in a copy of the repository's root - the script, the solution and
-    /// HelloWorld without its byproducts - so the real solution is never
-    /// written.
-    func testANewAppInAppsJoinsTheSolutionOnce() throws {
-        let fileManager = FileManager.default
-        let sandbox = try temporaryDirectory()
-        defer { try? fileManager.removeItem(at: sandbox) }
-
-        let script = sandbox.appendingPathComponent(".scripts/new-app.sh")
-        let solution = sandbox.appendingPathComponent("StateUI.slnx")
-        let model = sandbox.appendingPathComponent("apps/HelloWorld")
-
-        try fileManager.createDirectory(
-            at: script.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try fileManager.copyItem(
-            at: Fixtures.repository.appendingPathComponent(".scripts/new-app.sh"), to: script)
-        try fileManager.copyItem(
-            at: Fixtures.repository.appendingPathComponent("StateUI.slnx"), to: solution)
-
-        let copied = Fixtures.files(under: helloWorld)
-        XCTAssertFalse(copied.isEmpty, "apps/HelloWorld holds nothing to make an application from.")
-
-        for relative in copied {
-            let target = model.appendingPathComponent(relative)
-            try fileManager.createDirectory(
-                at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try fileManager.copyItem(at: helloWorld.appendingPathComponent(relative), to: target)
-        }
-
-        let before = try String(contentsOf: solution, encoding: .utf8)
-        let line = "  <Project Path=\"apps/Probe/Platforms/Maui/Probe.csproj\" />\n"
-
-        let first = try run(script, ["Probe"])
-        XCTAssertEqual(first.status, 0, "new-app.sh failed:\n\(first.output)")
-
-        let after = try String(contentsOf: solution, encoding: .utf8)
-        XCTAssertEqual(
-            after.components(separatedBy: line).count - 1, 1,
-            "the solution does not name the new MAUI project exactly once:\n\(after)")
-        XCTAssertEqual(
-            after.replacingOccurrences(of: line, with: ""), before,
-            "joining the solution changed more than the one line:\n\(after)")
-
-        try fileManager.removeItem(at: sandbox.appendingPathComponent("apps/Probe"))
-
-        let second = try run(script, ["Probe"])
-        XCTAssertEqual(second.status, 0, "new-app.sh failed the second time:\n\(second.output)")
-        XCTAssertEqual(
-            try String(contentsOf: solution, encoding: .utf8), after,
-            "the same name made again joined the solution a second time.")
     }
 
     /// The names new-app.sh refuses, each for the reason it cannot build: no
     /// name at all; a dot, which Finder reads as a bundle; a leading digit, a
-    /// hyphen or a space, which no Swift module or C# namespace holds; and
+    /// hyphen or a space, which no Swift module holds; and
     /// StateUI, which is the library. A refused name leaves nothing behind, and
     /// an existing directory is refused rather than written into.
     func testTheScaffolderRefusesANameItCannotBuild() throws {
@@ -421,10 +268,8 @@ final class AppsTests: XCTestCase {
 
     /// The PowerShell half cannot run where these tests run, so it is held to
     /// agreement with the bash half: both copy the same parts of HelloWorld,
-    /// rename inside the same kinds of file, leave the same byproducts behind,
-    /// refuse by the same rule, set the title the same way and register the
-    /// same project line - the pieces that drift first when one script is
-    /// edited without the other.
+    /// rename inside the same kinds of file and refuse by the same rule - the
+    /// pieces that drift first when one script is edited without the other.
     func testTheWindowsScaffolderKeepsStep() throws {
         let sh = try script("new-app.sh")
         let ps = try script("new-app.ps1")
@@ -443,36 +288,10 @@ final class AppsTests: XCTestCase {
             Set(psRenamed), Set(shRenamed),
             "the two scaffolders rename inside different kinds of file.")
 
-        // What HelloWorld's MAUI builds wrote is left behind, by the same two
-        // names in both: each copies the head's children but these.
-        let shLeft = (sh.occurrences(between: "in\n    ", and: ") continue ;;").first ?? "")
-            .split(separator: "|").map(String.init)
-        let psLeft = quoted(ps.occurrences(between: "-notin @(", and: ")").first ?? "")
-        XCTAssertEqual(
-            Set(shLeft), ["bin", "obj"], "new-app.sh copies what HelloWorld's MAUI builds wrote.")
-        XCTAssertEqual(
-            Set(psLeft), Set(shLeft), "the two scaffolders leave different byproducts behind.")
-
-        for piece in [
-            "^[A-Za-z][A-Za-z0-9]*$",
-            "\"StateUI\"",
-            "apps/HelloWorld",
-            "helloworld",
-            ".DS_Store",
-            "<ApplicationTitle>[^<]*</ApplicationTitle>",
-            "StateUI.slnx",
-            "</Solution>",
-        ] {
+        for piece in ["^[A-Za-z][A-Za-z0-9]*$", "\"StateUI\"", "apps/HelloWorld", "helloworld", ".DS_Store"] {
             XCTAssertTrue(sh.contains(piece), "new-app.sh no longer says \(piece)")
             XCTAssertTrue(ps.contains(piece), "new-app.ps1 no longer says \(piece)")
         }
-
-        // The line the solution gains, with each shell's spelling of the name.
-        let project = "apps/$Name/Platforms/Maui/$Name.csproj"
-        XCTAssertTrue(
-            sh.replacingOccurrences(of: "$NAME", with: "$Name").contains(project),
-            "new-app.sh registers something other than \(project).")
-        XCTAssertTrue(ps.contains(project), "new-app.ps1 registers something other than \(project).")
     }
 
     // MARK: - Helpers

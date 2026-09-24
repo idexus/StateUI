@@ -9,8 +9,8 @@ final class ReleaseTests: XCTestCase {
     /// extension's `package.json` states, the release's only home: the
     /// published-package line in the root's and each application's
     /// Package.swift, each Android head's version, the Gallery's AppKit
-    /// bundle, the bug report's example and the MAUI host's packages. A reader
-    /// copying any of them gets this release, not the one before.
+    /// bundle and the bug report's example. A reader copying any of them gets
+    /// this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let manifest = try JSONSerialization.jsonObject(
             with: Data(contentsOf: Fixtures.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
@@ -22,8 +22,6 @@ final class ReleaseTests: XCTestCase {
             (".github/ISSUE_TEMPLATE/bug.yml", "placeholder: StateUI ", ","),
             (".scripts/AppKit/build-gallery-appkit.sh", "CFBundleShortVersionString -string ", " "),
             ("lib/StateUI.Android/Tests/Platforms/Android/build.gradle.kts", "versionName = \"", "\""),
-            ("lib/StateUI.Maui/Sources/StateUI.Maui.csproj", "<Version>", "<"),
-            ("lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj", "<Version>", "<"),
         ]
 
         for application in try Fixtures.applications() {

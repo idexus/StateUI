@@ -18,7 +18,6 @@ Spans declares no members of its own.
 
 Realization:
 
-- **MAUI**: `Label`; `FormattedString` / `Span` runs
 - **AppKit**: `NSTextField` label; `NSAttributedString` runs
 - **UIKit**: `UILabel`; `NSAttributedString` runs
 - **GTK 4**: `GtkLabel`; `PangoAttrList` runs

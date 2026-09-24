@@ -43,8 +43,7 @@ enum AppKitInterop {
 /// `stateUICall` and an `Aim`, reach.
 ///
 /// Said once, from the application's AppKit head, before
-/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`. The MAUI host's
-/// registry of the same name takes the same acts by their names.
+/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind -
@@ -129,9 +128,6 @@ public enum StateUIActs {
 
 /// The events an application raises through this host - the ones no control
 /// raises, heard by every `HostEvents.on`.
-///
-/// The MAUI host's registry of the same name raises the same events by their
-/// names.
 public enum StateUIEvents {
     /// Raises an event of the application's - one no control raises - with the
     /// values its contract declares.
@@ -160,8 +156,7 @@ public enum StateUIEvents {
 /// realized with a view of its own.
 ///
 /// Said once, from the application's AppKit head, before
-/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`. The MAUI host's
-/// registry of the same name adds the same elements by their node types.
+/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a view of its own:

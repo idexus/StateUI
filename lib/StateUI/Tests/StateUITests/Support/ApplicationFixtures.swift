@@ -22,9 +22,8 @@ extension Fixtures {
         "node_modules", "out",
     ]
 
-    /// The endings of byproducts named after their project: an editor writes
-    /// `Gallery.csproj.user` when a head is chosen to run - `*.user`, which
-    /// .gitignore ignores for the same reason.
+    /// The endings of byproducts named after their project - `*.user`, which
+    /// an IDE writes beside a project it has run and .gitignore ignores.
     static let byproductEndings: [String] = [".user"]
 
     /// Every application under `apps/`, sorted by name.
@@ -89,36 +88,6 @@ extension Fixtures {
 
         walk("")
         return found.sorted()
-    }
-
-    /// Whether a path names something that is there. A wildcard in its last
-    /// component - `Images/*.svg`, `Images/art_*.svg` - names at least one
-    /// file the pattern matches, which is what MSBuild's own glob finds.
-    static func resolves(_ url: URL) -> Bool {
-        let last = url.lastPathComponent
-
-        guard last.contains("*") else {
-            return FileManager.default.fileExists(atPath: url.path)
-        }
-
-        let pieces = last.components(separatedBy: "*")
-        let head = pieces.first ?? ""
-        let tail = pieces.count > 1 ? pieces[pieces.count - 1] : ""
-        let names = (try? FileManager.default.contentsOfDirectory(
-            atPath: url.deletingLastPathComponent().path)) ?? []
-
-        return names.contains {
-            $0.hasPrefix(head) && $0.hasSuffix(tail) && $0.count >= head.count + tail.count
-        }
-    }
-
-    /// Every relative path a project file states that climbs out of the
-    /// project's own directory: the `Include`, `Update`, `Project` and
-    /// `ForegroundFile` values beginning with `../`.
-    static func relativePaths(in project: String) -> [String] {
-        ["Include=\"", "Update=\"", "Project=\"", "ForegroundFile=\""]
-            .flatMap { project.occurrences(between: $0, and: "\"") }
-            .filter { $0.hasPrefix("../") }
     }
 
     /// A file of HelloWorld's as it reads under another name: the name

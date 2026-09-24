@@ -14,14 +14,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 ## TabbedView's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `currentPage` | property | `Int` | structure | ✅ |  |  | ✅ |  |  |  |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
-- **MAUI**: `TabbedPage`
 - **AppKit**: `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it
 - **UIKit**: `UITabBarController`
 - **GTK 4**: `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack`
@@ -33,23 +32,23 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 
 The bar a page arrangement draws: its colour.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `barBackgroundColor` | property | `Color` | adaptive | ✅ |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `title` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |

@@ -18,7 +18,6 @@ TrailingContent declares no members of its own.
 
 Realization:
 
-- **MAUI**: structure
 - **AppKit**: structure
 - **UIKit**: structure
 - **GTK 4**: structure

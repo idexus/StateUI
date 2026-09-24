@@ -345,9 +345,9 @@ same value also schedules a save because the host store may not hold it yet.
 
 `ApplicationSession.persistentStorage` defaults to `.preferences`, the host's
 native settings store. `PersistentStorage("name")` selects a host extension
-point with that name; it is usable only when the active host provides it. The
-MAUI host provides named stores through `StateUIStores.Add`; see
-[MAUI host](maui-host.md#a-persistent-store).
+point with that name; it is usable only when the active host provides it. No
+host provides a named store yet: AppKit and Android keep the declared values
+and say so in their log.
 
 ## State kept with a scene
 

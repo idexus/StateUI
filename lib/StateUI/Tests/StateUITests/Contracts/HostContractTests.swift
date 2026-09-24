@@ -240,7 +240,7 @@ final class HostContractTests: XCTestCase {
             vocabulary: "event",
             in: statusRows)
 
-        for host in ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"] {
+        for host in ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"] {
             XCTAssertTrue(document.contains(host), "platform contract does not name \(host)")
         }
         XCTAssertTrue(document.contains("✅ means"), "platform contract does not define completion")

@@ -1,6 +1,4 @@
 [![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
-[![iOS / Mac Catalyst](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml?query=branch%3Amain)
-[![Android](https://github.com/idexus/StateUI/actions/workflows/build-android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-android.yml?query=branch%3Amain)
 [![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
 [![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
 # StateUI
@@ -10,27 +8,19 @@
 identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
-Three hosts are active: AppKit; .NET MAUI, which already runs StateUI
-applications on Android, iOS, Mac Catalyst, Windows, and Linux; and Android
-Views, a Swift host in the application's process. UIKit, WinUI 3, and GTK 4
-follow the same host contract. Web DOM/CSS comes after the native contract is
-settled.
+Every host is Swift, in the application's own process. Two are active, AppKit
+and Android Views; WinUI 3 comes next, then GTK 4 and UIKit, on the same host
+contract. Web DOM/CSS comes after the native contract is settled.
 
-| MAUI - Catalyst, iOS, Android, Windows, Linux | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ☑️ | — | — | ☑️ | — | — |
+| AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| ☑️ | — | — | ☑️ | — | — |
 
 ## In Action
 
-One application, described once in Swift, on two hosts. The .NET MAUI host
-renders it from the wire - here on Windows, under the debugger:
-
-<video src="https://github.com/user-attachments/assets/2807b471-95eb-4073-b393-0d10dc60f404" controls muted loop width="960" height="540" poster="docs/assets/win-poster.png">
-  <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/win.mp4"><img src="docs/assets/win-poster.png" alt="The Gallery on the MAUI host, on Windows" width="960" height="540"></a>
-</video>
-
-The AppKit host draws the same application with macOS controls, in the same
-process as the application module - here the Gallery's Metal sample: the cube
+One application, described once in Swift. The AppKit host draws it with macOS
+controls, in the same process as the application module - here the Gallery's
+Metal sample: the cube
 is an `MTKView` the application registers with the host, and its size, colour
 and spin are described from StateUI. The edge is handed over as a state, so
 dragging the slider rebuilds nothing:
@@ -82,8 +72,8 @@ that is usable now.
   event inventory with verified host coverage.
 - [Control dictionary](docs/controls/README.md) — every control and part of an
   application's structure, member by member, with a mark per platform.
-- [MAUI host](docs/maui-host.md) — platforms, an application's MAUI head,
-  builds, debugging, and C# registrations.
+- [AppKit host](docs/appkit-host.md) and [Android Views host](docs/android-host.md)
+  — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.
@@ -103,14 +93,9 @@ npm run package
 code --install-extension stateui-*.vsix
 ```
 
-For the .NET MAUI host - Android, iOS, Mac Catalyst, Windows, and Linux -
-install the .NET 10 SDK and the MAUI workload (everywhere except Linux, which
-has none). The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds with one Swift release everywhere, Swift 6.4: Xcode 27's
-on macOS and the swift.org 6.4.0 toolchain on the other platforms.
-
-```bash
-dotnet workload install maui
-```
+The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds
+with one Swift release everywhere, Swift 6.4: Xcode 27's on macOS and the
+swift.org 6.4.0 toolchain on the other platforms.
 
 Android asks for more, and builds on macOS only:
 
@@ -121,9 +106,6 @@ Android asks for more, and builds on macOS only:
   Xcode. Xcode's own Swift 6.4 is a different build and cannot read the SDK's
   modules; the build picks the matching toolchain by itself and names the one
   to install when none is there.
-
-[MAUI host](docs/maui-host.md#requirements) lists what each platform needs,
-GTK 4 on Linux among them.
 
 Then open the repository in VS Code:
 
@@ -140,25 +122,17 @@ extension's hosts and commands, including **StateUI: New Application**.
 From a terminal, the same builds are:
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug   # the AppKit Gallery bundle
-.scripts/Maui/run-app.sh maccatalyst            # the MAUI Gallery: ios, linux
-.scripts/test-native.sh                         # the Swift suites
-dotnet test lib/StateUI.Maui/Tests              # the C# suite
+.scripts/AppKit/build-gallery-appkit.sh debug                  # the AppKit Gallery bundle
+.scripts/Android/run-app.sh apps/Gallery debug emulator-5554   # the Android Gallery
+.scripts/test-native.sh                                        # the Swift suites
 ```
 
 ## Continuous integration
 
 Every workflow runs on pushes and pull requests to `main` and `dev`.
 
-### Native
-
-`Tests` runs the StateUI, StateUI.AppKit, and Gallery suites on macOS.
-
-### MAUI
-
-`Tests` also runs the MAUI host's C# suite on Ubuntu. The four platform
-workflows build the Gallery's MAUI head, and the Windows and Linux workflows
-also run the StateUI and C# suites on those hosts.
+`Tests` runs the StateUI, StateUI.AppKit, and Gallery suites on macOS, and
+the Windows and Linux workflows run the StateUI suite on those machines.
 
 ## License
 

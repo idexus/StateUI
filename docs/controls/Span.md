@@ -14,13 +14,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 ## Span's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `background` | property | `Color` | native |  |  |  |  |  |  |  |
 
 Realization:
 
-- **MAUI**: `Label`; `FormattedString` / `Span` runs
 - **AppKit**: `NSTextField` label; `NSAttributedString` runs
 - **UIKit**: `UILabel`; `NSAttributedString` runs
 - **GTK 4**: `GtkLabel`; `PangoAttrList` runs
@@ -32,51 +31,51 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
 What every element showing words has: the words, and the case they are drawn in.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `textCase` | property | `TextCase` | native | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `text` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
+| `textCase` | property | `TextCase` | native | ✅ |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
 How text looks wherever it is drawn: its colour and the space between its letters.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
+| `textColor` | property | `Color` | native |  |  |  |  |  |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
 The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ |  |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  |  |  |  |  |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native |  |  |  |  |  |  |  |
+| `fontSize` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
 How far apart the lines of text are.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineHeight` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `lineHeight` | property | `Double` | native |  |  |  |  |  |  |  |
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)
 
 The lines drawn through or under text.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `textDecorations` | property | `TextDecorations` | native |  |  |  |  |  |  |  |

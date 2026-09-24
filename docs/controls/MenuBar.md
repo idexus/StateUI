@@ -18,7 +18,6 @@ MenuBar declares no members of its own.
 
 Realization:
 
-- **MAUI**: `MenuFlyout` / `MenuBarItem`
 - **AppKit**: `NSMenu` / `NSMenuItem`
 - **UIKit**: `UIMenu` / `UIAction`
 - **GTK 4**: `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar`

@@ -10,9 +10,6 @@
   // extension host's own environment. A value here is laid OVER that and would
   // decide the host whatever is chosen.
 
-  // The solution the C# extension and ".NET MAUI: Select Startup Project" read.
-  "dotnet.defaultSolution": "StateUI.slnx",
-
   "files.associations": {
     "*.swift": "swift"
   },

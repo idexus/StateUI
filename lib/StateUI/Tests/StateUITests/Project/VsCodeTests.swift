@@ -76,14 +76,16 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// The editor runs no MAUI head: no task, launch or setting names one or
-    /// the MAUI extension. A head is run by the StateUI extension, on AppKit
-    /// or Android, and a MAUI head is built from a terminal.
-    func testTheEditorRunsNoMauiHead() throws {
+    /// The editor runs no .NET: no task, launch or setting names a MAUI head,
+    /// the MAUI extension or `dotnet`. A head is run by the StateUI extension,
+    /// on AppKit or Android.
+    func testTheEditorRunsNoDotNet() throws {
         for file in ["launch.json", "tasks.json", "settings.json"] {
             let text = try String(contentsOf: directory.appendingPathComponent(file), encoding: .utf8)
 
-            for spelling in ["Platforms/Maui", "\"maui.", "\"type\": \"maui\"", ".scripts/Maui"] {
+            for spelling in [
+                "Platforms/Maui", "\"maui.", "\"type\": \"maui\"", ".scripts/Maui", "dotnet", "coreclr", "StateUI.Maui",
+            ] {
                 XCTAssertFalse(text.contains(spelling), "\(file) still says \(spelling).")
             }
         }
@@ -139,7 +141,7 @@ final class VsCodeTests: XCTestCase {
         let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
         let labels = Set(array(tasks, "tasks").compactMap { $0["label"] as? String })
 
-        for label in ["Test StateUI", "Test StateUI.AppKit", "Test StateUI.Maui", "Test Gallery"] {
+        for label in ["Test StateUI", "Test StateUI.AppKit", "Test Gallery"] {
             XCTAssertTrue(labels.contains(label), "tasks.json declares no \"\(label)\"")
         }
     }

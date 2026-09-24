@@ -14,14 +14,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/SwipeActionContr
 
 ## SwipeAction's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native | ✅ |  |  |  |  |  |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `background` | property | `Color` | native |  |  |  |  |  |  |  |
+| `isVisible` | property | `Bool` | native |  |  |  |  |  |  |  |
 
 Realization:
 
-- **MAUI**: `SwipeItems` / `SwipeItem`
 - **AppKit**: structure
 - **UIKit**: structure
 - **GTK 4**: structure
@@ -33,18 +32,18 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ |  |  |  |  |  |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `isDestructive` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
-| `text` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `onClicked` (`clicked`) | event |  | native |  |  |  |  |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `text` | property | `String` | native |  |  |  |  |  |  |  |

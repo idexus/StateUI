@@ -212,9 +212,8 @@ A batch of actions is not a transaction. Use ordinary Swift control flow and
 Both halves are always needed: a declaration alone reaches nothing, and a host
 refuses by name an act nobody registered.
 
-The MAUI host registers an application's acts in C# with `StateUIActs.Add`;
-[MAUI host](maui-host.md#an-act) shows both halves. The AppKit host registers
-them in Swift, typed by the same contract the call is written against:
+The AppKit host registers them in Swift, typed by the same contract the call
+is written against:
 
 ```swift quote
 StateUIActs.add(NotesContract.exportDocument) { draft in
@@ -264,10 +263,9 @@ handler. An ordinary control or gesture event always belongs on its element
 instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
-The MAUI host raises such an event from C# with `StateUIEvents.Raise`; see
-[MAUI host](maui-host.md#an-event-without-a-control). The AppKit host raises it
-in Swift, typed by the same contract the subscription is written against, and
-from any thread - so a source is wired where the platform reports it:
+The AppKit host raises such an event in Swift, typed by the same contract the
+subscription is written against, and from any thread - so a source is wired
+where the platform reports it:
 
 ```swift quote
 StateUIEvents.raise(NotesContract.importFinished, location)

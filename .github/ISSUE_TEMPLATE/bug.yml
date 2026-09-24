@@ -24,11 +24,7 @@ body:
         exercised.
       options:
         - label: AppKit / macOS
-        - label: .NET MAUI / Android
-        - label: .NET MAUI / iOS
-        - label: .NET MAUI / Mac Catalyst
-        - label: .NET MAUI / Windows
-        - label: .NET MAUI / Linux
+        - label: Android Views / Android
 
   - type: textarea
     id: repro

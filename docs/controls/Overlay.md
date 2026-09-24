@@ -18,7 +18,6 @@ Overlay declares no members of its own.
 
 Realization:
 
-- **MAUI**: `IWindowOverlay` layer
 - **AppKit**: pass-through `NSView` above the page
 - **UIKit**: pass-through `UIView` above the page
 - **GTK 4**: `GtkOverlay`

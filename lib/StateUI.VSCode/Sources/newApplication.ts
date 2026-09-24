@@ -9,8 +9,8 @@ import * as path from "path";
 
 /**
  * Why `name` cannot name an application, or undefined where it can. Letters
- * and digits, starting with a letter: the name becomes a C# namespace, a
- * Swift module, a process name and a directory, and the strictest wins.
+ * and digits, starting with a letter: the name becomes a Swift module, a
+ * process name, a package identifier and a directory, and the strictest wins.
  */
 export function nameProblem(name: string): string | undefined {
     if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {

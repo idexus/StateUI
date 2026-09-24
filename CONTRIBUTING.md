@@ -16,7 +16,7 @@ A control, property, or event decision reaches every active layer together:
 
 - Swift API and vocabulary;
 - `HostContract` ownership;
-- every applicable host, the MAUI host included;
+- every applicable host;
 - focused core and host tests;
 - the Gallery, on every host the change reaches;
 - the handbook (`README.md`, `docs/`, and public `///` documentation).
@@ -32,10 +32,11 @@ requirement.
 ## Keep the core platform-neutral
 
 Code under `lib/StateUI/Sources` does not import Foundation or a platform UI
-framework. AppKit belongs under `lib/StateUI.AppKit` and the .NET MAUI host
-under `lib/StateUI.Maui`, with its build in `.scripts/Maui`; each later host
-receives a sibling package of its own. Swift written for the MAUI host alone
-stands under `#if MAUI`, the condition every MAUI build defines.
+framework. AppKit belongs under `lib/StateUI.AppKit` and Android Views under
+`lib/StateUI.Android`, with its build in `.scripts/Android`; each later host
+receives a sibling package of its own. Swift written for one host alone stands
+under that host's condition - `#if APPKIT`, `#if ANDROID` - which its builds
+define.
 
 The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
 `DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
@@ -59,37 +60,35 @@ Every public Swift declaration needs `///` documentation. Gallery pages use
 minimal on-screen prose: show behavior directly and tell the user only what
 they need to try.
 
-Every public C# member of the MAUI host carries XML documentation: CS1591 and
-CS1573 are errors in its projects.
-
 ## Test
 
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
-once with AppKit and once with .NET MAUI chosen. From a terminal,
-`.scripts/test-native.sh` runs every Swift suite under both conditions:
+once with AppKit and once with Android chosen. From a terminal,
+`.scripts/test-native.sh` runs every Swift suite on this Mac, and
+`.scripts/Android/test-android.sh <serial>` the Android host's on a device:
 
 ```bash
 .scripts/test-native.sh
-dotnet test lib/StateUI.Maui/Tests
+.scripts/Android/test-android.sh emulator-5554
 ```
 
-A plain `swift test` compiles neither `#if APPKIT` nor `#if MAUI` code, so it
-does not test either host's half on its own.
+A plain `swift test` compiles no `#if APPKIT` or `#if ANDROID` code, so it does
+not test either host's half on its own.
 
-Run the Gallery with **StateUI: Debug** on each host the change reaches:
-AppKit, and .NET MAUI on the affected platform. From a terminal:
+Run the Gallery with **StateUI: Debug** on each host the change reaches. From a
+terminal:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst27.0
+.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
 
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
-A pull request to `main` or `dev` runs the `Tests` workflow and the four
-platform builds: `iOS / Mac Catalyst`, `Android`, `Windows`, and `Linux`.
+A pull request to `main` or `dev` runs the `Tests` workflow on macOS and the
+core's suite on `Windows` and `Linux`.
 
 ## Keep changes reviewable
 

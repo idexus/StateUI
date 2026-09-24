@@ -8,12 +8,12 @@
 // platform contract are written by hand around the tables rendered here, which
 // stand between `<!-- name:begin -->` and `<!-- name:end -->`.
 //
-// A host's column comes from its RUNTIME wherever it can: MAUI writes what it
-// realizes to `exports/maui.txt`, read here and joined with the contracts, so
-// each member is named under the contract declaring it and no owner is typed
-// by hand. What a registry cannot know stays written - the elements a renderer
-// serves itself, and every judgement: what a realization is missing, what a
-// host realizes none of, and what it presents with no view of its own.
+// A host's column comes from its RUNTIME wherever it can: each host's suite
+// writes what its registrations realize to `exports/<host>.txt`, read here and
+// joined with the contracts, so each member is named under the contract
+// declaring it and no owner is typed by hand. What a registry cannot know stays
+// written - every judgement: what a realization is missing, what a host
+// realizes none of, and what it presents with no view of its own.
 //
 // The rest is read as text: `AppKitRealization` and `AndroidRealization`; the
 // doc comments over the contracts and over `ElementLayer`'s cases; the platform
@@ -46,7 +46,7 @@ extension ElementAct: ActShape {
 /// docs/controls as the contracts and the hosts' declarations say it is.
 struct ControlDictionary {
     /// Every host the matrix has a column for, in the columns' order.
-    static let platforms = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
+    static let platforms = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 
     /// What a mark means.
     static let legend = "✅ realized by that host and covered by its tests · ☑️ realized and tested, but "
@@ -629,21 +629,14 @@ struct ControlDictionary {
 
     // MARK: - What the pages are rendered from
 
-    /// What AppKit, MAUI and Android Views declare they realize.
+    /// What AppKit and Android Views declare they realize.
     ///
-    /// MAUI's is read twice over: what its RUNTIME wrote to `exports/maui.txt`
-    /// - every element it registers, with the owner of each member worked out
-    /// against the contracts - and then what is still said by hand, which is
-    /// the elements the renderer serves itself and the notes saying what a
-    /// realization is missing. A registry knows presence and nothing else, so
-    /// a judgement stays written.
+    /// Each is read twice over: what its RUNTIME wrote to its export - every
+    /// element it registers, with the owner of each member worked out against
+    /// the contracts - and then what is still said by hand, the notes saying
+    /// what a realization is missing. A registry knows presence and nothing
+    /// else, so a judgement stays written.
     static func declarations() throws -> [Declaration] {
-        let maui = try Declaration(
-            host: "MAUI", reading: "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs",
-            records: #"\b(Complete|Partial)"#,
-            unrealized: #"Unrealized = \[([^\]]*)\]"#,
-            viewless: nil)
-
         let appKit = try Declaration(
             host: "AppKit", reading: "lib/StateUI.AppKit/Sources/Registration/AppKitRealization.swift",
             records: #"\.(complete|partial)"#,
@@ -659,15 +652,12 @@ struct ControlDictionary {
 
         return [
             try appKit.and(exported(exports["AppKit"]!)),
-            try maui.and(exported(exports["MAUI"]!)),
             try android.and(exported(exports["Android Views"]!)),
         ]
     }
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.
-    static let exports = [
-        "AppKit": "exports/appkit.txt", "MAUI": "exports/maui.txt", "Android Views": "exports/android.txt",
-    ]
+    static let exports = ["AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt"]
 
     /// The records a host's own export carries: its declaration joined with
     /// the contracts, so each member is named under the contract DECLARING it.
@@ -686,7 +676,7 @@ struct ControlDictionary {
         guard let declaration = HostDeclaration(sidecar: try String(contentsOf: url, encoding: .utf8)) else {
             throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
                 + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
-                + "`dotnet test lib/StateUI.Maui/Tests` or `swift test --package-path lib/StateUI.AppKit`.")
+                + "`swift test --package-path lib/StateUI.AppKit` or `.scripts/Android/test-android.sh`.")
         }
         return declaration
     }

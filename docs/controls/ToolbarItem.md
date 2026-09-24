@@ -14,14 +14,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 ## ToolbarItem's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `priority` | property | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `placement` | property | `ToolbarItemPlacement` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `priority` | property | `Int` | adaptive | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
-- **MAUI**: `ToolbarItem`
 - **AppKit**: `NSToolbarItem`; `NSMenuToolbarItem` overflow
 - **UIKit**: `UIBarButtonItem`
 - **GTK 4**: `GtkButton` in `GtkHeaderBar`
@@ -33,18 +32,18 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `isDestructive` | property | `Bool` | adaptive | ✅ |  |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
+| `text` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |

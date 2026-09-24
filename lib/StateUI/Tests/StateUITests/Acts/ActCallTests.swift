@@ -16,7 +16,7 @@ final class ActCallTests: XCTestCase {
     // MARK: - The name
 
     /// An act is never called a command. The queue, its take and its receipt,
-    /// the C exports, the typed SPI, the C# mirror and the handbook spell act
+    /// the C exports, the typed SPI, the hosts and the handbook spell act
     /// calls; a drawing's commands are another thing and keep their word.
     func testTheActPathSpellsNoCommand() throws {
         let removed = [
@@ -30,10 +30,7 @@ final class ActCallTests: XCTestCase {
         var files = try Fixtures.allSources().map {
             (path: "lib/StateUI/Sources/\($0.path)", text: $0.text)
         }
-        files += try Fixtures.mauiSources().map {
-            (path: "lib/StateUI.Maui/Sources/\($0.path)", text: $0.text)
-        }
-        for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Maui/Tests", "docs"] {
+        for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Android/Sources", "docs"] {
             files += try Self.files(under: tree)
         }
         files.append((
@@ -48,12 +45,12 @@ final class ActCallTests: XCTestCase {
         XCTAssertEqual(found, [], "an act on its way to the host is an act call, never a command")
     }
 
-    /// The Swift, C# and Markdown files of one tree, build output left out.
+    /// The Swift and Markdown files of one tree, build output left out.
     private static func files(under tree: String) throws -> [(path: String, text: String)] {
         let root = Fixtures.repository.appendingPathComponent(tree)
         var found: [(path: String, text: String)] = []
         for path in try Fixtures.files(under: root, entering: Fixtures.entersSources)
-        where [".swift", ".cs", ".md"].contains(where: path.hasSuffix) {
+        where [".swift", ".md"].contains(where: path.hasSuffix) {
             found.append((
                 path: "\(tree)/\(path)",
                 text: try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)))

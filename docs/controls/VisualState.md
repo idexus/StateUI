@@ -14,14 +14,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Styles/VisualStateContract.s
 
 ## VisualState's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `group` | property | `Name` | structure | ✅ |  |  |  |  |  |  |  |
-| `name` | property | `Name` | structure | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `group` | property | `Name` | structure |  |  |  |  |  |  |  |
+| `name` | property | `Name` | structure |  |  |  |  |  |  |  |
 
 Realization:
 
-- **MAUI**: structure
 - **AppKit**: structure
 - **UIKit**: structure
 - **GTK 4**: structure

@@ -14,17 +14,15 @@
 # limitations under the License.
 # ---------------------------------------------------------------------------
 # Creates a new StateUI application in apps/: one page with a counter, an
-# AppKit head, an Android head, and a MAUI head for every MAUI platform.
+# AppKit head and an Android head.
 #
 # USAGE:
 #   ./new-app.sh Name [apps-dir]
 #
 #     Name      letters and digits, starting with a letter. Becomes the
-#               directory, the MAUI project, the process name and the Swift
-#               module (NameUI).
+#               directory, the process name and the Swift module (NameUI).
 #     apps-dir  where to create the application. Defaults to <repo>/apps.
-#               Tests pass a temporary directory here; only the default
-#               location also registers the MAUI project in StateUI.slnx.
+#               Tests pass a temporary directory here.
 #
 # WHAT IT MAKES is apps/HelloWorld under another name - the worked example of
 # the layout every application in apps/ has:
@@ -35,8 +33,6 @@
 #     Resources/            the artwork
 #     Platforms/AppKit/     the macOS head
 #     Platforms/Android/    the Android Views head: its Gradle build and Swift/
-#     Platforms/Maui/       the MAUI head: <Name>.csproj, Host/, and one folder
-#                           per platform
 #
 # HelloWorld is copied rather than kept here a second time, so the two never
 # drift; what its builds write is left behind.
@@ -59,9 +55,9 @@ fail() {
 
 [[ -n "$NAME" ]] || fail "no application name. Usage: new-app.sh Name"
 
-# Letters and digits, starting with a letter: the name becomes a C# namespace,
-# a Swift module, a process name and a directory, and the strictest of those
-# wins. No dots in particular - macOS Finder treats a directory named
+# Letters and digits, starting with a letter: the name becomes a Swift
+# module, a process name, a package identifier and a directory, and the
+# strictest of those wins. No dots in particular - macOS Finder treats a directory named
 # Something.App as an application bundle.
 [[ "$NAME" =~ ^[A-Za-z][A-Za-z0-9]*$ ]] \
   || fail "'$NAME' cannot name an application: letters and digits only, starting with a letter. (No dots - Finder reads Name.App as a bundle.)"
@@ -77,7 +73,7 @@ fail() {
 APP="$APPS_DIR/$NAME"
 LOWER="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
 
-mkdir -p "$APP/Platforms/Maui" "$APP/Platforms/Android"
+mkdir -p "$APP/Platforms/Android"
 for item in Package.swift Sources Resources Platforms/AppKit; do
   cp -R "$MODEL/$item" "$APP/$item"
 done
@@ -86,17 +82,6 @@ done
 # head writes beside it: the glob leaves every dot-directory out.
 for item in "$MODEL"/Platforms/Android/*; do
   cp -R "$item" "$APP/Platforms/Android/"
-done
-
-# The MAUI head without what its builds write: bin/ and obj/ stay where they
-# are rather than being copied and removed, which a build of HelloWorld under
-# way would race. SwiftPM's .build/ and Package.resolved sit beside the
-# manifest, outside what is copied at all.
-for item in "$MODEL"/Platforms/Maui/*; do
-  case "$(basename "$item")" in
-    bin|obj) continue ;;
-  esac
-  cp -R "$item" "$APP/Platforms/Maui/"
 done
 
 # And whatever Finder left behind.
@@ -109,26 +94,8 @@ find "$APP" -depth -name '*HelloWorld*' | while IFS= read -r path; do
   mv "$path" "$(dirname "$path")/$(basename "$path" | sed "s/HelloWorld/$NAME/g")"
 done
 
-find "$APP" -type f \
-  \( -name "*.swift" -o -name "*.cs" -o -name "*.csproj" -o -name "*.plist" \
-     -o -name "*.xml" -o -name "*.json" -o -name "*.xaml" -o -name "*.manifest" \
-     -o -name "*.kts" \) \
+find "$APP" -type f \( -name "*.swift" -o -name "*.xml" -o -name "*.kts" \) \
   -exec perl -pi -e "s/HelloWorld/$NAME/g; s/helloworld/$LOWER/g" {} +
-
-# The title is SET rather than renamed: it is the one property whose value need
-# not be the project name, and setting it outright is what carries the new
-# application's own name into its bundle and its window.
-perl -pi -e "s|<ApplicationTitle>[^<]*</ApplicationTitle>|<ApplicationTitle>$NAME</ApplicationTitle>|" \
-  "$APP/Platforms/Maui/$NAME.csproj"
-
-# Into the solution, so the IDE sees the MAUI head - only when creating in the
-# real apps/, never from a test's temporary directory, and never twice.
-SLNX="$ROOT_DIR/StateUI.slnx"
-PROJECT="apps/$NAME/Platforms/Maui/$NAME.csproj"
-if [[ "$APPS_DIR" == "$ROOT_DIR/apps" && -f "$SLNX" ]] && ! grep -q "$PROJECT" "$SLNX"; then
-  perl -pi -e "s|</Solution>|  <Project Path=\"$PROJECT\" />\n</Solution>|" "$SLNX"
-  echo "Registered in StateUI.slnx."
-fi
 
 cat <<DONE
 Created $APP
@@ -136,5 +103,4 @@ Created $APP
 Next, from the repository root:
   STATEUI_APPKIT=1 swift run --package-path apps/$NAME ${NAME}AppKit   # the AppKit head
   .scripts/Android/run-app.sh apps/$NAME                                    # the Android head
-  dotnet build apps/$NAME/Platforms/Maui -f net10.0-maccatalyst27.0         # or net10.0-ios27.0 / net10.0-android
 DONE

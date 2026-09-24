@@ -59,22 +59,3 @@ jobs:
       # The samples and the handbook's examples written for the MAUI host alone.
       - name: Test Gallery under the MAUI condition
         run: swift test --package-path apps/Gallery --scratch-path apps/Gallery/.build-maui -Xswiftc -DMAUI
-
-  maui:
-    name: StateUI.Maui
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v7.0.1
-      # The C# suite drives MAUI's controls as ordinary objects over the
-      # fixtures the StateUI suite writes, so it needs the .NET SDK and ICU and
-      # no workload: on Linux the MAUI packages arrive as plain references.
-      - name: Install what .NET needs
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libicu-dev
-      - uses: actions/setup-dotnet@v6.0.0
-        with:
-          dotnet-version: '10.0.x'
-      - name: Test StateUI.Maui
-        run: dotnet test lib/StateUI.Maui/Tests

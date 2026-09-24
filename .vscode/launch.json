@@ -25,20 +25,6 @@
       "request": "launch",
       "configuration": "release",
       "presentation": { "group": "0 StateUI", "order": 2 }
-    },
-    {
-      // The C# suite with its debugger attached, so a failing renderer test can
-      // be stepped through. StateUI: Run Tests runs every suite without one.
-      "name": "Test: C# (debug)",
-      "type": "coreclr",
-      "request": "launch",
-      "program": "dotnet",
-      "args": ["test", "${workspaceFolder}/lib/StateUI.Maui/Tests"],
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "stopAtEntry": false,
-      "env": { "VSTEST_HOST_DEBUG": "0" },
-      "presentation": { "group": "1 tests", "order": 1 }
     }
   ]
 }

@@ -5,11 +5,10 @@ platform-neutral Swift module. A small native executable imports that module
 and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
-Two hosts are active: AppKit, and .NET MAUI for Android, iOS, Mac Catalyst,
-Windows, and Linux. The supported setup today is a StateUI checkout: the AppKit
-host is a sibling Swift package whose manifest uses a local dependency on the
-repository root, and a MAUI application is created against the same checkout.
-Neither host has a published package route yet.
+Two hosts are active: AppKit on macOS, and Android Views - each Swift, in the
+application's own process. The supported setup today is a StateUI checkout:
+each host is a sibling Swift package whose manifest uses a local dependency on
+the repository root. Neither host has a published package route yet.
 
 ## Requirements
 
@@ -17,9 +16,8 @@ Neither host has a published package route yet.
 - a checkout of this repository;
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
-[Starting with the MAUI host](#starting-with-the-maui-host) lists what the MAUI
-host needs as well, and [Android Views host](android-host.md#requirements)
-what the Android Views host needs.
+[Android Views host](android-host.md#requirements) lists what the Android Views
+host needs as well.
 
 ## Working in VS Code
 
@@ -232,9 +230,8 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The MAUI head reaches the same `stateui_app_register` through an interop file
-its build generates, so its C# code never calls it. [MAUI host](maui-host.md)
-describes that head.
+The Android head calls the same `stateui_app_register` when Android loads its
+library; [Android Views host](android-host.md) describes that head.
 
 The repository examples use this directory shape:
 
@@ -248,13 +245,13 @@ apps/Notes/
   Platforms/
     AppKit/
       main.swift
-    Maui/
-      Notes.csproj
-      Host/
+    Android/
+      build.gradle.kts
+      AndroidManifest.xml
+      Swift/
   Resources/
     AppIcon/
     Images/
-    Splash/
   Tests/
 ```
 
@@ -308,28 +305,10 @@ Image("stateui_tile.png")
     .horizontalAlignment(.center)
 ```
 
-The AppKit head reads `Resources/` beside its own sources, and the MAUI head
-packages it at build time. StateUI's core does not read a filesystem or choose
-a platform image class.
-
-## Starting with the MAUI host
-
-The MAUI host runs the same application module from a .NET MAUI project in
-`Platforms/Maui/`. It needs the .NET 10 SDK and, everywhere except Linux, the
-MAUI workload:
-
-```bash
-dotnet workload install maui
-```
-
-Build and start HelloWorld's MAUI head on Mac Catalyst from a terminal:
-
-```bash
-.scripts/Maui/run-app.sh maccatalyst apps/HelloWorld/Platforms/Maui/HelloWorld.csproj
-```
-
-[MAUI host](maui-host.md) covers every platform, its builds and debugging,
-controls and acts registered in C#, and troubleshooting.
+The AppKit head reads `Resources/` beside its own sources, and the Android
+head's build draws `Resources/Images` into the application's assets and its
+icon from `Resources/AppIcon`. StateUI's core does not read a filesystem or
+choose a platform image class.
 
 ## Next steps
 

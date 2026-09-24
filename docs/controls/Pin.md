@@ -14,18 +14,17 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 ## Pin's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `label` | property | `String` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `location` | property | `Location` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `onPinClicked` (`pinClicked`) | event |  | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `type` | property | `PinType` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `address` | property | `String` | provider |  |  |  |  |  |  |  |
+| `label` | property | `String` | provider |  |  |  |  |  |  |  |
+| `location` | property | `Location` | provider |  |  |  |  |  |  |  |
+| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  |  |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  |  |
+| `type` | property | `PinType` | provider |  |  |  |  |  |  |  |
 
 Realization:
 
-- **MAUI**: `Map` / `Pin`
 - **AppKit**: `MKMapView` / `MKAnnotation`
 - **UIKit**: `MKMapView` / `MKAnnotation`
 - **GTK 4**: libshumate `ShumateMap` / `ShumateMarker`

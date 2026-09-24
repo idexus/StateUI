@@ -27,7 +27,8 @@ and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
 application is then chosen, so **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
-directory, the MAUI project, the process and the Swift module (`<Name>UI`).
+directory, the process, the package identifier and the Swift module
+(`<Name>UI`).
 
 ## The host
 

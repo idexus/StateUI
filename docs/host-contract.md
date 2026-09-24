@@ -257,11 +257,8 @@ when those hosts can consume the same complete contract.
 
 Until that payload and its layout, selection, activation, reuse, accessibility,
 and programmatic-scroll semantics are settled, the base contract exposes no
-native collection control. The MAUI host has `ItemsView` today as a StateUI
-composition compiled under `#if MAUI`: a `ScrollView` holding an
-`AbsoluteLayout`, with only the items in view described and placed by
-arithmetic - see [MAUI host](maui-host.md#lists-itemsview). Richer arrangements
-remain StateUI compositions over the smallest accepted primitives.
+native collection control. Richer arrangements remain StateUI compositions
+over the smallest accepted primitives.
 
 ## Wire encoding
 

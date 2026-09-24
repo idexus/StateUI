@@ -87,33 +87,36 @@ final class HostDeclarationTests: XCTestCase {
         XCTAssertEqual(wrong.undeclared.map(\.member), ["nosuchmember"])
     }
 
-    /// THE EXPORT ITSELF: what the MAUI runtime wrote is read here, joined
-    /// with the contracts, and every name in it is one the contracts know.
+    /// THE EXPORTS THEMSELVES: what each host's runtime wrote is read here,
+    /// joined with the contracts, and every name in it is one the contracts
+    /// know.
     ///
     /// This is the guard that replaces reading a hand-written declaration: the
     /// runtime says what it realizes, and a name it invents fails HERE rather
     /// than becoming a row nobody can explain.
-    func testTheMauiExportJoinsWithTheContracts() throws {
-        let declaration = try XCTUnwrap(
-            HostDeclaration(sidecar: try String(contentsOf: Self.export, encoding: .utf8)),
-            "exports/maui.txt did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 "
-            + "dotnet test lib/StateUI.Maui/Tests.")
+    func testEveryHostsExportJoinsWithTheContracts() throws {
+        for (host, path) in ControlDictionary.exports.sorted(by: { $0.key < $1.key }) {
+            let declaration = try XCTUnwrap(
+                HostDeclaration(sidecar: try String(
+                    contentsOf: Fixtures.repository.appendingPathComponent(path), encoding: .utf8)),
+                "\(path) did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 through \(host)'s suite.")
 
-        XCTAssertTrue(
-            declaration.undeclared.isEmpty,
-            "The MAUI export names what no contract declares: "
-            + declaration.undeclared.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
+            XCTAssertTrue(
+                declaration.undeclared.isEmpty,
+                "The \(host) export names what no contract declares: "
+                + declaration.undeclared.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
 
-        let realization = declaration.realization
+            let realization = declaration.realization
 
-        XCTAssertTrue(realization.elements.contains("Slider"))
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+            XCTAssertTrue(realization.elements.contains("Slider"), "\(host) realizes no Slider")
+            XCTAssertTrue(realization.members.contains(
+                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
 
-        // The drift this road exists to end: `aspect` reaches an Image through
-        // the tier declaring it, whatever the host called the member.
-        XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Image", owner: "ImageElement", member: "aspect")))
+            // The drift this road exists to end: `aspect` reaches an Image
+            // through the tier declaring it, whatever the host called the member.
+            XCTAssertTrue(realization.members.contains(
+                HostRealizedMember(element: "Image", owner: "ImageElement", member: "aspect")))
+        }
     }
 
     /// A registry's realization says each member on every element; its declaration says an element's
@@ -153,9 +156,6 @@ final class HostDeclarationTests: XCTestCase {
     }
 
     // MARK: - Support
-
-    /// `exports/maui.txt`, written by the MAUI suite from its registrations.
-    private static let export = Fixtures.repository.appendingPathComponent("exports/maui.txt")
 
     /// A host declaring a label with a member of its own and one of a tier it
     /// wears, and a slider with the value a user moves.

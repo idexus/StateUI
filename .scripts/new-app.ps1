@@ -18,10 +18,8 @@
 #   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]
 #
 # It makes apps/HelloWorld under another name: Package.swift, Sources/,
-# Resources/, Platforms/AppKit/, Platforms/Android/ and Platforms/Maui/ with
-# <Name>.csproj, Host/ and one folder per platform. What HelloWorld's builds
-# wrote is left behind.
-# Only the default AppsDir also registers the MAUI project in StateUI.slnx.
+# Resources/, Platforms/AppKit/ and Platforms/Android/. What HelloWorld's
+# builds wrote is left behind.
 # ---------------------------------------------------------------------------
 param(
     [Parameter(Mandatory = $true)][string]$Name,
@@ -37,8 +35,9 @@ $model     = Join-Path $rootDir "apps/HelloWorld"
 if (-not $AppsDir) { $AppsDir = Join-Path $rootDir "apps" }
 
 # Letters and digits, starting with a letter - the same rule as new-app.sh,
-# for the same reasons: the name becomes a C# namespace, a Swift module, a
-# process name and a directory. No dots - Finder reads Name.App as a bundle.
+# for the same reasons: the name becomes a Swift module, a process name, a
+# package identifier and a directory. No dots - Finder reads Name.App as a
+# bundle.
 if ($Name -notmatch '^[A-Za-z][A-Za-z0-9]*$') {
     throw "'$Name' cannot name an application: letters and digits only, starting with a letter."
 }
@@ -52,7 +51,6 @@ if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a
 
 $lower = $Name.ToLowerInvariant()
 
-New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Maui") -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Android") -Force | Out-Null
 foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit")) {
     Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
@@ -64,13 +62,6 @@ Get-ChildItem -Path (Join-Path $model "Platforms/Android") -Force |
     Where-Object { $_.Name -ne ".gradle" } |
     ForEach-Object { Copy-Item -Recurse $_.FullName (Join-Path $app "Platforms/Android") }
 
-# The MAUI head without what its builds write: bin/ and obj/ stay where they
-# are rather than being copied and removed, which a build of HelloWorld under
-# way would race.
-Get-ChildItem -Path (Join-Path $model "Platforms/Maui") |
-    Where-Object { $_.Name -notin @("bin", "obj") } |
-    ForEach-Object { Copy-Item -Recurse $_.FullName (Join-Path $app "Platforms/Maui") }
-
 # And whatever Finder left behind.
 Get-ChildItem -Path $app -Recurse -Force -Filter ".DS_Store" | Remove-Item -Force
 
@@ -80,7 +71,7 @@ Get-ChildItem -Path $app -Recurse -Filter "*HelloWorld*" |
     Sort-Object { $_.FullName.Length } -Descending |
     ForEach-Object { Rename-Item $_.FullName ($_.Name.Replace("HelloWorld", $Name)) }
 
-$extensions = @(".swift", ".cs", ".csproj", ".plist", ".xml", ".json", ".xaml", ".manifest", ".kts")
+$extensions = @(".swift", ".xml", ".kts")
 Get-ChildItem -Path $app -Recurse -File |
     Where-Object { $extensions -contains $_.Extension } |
     ForEach-Object {
@@ -89,29 +80,7 @@ Get-ChildItem -Path $app -Recurse -File |
         [System.IO.File]::WriteAllText($_.FullName, $text)
     }
 
-# The title is SET rather than renamed: it is the one property whose value need
-# not be the project name, and setting it outright is what carries the new
-# application's own name into its bundle and its window.
-$csprojPath = Join-Path $app "Platforms/Maui/$Name.csproj"
-$csproj = [System.IO.File]::ReadAllText($csprojPath)
-$csproj = $csproj -replace "<ApplicationTitle>[^<]*</ApplicationTitle>", "<ApplicationTitle>$Name</ApplicationTitle>"
-[System.IO.File]::WriteAllText($csprojPath, $csproj)
-
-# Into the solution, so the IDE sees the MAUI head - only in the real apps/,
-# never twice.
-$slnx = Join-Path $rootDir "StateUI.slnx"
-$defaultApps = Join-Path $rootDir "apps"
-$project = "apps/$Name/Platforms/Maui/$Name.csproj"
-if (($AppsDir -eq $defaultApps) -and (Test-Path $slnx)) {
-    $solution = [System.IO.File]::ReadAllText($slnx)
-    if (-not $solution.Contains($project)) {
-        $solution = $solution.Replace("</Solution>", "  <Project Path=`"$project`" />`n</Solution>")
-        [System.IO.File]::WriteAllText($slnx, $solution)
-        Write-Host "Registered in StateUI.slnx."
-    }
-}
-
 Write-Host "Created $app"
 Write-Host ""
 Write-Host "Next, from the repository root:"
-Write-Host "  dotnet build apps/$Name/Platforms/Maui -f net10.0-windows10.0.19041.0    # or net10.0-android"
+Write-Host "  swift build --package-path apps/$Name    # the application's module; its AppKit and Android heads build on macOS"

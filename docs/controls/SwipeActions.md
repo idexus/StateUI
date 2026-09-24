@@ -14,15 +14,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/SwipeActionsCont
 
 ## SwipeActions's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `mode` | property | `SwipeMode` | stateUI | ✅ |  |  |  |  |  |  |  |
-| `side` | property | `SwipeSide` | stateUI | ✅ |  |  |  |  |  |  |  |
-| `swipeBehaviorOnInvoked` | property | `SwipeBehaviorOnInvoked` | stateUI | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `mode` | property | `SwipeMode` | stateUI |  |  |  |  |  |  |  |
+| `side` | property | `SwipeSide` | stateUI |  |  |  |  |  |  |  |
+| `swipeBehaviorOnInvoked` | property | `SwipeBehaviorOnInvoked` | stateUI |  |  |  |  |  |  |  |
 
 Realization:
 
-- **MAUI**: `SwipeItems` / `SwipeItem`
 - **AppKit**: structure
 - **UIKit**: structure
 - **GTK 4**: structure

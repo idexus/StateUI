@@ -15,27 +15,26 @@ Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
        |
        v
   StateUI core             state, keys, diffing, timing laws        lib/StateUI/Sources
-       |                   HostRender / HostPatch (typed)   Wire (bytes)
-       |                                                      |
-       v                                                      v
-  host layer               CoreLink        PatchIntake        runtime in another language
-  @_spi(Host)              MountedTree     MountedElement     (C#: lib/StateUI.Maui),
-  Sources/Host             Animator        StateChannels      the same elements, ported
+       |                   HostRender / HostPatch (typed)
+       v
+  host layer               CoreLink        PatchIntake
+  @_spi(Host)              MountedTree     MountedElement
+  Sources/Host             Animator        StateChannels
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
        |
        v
   toolkit half             frame signal, each element's native half,
   one package per host     realizations, layout views, scrolling, gestures,
-  (lib/StateUI.AppKit)     focus, accessibility, windows and menus
+  (lib/StateUI.AppKit,     focus, accessibility, windows and menus
+  lib/StateUI.Android)
        |
        v
   native views
 ```
 
-A Swift host links the core's dynamic library and takes the typed patch, so one
-process holds one copy of StateUI's types. The Wire is the same patch as bytes,
-for a runtime that cannot read Swift types.
+A host links the core's dynamic library and takes the typed patch, so one
+process holds one copy of StateUI's types.
 
 ## The parts
 

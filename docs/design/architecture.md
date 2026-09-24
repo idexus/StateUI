@@ -11,7 +11,7 @@ the packages, what crosses between them, and where each part of the work runs.
   apps/<App>                              one Swift package per application
     Sources/                              views, @State, handlers, engines
     Platforms/AppKit                      the AppKit head: an executable
-    Platforms/Maui                        the MAUI head: a .NET project
+    Platforms/Android                     the Android head: Gradle and a Swift library
         |
         |  depends on
         v
@@ -20,23 +20,24 @@ the packages, what crosses between them, and where each part of the work runs.
     Sources/Core                          state, keys, diffing, cycles, the Wire
     Sources/Host                          the host layer, @_spi(Host)
     Sources/Bridge                        the C exports, for a runtime in another language
+        |
+        |  typed HostRender / HostPatch
+        v
+  StateUI.AppKit (lib/StateUI.AppKit)          StateUI.Android (lib/StateUI.Android)
+    Swift, in the application's process          Swift, in the application's process,
+    links the same StateUI library               Java beneath it through JNI
         |                                             |
-        |  typed HostRender / HostPatch               |  C calls, Wire bytes
         v                                             v
-  StateUI.AppKit (lib/StateUI.AppKit)          StateUI.Maui (lib/StateUI.Maui, C#)
-    Swift, in the application's process          Android, iOS, Mac Catalyst,
-    links the same StateUI library               Windows and Linux through .NET MAUI
-        |                                             |
-        v                                             v
-    AppKit views                                  each platform's native views
+    AppKit views                                  Android views
 
   lib/StateUI.VSCode                      the editor extension: new application,
                                           build, run and debug for every head
 ```
 
-A Swift host links the one dynamic StateUI library, so a process holds one
-copy of StateUI's types. A runtime in another language calls the C exports and
-reads the same patch as Wire bytes.
+Every host is Swift and links the one dynamic StateUI library, so a process
+holds one copy of StateUI's types. Code in the platform's own language - Java
+through JNI, C++/WinRT behind a C ABI - relays calls beneath the host and holds
+no StateUI logic.
 
 ## One change, end to end
 

@@ -18,7 +18,7 @@ final class ToolchainTests: XCTestCase {
     /// are written in, as `(path, text)`, read once.
     private static let texts: [(path: String, text: String)] = {
         let repository = Fixtures.repository
-        let kinds: Set<String> = ["swift", "md", "yml", "yaml", "sh", "ps1", "json", "csproj", "targets", "props", "ts"]
+        let kinds: Set<String> = ["swift", "md", "yml", "yaml", "sh", "ps1", "json", "kts", "ts"]
 
         // What a build writes, the wire fixtures, and the pages rendered from
         // the contracts - none of them names a toolchain.
@@ -105,26 +105,16 @@ final class ToolchainTests: XCTestCase {
         XCTAssertLessThanOrEqual(patches.count, 1, "one patch release everywhere, not \(patches.sorted())")
     }
 
-    /// The continuous integration, the handbook and the iOS and Mac Catalyst
-    /// frameworks name one Xcode: `net10.0-ios27.0` builds against .NET's
-    /// packs for Xcode 27.
+    /// The continuous integration and the handbook name one Xcode.
     func testEveryPlaceThatNamesXcodeNamesOne() throws {
         let named = try [
             #"Xcode_(\d+)(?:\.\d+)*\.app"#, #"\bXcode (\d+)(?:\.\d+)?\b"#,
-            #"net\d+\.\d+-(?:ios|maccatalyst)(\d+)\.\d+"#,
         ].flatMap(values(of:))
 
         XCTAssertGreaterThan(named.count, 10, "the walk found almost none of the places that name Xcode")
         XCTAssertEqual(
             Set(named.map(\.value)).count, 1,
             "one Xcode: \(named.map { "\($0.place) \($0.value)" })")
-
-        // A framework with no version takes whichever packs .NET defaults to,
-        // and those follow another Xcode.
-        let unversioned = try values(of: #"(net\d+\.\d+-(?:ios|maccatalyst))(?![\d.])"#)
-        XCTAssertEqual(
-            unversioned.map { "\($0.place) \($0.value)" }, [],
-            "an iOS or Mac Catalyst framework names the Xcode it builds against")
     }
 
     /// Every manifest, project, script and handbook page names one release of
@@ -133,24 +123,22 @@ final class ToolchainTests: XCTestCase {
     func testEveryPlaceThatNamesTheFloorNamesOne() throws {
         let named = try [
             #"\.(?:iOS|macCatalyst|macOS)\(\.v(\d+)\)"#,
-            #"== '(?:ios|maccatalyst)'">(\d+)\.\d+</SupportedOSPlatformVersion>"#,
-            #"(?:IOS|CATALYST)_MIN="(\d+)\.\d+""#,
             #"LSMinimumSystemVersion -string (\d+)"#,
             #"\b(?:iOS|macOS|Mac Catalyst) (\d+) or newer"#,
             #"minimum platforms are iOS (\d+)"#,
         ].flatMap(values(of:))
 
-        XCTAssertGreaterThan(named.count, 20, "the walk found almost none of the places that name the floor")
+        XCTAssertGreaterThan(named.count, 12, "the walk found almost none of the places that name the floor")
         XCTAssertEqual(
             Set(named.map(\.value)).count, 1,
             "one floor: \(named.map { "\($0.place) \($0.value)" })")
     }
 
-    /// The continuous integration and the handbook name one NDK, the one the
-    /// Swift SDK for Android is built with.
+    /// The handbook names one NDK, the one the Swift SDK for Android is built
+    /// with.
     func testEveryPlaceThatNamesTheNDKNamesOne() throws {
         let named = try [
-            #"\bNDK (\d+)\b"#, #"ndk;(\d+)\."#, #"ANDROID_NDK_VERSION: (\d+)\."#, #"android-ndk-r(\d+)"#,
+            #"\bNDK r?(\d+)\b"#, #"android-ndk-r(\d+)"#,
         ].flatMap(values(of:))
 
         XCTAssertGreaterThan(named.count, 3, "the walk found almost none of the places that name the NDK")

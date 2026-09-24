@@ -4,9 +4,9 @@
 import Foundation
 import XCTest
 
-/// An application registers with this host through the registries named as the
-/// MAUI host names its own: `StateUIControls.add`, `StateUIActs.add` and
-/// `StateUIEvents.raise` - and through nothing beside them.
+/// An application registers with this host through three registries,
+/// `StateUIControls.add`, `StateUIActs.add` and `StateUIEvents.raise` - and
+/// through nothing beside them.
 ///
 /// Every spelling those names replaced is written here the way an application
 /// would have written it, and must NOT compile against this host's public

@@ -14,14 +14,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 ## SplitView's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `isSidebarVisible` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
-- **MAUI**: `FlyoutPage`
 - **AppKit**: `NSSplitViewController`
 - **UIKit**: `UISplitViewController`
 - **GTK 4**: `GtkPaned`; libadwaita `AdwOverlaySplitView`
@@ -33,15 +32,15 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `title` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |

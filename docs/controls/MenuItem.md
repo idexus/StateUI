@@ -18,7 +18,6 @@ MenuItem declares no members of its own.
 
 Realization:
 
-- **MAUI**: `MenuFlyout` / `MenuBarItem`
 - **AppKit**: `NSMenu` / `NSMenuItem`
 - **UIKit**: `UIMenu` / `UIAction`
 - **GTK 4**: `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar`
@@ -30,18 +29,18 @@ Realization:
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ☑️ |  |  | ✅ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ☑️ |  |  | ✅ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `isDestructive` | property | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  |  |  |  |  |  |
+| `isDestructive` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
+| `text` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |

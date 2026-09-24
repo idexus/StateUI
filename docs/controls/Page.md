@@ -14,22 +14,21 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 ## Page's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `backButtonTitle` | property | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | `Color` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `disappearing` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `navigatedFrom` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `appearing` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `backButtonTitle` | property | `String` | adaptive | ✅ |  |  |  |  |  |  |
+| `background` | property | `Color` | native | ✅ |  |  | ✅ |  |  |  |
+| `disappearing` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `hasBackButton` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `hasNavigationBar` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `navigatedFrom` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `navigatedTo` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `navigatingFrom` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `padding` | property | `Insets` | native | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
-- **MAUI**: `ContentPage`
 - **AppKit**: custom `NSView`
 - **UIKit**: `UIViewController`
 - **GTK 4**: custom `GtkWidget`
@@ -41,7 +40,7 @@ Realization:
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `title` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |

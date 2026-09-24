@@ -18,7 +18,6 @@ ModalStack declares no members of its own.
 
 Realization:
 
-- **MAUI**: modal `Page` (`PushModalAsync`)
 - **AppKit**: sheet `NSWindow`
 - **UIKit**: `present(_:animated:)`
 - **GTK 4**: modal `GtkWindow`; libadwaita `AdwDialog`

@@ -55,15 +55,12 @@ replaces the earlier registration.
 against the same `ElementContract` the application's own views are written
 against, so the compiler refuses a property of the wrong type, an event of a
 contract the element does not wear, and a performer whose arguments are not the
-act's. That is the difference from the [MAUI host](maui-host.md), which
-registers by name across the wire and reads its values untyped.
+act's.
 
 Because the registration names the contract's types, the application's
 contracts are `public`: the host lives in a module of its own and must see
-them. The Swift half itself is unchanged from any other host - one contract,
-one `View` - which is why the Gallery's "AppKit interop" group and its "C#
-interop" group show the SAME Swift beside two different hosts. The AppKit
-halves are in `apps/Gallery/Platforms/AppKit/Host/`.
+them. The Swift half itself is the same for every host - one contract, one
+`View`. The AppKit halves are in `apps/Gallery/Platforms/AppKit/Host/`.
 
 ### A control
 
@@ -157,11 +154,10 @@ The Metal cube's contract and its `View` stand under `#if APPKIT` beside its
 samples, so a test reading an application's elements against another host's
 registrations never demands of that host a control it cannot draw.
 
-**A registered control has no slot on this host.** The MAUI
-registration takes a `content:` that places the one child the Swift side
-describes. This host arranges children by the container classes it makes
-itself, so a registered view is handed none - a registered element's children
-reach nothing. An application's own element is a leaf here.
+**A registered control has no slot on this host.** This host arranges
+children by the container classes it makes itself, so a registered view is
+handed none - a registered element's children reach nothing. An application's
+own element is a leaf here.
 
 ### An act
 

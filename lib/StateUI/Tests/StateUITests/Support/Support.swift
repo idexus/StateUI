@@ -383,28 +383,12 @@ enum Fixtures {
     }
 
     /// Whether a walk of sources enters a directory: never build output - a
-    /// directory named with a leading dot (`.build`, `.build-maui`), `bin` or
+    /// directory named with a leading dot (`.build`, `.build-appkit`), `bin` or
     /// `obj`. Under `apps/` build output is 99 files in 100, and walking it
     /// costs a guard a minute and more on Windows.
     static func entersSources(_ relative: String) -> Bool {
         let directory = name(of: relative)
         return !directory.hasPrefix(".") && directory != "bin" && directory != "obj"
-    }
-
-    /// Every C# source of the MAUI host, `lib/StateUI.Maui/Sources`, for the
-    /// guards that read both languages - a name leaves Swift as a token and
-    /// arrives there as a lookup, so only a reader of both can hold the two
-    /// together.
-    static func mauiSources() throws -> [(path: String, text: String)] {
-        let root = repository.appendingPathComponent("lib/StateUI.Maui/Sources")
-        var found: [(path: String, text: String)] = []
-
-        for path in try files(under: root, entering: entersSources) where path.hasSuffix(".cs") {
-            let text = try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)
-            found.append((path: path, text: text))
-        }
-
-        return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: root, moreThan: 50)
     }
 
     static var updating: Bool {

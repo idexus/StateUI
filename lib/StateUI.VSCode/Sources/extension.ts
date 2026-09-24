@@ -233,7 +233,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const apps = path.join(folder.uri.fsPath, "apps");
             const name = await vscode.window.showInputBox({
                 title: "New Application in apps/",
-                prompt: "The application's name: its directory, MAUI project, process and Swift module (<Name>UI).",
+                prompt: "The application's name: its directory, process and Swift module (<Name>UI).",
                 placeHolder: "MyApp",
                 ignoreFocusOut: true,
                 validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(apps, value)) ? `apps/${value} already exists.` : undefined),
