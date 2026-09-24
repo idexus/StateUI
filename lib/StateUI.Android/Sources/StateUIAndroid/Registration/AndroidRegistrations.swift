@@ -42,6 +42,13 @@ enum AndroidRegistrations {
 
     /// What `AndroidElement` puts on every view wearing each member's contract.
     static func shared(_ registry: Registry<AndroidView>) {
+        registry.everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+        registry.everyElementRealizes(VisualElementContract.accessibilityHint)
+        registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
+        registry.everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+        registry.everyElementRealizes(VisualElementContract.isAccessibilityHidden)
+        registry.everyElementRealizes(VisualElementContract.frame)
+        registry.everyElementRaises(ViewContract.frameChanged)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.translationX)
         registry.everyElementRealizes(VisualElementContract.translationY)

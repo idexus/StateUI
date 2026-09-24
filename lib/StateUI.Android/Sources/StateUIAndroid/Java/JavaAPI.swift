@@ -270,6 +270,7 @@ enum JavaAPI {
     static let setMinimumHeight = Java.method(view, "setMinimumHeight", "(I)V")
     static let setClickable = Java.method(view, "setClickable", "(Z)V")
     static let isLongClickable = Java.method(view, "isLongClickable", "()Z")
+    static let getImportantForAccessibility = Java.method(view, "getImportantForAccessibility", "()I")
     static let setLongClickable = Java.method(view, "setLongClickable", "(Z)V")
     static let setOnCreateContextMenuListener = Java.method(
         view, "setOnCreateContextMenuListener", "(Landroid/view/View$OnCreateContextMenuListener;)V")
@@ -376,6 +377,8 @@ enum JavaAPI {
     static let pressable = Java.staticMethod(
         views, "pressable",
         "(Landroid/content/Context;Lstateui/android/StateUIShapeDrawable;Landroid/graphics/drawable/Drawable;)Landroid/graphics/drawable/Drawable;")
+    static let setAccessibility = Java.staticMethod(
+        views, "setAccessibility", "(Landroid/view/View;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZI)V")
     static let textColors = Java.staticMethod(
         views, "textColors", "(Landroid/content/Context;I)Landroid/content/res/ColorStateList;")
     static let setIcon = Java.staticMethod(views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIII)V")

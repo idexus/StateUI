@@ -359,16 +359,16 @@ which a host serves without a member of its own.
 <!-- shared:begin -->
 | Member | Tier | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
+| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ☑️ |  |  |
+| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
+| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `background` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ☑️ |  |  | ✅ |  |  |
-| `frame` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
+| `frame` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `height` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
-| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  |  |  |  |
+| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
 | `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ |  |  |  |  |  |  |
 | `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event | ✅ | ✅ |  |  |  |  |  |
 | `isVisible` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  |  | ✅ |  |  |
@@ -436,42 +436,42 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 37 ✅ |  |  |
-| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
-| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 36 ✅ |  |  |
-| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 36 ✅ |  |  |
-| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
-| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 42 ✅ |  |  |
-| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 38 ✅ |  |  |
-| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
-| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 46 ✅ |  |  |
-| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 46 ✅ |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 54 ✅ · 2 ☑️ |  |  | 39 ✅ · 1 ☑️ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
+| [Border](controls/Border.md) | 77 | 76 ✅ | 57 ✅ · 2 ☑️ |  |  | 43 ✅ · 1 ☑️ |  |  |
+| [Button](controls/Button.md) | 88 | 86 ✅ | 69 ✅ · 3 ☑️ |  |  | 56 ✅ · 2 ☑️ |  |  |
+| [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 42 ✅ · 1 ☑️ |  |  |
+| [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 42 ✅ · 1 ☑️ |  |  |
+| [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
+| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 51 ✅ · 1 ☑️ |  |  |
+| [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 48 ✅ · 1 ☑️ |  |  |
+| [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 44 ✅ · 1 ☑️ |  |  |
+| [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
+| [Image](controls/Image.md) | 71 | 70 ✅ | 56 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
+| [Label](controls/Label.md) | 83 | 82 ✅ | 67 ✅ · 2 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
+| [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
 | [Map](controls/Map.md) | 76 | 68 ✅ · 6 ☑️ |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
-| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 45 ✅ · 1 ☑️ |  |  |
-| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 44 ✅ |  |  |
-| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 44 ✅ |  |  |
+| [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
+| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 51 ✅ · 2 ☑️ |  |  |
+| [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
+| [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  | 50 ✅ · 1 ☑️ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 76 | 75 ✅ |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 43 ✅ |  |  |
-| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 43 ✅ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 40 ✅ · 1 ☑️ |  |  |
+| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
+| [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
 | [RefreshView](controls/RefreshView.md) | 73 | 72 ✅ |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
-| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 46 ✅ |  |  |
-| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
-| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 38 ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 46 ✅ · 1 ☑️ |  |  |
+| [SearchField](controls/SearchField.md) | 91 | 90 ✅ | 71 ✅ · 2 ☑️ |  |  | 52 ✅ · 1 ☑️ |  |  |
+| [Slider](controls/Slider.md) | 75 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 46 ✅ · 1 ☑️ |  |  |
+| [Stepper](controls/Stepper.md) | 73 | 72 ✅ | 59 ✅ · 2 ☑️ |  |  | 44 ✅ · 1 ☑️ |  |  |
 | [SwipeView](controls/SwipeView.md) | 72 | 71 ✅ |  |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 45 ✅ |  |  |
-| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 47 ✅ |  |  |
-| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 43 ✅ |  |  |
+| [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
+| [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 51 ✅ · 1 ☑️ |  |  |
+| [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 53 ✅ · 1 ☑️ |  |  |
+| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 49 ✅ · 1 ☑️ |  |  |
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
-| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 43 ✅ |  |  |
+| [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 41 ✅ · 1 ☑️ |  |  |
+| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 49 ✅ · 1 ☑️ |  |  |
 
 ### Application structure
 
@@ -483,10 +483,10 @@ Every control, and every part an application, its windows and its pages are made
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  | 2 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  | 4 ✅ |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  | 5 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 5 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 6 ✅ |  |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 | 12 ✅ | 12 ✅ |  |  | 11 ✅ |  |  |
 | [Pin](controls/Pin.md) | 6 | 0 ✅ · 6 ☑️ |  |  |  |  |  |  |
@@ -494,12 +494,12 @@ Every control, and every part an application, its windows and its pages are made
 | [Setters](controls/Setters.md) | 0 |  |  |  |  |  |  |  |
 | [Span](controls/Span.md) | 12 | 12 ✅ | 3 ✅ |  |  | 2 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 | 5 ✅ | 5 ✅ |  |  | 3 ✅ |  |  |
+| [SplitView](controls/SplitView.md) | 5 | 5 ✅ | 5 ✅ |  |  | 4 ✅ |  |  |
 | [SwipeAction](controls/SwipeAction.md) | 8 | 8 ✅ |  |  |  |  |  |  |
 | [SwipeActions](controls/SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
-| [TabbedView](controls/TabbedView.md) | 6 | 6 ✅ | 6 ✅ |  |  | 4 ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | 6 | 6 ✅ | 6 ✅ |  |  | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 7 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 8 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |  |
 | [VisualState](controls/VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |
@@ -517,7 +517,7 @@ contract's page in [the control dictionary](controls/README.md).
 <!-- members:begin -->
 | Contract | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | ✅ | ☑️ |  |  |  |  |  |
+| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | ✅ | ☑️ |  |  | ✅ |  |  |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `onVisualStateChanged` (`visualStateChanged`), `width`, `zIndex` |  |  |  |  |  |  |  |
 | [View](controls/tiers/View.md) | `absoluteLayoutBounds`, `absoluteLayoutProportions`, `allowDrop`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | ✅ |  |  |  |  |  |  |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | ✅ |  |  |  |  |  |  |

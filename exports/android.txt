@@ -291,13 +291,19 @@ WebView
 (every element)
   absoluteLayoutBounds
   absoluteLayoutProportions
+  accessibilityHint
+  accessibilityIdentifier
+  accessibilityLabel
+  automationExcludedWithChildren
   background
+  frame
   gridColumn
   gridColumnSpan
   gridRow
   gridRowSpan
   height
   horizontalAlignment
+  isAccessibilityHidden
   isVisible
   margin
   maximumHeight
@@ -317,6 +323,7 @@ WebView
   translationY
   verticalAlignment
   width
+  frameChanged()
   tapped()
 (acts)
   alert()

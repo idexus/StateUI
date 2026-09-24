@@ -21,7 +21,7 @@ extension AndroidElement {
         .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
         .isOn, .value, .minimum, .maximum, .cursorPosition, .selectionLength,
         .color, .cornerRadius, .stroke, .strokeWidth, .shape,
-    ]).union(transformProperties)
+    ]).union(transformProperties).union(accessibilityProperties)
 
     /// Properties that move, turn and scale the view where its layout put it.
     static let transformProperties: Set<Prop> = [
@@ -94,10 +94,34 @@ extension AndroidElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if !own.isDisjoint(with: Self.accessibilityProperties) { applyAccessibility(to: view) }
             if let absolute = view as? AndroidAbsoluteLayoutView { absolute.placement = placement }
         }
 
         if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// What assistive technology meets.
+    static let accessibilityProperties: Set<Prop> = [
+        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
+        .isAccessibilityHidden, .automationExcludedWithChildren,
+    ]
+
+    /// Puts the accessibility words on the view together: left out with its children, or hidden, or met,
+    /// as the element says - or as the view is of itself where it says nothing.
+    private func applyAccessibility(to view: AndroidView) {
+        let met: AndroidView.AccessibilityPresence? = switch (
+            value(.automationExcludedWithChildren)?.bool, value(.isAccessibilityHidden)?.bool
+        ) {
+        case (true?, _): .hiddenWithChildren
+        case (_, true?): .hidden
+        case (_, false?): .met
+        default: nil
+        }
+        view.setAccessibility(
+            identifier: value(.accessibilityIdentifier)?.string, label: value(.accessibilityLabel)?.string,
+            hint: value(.accessibilityHint)?.string, heading: (value(.accessibilityHeadingLevel)?.enumeration ?? 0) > 0,
+            met: met)
     }
 
     /// The layout's own placement run, where a state drives one: it moves the children without changing

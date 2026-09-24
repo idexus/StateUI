@@ -187,3 +187,14 @@ answers later, by ticket, with its value as text: a string as itself, none
 for null, anything else as JSON writes it. The web view runs scripts and
 keeps the page's storage, as a browser does, and lets go of its page and its
 web process when its element leaves.
+
+## What assistive technology meets
+
+A view's accessibility crosses in one call: the name a test finds it by, the
+words read for it in place of its own and the hint read after them, whether
+it is a heading, and whether it - or it with everything in it - is met at
+all. The name and the hint are the view's node's, written as the node is
+made; the rest are the view's own. A view the element says nothing of is as
+it is of itself: a text is met, a layout as Android decides, so its own
+presence is read once, before the element first says. Android marks a
+heading but not its level.

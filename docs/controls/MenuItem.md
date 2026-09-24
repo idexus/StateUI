@@ -32,7 +32,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ☑️ |  |  |  |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ☑️ |  |  | ✅ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 

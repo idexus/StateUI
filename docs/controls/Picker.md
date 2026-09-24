@@ -40,7 +40,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -48,16 +48,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ✅ | ✅ |  |  | ☑️ |  |  | Android Views: Android marks a heading, not its level: every level is a heading. |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `background` | property | `Background` | native | ✅ | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `frame` | property | `Rect` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |

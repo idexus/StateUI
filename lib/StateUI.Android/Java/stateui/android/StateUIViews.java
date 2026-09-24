@@ -12,9 +12,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -93,6 +95,36 @@ final class StateUIViews {
         int dimmed = (Math.round(Color.alpha(color) * disabledAlpha(context)) << 24) | (color & 0xFFFFFF);
         return new ColorStateList(
                 new int[][] {new int[] {-android.R.attr.state_enabled}, new int[0]}, new int[] {dimmed, color});
+    }
+
+    /**
+     * What assistive technology meets of `view`: the name a test finds it by, the words read for it and the
+     * hint after them - none leaves the view's own - whether it is a heading, and whether it is met at all.
+     */
+    static void setAccessibility(View view, String identifier, String label, String hint, boolean heading,
+                                 int importance) {
+        view.setContentDescription(label);
+        view.setImportantForAccessibility(importance);
+        if (Build.VERSION.SDK_INT >= 28) view.setAccessibilityHeading(heading);
+        view.setAccessibilityDelegate(identifier == null && hint == null ? null : new Words(identifier, hint));
+    }
+
+    /** The words a view's accessibility node carries beyond the view's own: its name, and its hint. */
+    private static final class Words extends View.AccessibilityDelegate {
+        private final String identifier;
+        private final String hint;
+
+        Words(String identifier, String hint) {
+            this.identifier = identifier;
+            this.hint = hint;
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            if (identifier != null) info.setViewIdResourceName(identifier);
+            if (hint != null) info.setHintText(hint);
+        }
     }
 
     /** How opaque the theme draws a disabled control. */

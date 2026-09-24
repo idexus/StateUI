@@ -35,8 +35,7 @@ enum AndroidRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
-        .complete("View", "frame"),
-        .complete("View", "frameChanged"),
+        .partial("VisualElement", "accessibilityHeadingLevel", missing: "Android marks a heading, not its level: every level is a heading."),
 
         // MARK: Entries - a control's or a part's own
         .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
