@@ -18,7 +18,7 @@ enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
         "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
-        "MenuSeparator", "ModalStack", "Overlay", "Pin", "PositionIndicator", "RefreshView", "Setters",
+        "MenuSeparator", "Overlay", "Pin", "PositionIndicator", "RefreshView", "Setters",
         "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TitleView", "TrailingContent",
         "VisualState", "WebView",
     ]
@@ -56,6 +56,7 @@ enum AndroidRealization {
         .complete("ToolbarItem", "placement"),
         .complete("Window", "activated"),
         .complete("Window", "deactivated"),
+        .complete("Window", "modalPopped"),
         .complete("Window", "stopped"),
     ]
 }

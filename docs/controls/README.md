@@ -86,7 +86,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |  |
 | [VisualState](VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |
-| [Window](Window.md) | 23 | 20 ✅ · 1 ☑️ | 23 ✅ |  |  | 3 ✅ |  |  |
+| [Window](Window.md) | 23 | 20 ✅ · 1 ☑️ | 23 ✅ |  |  | 4 ✅ |  |  |
 <!-- structure:end -->
 
 ## Tiers

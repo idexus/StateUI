@@ -30,7 +30,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `maximumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `resumed` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 | `stopped` | event |  | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |

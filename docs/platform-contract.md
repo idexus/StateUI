@@ -94,7 +94,7 @@ host that creates or interprets it.
 | `MenuBar` | structure | ✅ | ✅ |  |  |  |  |  |
 | `MenuItem` | structure | ✅ | ✅ |  |  |  |  |  |
 | `MenuSeparator` | structure | ✅ | ✅ |  |  |  |  |  |
-| `ModalStack` | structure | ✅ | ✅ |  |  |  |  |  |
+| `ModalStack` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `NavigationStack` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
 | `Overlay` | structure | ✅ | ✅ |  |  |  |  |  |
 | `Page` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
@@ -503,7 +503,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |  |
 | [VisualState](controls/VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 | 20 ✅ · 1 ☑️ | 23 ✅ |  |  | 3 ✅ |  |  |
+| [Window](controls/Window.md) | 23 | 20 ✅ · 1 ☑️ | 23 ✅ |  |  | 4 ✅ |  |  |
 <!-- dictionary:end -->
 
 ## Contract members

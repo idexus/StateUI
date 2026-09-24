@@ -149,6 +149,9 @@ enum JavaAPI {
         store, "write", "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V")
 
     static let focus = Java.staticMethod(views, "focus", "(Landroid/view/View;Z)Z")
+    static let sheet = Java.staticMethod(
+        views, "sheet", "(Landroid/content/Context;Landroid/view/View;)Landroid/widget/FrameLayout;")
+    static let rise = Java.staticMethod(views, "rise", "(Landroid/view/ViewGroup;Landroid/view/View;ZJ)V")
     static let announceForAccessibility = Java.method(view, "announceForAccessibility", "(Ljava/lang/CharSequence;)V")
 
     static let dateField = Java.findClass("stateui/android/StateUIDateField")

@@ -54,9 +54,27 @@ has left the tree hears nothing more.
 
 ## The way back
 
-The way back is the innermost the shown arrangement offers: a sidebar open
-over the detail closes, a stack with a page pushed pops it - through tabs and
-split views to the stack the user sees. The system's back asks the host
+The way back is the innermost the page in front offers - a presented page
+first, then the shown arrangement: a sidebar open over the detail closes, a
+stack with a page pushed pops it - through tabs and split views to the stack
+the user sees. The system's back asks the host
 first, and the host tells the activity whenever it has a way back, so from
 Android 13 the system's predictive back animates to the launcher only where
 the application has nowhere to go back to.
+
+## A modal stack
+
+The pages a window's modal stack presents stand over its page in the
+activity's root, in order, the top one in front, each in a holder on the
+theme's window background that takes every touch meant for the page beneath.
+A page rises from the bottom as it comes and goes down as it leaves - at once
+where the user asks for less motion. The page in front is the one presented:
+the page beneath hears it disappear, and appear again when the one over it
+goes. Back is the page in front's own way first - a stack inside it pops -
+and then that page going down, which the window reports as `modalPopped`
+with the pages left, so the state that holds the stack follows.
+
+A page the program takes off the stack has already left the tree when the
+stack is shown again, so the host holds each presented page, and the shown
+arrangement, by its mounted element, which owns its Android half: the page is
+still whole as it goes down, and is let go with its holder.

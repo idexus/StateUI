@@ -60,8 +60,10 @@ final class AndroidRenderer {
         var isPhase = false
     }
 
-    /// The arrangement of pages the root shows, and whether the activity was last told there is a way back.
-    private weak var shownArrangement: AndroidElement?
+    /// The arrangement of pages the root shows, held by its mounted element, which owns its Android half; and
+    /// whether the activity was last told there is a way back.
+    private var shownArrangementElement: MountedElement?
+    private var shownArrangement: AndroidElement? { shownArrangementElement?.android }
     private var handlesBack = false
 
     /// How deep the user's transactions stand; their events wait for the outermost to end.
@@ -147,6 +149,9 @@ final class AndroidRenderer {
         }
         Java.release(local: observer)
     }
+
+    /// The pages the window presents over its page.
+    private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
 
     /// The acts the application calls, performed and answered.
     private lazy var acts = AndroidActPerformer(core: core, context: context, root: root)
@@ -348,25 +353,41 @@ final class AndroidRenderer {
         showPage()
     }
 
-    /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show.
+    /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show,
+    /// and the pages its modal stack presents over it.
     private func showPage() {
-        let arrangement = tree.root?.first(type: .window)?.children
-            .first { AndroidElement.pageTypes.contains($0.type) }?.android
-        guard arrangement !== shownArrangement else { return }
-
-        shownArrangement?.setPagePresented(false, reason: .window)
-        shownArrangement = arrangement
-        Java.call(root.reference, JavaAPI.removeAllViews)
-        if let page = arrangement?.view {
-            page.forgetPlace()
-            Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
+        let window = tree.root?.first(type: .window)
+        let arrangement = window?.children.first { AndroidElement.pageTypes.contains($0.type) }
+        if arrangement !== shownArrangementElement {
+            shownArrangement?.setPagePresented(false, reason: .window)
+            shownArrangementElement = arrangement
+            Java.call(root.reference, JavaAPI.removeAllViews)
+            if let page = shownArrangement?.view {
+                page.forgetPlace()
+                Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
+            }
+            shownArrangement?.setPagePresented(true, reason: .window)
         }
-        arrangement?.setPagePresented(true, reason: .window)
+
+        modals.present(window?.children.first { $0.type == .modalStack }?.children ?? [], over: shownArrangement)
     }
 
-    /// Goes the way back the arrangement shown offers; whether there was one.
+    /// Goes the way back the page in front offers - a presented page's own, else that page going down, else
+    /// the arrangement's; whether there was one.
     /// Design: docs/design/platforms/android/pages.md#the-way-back
     func goBack() -> Bool {
+        if let top = modals.top {
+            if let wayBack = top.wayBack {
+                wayBack()
+            } else {
+                modals.dismissTop(over: shownArrangement)
+                let window = tree.root?.first(type: .window)
+                if let handler = window?.handler(.modalPopped) {
+                    dispatch(handler, payload: [.number(Double(modals.count))])
+                }
+            }
+            return true
+        }
         guard let wayBack = shownArrangement?.wayBack else { return false }
 
         wayBack()
@@ -375,7 +396,7 @@ final class AndroidRenderer {
 
     /// Tells the activity whether there is a way back, so the system's own back gesture knows whose it is.
     func refreshBack() {
-        let handles = shownArrangement?.wayBack != nil
+        let handles = modals.top != nil || shownArrangement?.wayBack != nil
         guard handles != handlesBack else { return }
 
         handlesBack = handles

@@ -13,6 +13,9 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
+            ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
+            ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
         ]
     }
 
@@ -149,6 +152,99 @@ final class AndroidPagesTests: XCTestCase {
 
             navigation.bar.onAction?(0)
             XCTAssertEqual(saved.values, [1])
+        }
+    }
+}
+
+extension AndroidPagesTests {
+    /// A page the modal stack presents stands over the window's page; back takes it down, the stack hears it,
+    /// and the page under it shows again.
+    func testAModalStackPresentsOverThePageAndBackTakesItDown() {
+        onMainActor {
+            let sheets = State(wrappedValue: [Int]())
+            let log = Received<String>()
+            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, log: log) }
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
+
+            log.values = []
+            sheets.wrappedValue = [1]
+            host.pump()
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the page, and the sheet over it")
+            XCTAssertEqual(
+                log.values.filter { $0.hasSuffix("appearing") }, ["Page disappearing", "Sheet 1 appearing"])
+
+            log.values = []
+            XCTAssertTrue(host.goBack())
+            XCTAssertEqual(sheets.wrappedValue, [])
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page appearing"])
+        }
+    }
+
+    /// The program shortening the stack takes its pages down after the tree has let them go - a page that left
+    /// hears nothing more - and the page under them shows again.
+    func testThePageUnderPagesTheProgramTakesDownShowsAgain() {
+        onMainActor {
+            let sheets = State(wrappedValue: [Int]())
+            let log = Received<String>()
+            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, log: log) }
+            sheets.wrappedValue = [1, 2]
+            host.pump()
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 3)
+
+            log.values = []
+            sheets.wrappedValue = [1]
+            host.pump()
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2)
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 appearing"])
+
+            log.values = []
+            sheets.wrappedValue = []
+            host.pump()
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page appearing"])
+        }
+    }
+
+    /// A window showing another arrangement: the new one appears, and the one the tree let go hears nothing more.
+    func testAnArrangementTheWindowShowsInsteadAppears() {
+        onMainActor {
+            let stacked = State(wrappedValue: false)
+            let path = State(wrappedValue: [Int]())
+            let log = Received<String>()
+            let host = AndroidRenderer.running {
+                if !stacked.wrappedValue { return TitledPage(title: "Page", log: log) }
+                return NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Root", log: log)
+                } destination: { _ in
+                    TitledPage(title: "Pushed")
+                }
+            }
+
+            log.values = []
+            stacked.wrappedValue = true
+            host.pump()
+            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["Root"])
+            XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
+        }
+    }
+}
+
+/// A page that presents its sheets over itself through its window's modal stack.
+private struct SheetsPage: ContentView {
+    let sheets: State<[Int]>
+    let log: Received<String>
+
+    @Environment private var window: WindowSession
+
+    var content: any View {
+        let sheets = self.sheets
+        let log = self.log
+        let window = self.window
+        return TitledPage(title: "Page", log: log).onCreated {
+            window.modalStack = ModalStack(sheets.projectedValue) { number in
+                TitledPage(title: "Sheet \(number)", log: log)
+            }
         }
     }
 }

@@ -14,6 +14,8 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 /** What the Swift host does to a view in one call where Android asks for several. */
@@ -142,5 +144,40 @@ final class StateUIViews {
             if (keyboard != null) keyboard.showSoftInput(view, 0);
         }
         return took;
+    }
+
+    /** A holder for a page presented over the window's page: filling it, on the theme's window background. */
+    static FrameLayout sheet(Context context, View page) {
+        FrameLayout holder = new FrameLayout(context);
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.windowBackground});
+        holder.setBackground(theme.getDrawable(0));
+        theme.recycle();
+        holder.setClickable(true);
+        if (page.getParent() instanceof ViewGroup) ((ViewGroup) page.getParent()).removeView(page);
+        holder.addView(page, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        return holder;
+    }
+
+    /**
+     * Brings a presented page up from the bottom of `parent` over `duration` milliseconds, or takes it down
+     * and out of `parent`; at no duration it stands or goes at once.
+     */
+    static void rise(ViewGroup parent, View holder, boolean in, long duration) {
+        holder.animate().cancel();
+        float away = parent.getHeight();
+        if (in) {
+            parent.addView(holder, new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            if (duration <= 0 || away <= 0) return;
+            holder.setTranslationY(away);
+            holder.animate().translationY(0).setDuration(duration).start();
+            return;
+        }
+        if (duration <= 0 || away <= 0) {
+            parent.removeView(holder);
+            return;
+        }
+        holder.animate().translationY(away).setDuration(duration).withEndAction(() -> parent.removeView(holder)).start();
     }
 }
