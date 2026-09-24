@@ -88,3 +88,14 @@ A page the program takes off the stack has already left the tree when the
 stack is shown again, so the host holds each presented page, and the shown
 arrangement, by its mounted element, which owns its Android half: the page is
 still whole as it goes down, and is let go with its holder.
+
+## The window's overlay
+
+What a window lays over everything it shows - the inspector docked in it -
+stands in the activity's root as its top child, over the page and over every
+page the modal stack presents: a page that rises after it lifts the overlay
+over itself again. It is laid out over the whole root, and takes no touch of
+its own, as no StateUI layout on Android does: a touch beside what it holds
+goes on to the page under it. The host holds the overlay by its mounted
+element, as it does the arrangement, and takes its view out of the root when
+the window no longer describes it.

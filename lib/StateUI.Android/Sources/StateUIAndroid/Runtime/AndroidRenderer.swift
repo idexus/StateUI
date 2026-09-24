@@ -66,6 +66,9 @@ final class AndroidRenderer {
     private var shownArrangement: AndroidElement? { shownArrangementElement?.android }
     private var handlesBack = false
 
+    /// What the window lays over everything it shows - the inspector docked in it - held as the arrangement is.
+    private var shownOverlayElement: MountedElement?
+
     /// The window told it was made, and whether the activity stands stopped.
     private weak var createdWindow: MountedElement?
     private var stopped = false
@@ -406,13 +409,15 @@ final class AndroidRenderer {
     }
 
     /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show,
-    /// and the pages its modal stack presents over it.
+    /// the pages its modal stack presents over it, and its overlay over them all.
+    /// Design: docs/design/platforms/android/pages.md#the-windows-overlay
     private func showPage() {
         let window = tree.root?.first(type: .window)
         let arrangement = window?.children.first { AndroidElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {
             shownArrangement?.setPagePresented(false, reason: .window)
             shownArrangementElement = arrangement
+            shownOverlayElement = nil
             Java.call(root.reference, JavaAPI.removeAllViews)
             if let page = shownArrangement?.view {
                 page.forgetPlace()
@@ -421,7 +426,26 @@ final class AndroidRenderer {
             shownArrangement?.setPagePresented(true, reason: .window)
         }
 
-        modals.present(window?.children.first { $0.type == .modalStack }?.children ?? [], over: shownArrangement)
+        let rose = modals.present(
+            window?.children.first { $0.type == .modalStack }?.children ?? [], over: shownArrangement)
+        showOverlay(window?.children.first { $0.type == .overlay }, raised: rose)
+    }
+
+    /// Lays the window's overlay over the root's pages, lifted over a page that rose after it; it takes no touch
+    /// beside what it holds, which goes on to the page under it.
+    private func showOverlay(_ overlay: MountedElement?, raised: Bool) {
+        guard overlay === shownOverlayElement else {
+            if let leaving = shownOverlayElement?.android.view {
+                Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference))
+            }
+            shownOverlayElement = overlay
+            if let view = overlay?.android.view {
+                view.forgetPlace()
+                Java.call(root.reference, JavaAPI.addView, .object(view.reference), .int(-1), .int(-1))
+            }
+            return
+        }
+        if raised, let view = overlay?.android.view { Java.call(view.reference, JavaAPI.bringToFront) }
     }
 
     /// Goes the way back the page in front offers - a presented page's own, else that page going down, else

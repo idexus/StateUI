@@ -243,6 +243,17 @@ extension AndroidView {
         Java.release(local: event)
     }
 
+    /// Whether the view takes a finger put down at `x`, `y` pixels of it: one it does not goes on to whatever
+    /// is behind it.
+    func touched(x: Float, y: Float) -> Bool {
+        let event = Java.callStaticObject(
+            TestJava.motionEvent, TestJava.obtain, .long(0), .long(0), .int(0), .float(x), .float(y), .int(0))
+        let taken = Java.callBool(reference, TestJava.dispatchTouchEvent, .object(event))
+        Java.call(event!, TestJava.recycle)
+        Java.release(local: event)
+        return taken
+    }
+
     /// Drags a finger across the view's middle, from `start` to `end` of its width, as the user does.
     func drag(from start: Double, to end: Double) {
         let (_, _, width, height) = frame

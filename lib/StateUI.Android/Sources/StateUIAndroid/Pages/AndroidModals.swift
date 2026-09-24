@@ -32,8 +32,9 @@ final class AndroidModals {
     var count: Int { shown.count }
 
     /// Presents the modal stack's pages: the ones shown and still described stay, the rest leave from the top,
-    /// and each new one rises over the one before; the page in front is the one that shows.
-    func present(_ target: [MountedElement], over page: AndroidElement?) {
+    /// and each new one rises over the one before; the page in front is the one that shows. Whether one rose.
+    @discardableResult
+    func present(_ target: [MountedElement], over page: AndroidElement?) -> Bool {
         var common = 0
         while common < shown.count, common < target.count, shown[common].element === target[common] {
             common += 1
@@ -56,6 +57,7 @@ final class AndroidModals {
             shown.append(Shown(element: element, holder: holder))
             element.android.setPagePresented(true, reason: .navigation)
         }
+        return shown.count > common
     }
 
     /// Takes the page in front down, and the one under it shows again.

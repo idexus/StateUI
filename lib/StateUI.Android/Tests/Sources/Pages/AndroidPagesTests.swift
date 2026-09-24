@@ -20,6 +20,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
+            ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
         ]
     }
 
@@ -382,6 +383,40 @@ extension AndroidPagesTests {
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
         }
     }
+
+    /// The inspector docked in the window is its overlay: over the page and over a page presented after it,
+    /// taking no touch beside its panel, and gone once the inspector closes.
+    func testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough() throws {
+        try onMainActor {
+            let sheets = State(wrappedValue: [Int]())
+            let scenes = Received<SceneSession>()
+            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, scenes: scenes) }
+            let scene = try XCTUnwrap(scenes.values.last)
+            defer { Inspector.close(in: scene) }
+            host.layOut()
+
+            Inspector.open(in: scene)
+            host.pump()
+            host.layOut()
+            let overlay = try XCTUnwrap((host.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
+            let root = host.root.reference
+            XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page, and the overlay over it")
+            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 1)
+            XCTAssertEqual(overlay.frame.width, 1080)
+            XCTAssertEqual(overlay.frame.height, 1920)
+            XCTAssertFalse(overlay.touched(x: 540, y: 100), "the overlay took a touch beside its panel")
+
+            sheets.wrappedValue = [1]
+            host.pump()
+            XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
+            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
+
+            Inspector.close(in: scene)
+            host.pump()
+            XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page and the sheet")
+            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), -1)
+        }
+    }
 }
 
 /// A page on a blue ground with its words 8 points in, saying whether its bar shows and has a way back.
@@ -422,18 +457,23 @@ private struct SearchingPage: ContentView {
     }
 }
 
-/// A page that presents its sheets over itself through its window's modal stack.
+/// A page that presents its sheets over itself through its window's modal stack, and tells its scene.
 private struct SheetsPage: ContentView {
     let sheets: State<[Int]>
-    let log: Received<String>
+    var log = Received<String>()
+    var scenes = Received<SceneSession>()
 
     @Environment private var window: WindowSession
+    @Environment private var scene: SceneSession
 
     var content: any View {
         let sheets = self.sheets
         let log = self.log
         let window = self.window
+        let scenes = self.scenes
+        let scene = self.scene
         return TitledPage(title: "Page", log: log).onCreated {
+            scenes.values.append(scene)
             window.modalStack = ModalStack(sheets.projectedValue) { number in
                 TitledPage(title: "Sheet \(number)", log: log)
             }

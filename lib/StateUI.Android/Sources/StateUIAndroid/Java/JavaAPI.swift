@@ -50,6 +50,7 @@ enum JavaAPI {
     static let removeAllViews = Java.method(viewGroup, "removeAllViews", "()V")
     static let addView = Java.method(viewGroup, "addView", "(Landroid/view/View;II)V")
     static let removeView = Java.method(viewGroup, "removeView", "(Landroid/view/View;)V")
+    static let bringToFront = Java.method(view, "bringToFront", "()V")
     static let setClipChildren = Java.method(viewGroup, "setClipChildren", "(Z)V")
     static let getParent = Java.method(view, "getParent", "()Landroid/view/ViewParent;")
     static let scrollTo = Java.method(view, "scrollTo", "(II)V")

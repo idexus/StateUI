@@ -96,7 +96,7 @@ host that creates or interprets it.
 | `MenuSeparator` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `ModalStack` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `NavigationStack` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
-| `Overlay` | structure | ✅ | ✅ |  |  |  |  |  |
+| `Overlay` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `Page` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
 | `Path` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `Picker` | native | ✅ | ✅ |  |  | ✅ |  |  |

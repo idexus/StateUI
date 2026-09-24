@@ -43,7 +43,7 @@ extension AndroidElement {
         case .application, .scene, .window:
             return nil
 
-        case .page:
+        case .page, .overlay:
             return AndroidSingleChildView()
 
         case .navigationStack:
