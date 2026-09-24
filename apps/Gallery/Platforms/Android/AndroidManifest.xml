@@ -2,8 +2,11 @@
 <!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The WebView sample fetches its page, and the page's link leads on over plain HTTP. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="StateUI Gallery"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
         <activity

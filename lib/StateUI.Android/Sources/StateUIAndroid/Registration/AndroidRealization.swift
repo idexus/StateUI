@@ -19,7 +19,7 @@ enum AndroidRealization {
     static let unrealized: Set<String> = [
         "Content", "LeadingContent", "Map", "MenuBar", "Overlay", "Pin", "PositionIndicator", "RefreshView",
         "Setters", "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TrailingContent",
-        "VisualState", "WebView",
+        "VisualState",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's text - so

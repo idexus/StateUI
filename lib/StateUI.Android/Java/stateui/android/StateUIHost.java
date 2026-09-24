@@ -79,8 +79,23 @@ final class StateUIHost {
     /** The user chose a picker's option at `index`. */
     static native void chose(long view, int index);
 
-    /** The user answered the dialog under `ticket`: accepted or not, and the words chosen or typed. */
-    static native void dialogAnswered(long ticket, boolean accepted, String words);
+    /**
+     * The act waiting under `ticket` was answered: a dialog accepted or not, and the words chosen or typed;
+     * a script's value as text.
+     */
+    static native void answered(long ticket, boolean accepted, String words);
+
+    /** A web view's navigation started: why, as StateUI numbers it, and where it is going. */
+    static native void webNavigating(long view, int cause, String address);
+
+    /** A web view's navigation ended: how and why, as StateUI numbers them, and where it went. */
+    static native void webNavigated(long view, int result, int cause, String address);
+
+    /** Whether a web view has a page behind it and ahead of it, as its history now stands. */
+    static native void webHistory(long view, boolean back, boolean forward);
+
+    /** A web view's web process died, and the view was made again, blank. */
+    static native void webProcessGone(long view);
 
     /** A finger went down on a canvas - 0 - moved on it - 1 - or was lifted - 2 - at a point in points. */
     static native void canvasTouched(long view, int phase, float x, float y);

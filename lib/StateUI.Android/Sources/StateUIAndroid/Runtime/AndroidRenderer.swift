@@ -156,7 +156,8 @@ final class AndroidRenderer {
     /// The acts the application calls, performed and answered.
     private lazy var acts = AndroidActPerformer(core: core, context: context, root: root)
 
-    /// The user answered a dialog: its act is answered, and what that resumes runs.
+    /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
+    /// writes runs.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         acts.answered(ticket: ticket, accepted: accepted, words: words)
         pump()

@@ -103,7 +103,7 @@ final class StateUIDialogs {
         void give(boolean accepted, String words) {
             if (given) return;
             given = true;
-            StateUIHost.dialogAnswered(ticket, accepted, words);
+            StateUIHost.answered(ticket, accepted, words);
         }
 
         void onDismissOf(AlertDialog dialog) {

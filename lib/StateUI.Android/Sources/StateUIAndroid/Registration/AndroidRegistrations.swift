@@ -23,6 +23,7 @@ enum AndroidRegistrations {
         shapes(registry)
         drawing(registry)
         indicators(registry)
+        web(registry)
         shared(registry)
 
         return registry
@@ -36,6 +37,7 @@ enum AndroidRegistrations {
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
         ApplicationContract.prompt, ApplicationContract.utcOffset,
+        WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
     ]
 
     /// What `AndroidElement` puts on every view wearing each member's contract.

@@ -170,3 +170,20 @@ Android has no stepper, so the host builds one from its own buttons: one a
 step down, one a step up, side by side, each off at its end of the range. A
 step is the user's report, held in the range; the value the tree writes is
 put where it said, within it.
+
+## A web view
+
+A WebView is Android's own web view, standing in a holder. Where its web
+process dies - a crash, or the system reclaiming memory - Android leaves the
+view unusable: the holder makes it again, blank, and the element hears the
+process ended; a reload shows the page again. A navigation is reported as it
+starts and as it ends, with why it happened - a new page, back, forward, a
+reload, as the act that caused it said - and how it ended: an error on the
+page itself makes it a failure, a timeout its own. A page crosses with the
+name the view asks by, the name written first: written while a page loads,
+Android leaves that page out of the history, and there is no way back to it. Whether there is a page
+behind and ahead is said when it changes. A script runs in the page and
+answers later, by ticket, with its value as text: a string as itself, none
+for null, anything else as JSON writes it. The web view runs scripts and
+keeps the page's storage, as a browser does, and lets go of its page and its
+web process when its element leaves.

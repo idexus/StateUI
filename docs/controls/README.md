@@ -50,7 +50,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TimePicker](TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [TitleBar](TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [WebView](WebView.md) | 79 | 78 ✅ |  |  |  |  |  |  |
+| [WebView](WebView.md) | 79 | 78 ✅ |  |  |  | 42 ✅ |  |  |
 <!-- controls:end -->
 
 ## Application structure

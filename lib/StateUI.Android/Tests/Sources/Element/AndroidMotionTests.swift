@@ -30,7 +30,7 @@ final class AndroidMotionTests: XCTestCase {
         XCTAssertTrue(AndroidTransitionSurface.presents(.spacing, on: .vStack))
         XCTAssertFalse(AndroidTransitionSurface.presents(.value, on: .label))
         XCTAssertTrue(AndroidTransitionSurface.presents(.opacity, on: .checkBox), "every registered view")
-        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .webView))
+        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .positionIndicator))
         XCTAssertFalse(AndroidTransitionSurface.presents(Prop("custom"), on: .label))
     }
 

@@ -54,9 +54,9 @@ final class AndroidRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onMainActor {
-            let host = AndroidRenderer.running { VStack { WebView("https://example.com") } }
+            let host = AndroidRenderer.running { VStack { PositionIndicator() } }
 
-            XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported WebView"])
+            XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported PositionIndicator"])
         }
     }
 

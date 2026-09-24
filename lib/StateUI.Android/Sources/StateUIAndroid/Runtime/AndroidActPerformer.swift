@@ -6,7 +6,8 @@ import CStateUIAndroid
 
 /// Performs the acts the application calls on the host, and answers each - a reply with its values, or a
 /// failure with the reason - so a caller never waits on an act nobody performs. A question for the user
-/// answers when the user does: its call waits under a ticket the dialog hands back.
+/// answers when the user does, and a script when the page has run it: its call waits under a ticket the
+/// dialog or the web view hands back.
 /// Design: docs/design/platforms/android/runtime.md#acts
 @MainActor
 final class AndroidActPerformer {
@@ -14,9 +15,12 @@ final class AndroidActPerformer {
     private let context: JavaObject
     private let root: JavaObject
 
-    /// The questions the user has not answered yet, by ticket.
+    /// The acts not answered yet - a question, a script - by ticket.
     private var waiting: [Int64: HostActCall] = [:]
-    private var nextTicket: Int64 = 1
+
+    /// The next ticket: one number across every renderer of the process, so an answer that comes after its
+    /// renderer is gone answers nothing of another's.
+    private(set) static var nextTicket: Int64 = 1
 
     init(core: CoreLink, context: JavaObject, root: JavaObject) {
         self.core = core
@@ -45,7 +49,9 @@ final class AndroidActPerformer {
         case .hideOnScreenKeyboard:
             reply(call, [.bool(Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root.reference)))])
         case .focus, .unfocus:
-            aim(call, in: tree)
+            focus(call, in: tree)
+        case .goBack, .goForward, .reload, .evaluateJavaScript:
+            browse(call, in: tree)
         case .persistValue:
             AndroidPersistence.keep(call, core: core, context: context.reference)
             reply(call, [])
@@ -57,22 +63,22 @@ final class AndroidActPerformer {
         }
     }
 
-    /// The user answered the dialog under `ticket`: accepted or not, and the words chosen or typed.
+    /// The act under `ticket` was answered: a dialog accepted or not, and the words chosen or typed; a script's
+    /// value as text.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         guard let call = waiting.removeValue(forKey: ticket) else { return }
 
         switch call.act {
         case .confirm: reply(call, [.bool(accepted)])
         case .chooseAction, .prompt: reply(call, [(accepted ? words : nil).propValue])
+        case .evaluateJavaScript: reply(call, [words.propValue])
         default: reply(call, [])
         }
     }
 
     /// Puts a question to the user in the platform's own dialog; its answer comes back by ticket.
     private func ask(_ call: HostActCall) {
-        let ticket = nextTicket
-        nextTicket += 1
-        waiting[ticket] = call
+        let ticket = wait(call)
         let arguments = call.arguments
 
         func text(_ index: Int) -> String? { arguments.value(index)?.string }
@@ -135,19 +141,51 @@ final class AndroidActPerformer {
     }
 
     /// Puts the focus on the view the act names, or takes it off; `focus` answers whether the view took it.
-    private func aim(_ call: HostActCall, in tree: MountedTree) {
+    private func focus(_ call: HostActCall, in tree: MountedTree) {
+        guard let view = aimed(call, in: tree) else { return }
+
+        let took = Java.callStaticBool(JavaAPI.views, JavaAPI.focus, .object(view.reference), .bool(call.act == .focus))
+        reply(call, call.act == .focus ? [.bool(took)] : [])
+    }
+
+    /// Steps a web view back or forward, or loads it again; or runs a script in it, which answers by ticket.
+    private func browse(_ call: HostActCall, in tree: MountedTree) {
+        guard let view = aimed(call, in: tree) else { return }
+        guard let web = view as? AndroidWebView else { return fail(call, "\(call.act.name) is an act of a web view") }
+
+        switch call.act {
+        case .goBack: web.goBack()
+        case .goForward: web.goForward()
+        case .reload: web.reload()
+        default: return web.evaluate(call.arguments.value(1)?.string ?? "", ticket: wait(call))
+        }
+        reply(call, [])
+    }
+
+    /// The view the act is aimed at, which its first argument names; nil, the act failed, where there is none.
+    private func aimed(_ call: HostActCall, in tree: MountedTree) -> AndroidView? {
         let target: ElementId? = switch call.arguments.first {
         case .string(let name)?: .manual(name)
         case .number(let number)?: .auto(Int(number))
         default: nil
         }
-        guard let target else { return fail(call, "a focus act has to say which view it is for") }
-        guard let view = (tree.root?.first(id: target)?.native as? AndroidElement)?.view else {
-            return fail(call, "there is no view \(target) on screen")
+        guard let target else {
+            fail(call, "\(call.act.name) has to say which view it is for")
+            return nil
         }
+        guard let view = (tree.root?.first(id: target)?.native as? AndroidElement)?.view else {
+            fail(call, "there is no view \(target) on screen")
+            return nil
+        }
+        return view
+    }
 
-        let took = Java.callStaticBool(JavaAPI.views, JavaAPI.focus, .object(view.reference), .bool(call.act == .focus))
-        reply(call, call.act == .focus ? [.bool(took)] : [])
+    /// Keeps `call` waiting for its answer, under the ticket this answers.
+    private func wait(_ call: HostActCall) -> Int64 {
+        let ticket = Self.nextTicket
+        Self.nextTicket += 1
+        waiting[ticket] = call
+        return ticket
     }
 
     private func reply(_ call: HostActCall, _ values: [HostValue]) {

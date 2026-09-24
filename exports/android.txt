@@ -280,6 +280,14 @@ VStack
   ignoresInput
   padding
   spacing
+WebView
+  source
+  userAgent
+  canGoBackChanged()
+  canGoForwardChanged()
+  navigated()
+  navigating()
+  processTerminated()
 (every element)
   absoluteLayoutBounds
   absoluteLayoutProportions
@@ -317,10 +325,14 @@ VStack
   confirm()
   currentTime()
   currentTimeZone()
+  evaluateJavaScript()
   focus()
+  goBack()
+  goForward()
   handlerFailed()
   hideOnScreenKeyboard()
   persistValue()
   prompt()
+  reload()
   unfocus()
   utcOffset()

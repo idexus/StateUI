@@ -132,7 +132,7 @@ host that creates or interprets it.
 | `TrailingContent` | structure | ✅ | ✅ |  |  |  |  |  |
 | `VStack` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `VisualState` | structure | ✅ |  |  |  |  |  |  |
-| `WebView` | native | ✅ |  |  |  |  |  |  |
+| `WebView` | native | ✅ |  |  |  | ✅ |  |  |
 | `Window` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 <!-- creation:end -->
 
@@ -332,10 +332,10 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | `prompt` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |  |
 | `utcOffset` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |  |
 | `moveToRegion` | [Map](controls/Map.md) | ✅ |  |  |  |  |  |  |
-| `evaluateJavaScript` | [WebView](controls/WebView.md) | ✅ |  |  |  |  |  |  |
-| `goBack` | [WebView](controls/WebView.md) | ✅ |  |  |  |  |  |  |
-| `goForward` | [WebView](controls/WebView.md) | ✅ |  |  |  |  |  |  |
-| `reload` | [WebView](controls/WebView.md) | ✅ |  |  |  |  |  |  |
+| `evaluateJavaScript` | [WebView](controls/WebView.md) | ✅ |  |  |  | ✅ |  |  |
+| `goBack` | [WebView](controls/WebView.md) | ✅ |  |  |  | ✅ |  |  |
+| `goForward` | [WebView](controls/WebView.md) | ✅ |  |  |  | ✅ |  |  |
+| `reload` | [WebView](controls/WebView.md) | ✅ |  |  |  | ✅ |  |  |
 <!-- acts:end -->
 
 ## Shared view members
@@ -471,7 +471,7 @@ Every control, and every part an application, its windows and its pages are made
 | [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 34 ✅ |  |  |
-| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  |  |  |  |
+| [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  | 42 ✅ |  |  |
 
 ### Application structure
 
@@ -580,7 +580,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | ✅ | ✅ |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | ✅ | ✅ |  |  | ✅ |  |  |
 | [VisualState](controls/VisualState.md) | `group`, `name` | ✅ |  |  |  |  |  |  |
-| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | ✅ |  |  |  |  |  |  |
+| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | ✅ |  |  |  | ✅ |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` |  | ✅ |  |  |  |  |  |
 <!-- members:end -->
 

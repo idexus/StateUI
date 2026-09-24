@@ -162,6 +162,17 @@ enum JavaAPI {
     static let setFieldFormat = Java.method(dateField, "setFormat", "(Ljava/lang/String;)V")
     static let setFieldOpen = Java.method(dateField, "setOpen", "(Z)V")
 
+    static let webView = Java.findClass("stateui/android/StateUIWebView")
+    static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;J)V")
+    static let loadWeb = Java.method(webView, "load", "(Ljava/lang/String;Ljava/lang/String;)V")
+    static let showWeb = Java.method(webView, "show", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
+    static let setWebUserAgent = Java.method(webView, "setUserAgent", "(Ljava/lang/String;)V")
+    static let webGoBack = Java.method(webView, "goBack", "()V")
+    static let webGoForward = Java.method(webView, "goForward", "()V")
+    static let webReload = Java.method(webView, "reload", "()V")
+    static let webEvaluate = Java.method(webView, "evaluate", "(Ljava/lang/String;J)V")
+    static let releaseWeb = Java.method(webView, "release", "()V")
+
     static let canvasView = Java.findClass("stateui/android/StateUICanvasView")
     static let newCanvasView = Java.method(canvasView, "<init>", "(Landroid/content/Context;JF)V")
     static let setDrawing = Java.method(canvasView, "setDrawing", "([I[F[Ljava/lang/String;)V")
