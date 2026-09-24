@@ -81,7 +81,7 @@ host that creates or interprets it.
 | `ColorBox` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Content` | structure | ✅ | ✅ |  |  |  |  |  |
 | `ContextMenu` | structure | ✅ | ✅ |  |  |  |  |  |
-| `DatePicker` | native | ✅ | ✅ |  |  |  |  |  |
+| `DatePicker` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Ellipse` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `Grid` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `HStack` | native | ✅ | ✅ |  |  | ✅ |  |  |
@@ -124,7 +124,7 @@ host that creates or interprets it.
 | `TabbedView` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
 | `TextEditor` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `TextField` | native | ✅ | ✅ |  |  | ✅ |  |  |
-| `TimePicker` | native | ✅ | ✅ |  |  |  |  |  |
+| `TimePicker` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `TitleBar` | adaptive | ✅ | ✅ |  |  |  |  |  |
 | `TitleView` | structure | ✅ | ✅ |  |  |  |  |  |
 | `ToolbarItem` | structure | ✅ | ✅ |  |  | ✅ |  |  |
@@ -443,7 +443,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Canvas](controls/Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [ColorBox](controls/ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
-| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  |  |  |  |
+| [DatePicker](controls/DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [Ellipse](controls/Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 39 ✅ |  |  |
 | [Grid](controls/Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
 | [HStack](controls/HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
@@ -468,7 +468,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Switch](controls/Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [TextField](controls/TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 44 ✅ |  |  |
-| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
 | [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  |  |  |  |
@@ -543,7 +543,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | ✅ |  |  | ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ | ✅ |  |  | ✅ |  |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | ✅ | ✅ |  |  | ✅ |  |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | ✅ |  |  |  |  |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | ✅ |  |  |  | ✅ |  |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | ✅ | ✅ |  |  |  |  |  |
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | ✅ | ✅ |  |  | ✅ |  |  |
@@ -576,7 +576,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ | ✅ |  |  | ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ | ✅ |  |  | ✅ |  |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | ✅ |  |  |  |  |  |  |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | ✅ |  |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | ✅ |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | ✅ | ✅ |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | ✅ | ✅ |  |  |  |  |  |
 | [VisualState](controls/VisualState.md) | `group`, `name` | ✅ |  |  |  |  |  |  |

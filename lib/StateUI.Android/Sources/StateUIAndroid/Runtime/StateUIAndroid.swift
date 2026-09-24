@@ -125,14 +125,16 @@ enum JavaNatives {
                 AndroidView.find(number)?.held(holding != 0)
             }
         }
-        let pickerOpened: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
-            MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidPickerView)?.onOpened?()
-            }
+        let opened: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated { AndroidView.find(number)?.opened() }
         }
-        let pickerClosed: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+        let closed: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated { AndroidView.find(number)?.closed() }
+        }
+        let fieldChose: @convention(c) (Environment, jclass?, jlong, jint, jint, jint) -> Void = {
+            _, _, number, first, second, third in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidPickerView)?.onClosed?()
+                (AndroidView.find(number) as? AndroidDateFieldView)?.chose(Int(first), Int(second), Int(third))
             }
         }
         let chose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, index in
@@ -184,8 +186,9 @@ enum JavaNatives {
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),
-            ("pickerOpened", "(J)V", unsafeBitCast(pickerOpened, to: UnsafeMutableRawPointer.self)),
-            ("pickerClosed", "(J)V", unsafeBitCast(pickerClosed, to: UnsafeMutableRawPointer.self)),
+            ("opened", "(J)V", unsafeBitCast(opened, to: UnsafeMutableRawPointer.self)),
+            ("closed", "(J)V", unsafeBitCast(closed, to: UnsafeMutableRawPointer.self)),
+            ("fieldChose", "(JIII)V", unsafeBitCast(fieldChose, to: UnsafeMutableRawPointer.self)),
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),

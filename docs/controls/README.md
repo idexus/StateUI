@@ -22,7 +22,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Canvas](Canvas.md) | 72 | 71 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [CheckBox](CheckBox.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 33 ✅ |  |  |
 | [ColorBox](ColorBox.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
-| [DatePicker](DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  |  |  |  |
+| [DatePicker](DatePicker.md) | 82 | 81 ✅ | 62 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [Ellipse](Ellipse.md) | 78 | 77 ✅ | 62 ✅ · 3 ☑️ |  |  | 39 ✅ |  |  |
 | [Grid](Grid.md) | 76 | 75 ✅ | 59 ✅ · 2 ☑️ |  |  | 35 ✅ |  |  |
 | [HStack](HStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
@@ -47,7 +47,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Switch](Switch.md) | 71 | 70 ✅ | 57 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
 | [TextEditor](TextEditor.md) | 89 | 88 ✅ | 70 ✅ · 2 ☑️ |  |  | 42 ✅ |  |  |
 | [TextField](TextField.md) | 92 | 91 ✅ | 71 ✅ · 2 ☑️ |  |  | 44 ✅ |  |  |
-| [TimePicker](TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  |  |  |  |
+| [TimePicker](TimePicker.md) | 80 | 79 ✅ | 60 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
 | [TitleBar](TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](VStack.md) | 73 | 72 ✅ | 56 ✅ · 2 ☑️ |  |  | 32 ✅ |  |  |
 | [WebView](WebView.md) | 79 | 78 ✅ |  |  |  |  |  |  |

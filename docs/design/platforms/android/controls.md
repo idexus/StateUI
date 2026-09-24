@@ -146,6 +146,17 @@ is not. It takes the window's focus while it shows, and the focus coming back
 is the list closing - Android has no call for it. Nor does it let a program
 close the list: `isOpen` set to false leaves it to the user.
 
+## A day and a time
+
+A date picker and a time picker are one field of the host's, showing the day
+or the time in the user's locale - "D" and "d" the long and short day, "T" and
+"t" the long and short time, which follows the user's choice of a 24-hour
+clock, any other text a pattern - and opening the platform's own calendar or
+clock, within the bounds the tree gave. The user's choice is written into the
+field and reported; the program's day or time is only written. The dialog
+opening on the user's tap and it closing are reported; the program opening or
+closing it is not, and a field that leaves closes its dialog.
+
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.

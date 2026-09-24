@@ -63,11 +63,14 @@ final class StateUIHost {
     /** A finger took hold of a view, or let go of it. */
     static native void held(long view, boolean holding);
 
-    /** The user opened a picker's list. */
-    static native void pickerOpened(long view);
+    /** The user opened a view's list, calendar or clock. */
+    static native void opened(long view);
 
-    /** A picker's list closed. */
-    static native void pickerClosed(long view);
+    /** A view's list, calendar or clock closed. */
+    static native void closed(long view);
+
+    /** The user chose a day - year, month, day - or a time - hour, minute, 0 - in a date or time field. */
+    static native void fieldChose(long view, int first, int second, int third);
 
     /** The user chose a picker's option at `index`. */
     static native void chose(long view, int index);

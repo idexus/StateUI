@@ -80,7 +80,7 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         boolean handled = super.performClick();
         if (!open) {
             open = true;
-            if (!opening) StateUIHost.pickerOpened(view);
+            if (!opening) StateUIHost.opened(view);
         }
         return handled;
     }
@@ -91,7 +91,7 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         super.onWindowFocusChanged(focused);
         if (focused && open) {
             open = false;
-            StateUIHost.pickerClosed(view);
+            StateUIHost.closed(view);
         }
     }
 

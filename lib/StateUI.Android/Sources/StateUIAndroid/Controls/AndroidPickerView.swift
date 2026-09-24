@@ -71,6 +71,14 @@ final class AndroidPickerView: AndroidView {
         Java.release(local: tint)
     }
 
+    override func opened() {
+        onOpened?()
+    }
+
+    override func closed() {
+        onClosed?()
+    }
+
     override func detach() {
         super.detach()
         onChosen = nil

@@ -42,6 +42,20 @@ CheckBox
 ColorBox
   color
   cornerRadius
+DatePicker
+  date
+  fontAttributes
+  fontFamily
+  fontSize
+  format
+  isEnabled
+  isOpen
+  maximumDate
+  minimumDate
+  textColor
+  closed()
+  dateChanged()
+  opened()
 Ellipse
   aspect
   fill
@@ -250,6 +264,18 @@ TextField
   textColor
   submitted()
   textChanged()
+TimePicker
+  fontAttributes
+  fontFamily
+  fontSize
+  format
+  isEnabled
+  isOpen
+  textColor
+  time
+  closed()
+  opened()
+  timeChanged()
 VStack
   ignoresInput
   padding

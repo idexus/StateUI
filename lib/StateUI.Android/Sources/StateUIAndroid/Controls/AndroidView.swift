@@ -202,6 +202,12 @@ class AndroidView {
     /// A finger took hold of the view, or let go of it; a view that listens for it says what that means.
     func held(_ holding: Bool) {}
 
+    /// The user opened the view's list, calendar or clock.
+    func opened() {}
+
+    /// The view's list, calendar or clock closed.
+    func closed() {}
+
     /// What the view does when the user taps it; nil where it takes no tap.
     private(set) var onTapped: (() -> Void)?
 

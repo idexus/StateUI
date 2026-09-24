@@ -15,6 +15,7 @@ enum AndroidRegistrations {
         buttons(registry)
         toggles(registry)
         pickers(registry)
+        dates(registry)
         values(registry)
         fields(registry)
         layouts(registry)
