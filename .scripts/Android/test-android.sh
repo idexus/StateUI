@@ -47,7 +47,7 @@ echo "$output"
 
 summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing - read: $ADB -s $serial logcat -s StateUI"; exit 1; }
-[[ "$summary" == *" with 0 failures" ]]
+[[ "$summary" == *" with 0 failures" ]] || exit 1
 
 declared="$(mktemp -d)"
 trap 'rm -rf "$declared"' EXIT
