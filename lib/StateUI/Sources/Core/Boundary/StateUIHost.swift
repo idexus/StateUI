@@ -12,68 +12,68 @@
 
     /// Updates the appearance used to resolve themed values before rendering.
     public static func setTheme(_ theme: Theme) {
-        StandardEnvironment.app.requestedTheme = theme
+        update(StandardEnvironment.app, \.requestedTheme, theme)
     }
 
     /// Replaces the standard device report used by application builds.
     public static func setDeviceInfo(_ info: HostDeviceInfo) {
         let device = StandardEnvironment.device
-        device.formFactor = info.formFactor
-        device.platform = info.platform
-        device.model = info.model
-        device.manufacturer = info.manufacturer
-        device.name = info.name
-        device.versionString = info.versionString
-        device.deviceType = info.deviceType
+        update(device, \.formFactor, info.formFactor)
+        update(device, \.platform, info.platform)
+        update(device, \.model, info.model)
+        update(device, \.manufacturer, info.manufacturer)
+        update(device, \.name, info.name)
+        update(device, \.versionString, info.versionString)
+        update(device, \.deviceType, info.deviceType)
     }
 
     /// Replaces the standard main-display report used by application builds.
     public static func setDisplayInfo(_ info: HostDisplayInfo) {
         let display = StandardEnvironment.display
-        display.width = info.width
-        display.height = info.height
-        display.density = info.density
-        display.orientation = info.orientation
-        display.rotation = info.rotation
-        display.refreshRate = info.refreshRate
+        update(display, \.width, info.width)
+        update(display, \.height, info.height)
+        update(display, \.density, info.density)
+        update(display, \.orientation, info.orientation)
+        update(display, \.rotation, info.rotation)
+        update(display, \.refreshRate, info.refreshRate)
     }
 
     /// Replaces the standard application-manifest report used by builds.
     public static func setApplicationInfo(_ info: HostApplicationInfo) {
         let app = StandardEnvironment.app
-        app.name = info.name
-        app.packageName = info.packageName
-        app.versionString = info.versionString
-        app.buildString = info.buildString
+        update(app, \.name, info.name)
+        update(app, \.packageName, info.packageName)
+        update(app, \.versionString, info.versionString)
+        update(app, \.buildString, info.buildString)
     }
 
     /// Replaces the standard battery report.
     public static func setBatteryInfo(_ info: HostBatteryInfo) {
         let battery = StandardEnvironment.battery
-        battery.chargeLevel = info.chargeLevel
-        battery.state = info.state
-        battery.powerSource = info.powerSource
-        battery.energySaverStatus = info.energySaverStatus
+        update(battery, \.chargeLevel, info.chargeLevel)
+        update(battery, \.state, info.state)
+        update(battery, \.powerSource, info.powerSource)
+        update(battery, \.energySaverStatus, info.energySaverStatus)
     }
 
     /// Replaces the standard connectivity report.
     public static func setConnectivityInfo(_ info: HostConnectivityInfo) {
         let connectivity = StandardEnvironment.connectivity
-        connectivity.networkAccess = info.networkAccess
-        connectivity.connectionProfiles = info.connectionProfiles
+        update(connectivity, \.networkAccess, info.networkAccess)
+        update(connectivity, \.connectionProfiles, info.connectionProfiles)
     }
 
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
-        locale.language = info.language
-        locale.region = info.region
-        locale.name = info.name
-        locale.timeZone = info.timeZone
-        locale.uses24HourClock = info.uses24HourClock
-        locale.firstDayOfWeek = info.firstDayOfWeek
-        locale.isMetric = info.isMetric
-        locale.layoutDirection = info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight
+        update(locale, \.language, info.language)
+        update(locale, \.region, info.region)
+        update(locale, \.name, info.name)
+        update(locale, \.timeZone, info.timeZone)
+        update(locale, \.uses24HourClock, info.uses24HourClock)
+        update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
+        update(locale, \.isMetric, info.isMetric)
+        update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
     }
 
     /// Hands a platform-created scene to StateUI before its first render.
@@ -88,7 +88,15 @@
 
     /// Updates the process-wide application session from native lifecycle.
     public static func setApplicationPhase(_ phase: ApplicationPhase) {
-        StandardEnvironment.application.phase = phase
+        update(StandardEnvironment.application, \.phase, phase)
+    }
+
+    /// Writes a report's field where it differs, so a report that repeats itself asks for no render.
+    /// Design: docs/design/types/environment.md#a-report-that-repeats-itself
+    private static func update<Provider: AnyObject, Value: Equatable>(
+        _ provider: Provider, _ field: ReferenceWritableKeyPath<Provider, Value>, _ value: Value
+    ) {
+        if provider[keyPath: field] != value { provider[keyPath: field] = value }
     }
 
     /// The typed keys the host reads before the first application render.

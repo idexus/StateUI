@@ -39,6 +39,14 @@ views showing the level and not the ones gating on the battery saver.
 Rotating a phone writes orientation, rotation, width and height in one
 update.
 
+## A report that repeats itself
+
+A setter writes only the fields that differ from what the provider holds.
+Platforms report far more often than anything changes - Android on every
+battery broadcast, macOS on every power-source notice - and a write asks for a
+render even when it writes what was there, so a repeated report would rebuild
+every reader for nothing.
+
 ## One door and the bottom of the scope
 
 The provider instances are internal on purpose: the way to read one is

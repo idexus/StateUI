@@ -149,6 +149,30 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(builds.count, 1, "a view that reads no battery is left alone")
     }
 
+    /// A report that says again what the host said changes no state and asks for no render: a platform
+    /// that reports on every tick of its battery or its network costs nothing between real changes.
+    func testAReportThatChangesNothingAsksForNoRender() {
+        let renders = Renders()
+        renders.render(stack([BatteryLabel().body], id: "root"))
+        let battery = HostBatteryInfo(chargeLevel: 0.5, state: .charging, powerSource: .usb, energySaverStatus: .off)
+        let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wiFi])
+        let locale = HostLocaleInfo(
+            language: "ar", region: "EG", name: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
+            firstDayOfWeek: .saturday, isMetric: true, layoutDirection: .rightToLeft)
+        StateUIHost.setBatteryInfo(battery)
+        StateUIHost.setConnectivityInfo(network)
+        StateUIHost.setLocaleInfo(locale)
+        renders.revisit(changed: changed)
+        Renderer.shared.clearInvalidation()
+
+        StateUIHost.setBatteryInfo(battery)
+        StateUIHost.setConnectivityInfo(network)
+        StateUIHost.setLocaleInfo(locale)
+
+        XCTAssertTrue(changed.isEmpty, "\(changed.count) states written with what they held")
+        XCTAssertFalse(StateUIHost.needsRender)
+    }
+
     /// A page decides whether its heading fits from the screen's orientation,
     /// and a turn of the device has to reach it - through a computed property
     /// read as a modifier's argument, which is where a page asks.
