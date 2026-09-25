@@ -75,6 +75,17 @@ are. A template reads its resources as its theme is read, so the control
 reads its theme again at once; a tint changed after the control is drawn is
 drawn. No tint takes the names away, and the system's accent returns.
 
+## A picker
+
+A Picker is WinUI's `ComboBox`: its choices, the one chosen, its title as the
+placeholder it shows while none is, its words' font and colour, and its
+choices standing across it - the one shown and each in the list alike, the
+list's through a style for its items. The chosen one is written only where the
+tree changed it or the choices changed, so the user's choice is never argued
+with. `isOpen` opens and closes the list; the user's opening and closing are
+reported and the program's are not, so the user closing a list the program
+opened is reported. The chosen choice's mark in the list is the picker's tint.
+
 ## What shows work
 
 A ProgressBar is WinUI's `ProgressBar` over the range 0 to 1, a fraction past

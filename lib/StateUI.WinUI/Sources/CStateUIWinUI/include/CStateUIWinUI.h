@@ -286,8 +286,25 @@ void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush backgro
 void stateui_winui_button_invoke(StateUIObjectRef button);
 
 /// A control's one accent colour, `argb`, where `tinted`, and the platform's accent otherwise: a check box's tick,
-/// a switch's track while it is on, a slider's thumb and the track behind it, a progress bar and a spinner.
+/// a switch's track while it is on, a slider's thumb and the track behind it, a picker's chosen choice in its list, a
+/// progress bar and a spinner.
 void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted);
+
+/// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
+/// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list
+/// opening and closing told through `presented`.
+StateUIObjectRef stateui_winui_picker_make(int64_t view);
+void stateui_winui_picker_set_options(StateUIObjectRef picker, char const *const *options, int32_t count);
+void stateui_winui_picker_set(StateUIObjectRef picker, int32_t selected, bool writeSelected, char const *title);
+void stateui_winui_picker_set_alignment(StateUIObjectRef picker, int32_t alignment);
+void stateui_winui_picker_set_open(StateUIObjectRef picker, bool open);
+bool stateui_winui_picker_is_open(StateUIObjectRef picker);
+int32_t stateui_winui_picker_selected(StateUIObjectRef picker);
+
+/// Opens or closes the list as UI Automation does, and chooses as the user does, outside the program's write - what
+/// a test does.
+void stateui_winui_picker_open_as_user(StateUIObjectRef picker, bool open);
+void stateui_winui_picker_choose_as_user(StateUIObjectRef picker, int32_t index);
 
 /// What shows work: a progress bar, how far along from 0 to 1, and a spinner, turning while its work runs.
 StateUIObjectRef stateui_winui_progress_bar_make(void);

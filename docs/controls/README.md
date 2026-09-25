@@ -29,7 +29,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Line](Line.md) | 81 | 65 ✅ · 3 ☑️ |  |  | 66 ✅ · 1 ☑️ | 63 ✅ |  |
 | [Map](Map.md) | 75 |  |  |  |  |  |  |
 | [Path](Path.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
-| [Picker](Picker.md) | 83 | 66 ✅ · 2 ☑️ |  |  | 65 ✅ · 2 ☑️ |  |  |
+| [Picker](Picker.md) | 83 | 66 ✅ · 2 ☑️ |  |  | 65 ✅ · 2 ☑️ | 63 ✅ |  |
 | [Polygon](Polygon.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [Polyline](Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [PositionIndicator](PositionIndicator.md) | 75 |  |  |  |  |  |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
 | [WebView](WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1367 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1430 of 2548 met |  |
 <!-- controls:end -->
 
 ## Application structure

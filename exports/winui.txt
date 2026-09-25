@@ -104,6 +104,21 @@ Path
   strokeLineJoin
   strokeMiterLimit
   strokeWidth
+Picker
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  isEnabled
+  isOpen
+  options
+  selectedIndex
+  textColor
+  tint
+  title
+  closed()
+  opened()
+  selectedIndexChanged()
 Polygon
   aspect
   fill

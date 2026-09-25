@@ -16,6 +16,7 @@ enum WinUIRegistrations {
         toggles(registry)
         values(registry)
         indicators(registry)
+        pickers(registry)
         fields(registry)
         pictures(registry)
         shapes(registry)

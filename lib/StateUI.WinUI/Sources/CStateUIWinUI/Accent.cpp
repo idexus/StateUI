@@ -19,13 +19,20 @@ using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
-    /// The resources a control's template fills with the accent, each named again for under the pointer and
-    /// pressed; none for a control that takes no accent.
-    std::vector<std::wstring> accentResources(IInspectable const &control) {
+    /// A resource a control's template fills with the accent, and whether it is named again for under the pointer
+    /// and pressed.
+    struct Accented {
+        std::wstring name;
+        bool varies = true;
+    };
+
+    /// The resources a control's template fills with the accent; none for a control that takes no accent.
+    std::vector<Accented> accentResources(IInspectable const &control) {
         if (control.try_as<controls::CheckBox>())
-            return {L"CheckBoxCheckBackgroundFillChecked", L"CheckBoxCheckBackgroundStrokeChecked"};
-        if (control.try_as<controls::ToggleSwitch>()) return {L"ToggleSwitchFillOn", L"ToggleSwitchStrokeOn"};
-        if (control.try_as<controls::Slider>()) return {L"SliderThumbBackground", L"SliderTrackValueFill"};
+            return {{L"CheckBoxCheckBackgroundFillChecked"}, {L"CheckBoxCheckBackgroundStrokeChecked"}};
+        if (control.try_as<controls::ToggleSwitch>()) return {{L"ToggleSwitchFillOn"}, {L"ToggleSwitchStrokeOn"}};
+        if (control.try_as<controls::Slider>()) return {{L"SliderThumbBackground"}, {L"SliderTrackValueFill"}};
+        if (control.try_as<controls::ComboBox>()) return {{L"ComboBoxItemPillFillBrush", false}};
         return {};
     }
 }
@@ -45,9 +52,10 @@ extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, b
         // WinUI's accent brushes: the colour, then nine tenths of it under the pointer and eight tenths pressed.
         struct Variant { wchar_t const *suffix; double opacity; };
         Variant const variants[] = {{L"", 1}, {L"PointerOver", 0.9}, {L"Pressed", 0.8}};
-        for (auto const &name : accentResources(control)) {
+        for (auto const &accented : accentResources(control)) {
             for (auto const &variant : variants) {
-                auto key = winrt::box_value(winrt::hstring(name + variant.suffix));
+                if (!accented.varies && *variant.suffix) continue;
+                auto key = winrt::box_value(winrt::hstring(accented.name + variant.suffix));
                 if (!tinted) {
                     if (resources.HasKey(key)) resources.Remove(key);
                     continue;

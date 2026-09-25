@@ -106,7 +106,7 @@ host that creates or interprets it.
 | `Overlay` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `Page` | adaptive | ✅ |  |  | ✅ | ✅ |  |
 | `Path` | stateUI | ✅ |  |  | ✅ | ✅ |  |
-| `Picker` | native | ✅ |  |  | ✅ |  |  |
+| `Picker` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Pin` | provider |  |  |  |  |  |  |
 | `Polygon` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Polyline` | stateUI | ✅ |  |  | ✅ | ✅ |  |
@@ -439,7 +439,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 81 | 65 ✅ · 3 ☑️ |  |  | 66 ✅ · 1 ☑️ | 63 ✅ |  |
 | [Map](controls/Map.md) | 75 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
-| [Picker](controls/Picker.md) | 83 | 66 ✅ · 2 ☑️ |  |  | 65 ✅ · 2 ☑️ |  |  |
+| [Picker](controls/Picker.md) | 83 | 66 ✅ · 2 ☑️ |  |  | 65 ✅ · 2 ☑️ | 63 ✅ |  |
 | [Polygon](controls/Polygon.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [Polyline](controls/Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 75 |  |  |  |  |  |  |
@@ -458,7 +458,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1367 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1430 of 2548 met |  |
 
 ### Application structure
 
@@ -538,7 +538,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | ✅ |  |  | ✅ |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | ✅ |  |  |  |  |  |
 | [Path](controls/Path.md) | `data` | ✅ |  |  | ✅ | ✅ |  |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | ✅ |  |  | ☑️ |  |  |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | ✅ |  |  | ☑️ | ✅ |  |
 | [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | ✅ |  |  | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | ✅ |  |  | ✅ | ✅ |  |
