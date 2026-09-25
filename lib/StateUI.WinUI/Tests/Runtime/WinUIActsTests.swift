@@ -61,6 +61,35 @@ private struct FocusPage: ContentView {
     }
 }
 
+/// A page whose buttons ask the user each kind of question, saying every answer after the last.
+private struct QuestionsPage: ContentView {
+    @State private var said = ""
+
+    var content: any View {
+        VStack {
+            Label(said)
+            Button("Alert").onClicked {
+                try await Dialogs.alert("Saved", message: "The draft is kept")
+                said += "alerted; "
+            }
+            Button("Confirm").onClicked {
+                let accepted = try await Dialogs.confirm(
+                    "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
+                said += "confirmed \(accepted); "
+            }
+            Button("Choose").onClicked {
+                let chosen = try await Dialogs.chooseAction(
+                    "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
+                said += "chose \(chosen ?? "nothing"); "
+            }
+            Button("Prompt").onClicked {
+                let typed = try await Dialogs.prompt("Rename", placeholder: "Name", initialValue: "Draft")
+                said += "typed \(typed ?? "nothing"); "
+            }
+        }
+    }
+}
+
 final class WinUIActsTests: XCTestCase {
     /// The host answers the time of day and its zone, and a zone's distance from UTC on the day asked - summer
     /// time included.
@@ -116,6 +145,60 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// Every question is WinUI's own dialog, answered as the user answers it: an alert dismissed, a confirmation
+    /// accepted, a choice made - the dangerous one first - and words typed.
+    func testEveryQuestionIsWinUIsDialog() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { QuestionsPage() }
+
+            try host.press("Alert")
+            host.answer(1)
+            try host.press("Confirm")
+            host.answer(0)
+            try host.press("Choose")
+            host.answer(3)
+            try host.press("Prompt")
+            host.answer(0, typing: "Ada")
+            let expected = "alerted; confirmed true; chose Mail; typed Ada; "
+            host.settle { host.said == expected }
+
+            XCTAssertEqual(host.said, expected)
+        }
+    }
+
+    /// A question cancelled answers so: a confirmation not accepted, a choice the cancelling caption, a prompt
+    /// nothing.
+    func testACancelledQuestionAnswersSo() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { QuestionsPage() }
+
+            for question in ["Confirm", "Choose", "Prompt"] {
+                try host.press(question)
+                host.answer(1)
+            }
+            let expected = "confirmed false; chose Cancel; typed nothing; "
+            host.settle { host.said == expected }
+
+            XCTAssertEqual(host.said, expected)
+        }
+    }
+
+    /// A window shows one dialog at a time: a second question waits for the first to close.
+    func testQuestionsWaitTheirTurn() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { QuestionsPage() }
+
+            try host.press("Alert")
+            try host.press("Confirm")
+            host.answer(1)
+            host.answer(0)
+            let expected = "alerted; confirmed true; "
+            host.settle { host.said == expected }
+
+            XCTAssertEqual(host.said, expected)
+        }
+    }
+
     /// The kept values' store reads back what it was given, whatever the words hold, and the same values write the
     /// same file.
     func testTheStoreReadsBackWhatItKept() {
@@ -144,5 +227,18 @@ private extension WinUIRenderer {
     /// Presses the button of that caption.
     func press(_ caption: String) throws {
         try XCTUnwrap(views(WinUIButtonView.self).first { $0.text == caption }).invoke()
+    }
+
+    /// Answers the dialog once it shows, as the user would: `button` 0 accepts, 1 cancels, 2 and on the choices;
+    /// a prompt's field first holding `words`.
+    func answer(_ button: Int32, typing words: String? = nil) {
+        guard let content = window?.content else { return XCTFail("no window to answer a dialog in") }
+        var answered = false
+        settle {
+            answered = answered || stateui_winui_answer(content.handle, button, words)
+            return answered
+        }
+        XCTAssertTrue(answered, "no dialog showed")
+        WinUITestHost.pump(0.05)
     }
 }

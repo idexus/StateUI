@@ -5,11 +5,19 @@
 import CStateUIWinUI
 
 /// Performs the acts the application calls on the host, and answers each - a reply with its values, or a failure
-/// with the reason - so a caller never waits on an act nobody performs.
+/// with the reason - so a caller never waits on an act nobody performs. A question for the user answers when the
+/// user does: its call waits under a ticket the dialog hands back.
 /// Design: docs/design/platforms/winui/runtime.md#acts
 @MainActor
 final class WinUIActPerformer {
     private let core: CoreLink
+
+    /// The questions not answered yet, by ticket.
+    private var waiting: [Int64: HostActCall] = [:]
+
+    /// The next ticket: one number across every renderer of the process, so an answer that comes after its
+    /// renderer is gone answers nothing of another's.
+    private static var nextTicket: Int64 = 1
 
     init(core: CoreLink) {
         self.core = core
@@ -26,6 +34,8 @@ final class WinUIActPerformer {
             reply(call, [.string(WinUIStrings.read { stateui_winui_time_zone($0, $1) })])
         case .utcOffset:
             utcOffset(call)
+        case .alert, .confirm, .chooseAction, .prompt:
+            ask(call, window: window)
         case .announce:
             if let content = window?.content { stateui_winui_announce(content.handle, call.arguments.first?.string ?? "") }
             reply(call, [])
@@ -42,6 +52,68 @@ final class WinUIActPerformer {
         default:
             fail(call, "the WinUI host does not perform the act '\(call.act.name)'")
         }
+    }
+
+    /// The question asked under `ticket` was answered: accepted or not, and the words chosen or typed.
+    func answered(ticket: Int64, accepted: Bool, words: String?) {
+        guard let call = waiting.removeValue(forKey: ticket) else { return }
+
+        switch call.act {
+        case .confirm: reply(call, [.bool(accepted)])
+        case .chooseAction, .prompt: reply(call, [(accepted ? words : nil).propValue])
+        default: reply(call, [])
+        }
+    }
+
+    /// Puts a question to the user in WinUI's own dialog; its answer comes back by ticket.
+    /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
+    private func ask(_ call: HostActCall, window: WinUIWindow?) {
+        guard let content = window?.content else { return fail(call, "there is no window to ask the user in") }
+
+        let arguments = call.arguments
+        func text(_ index: Int) -> String? { arguments.value(index)?.string }
+
+        // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
+        var kind: Int32 = 3
+        var words: [String?] = [text(0), text(1), text(2) ?? "OK", text(3) ?? "Cancel", nil, text(4), text(7) ?? ""]
+        var choices: [String] = []
+        var maximum: Int32 = 0
+        var purpose = InputPurpose.default
+        switch call.act {
+        case .alert:
+            kind = 0
+            words = [text(0), text(1), text(2) ?? "OK", nil, nil, nil, nil]
+        case .confirm:
+            kind = 1
+            words = [text(0), text(1), text(2) ?? "OK", text(3) ?? "Cancel", nil, nil, nil]
+        case .chooseAction:
+            kind = 2
+            words = [text(0), nil, nil, text(1), text(2), nil, nil]
+            choices = arguments.value(3).flatMap { [String](propValue: $0) } ?? []
+        default:
+            maximum = Int32(arguments.value(5)?.number ?? 0)
+            purpose = arguments.value(6).flatMap { InputPurpose(propValue: $0) } ?? .default
+        }
+
+        let ticket = wait(call)
+        WinUIStrings.withCStrings(words.map { $0 ?? "" } + choices) { pointers in
+            func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
+            Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
+                var question = StateUIQuestion(
+                    kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3), destruction: at(4),
+                    choices: offered.baseAddress, choiceCount: Int32(choices.count), placeholder: at(5),
+                    maximumLength: maximum, purpose: purpose.rawValue, initial: at(6))
+                stateui_winui_ask(content.handle, ticket, &question)
+            }
+        }
+    }
+
+    /// Keeps `call` waiting for its answer, under the ticket this answers.
+    private func wait(_ call: HostActCall) -> Int64 {
+        let ticket = Self.nextTicket
+        Self.nextTicket += 1
+        waiting[ticket] = call
+        return ticket
     }
 
     /// How far a zone is from UTC on a day, in minutes, as ICU says; a zone it does not know fails the act.

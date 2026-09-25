@@ -53,6 +53,25 @@ typedef enum {
     StateUIHeardPinch,
 } StateUIHeard;
 
+/// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title
+/// and message; the captions that accept and cancel; for a choice, the dangerous one and the choices; for a
+/// prompt, the field's placeholder, its most characters (0 for any), what it is for (StateUI's `InputPurpose`)
+/// and what it starts holding. Null for a caption there is none of.
+typedef struct {
+    int32_t kind;
+    char const *title;
+    char const *message;
+    char const *accept;
+    char const *cancel;
+    char const *destruction;
+    char const *const *choices;
+    int32_t choiceCount;
+    char const *placeholder;
+    int32_t maximumLength;
+    int32_t purpose;
+    char const *initial;
+} StateUIQuestion;
+
 /// What the relay calls on the UI thread. Every one is set: the relay calls them unchecked.
 typedef struct {
     /// WinUI stands on the thread: the host's first render.
@@ -103,6 +122,10 @@ typedef struct {
 
     /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place or a gesture's phase.
     void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
+
+    /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
+    /// typed, in UTF-8; null for none.
+    void (*answered)(int64_t ticket, bool accepted, char const *utf8);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -373,6 +396,15 @@ bool stateui_winui_focused(StateUIObjectRef element);
 
 /// Takes the focus off a field typed into in `element`'s window, so the on-screen keyboard goes; whether one was.
 bool stateui_winui_hide_keyboard(StateUIObjectRef element);
+
+/// Puts `question` to the user in WinUI's dialog over `element`'s window, once any dialog showing there has
+/// closed; the answer comes back through `answered`, under `ticket`.
+void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion const *question);
+
+/// Answers the dialog showing over `element`'s window as the user would: `button` 0 accepts, 1 cancels, 2 and on
+/// press the choices in order; a prompt's field first holding `words` where they are given. Whether a dialog
+/// was showing and had that button. What a test does.
+bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *words);
 
 /// The folder the kept values stand in, in UTF-8; empty for the application's own in the user's local data.
 void stateui_winui_set_store(char const *utf8);

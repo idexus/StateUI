@@ -90,6 +90,10 @@ enum WinUICallbacks {
             heard: { view, what, phase, x, y, scale in
                 guard let heard = WinUIHeard(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
+            },
+            answered: { ticket, accepted, utf8 in
+                let words = utf8.map { String(cString: $0) }
+                MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, accepted: accepted, words: words) }
             })
     }
 }

@@ -21,6 +21,7 @@
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.Primitives.h>
+#include <winrt/Microsoft.UI.Xaml.Input.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
 #include "CStateUIWinUI.h"
@@ -43,6 +44,9 @@ namespace stateui {
     /// a tap.
     bool hearsTaps(int64_t view);
     void press(int64_t view);
+
+    /// WinUI's input scope for StateUI's `InputPurpose`: the on-screen keyboard a field brings up.
+    xaml::Input::InputScope inputScope(int32_t purpose);
 
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {

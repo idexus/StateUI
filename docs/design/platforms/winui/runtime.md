@@ -99,6 +99,19 @@ WinUI has no way to leave the focus nowhere, so taking it off lends it to the
 window's content for a moment, as no control, and the on-screen keyboard goes
 with a field that loses it.
 
+## Questions for the user
+
+A question - an alert, a confirmation, a choice of actions, a prompt - is
+WinUI's own dialog, over the window, and its call waits under a ticket the
+dialog hands back as the user answers; a ticket is one number across the
+process, so an answer that arrives after its renderer has gone answers
+nothing of another's. A window shows one dialog at a time, so a question
+asked while one shows waits for it to close. A choice of actions is a
+button a choice, the dangerous one first, and the pressed caption is the
+answer - the cancelling one too; a dialog dismissed any other way, Escape
+among them, answers that nothing was chosen. A prompt's field takes the
+placeholder, the most characters and the keyboard its purpose asks for.
+
 ## Kept values
 
 Windows keeps no store for an application that is no package, so the host

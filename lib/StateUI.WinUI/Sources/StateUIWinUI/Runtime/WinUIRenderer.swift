@@ -130,6 +130,12 @@ final class WinUIRenderer {
         return renderer
     }
 
+    /// The user answered a question put under `ticket`: its caller hears the answer, and what it changes renders.
+    func answered(ticket: Int64, accepted: Bool, words: String?) {
+        acts.answered(ticket: ticket, accepted: accepted, words: words)
+        pump()
+    }
+
     /// Windows said the theme, the power or the network changed: the core hears it, and renders what it changed.
     func environmentChanged() {
         WinUIEnvironment.reportChanging(to: core)
