@@ -84,7 +84,7 @@ host that creates or interprets it.
 | `Application` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `Button` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Canvas` | native | ✅ |  |  | ✅ | ✅ |  |
-| `CheckBox` | stateUI | ✅ |  |  | ✅ |  |  |
+| `CheckBox` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `ColorBox` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Content` | structure | ✅ |  |  |  |  |  |
 | `ContextMenu` | structure | ✅ |  |  | ✅ |  |  |
@@ -112,7 +112,7 @@ host that creates or interprets it.
 | `Polyline` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `PositionIndicator` | stateUI |  |  |  |  |  |  |
 | `ProgressBar` | native | ✅ |  |  | ✅ |  |  |
-| `RadioButton` | stateUI | ✅ |  |  | ✅ |  |  |
+| `RadioButton` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Rectangle` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Scene` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `ScrollView` | native | ✅ |  |  | ✅ | ✅ |  |
@@ -428,7 +428,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ActivityIndicator](controls/ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [Button](controls/Button.md) | 87 | 66 ✅ · 5 ☑️ |  |  | 70 ✅ · 2 ☑️ | 56 ✅ |  |
 | [Canvas](controls/Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 47 ✅ |  |
-| [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
+| [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 46 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 45 ✅ |  |
 | [DatePicker](controls/DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
 | [Ellipse](controls/Ellipse.md) | 77 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ | 53 ✅ |  |
@@ -444,7 +444,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Polyline](controls/Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 55 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 75 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [RadioButton](controls/RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [RadioButton](controls/RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 54 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 54 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 55 ✅ |  |
 | [SearchField](controls/SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
@@ -458,7 +458,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 51 ✅ |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 50 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 981 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1081 of 2548 met |  |
 
 ### Application structure
 
@@ -517,7 +517,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | ✅ |  |  | ✅ | ✅ |  |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | ✅ |  |  | ✅ | ✅ |  |
 | [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | ✅ |  |  | ✅ | ✅ |  |
-| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` |  |  |  |  | ✅ |  |
+| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` |  |  |  |  |  |  |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | ☑️ |  |  | ☑️ |  |  |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ |  |  |  |  |  |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ |  |  |  |  |  |
@@ -526,7 +526,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  |  | ✅ |  |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) |  |  |  | ✅ |  |  |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ | ✅ |  |
-| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | ✅ |  |  | ✅ | ✅ |  |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) |  |  |  | ✅ |  |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | ✅ |  |  | ✅ | ✅ |  |
@@ -544,7 +544,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | ✅ |  |  | ✅ | ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  |  | ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | ✅ |  |  | ✅ | ✅ |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | ✅ |  |  | ✅ | ✅ |  |

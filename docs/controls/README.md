@@ -18,7 +18,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ActivityIndicator](ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
 | [Button](Button.md) | 87 | 66 ✅ · 5 ☑️ |  |  | 70 ✅ · 2 ☑️ | 56 ✅ |  |
 | [Canvas](Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 47 ✅ |  |
-| [CheckBox](CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
+| [CheckBox](CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 46 ✅ |  |
 | [ColorBox](ColorBox.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 45 ✅ |  |
 | [DatePicker](DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
 | [Ellipse](Ellipse.md) | 77 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ | 53 ✅ |  |
@@ -34,7 +34,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Polyline](Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 55 ✅ |  |
 | [PositionIndicator](PositionIndicator.md) | 75 |  |  |  |  |  |  |
 | [ProgressBar](ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [RadioButton](RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [RadioButton](RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 54 ✅ |  |
 | [Rectangle](Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 54 ✅ |  |
 | [ScrollView](ScrollView.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 55 ✅ |  |
 | [SearchField](SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 51 ✅ |  |
 | [WebView](WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 50 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 981 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1081 of 2548 met |  |
 <!-- controls:end -->
 
 ## Application structure

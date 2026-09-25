@@ -57,7 +57,7 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIView.find(view)?.clicked() }
             },
             toggled: { view, on in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUISwitchView)?.onToggled?(on) }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIToggleView)?.onToggled?(on) }
             },
             valueChanged: { view, value in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUISliderView)?.onValueChanged?(value) }

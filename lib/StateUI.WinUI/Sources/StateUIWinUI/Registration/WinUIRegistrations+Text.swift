@@ -35,12 +35,11 @@ extension WinUIRegistrations {
         PaddingElementContract.padding,
     ]
 
-    /// Puts `textMembers` on a label or a button.
+    /// Puts `textMembers` on a label, a button or a radio button.
     static func applyText<Realized: ElementContract>(_ view: WinUIView, _ values: ElementValues<Realized>) {
         if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
             let words = cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase])
-            (view as? WinUITextView)?.setText(words)
-            (view as? WinUIButtonView)?.setText(words)
+            (view as? WinUIWordsView)?.setText(words)
         }
         if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) {

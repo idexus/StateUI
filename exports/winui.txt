@@ -17,6 +17,10 @@ Canvas
   dragged()
   pressed()
   released()
+CheckBox
+  isEnabled
+  isOn
+  toggled()
 ColorBox
   color
   cornerRadius
@@ -122,6 +126,17 @@ Polyline
   strokeLineJoin
   strokeMiterLimit
   strokeWidth
+RadioButton
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  isOn
+  padding
+  text
+  textCase
+  textColor
+  toggled()
 Rectangle
   aspect
   cornerRadius

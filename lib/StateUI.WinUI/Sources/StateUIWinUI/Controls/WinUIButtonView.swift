@@ -16,7 +16,7 @@ final class WinUIButtonView: WinUIView {
 
     /// The caption.
     func setText(_ text: String) {
-        stateui_winui_button_set_text(handle, text)
+        stateui_winui_set_caption(handle, text)
     }
 
     /// The caption the button shows now, read back from WinUI.

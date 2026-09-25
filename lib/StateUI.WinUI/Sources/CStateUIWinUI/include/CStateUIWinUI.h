@@ -92,7 +92,7 @@ typedef struct {
     /// A button's Click.
     void (*clicked)(int64_t view);
 
-    /// A switch the user turned.
+    /// A switch, a check box or a radio button the user turned on or off.
     void (*toggled)(int64_t view, bool on);
 
     /// A slider's value moved.
@@ -272,7 +272,9 @@ void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t characterSpac
 void stateui_winui_text_set_decorations(StateUIObjectRef text, bool underline, bool strikethrough);
 
 StateUIObjectRef stateui_winui_button_make(int64_t view);
-void stateui_winui_button_set_text(StateUIObjectRef button, char const *utf8);
+
+/// The words a button or a radio button shows.
+void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);
 
 /// A button's look: what fills it - the platform's for none, and fainter under the pointer and pressed, as
 /// WinUI's own buttons - its outline `strokeWidth` DIPs wide, and its corners' radius, less than 0 for the
@@ -283,12 +285,17 @@ void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush backgro
 /// Presses a button as UI Automation does, which raises its Click.
 void stateui_winui_button_invoke(StateUIObjectRef button);
 
+/// The controls that are on or off - a switch, a check box with no caption, and a radio button in a group of its
+/// own - each telling its turn through `toggled`.
 StateUIObjectRef stateui_winui_switch_make(int64_t view);
-void stateui_winui_switch_set_on(StateUIObjectRef toggle, bool on);
-bool stateui_winui_switch_is_on(StateUIObjectRef toggle);
+StateUIObjectRef stateui_winui_check_box_make(int64_t view);
+StateUIObjectRef stateui_winui_radio_make(int64_t view);
+void stateui_winui_toggle_set_on(StateUIObjectRef toggle, bool on);
+bool stateui_winui_toggle_is_on(StateUIObjectRef toggle);
 
-/// Turns a switch as UI Automation does, which the user's turn is.
-void stateui_winui_switch_toggle(StateUIObjectRef toggle);
+/// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled, a radio
+/// button chosen.
+void stateui_winui_toggle_press(StateUIObjectRef toggle);
 
 StateUIObjectRef stateui_winui_slider_make(int64_t view);
 

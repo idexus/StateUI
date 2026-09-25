@@ -39,9 +39,26 @@ down whole each time.
 
 Every native write of an element - a patch applied, a display frame presented
 - runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s `Toggled`, a
-`Slider`'s `ValueChanged` and a `TextBox`'s `TextChanging` inside the write
-that sets the value, so a report during that write is the write's echo, and
-the element reports nothing. A control keeps no flag of its own.
+check box's or a radio button's `Checked` and `Unchecked`, a `Slider`'s
+`ValueChanged` and a `TextBox`'s `TextChanging` inside the write that sets the
+value, so a report during that write is the write's echo, and the element
+reports nothing. A control keeps no flag of its own.
+
+## On or off
+
+A Switch is WinUI's `ToggleSwitch`, a CheckBox its `CheckBox` and a
+RadioButton its `RadioButton`, one view kind in the host: whether it is on,
+whether it can be turned, and the turn the user makes, each telling it through
+the same callback. A check box has no caption, so it takes no caption's room:
+the box alone, where WinUI's own style would reserve the width of words.
+
+Which of a radio button's set loses its check is the host's. A set is named
+across the window, or is the buttons beside one that names none, and only
+the tree knows who is in it: the button the user checks reports that it is
+on, and the host takes the check off each other button of its set, each
+reporting that it is off, in one transaction. WinUI's own grouping would
+uncheck the button's neighbours by itself - and the one that lost would be
+heard twice - so every button stands in a group of its own.
 
 ## A slider in steps
 

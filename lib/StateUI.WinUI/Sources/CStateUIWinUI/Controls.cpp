@@ -1,33 +1,20 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The controls: a text block, a button, a switch, a slider and a field, and
-// what the user does to them. Each handler names its view by number and holds
-// nothing of the control it is on.
+// The controls: a text block, a button, a slider and a field, and what the
+// user does to them. Each handler names its view by number and holds nothing
+// of the control it is on.
 
-#include "Relay.h"
+#include "Automation.h"
 
 #include <algorithm>
 
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
-#include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
-#include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
 using namespace stateui;
-using winrt::Microsoft::UI::Xaml::Automation::Peers::PatternInterface;
-namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
-
-namespace {
-    /// The control's UI Automation pattern, asked of its peer as an automation client asks.
-    template <typename Provider>
-    Provider pattern(xaml::UIElement const &control, PatternInterface which) {
-        auto peer = xaml::Automation::Peers::FrameworkElementAutomationPeer::CreatePeerForElement(control);
-        return peer.GetPattern(which).as<Provider>();
-    }
-}
 
 extern "C" StateUIObjectRef stateui_winui_text_make(void) {
     try {
@@ -102,50 +89,11 @@ extern "C" void stateui_winui_button_set_look(
     }
 }
 
-extern "C" void stateui_winui_button_set_text(StateUIObjectRef handle, char const *utf8) {
+extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *utf8) {
     try {
-        borrow<controls::Button>(handle).Content(winrt::box_value(text(utf8)));
+        as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
     } catch (winrt::hresult_error const &error) {
-        report(error, "setting a button's caption");
-    }
-}
-
-extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
-    try {
-        controls::ToggleSwitch toggle;
-        toggle.Toggled([view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
-            callbacks.toggled(view, sender.as<controls::ToggleSwitch>().IsOn());
-        });
-        return detach(toggle);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a switch");
-        return nullptr;
-    }
-}
-
-extern "C" void stateui_winui_switch_set_on(StateUIObjectRef handle, bool on) {
-    try {
-        auto toggle = borrow<controls::ToggleSwitch>(handle);
-        if (toggle.IsOn() != on) toggle.IsOn(on);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "turning a switch");
-    }
-}
-
-extern "C" bool stateui_winui_switch_is_on(StateUIObjectRef handle) {
-    try {
-        return borrow<controls::ToggleSwitch>(handle).IsOn();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a switch");
-        return false;
-    }
-}
-
-extern "C" void stateui_winui_switch_toggle(StateUIObjectRef handle) {
-    try {
-        pattern<provider::IToggleProvider>(borrow<controls::ToggleSwitch>(handle), PatternInterface::Toggle).Toggle();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "toggling a switch");
+        report(error, "setting a caption");
     }
 }
 

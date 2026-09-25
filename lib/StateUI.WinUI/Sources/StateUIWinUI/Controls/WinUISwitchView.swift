@@ -3,30 +3,10 @@
 
 import CStateUIWinUI
 
-/// A Switch: a WinUI `ToggleSwitch`, whose turn reaches Swift through the relay.
+/// A Switch: a WinUI `ToggleSwitch`.
 @MainActor
-final class WinUISwitchView: WinUIView {
-    /// What the switch does when it turns.
-    var onToggled: ((Bool) -> Void)?
-
+final class WinUISwitchView: WinUIToggleView {
     init() {
         super.init { number in stateui_winui_switch_make(number) }
-    }
-
-    /// Whether the switch stands on.
-    var isOn: Bool { stateui_winui_switch_is_on(handle) }
-
-    /// Turns the switch on or off.
-    func setOn(_ on: Bool) {
-        stateui_winui_switch_set_on(handle, on)
-    }
-
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
-    override func detach() {
-        super.detach()
-        onToggled = nil
     }
 }
