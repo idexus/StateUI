@@ -48,6 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [WebView](WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met |  |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -82,6 +83,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [VisualState](VisualState.md) | 2 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 23 ✅ |  |  | 8 ✅ |  |  |
+| **Met** - ✅ and – | 106 | 78 of 106 met |  |  | 66 of 106 met |  |  |
 <!-- structure:end -->
 
 ## Tiers

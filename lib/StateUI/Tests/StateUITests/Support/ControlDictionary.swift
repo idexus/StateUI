@@ -50,7 +50,8 @@ struct ControlDictionary {
 
     /// What a mark means.
     static let legend = "✅ realized by that host and covered by its tests · ☑️ realized and tested, but "
-        + "incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet"
+        + "incomplete - the note says what is missing · – not planned for that host's family, which meets the "
+        + "contract there - the note says why · empty: absent, partial and unverified, or not looked at yet"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what "
@@ -69,12 +70,20 @@ struct ControlDictionary {
 
     /// One host's declaration of what it realizes, read out of its source.
     struct Declaration {
-        /// One member realized - on an element, or on a tier for every element
-        /// wearing it - and, when only in part, what is missing.
+        /// One member judged - on an element, or on a tier for every element
+        /// wearing it.
         struct Record: Hashable {
             let owner: String
             let member: String
-            let missing: String?
+            let judgement: Judgement
+        }
+
+        /// What a record says of its member: realized in full, realized in part
+        /// and what is missing, or not planned for the host's family and why.
+        enum Judgement: Hashable {
+            case complete
+            case partial(missing: String)
+            case notPlanned(reason: String)
         }
 
         /// The host, as its column is headed.
@@ -92,6 +101,10 @@ struct ControlDictionary {
         /// The elements the host presents with no view of their own, which no
         /// tier's record reaches.
         let viewless: Set<String>
+
+        /// The elements the host's family will never have: each meets the
+        /// contract there, marked –.
+        var notPlanned: Set<String> = []
 
         /// The same declaration with a host's own export behind it.
         ///
@@ -119,7 +132,7 @@ struct ControlDictionary {
 
             return Declaration(
                 host: host, source: source, records: records + exported,
-                unrealized: unrealized, viewless: viewless)
+                unrealized: unrealized, viewless: viewless, notPlanned: notPlanned)
         }
 
         /// The mark and the note one member of `element` has on this host: the
@@ -127,12 +140,17 @@ struct ControlDictionary {
         /// from.
         func mark(of member: String, on element: String, from tier: String?) -> (mark: String, note: String) {
             guard !unrealized.contains(element) else { return ("", "") }
+            guard !notPlanned.contains(element) else { return ("–", "") }
 
             let owners = [element] + (viewless.contains(element) ? [] : [tier].compactMap { $0 })
 
             for owner in owners {
                 if let record = records.first(where: { $0.owner == owner && $0.member == member }) {
-                    return record.missing.map { ("☑️", $0) } ?? ("✅", "")
+                    switch record.judgement {
+                    case .complete: return ("✅", "")
+                    case .partial(let missing): return ("☑️", missing)
+                    case .notPlanned(let reason): return ("–", reason)
+                    }
                 }
             }
 
@@ -148,8 +166,18 @@ struct ControlDictionary {
         /// How many members it lists, its own and its tiers'.
         let members: Int
 
-        /// Each host's count of members realized in full and in part.
-        let marks: [String: (done: Int, partial: Int)]
+        /// Each host's count of members realized in full, in part, and not planned.
+        let marks: [String: Marks]
+    }
+
+    /// One host's count of an element's members, by mark.
+    struct Marks {
+        var done = 0
+        var partial = 0
+        var notPlanned = 0
+
+        /// The members the host meets the contract on: realized in full, or not planned for its family.
+        var met: Int { done + notPlanned }
     }
 
     /// Every element contract, by name.
@@ -218,7 +246,7 @@ struct ControlDictionary {
         let name = element.name
         let worn = tiers.filter { tier in element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(tier) } }
         var members = 0
-        var marks: [String: (done: Int, partial: Int)] = [:]
+        var marks: [String: Marks] = [:]
 
         func table(of contract: any Contract.Type, tier: String?) -> [String] {
             var lines = [
@@ -240,8 +268,9 @@ struct ControlDictionary {
                     cells.append(mark)
                     notes[platform] = note
 
-                    if mark == "✅" { marks[platform, default: (0, 0)].done += 1 }
-                    if mark == "☑️" { marks[platform, default: (0, 0)].partial += 1 }
+                    if mark == "✅" { marks[platform, default: Marks()].done += 1 }
+                    if mark == "☑️" { marks[platform, default: Marks()].partial += 1 }
+                    if mark == "–" { marks[platform, default: Marks()].notPlanned += 1 }
                 }
 
                 lines.append("| " + (cells + [Self.notes(notes)]).joined(separator: " | ") + " |")
@@ -397,6 +426,7 @@ struct ControlDictionary {
             let marks = Self.platforms.map { platform -> String in
                 guard let declaration = declaration(of: platform) else { return "" }
 
+                if declaration.notPlanned.contains(element.name) { return "–" }
                 return declaration.unrealized.contains(element.name) ? "" : "✅"
             }
 
@@ -523,12 +553,14 @@ struct ControlDictionary {
     }
 
     /// The mark of a row naming several members, or of one member across
-    /// several elements: ✅ when every one is realized in full, ☑️ when every
-    /// one is realized and some only in part, and nothing otherwise - or where
-    /// there is nothing to count.
+    /// several elements: – when none is planned, ✅ when every one is realized
+    /// in full or not planned, ☑️ when every one is judged and some are
+    /// realized only in part, and nothing otherwise - or where there is nothing
+    /// to count.
     static func grouped(_ marks: [String]) -> String {
-        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "☑️" }) else { return "" }
+        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "☑️" || $0 == "–" }) else { return "" }
 
+        if marks.allSatisfy({ $0 == "–" }) { return "–" }
         return marks.contains("☑️") ? "☑️" : "✅"
     }
 
@@ -598,21 +630,38 @@ struct ControlDictionary {
             "| --- | ---: | " + Self.platforms.map { _ in ":---:" }.joined(separator: " | ") + " |",
         ]
 
+        var total = 0
+        var totals: [String: Marks] = [:]
         for element in elements {
             let page = page(of: element)
+            total += page.members
             let cells = Self.platforms.map { platform -> String in
-                let (done, partial) = page.marks[platform] ?? (0, 0)
-
-                guard done + partial > 0 else { return "" }
-
-                return partial > 0 ? "\(done) ✅ · \(partial) ☑️" : "\(done) ✅"
+                let marks = page.marks[platform] ?? Marks()
+                totals[platform, default: Marks()].done += marks.done
+                totals[platform, default: Marks()].partial += marks.partial
+                totals[platform, default: Marks()].notPlanned += marks.notPlanned
+                return Self.counted(marks)
             }
 
             lines.append("| [\(element.name)](\(prefix)\(element.name).md) | \(page.members) | "
                 + cells.joined(separator: " | ") + " |")
         }
 
+        let met = Self.platforms.map { platform -> String in
+            let marks = totals[platform] ?? Marks()
+            return marks.met + marks.partial == 0 ? "" : "\(marks.met) of \(total) met"
+        }
+        lines.append("| **Met** - ✅ and – | \(total) | " + met.joined(separator: " | ") + " |")
+
         return lines.joined(separator: "\n")
+    }
+
+    /// One host's marks on one element, counted: each kind it has, in the legend's order.
+    static func counted(_ marks: Marks) -> String {
+        [(marks.done, "✅"), (marks.partial, "☑️"), (marks.notPlanned, "–")]
+            .filter { $0.0 > 0 }
+            .map { "\($0.0) \($0.1)" }
+            .joined(separator: " · ")
     }
 
     /// `text` with the block `name` holding `content`, between its markers.
@@ -639,16 +688,18 @@ struct ControlDictionary {
     static func declarations() throws -> [Declaration] {
         let appKit = try Declaration(
             host: "AppKit", reading: "lib/StateUI.AppKit/Sources/Registration/AppKitRealization.swift",
-            records: #"\.(complete|partial)"#,
+            records: #"\.(complete|partial|notPlanned)"#,
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
+            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
+            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
 
         let android = try Declaration(
             host: "Android Views",
             reading: "lib/StateUI.Android/Sources/StateUIAndroid/Registration/AndroidRealization.swift",
-            records: #"\.(complete|partial)"#,
+            records: #"\.(complete|partial|notPlanned)"#,
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
+            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
+            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
 
         return [
             try appKit.and(exported(exports["AppKit"]!)),
@@ -719,7 +770,7 @@ struct ControlDictionary {
 
         return pairs
             .sorted { ($0.owner, $0.member) < ($1.owner, $1.member) }
-            .map { Declaration.Record(owner: $0.owner, member: $0.member, missing: nil) }
+            .map { Declaration.Record(owner: $0.owner, member: $0.member, judgement: .complete) }
     }
 
     /// Whether `element` wears `tier` - a contract other than its own.
@@ -1045,15 +1096,16 @@ struct ControlDictionary {
 }
 
 extension ControlDictionary.Declaration {
-    /// A host's declaration, read out of its source: `records` finds each
-    /// record, its groups the kind, the owner, the member and what is missing;
-    /// `unrealized` and `viewless` each find one list of names.
-    /// A record's owner, member and what is missing, written on one line after its opening.
-    private static let record = #"\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)"#
+    /// A record's owner, member, and what is missing or why it is not planned, written on one line after its
+    /// opening.
+    private static let record = #"\("(\w+)", "(\w+)"(?:, (?:missing|reason): "((?:[^"\\]|\\.)*)")?\)"#
 
     /// A host's declaration, read from its source: `records` opens each record, which then reads as `record`;
     /// one opened that does not read throws, so no record is lost to how it is written.
-    init(host: String, reading source: String, records opening: String, unrealized: String, viewless: String?) throws {
+    init(
+        host: String, reading source: String, records opening: String, unrealized: String, viewless: String?,
+        notPlanned: String? = nil
+    ) throws {
         let text = ControlDictionary.uncommented(
             try String(contentsOf: SourceTree.repository.appendingPathComponent(source), encoding: .utf8))
 
@@ -1064,22 +1116,25 @@ extension ControlDictionary.Declaration {
         }
 
         let found = try ControlDictionary.matches(opening + Self.record, in: text).map { groups in
-            Record(
-                owner: groups[2] ?? "",
-                member: groups[3] ?? "",
-                missing: groups[1]?.lowercased() == "partial"
-                    ? (groups[4] ?? "").replacingOccurrences(of: #"\""#, with: "\"")
-                    : nil)
+            let said = (groups[4] ?? "").replacingOccurrences(of: #"\""#, with: "\"")
+            let judgement: Judgement = switch groups[1] {
+            case "partial": .partial(missing: said)
+            case "notPlanned": .notPlanned(reason: said)
+            default: .complete
+            }
+            return Record(owner: groups[2] ?? "", member: groups[3] ?? "", judgement: judgement)
         }
         let opened = try ControlDictionary.matches(opening + #"\(\s*""#, in: text).count
         guard opened == found.count else {
             throw ControlDictionary.Unreadable(description: "\(source): \(opened - found.count) of its \(opened) records do not read. "
-                + "Write each on one line - (\"Owner\", \"member\"), with its missing: \"...\" where it has one.")
+                + "Write each on one line - (\"Owner\", \"member\"), with its missing: or reason: \"...\" where it has one.")
         }
         let unrealizedNames = try names(unrealized)
         let viewlessNames = try names(viewless)
+        let notPlannedNames = try names(notPlanned)
 
         self.init(
-            host: host, source: source, records: found, unrealized: unrealizedNames, viewless: viewlessNames)
+            host: host, source: source, records: found, unrealized: unrealizedNames, viewless: viewlessNames,
+            notPlanned: notPlannedNames)
     }
 }

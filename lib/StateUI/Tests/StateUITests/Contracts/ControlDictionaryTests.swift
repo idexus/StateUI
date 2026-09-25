@@ -15,8 +15,9 @@ import XCTest
 ///
 /// The declarations are read where they are rendered, so they are held here:
 /// a record naming what no contract declares, a record written twice, a
-/// partial one that does not say what is missing, and an unrealized or
-/// viewless name that is no element all fail.
+/// partial one that does not say what is missing, a not planned one that does
+/// not say why, and an unrealized, viewless or not planned name that is no
+/// element all fail.
 final class ControlDictionaryTests: XCTestCase {
     private static let folder = SourceTree.repository.appendingPathComponent("docs/controls")
 
@@ -119,7 +120,7 @@ final class ControlDictionaryTests: XCTestCase {
     // MARK: - The declarations
 
     /// Every record names a contract and a member that contract declares or
-    /// wears, and every unrealized or viewless name is an element.
+    /// wears, and every unrealized, viewless or not planned name is an element.
     func testEveryRecordNamesAMemberOfWhatItNames() throws {
         let contracts = Dictionary(LibraryContracts.all.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
         let elements = Set(LibraryContracts.elements.map { $0.name })
@@ -139,8 +140,9 @@ final class ControlDictionaryTests: XCTestCase {
                 }
             }
 
-            for name in declaration.unrealized.union(declaration.viewless).sorted() where !elements.contains(name) {
-                wrong.append("\(declaration.host): \(name), unrealized or viewless, is no element")
+            let listed = declaration.unrealized.union(declaration.viewless).union(declaration.notPlanned)
+            for name in listed.sorted() where !elements.contains(name) {
+                wrong.append("\(declaration.host): \(name), unrealized, viewless or not planned, is no element")
             }
         }
 
@@ -157,6 +159,9 @@ final class ControlDictionaryTests: XCTestCase {
             let realized = Set(try ControlDictionary.export(path).realization.elements)
             for name in realized.intersection(declaration.unrealized).sorted() {
                 wrong.append("\(declaration.host): \(name), realized, is listed unrealized")
+            }
+            for name in realized.intersection(declaration.notPlanned).sorted() {
+                wrong.append("\(declaration.host): \(name), realized, is listed not planned")
             }
         }
 
@@ -183,9 +188,9 @@ final class ControlDictionaryTests: XCTestCase {
     func testAWrittenNoteOnATierStaysOnAnElementTheExportNames() {
         let written = ControlDictionary.Declaration(
             host: "AppKit", source: "",
-            records: [.init(owner: "VisualElement", member: "background", missing: "A colour alone.")],
+            records: [.init(owner: "VisualElement", member: "background", judgement: .partial(missing: "A colour alone."))],
             unrealized: [], viewless: [])
-        let declaration = written.and([.init(owner: "Button", member: "background", missing: nil)])
+        let declaration = written.and([.init(owner: "Button", member: "background", judgement: .complete)])
 
         XCTAssertEqual(
             declaration.mark(of: "background", on: "Button", from: "VisualElement").note, "A colour alone.")
@@ -207,11 +212,43 @@ final class ControlDictionaryTests: XCTestCase {
     /// is no mark at all.
     func testAPartialRecordSaysWhatIsMissing() throws {
         for declaration in try ControlDictionary.declarations() {
-            for record in declaration.records where record.missing?.isEmpty == true {
+            for record in declaration.records where record.judgement == .partial(missing: "") {
                 XCTFail("\(declaration.source) records \(record.member) on \(record.owner) in part, "
                     + "and does not say what is missing")
             }
         }
+    }
+
+    /// A member not planned for a host's family says why: a – nobody can question is a gap hidden.
+    func testANotPlannedRecordSaysWhy() throws {
+        for declaration in try ControlDictionary.declarations() {
+            for record in declaration.records where record.judgement == .notPlanned(reason: "") {
+                XCTFail("\(declaration.source) records \(record.member) on \(record.owner) as not planned, "
+                    + "and does not say why")
+            }
+        }
+    }
+
+    /// – meets the contract: a member not planned is marked –, its note saying why; a row whose members are all
+    /// realized or not planned is met, one of which none is planned is –, and an element not planned is – on
+    /// every member.
+    func testNotPlannedMeetsTheContract() {
+        let declaration = ControlDictionary.Declaration(
+            host: "WinUI 3", source: "",
+            records: [
+                .init(owner: "Button", member: "text", judgement: .complete),
+                .init(owner: "Button", member: "aspect", judgement: .notPlanned(reason: "No such screen.")),
+            ],
+            unrealized: [], viewless: [], notPlanned: ["MenuBar"])
+
+        XCTAssertTrue(declaration.mark(of: "aspect", on: "Button", from: nil) == ("–", "No such screen."))
+        XCTAssertEqual(declaration.mark(of: "text", on: "MenuBar", from: nil).mark, "–")
+        XCTAssertEqual(ControlDictionary.grouped(["✅", "–"]), "✅")
+        XCTAssertEqual(ControlDictionary.grouped(["–", "–"]), "–")
+        XCTAssertEqual(ControlDictionary.grouped(["☑️", "–"]), "☑️")
+        XCTAssertEqual(ControlDictionary.grouped(["✅", ""]), "")
+        XCTAssertEqual(ControlDictionary.counted(.init(done: 3, partial: 1, notPlanned: 2)), "3 ✅ · 1 ☑️ · 2 –")
+        XCTAssertEqual(ControlDictionary.Marks(done: 3, partial: 1, notPlanned: 2).met, 5)
     }
 
     // MARK: - The contracts

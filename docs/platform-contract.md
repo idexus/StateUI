@@ -11,6 +11,10 @@ surface and the implementation evidence for each host.
 - ☑️ means the member is implemented and tested but incomplete; the
   element's page in [the control dictionary](controls/README.md) names what is
   missing.
+- – means the member is not planned for that host's family - a phone with no
+  menu bar, a desktop with no pull to refresh - and meets the contract there:
+  the element's page says why, and the Gallery shows that family no example of
+  it. The totals count a host's ✅ and – as met.
 - An empty cell means the implementation is absent, incomplete, or not yet
   verified. It is deliberately not an estimate of how difficult the work will
   be.
@@ -20,7 +24,8 @@ surface and the implementation evidence for each host.
   platform control. It does not imply that every member has been completed;
   the member rows state that separately.
 - A row naming several members receives ✅ only when every one is
-  implemented, and ☑️ when every one is implemented and some only in part. A
+  implemented or not planned, – when none is planned, and ☑️ when every one is
+  judged and some are implemented only in part. A
   tier's member is counted on every element wearing the tier that the host
   realizes, and under [Shared view members](#shared-view-members) on every
   view; an element the host presents with no view of its own is left out.
@@ -453,6 +458,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ |  |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met |  |  |
 
 ### Application structure
 
@@ -483,6 +489,7 @@ Every control, and every part an application, its windows and its pages are made
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [VisualState](controls/VisualState.md) | 2 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 23 ✅ |  |  | 8 ✅ |  |  |
+| **Met** - ✅ and – | 106 | 78 of 106 met |  |  | 66 of 106 met |  |  |
 <!-- dictionary:end -->
 
 ## Contract members
