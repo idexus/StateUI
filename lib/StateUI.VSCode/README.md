@@ -32,12 +32,12 @@ directory, the process, the package identifier and the Swift module
 
 ## The host
 
-The status bar shows the host - **AppKit**, **Android** or **WinUI**. Click it,
-or run **StateUI: Select Host**. AppKit and Android are offered on macOS,
-Android where an application has an Android head (`Platforms/Android`); WinUI
-on Windows. On Linux no host runs yet: the status bar says **no host**, a launch
-says why it runs nothing, and the editor and **StateUI: Run Tests** work as
-plain Swift.
+The status bar shows the host - **AppKit**, **Android**, **WinUI** or **GTK**.
+Click it, or run **StateUI: Select Host**. AppKit and Android are offered on
+macOS, Android where an application has an Android head (`Platforms/Android`);
+WinUI on Windows; GTK on Linux. On a machine that runs no host the status bar
+says **no host**, a launch says why it runs nothing, and the editor and
+**StateUI: Run Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
@@ -60,6 +60,8 @@ plain Swift.
   one's log before it starts again. On WinUI `.scripts/WinUI/run-app.ps1`
   builds the head, lays the Windows App SDK beside it and starts it, its
   terminal passing on what the application writes; no debugger attaches yet.
+  On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
+  first, and `lldb-dap` starts it: a breakpoint holds from the first line.
 
 ## The Android device
 
@@ -91,6 +93,9 @@ them AS THE HOST, one after another, each in a terminal of its own:
 - **WinUI**: the library and each application as plain Swift, and the WinUI
   host's own package, `lib/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
   which lays the Windows App SDK beside its test runner first.
+- **GTK**: the library and each application as plain Swift, and the GTK host's
+  own package, `lib/StateUI.GTK`, by `swift test`, its windows on the
+  desktop's display.
 - **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
@@ -99,8 +104,8 @@ failed.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build`, `.build-android/index-build` or
-`.build-winui/index-build` - with no
+own, `.build-appkit/index-build`, `.build-android/index-build`,
+`.build-winui/index-build` or `.build-gtk/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
@@ -128,6 +133,10 @@ launch file at all:
 - For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds and
   runs the head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the
   Windows SDK. The scripts fetch C++/WinRT and the Windows App SDK themselves.
+- For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
+  Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
+  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); and the `lldb-dap`
+  extension.
 
 Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
 `swift.swiftEnvironmentVariables`: that setting is laid over the host chosen

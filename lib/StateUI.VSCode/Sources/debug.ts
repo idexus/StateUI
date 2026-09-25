@@ -16,13 +16,17 @@
 // .build-android/debugger.json. A Release build cannot be debugged, and
 // resolves to no session.
 //
+// A GTK head is built by .scripts/GTK/run-app.sh --build-only, as a task, and
+// launched by lldb-dap: the debugger is the application's parent, which is what
+// Ubuntu's ptrace scope permits.
+//
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
 
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, appKitProgram } from "./applications";
+import { Application, appKitProgram, gtkProgram } from "./applications";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
 
@@ -60,11 +64,16 @@ export interface Choices {
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
-export const noHost = "no StateUI host runs on this machine yet - AppKit and Android are built and run on macOS, WinUI on Windows.";
+export const noHost = "no StateUI host runs on this machine yet - AppKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux.";
 
 /** A script of a StateUI checkout's .scripts/WinUI, under `root`. */
 export function winUIScript(root: string, name: string): string {
     return path.join(root, ".scripts", "WinUI", name);
+}
+
+/** A script of a StateUI checkout's .scripts/GTK, under `root`. */
+export function gtkScript(root: string, name: string): string {
+    return path.join(root, ".scripts", "GTK", name);
 }
 
 /** The two configurations every workspace offers. */
@@ -114,6 +123,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
         if (host === "winui") {
             return this.winUI(root, application, configuration);
+        }
+
+        if (host === "gtk") {
+            return this.gtk(root, application, configuration, name);
         }
 
         if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
@@ -204,6 +217,44 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
         await this.choices.start(task);
         return undefined;
+    }
+    /**
+     * A GTK head, built by run-app.sh --build-only in a task - which stops a running copy first, a GTK application
+     * being one instance - and launched by lldb-dap.
+     */
+    private async gtk(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const script = gtkScript(root.uri.fsPath, "run-app.sh");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a GTK head is built by a StateUI checkout's .scripts/GTK/run-app.sh, which ${root.name} does not have.`);
+            return undefined;
+        }
+
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration }, root,
+            `Build ${application.name} (GTK, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash", [script, application.directory, configuration, "--build-only"],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        if ((await this.choices.run(task)) !== 0) {
+            void vscode.window.showErrorMessage(
+                `StateUI: the GTK build of ${application.name} failed - its output is in the terminal.`);
+            return undefined;
+        }
+
+        return {
+            type: "lldb-dap",
+            request: "launch",
+            name,
+            program: gtkProgram(application, configuration),
+            cwd: root.uri.fsPath,
+            stopOnEntry: false,
+        };
     }
 }
 

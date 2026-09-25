@@ -97,13 +97,14 @@ export async function run(): Promise<void> {
             && !(await resolves(conditional, "MetalCube()", "var content: any View")), 900);
 
         // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
-        //    on Windows, none on Linux yet, and no .NET MAUI. A launch on a
-        //    machine that runs no host resolves to nothing.
+        //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine
+        //    that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit and Android on macOS, WinUI on Windows, nothing on Linux, and never .NET MAUI",
+        check("the host picker offers AppKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "android"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
-            && availableHosts("linux").length === 0
+            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk"])
+            && availableHosts("freebsd").length === 0
             && !hosts.some((each) => each.label.includes("MAUI")));
         {
             const ran: string[] = [];
@@ -293,6 +294,41 @@ export async function run(): Promise<void> {
                 winUISuites.some((each) => each.label === "StateUI")
                 && own?.command === "powershell" && own.args[own.args.length - 1].endsWith("test-winui.ps1")
                 && !winUISuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+        }
+
+        // 6c. GTK: HelloWorld's head, built by run-app.sh --build-only and
+        //     launched under lldb-dap, and the host's own package by swift test.
+        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build-gtk/index-build",
+            hasHead(helloWorld, "gtk")
+            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build-gtk/index-build" }));
+        {
+            const ran: vscode.Task[] = [];
+            const provider = new StateUIDebugConfigurationProvider({
+                host: () => "gtk", application: async () => helloWorld,
+                run: async (task) => { ran.push(task); return 0; },
+                start: async () => {},
+                ready: async () => false,
+                device: async () => undefined,
+            });
+            const resolved = await provider.resolveDebugConfiguration(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
+            const shell = ran[0]?.execution as vscode.ShellExecution | undefined;
+            const line = shell ? [shell.command, ...shell.args].join(" ") : "";
+            say(`     gtk built: ${line}`);
+            check("GTK: run-app.sh <HelloWorld> debug --build-only ran as a task, then lldb-dap launches HelloWorldGTK",
+                ran.length === 1
+                && line === `bash ${path.join(root.uri.fsPath, ".scripts", "GTK", "run-app.sh")} ${helloWorld.directory} debug --build-only`
+                && resolved?.type === "lldb-dap" && resolved.request === "launch"
+                && resolved.program === path.join(helloWorld.directory, ".build-gtk", "debug", "HelloWorldGTK"));
+        }
+        {
+            const gtkSuites = findSuites(root.uri.fsPath, "gtk");
+            say(`gtk suites: ${gtkSuites.map((each) => each.label).join(", ")}`);
+            const own = gtkSuites.find((each) => each.label === "lib/StateUI.GTK");
+            check("gtk runs the core and the Gallery as plain Swift, its own package by swift test, and no other host's",
+                gtkSuites.some((each) => each.label === "StateUI")
+                && own?.command === "swift" && own.args.join(" ") === `test --package-path ${path.join(root.uri.fsPath, "lib", "StateUI.GTK")}`
+                && !gtkSuites.some((each) => ["lib/StateUI.AppKit", "lib/StateUI.WinUI", "lib/StateUI.Android/Tests"].includes(each.label)));
         }
 
         const palette = await vscode.commands.getCommands(true);

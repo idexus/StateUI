@@ -5,7 +5,7 @@
   // "StateUI: Debug" and "StateUI: Release" are the whole of it. The extension's
   // status bar chooses:
   //
-  //   the host         AppKit or Android - and the editor works as it
+  //   the host         AppKit, Android, WinUI or GTK - and the editor works as it
   //   the application  Gallery, HelloWorld, … - remembered for the workspace
   //   the device       for Android: the phone or emulator it runs on
   //

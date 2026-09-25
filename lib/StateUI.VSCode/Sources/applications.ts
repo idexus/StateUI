@@ -24,6 +24,9 @@ export interface Application {
     /** Whether it has a WinUI head: `Platforms/WinUI/main.swift`. */
     readonly hasWinUIHead: boolean;
 
+    /** Whether it has a GTK head: `Platforms/GTK/main.swift`. */
+    readonly hasGTKHead: boolean;
+
     /**
      * The script that builds the application's AppKit bundle, where it has one
      * - `.scripts/AppKit/build-gallery-appkit.sh`. Without one the head is
@@ -57,8 +60,9 @@ function describeApplication(root: string, directory: string): Application | und
     const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
     const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
     const hasWinUIHead = fs.existsSync(path.join(directory, "Platforms", "WinUI", "main.swift"));
+    const hasGTKHead = fs.existsSync(path.join(directory, "Platforms", "GTK", "main.swift"));
 
-    if (!hasAppKitHead && !hasAndroidHead && !hasWinUIHead) {
+    if (!hasAppKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead) {
         return undefined;
     }
 
@@ -71,6 +75,7 @@ function describeApplication(root: string, directory: string): Application | und
         hasAppKitHead,
         hasAndroidHead,
         hasWinUIHead,
+        hasGTKHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
     };
 }
@@ -81,6 +86,7 @@ export function hasHead(application: Application, host: Host): boolean {
     case "appkit": return application.hasAppKitHead;
     case "android": return application.hasAndroidHead;
     case "winui": return application.hasWinUIHead;
+    case "gtk": return application.hasGTKHead;
     }
 }
 
@@ -97,4 +103,9 @@ export function appKitProgram(application: Application, configuration: "debug" |
     return application.bundleScript
         ? path.join(application.directory, ".build-appkit", configuration, `${product}.app`, "Contents", "MacOS", product)
         : path.join(application.directory, ".build", configuration, product);
+}
+
+/** Where an application's GTK head is, once `.scripts/GTK/run-app.sh` built it in `configuration`. */
+export function gtkProgram(application: Application, configuration: "debug" | "release"): string {
+    return path.join(application.directory, ".build-gtk", configuration, `${application.name}GTK`);
 }

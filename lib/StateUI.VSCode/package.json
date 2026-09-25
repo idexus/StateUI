@@ -1,7 +1,7 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit and Android.",
+  "description": "Build, run and debug StateUI applications on AppKit, Android, WinUI and GTK.",
   "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
@@ -24,6 +24,8 @@
   "activationEvents": [
     "workspaceContains:**/Platforms/AppKit/main.swift",
     "workspaceContains:**/Platforms/Android/build.gradle.kts",
+    "workspaceContains:**/Platforms/WinUI/main.swift",
+    "workspaceContains:**/Platforms/GTK/main.swift",
     "onDebugResolve:stateui",
     "onDebugDynamicConfigurations:stateui"
   ],

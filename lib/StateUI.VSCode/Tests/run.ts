@@ -25,6 +25,7 @@ const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results }
 delete env.STATEUI_APPKIT;
 delete env.STATEUI_ANDROID;
 delete env.STATEUI_WINUI;
+delete env.STATEUI_GTK;
 delete env.ELECTRON_RUN_AS_NODE;
 
 const child = spawn(code, [

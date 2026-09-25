@@ -5,7 +5,7 @@
 // editor - one host's.
 
 /** A host an application is built for and run on. */
-export type Host = "appkit" | "android" | "winui";
+export type Host = "appkit" | "android" | "winui" | "gtk";
 
 /** What the extension knows about one host. */
 export interface HostDescription {
@@ -58,6 +58,7 @@ export const hosts: readonly HostDescription[] = [
         },
     },
     { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", variable: "STATEUI_WINUI", indexPath: ".build-winui/index-build", platforms: ["win32"] },
+    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", variable: "STATEUI_GTK", indexPath: ".build-gtk/index-build", platforms: ["linux"] },
 ];
 
 /**
@@ -66,7 +67,7 @@ export const hosts: readonly HostDescription[] = [
  */
 export const plainIndexPath = ".build/index-build";
 
-/** The hosts this machine builds and runs - AppKit and Android on macOS, WinUI on Windows. */
+/** The hosts this machine builds and runs - AppKit and Android on macOS, WinUI on Windows, GTK on Linux. */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
     return hosts.filter((each) => each.platforms.includes(platform));
 }

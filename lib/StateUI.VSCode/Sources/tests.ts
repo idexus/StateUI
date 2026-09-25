@@ -38,6 +38,8 @@ export interface Suite {
  * - For the WinUI host an application runs as plain Swift, and the host's own
  *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
  *   App SDK beside its test runner first.
+ * - For the GTK host an application runs as plain Swift, and the host's own
+ *   package with `swift test`, its windows on the desktop's display.
  * - With no host - a machine that runs none - every package but the hosts'
  *   own runs as plain Swift.
  */
@@ -55,7 +57,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
         }
 
         const name = directory === root ? path.basename(root) : path.relative(root, directory);
-        const hostPackage = path.basename(directory).match(/\.(AppKit|Android|WinUI)$/)?.[1]?.toLowerCase();
+        const hostPackage = path.basename(directory).match(/\.(AppKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
