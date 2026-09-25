@@ -309,6 +309,23 @@ StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline);
 void stateui_winui_shape_set(StateUIObjectRef shape, double radius, StateUIBrush fill, StateUIBrush stroke,
                              double strokeWidth);
 
+/// A shape: one WinUI Path, drawn by `stateui_winui_path_draw` and painted by `stateui_winui_path_paint`.
+StateUIObjectRef stateui_winui_path_make(void);
+
+/// Paints a shape: its fill and outline, the outline's width, its dashes and their offset in DIPs, its ends
+/// (StateUI's LineCap), its joins (LineJoin) and how far a mitred join may reach.
+void stateui_winui_path_paint(StateUIObjectRef path, StateUIBrush fill, StateUIBrush stroke, double width,
+                              double const *dashes, int32_t dashCount, double dashOffset, int32_t cap, int32_t join,
+                              double miter);
+
+/// Draws a shape in a room `width` by `height` DIPs: `kind` 0 a rectangle, its corners' `radii` clockwise from the
+/// top left, or 1 an ellipse, both drawn `inset` from the room's edges; 2 the geometry `commands` draw - flat, 0 move
+/// x y, 1 line x y, 2 cubic x1 y1 x2 y2 x y, 3 quadratic x1 y1 x y, 4 close - filled by `evenOdd`'s rule, placed by
+/// `aspect` (fit, fill, stretch, centre) and centred, then moved by `transform` (a b c d tx ty) where one is given.
+void stateui_winui_path_draw(StateUIObjectRef path, int32_t kind, double const *radii, double const *commands,
+                             int32_t count, bool evenOdd, int32_t aspect, double const *transform, double width,
+                             double height, double inset);
+
 /// A ColorBox: a Border filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.
 StateUIObjectRef stateui_winui_color_box_make(void);

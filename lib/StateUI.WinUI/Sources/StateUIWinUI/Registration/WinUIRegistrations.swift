@@ -17,6 +17,7 @@ enum WinUIRegistrations {
         values(registry)
         fields(registry)
         pictures(registry)
+        shapes(registry)
         layouts(registry)
         shared(registry)
 

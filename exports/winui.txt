@@ -15,6 +15,17 @@ Button
 ColorBox
   color
   cornerRadius
+Ellipse
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 Grid
   background
   clipsContent
@@ -53,6 +64,71 @@ Label
   textCase
   textColor
   textDecorations
+Line
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+  x1
+  x2
+  y1
+  y2
+Path
+  aspect
+  data
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Polygon
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Polyline
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Rectangle
+  aspect
+  cornerRadius
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 ScrollView
   background
   horizontalScrollBarVisibility

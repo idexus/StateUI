@@ -1,13 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What this host realizes beyond its registry - the pages, the chrome's actions, a label's runs - member by member,
-/// for the WinUI 3 column of the control dictionary, `docs/controls/`.
-///
-/// The registry says the rest itself: `exports/winui.txt`, written by this package's suite. A record names an entry
-/// of the dictionary or a tier; an entry's own record wins over its tier's. A member is recorded once this host
-/// realizes it and a test of this package covers it; `.partial` says what is still missing, and `.notPlanned` why
-/// Windows will not have it. `ControlDictionaryTests`, in the core's suite, reads these records as text.
+/// What this host realizes beyond its registry, whose export says the rest - the WinUI 3 column of the control
+/// dictionary; a member is recorded once a test of this package covers it.
+/// Design: docs/design/contracts/dictionary.md#marks
 enum WinUIRealization {
     /// Realized in full.
     case complete(_ owner: String, _ member: String)
@@ -20,11 +16,10 @@ enum WinUIRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "ActivityIndicator", "Canvas", "CheckBox", "Content", "ContextMenu", "DatePicker", "Ellipse",
-        "LeadingContent", "Line", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack", "Path",
-        "Picker", "Pin", "Polygon", "Polyline", "PositionIndicator", "ProgressBar", "RadioButton", "Rectangle",
-        "SearchField", "Setters", "Stepper", "TextEditor", "TimePicker", "TitleBar", "TrailingContent",
-        "VisualState", "WebView",
+        "ActivityIndicator", "Canvas", "CheckBox", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map",
+        "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack", "Picker", "Pin", "PositionIndicator",
+        "ProgressBar", "RadioButton", "SearchField", "Setters", "Stepper", "TextEditor", "TimePicker", "TitleBar",
+        "TrailingContent", "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no

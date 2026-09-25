@@ -43,3 +43,22 @@ A test reads what is drawn: the relay renders the element through
 bitmap holds only what is drawn, from the first thing drawn, so a panel with
 no background is painted clear while it is rendered, and the bitmap then
 begins at its corner.
+
+## The shapes
+
+Each of the six shapes is one WinUI `Path`, whose geometry the host hands
+over for the room its layout gives it, again whenever that room changes. A
+rectangle and an ellipse fill the room, drawn half their outline in from its
+edges so the outline stays inside, as WinUI's own `Rectangle` does; a
+rectangle's corners are its own arcs, each corner its radius. A line, a
+path, a polygon and a polyline draw a geometry of their own - a path's data
+read by the core's parser, its arcs as curves - placed in the room by their
+aspect: fitted, covering, stretched or at their own size, centred, then
+moved by their transform, as every host places them. WinUI measures the
+geometry's bounds itself; a geometry left where it stands takes no
+transform, since WinUI draws nothing of one given the identity. A shape has
+no size of its own and asks WinUI for none: it is drawn in the place its
+layout gives it. Dashes, gaps and their offset are outline widths in WinUI
+as in StateUI; a mitred corner's limit WinUI measures against half the
+outline's width and StateUI against the whole, so it is doubled.
+
