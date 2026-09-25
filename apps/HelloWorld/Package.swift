@@ -31,14 +31,19 @@ let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "
 // host, asked by .scripts/WinUI/run-app.ps1.
 let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
 
+// WHETHER THIS BUILD HAS A GTK HEAD - the same question for the GTK 4 host,
+// asked by .scripts/GTK/run-app.sh.
+let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
+
 // What every module of the application is compiled with - in an AppKit build
 // including APPKIT, in an Android Views build ANDROID, in a WinUI build WINUI,
-// each defined here and nowhere else. See apps/Gallery/Package.swift.
+// in a GTK build GTK, each defined here and nowhere else. See apps/Gallery/Package.swift.
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
     + (hasWinUIHead ? [.define("WINUI")] : [])
+    + (hasGTKHead ? [.define("GTK")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -155,6 +160,30 @@ if hasWinUIHead {
             swiftSettings: settings,
             // A windowed application: started by itself it opens no console, and started from one it writes there.
             linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
+        ))
+}
+
+if hasGTKHead {
+    // The same Swift application, an executable its GTK host runs on Linux:
+    // its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "HelloWorldGTK",
+            targets: ["HelloWorldGTK"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldGTK",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIGTK", package: "StateUIGTK"),
+            ],
+            path: "Platforms/GTK",
+            swiftSettings: settings
         ))
 }
 

@@ -9,10 +9,12 @@ lib/StateUI/Tests/                 core tests and shared test support
 lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
 lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
+lib/StateUI.GTK/                   GTK host package, Swift over GTK's C API, and tests
 lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling
 .scripts/Android/                  Android Views builds, runs, devices and tests
 .scripts/WinUI/                    WinUI builds, runs and tests, and the Windows App SDK
+.scripts/GTK/                      GTK builds and runs
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/Android/    Gallery Android head
@@ -21,6 +23,7 @@ apps/HelloWorld/Sources/           small platform-neutral example application
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
+apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
 ```
 
 The core never imports Foundation or a platform UI framework. Application code
@@ -154,6 +157,15 @@ itself. An application's WinUI head is built and started by one script:
 
 [WinUI host](winui-host.md) lists what it needs and what it builds.
 
+The GTK host builds on Linux with the swift.org toolchain, GTK 4 and
+libadwaita. An application's GTK head is built and started by one script:
+
+```bash
+.scripts/GTK/run-app.sh apps/HelloWorld
+```
+
+[GTK host](gtk-host.md) lists what it needs and what it builds.
+
 ## Test
 
 Each suite lives beside the package whose behavior it verifies:
@@ -187,6 +199,13 @@ test runner first:
 
 ```powershell
 .scripts\WinUI\test-winui.ps1
+```
+
+The GTK host's suite runs on Linux, in a desktop session whose display shows
+its windows:
+
+```bash
+swift test --package-path lib/StateUI.GTK
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a

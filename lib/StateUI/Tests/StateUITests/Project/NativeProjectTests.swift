@@ -212,6 +212,59 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThan(heads, 0, "no WinUI head found")
     }
 
+    /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C module is
+    /// the system's headers and nothing else - a module map and one header that includes libadwaita's -
+    /// and its scripts stand under `.scripts/GTK`.
+    func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
+        let repository = SourceTree.repository
+        let host = "lib/StateUI.GTK"
+        let module = "\(host)/Sources/CStateUIGTK"
+        for relative in ["\(host)/Package.swift", ".scripts/GTK/run-app.sh"] {
+            XCTAssertTrue(
+                FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
+                "missing \(relative)")
+        }
+
+        let files = try SourceTree.files(under: repository.appendingPathComponent(module), entering: { _ in true })
+        XCTAssertEqual(files.sorted(), ["CStateUIGTK.h", "module.modulemap"], "the C module holds more than the headers")
+
+        let header = try String(contentsOf: repository.appendingPathComponent("\(module)/CStateUIGTK.h"), encoding: .utf8)
+        let code = header.split(separator: "\n").filter { !$0.hasPrefix("//") && !$0.isEmpty }
+        XCTAssertEqual(code, ["#include <adwaita.h>"], "the header declares something of its own")
+    }
+
+    /// Every GTK HEAD is an executable its application declares exactly when a
+    /// build says it is a GTK one, whose main names the application to the host
+    /// and hands it the thread under the application's name.
+    func testEveryGTKHeadRunsTheApplicationsModule() throws {
+        var heads = 0
+
+        for application in try SourceTree.applications() {
+            let head = application.appendingPathComponent("Platforms/GTK")
+            guard FileManager.default.fileExists(atPath: head.path) else { continue }
+            heads += 1
+            let name = application.lastPathComponent
+            func text(_ relative: String) throws -> String {
+                try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
+            }
+
+            let manifest = try text("Package.swift")
+            for shape in [
+                "environment[\"STATEUI_GTK\"] == \"1\"", "hasGTKHead ? [.define(\"GTK\")] : []",
+                "name: \"\(name)GTK\"", "name: \"StateUIGTK\"", "path: \"Platforms/GTK\"",
+            ] {
+                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
+            }
+
+            let entry = try text("Platforms/GTK/main.swift")
+            for shape in ["import StateUIGTK", "stateui_app_register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
+                XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
+            }
+        }
+
+        XCTAssertGreaterThan(heads, 0, "no GTK head found")
+    }
+
     /// Every ANDROID HEAD is a library Android loads, declared by the
     /// application's manifest exactly when a build says it is an Android one:
     /// its Gradle build, an Android manifest naming the host's activity and the
@@ -267,7 +320,7 @@ final class NativeProjectTests: XCTestCase {
         roots += apps.map { $0.appendingPathComponent("Sources") }
 
         var offenders: [String] = []
-        for (word, conditioned) in [("app" + "kit", true), ("win" + "ui", true), ("ma" + "ui", false)] {
+        for (word, conditioned) in [("app" + "kit", true), ("win" + "ui", true), ("gt" + "k", true), ("ma" + "ui", false)] {
             let condition = "#if " + word.uppercased()
             for root in roots {
                 guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)

@@ -58,6 +58,9 @@ usable platform promise.
   that renders an application with Android views, in the application's process.
 - [WinUI host](winui-host.md) builds, runs, and tests the Swift host that
   renders an application with WinUI 3 on Windows, in the application's process.
+- [GTK host](gtk-host.md) builds, runs, and tests the Swift host that renders
+  an application with GTK 4 and libadwaita on Linux, in the application's
+  process.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
 - [Design notes](design/README.md) draw the architecture and give the reasons

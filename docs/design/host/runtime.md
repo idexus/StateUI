@@ -29,7 +29,8 @@ Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
   one package per host     realizations, layout views, scrolling, gestures,
   (lib/StateUI.AppKit,     focus, accessibility, windows and menus
   lib/StateUI.Android,
-  lib/StateUI.WinUI)
+  lib/StateUI.WinUI,
+  lib/StateUI.GTK)
        |
        v
   native views

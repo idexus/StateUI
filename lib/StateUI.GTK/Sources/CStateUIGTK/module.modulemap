@@ -1,0 +1,4 @@
+module CStateUIGTK [system] {
+    header "CStateUIGTK.h"
+    export *
+}
