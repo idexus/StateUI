@@ -118,6 +118,10 @@ void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef t
 void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 
+/// Makes the element fill whatever place it is arranged in, whatever its style aligns it to: a StateUI layout
+/// decides its place.
+void stateui_winui_fill_place(StateUIObjectRef element);
+
 /// Every element: measured and placed by its parent's panel, shown or collapsed, drawn how opaque.
 void stateui_winui_measure(StateUIObjectRef element, double width, double height, double *size);
 void stateui_winui_arrange(StateUIObjectRef element, double x, double y, double width, double height);
@@ -167,14 +171,36 @@ int32_t stateui_winui_text(StateUIObjectRef element, char *utf8, int32_t capacit
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
 void stateui_winui_panel_set_children(StateUIObjectRef panel, StateUIObjectRef const *children, int32_t count);
 
+/// How words look on a text block or any control showing them: the font - a size of 0 or less and an empty
+/// family are the platform's - the colour as 0xAARRGGBB, `has` false putting back the platform's, and the room
+/// around them in DIPs.
+void stateui_winui_set_font(StateUIObjectRef element, double size, bool bold, bool italic, char const *family);
+void stateui_winui_set_foreground(StateUIObjectRef element, bool has, uint32_t argb);
+void stateui_winui_set_padding(StateUIObjectRef element, double left, double top, double right, double bottom);
+
+/// How words look, as WinUI holds it: the size, the weight, the most lines, the alignment and the colour as
+/// 0xAARRGGBB - five values; what a test reads back.
+void stateui_winui_text_style(StateUIObjectRef element, double *style);
+
 StateUIObjectRef stateui_winui_text_make(void);
 void stateui_winui_text_set_text(StateUIObjectRef text, char const *utf8);
 
-/// The words' colour as 0xAARRGGBB; `has` false puts back the platform's.
-void stateui_winui_text_set_color(StateUIObjectRef text, bool has, uint32_t argb);
+/// A label's lines - StateUI's LineBreak, and the most lines, 0 for any - its words' alignment across it - start,
+/// centre, end - the space between its letters in thousandths of an em, the height of a line in DIPs, 0 for the
+/// font's, and the lines under or through its words.
+void stateui_winui_text_set_lines(StateUIObjectRef text, int32_t breaking, int32_t maximum);
+void stateui_winui_text_set_alignment(StateUIObjectRef text, int32_t horizontal);
+void stateui_winui_text_set_spacing(StateUIObjectRef text, int32_t characterSpacing, double lineHeight);
+void stateui_winui_text_set_decorations(StateUIObjectRef text, bool underline, bool strikethrough);
 
 StateUIObjectRef stateui_winui_button_make(int64_t view);
 void stateui_winui_button_set_text(StateUIObjectRef button, char const *utf8);
+
+/// A button's look: what fills it - the platform's for none, and fainter under the pointer and pressed, as
+/// WinUI's own buttons - its outline `strokeWidth` DIPs wide, and its corners' radius, less than 0 for the
+/// platform's.
+void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush background, StateUIBrush stroke,
+                                   double strokeWidth, double cornerRadius);
 
 /// Presses a button as UI Automation does, which raises its Click.
 void stateui_winui_button_invoke(StateUIObjectRef button);

@@ -5,6 +5,25 @@ a field - and hears what the user does to them. The value a control carries
 belongs to a state; the host writes the control where the tree changed that
 value and reports the user's change back ([patches](../../host/patches.md)).
 
+## Words
+
+How words look is one road for every element showing them, a `TextBlock` or a
+control: the font - its size, weight, slant and family - the colour, and the
+room around them, each the platform's where the tree says nothing. A label
+adds its lines, its alignment across itself, the space between its letters
+and its lines, and the lines under or through its words.
+
+WinUI spaces letters in thousandths of an em and lines in DIPs, where StateUI
+gives the first in points and the second as a multiple of the font's own
+line: both are worked out against the font's size, a line of Segoe UI taken as
+four thirds of it. A `TextBlock` cuts words short only at their end, so a label
+cut at its start or in its middle is cut at its end.
+
+A button drawn in the application's colours keeps them under the pointer and
+pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
+are, its words and outline as they are - WinUI's template otherwise draws
+those states in the platform's colours.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented

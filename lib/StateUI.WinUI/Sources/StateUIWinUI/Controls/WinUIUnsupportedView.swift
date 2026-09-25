@@ -9,6 +9,6 @@ final class WinUIUnsupportedView: WinUITextView {
     init(_ type: NodeType) {
         super.init()
         setText("WinUI: unsupported \(type.name)")
-        setTextColor(0xFFD3_2F2F)
+        setForeground(.color(red: 0xD3, green: 0x2F, blue: 0x2F, alpha: 0xFF))
     }
 }

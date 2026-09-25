@@ -34,8 +34,10 @@ namespace {
             stops.Append(stop);
         }
     }
+}
 
-    media::Brush make(StateUIBrush const &brush) {
+namespace stateui {
+    media::Brush brush(StateUIBrush const &brush) {
         auto const *g = brush.geometry;
         switch (brush.kind) {
         case 1:
@@ -77,8 +79,8 @@ extern "C" void stateui_winui_shape_set(
 ) {
     try {
         auto shape = as<shapes::Shape>(handle);
-        shape.Fill(make(fill));
-        shape.Stroke(make(stroke));
+        shape.Fill(brush(fill));
+        shape.Stroke(brush(stroke));
         shape.StrokeThickness(strokeWidth);
         if (auto rectangle = shape.try_as<shapes::Rectangle>()) {
             rectangle.RadiusX(radius);

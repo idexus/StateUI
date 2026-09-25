@@ -21,6 +21,7 @@
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.Primitives.h>
+#include <winrt/Microsoft.UI.Xaml.Media.h>
 
 #include "CStateUIWinUI.h"
 
@@ -34,6 +35,9 @@ namespace stateui {
 
     /// Runs `work` on the UI thread, in its turn; from any thread.
     void post(void (*work)());
+
+    /// WinUI's own brush for a brush as the host hands it; null for none.
+    xaml::Media::Brush brush(StateUIBrush const &brush);
 
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {

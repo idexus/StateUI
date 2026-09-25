@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIWinUI
 
-/// A WinUI `Button`: its caption, whether it takes a press, and the click it raises.
+/// A WinUI `Button`: its caption, its look, whether it takes a press, and the click it raises.
 @MainActor
 final class WinUIButtonView: WinUIView {
     /// What the button does when the user clicks it.
@@ -21,6 +22,22 @@ final class WinUIButtonView: WinUIView {
     /// The caption the button shows now, read back from WinUI.
     var text: String {
         WinUIView.words(of: handle)
+    }
+
+    /// What fills the button, its outline and its shape; nil for the platform's own.
+    func setLook(background: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
+        let radius: Double = switch shape.map({ WinUIOutline(container: $0) }) {
+        case .rounded(let radius)?: radius
+        case .ellipse?: .greatestFiniteMagnitude
+        case .rectangle?: 0
+        case nil: -1
+        }
+        WinUIBrush(background).withRelayBrush { fill in
+            WinUIBrush(stroke).withRelayBrush { outline in
+                stateui_winui_button_set_look(
+                    handle, fill, outline, stroke == nil ? 0 : max(0, strokeWidth ?? 1), radius)
+            }
+        }
     }
 
     func setEnabled(_ enabled: Bool) {

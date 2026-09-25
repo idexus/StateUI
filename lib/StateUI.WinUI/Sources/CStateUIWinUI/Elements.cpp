@@ -18,6 +18,16 @@ using namespace stateui;
 using winrt::Windows::Foundation::Rect;
 using winrt::Windows::Foundation::Size;
 
+extern "C" void stateui_winui_fill_place(StateUIObjectRef handle) {
+    try {
+        auto element = as<xaml::FrameworkElement>(handle);
+        element.HorizontalAlignment(xaml::HorizontalAlignment::Stretch);
+        element.VerticalAlignment(xaml::VerticalAlignment::Stretch);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "filling a place");
+    }
+}
+
 extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, double height, double *size) {
     try {
         auto element = as<xaml::UIElement>(handle);

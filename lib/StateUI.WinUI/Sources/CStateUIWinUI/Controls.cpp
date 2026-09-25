@@ -48,19 +48,6 @@ extern "C" void stateui_winui_text_set_text(StateUIObjectRef handle, char const 
     }
 }
 
-extern "C" void stateui_winui_text_set_color(StateUIObjectRef handle, bool has, uint32_t argb) {
-    try {
-        auto block = borrow<controls::TextBlock>(handle);
-        if (!has) return block.ClearValue(controls::TextBlock::ForegroundProperty());
-        winrt::Windows::UI::Color color{
-            static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16),
-            static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
-        block.Foreground(xaml::Media::SolidColorBrush(color));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "colouring a text block's words");
-    }
-}
-
 extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
     try {
         controls::Button button;
@@ -69,6 +56,49 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
     } catch (winrt::hresult_error const &error) {
         report(error, "making a button");
         return nullptr;
+    }
+}
+
+extern "C" void stateui_winui_button_set_look(
+    StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double strokeWidth, double cornerRadius
+) {
+    try {
+        auto button = borrow<controls::Button>(handle);
+        auto resources = button.Resources();
+        auto keep = [&](wchar_t const *key, xaml::Media::Brush const &value) {
+            auto name = winrt::box_value(key);
+            if (resources.HasKey(name)) resources.Remove(name);
+            if (value) resources.Insert(name, value);
+        };
+        // Under the pointer and pressed, WinUI's own buttons draw their fill a little fainter each time.
+        auto fill = brush(background);
+        auto faded = [&](double opacity) {
+            auto made = brush(background);
+            if (made) made.Opacity(opacity);
+            return made;
+        };
+        if (fill) button.Background(fill);
+        else button.ClearValue(controls::Control::BackgroundProperty());
+        keep(L"ButtonBackground", fill);
+        keep(L"ButtonBackgroundPointerOver", faded(0.9));
+        keep(L"ButtonBackgroundPressed", faded(0.8));
+
+        auto outline = strokeWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        if (outline) {
+            button.BorderBrush(outline);
+            button.BorderThickness({strokeWidth, strokeWidth, strokeWidth, strokeWidth});
+        } else {
+            button.ClearValue(controls::Control::BorderBrushProperty());
+            button.ClearValue(controls::Control::BorderThicknessProperty());
+        }
+        keep(L"ButtonBorderBrush", outline);
+        keep(L"ButtonBorderBrushPointerOver", outline);
+        keep(L"ButtonBorderBrushPressed", outline);
+
+        if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
+        else button.ClearValue(controls::Control::CornerRadiusProperty());
+    } catch (winrt::hresult_error const &error) {
+        report(error, "dressing a button");
     }
 }
 

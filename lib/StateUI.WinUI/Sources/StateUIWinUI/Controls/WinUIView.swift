@@ -49,6 +49,9 @@ class WinUIView {
         guard let handle = make(number) else { fatalError("the relay made no element - its log says why") }
         self.handle = handle
         Self.live[number] = Weak(self)
+        // A control's style aligns it inside its place; a StateUI layout decides the place, so it fills it.
+        // Design: docs/design/platforms/winui/layout.md#a-place-filled
+        stateui_winui_fill_place(handle)
     }
 
     isolated deinit {

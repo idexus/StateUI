@@ -30,6 +30,14 @@ child, the view asks the layout that placed it to arrange again
 (`InvalidateArrange`); WinUI runs that arrangement before it draws the frame,
 and the layout's arrangement gives the child the place it keeps.
 
+## A place filled
+
+A control's style aligns it inside the place its parent arranges it in - a
+`Button` to the left and to the middle, at the size it asked for - where a
+StateUI layout decides the place itself. So every element the host holds is
+told to stretch across whatever place it is arranged in, once, as it is made:
+the layout's place is the control's size.
+
 ## No room asked
 
 WinUI arranges an element at no less than the size it last asked for in
