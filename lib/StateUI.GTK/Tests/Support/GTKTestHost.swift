@@ -124,7 +124,7 @@ extension GTKRenderer {
     /// render is taken and set aside, so no frame renders the core's tree over the test's.
     static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> GTKRenderer {
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
-        _ = renderer.core.render(baseline: 0)
+        _ = renderer.runtime.core.render(baseline: 0)
         return renderer
     }
 
@@ -132,7 +132,7 @@ extension GTKRenderer {
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
         GTKPictures.folder = GTKTestHost.pictures
         GTKKeptValues.folder = String(cString: g_get_tmp_dir()) + "/stateui-gtk-tests"
-        shared?.tree.root?.leave()
+        shared?.runtime.tree.root?.leave()
         shared?.window?.close()
         GTKTestHost.window.show(nil)
 
@@ -145,8 +145,8 @@ extension GTKRenderer {
 
     /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
     func apply(_ patch: HostPatch) {
-        intake.take(patch, generation: intake.baseline &+ 1) { tree.apply($0, complete: true) }
-        let root = (tree.root?.native as? GTKElement)?.view
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
+        let root = (runtime.tree.root?.native as? GTKElement)?.view
         guard GTKTestHost.window.content !== root else { return }
         GTKTestHost.window.show(root)
         GTKTestHost.pump()
@@ -155,12 +155,12 @@ extension GTKRenderer {
 
     /// The view of the element keyed `id`.
     func view(id: ElementId) -> GTKView? {
-        (tree.root?.first(id: id)?.native as? GTKElement)?.view
+        (runtime.tree.root?.first(id: id)?.native as? GTKElement)?.view
     }
 
     /// One display frame at the clock's time, then the layout GTK runs in it.
     func frame() {
-        displayCycle.frame(now: frameClock.now())
+        runtime.displayCycle.frame(now: frameClock.now())
         layOut()
     }
 
@@ -175,8 +175,8 @@ extension GTKRenderer {
         for _ in 0..<150 {
             if done() { return }
             GTKTestHost.pump(0.01)
-            _ = core.runJobs()
-            pump.turn()
+            _ = runtime.core.runJobs()
+            runtime.pump.turn()
             if frameClock.held { frame() }
         }
     }
@@ -189,7 +189,7 @@ extension GTKRenderer {
 
     /// Every view of `type` in the tree, in order.
     func views<Native: GTKView>(_ type: Native.Type) -> [Native] {
-        guard let root = tree.root else { return [] }
+        guard let root = runtime.tree.root else { return [] }
         return Self.views(type, in: root)
     }
 

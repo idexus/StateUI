@@ -20,10 +20,10 @@ extension GTKElement {
         lastFrameReport = report
 
         if let binding = element.driven[.frame] {
-            host.report(.lanes(Array(report.prefix(4))), through: binding)
+            host.runtime.report(.lanes(Array(report.prefix(4))), through: binding)
         }
         if let handler = element.handler(.frameChanged) {
-            host.dispatch(handler, payload: [.numbers(report)])
+            host.runtime.dispatch(handler, payload: [.numbers(report)])
         }
     }
 }

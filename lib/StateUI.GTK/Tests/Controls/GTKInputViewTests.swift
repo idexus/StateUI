@@ -68,7 +68,7 @@ final class GTKInputViewTests: XCTestCase {
             XCTAssertTrue(editor.showsPlaceholder)
 
             editor.type("one")
-            host.pump.turn()
+            host.runtime.pump.turn()
 
             XCTAssertFalse(editor.showsPlaceholder)
         }

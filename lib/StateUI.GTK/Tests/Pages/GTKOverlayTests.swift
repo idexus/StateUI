@@ -72,7 +72,7 @@ final class GTKOverlayTests: XCTestCase {
 
             Inspector.open(in: scene)
             host.settle { window.overlay != nil }
-            let overlay = try XCTUnwrap((host.tree.root?.first(type: .overlay)?.native as? GTKElement)?.view)
+            let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? GTKElement)?.view)
             XCTAssertTrue(window.overlay === overlay)
             host.layOut()
             XCTAssertFalse(beneath.reaches(size.width / 2, size.height - 20), "the folded inspector along the bottom")

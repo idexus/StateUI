@@ -80,7 +80,7 @@ final class GTKSplitViewTests: XCTestCase {
             XCTAssertNotNil(navigation.frames.last?.sidebarToggle)
 
             path.wrappedValue = [2]
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertEqual(navigation.frames.map(\.chrome.title), ["Home", "Page 2"])
             XCTAssertNotNil(navigation.frames.last?.sidebarToggle)
             XCTAssertEqual(host.windowTitle, "Page 2")
@@ -110,7 +110,7 @@ final class GTKTabbedViewTests: XCTestCase {
 
             log.values = []
             tabs.selectByUser(1)
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertEqual(tab.wrappedValue, "two")
             XCTAssertEqual(log.values, ["One disappearing", "Two appearing"])
             XCTAssertEqual(frame.buttons.map(\.text), ["Share"])

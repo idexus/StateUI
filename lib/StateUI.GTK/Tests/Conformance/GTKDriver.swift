@@ -20,19 +20,19 @@ final class GTKDriver: HostDriver {
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
-        return renderer.tree
+        return renderer.runtime.tree
     }
 
     func step() {
         guard let renderer else { return }
         GTKTestHost.pump(0.01)
-        _ = renderer.core.runJobs()
-        renderer.pump.turn()
+        _ = renderer.runtime.core.runJobs()
+        renderer.runtime.pump.turn()
         if renderer.frameClock.held { renderer.frame() }
     }
 
     func turn() {
-        renderer?.pump.turn()
+        renderer?.runtime.pump.turn()
     }
 
     func frame() {

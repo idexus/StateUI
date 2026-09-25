@@ -49,7 +49,7 @@ final class GTKAccessibilityTests: XCTestCase {
             XCTAssertEqual(group.widget.said, "label description")
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.pump.turn()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(group.widget.said, "")
         }

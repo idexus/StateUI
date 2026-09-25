@@ -140,7 +140,7 @@ final class GTKScrollViewTests: XCTestCase {
             XCTAssertEqual(host.views(GTKScrollView.self).count, 1)
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            _ = host.core.runJobs()
+            _ = host.runtime.core.runJobs()
             GTKTestHost.pump(0.05)
 
             XCTAssertEqual(host.views(GTKScrollView.self).count, 0)

@@ -31,7 +31,7 @@ enum GTKDoorbell {
     /// Posts one turn to the main loop, at input's priority, so it lands before the next paint.
     nonisolated static func postTurn() {
         g_idle_add_full(G_PRIORITY_DEFAULT, { _ in
-            MainActor.assumeIsolated { GTKRenderer.shared?.pump.turn() }
+            MainActor.assumeIsolated { GTKRenderer.shared?.runtime.pump.turn() }
             return 0
         }, nil, nil)
     }
@@ -47,7 +47,7 @@ extension GTKDoorbell {
                 let works = GTKDoorbell.pending
                 GTKDoorbell.pending = []
                 for work in works { work() }
-                GTKRenderer.shared?.pump.turn()
+                GTKRenderer.shared?.runtime.pump.turn()
             }
             return 0
         }, nil, nil)

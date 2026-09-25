@@ -50,6 +50,7 @@ final class DisplayCycleTests: XCTestCase {
 private final class HandClock: FrameClock {
     let now: () -> Double = { 0 }
     var held = false
+    var onFrame: ((Double) -> Void)?
 }
 
 /// A presenter that counts the walks a frame asks of the mounted tree.

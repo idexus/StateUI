@@ -51,14 +51,15 @@ paths, the journey's animations and the frame they run on.
 | | | `HandlerDispatch` | host layer |
 | | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
-| | | the user's reports | toolkit half |
+| | | a user's change carried onto its state and its event, a radio set, a scroller's move (`MountedElement.reportUserChange`) | host layer |
+| | | the native callback that hears the user | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
 | | | the frame signal: the toolkit's display link | toolkit half |
 | P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `ZStackArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
 | | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
-| | | `Pump` | host layer |
+| | | `Pump`; `HostRuntime` wires every part above | host layer |
 | | | the doorbell's post, the act performer | toolkit half |
 
 ## One frame
@@ -146,6 +147,27 @@ phase sees each one.
     v
   the handler runs, and reads the user's value already in the state
 ```
+
+The carrying is the host layer's, the same on every host
+(`MountedElement.reportUserChange`): what the program writes reports
+nothing; a value becomes the state's - a journey a carried property's channel
+takes, else a report - and then its event runs, or a turn renders what the
+state changed where no handler listens. A radio button checked takes its
+set's other checks away first, in one user's transaction: each peer turned off
+on its own control as the program, then reporting that it is off. A host's
+native callback hands the value on, and turns a peer's control off in its
+toolkit's terms.
+
+## The runtime's parts
+
+`HostRuntime` builds the parts every host holds alike and wires them once: the
+core's link, the patch's intake, the animator, the state channels and the two
+motions, the display cycle on the host's frame clock, the mounted tree and the
+pump - the clock's frames run the cycle, a layout motion or an animation
+starting holds the clock. It is also every road a user's change takes in: a
+dispatch, a user's transaction, a report through a bound state, a journey
+taken, a gesture's value. A host gives it its frame clock and how an element's
+native half is made, and presents a turn's and a frame's end.
 
 ## The host layer
 

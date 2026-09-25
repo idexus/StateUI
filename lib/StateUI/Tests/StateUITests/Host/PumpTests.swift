@@ -142,6 +142,7 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
     let intake = PatchIntake()
     let now: () -> Double = { 0 }
     var held = false
+    var onFrame: ((Double) -> Void)?
     private(set) var tree: MountedTree!
     private(set) var pump: Pump!
     private var displayCycle: DisplayCycle!

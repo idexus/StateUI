@@ -42,7 +42,7 @@ final class GTKLayoutMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(moved.frame.y, 0, "and it lands exactly")
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 
@@ -78,7 +78,7 @@ final class GTKLayoutMotionTests: XCTestCase {
             host.layOut()
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("b"))).frame.y, 0)
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 

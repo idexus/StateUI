@@ -26,7 +26,7 @@ final class GTKPagesTests: XCTestCase {
             XCTAssertFalse(host.goBack(), "no way back from the root")
 
             path.wrappedValue.append(7)
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertEqual(navigation.frames.map(\.chrome.title), ["Root", "Detail 7"])
             XCTAssertEqual(navigation.visiblePageTitle, "Detail 7", "GTK shows the pushed page")
             XCTAssertEqual(host.windowTitle, "Detail 7")
@@ -55,7 +55,7 @@ final class GTKPagesTests: XCTestCase {
 
             log.values = []
             path.wrappedValue.append(1)
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertEqual(log.values, [
                 "Root navigatingFrom", "Root disappearing", "Root navigatedFrom",
                 "Pushed appearing", "Pushed navigatedTo",
@@ -104,7 +104,7 @@ final class GTKPagesTests: XCTestCase {
             for button in frame.buttons + frame.overflowButtons where gtk_widget_get_sensitive(button.widget) != 0 {
                 button.click()
             }
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
         }
     }
@@ -182,7 +182,7 @@ final class GTKPagesTests: XCTestCase {
             XCTAssertTrue(adw_header_bar_get_title_widget(root.header.opaque) == field.widget)
 
             path.wrappedValue = [1]
-            host.pump.turn()
+            host.runtime.pump.turn()
             XCTAssertNil(navigation.frames.last?.chrome.titleView)
             XCTAssertEqual(navigation.frames.last?.chrome.title, "Result")
             XCTAssertTrue(adw_header_bar_get_title_widget(root.header.opaque) == field.widget, "still the root's")

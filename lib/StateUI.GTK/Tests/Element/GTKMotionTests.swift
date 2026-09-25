@@ -43,7 +43,7 @@ final class GTKMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(label.drawnOpacity, 0.75, accuracy: GTKView.opacityStep)
-            XCTAssertFalse(host.describedMotion.isActive)
+            XCTAssertFalse(host.runtime.describedMotion.isActive)
         }
     }
 
@@ -60,7 +60,7 @@ final class GTKMotionTests: XCTestCase {
             host.apply(changed)
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).drawnOpacity, 0.75, accuracy: GTKView.opacityStep)
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 

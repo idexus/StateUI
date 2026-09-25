@@ -229,7 +229,7 @@ extension GTKElement {
     /// Hands a page's phase to its handler, rendered before the next phase is heard.
     private func announce(_ event: Event) {
         guard let handler = element.handler(event) else { return }
-        host?.pump.handlers.enqueuePhase(handler)
+        host?.runtime.pump.handlers.enqueuePhase(handler)
     }
 
     /// Keeps an arrangement's own parts with the tree: a stack hears the user take its top page away, a tabbed view
@@ -279,7 +279,7 @@ extension GTKElement {
     /// it is now.
     private func userPopped(remaining: Int) {
         guard type == .navigationStack, let handler = element.handler(.popped) else { return }
-        host?.dispatch(handler, payload: [.number(Double(remaining - 1))])
+        host?.runtime.dispatch(handler, payload: [.number(Double(remaining - 1))])
     }
 
     /// The user showed or hid a split view's sidebar through a header bar's button.

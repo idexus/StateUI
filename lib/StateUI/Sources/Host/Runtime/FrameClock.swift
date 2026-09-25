@@ -9,4 +9,7 @@
 
     /// Whether something holds the clock; frames come only while it does.
     var held: Bool { get set }
+
+    /// What each display frame runs, at its time.
+    var onFrame: ((Double) -> Void)? { get set }
 }

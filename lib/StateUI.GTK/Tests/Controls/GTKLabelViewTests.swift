@@ -143,7 +143,7 @@ final class GTKLabelViewTests: XCTestCase {
             XCTAssertEqual(label.ranged, ["0-4 foreground 65535 0 0", "0-4 foreground-alpha 65535"])
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.pump.turn()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(label.ranged, ["0-4 foreground 0 0 65535", "0-4 foreground-alpha 65535"])
         }
@@ -157,7 +157,7 @@ final class GTKLabelViewTests: XCTestCase {
             XCTAssertEqual(label.text, "runs")
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.pump.turn()
+            host.runtime.pump.turn()
 
             XCTAssertTrue(host.views(GTKLabelView.self).first === label, "the same label, its spans gone")
             XCTAssertEqual(label.text, "own")

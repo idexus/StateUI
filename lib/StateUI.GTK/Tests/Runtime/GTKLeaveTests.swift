@@ -32,7 +32,7 @@ final class GTKLeaveTests: XCTestCase {
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
             // A view's deinit is MainActor's, and runs in the turn after the one it left in.
-            _ = host.core.runJobs()
+            _ = host.runtime.core.runJobs()
 
             XCTAssertEqual(host.views(GTKLabelView.self).count, 0)
             XCTAssertEqual(GTKView.liveCount, before - 1, "the label's view outlived its element")

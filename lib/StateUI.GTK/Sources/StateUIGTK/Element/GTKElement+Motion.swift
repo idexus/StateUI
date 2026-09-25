@@ -10,7 +10,7 @@ extension GTKElement {
     func configureLayoutMotion() {
         guard let layout = view as? GTKTravellingLayout else { return }
 
-        layout.layoutMotion = host?.layoutMotion
+        layout.layoutMotion = host?.runtime.layoutMotion
         layout.motion = element.motion
         layout.framesRead = element.framesRead
         layout.patchArrived()
@@ -24,10 +24,10 @@ extension GTKElement {
     /// Fades the element in as it joins a layout already standing; an opacity already on its way keeps its motion.
     func fadeIn(under motion: Motion) {
         guard fadesIn, let host, let view,
-              host.tree.presentedPropertyValue(mount: element.mount, property: .opacity) == nil
+              host.runtime.tree.presentedPropertyValue(mount: element.mount, property: .opacity) == nil
         else { return }
 
-        host.tree.receiveProperty(
+        host.runtime.tree.receiveProperty(
             mount: element.mount, property: .opacity,
             standing: .number(0), target: element.resolvedValue(.opacity) ?? .number(1), motion: motion)
         view.setOpacity(value(.opacity)?.number ?? 1)
@@ -38,23 +38,23 @@ extension GTKElement {
     func crossVisibility() {
         guard let host, let view else { return }
 
-        let law = host.layoutMotion.law(of: element.motion)
+        let law = host.runtime.layoutMotion.law(of: element.motion)
         let opacity = element.resolvedValue(.opacity) ?? .number(1)
 
         if value(.isVisible)?.bool == false {
             guard view.isShown, !leaving, let law else { return }
             leaving = true
-            let started = host.tree.receiveProperty(
+            let started = host.runtime.tree.receiveProperty(
                 mount: element.mount, property: .opacity, standing: .number(view.opacity), target: .number(0),
                 motion: law, landed: { [weak self] in self?.crossed() })
             if !started { leaving = false }
         } else if leaving {
             leaving = false
-            host.tree.receiveProperty(
+            host.runtime.tree.receiveProperty(
                 mount: element.mount, property: .opacity, standing: .number(view.opacity), target: opacity,
                 motion: law)
         } else if !view.isShown, let law {
-            host.tree.receiveProperty(
+            host.runtime.tree.receiveProperty(
                 mount: element.mount, property: .opacity, standing: .number(0), target: opacity, motion: law)
             view.setOpacity(value(.opacity)?.number ?? 1)
         }

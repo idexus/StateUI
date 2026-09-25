@@ -189,7 +189,7 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A view listens for what its handlers ask, and its controllers come off once it leaves the tree.
+    /// A view listens for what its handlers ask, and its controllers come off once it leaves the runtime.tree.
     func testAViewListensForWhatItsHandlersAskAndStopsAsItLeaves() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }
