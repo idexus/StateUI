@@ -22,6 +22,7 @@ final class GTKPageFrame {
     private let heading: GTKWidget
     private let actionsBox: GTKWidget
     private(set) var buttons: [GTKButtonView] = []
+    private var sidebarButton: GTKButtonView?
     private var overflowButton: GTKWidget?
     fileprivate var overflowPopover: GTKWidget?
     private(set) var overflowButtons: [GTKButtonView] = []
@@ -31,7 +32,9 @@ final class GTKPageFrame {
         widget = adw_toolbar_view_new()!
         g_object_ref_sink(widget)
         header = adw_header_bar_new()!
+        // Held by the frame too: a title view takes its place in the bar, and the bar lets go of it there.
         heading = adw_window_title_new("", nil)!
+        g_object_ref_sink(heading)
         adw_header_bar_set_title_widget(header.opaque, heading)
         actionsBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
         adw_header_bar_pack_end(header.opaque, actionsBox)
@@ -46,6 +49,7 @@ final class GTKPageFrame {
     /// Lets go of the toolbar view and nothing in it: a page popped still slides away in it, and GTK lets it go once
     /// the slide is over.
     isolated deinit {
+        g_object_unref(heading)
         g_object_unref(widget)
     }
 
@@ -62,8 +66,30 @@ final class GTKPageFrame {
             adw_header_bar_set_show_back_button(header.opaque, chrome.offersBack ? 1 : 0)
         }
         showActions(chrome.actions, overflow: chrome.overflow)
+        showSidebarButton(chrome.sidebar)
         self.chrome = chrome
     }
+
+    /// The sidebar's toggle at the bar's start, pressed in while the sidebar shows, while the page offers it.
+    private func showSidebarButton(_ sidebar: (shows: Bool, toggle: () -> Void)?) {
+        guard let sidebar else {
+            if let sidebarButton { adw_header_bar_remove(header.opaque, sidebarButton.widget) }
+            sidebarButton = nil
+            return
+        }
+        if sidebarButton == nil {
+            let button = GTKButtonView(toggles: true)
+            gtk_button_set_icon_name(button.widget.of(GtkButton.self), "sidebar-show-symbolic")
+            gtk_widget_set_tooltip_text(button.widget, "Toggle Sidebar")
+            adw_header_bar_pack_start(header.opaque, button.widget)
+            sidebarButton = button
+        }
+        sidebarButton?.onClicked = sidebar.toggle
+        gtk_toggle_button_set_active(sidebarButton?.widget.of(GtkToggleButton.self), sidebar.shows ? 1 : 0)
+    }
+
+    /// The sidebar's toggle, where the bar shows one.
+    var sidebarToggle: GTKButtonView? { sidebarButton }
 
     /// The page's actions as buttons at the bar's end, in order, and the overflow behind a menu after them.
     private func showActions(_ actions: [GTKToolbarAction], overflow: [GTKToolbarAction]) {

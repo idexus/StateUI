@@ -51,6 +51,9 @@ final class GTKRenderer {
     /// The window told it was made.
     private weak var createdWindow: MountedElement?
 
+    /// Whether the window's split view has been opened wide, once.
+    private var openedWide = false
+
     /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
     private var scrollers: [Int64: WeakScroller] = [:]
 
@@ -175,7 +178,11 @@ final class GTKRenderer {
         if arrangement !== shownArrangementElement {
             let previous = shownArrangementElement
             shownArrangementElement = arrangement
-            if arrangement?.type == .page { window.show(page: arrangement?.gtk.view) } else { window.show(arrangement?.gtk.view) }
+            if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
+                window.show(page: arrangement.gtk.view)
+            } else {
+                window.show(arrangement?.gtk.view)
+            }
             previous?.gtk.setPagePresented(false, reason: .window)
             arrangement?.gtk.setPagePresented(true, reason: .window)
         }
@@ -193,13 +200,28 @@ final class GTKRenderer {
         guard let window, let element = tree.root?.first(type: .window)?.gtk else { return }
 
         let arrangement = shownArrangementElement?.gtk
-        if let arrangement, arrangement.type == .page {
+        if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
             window.pageFrame?.show(arrangement.chrome)
-        } else {
-            arrangement?.composeChrome()
         }
+        arrangement?.composeChrome()
+        adaptSplitViews(in: window)
         let pageTitle = arrangement?.visiblePage?.value(.title)?.string
         window.setTitle(pageTitle.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+    }
+
+    /// Collapses the window's split view where the window is narrow, and opens it wide with its sidebar shown once
+    /// the window first stands - said in the next turn, as the user's.
+    private func adaptSplitViews(in window: GTKWindow) {
+        guard let split = shownArrangementElement?.gtk, split.type == .splitView, let view = split.view as? GTKSplitView
+        else { return }
+
+        view.adapt(in: window.widget)
+        guard !openedWide else { return }
+        openedWide = true
+        GTKDoorbell.afterLayout { [weak split] in
+            guard let split, let view = split.view as? GTKSplitView, view.openWide() else { return }
+            split.sidebarChanged(to: true)
+        }
     }
 
     /// Goes the way back the arrangement the window shows offers, as the user does - a stack's top page going;

@@ -53,6 +53,8 @@ extension GTKElement {
         switch type {
         case .page, .overlay: return GTKSingleChildView()
         case .navigationStack: return GTKNavigationView()
+        case .splitView: return GTKSplitView()
+        case .tabbedView: return GTKTabbedView()
         default: return GTKUnsupportedView(type)
         }
     }

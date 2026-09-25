@@ -36,3 +36,23 @@ enum GTKDoorbell {
         }, nil, nil)
     }
 }
+
+extension GTKDoorbell {
+    /// Runs `work` once GTK has laid the frame out: at the priority after its layout and paint, then a turn.
+    @MainActor static func afterLayout(_ work: @escaping @MainActor () -> Void) {
+        pending.append(work)
+        guard pending.count == 1 else { return }
+        g_idle_add_full(G_PRIORITY_DEFAULT_IDLE, { _ in
+            MainActor.assumeIsolated {
+                let works = GTKDoorbell.pending
+                GTKDoorbell.pending = []
+                for work in works { work() }
+                GTKRenderer.shared?.pump.turn()
+            }
+            return 0
+        }, nil, nil)
+    }
+
+    /// Work waiting for the frame's layout.
+    @MainActor private static var pending: [@MainActor () -> Void] = []
+}

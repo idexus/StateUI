@@ -24,4 +24,8 @@ struct GTKPageChrome {
     var overflow: [GTKToolbarAction] = []
     var showsBar = true
     var offersBack = true
+
+    /// The split view's sidebar, where this page's header bar offers its toggle - the detail's: whether it shows,
+    /// and what turns it.
+    var sidebar: (shows: Bool, toggle: () -> Void)?
 }

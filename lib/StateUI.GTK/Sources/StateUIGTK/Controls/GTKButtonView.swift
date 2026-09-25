@@ -9,8 +9,9 @@ final class GTKButtonView: GTKView {
     /// What the button does when the user clicks it.
     var onClicked: (() -> Void)?
 
-    init() {
-        super.init { _ in gtk_button_new() }
+    /// A button, or one that stays pressed in while what it turns on is on.
+    init(toggles: Bool = false) {
+        super.init { _ in toggles ? gtk_toggle_button_new() : gtk_button_new() }
         connect("clicked") { _, data in
             MainActor.assumeIsolated { GTKView.find(viewNumber(data))?.clicked() }
         }

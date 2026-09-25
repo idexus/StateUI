@@ -9,7 +9,8 @@ extension GTKElement {
     /// its room.
     func arrangeChildren() {
         let arranged = type == .page ? children.filter { !Self.slotTypes.contains($0.type) } : children
-        (view as? GTKNavigationView)?.titles = arranged.map { $0.value(.title)?.string ?? "" }
+        (view as? GTKNavigationView)?.titles = arranged.map { $0.visiblePage?.value(.title)?.string ?? "" }
+        (view as? GTKSplitView)?.framedPanes = arranged.map { Self.framedTypes.contains($0.type) }
         let layout = view as? GTKLayoutView
         layout?.direction = element.layoutDirection
         layout?.setItems(arranged.compactMap(\.layoutItem))

@@ -26,6 +26,8 @@ final class GTKWindow {
         widget = adw_application_window_new(application)!
         g_object_ref(widget)
         gtk_window_set_default_size(widget.of(GtkWindow.self), 560, 440)
+        // GNOME's smallest window, which a window that adapts to its width must say.
+        gtk_widget_set_size_request(widget, 360, 294)
     }
 
     isolated deinit {

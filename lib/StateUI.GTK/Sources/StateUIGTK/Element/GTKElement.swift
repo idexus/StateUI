@@ -62,7 +62,7 @@ final class GTKElement: NativeElement {
         applyProperties(changed: changed)
         configureLayoutMotion()
         arrangeChildren()
-        arrangePages()
+        arrangePages(changed: changed)
         reconcilePresentation(from: previouslyShown.map(\.gtk))
         previouslyShown = []
     }

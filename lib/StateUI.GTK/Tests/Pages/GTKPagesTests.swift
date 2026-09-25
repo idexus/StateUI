@@ -152,7 +152,7 @@ final class GTKPagesTests: XCTestCase {
 
 /// A page with a title, maybe a log of its phases, the actions it puts on its header bar, and whether it hides its
 /// navigation bar.
-private struct TitledPage: ContentView {
+struct TitledPage: ContentView {
     let title: String
     var log: Received<String>? = nil
     var actions: [ToolbarItem] = []
