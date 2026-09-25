@@ -11,6 +11,7 @@
 #include <winrt/Windows.UI.h>
 #include <winrt/Windows.UI.Text.h>
 #include <winrt/Microsoft.UI.Text.h>
+#include <winrt/Microsoft.UI.Xaml.Documents.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
 using namespace stateui;
@@ -133,6 +134,84 @@ extern "C" void stateui_winui_text_set_spacing(StateUIObjectRef handle, int32_t 
         block.LineHeight(lineHeight > 0 ? lineHeight : 0);
     } catch (winrt::hresult_error const &error) {
         report(error, "spacing a label's words");
+    }
+}
+
+extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWordsRun const *runs, int32_t count) {
+    try {
+        namespace documents = winrt::Microsoft::UI::Xaml::Documents;
+        using winrt::Windows::UI::Text::TextDecorations;
+        auto block = borrow<controls::TextBlock>(handle);
+        auto inlines = block.Inlines();
+        auto highlighters = block.TextHighlighters();
+        inlines.Clear();
+        highlighters.Clear();
+        int32_t at = 0;
+        for (int32_t index = 0; index < count; ++index) {
+            auto const &run = runs[index];
+            documents::Run piece;
+            auto words = text(run.text);
+            piece.Text(words);
+            if (run.hasColor) piece.Foreground(media::SolidColorBrush(color(run.color)));
+            if (run.size > 0) piece.FontSize(run.size);
+            if (run.bold) piece.FontWeight(winrt::Microsoft::UI::Text::FontWeights::Bold());
+            if (run.italic) piece.FontStyle(winrt::Windows::UI::Text::FontStyle::Italic);
+            auto lines = TextDecorations::None;
+            if (run.underline) lines = lines | TextDecorations::Underline;
+            if (run.strikethrough) lines = lines | TextDecorations::Strikethrough;
+            if (lines != TextDecorations::None) piece.TextDecorations(lines);
+            inlines.Append(piece);
+
+            // A run's background is a highlighter over its part of the words; its own colour stays on them.
+            auto length = static_cast<int32_t>(words.size());
+            if (run.hasBackground && length > 0) {
+                documents::TextHighlighter highlighter;
+                highlighter.Background(media::SolidColorBrush(color(run.background)));
+                highlighter.Foreground(run.hasColor ? media::SolidColorBrush(color(run.color)) : block.Foreground());
+                highlighter.Ranges().Append(documents::TextRange{at, length});
+                highlighters.Append(highlighter);
+            }
+            at += length;
+        }
+    } catch (winrt::hresult_error const &error) {
+        report(error, "setting a label's runs of words");
+    }
+}
+
+extern "C" int32_t stateui_winui_text_runs(StateUIObjectRef handle, double *values, int32_t capacity) {
+    try {
+        namespace documents = winrt::Microsoft::UI::Xaml::Documents;
+        using winrt::Windows::UI::Text::TextDecorations;
+        auto block = borrow<controls::TextBlock>(handle);
+        int32_t count = 0, at = 0;
+        for (auto const &piece : block.Inlines()) {
+            auto run = piece.try_as<documents::Run>();
+            if (!run) continue;
+            auto length = static_cast<int32_t>(run.Text().size());
+            double background = 0;
+            for (auto const &highlighter : block.TextHighlighters())
+                for (auto const &range : highlighter.Ranges())
+                    if (range.StartIndex == at && range.Length == length) background = argb(highlighter.Background());
+            if (6 * (count + 1) <= capacity) {
+                auto *slot = values + 6 * count;
+                slot[0] = run.ReadLocalValue(documents::TextElement::ForegroundProperty()) == xaml::DependencyProperty::UnsetValue()
+                    ? 0 : argb(run.Foreground());
+                slot[1] = run.ReadLocalValue(documents::TextElement::FontSizeProperty()) == xaml::DependencyProperty::UnsetValue()
+                    ? 0 : run.FontSize();
+                slot[2] = run.FontWeight().Weight;
+                slot[3] = run.FontStyle() == winrt::Windows::UI::Text::FontStyle::Italic ? 1 : 0;
+                auto lines = run.TextDecorations();
+                slot[4] = ((lines & TextDecorations::Underline) == TextDecorations::Underline ? 1 : 0)
+                    + ((lines & TextDecorations::Strikethrough) == TextDecorations::Strikethrough ? 2 : 0);
+                slot[5] = background;
+            }
+            ++count;
+            at += length;
+        }
+        return count;
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a label's runs");
+        return 0;
     }
 }
 

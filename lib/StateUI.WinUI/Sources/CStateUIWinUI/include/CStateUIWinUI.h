@@ -211,6 +211,29 @@ void stateui_winui_text_style(StateUIObjectRef element, double *style);
 StateUIObjectRef stateui_winui_text_make(void);
 void stateui_winui_text_set_text(StateUIObjectRef text, char const *utf8);
 
+/// One run of a label's words, and how it differs from the label's: its colour and its background where it has
+/// them, as 0xAARRGGBB; its size in DIPs, 0 for the label's; bold, italic, and lines under or through it.
+typedef struct {
+    char const *text;
+    uint32_t color;
+    uint32_t background;
+    double size;
+    bool hasColor;
+    bool hasBackground;
+    bool bold;
+    bool italic;
+    bool underline;
+    bool strikethrough;
+} StateUIWordsRun;
+
+/// Shows `runs`, in order, as the text block's words, each as it says, in place of its words.
+void stateui_winui_text_set_runs(StateUIObjectRef text, StateUIWordsRun const *runs, int32_t count);
+
+/// The runs a text block shows, six values each - its colour as 0xAARRGGBB or 0, its size or 0, its weight, 1 for
+/// italic, its lines (1 under, 2 through), its background or 0 - into `values` as far as `capacity` goes; answers
+/// how many runs it shows. What a test reads back.
+int32_t stateui_winui_text_runs(StateUIObjectRef text, double *values, int32_t capacity);
+
 /// A label's lines - StateUI's LineBreak, and the most lines, 0 for any - its words' alignment across it - start,
 /// centre, end - the space between its letters in thousandths of an em, the height of a line in DIPs, 0 for the
 /// font's, and the lines under or through its words.

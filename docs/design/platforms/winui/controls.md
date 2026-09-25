@@ -24,6 +24,17 @@ pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
 those states in the platform's colours.
 
+## Runs of words
+
+A label's spans are its words, run by run: each a `Run` among the text
+block's inlines, taking the colour, size, weight, slant and lines its span
+says and the label's own where it says nothing. A run's background is a
+`TextHighlighter` over its part of the words - a text block has no background
+per run - keeping the run's colour on them. The runs stand in place of the
+label's own words; a label whose spans are taken away shows its own words
+again. A span that changes has its label apply again, so the runs are laid
+down whole each time.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented

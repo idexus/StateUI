@@ -25,6 +25,9 @@ final class WinUIElement: NativeElement {
     /// Where the states a press dragged carries stood as it began.
     var panFrom = (x: 0.0, y: 0.0)
 
+    /// Whether a label shows its spans' runs in place of its own words.
+    var hasRuns = false
+
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
         self.host = host

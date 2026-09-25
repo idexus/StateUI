@@ -10,6 +10,7 @@
 #include <cstring>
 
 #include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Microsoft.UI.Xaml.Documents.h>
 #include <winrt/Microsoft.UI.Xaml.Hosting.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Windows.UI.ViewManagement.h>
@@ -208,7 +209,10 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
         auto object = as<IInspectable>(handle);
         winrt::hstring words;
         if (auto block = object.try_as<controls::TextBlock>()) {
-            words = block.Text();
+            // Runs of words are the block's words, in order.
+            for (auto const &piece : block.Inlines())
+                if (auto run = piece.try_as<winrt::Microsoft::UI::Xaml::Documents::Run>()) words = words + run.Text();
+            if (!block.Inlines().Size()) words = block.Text();
         } else if (auto box = object.try_as<controls::TextBox>()) {
             words = box.Text();
         } else if (auto content = object.try_as<controls::ContentControl>()) {
