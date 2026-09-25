@@ -81,6 +81,7 @@ extension GTKElement {
             chrome.titleView = (view as? GTKTabbedView)?.switcher
             chrome.showsBar = value(.hasNavigationBar)?.bool != false
             chrome.offersBack = value(.hasBackButton)?.bool != false
+            (chrome.barBackground, chrome.barForeground) = barColors
             return chrome
         }
 
@@ -89,6 +90,7 @@ extension GTKElement {
         chrome.titleView = firstView(in: .titleView)
         chrome.showsBar = value(.hasNavigationBar)?.bool != false
         chrome.offersBack = value(.hasBackButton)?.bool != false
+        (chrome.barBackground, chrome.barForeground) = barColors
 
         let items = children.first { $0.type == .toolbarItems }?.children.filter { $0.type == .toolbarItem } ?? []
         let ordered = items.enumerated().sorted {
@@ -104,6 +106,23 @@ extension GTKElement {
             if item.value(.placement)?.enumeration == 2 { chrome.overflow.append(action) } else { chrome.actions.append(action) }
         }
         return chrome
+    }
+
+    /// The colours this element's bar is painted in: the nearest stack's or tabbed view's around it, itself
+    /// included, and what stands on the bar in, the nearest stack's.
+    /// Design: docs/design/platforms/gtk/pages.md#the-chrome
+    private var barColors: (background: HostValue?, foreground: HostValue?) {
+        var background: HostValue?
+        var foreground: HostValue?
+        var each: GTKElement? = self
+        while let element = each, background == nil || foreground == nil {
+            if element.type == .navigationStack || element.type == .tabbedView {
+                background = background ?? element.value(.barBackgroundColor)
+            }
+            if element.type == .navigationStack { foreground = foreground ?? element.value(.barForegroundColor) }
+            each = element.parent
+        }
+        return (background, foreground)
     }
 
     /// Writes each framed element's chrome on its header bar, through this arrangement and every one it holds;

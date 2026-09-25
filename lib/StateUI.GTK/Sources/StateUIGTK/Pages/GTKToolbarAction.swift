@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+
 /// One action a page's header bar performs for the page.
 @MainActor
 struct GTKToolbarAction {
@@ -27,6 +29,10 @@ struct GTKPageChrome {
     var overflow: [GTKToolbarAction] = []
     var showsBar = true
     var offersBack = true
+
+    /// What the bar is painted in, and what stands on it in; nil for the platform's.
+    var barBackground: HostValue?
+    var barForeground: HostValue?
 
     /// The split view's sidebar, where this page's header bar offers its toggle - the detail's: whether it shows,
     /// and what turns it.

@@ -19,6 +19,23 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class painting a bar in `background`, what stands on it in `foreground`; nil where neither is given.
+    static func bar(background: GdkRGBA?, foreground: GdkRGBA?) -> String? {
+        guard background != nil || foreground != nil else { return nil }
+        var name = "stateui-bar"
+        var body = ""
+        if let background {
+            name += "-b" + hex(background)
+            body += "background: \(css(background)); box-shadow: none; "
+        }
+        if let foreground {
+            name += "-f" + hex(foreground)
+            body += "color: \(css(foreground)); "
+        }
+        write(name, body)
+        return name
+    }
+
     /// Writes the rule for `name` the first time it is asked for, the whole sheet in the rules' order.
     private static func write(_ name: String, _ body: String) {
         guard rules[name] == nil else { return }
@@ -33,6 +50,21 @@ enum GTKStyleSheet {
         }()
         let sheet = rules.keys.sorted().map { ".\($0) { \(rules[$0]!) }" }.joined(separator: "\n")
         gtk_css_provider_load_from_string(provider, sheet)
+    }
+
+    /// A colour as CSS writes it.
+    private static func css(_ color: GdkRGBA) -> String {
+        let channels = [color.red, color.green, color.blue].map { String(Int((min(max($0, 0), 1) * 255).rounded())) }
+        return "rgba(\(channels.joined(separator: ", ")), \(css(Double(min(max(color.alpha, 0), 1)))))"
+    }
+
+    /// A colour's channels in hex, red to alpha.
+    private static func hex(_ color: GdkRGBA) -> String {
+        [color.red, color.green, color.blue, color.alpha].map { channel in
+            let value = Int((min(max(channel, 0), 1) * 255).rounded())
+            let digits = String(value, radix: 16, uppercase: true)
+            return value < 16 ? "0" + digits : digits
+        }.joined()
     }
 
     /// A number as CSS writes it: whole without a point.

@@ -25,8 +25,10 @@ radius; it takes the room its layout gives it and asks for none.
 GTK sizes and draws a widget's own box - the room between its edge and its
 content - from CSS alone. The host keeps one style sheet for the whole
 display, and a rule in it for each value asked for, a class named for what
-it says - `stateui-padding-24-8-12-4` - which a widget wears to take it and
-takes off to give it up. A rule is written the first time its value is
+it says - `stateui-padding-24-8-12-4`, a header bar's colours
+`stateui-bar-b512BD4FF-fFFFFFFFF` - which a widget wears to take it and takes
+off to give it up. The sheet stands above the theme, so its rule wins over
+the theme's own for the same widget. A rule is written the first time its value is
 asked for and stays, the sheet written again in the rules' order; a value
 that moves every frame has its own road, never a rule a frame.
 

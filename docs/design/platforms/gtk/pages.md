@@ -36,7 +36,13 @@ every render, and written on the header bar of each page shown:
 - a split view's sidebar toggle, at the start of the bar of the page the user
   sees in its detail, pressed in while the sidebar shows;
 - for a tabbed view, its switcher in the middle, over the chosen tab's page's
-  actions.
+  actions;
+- the bar's colours: a page's header bar is painted in the bar colour of the
+  nearest stack or tabbed view around it, and what stands on it - the title,
+  the way back, the toggles and the switcher's captions - in the nearest
+  stack's foreground, as a class of the host's style sheet
+  ([a widget's own box](drawing.md#a-widgets-own-box)); a bar no arrangement
+  colours keeps the platform's.
 
 The page the user sees names the window, for the desktop's switcher and dock;
 a page with no title leaves the window's own.

@@ -132,6 +132,26 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A stack's bar colours paint the header bar of every page on it, and what stands on the bar.
+    func testAStacksBarColoursPaintItsPagesHeaderBars() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Painted")
+                } destination: { _ in
+                    TitledPage(title: "Next")
+                }
+                .barBackgroundColor(Color("#FF0000"))
+                .barForegroundColor(Color("#FFFFFF"))
+            }
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            host.layOut()
+
+            XCTAssertNotEqual(gtk_widget_has_css_class(frame.header, "stateui-bar-bFF0000FF-fFFFFFFFF"), 0)
+            XCTAssertEqual(GTKTestHost.pixels(of: frame.header, at: [(4, 4)]), [0xFFFF_0000])
+        }
+    }
+
     /// A page's title view stands at the middle of its header bar; a page pushed over it has its own title.
     func testAPagesTitleViewStandsInItsHeaderBar() throws {
         try onUIThread {

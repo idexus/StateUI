@@ -244,9 +244,16 @@ extension GTKView {
 }
 
 extension GTKView {
-    /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB: the widget
-    /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
+    /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
+        GTKTestHost.pixels(of: widget, at: points)
+    }
+}
+
+extension GTKTestHost {
+    /// The colours GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
+    /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
+    static func pixels(of widget: GTKWidget, at points: [(Double, Double)]) -> [UInt32] {
         let width = Int(gtk_widget_get_width(widget))
         let height = Int(gtk_widget_get_height(widget))
         var bounds = graphene_rect_t()

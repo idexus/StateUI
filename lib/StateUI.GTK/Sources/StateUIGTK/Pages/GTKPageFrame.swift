@@ -25,6 +25,9 @@ final class GTKPageFrame {
     private var sidebarButton: GTKButtonView?
     private var overflowButton: GTKWidget?
     fileprivate var overflowPopover: GTKWidget?
+
+    /// The style sheet's class painting the header bar.
+    private var barClass: String?
     private(set) var overflowButtons: [GTKButtonView] = []
 
     init(page: GTKView) {
@@ -65,9 +68,21 @@ final class GTKPageFrame {
         if chrome.offersBack != self.chrome.offersBack {
             adw_header_bar_set_show_back_button(header.opaque, chrome.offersBack ? 1 : 0)
         }
+        if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
+            paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
+        }
         showActions(chrome.actions, overflow: chrome.overflow)
         showSidebarButton(chrome.sidebar)
         self.chrome = chrome
+    }
+
+    /// Paints the header bar and what stands on it, as a class of the host's style sheet; nil keeps the platform's.
+    private func paintBar(background: HostValue?, foreground: HostValue?) {
+        let painted = GTKStyleSheet.bar(
+            background: background.flatMap(GTKBrush.rgba), foreground: foreground.flatMap(GTKBrush.rgba))
+        if let barClass { gtk_widget_remove_css_class(header, barClass) }
+        if let painted { gtk_widget_add_css_class(header, painted) }
+        barClass = painted
     }
 
     /// The sidebar's toggle at the bar's start, pressed in while the sidebar shows, while the page offers it.
