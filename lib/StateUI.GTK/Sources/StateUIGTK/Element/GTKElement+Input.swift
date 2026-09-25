@@ -12,10 +12,28 @@ extension GTKElement {
         host?.dispatch(handler, payload: values)
     }
 
-    /// A value the user changed in the view: onto its state first, then the event with it.
-    /// Design: docs/design/host/patches.md#program-write
+    /// A value the user changed in the view: onto its state first, then the event with it. A radio button
+    /// checked takes its set's other checks away first, each reporting that it is off, in one transaction.
+    /// Design: docs/design/platforms/gtk/controls.md#on-or-off
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host, !ProgramWrite.isWriting else { return }
+
+        guard element.type == .radioButton, property == .isOn, value == .bool(true) else {
+            return carry(property, event, value)
+        }
+        host.performUserTransaction {
+            for peer in element.radioPeers.compactMap({ $0.native as? GTKElement })
+            where peer.element.value(.isOn)?.bool == true {
+                ProgramWrite.perform { (peer.view as? GTKToggleView)?.setOn(false) }
+                peer.carry(.isOn, event, .bool(false))
+            }
+            carry(property, event, value)
+        }
+    }
+
+    /// One value onto the state that carries it, then the event with it.
+    private func carry(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
 
         let carried: HostStateValue? = switch value {
         case .string(let text): .text(text)

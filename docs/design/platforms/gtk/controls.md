@@ -44,6 +44,23 @@ nothing. The runs stand in place of the label's own words; a label whose
 spans are taken away shows its own words again. A span that changes has its
 label apply again, so the runs are laid down whole each time.
 
+## On or off
+
+A Switch is GTK's `GtkSwitch`, a CheckBox and a RadioButton each a
+`GtkCheckButton`, one view kind in the host: whether it is on, whether it can
+be turned, and the turn the user makes, each heard through the property GTK
+notifies. A check box has no caption, so it is the box alone; a radio
+button's caption is its label, in the look the tree gives its words.
+
+Which of a radio button's set loses its check is the host's. A set is named
+across the window, or is the buttons beside one that names none, and only
+the tree knows who is in it: the button the user checks reports that it is
+on, and the host takes the check off each other button of its set, each
+reporting that it is off, in one transaction. GTK draws a check button as a
+radio only in a group, and a group takes its other members' checks away
+itself - the one that lost would be heard twice - so each radio button stands
+in a group with a partner of its own that is never shown.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented
