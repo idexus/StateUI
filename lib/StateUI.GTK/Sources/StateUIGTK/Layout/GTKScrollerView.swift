@@ -24,6 +24,7 @@ final class GTKScrollerView: GTKView {
                 MainActor.assumeIsolated {
                     guard let view = GTKView.find(viewNumber(data)) as? GTKScrollerView else { return }
                     view.onScrolled?(view.standing.offset)
+                    GTKRenderer.shared?.laidOut()
                 }
             }
         }

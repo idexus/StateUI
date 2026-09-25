@@ -125,6 +125,35 @@ class GTKView {
         return LayoutSize(width: measuredWidth, height: Double(natural))
     }
 
+    /// Where the view stands, in logical pixels: its frame in its parent, its place in the window, and that place
+    /// from the top left of its page's content, beneath the page's header bar.
+    /// Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
+    func frameReport() -> [Double] {
+        let place = placed ?? laidOutFrame
+        guard let root = gtk_widget_get_root(widget).map(GTKWidget.init) else {
+            return [place.x, place.y, place.width, place.height, place.x, place.y, place.x, place.y]
+        }
+        let corner = Self.origin(of: widget, in: root)
+        var page = (x: 0.0, y: 0.0)
+        var ancestor = gtk_widget_get_parent(widget)
+        while let each = ancestor {
+            if g_type_check_instance_is_a(each.of(GTypeInstance.self), adw_toolbar_view_get_type()) != 0,
+               let content = adw_toolbar_view_get_content(each.opaque) {
+                page = Self.origin(of: content, in: root)
+                break
+            }
+            ancestor = gtk_widget_get_parent(each)
+        }
+        return [place.x, place.y, place.width, place.height, corner.x, corner.y, corner.x - page.x, corner.y - page.y]
+    }
+
+    private static func origin(of widget: GTKWidget, in root: GTKWidget) -> (x: Double, y: Double) {
+        var from = graphene_point_t(x: 0, y: 0)
+        var to = graphene_point_t()
+        guard gtk_widget_compute_point(widget, root, &from, &to) != 0 else { return (0, 0) }
+        return (Double(to.x), Double(to.y))
+    }
+
     /// Where GTK laid the widget out in its parent, in logical pixels, its CSS box and transform included.
     var laidOutFrame: Rect {
         var bounds = graphene_rect_t()

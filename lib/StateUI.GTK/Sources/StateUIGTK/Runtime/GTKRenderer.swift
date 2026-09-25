@@ -64,6 +64,15 @@ final class GTKRenderer {
         weak var view: GTKScrollView?
     }
 
+    /// The elements whose frame the tree reads, by their view's number, and whether any may have moved since
+    /// they last said where they stand.
+    private var frameReaders: [Int64: WeakElement] = [:]
+    private var framesMoved = false
+
+    private struct WeakElement {
+        weak var element: GTKElement?
+    }
+
     /// A runtime whose windows belong to `application`, on GLib's monotonic clock or on `clock`, with the motion
     /// `reducesMotion` allows.
     init(
@@ -153,6 +162,23 @@ final class GTKRenderer {
     /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
     func requestFrames(for scroller: GTKScrollView) {
         scrollers[scroller.number] = WeakScroller(view: scroller)
+        displayCycle.hold()
+    }
+
+    /// Follows where `element` stands while the tree reads it, and lets it go once nothing does.
+    /// Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
+    func follow(_ element: GTKElement, readsFrame: Bool) {
+        guard let number = element.view?.number, readsFrame != (frameReaders[number] != nil) else { return }
+
+        frameReaders[number] = readsFrame ? WeakElement(element: element) : nil
+        if readsFrame { laidOut() }
+    }
+
+    /// GTK allocated a StateUI panel, or a scroller moved: whoever reads a frame says it on the display's next frame.
+    func laidOut() {
+        guard !frameReaders.isEmpty, !framesMoved else { return }
+
+        framesMoved = true
         displayCycle.hold()
     }
 
@@ -276,13 +302,13 @@ extension GTKRenderer: TurnPresenter {
 
 extension GTKRenderer: FramePresenter {
     var wantsFrames: Bool {
-        scrollers.values.contains { $0.view?.wantsFrames == true }
+        framesMoved || scrollers.values.contains { $0.view?.wantsFrames == true }
     }
 
-    /// Lets every moving scroller say what the frame saw it do, in the order its view was made, as one user's
-    /// transaction.
+    /// Lets every moving scroller say what the frame saw it do, then every element whose frame the tree reads say
+    /// where it stands, each in the order its view was made, as one user's transaction.
     func commitUserReports(now: Double) {
-        guard !scrollers.isEmpty else { return }
+        guard !scrollers.isEmpty || framesMoved else { return }
 
         performUserTransaction {
             for number in scrollers.keys.sorted() {
@@ -292,6 +318,16 @@ extension GTKRenderer: FramePresenter {
                 }
                 view.frame(now: now)
                 if !view.wantsFrames { scrollers[number] = nil }
+            }
+
+            guard framesMoved else { return }
+            framesMoved = false
+            for number in frameReaders.keys.sorted() {
+                guard let element = frameReaders[number]?.element else {
+                    frameReaders[number] = nil
+                    continue
+                }
+                element.reportFrame()
             }
         }
     }

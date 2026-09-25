@@ -189,12 +189,14 @@ extension GTKRenderer {
         GTKTestHost.layOut((window ?? GTKTestHost.window).widget)
     }
 
-    /// Turns until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
+    /// Turns until `done` holds: a handler resumed on the pool comes back to the UI thread's queue, and a display
+    /// frame runs while something asks for one - a window behind another gets none from the desktop.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 where !done() {
             GTKTestHost.pump(0.01)
             _ = core.runJobs()
             pump.turn()
+            if frameClock.held { frame() }
         }
     }
 

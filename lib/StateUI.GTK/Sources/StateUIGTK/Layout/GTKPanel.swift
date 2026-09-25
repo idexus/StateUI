@@ -36,7 +36,10 @@ enum GTKPanel {
             }
             widgetClass.pointee.size_allocate = { widget, width, height, _ in
                 let number = GTKPanel.number(of: widget)
-                MainActor.assumeIsolated { GTKPanel.view(number)?.allocate(width: Double(width), height: Double(height)) }
+                MainActor.assumeIsolated {
+                    GTKPanel.view(number)?.allocate(width: Double(width), height: Double(height))
+                    GTKRenderer.shared?.laidOut()
+                }
             }
             widgetClass.pointee.snapshot = { widget, snapshot in
                 let number = GTKPanel.number(of: widget)

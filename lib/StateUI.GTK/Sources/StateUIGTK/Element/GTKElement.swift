@@ -27,6 +27,9 @@ final class GTKElement: NativeElement {
     /// Where the states a press dragged carries stood as it began.
     var panFrom = (x: 0.0, y: 0.0)
 
+    /// Where the element last said it stands; empty before it has said.
+    var lastFrameReport: [Double] = []
+
     init(_ element: MountedElement, host: GTKRenderer) {
         self.element = element
         self.host = host
@@ -69,6 +72,7 @@ final class GTKElement: NativeElement {
         arrangePages(changed: changed)
         reconcilePresentation(from: previouslyShown.map(\.gtk))
         previouslyShown = []
+        host?.follow(self, readsFrame: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -83,6 +87,7 @@ final class GTKElement: NativeElement {
 
     func leave() {
         leaving = false
+        host?.follow(self, readsFrame: false)
         view?.detach()
     }
 }
