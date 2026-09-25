@@ -11,4 +11,13 @@ enum WinUIStrings {
         defer { copies.forEach { free($0) } }
         return body(copies.map { $0.map { UnsafePointer($0) } })
     }
+
+    /// Words the relay writes into a buffer the caller hands it, answering how long they are: asked once for the
+    /// length, then written.
+    static func read(_ fill: (UnsafeMutablePointer<CChar>?, Int32) -> Int32) -> String {
+        let length = Int(fill(nil, 0))
+        var bytes = [CChar](repeating: 0, count: length + 1)
+        _ = bytes.withUnsafeMutableBufferPointer { fill($0.baseAddress, Int32($0.count)) }
+        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+    }
 }

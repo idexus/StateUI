@@ -23,8 +23,12 @@ let package = Package(
             name: "CStateUIWinUI",
             path: "Sources/CStateUIWinUI",
             cxxSettings: [.headerSearchPath("../../.projection")],
-            // An SVG is handed to WinUI from memory.
-            linkerSettings: [.linkedLibrary("shcore"), .linkedLibrary("shlwapi")]
+            // An SVG is handed to WinUI from memory; a zone's offset is ICU's, and the kept values stand in the
+            // user's local data.
+            linkerSettings: [
+                .linkedLibrary("shcore"), .linkedLibrary("shlwapi"), .linkedLibrary("icu"), .linkedLibrary("shell32"),
+                .linkedLibrary("ole32"),
+            ]
         ),
         .target(
             name: "StateUIWinUI",

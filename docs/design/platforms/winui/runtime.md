@@ -85,6 +85,31 @@ light and dark reads as WinUI's own text beside it. Windows says when the
 theme, the power or the network changes; the relay posts each change to the
 UI thread, and the host tells the core again and renders what it changed.
 
+## Acts
+
+The acts the application calls are performed after each turn's render and
+answered, a reply or a failure with its reason, so no caller waits on an act
+nobody performs. The time of day is the system's local time; the zone is the
+one the locale reports, an IANA name; a zone's distance from UTC on a day is
+ICU's - the ICU Windows carries - taken at the day's noon, so the day decides
+summer time, and a zone ICU does not know fails the act. The screen reader is
+told through the window's content, cutting off what it was saying. The focus
+is put on the view the act names, or the first control in it that takes it;
+WinUI has no way to leave the focus nowhere, so taking it off lends it to the
+window's content for a moment, as no control, and the on-screen keyboard goes
+with a field that loses it.
+
+## Kept values
+
+Windows keeps no store for an application that is no package, so the host
+keeps one of its own: a file in the user's local data, in a folder named
+after the executable, a line a key - its name and its words apart by a tab,
+the tabs, line ends and backslashes in either escaped. Every key the
+application lists is read before the first scene connects and handed to the
+core ahead of the first view; a key's new value writes the whole file again,
+its keys in order, beside the old one first and then in its place, so a
+failed write leaves the old.
+
 ## Self-contained
 
 An application carries the Windows App SDK beside its executable, with no

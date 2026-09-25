@@ -351,6 +351,38 @@ bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);
 
+/// The local time of day: hour, minute, second and millisecond, into `time`.
+void stateui_winui_clock(int32_t *time);
+
+/// The IANA identifier of the local time zone, in UTF-8, as far as `capacity` goes; answers its whole length.
+int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
+
+/// How far `zone` - an IANA identifier, the local zone for null - stands from UTC on a day, in minutes; year 0
+/// for today. Answers false for a zone ICU does not know.
+bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes);
+
+/// Says `utf8` to a screen reader, from `element`, cutting off what it was saying.
+void stateui_winui_announce(StateUIObjectRef element, char const *utf8);
+
+/// Puts the keyboard's focus on `element`, or the first control in it that takes it, answering whether one did;
+/// or takes it off whatever holds it inside `element`, answering whether anything did.
+bool stateui_winui_focus(StateUIObjectRef element, bool focus);
+
+/// Whether `element`, or something inside it, holds the keyboard's focus.
+bool stateui_winui_focused(StateUIObjectRef element);
+
+/// Takes the focus off a field typed into in `element`'s window, so the on-screen keyboard goes; whether one was.
+bool stateui_winui_hide_keyboard(StateUIObjectRef element);
+
+/// The folder the kept values stand in, in UTF-8; empty for the application's own in the user's local data.
+void stateui_winui_set_store(char const *utf8);
+
+/// The kept values' store as it stands, in UTF-8, as far as `capacity` goes; answers its whole length.
+int32_t stateui_winui_stored(char *utf8, int32_t capacity);
+
+/// Writes the whole store, in UTF-8, in place of the old one; whether it was written.
+bool stateui_winui_store(char const *utf8);
+
 /// The folder the application's pictures are read from, in UTF-8; empty for `Images` beside the executable.
 void stateui_winui_set_pictures(char const *folder);
 

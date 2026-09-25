@@ -79,6 +79,9 @@ final class WinUIRenderer {
         weak var element: WinUIElement?
     }
 
+    /// What performs the acts the application calls on the host.
+    private lazy var acts = WinUIActPerformer(core: core)
+
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
     /// the motion `reducesMotion` allows.
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
@@ -117,8 +120,10 @@ final class WinUIRenderer {
     static func start() -> WinUIRenderer {
         shared?.tree.root?.leave()
 
+        let previous = shared
         let renderer = WinUIRenderer()
         shared = renderer
+        if previous == nil { WinUIPersistence.restore(into: renderer.core) }
         renderer.show()
         WinUIDoorbell.install()
         stateui_winui_watch_environment()
@@ -258,9 +263,7 @@ final class WinUIRenderer {
         }
 
         for call in core.takeActCalls() {
-            if let completion = call.completion {
-                core.fail(completion, reason: "the WinUI host performs no act yet: \(call.act.name)")
-            }
+            acts.perform(call, in: tree, window: window)
         }
     }
 
