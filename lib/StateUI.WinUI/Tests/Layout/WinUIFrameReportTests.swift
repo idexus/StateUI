@@ -32,8 +32,8 @@ private struct FramesPage: ContentView {
 
 final class WinUIFrameReportTests: XCTestCase {
     /// A view the tree reads says where it stands once laid out: its state, its handler and a reader's content.
-    func testAReadViewSaysWhereItStands() throws {
-        try onUIThread {
+    func testAReadViewSaysWhereItStands() {
+        onUIThread {
             let host = WinUIRenderer.running { FramesPage() }
             let expected = ["said 120x60", "room 120x60", "reader 90"]
             host.settle { host.views(WinUILabelView.self).map(\.text) == expected }
