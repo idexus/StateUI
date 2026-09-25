@@ -410,6 +410,22 @@ bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);
 
+/// What assistive technology meets of the element: its automation id, name and help text - null for the control's
+/// own - its heading level (0 none, 1 to 9), and `presence`: 0 as the control is of itself, 1 met, 2 skipped.
+void stateui_winui_set_accessibility(StateUIObjectRef element, char const *identifier, char const *label,
+                                     char const *hint, int32_t heading, int32_t presence);
+
+/// Whether assistive technology meets none of what stands in a panel.
+void stateui_winui_panel_hide_children(StateUIObjectRef panel, bool hidden);
+
+/// What assistive technology meets of the element, as its automation peer says it - what a test reads: `what` 0 its
+/// name, 1 its help text, 2 its automation id, in UTF-8; the length they need, their end not counted.
+int32_t stateui_winui_automation_words(StateUIObjectRef element, int32_t what, char *utf8, int32_t capacity);
+
+/// Its heading level, whether it is a control element and a content element, and how many children it has: four
+/// values.
+void stateui_winui_automation_facts(StateUIObjectRef element, int32_t *facts);
+
 /// How many canvases WinUI holds - what a test counts to see every one let go.
 int32_t stateui_winui_canvases(void);
 

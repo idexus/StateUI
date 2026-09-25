@@ -60,6 +60,23 @@ reporting that it is off, in one transaction. WinUI's own grouping would
 uncheck the button's neighbours by itself - and the one that lost would be
 heard twice - so every button stands in a group of its own.
 
+## What assistive technology meets
+
+What an element says for assistive technology - its identifier, its label,
+its hint and its heading level - is WinUI's `AutomationProperties`:
+`AutomationId`, `Name`, `HelpText` and `HeadingLevel`, level for level. A word
+the element does not say is cleared, not written empty, so a control's own
+name - a button's caption - stands where no label replaces it.
+
+Whether it is met at all is its accessibility view: an element hidden is
+`Raw`, which assistive technology skips while it still meets what stands in
+it; an element that says it is not hidden is `Content`; one that says
+nothing keeps the view its control has. An element left out with its
+children is `Raw`, and a layout so left out answers assistive technology with
+no children at all, its panel's automation peer holding them back. A control
+needs nothing more: what its template draws - a button's words - WinUI
+already keeps out of what is read.
+
 ## A slider in steps
 
 A `Slider` snaps its value to `StepFrequency`. The host sets the step to a

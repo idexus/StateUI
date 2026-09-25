@@ -197,7 +197,12 @@ ZStack
   stroke
   strokeWidth
 (every element)
+  accessibilityHeadingLevel
+  accessibilityHint
+  accessibilityIdentifier
+  accessibilityLabel
   area
+  automationExcludedWithChildren
   frame
   gridColumn
   gridColumnSpan
@@ -205,6 +210,7 @@ ZStack
   gridRowSpan
   height
   horizontalAlignment
+  isAccessibilityHidden
   isVisible
   margin
   maximumHeight

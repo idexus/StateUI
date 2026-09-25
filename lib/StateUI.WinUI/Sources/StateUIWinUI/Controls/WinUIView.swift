@@ -185,6 +185,27 @@ class WinUIView {
         return Rect(x: frame[0], y: frame[1], width: frame[2], height: frame[3])
     }
 
+    /// Whether assistive technology meets a view: met, skipped, or skipped with everything that stands in it.
+    enum AccessibilityPresence {
+        case met
+        case hidden
+        case hiddenWithChildren
+    }
+
+    /// What assistive technology meets of the view: nil words and presence for the control's own, a heading level
+    /// of 0 for none.
+    /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
+    func setAccessibility(
+        identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: AccessibilityPresence?
+    ) {
+        let met: Int32 = switch presence {
+        case nil: 0
+        case .met: 1
+        case .hidden, .hiddenWithChildren: 2
+        }
+        stateui_winui_set_accessibility(handle, identifier, label, hint, headingLevel, met)
+    }
+
     /// The user clicked the view.
     func clicked() {}
 

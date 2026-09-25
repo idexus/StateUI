@@ -180,6 +180,25 @@ extension WinUIView {
 }
 
 extension WinUIView {
+    /// What assistive technology meets of the view, as its automation peer says it: its name, help text and
+    /// automation id.
+    var automationWords: (name: String, help: String, identifier: String) {
+        func read(_ what: Int32) -> String {
+            let length = Int(stateui_winui_automation_words(handle, what, nil, 0))
+            var bytes = [CChar](repeating: 0, count: length + 1)
+            _ = stateui_winui_automation_words(handle, what, &bytes, Int32(bytes.count))
+            return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        }
+        return (read(0), read(1), read(2))
+    }
+
+    /// And its heading level, whether it is a control element and a content element, and how many children it has.
+    var automationFacts: (heading: Int32, isControl: Bool, isContent: Bool, children: Int32) {
+        var facts = [Int32](repeating: 0, count: 4)
+        stateui_winui_automation_facts(handle, &facts)
+        return (facts[0], facts[1] != 0, facts[2] != 0, facts[3])
+    }
+
     /// Presses the view as assistive technology does, through its automation peer; whether it could be pressed.
     func press() -> Bool {
         stateui_winui_press(handle)

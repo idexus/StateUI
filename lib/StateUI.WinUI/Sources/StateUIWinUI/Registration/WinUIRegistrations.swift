@@ -37,6 +37,12 @@ enum WinUIRegistrations {
     /// What `WinUIElement` puts on every view wearing each member's contract, and what every layout reads of
     /// its children.
     static func shared(_ registry: Registry<WinUIView>) {
+        registry.everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+        registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
+        registry.everyElementRealizes(VisualElementContract.accessibilityHint)
+        registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        registry.everyElementRealizes(VisualElementContract.isAccessibilityHidden)
+        registry.everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.width)

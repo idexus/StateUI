@@ -178,6 +178,15 @@ class WinUILayoutView: WinUIView {
         arrange(in: Rect(x: 0, y: 0, width: width, height: height))
     }
 
+    /// A layout skipped with its children hides from assistive technology all that stands in it.
+    override func setAccessibility(
+        identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: AccessibilityPresence?
+    ) {
+        super.setAccessibility(
+            identifier: identifier, label: label, hint: hint, headingLevel: headingLevel, presence: presence)
+        stateui_winui_panel_hide_children(handle, presence == .hiddenWithChildren)
+    }
+
     /// Cuts what the layout shows to its outline at its size, written only where it differs.
     private func writeCut(width: Double, height: Double) {
         let outline = WinUIOutline(container: box.shape)

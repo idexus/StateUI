@@ -21,7 +21,13 @@ extension WinUIElement {
         .opacity, .background, .textColor, .isEnabled,
         .isOn, .value, .minimum, .maximum,
         .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
-    ]).union(transformProperties)
+    ]).union(transformProperties).union(accessibilityProperties)
+
+    /// What assistive technology meets.
+    static let accessibilityProperties: Set<Prop> = [
+        .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
+        .isAccessibilityHidden, .automationExcludedWithChildren,
+    ]
 
     /// Properties that move, turn and scale the view where its layout put it.
     static let transformProperties: Set<Prop> = [
@@ -94,10 +100,28 @@ extension WinUIElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if !own.isDisjoint(with: Self.accessibilityProperties) { applyAccessibility(to: view) }
             if let layers = view as? WinUIZStackView { layers.placement = placement }
         }
 
         if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// Puts the accessibility words on the view together: left out with its children, or skipped, or met, as the
+    /// element says - or as the view is of itself where it says nothing.
+    private func applyAccessibility(to view: WinUIView) {
+        let presence: WinUIView.AccessibilityPresence? = switch (
+            value(.automationExcludedWithChildren)?.bool, value(.isAccessibilityHidden)?.bool
+        ) {
+        case (true?, _): .hiddenWithChildren
+        case (_, true?): .hidden
+        case (_, false?): .met
+        default: nil
+        }
+        view.setAccessibility(
+            identifier: value(.accessibilityIdentifier)?.string, label: value(.accessibilityLabel)?.string,
+            hint: value(.accessibilityHint)?.string, headingLevel: value(.accessibilityHeadingLevel)?.enumeration ?? 0,
+            presence: presence)
     }
 
     /// The layout's own placement run, where a state drives one: it moves the children without changing
