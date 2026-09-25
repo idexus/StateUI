@@ -18,7 +18,11 @@ first, so its widget holds none of them.
 
 GTK hits a widget across its bounds, whatever it draws: a panel with nothing
 between its children still takes a click there, so a row answers past its
-words as well as on them.
+words as well as on them. GTK tries a widget's children before the widget
+itself, so a layout that lets input through - a panel whose own test of a
+point holds none - passes a click beside its children on to what is under
+it, while its children still take theirs. A view that ignores input takes
+none, nor does anything in it.
 
 ## Taps
 

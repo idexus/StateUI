@@ -51,7 +51,11 @@ extension GTKElement {
         guard !Self.viewlessTypes.contains(type) else { return nil }
 
         switch type {
-        case .page, .overlay: return GTKSingleChildView()
+        case .page: return GTKSingleChildView()
+        case .overlay:
+            let overlay = GTKSingleChildView()
+            overlay.passesBeside = true
+            return overlay
         case .navigationStack: return GTKNavigationView()
         case .splitView: return GTKSplitView()
         case .tabbedView: return GTKTabbedView()

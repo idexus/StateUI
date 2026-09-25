@@ -4,19 +4,21 @@
 @_spi(Host) import StateUI
 
 extension GTKRegistrations {
-    /// The stacks, the grid and the ZStack: the room a layout leaves around and between its children, and the box
-    /// it paints.
+    /// The stacks, the grid and the ZStack: the room a layout leaves around and between its children, the box it
+    /// paints, and whether a click beside its children goes on to what is under it.
     static func layouts(_ registry: Registry<GTKView>) {
         registry.add(VStackContract.self, create: { _ in GTKStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(HStackContract.self, create: { _ in GTKStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            stack.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(GridContract.self, create: { _ in GTKGridView() }) { grid in
@@ -33,12 +35,14 @@ extension GTKRegistrations {
             }
             grid.applies(boxMembers) { view, values in applyBox(view, values) }
             grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            grid.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         registry.add(ZStackContract.self, create: { _ in GTKZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            layout.property(LayoutContract.letsInputThrough) { view, lets in view.passesBeside = lets ?? false }
         }
 
         // Where the user moves it is reported by the element, on the display's frames.

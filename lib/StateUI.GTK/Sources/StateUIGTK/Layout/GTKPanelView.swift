@@ -7,6 +7,9 @@ import CStateUIGTK
 /// A view over a `StateUIPanel`: what StateUI measures, places and draws itself - a layout, a colour box.
 @MainActor
 class GTKPanelView: GTKView {
+    /// Whether a click beside the panel's children goes on to what is under it: an overlay laid over a window's pages.
+    var passesBeside = false
+
     init() {
         super.init { number in GTKPanel.make(number: number) }
     }

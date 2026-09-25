@@ -53,8 +53,9 @@ final class GTKRenderer {
     /// The window the first window element shows in; nil before it says it is there.
     private(set) var window: GTKWindow?
 
-    /// The arrangement of pages the window shows, held by its mounted element, which owns its GTK half.
+    /// The arrangement of pages the window shows, and what it lays over them, held by their mounted elements.
     private var shownArrangementElement: MountedElement?
+    private var shownOverlayElement: MountedElement?
 
     /// The window told it was made.
     private weak var createdWindow: MountedElement?
@@ -250,6 +251,11 @@ final class GTKRenderer {
             }
             previous?.gtk.setPagePresented(false, reason: .window)
             arrangement?.gtk.setPagePresented(true, reason: .window)
+        }
+        let overlay = element.children.first { $0.type == .overlay }
+        if overlay !== shownOverlayElement {
+            shownOverlayElement = overlay
+            window.showOverlay(overlay?.gtk.view)
         }
         refreshChrome()
 

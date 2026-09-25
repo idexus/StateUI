@@ -82,6 +82,16 @@ switcher's choice is the user's: the pages hear it, then the selection's
 state, and the header bar follows the chosen tab whether or not the
 application renders again.
 
+## The window's overlay
+
+What a window lays over everything it shows - the inspector docked in it, an
+application's own layers - is an overlay of the `GtkOverlay` the window's
+content stands in: over the whole window, header bars included, which the
+inspector's own layout leaves free where it docks at a side. It holds a
+layout that lets input through, so a click beside what it holds goes on to
+the page under it ([listening](input.md#listening)). The window takes the
+overlay out when it no longer describes it.
+
 ## A page's phases
 
 A page hears that it appears and disappears, and that it is navigated to and

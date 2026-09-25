@@ -15,8 +15,9 @@ enum GTKPanel {
     /// Design: docs/design/platforms/gtk/input.md#pressed-by-assistive-technology
     static let pressAction = "panel.click"
 
-    /// Widget's own dispose, which a panel's calls after letting its children go.
+    /// Widget's own dispose, which a panel's calls after letting its children go, and its own test of a point.
     nonisolated(unsafe) private static var widgetDispose: (@convention(c) (UnsafeMutablePointer<GObject>?) -> Void)?
+    nonisolated(unsafe) private static var widgetContains: (@convention(c) (GTKWidget?, Double, Double) -> gboolean)?
 
     static let type: GType = g_type_register_static_simple(
         gtk_widget_get_type(), "StateUIPanel",
@@ -56,6 +57,14 @@ enum GTKPanel {
                     guard let view = GTKView.find(number), view.hearing.contains(.taps) else { return }
                     view.heard(.tap(run: 0))
                 }
+            }
+            // GTK tries a widget's children before the widget: a panel passing beside them holds no point itself.
+            GTKPanel.widgetContains = g_type_class_peek(gtk_widget_get_type())!
+                .assumingMemoryBound(to: GtkWidgetClass.self).pointee.contains
+            widgetClass.pointee.contains = { widget, x, y in
+                let number = GTKPanel.number(of: widget)
+                let passes = MainActor.assumeIsolated { GTKPanel.view(number)?.passesBeside == true }
+                return passes ? 0 : GTKPanel.widgetContains?(widget, x, y) ?? 0
             }
             let objectClass = theClass!.assumingMemoryBound(to: GObjectClass.self)
             GTKPanel.widgetDispose = g_type_class_peek(gtk_widget_get_type())!
