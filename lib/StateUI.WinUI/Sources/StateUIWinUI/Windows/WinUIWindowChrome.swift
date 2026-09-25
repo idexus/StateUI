@@ -18,4 +18,7 @@ struct WinUIWindowChrome {
     var overflow: [WinUIToolbarAction] = []
     var background: HostValue?
     var foreground: HostValue?
+
+    /// While a sheet shows: its way back - its own stack's, else it going - and it going, which Escape asks.
+    var sheet: (back: () -> Void, dismiss: () -> Void)?
 }

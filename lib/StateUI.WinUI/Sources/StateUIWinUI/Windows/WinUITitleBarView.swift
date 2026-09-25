@@ -53,8 +53,9 @@ final class WinUITitleBarView: WinUIView {
     /// The user pressed the way back (-1), the sidebar's toggle (-2), or an action by its place.
     override func chose(_ index: Int) {
         switch index {
-        case -1: chrome.back?.perform()
+        case -1: if let sheet = chrome.sheet { sheet.back() } else { chrome.back?.perform() }
         case -2: chrome.sidebarToggle?()
+        case -3: chrome.sheet?.dismiss()
         default: if drawn.indices.contains(index), drawn[index].isEnabled { drawn[index].perform() }
         }
     }

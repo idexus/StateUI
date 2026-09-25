@@ -85,3 +85,19 @@ A page hears that it appears and disappears, and on a stack that it is
 navigated to and from, only once the arrangement shows what the tree says,
 each phase rendered before the next is heard. What an arrangement stopped
 showing leaves before what it started showing arrives.
+
+## The modal stack
+
+The pages a window's modal stack presents stand over everything the window
+shows, as WinUI presents a dialog: each on a card over a veil across the
+whole window - the chrome and the tabs too - the last on top. The card is a
+dialog's own - its background, outline and corners, no wider than a dialog
+and clear of the window's edges - with the presented page's title above the
+page, and it enters as a dialog enters. The veil takes every click meant for
+what is beneath, and the keyboard goes round inside the top card.
+
+What the user sees is the top sheet, else the window's arrangement: when that
+changes, the page that stops showing hears it and then the one that starts,
+as a move. Escape takes the top sheet away, and so does the window's way back
+while a sheet shows, once the sheet's own stack has no page to go back to;
+the window is told how many sheets remain.

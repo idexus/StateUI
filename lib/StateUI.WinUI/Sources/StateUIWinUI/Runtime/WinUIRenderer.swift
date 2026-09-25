@@ -40,6 +40,9 @@ final class WinUIRenderer {
     /// The arrangement of pages the window shows, held by its mounted element, which owns its WinUI half.
     private var shownArrangementElement: MountedElement?
 
+    /// The sheets the window shows, one for each page its modal stack presents, the last on top.
+    private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
+
     /// The window told it was made.
     private weak var createdWindow: MountedElement?
 
@@ -308,12 +311,21 @@ final class WinUIRenderer {
         }
         guard let window = self.window else { return }
 
+        // What the user sees is the top sheet, else the window's arrangement: the one that stops showing hears it,
+        // then the one that starts - by the window's own coming and going, or by a sheet's, as a move.
+        let previousVisible = sheets.last?.element ?? shownArrangementElement
+        let hadSheets = !sheets.isEmpty
         let arrangement = element.children.first { WinUIElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {
-            shownArrangementElement?.winUI.setPagePresented(false, reason: .window)
             shownArrangementElement = arrangement
             window.show(arrangement?.winUI.view)
-            arrangement?.winUI.setPagePresented(true, reason: .window)
+        }
+        showSheets(of: element, in: window)
+        let visible = sheets.last?.element ?? shownArrangementElement
+        if visible !== previousVisible {
+            let reason: WinUIPagePresentationReason = hadSheets || !sheets.isEmpty ? .navigation : .window
+            previousVisible?.winUI.setPagePresented(false, reason: reason)
+            visible?.winUI.setPagePresented(true, reason: reason)
         }
 
         if element !== createdWindow {
@@ -324,6 +336,31 @@ final class WinUIRenderer {
 }
 
 extension WinUIRenderer {
+    /// Keeps a sheet for each page the window's modal stack presents, in its order, each under its page's title.
+    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+    private func showSheets(of window: MountedElement, in native: WinUIWindow) {
+        let pages = window.children.first { $0.type == .modalStack }?.children
+            .filter { WinUIElement.pageTypes.contains($0.type) } ?? []
+        guard !pages.isEmpty || !sheets.isEmpty else { return }
+
+        sheets = pages.map { page in
+            let sheet = sheets.first { $0.element === page }?.sheet ?? WinUISheetView()
+            sheet.show(title: page.winUI.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
+            return (page, sheet)
+        }
+        native.showSheets(sheets.map(\.sheet))
+    }
+
+    /// The user took the top sheet away - Escape, the way back of a sheet with none of its own: the window is told
+    /// how many remain.
+    func dismissTopSheet() {
+        guard !sheets.isEmpty, let window = tree.root?.first(type: .window),
+              let handler = window.handler(.modalPopped)
+        else { return }
+
+        dispatch(handler, payload: [.number(Double(sheets.count - 1))])
+    }
+
     /// Composes the window's one chrome again from what it shows now: the top page names the window, the stack's
     /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the tabs of a
     /// tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
@@ -347,6 +384,13 @@ extension WinUIRenderer {
         chrome.overflow = actions.overflow
         chrome.background = arrangement?.visibleBarBackground ?? titleBar?.value(.background)
         chrome.foreground = arrangement?.visibleBarForeground ?? titleBar?.value(.barForegroundColor)
+        if let top = sheets.last?.element.winUI {
+            chrome.sheet = (
+                back: { [weak self, weak top] in
+                    if let wayBack = top?.wayBack { wayBack() } else { self?.dismissTopSheet() }
+                },
+                dismiss: { [weak self] in self?.dismissTopSheet() })
+        }
         window.apply(chrome, tabs: arrangement?.visibleWindowTabs)
     }
 

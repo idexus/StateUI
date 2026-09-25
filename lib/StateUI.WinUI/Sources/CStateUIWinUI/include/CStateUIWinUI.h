@@ -293,6 +293,15 @@ void stateui_winui_button_invoke(StateUIObjectRef button);
 /// progress bar and a spinner.
 void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted);
 
+/// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, the
+/// last on top. Escape takes the top one away, chosen on the window's chrome as -3.
+StateUIObjectRef stateui_winui_sheet_make(void);
+void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
+void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef const *sheets, int32_t count);
+
+/// How many sheets a window shows - what a test reads.
+int32_t stateui_winui_window_sheets(StateUIObjectRef window);
+
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
 /// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list
 /// opening and closing told through `presented`.

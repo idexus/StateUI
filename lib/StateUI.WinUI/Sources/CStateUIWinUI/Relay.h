@@ -48,6 +48,9 @@ namespace stateui {
     /// WinUI's input scope for StateUI's `InputPurpose`: the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t purpose);
 
+    /// Whether the window whose root is `root` presents sheets over its pages.
+    bool showsSheets(controls::Grid const &root);
+
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {
         std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %ls\n", where,

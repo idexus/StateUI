@@ -22,7 +22,8 @@ namespace {
         return window.Content().as<controls::Grid>();
     }
 
-    /// The window's way back - the mouse's back button, Alt+Left and the Back key - chosen on its chrome as -1.
+    /// The window's way back - the mouse's back button, Alt+Left and the Back key - chosen on its chrome as -1; and
+    /// Escape, which takes a sheet away.
     void takeTheWayBack(controls::Grid const &grid, int64_t chrome) {
         grid.AddHandler(
             xaml::UIElement::PointerPressedEvent(),
@@ -46,6 +47,17 @@ namespace {
         };
         accelerate(VirtualKey::Left, VirtualKeyModifiers::Menu);
         accelerate(VirtualKey::GoBack, VirtualKeyModifiers::None);
+
+        // Escape takes the top sheet away, chosen on the chrome as -3; with no sheet it is left to whatever has it.
+        xaml::Input::KeyboardAccelerator escape;
+        escape.Key(VirtualKey::Escape);
+        escape.Invoked([chrome](auto const &, xaml::Input::KeyboardAcceleratorInvokedEventArgs const &args) {
+            auto root = args.Element().try_as<controls::Grid>();
+            if (!root || !showsSheets(root)) return;
+            callbacks.chosen(chrome, -3);
+            args.Handled(true);
+        });
+        grid.KeyboardAccelerators().Append(escape);
     }
 }
 

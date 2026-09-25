@@ -75,6 +75,13 @@ final class WinUIWindow {
         if inWindow { stateui_winui_window_set_chrome(handle, titleBar.handle, tabRow.handle) }
     }
 
+    /// Shows `sheets` over everything the window shows, the last on top.
+    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
+    func showSheets(_ sheets: [WinUISheetView]) {
+        let handles: [StateUIObjectRef?] = sheets.map(\.handle)
+        stateui_winui_window_set_sheets(handle, handles, Int32(handles.count))
+    }
+
     /// Closes the window.
     func close() {
         stateui_winui_window_close(handle)

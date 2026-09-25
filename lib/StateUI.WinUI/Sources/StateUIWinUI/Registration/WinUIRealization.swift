@@ -16,8 +16,8 @@ enum WinUIRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
-        "Pin", "PositionIndicator", "Setters", "TitleBar", "TrailingContent", "VisualState", "WebView",
+        "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "Pin",
+        "PositionIndicator", "Setters", "TitleBar", "TrailingContent", "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -54,5 +54,6 @@ enum WinUIRealization {
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
+        .complete("Window", "modalPopped"),
     ]
 }
