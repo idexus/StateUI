@@ -98,7 +98,7 @@ host that creates or interprets it.
 | `Line` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Map` | provider |  |  |  |  |  |  |
 | `Menu` | structure | ✅ |  |  | ✅ | ✅ |  |
-| `MenuBar` | structure | ✅ |  |  |  |  |  |
+| `MenuBar` | structure | ✅ |  |  |  | ✅ |  |
 | `MenuItem` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `MenuSeparator` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `ModalStack` | structure | ✅ |  |  | ✅ | ✅ |  |

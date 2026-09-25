@@ -81,11 +81,11 @@ final class WinUIContextMenuTests: XCTestCase {
             let heard = Received<String>()
             let host = WinUIRenderer.running { MenuPage(heard: heard) }
             let row = try XCTUnwrap(host.views(WinUILabelView.self).first)
-            XCTAssertEqual(row.contextMenu, "Copy;-;!Paste;Share[Mail]")
+            XCTAssertEqual(row.menus, "Copy;-;!Paste;Share[Mail]")
 
-            stateui_winui_context_menu_choose(row.handle, 2)
+            stateui_winui_menus_choose(row.handle, 2)
             host.settle { heard.values == ["share Mail"] }
-            stateui_winui_context_menu_choose(row.handle, 0)
+            stateui_winui_menus_choose(row.handle, 0)
             host.settle { heard.values.count == 2 }
             XCTAssertEqual(heard.values, ["share Mail", "copy"])
         }
@@ -100,13 +100,13 @@ final class WinUIContextMenuTests: XCTestCase {
             let buttons = host.views(WinUIButtonView.self)
 
             buttons[0].invoke()
-            host.settle { row.contextMenu == "Copy;-;Paste;Share[Mail]" }
-            XCTAssertEqual(row.contextMenu, "Copy;-;Paste;Share[Mail]")
+            host.settle { row.menus == "Copy;-;Paste;Share[Mail]" }
+            XCTAssertEqual(row.menus, "Copy;-;Paste;Share[Mail]")
             buttons[1].invoke()
-            host.settle { row.contextMenu == "Copy;-;Paste;Share[Mail;Chat]" }
-            XCTAssertEqual(row.contextMenu, "Copy;-;Paste;Share[Mail;Chat]")
+            host.settle { row.menus == "Copy;-;Paste;Share[Mail;Chat]" }
+            XCTAssertEqual(row.menus, "Copy;-;Paste;Share[Mail;Chat]")
 
-            stateui_winui_context_menu_choose(row.handle, 3)
+            stateui_winui_menus_choose(row.handle, 3)
             host.settle { heard.values == ["share Chat"] }
             XCTAssertEqual(heard.values, ["share Chat"])
         }
@@ -117,11 +117,11 @@ final class WinUIContextMenuTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { EmptyingMenuPage() }
             let row = try XCTUnwrap(host.views(WinUILabelView.self).first)
-            XCTAssertEqual(row.contextMenu, "Open")
+            XCTAssertEqual(row.menus, "Open")
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
-            host.settle { row.contextMenu == "" }
-            XCTAssertEqual(row.contextMenu, "")
+            host.settle { row.menus == "" }
+            XCTAssertEqual(row.menus, "")
         }
     }
 
@@ -130,26 +130,15 @@ final class WinUIContextMenuTests: XCTestCase {
     func testAStackOfferingAMenuIsHitWhereItDrawsNothing() throws {
         try onUIThread {
             let host = WinUIRenderer.running { MenuStacksPage() }
-            let stacks = host.views(WinUIStackView.self).filter { $0.contextMenu == "Open" }
+            let stacks = host.views(WinUIStackView.self).filter { $0.menus == "Open" }
             XCTAssertEqual(stacks.count, 2)
             XCTAssertTrue(stacks[0].hits(190, 20))
             XCTAssertTrue(stacks[1].hits(190, 20))
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
-            host.settle { stacks[0].contextMenu == "" }
+            host.settle { stacks[0].menus == "" }
             XCTAssertFalse(stacks[0].hits(190, 20), "no menu, nothing heard: hit only on its words")
             XCTAssertTrue(stacks[1].hits(190, 20), "still hearing taps")
         }
-    }
-}
-
-extension WinUIView {
-    /// The view's context menu as the relay reads it: items by caption, "!" before one that cannot be chosen, "-"
-    /// a separator, a submenu's entries in brackets; empty for none.
-    var contextMenu: String {
-        let length = Int(stateui_winui_context_menu(handle, nil, 0))
-        var bytes = [CChar](repeating: 0, count: length + 1)
-        _ = stateui_winui_context_menu(handle, &bytes, Int32(bytes.count))
-        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 }

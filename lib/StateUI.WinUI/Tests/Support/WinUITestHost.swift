@@ -180,6 +180,15 @@ extension WinUIView {
 }
 
 extension WinUIView {
+    /// The view's context menu, or a bar's menus, as the relay reads them: items by caption, "!" before one that
+    /// cannot be chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets; empty for none.
+    var menus: String {
+        let length = Int(stateui_winui_menus(handle, nil, 0))
+        var bytes = [CChar](repeating: 0, count: length + 1)
+        _ = stateui_winui_menus(handle, &bytes, Int32(bytes.count))
+        return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+    }
+
     /// What assistive technology meets of the view, as its automation peer says it: its name, help text and
     /// automation id.
     var automationWords: (name: String, help: String, identifier: String) {

@@ -27,7 +27,9 @@ that the application may not render for - a tab chosen, the sidebar shown:
 - the page's title view stands at the chrome's centre, where an application
   puts its search;
 - an authored `TitleBar` adds its leading, centre and trailing content, and
-  the bars' colours paint the chrome.
+  the bars' colours paint the chrome;
+- the visible page's menus stand on a menu bar beneath the chrome
+  ([menus](#menus)).
 
 A page that hides its navigation bar puts neither the way back nor its
 actions on the chrome.
@@ -104,6 +106,12 @@ the window is told how many sheets remain.
 
 ## Menus
 
+The visible page's menus stand on WinUI's `MenuBar` in a row of the window
+beneath its chrome, above the window's tabs - each menu one of the bar's,
+its entries within it - while the page has any; a page with none leaves no
+row. The bar is written again only when what it draws changes: a render that
+changes nothing on it leaves the bar, and a menu open on it, as they are.
+
 A view's context menu is WinUI's `MenuFlyout` on the view: a right click and a
 long press open it where the user asked, and on a view that holds the
 keyboard, the menu key and Shift+F10 too. Its items
@@ -112,7 +120,8 @@ are `MenuFlyoutItem`s, its separators `MenuFlyoutSeparator`s and its submenus
 entry that cannot be chosen is shown dimmed. The host hands the relay the
 menu flat - an item, a separator, a submenu opening and closing, each with its
 caption - and hears a choice by the item's place among the items, submenus'
-included; the item's own handler runs. Any entry the tree changes, adds or
+included; the item's own handler runs. A bar's menus are written the same
+way. Any entry the tree changes, adds or
 removes gives the view its menu again, and a menu with no entries is none.
 
 A stack with a menu is hit across its bounds, as a listening one is

@@ -3,8 +3,8 @@
 
 import CStateUIWinUI
 
-/// A WinUI window: its title, its one chrome across the top, the row of tabs beneath it, and the page shown in it,
-/// activated the first time it has one.
+/// A WinUI window: its title, its one chrome across the top, its menu bar and the row of tabs beneath it, and the
+/// page shown in it, activated the first time it has one.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 final class WinUIWindow {
@@ -17,9 +17,13 @@ final class WinUIWindow {
     /// The view the window shows.
     private(set) var content: WinUIView?
 
-    /// The window's chrome, and the row a window's tabs stand in.
+    /// The window's chrome, its menu bar, and the row a window's tabs stand in.
     let titleBar = WinUITitleBarView()
+    let menuBar = WinUIMenuBarView()
     let tabRow = WinUITabsView()
+
+    /// Whether the menu bar stands beneath the chrome: while the visible page has menus.
+    private(set) var menuBarStands = false
 
     /// Where the row of tabs stands: across the window beneath its chrome, or across a split view's detail.
     private(set) var tabsStandInWindow = false
@@ -29,7 +33,7 @@ final class WinUIWindow {
 
     init() {
         handle = stateui_winui_window_make()!
-        stateui_winui_window_set_chrome(handle, titleBar.handle, nil)
+        stateui_winui_window_set_chrome(handle, titleBar.handle, nil, nil)
     }
 
     isolated deinit {
@@ -53,10 +57,16 @@ final class WinUIWindow {
         stateui_winui_window_activate(handle)
     }
 
-    /// Shows `chrome`, and `tabs` beneath it - across the split view's detail they stand in, or across the window.
+    /// Shows `chrome`, its menus beneath it, and `tabs` - across the split view's detail they stand in, or across the
+    /// window.
     func apply(_ chrome: WinUIWindowChrome, tabs: WinUIWindowTabs?) {
         setTitle(chrome.title)
         titleBar.apply(chrome)
+        menuBar.show(chrome.menuBar)
+        if chrome.menuBar.isEmpty == menuBarStands {
+            menuBarStands.toggle()
+            standChrome()
+        }
         if let tabs {
             tabRow.onChosen = tabs.select
             tabRow.show(tabs.titles, chosen: tabs.selected)
@@ -68,11 +78,20 @@ final class WinUIWindow {
 
         // Out of where it stood before it stands anywhere else: an element has one parent.
         tabsSplit?.setDetailRow(nil)
-        if tabsStandInWindow { stateui_winui_window_set_chrome(handle, titleBar.handle, nil) }
+        if tabsStandInWindow {
+            tabsStandInWindow = false
+            standChrome()
+        }
         tabsSplit = split
         tabsStandInWindow = inWindow
         split?.setDetailRow(tabRow)
-        if inWindow { stateui_winui_window_set_chrome(handle, titleBar.handle, tabRow.handle) }
+        if inWindow { standChrome() }
+    }
+
+    /// Stands the chrome across the window, and beneath it the menu bar and the tabs where they stand there.
+    private func standChrome() {
+        stateui_winui_window_set_chrome(
+            handle, titleBar.handle, menuBarStands ? menuBar.handle : nil, tabsStandInWindow ? tabRow.handle : nil)
     }
 
     /// Shows `sheets` over everything the window shows, the last on top.

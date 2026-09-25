@@ -362,8 +362,8 @@ extension WinUIRenderer {
     }
 
     /// Composes the window's one chrome again from what it shows now: the top page names the window, the stack's
-    /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the tabs of a
-    /// tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
+    /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the page's menus
+    /// and the tabs of a tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     func refreshWindowChrome() {
         guard let window, let element = tree.root?.first(type: .window)?.winUI else { return }
@@ -384,6 +384,7 @@ extension WinUIRenderer {
         chrome.overflow = actions.overflow
         chrome.background = arrangement?.visibleBarBackground ?? titleBar?.value(.background)
         chrome.foreground = arrangement?.visibleBarForeground ?? titleBar?.value(.barForegroundColor)
+        chrome.menuBar = WinUIMenu(bar: arrangement?.visiblePage?.children.first { $0.type == .menuBar })
         if let top = sheets.last?.element.winUI {
             chrome.sheet = (
                 back: { [weak self, weak top] in

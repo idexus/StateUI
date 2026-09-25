@@ -170,9 +170,11 @@ StateUIObjectRef stateui_winui_window_make(void);
 void stateui_winui_window_set_title(StateUIObjectRef window, char const *title);
 void stateui_winui_window_set_content(StateUIObjectRef window, StateUIObjectRef content);
 
-/// The window's chrome across its top, and the row of tabs beneath it; null for none. The first chrome given also
-/// takes the window's way back: the mouse's back button, Alt+Left and the Back key choose its way back (-1).
-void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef titleBar, StateUIObjectRef tabs);
+/// The window's chrome across its top, its menu bar and the row of tabs beneath it; null for none. The first chrome
+/// given also takes the window's way back: the mouse's back button, Alt+Left and the Back key choose its way back
+/// (-1).
+void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef titleBar, StateUIObjectRef menuBar,
+                                     StateUIObjectRef tabs);
 void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 
@@ -311,12 +313,18 @@ int32_t stateui_winui_window_sheets(StateUIObjectRef window);
 void stateui_winui_set_context_menu(StateUIObjectRef element, int64_t view, int32_t const *kinds,
                                     char const *const *titles, bool const *enabled, int32_t count);
 
-/// The context menu as a test reads it: items by caption, "!" before one that cannot be chosen, "-" a separator,
-/// a submenu's entries in brackets after its caption, ";" between - in UTF-8; the length it needs.
-int32_t stateui_winui_context_menu(StateUIObjectRef element, char *utf8, int32_t capacity);
+/// A window's menu bar: WinUI's MenuBar, written as a context menu is, each menu at the top one of the bar's own.
+StateUIObjectRef stateui_winui_menu_bar_make(int64_t view);
+void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t const *kinds, char const *const *titles,
+                                bool const *enabled, int32_t count);
 
-/// Chooses the item at `index` among the context menu's items, submenus' included, as assistive technology does.
-void stateui_winui_context_menu_choose(StateUIObjectRef element, int32_t index);
+/// A view's context menu, or a bar's menus, as a test reads them: items by caption, "!" before one that cannot be
+/// chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets after its caption, ";" between -
+/// in UTF-8; the length it needs.
+int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capacity);
+
+/// Chooses the item at `index` among those menus' items, submenus' included, as assistive technology does.
+void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
 /// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list

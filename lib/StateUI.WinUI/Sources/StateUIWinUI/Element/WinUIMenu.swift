@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 
 /// A menu as the relay takes it: its entries flat - an item, a separator, a submenu opening and closing - each with
-/// its caption and whether it can be chosen, and what each item does, in the items' order.
+/// its caption and whether it can be chosen, and what each item does, in the items' order. A menu bar's are its
+/// menus, each one's entries within it.
 /// Design: docs/design/platforms/winui/pages.md#menus
 @MainActor
 struct WinUIMenu {
@@ -14,8 +15,21 @@ struct WinUIMenu {
     private(set) var actions: [() -> Void] = []
 
     /// The entries `container` holds, in order; none for no container.
-    init(_ container: WinUIElement?) {
+    init(_ container: WinUIElement? = nil) {
         if let container { add(container.children) }
+    }
+
+    /// The menus `bar` holds, in order - what else stands at its top stands on no bar; none for no bar.
+    init(bar: WinUIElement?) {
+        if let bar { add(bar.children.filter { $0.type == .menu }) }
+    }
+
+    /// Whether the menu has no entries.
+    var isEmpty: Bool { kinds.isEmpty }
+
+    /// Whether the menu draws as `other` does: the same entries, captions and choosable ones.
+    func draws(like other: WinUIMenu) -> Bool {
+        kinds == other.kinds && titles == other.titles && enabled == other.enabled
     }
 
     private mutating func add(_ entries: [WinUIElement]) {

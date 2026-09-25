@@ -227,8 +227,8 @@ class WinUIView {
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     func picked(_ first: Int32, _ second: Int32, _ third: Int32) {}
 
-    /// What the items of the view's context menu do, in their order.
-    private var menuActions: [() -> Void] = []
+    /// What the items of the menus the view offers do, in their order: its context menu's, or a menu bar's.
+    var menuActions: [() -> Void] = []
 
     /// Gives the view `menu` as its context menu; an empty one takes it away.
     /// Design: docs/design/platforms/winui/pages.md#menus
@@ -244,7 +244,7 @@ class WinUIView {
         }
     }
 
-    /// The user chose the item at `index` of the view's context menu.
+    /// The user chose the item at `index` of the view's menus.
     func menuChosen(_ index: Int) {
         if menuActions.indices.contains(index) { menuActions[index]() }
     }

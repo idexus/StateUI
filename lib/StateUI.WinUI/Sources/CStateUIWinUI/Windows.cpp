@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A window: its title, and a root of three rows - the window's chrome, the
-// row of tabs beneath it, and the arrangement of pages - shown and closed.
+// A window: its title, and a root of four rows - the window's chrome, its
+// menu bar, the row of tabs, and the arrangement of pages - shown and closed.
 // Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 
 #include "Relay.h"
@@ -65,7 +65,7 @@ extern "C" StateUIObjectRef stateui_winui_window_make(void) {
     try {
         xaml::Window window;
         window.SystemBackdrop(xaml::Media::MicaBackdrop());
-        window.Content(rows({true, true, false}));
+        window.Content(rows({true, true, true, false}));
         return detach(window);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a window");
@@ -83,18 +83,21 @@ extern "C" void stateui_winui_window_set_title(StateUIObjectRef handle, char con
 
 extern "C" void stateui_winui_window_set_content(StateUIObjectRef handle, StateUIObjectRef content) {
     try {
-        standInRow(root(borrow<xaml::Window>(handle)), 2, content);
+        standInRow(root(borrow<xaml::Window>(handle)), 3, content);
     } catch (winrt::hresult_error const &error) {
         report(error, "filling a window");
     }
 }
 
-extern "C" void stateui_winui_window_set_chrome(StateUIObjectRef handle, StateUIObjectRef titleBar, StateUIObjectRef tabs) {
+extern "C" void stateui_winui_window_set_chrome(
+    StateUIObjectRef handle, StateUIObjectRef titleBar, StateUIObjectRef menuBar, StateUIObjectRef tabs
+) {
     try {
         auto window = borrow<xaml::Window>(handle);
         auto grid = root(window);
         standInRow(grid, 0, titleBar);
-        standInRow(grid, 1, tabs);
+        standInRow(grid, 1, menuBar);
+        standInRow(grid, 2, tabs);
         if (titleBar && !window.ExtendsContentIntoTitleBar()) {
             auto bar = as<controls::TitleBar>(titleBar);
             window.ExtendsContentIntoTitleBar(true);

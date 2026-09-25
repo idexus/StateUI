@@ -23,7 +23,7 @@ namespace {
         return xaml::Application::Current().Resources().TryLookup(winrt::box_value(name));
     }
 
-    /// The layer over the window's three rows that holds its sheets, made the first time one is asked for.
+    /// The layer over the window's rows that holds its sheets, made the first time one is asked for.
     controls::Grid layer(xaml::Window const &window, bool make) {
         auto root = window.Content().as<controls::Grid>();
         for (auto const &child : root.Children())
@@ -33,7 +33,7 @@ namespace {
 
         controls::Grid sheets;
         sheets.Tag(winrt::box_value(L"sheets"));
-        controls::Grid::SetRowSpan(sheets, 3);
+        controls::Grid::SetRowSpan(sheets, 4);
         media::Animation::TransitionCollection transitions;
         transitions.Append(media::Animation::PopupThemeTransition());
         sheets.ChildrenTransitions(transitions);
