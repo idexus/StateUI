@@ -39,6 +39,12 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
     try {
         controls::Button button;
         button.Click([view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); });
+        // Held down by a pointer or a key, and let go: what WinUI's own pressed look follows.
+        button.RegisterPropertyChangedCallback(
+            controls::Primitives::ButtonBase::IsPressedProperty(),
+            [view](xaml::DependencyObject const &sender, xaml::DependencyProperty const &) {
+                callbacks.held(view, sender.as<controls::Primitives::ButtonBase>().IsPressed());
+            });
         return detach(button);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a button");

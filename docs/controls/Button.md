@@ -21,8 +21,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | `iconPosition` | property | `IconPosition` | adaptive | ✅ |  |  | ✅ |  |  |  |
 | `iconSpacing` | property | `Double` | adaptive |  |  |  | ✅ |  |  |  |
 | `lineBreak` | property | `LineBreak` | native | ✅ |  |  | ✅ |  |  |  |
-| `onPressed` (`pressed`) | event |  | native | ✅ |  |  | ✅ |  |  |  |
-| `onReleased` (`released`) | event |  | native | ✅ |  |  | ✅ |  |  |  |
+| `onPressed` (`pressed`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onReleased` (`released`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -58,7 +58,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |

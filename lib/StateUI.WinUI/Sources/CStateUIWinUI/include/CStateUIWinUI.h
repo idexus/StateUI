@@ -107,7 +107,7 @@ typedef struct {
     /// A scroller's view changed: where it stands now, in DIPs.
     void (*scrolled)(int64_t view, double x, double y);
 
-    /// The user took hold of a scroller, or let go of it.
+    /// The user holds a view down or lets it go: a scroller taken hold of, a button held by a pointer or a key.
     void (*held)(int64_t view, bool holding);
 
     /// The user chose an entry by its place: an action of a window's chrome, or its way back (-1) or sidebar toggle
@@ -135,6 +135,9 @@ typedef struct {
 
     /// The user chose an item of a view's menu: its place among the menu's items, from 0.
     void (*menuChosen)(int64_t view, int32_t index);
+
+    /// The keyboard came into a view - to it or to what stands in it - or left it.
+    void (*focused)(int64_t view, bool focused);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -528,6 +531,10 @@ bool stateui_winui_press(StateUIObjectRef element);
 
 /// Whether a click at (x, y) DIPs of `element` would reach the element itself.
 bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
+
+/// Tells `focused` whenever the keyboard comes into the element or leaves it, while `hearing`; false stops.
+void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool hearing);
+
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);

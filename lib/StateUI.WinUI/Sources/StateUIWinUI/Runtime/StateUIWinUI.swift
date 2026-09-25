@@ -76,7 +76,7 @@ enum WinUICallbacks {
                 }
             },
             held: { view, holding in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIScrollerView)?.onHeld?(holding) }
+                MainActor.assumeIsolated { WinUIView.find(view)?.held(holding) }
             },
             chosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.chose(Int(index)) }
@@ -105,6 +105,9 @@ enum WinUICallbacks {
             },
             menuChosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.menuChosen(Int(index)) }
+            },
+            focused: { view, focused in
+                MainActor.assumeIsolated { WinUIView.find(view)?.focusChanged(focused) }
             })
     }
 }

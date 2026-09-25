@@ -87,6 +87,7 @@ enum WinUIRegistrations {
         registry.everyElementRaises(ViewContract.pointerMoved)
         registry.everyElementRaises(ViewContract.pointerPressed)
         registry.everyElementRaises(ViewContract.pointerReleased)
+        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
 
     /// `text` in the case the tree asks for: as written, or in one case throughout.

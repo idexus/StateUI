@@ -52,6 +52,10 @@ final class WinUIScrollerView: WinUIView {
         return (Point(x: values[0], y: values[1]), Point(x: values[2], y: values[3]))
     }
 
+    override func held(_ holding: Bool) {
+        onHeld?(holding)
+    }
+
     override func detach() {
         super.detach()
         onScrolled = nil

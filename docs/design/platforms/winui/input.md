@@ -53,3 +53,19 @@ A view that listens for a pinch takes WinUI's scale manipulation - two
 fingers on a touch screen - and says each step's scale since the last, and
 where, as shares of its size. Taking the manipulation keeps the platform's
 own panning off that view's touches.
+
+## A button held down
+
+A button held down - by the pointer, or by Space or Enter on the keyboard -
+is told as pressed, and let go as released, apart from its click: the relay
+follows WinUI's own `IsPressed`, which the button's pressed look follows too.
+A scroller taken hold of and let go arrives by the same road, each view
+answering what holding means for it.
+
+## The keyboard coming in
+
+A view whose element hears `isFocusedChanged` is told when the keyboard comes
+into it - to it, or to what stands in it, as a number box's own field - and
+when it leaves. WinUI's `GotFocus` and `LostFocus` bubble from inside the
+element, so as each arrives the relay asks where the keyboard is now, the
+act of moving the focus asking the same, and tells only a change.

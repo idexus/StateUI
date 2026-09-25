@@ -149,10 +149,13 @@ extern "C" bool stateui_winui_focus(StateUIObjectRef handle, bool focus) {
     }
 }
 
+bool stateui::holdsFocus(xaml::UIElement const &element) {
+    return within(focused(element), element);
+}
+
 extern "C" bool stateui_winui_focused(StateUIObjectRef handle) {
     try {
-        auto element = as<xaml::UIElement>(handle);
-        return within(focused(element), element);
+        return holdsFocus(as<xaml::UIElement>(handle));
     } catch (winrt::hresult_error const &error) {
         report(error, "reading the keyboard's focus");
         return false;

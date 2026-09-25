@@ -244,6 +244,23 @@ class WinUIView {
         }
     }
 
+    /// The user holds the view down or lets it go: a scroller taken hold of, a button's press.
+    func held(_ holding: Bool) {}
+
+    /// What the view does when the keyboard comes into it or leaves; nil hears nothing.
+    private var onFocusChanged: ((Bool) -> Void)?
+
+    /// Hears the keyboard come into the view and leave it, while `action` is set.
+    func setFocusChanged(_ action: ((Bool) -> Void)?) {
+        if (action != nil) != (onFocusChanged != nil) { stateui_winui_hear_focus(handle, number, action != nil) }
+        onFocusChanged = action
+    }
+
+    /// The keyboard came into the view or left it.
+    func focusChanged(_ focused: Bool) {
+        onFocusChanged?(focused)
+    }
+
     /// The user chose the item at `index` of the view's menus.
     func menuChosen(_ index: Int) {
         if menuActions.indices.contains(index) { menuActions[index]() }
@@ -272,6 +289,7 @@ class WinUIView {
     /// overrides this lets go of what every view holds first, then of its own.
     func detach() {
         hear(0) { _ in }
+        setFocusChanged(nil)
         menuActions = []
     }
 

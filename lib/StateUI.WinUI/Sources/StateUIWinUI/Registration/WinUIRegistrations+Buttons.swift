@@ -9,6 +9,8 @@ extension WinUIRegistrations {
         registry.add(ButtonContract.self, create: { reports in
             let button = WinUIButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onPressed = { reports.raise(ButtonContract.pressed) }
+            button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
             button.applies(textMembers) { view, values in applyText(view, values) }
@@ -26,6 +28,8 @@ extension WinUIRegistrations {
                 view.setEnabled(enabled ?? true)
             }
             button.raises(ButtonContract.clicked)
+            button.raises(ButtonContract.pressed)
+            button.raises(ButtonContract.released)
         })
     }
 }

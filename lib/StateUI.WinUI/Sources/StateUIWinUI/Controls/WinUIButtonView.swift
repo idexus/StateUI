@@ -7,8 +7,10 @@ import CStateUIWinUI
 /// A WinUI `Button`: its caption, its look, whether it takes a press, and the click it raises.
 @MainActor
 final class WinUIButtonView: WinUIView {
-    /// What the button does when the user clicks it.
+    /// What the button does when the user clicks it, holds it down and lets it go.
     var onClicked: (() -> Void)?
+    var onPressed: (() -> Void)?
+    var onReleased: (() -> Void)?
 
     init() {
         super.init { number in stateui_winui_button_make(number) }
@@ -48,8 +50,14 @@ final class WinUIButtonView: WinUIView {
         onClicked?()
     }
 
+    override func held(_ holding: Bool) {
+        (holding ? onPressed : onReleased)?()
+    }
+
     override func detach() {
         super.detach()
         onClicked = nil
+        onPressed = nil
+        onReleased = nil
     }
 }

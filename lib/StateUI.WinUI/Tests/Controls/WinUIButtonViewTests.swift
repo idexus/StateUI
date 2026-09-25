@@ -1,11 +1,33 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
 import XCTest
 
 final class WinUIButtonViewTests: XCTestCase {
+    /// A button held down and let go is heard as pressed and released, apart from the click.
+    func testAButtonHeldDownIsHeardPressedAndReleased() throws {
+        try onUIThread {
+            let heard = Received<String>()
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Hold")
+                        .onPressed { heard.values.append("pressed") }
+                        .onReleased { heard.values.append("released") }
+                }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+
+            button.held(true)
+            host.settle { heard.values == ["pressed"] }
+            button.held(false)
+            host.settle { heard.values.count == 2 }
+            XCTAssertEqual(heard.values, ["pressed", "released"])
+        }
+    }
+
     /// A button styled by the application wears its fill, its words' colour and its rounded corners; the corner
     /// outside the rounding shows nothing of it.
     func testAButtonWearsItsFillWordsAndCorners() throws {

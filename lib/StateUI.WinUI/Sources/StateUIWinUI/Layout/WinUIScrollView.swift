@@ -45,7 +45,7 @@ final class WinUIScrollView: WinUILayoutView {
         super.init()
         movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }
         scroller.onScrolled = { [weak self] standing in self?.scrolled(to: standing) }
-        scroller.onHeld = { [weak self] holding in self?.held(holding) }
+        scroller.onHeld = { [weak self] holding in self?.scrollerHeld(holding) }
         scroller.placingLayout = self
         setChildren([scroller])
         configure()
@@ -141,7 +141,7 @@ final class WinUIScrollView: WinUILayoutView {
     }
 
     /// The user took hold of the scroller, or let go of it and left it to throw on.
-    private func held(_ holding: Bool) {
+    private func scrollerHeld(_ holding: Bool) {
         if holding {
             programTarget = nil
             movement.holdBegan()

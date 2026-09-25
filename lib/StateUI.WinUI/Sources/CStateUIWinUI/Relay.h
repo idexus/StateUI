@@ -45,6 +45,9 @@ namespace stateui {
     bool hearsTaps(int64_t view);
     void press(int64_t view);
 
+    /// Whether the keyboard's focus is on `element` or on what stands in it.
+    bool holdsFocus(xaml::UIElement const &element);
+
     /// Paints a panel clear while its view listens for the user or offers a context menu, so it is hit across its
     /// bounds and not only where its children stand; takes that away once neither holds. An author's background
     /// stays.

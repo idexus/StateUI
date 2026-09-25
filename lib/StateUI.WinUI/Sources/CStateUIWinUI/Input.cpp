@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What the user does to any element - taps, the pointer, a press dragged, a
-// pinch - heard where a view listens for it. Each handler names its view by
-// number and holds nothing of the element it hangs on.
+// pinch, the keyboard coming in - heard where a view listens for it. Each
+// handler names its view by number and holds nothing of the element it hangs
+// on.
 // Design: docs/design/platforms/winui/input.md
 
 #include "Relay.h"
@@ -258,6 +259,47 @@ extern "C" bool stateui_winui_hits(StateUIObjectRef handle, double x, double y) 
     } catch (winrt::hresult_error const &error) {
         report(error, "finding what a click hits");
         return false;
+    }
+}
+
+namespace {
+    /// One view's focus heard: whether the keyboard is in it, and the handlers hung on its element.
+    struct Focus {
+        bool within = false;
+        winrt::event_token got, lost;
+    };
+
+    std::unordered_map<int64_t, Focus> focusing;
+
+    void tellFocus(int64_t view, bool within) {
+        auto found = focusing.find(view);
+        if (found == focusing.end() || found->second.within == within) return;
+        found->second.within = within;
+        callbacks.focused(view, within);
+    }
+}
+
+extern "C" void stateui_winui_hear_focus(StateUIObjectRef handle, int64_t view, bool hearing) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        auto found = focusing.find(view);
+        if (!hearing) {
+            if (found == focusing.end()) return;
+            element.GotFocus(found->second.got);
+            element.LostFocus(found->second.lost);
+            focusing.erase(found);
+            return;
+        }
+        if (found != focusing.end()) return;
+
+        // Both events bubble from what stands in the element, so the keyboard is asked where it is now.
+        auto &entry = focusing.emplace(view, Focus{}).first->second;
+        entry.got = element.GotFocus([view](IInspectable const &, xaml::RoutedEventArgs const &) { tellFocus(view, true); });
+        entry.lost = element.LostFocus([view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+            tellFocus(view, holdsFocus(sender.as<xaml::UIElement>()));
+        });
+    } catch (winrt::hresult_error const &error) {
+        report(error, "hearing an element's focus");
     }
 }
 
