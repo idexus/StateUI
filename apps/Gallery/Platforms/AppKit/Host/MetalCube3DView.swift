@@ -10,9 +10,9 @@ import StateUIAppKit
 /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
 /// StateUI.
 ///
-/// `register()`, at the end of this file, adds it for `MetalCubeContract`, and
+/// `register()`, at the end of this file, adds it for `Cube3DContract`, and
 /// that registration is the whole bridge. The Swift half is
-/// Sources/Samples/Interop/MetalCube.swift.
+/// Sources/Samples/Interop/Cube3D.swift.
 ///
 /// Its shaders are compiled FROM SOURCE as the view is made, so the
 /// application ships no `.metal` file and its build needs nothing added to it.
@@ -20,7 +20,7 @@ import StateUIAppKit
 /// It renders in `draw(_:)` rather than through an `MTKViewDelegate`: a view
 /// that draws itself needs no second object, and this way the drawing runs
 /// where every other `NSView` draws.
-final class MetalCubeView: MTKView {
+final class MetalCube3DView: MTKView {
     /// How long the cube's edge is, as a share of the room it is given: 1
     /// turns corner to corner inside the view.
     var cubeSize: Double = 0.6 {
@@ -121,7 +121,7 @@ final class MetalCubeView: MTKView {
 
     @available(*, unavailable)
     required init(coder: NSCoder) {
-        fatalError("MetalCubeView is created in code")
+        fatalError("MetalCube3DView is created in code")
     }
 
     /// Square, and big enough to see a solid turn in.
@@ -307,8 +307,8 @@ final class MetalCubeView: MTKView {
 
 // MARK: - Registration
 
-extension MetalCubeView {
-    /// Adds the cube for `MetalCubeContract`. Said once, before the application
+extension MetalCube3DView {
+    /// Adds the cube for `Cube3DContract`. Said once, before the application
     /// runs.
     ///
     /// A view that draws on the GPU registers exactly like one that draws with a
@@ -319,16 +319,16 @@ extension MetalCubeView {
     /// this folder.
     @MainActor
     static func register() {
-        StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
-            MetalCubeView()
+        StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+            MetalCube3DView()
         }) { cube in
-            cube.property(MetalCubeContract.size) { view, size in
+            cube.property(Cube3DContract.size) { view, size in
                 view.cubeSize = size ?? 0.6
             }
-            cube.property(MetalCubeContract.color) { view, color in
+            cube.property(Cube3DContract.color) { view, color in
                 view.color = (color ?? .teal).rawValue
             }
-            cube.property(MetalCubeContract.isSpinning) { view, spinning in
+            cube.property(Cube3DContract.isSpinning) { view, spinning in
                 view.isSpinning = spinning ?? true
             }
         }

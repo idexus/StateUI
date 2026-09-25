@@ -12,5 +12,6 @@ enum GalleryControls {
     static func register() {
         TrafficLightWidget.register()
         RatingBarWidget.register()
+        OpenGLCube3DWidget.register()
     }
 }

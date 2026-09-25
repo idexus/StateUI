@@ -113,8 +113,12 @@ StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLight
 The host places, sizes and shows the control's widget as it does its own -
 margins, alignment, opacity, gestures, frame reports - and measures it by the
 widget's own measure. A registered control is a leaf. A control that runs a
-loop of its own, a `GtkGLArea` turning a cube, stops it when its widget is
-unmapped, so nothing turns behind a page the user has left.
+loop of its own - the Gallery's `Cube3D`, a `GtkGLArea` drawing with OpenGL 3.3
+core through libepoxy - turns on its widget's tick callback, which GTK calls
+only while the widget is on screen, so nothing turns behind a page the user has
+left; a value changed while it is stopped still asks for the one frame it
+needs. The same `Cube3D` is drawn with Metal on AppKit: one declaration, each
+host drawing it in its own way.
 
 ### An act
 

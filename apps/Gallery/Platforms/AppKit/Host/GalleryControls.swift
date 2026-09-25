@@ -14,6 +14,6 @@ enum GalleryControls {
     static func register() {
         TrafficLightView.register()
         RatingBarView.register()
-        MetalCubeView.register()
+        MetalCube3DView.register()
     }
 }

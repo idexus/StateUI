@@ -1,0 +1,5 @@
+module CGalleryOpenGL [system] {
+    header "CGalleryOpenGL.h"
+    link "epoxy"
+    export *
+}

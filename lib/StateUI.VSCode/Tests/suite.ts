@@ -70,8 +70,8 @@ export async function run(): Promise<void> {
         const root = vscode.workspace.workspaceFolders![0];
         const gallery = path.join(root.uri.fsPath, "apps", "Gallery");
         const plain = path.join(gallery, "Sources", "Samples", "BasicInput", "SliderSample.swift");
-        const conditional = path.join(gallery, "Sources", "Samples", "Interop", "AppKitMetalSample.swift");
-        const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCubeView.swift");
+        const conditional = path.join(gallery, "Sources", "Samples", "Interop", "Cube3DSample.swift");
+        const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCube3DView.swift");
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
@@ -79,22 +79,22 @@ export async function run(): Promise<void> {
         // 1. Android: the plain symbol resolves, the AppKit one does not.
         await api.selectHost("android");
         await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
-        check("android: MetalCube under #if APPKIT does not resolve",
-            !(await resolves(conditional, "MetalCube()", "var content: any View")));
+        check("android: Cube3D under #if APPKIT || GTK does not resolve",
+            !(await resolves(conditional, "Cube3D()", "var content: any View")));
 
         // 2. AppKit, with no reload: the conditional symbol and the head resolve.
         await api.selectHost("appkit");
-        await until("appkit: MetalCube under #if APPKIT resolves",
-            () => resolves(conditional, "MetalCube()", "var content: any View"), 900);
+        await until("appkit: Cube3D under #if APPKIT || GTK resolves",
+            () => resolves(conditional, "Cube3D()", "var content: any View"), 900);
         // A target the package did not have a moment ago: the server has to
         // load it, so this is waited for rather than asked once.
-        await until("appkit: MetalCubeContract in Platforms/AppKit resolves", () => resolves(head, "MetalCubeContract.self"), 900);
+        await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
 
         // 3. And back, still with no reload.
         await api.selectHost("android");
-        await until("android again: MetalCube stops resolving while the plain symbol does", async () =>
+        await until("android again: Cube3D stops resolving while the plain symbol does", async () =>
             (await resolves(plain, "Palette.accent"))
-            && !(await resolves(conditional, "MetalCube()", "var content: any View")), 900);
+            && !(await resolves(conditional, "Cube3D()", "var content: any View")), 900);
 
         // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
         //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine

@@ -196,16 +196,21 @@ if hasGTKHead {
     dependencies.append(
         .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
 
-    targets.append(
+    targets.append(contentsOf: [
         .executableTarget(
             name: "GalleryGTK",
             dependencies: [
                 "GalleryUI",
+                "CGalleryOpenGL",
                 .product(name: "StateUIGTK", package: "StateUIGTK"),
             ],
             path: "Platforms/GTK",
+            exclude: ["OpenGL"],
             swiftSettings: settings
-        ))
+        ),
+        // OpenGL for the head's cube, through libepoxy - the loader GTK itself draws with.
+        .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
+    ])
 }
 
 let package = Package(

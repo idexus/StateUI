@@ -1,11 +1,12 @@
-#if APPKIT
+#if APPKIT || GTK
 // A control of the application's OWN that draws with the GPU, declared for the
-// one host that can realize it.
+// hosts that can realize it: an `MTKView` drawing with Metal on AppKit, a
+// `GtkGLArea` drawing with OpenGL 3.3 on GTK.
 //
 // Every other element here is declared for all of them: a contract and a
 // `View`, shared, with each host saying what it IS on screen. This one is
-// declared under a condition, because the view behind it is an `MTKView` and
-// Metal belongs to this platform. `GalleryElements` lists it under the same
+// declared under a condition, because the view behind it draws on the GPU in
+// the platform's own way. `GalleryElements` lists it under the same
 // condition, so no other host is held to a promise it cannot keep.
 //
 // PUBLIC, because a host in the same process registers BY TYPE and lives in a
@@ -28,10 +29,10 @@ public enum CubeColor: Int32, CaseIterable, HostRepresentable {
     case violet = 2
 }
 
-/// The gallery's own Metal cube, declared: its node type, the tier it wears,
+/// The gallery's own cube, declared: its node type, the tier it wears,
 /// and its members, each with its value's type.
-public enum MetalCubeContract: ElementContract {
-    public static let nodeType: NodeType = "Gallery.MetalCube"
+public enum Cube3DContract: ElementContract {
+    public static let nodeType: NodeType = "Gallery.Cube3D"
     public static let tiers: [any Contract.Type] = [ViewContract.self]
 
     /// How long the cube's edge is, as a share of the room the view is given,
@@ -55,8 +56,8 @@ public enum MetalCubeContract: ElementContract {
 /// Nothing about the drawing is described here and nothing about the
 /// description is drawn here: this side owns what the cube should be, and the
 /// host owns the frames that make it so.
-public struct MetalCube: View {
-    public var node = Node(contract: MetalCubeContract.self)
+public struct Cube3D: View {
+    public var node = Node(contract: Cube3DContract.self)
 
     /// A cube at whatever size, colour and motion its modifiers say.
     public init() {}
@@ -64,14 +65,14 @@ public struct MetalCube: View {
     /// How long the cube's edge is, as a share of the room the view is given,
     /// 0 through 1.
     public func size(_ value: Double) -> Self {
-        setValue(MetalCubeContract.size, value)
+        setValue(Cube3DContract.size, value)
     }
 
     /// The same edge, walked by the host from a state.
     ///
     ///     @State private var size = 0.6
     ///
-    ///     MetalCube().size($size)
+    ///     Cube3D().size($size)
     ///
     ///     Slider($size).minimum(0.2).maximum(1)
     ///
@@ -84,17 +85,17 @@ public struct MetalCube: View {
     /// what `$size.journey.value` reads - so `$size.journey.move(to: 1)` grows
     /// the cube the way it moves any other walked value.
     public func size(_ state: Binding<Double>) -> Modified {
-        setValue(MetalCubeContract.size, on: state, mode: .inOut, kind: .property)
+        setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
     }
 
     /// Which colour the cube is painted.
     public func color(_ value: CubeColor) -> Self {
-        setValue(MetalCubeContract.color, value)
+        setValue(Cube3DContract.color, value)
     }
 
     /// Whether the cube turns.
     public func isSpinning(_ value: Bool) -> Self {
-        setValue(MetalCubeContract.isSpinning, value)
+        setValue(Cube3DContract.isSpinning, value)
     }
 }
 #endif

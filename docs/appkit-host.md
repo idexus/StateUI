@@ -141,17 +141,18 @@ frames; see [Motion and journeys](motion-and-journeys.md).
 
 **A registered view draws however it likes, the GPU included.** An `MTKView` is
 an `NSView`, so its registration says no more than any other one: the Gallery's
-Metal cube takes a size, a colour and whether it turns, and the corners, the
+`Cube3D`, drawn here with Metal, takes a size, a colour and whether it turns, and the corners, the
 matrix and the frames stay the host's. Two things belong to a view that runs a
 loop of its own. It stops that loop when the tree drops it - the Gallery's
 pauses in `viewDidMoveToWindow`, so nothing turns behind a page the user has
 left. And a stopped loop still owes one frame to a value that changed, or a
 size moved while it is paused arrives only when the user starts it again.
 
-An element only one host can honestly realize is declared only for that host.
-The Metal cube's contract and its `View` stand under `#if APPKIT` beside its
-samples, so a test reading an application's elements against another host's
-registrations never demands of that host a control it cannot draw.
+An element only some hosts can honestly realize is declared only for them.
+`Cube3D`'s contract and its `View` stand under `#if APPKIT || GTK` beside its
+sample - one declaration, drawn with Metal here and with OpenGL on GTK - so a
+test reading an application's elements against another host's registrations
+never demands of that host a control it cannot draw.
 
 **A registered control has no slot on this host.** This host arranges
 children by the container classes it makes itself, so a registered view is

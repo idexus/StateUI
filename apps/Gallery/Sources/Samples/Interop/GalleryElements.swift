@@ -17,13 +17,13 @@ enum GalleryElements {
             TrafficLightContract.self, RatingBarContract.self,
         ]
 
-        #if APPKIT
-        // Drawn with the GPU, which belongs to this platform. An element only
-        // one host can honestly realize is declared only for that host, so the
-        // others are never held to a promise they cannot keep - which is what
-        // the test reading this list against each host's registrations would
-        // otherwise demand of them.
-        all.append(MetalCubeContract.self)
+        #if APPKIT || GTK
+        // Drawn with the GPU in each platform's own way - Metal on AppKit,
+        // OpenGL 3.3 on GTK. An element only some hosts can honestly realize is
+        // declared only for them, so the others are never held to a promise
+        // they cannot keep - which is what the test reading this list against
+        // each host's registrations would otherwise demand of them.
+        all.append(Cube3DContract.self)
         #endif
 
         return all

@@ -309,8 +309,9 @@ final class Catalog {
         // contract, one `View`, and the host's half beside the AppKit head,
         // in Platforms/AppKit/Host.
         //
-        // The Metal cube is the exception, and deliberately: its view draws on
-        // the GPU, so it is declared for this host alone.
+        // The cube is the exception, and deliberately: its view draws on the
+        // GPU, so it is declared only for the hosts that draw it - here with
+        // Metal.
         groups.append(
             SampleGroup(
                 route: "appKitInterop",
@@ -323,7 +324,7 @@ final class Catalog {
                     Sample(AppKitActsSample()),
                     Sample(AppKitEventsSample()),
                     Sample(AppKitControlSample()),
-                    Sample(AppKitMetalSample()),
+                    Sample(Cube3DSample()),
                 ]))
         #endif
 
@@ -343,6 +344,7 @@ final class Catalog {
                     Sample(GTKActsSample()),
                     Sample(GTKEventsSample()),
                     Sample(GTKControlSample()),
+                    Sample(Cube3DSample()),
                 ]))
         #endif
 
