@@ -307,8 +307,9 @@ final class NativeProjectTests: XCTestCase {
     /// The code every host runs names no host. Swift written for one host alone
     /// stands under the condition named for it - `#if APPKIT`, which every
     /// AppKit build of an application defines; see the two tests below - and
-    /// such a block, up to its `#else` or `#endif`, is the one place the
-    /// library and each application's `Sources/` may name that host. A host
+    /// Swift for several, under their conditions joined, `#if APPKIT || GTK`.
+    /// Such a block, up to its `#else` or `#endif`, is the one place the
+    /// library and each application's `Sources/` may name those hosts. A host
     /// with no builds any more is named nowhere, under no condition.
     ///
     /// The words are assembled here so this guard does not find itself.
@@ -321,7 +322,12 @@ final class NativeProjectTests: XCTestCase {
 
         var offenders: [String] = []
         for (word, conditioned) in [("app" + "kit", true), ("win" + "ui", true), ("gt" + "k", true), ("ma" + "ui", false)] {
-            let condition = "#if " + word.uppercased()
+            // A block for this host: its condition alone, or joined with other hosts' by `||`.
+            func opens(_ directive: String) -> Bool {
+                guard directive.hasPrefix("#if ") else { return false }
+                return directive.dropFirst(4).components(separatedBy: "||")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }.contains(word.uppercased())
+            }
             for root in roots {
                 guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
                 else { continue }
@@ -346,7 +352,7 @@ final class NativeProjectTests: XCTestCase {
                             continue
                         }
 
-                        if conditioned && directive == condition {
+                        if conditioned && opens(directive) {
                             depth = 1
                         } else if line.lowercased().contains(word) {
                             let relative = String(file.path.dropFirst(repository.path.count + 1))
