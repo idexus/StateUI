@@ -15,6 +15,7 @@ enum GTKRegistrations {
         buttons(registry)
         toggles(registry)
         values(registry)
+        pickers(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)

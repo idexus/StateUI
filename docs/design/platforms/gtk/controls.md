@@ -94,3 +94,13 @@ pixels, so a size in motion does not read it every frame. An SVG keeps its
 own proportions as it is read, leaving bands where the room has others, so a
 stretched one is read covering its room and drawn squeezed into it - never
 enlarged.
+
+## A picker
+
+A Picker is a `GtkDropDown` over a `GtkStringList` of its choices' words, the
+chosen one shown on its button. The chosen one is written only where the tree
+changed it or the choices changed, so the user's choice is never argued with,
+and the user's choice is reported onto the state it is carried in. GTK gives a
+drop-down no placeholder and no way to open or close its list from outside, so
+the title and the list's opening and closing are not realized.
+
