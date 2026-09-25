@@ -166,11 +166,21 @@ extern "C" void stateui_winui_set_transform(
     double scaleY, double centerX, double centerY
 ) {
     try {
+        // A composite render transform, which an element whose visual a cut has taken still takes: WinUI refuses
+        // such an element its Translation, Rotation, Scale and CenterPoint.
         auto element = as<xaml::UIElement>(handle);
-        element.CenterPoint({static_cast<float>(centerX), static_cast<float>(centerY), 0});
-        element.Translation({static_cast<float>(translationX), static_cast<float>(translationY), 0});
-        element.Rotation(static_cast<float>(rotation));
-        element.Scale({static_cast<float>(scaleX), static_cast<float>(scaleY), 1});
+        auto transform = element.RenderTransform().try_as<xaml::Media::CompositeTransform>();
+        if (!transform) {
+            transform = xaml::Media::CompositeTransform();
+            element.RenderTransform(transform);
+        }
+        transform.CenterX(centerX);
+        transform.CenterY(centerY);
+        transform.TranslateX(translationX);
+        transform.TranslateY(translationY);
+        transform.Rotation(rotation);
+        transform.ScaleX(scaleX);
+        transform.ScaleY(scaleY);
     } catch (winrt::hresult_error const &error) {
         report(error, "transforming");
     }
@@ -178,11 +188,12 @@ extern "C" void stateui_winui_set_transform(
 
 extern "C" void stateui_winui_transform(StateUIObjectRef handle, double *values) {
     try {
-        auto element = as<xaml::UIElement>(handle);
-        auto translation = element.Translation();
-        auto scale = element.Scale();
-        auto center = element.CenterPoint();
-        double const read[] = {translation.x, translation.y, element.Rotation(), scale.x, scale.y, center.x, center.y};
+        double read[] = {0, 0, 0, 1, 1, 0, 0};
+        if (auto t = as<xaml::UIElement>(handle).RenderTransform().try_as<xaml::Media::CompositeTransform>()) {
+            double const held[] = {t.TranslateX(), t.TranslateY(), t.Rotation(), t.ScaleX(), t.ScaleY(), t.CenterX(),
+                                   t.CenterY()};
+            std::memcpy(read, held, sizeof read);
+        }
         std::memcpy(values, read, sizeof read);
     } catch (winrt::hresult_error const &error) {
         report(error, "reading a transform");

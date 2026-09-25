@@ -20,12 +20,16 @@ drawn at, the value a slider's thumb shows.
 
 ## Moved, turned and scaled
 
-An element's `Translation`, `Rotation` and `Scale` are drawn over the place
-its layout gave it, so moving one never moves the layout's arithmetic. A
-translation is in DIPs, a rotation in degrees, clockwise in the screen's
-plane; `scale` multiplies both axes over `scaleX` and `scaleY`. StateUI's
-pivot is a fraction of the element's size, WinUI's `CenterPoint` is in DIPs:
-the host puts it back each time the element is placed at a new size.
+An element is moved, turned and scaled by a `CompositeTransform`, its render
+transform, drawn over the place its layout gave it, so moving one never moves
+the layout's arithmetic. A translation is in DIPs, a rotation in degrees,
+clockwise in the screen's plane; `scale` multiplies both axes over `scaleX`
+and `scaleY`. StateUI's pivot is a fraction of the element's size and the
+transform's centre is in DIPs: the host puts it back each time the element is
+placed at a new size. The element's own `Translation`, `Rotation`, `Scale` and
+`CenterPoint` go unused: a layout cut to its outline takes the element's
+visual ([a box and its brush](drawing.md#a-box-and-its-brush)), and WinUI
+refuses those four to such an element.
 
 ## Less motion
 

@@ -5,6 +5,27 @@
 @testable import StateUIWinUI
 import XCTest
 
+/// A red box cut to its outline, which a click moves.
+private struct CutPage: ContentView {
+    @State private var moved = false
+
+    var content: any View {
+        VStack {
+            VStack { Label("cut") }
+                .width(40)
+                .height(40)
+                .background(Color("#FF0000"))
+                .clipsContent(true)
+                .horizontalAlignment(.start)
+                .translationX(moved ? 50 : 0)
+            Button("Move").onClicked { moved = true }
+        }
+        .width(100)
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 final class WinUIMotionTests: XCTestCase {
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
         onUIThread {
@@ -147,6 +168,21 @@ final class WinUIMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(label.drawnTransform.translationX, 100, accuracy: 0.01)
+        }
+    }
+
+    /// A layout cut to its outline is still moved, turned and scaled: the cut takes the element's own visual, and
+    /// what moves it must be what WinUI still lets move it.
+    func testALayoutCutToItsOutlineIsStillMoved() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { CutPage() }
+            let page = try XCTUnwrap(host.views(WinUIStackView.self).first)
+            host.settle { page.pixels(at: [(20, 20)]) == [0xFFFF_0000] }
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.settle { page.pixels(at: [(70, 20)]) == [0xFFFF_0000] }
+
+            XCTAssertEqual(page.pixels(at: [(20, 20), (70, 20)]), [0, 0xFFFF_0000])
         }
     }
 }
