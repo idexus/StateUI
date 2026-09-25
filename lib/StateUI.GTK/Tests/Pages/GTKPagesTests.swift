@@ -4,6 +4,7 @@
 import CStateUIGTK
 @_spi(Host) import StateUI
 @testable import StateUIGTK
+import StateUIHostConformance
 import XCTest
 
 final class GTKPagesTests: XCTestCase {

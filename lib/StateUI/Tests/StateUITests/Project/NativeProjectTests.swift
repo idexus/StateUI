@@ -212,6 +212,55 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThan(heads, 0, "no WinUI head found")
     }
 
+    /// The conformance suite is a package beside the hosts that links the one StateUI runtime as its product,
+    /// and none of its sources names a toolkit: what it asserts is what executing the contract does, on every host.
+    func testTheConformanceSuiteNamesNoToolkit() throws {
+        let package = SourceTree.repository.appendingPathComponent("lib/StateUI.HostConformance")
+        let manifest = try String(contentsOf: package.appendingPathComponent("Package.swift"), encoding: .utf8)
+        XCTAssertTrue(manifest.contains(#".product(name: "StateUI", package: "StateUIRoot")"#), "StateUI linked as a product")
+        XCTAssertFalse(manifest.contains(#"dependencies: ["StateUI"]"#), "a second StateUI runtime")
+
+        let sources = package.appendingPathComponent("Sources")
+        let files = try SourceTree.files(under: sources, entering: { _ in true }).filter { $0.hasSuffix(".swift") }
+        XCTAssertGreaterThan(files.count, 10, "the walk read almost nothing")
+        let toolkit = try NSRegularExpression(
+            pattern: #"GTK|WinUI|AppKit|UIKit|Android|\bNS[A-Z]\w+|\bgtk_|\badw_|stateui_winui_|Java\b"#)
+        for file in files {
+            let text = try String(contentsOf: sources.appendingPathComponent(file), encoding: .utf8)
+            for match in toolkit.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                let line = text[..<Range(match.range, in: text)!.lowerBound].split(separator: "\n", omittingEmptySubsequences: false).count
+                XCTFail("\(file):\(line) names a toolkit: \((text as NSString).substring(with: match.range))")
+            }
+        }
+    }
+
+    /// Every host whose suite runs the conformance cases runs every family of them: a family one host leaves out
+    /// is work that host silently does not prove.
+    func testEveryHostRunsEveryConformanceFamily() throws {
+        let repository = SourceTree.repository
+        let cases = repository.appendingPathComponent("lib/StateUI.HostConformance/Sources/StateUIHostConformance/Cases")
+        let family = try NSRegularExpression(pattern: #"public enum (\w+): ConformanceFamily"#)
+        var families: Set<String> = []
+        for file in try SourceTree.files(under: cases, entering: { _ in true }) {
+            let text = try String(contentsOf: cases.appendingPathComponent(file), encoding: .utf8)
+            for match in family.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
+                families.insert((text as NSString).substring(with: match.range(at: 1)))
+            }
+        }
+        XCTAssertGreaterThanOrEqual(families.count, 4, "the walk found almost no family")
+
+        let lib = repository.appendingPathComponent("lib")
+        let runners = try SourceTree.files(under: lib, entering: { !$0.contains(".build") && !$0.hasPrefix("StateUI/") })
+            .filter { $0.hasSuffix("ConformanceTests.swift") && !$0.hasPrefix("StateUI.HostConformance/") }
+        XCTAssertFalse(runners.isEmpty, "no host runs the conformance cases")
+        for runner in runners {
+            let text = try String(contentsOf: lib.appendingPathComponent(runner), encoding: .utf8)
+            for name in families.sorted() where !text.contains("conform(\(name).self)") {
+                XCTFail("\(runner) does not run the family \(name)")
+            }
+        }
+    }
+
     /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C module is
     /// the system's headers and nothing else - a module map and one header that includes libadwaita's -
     /// and its scripts stand under `.scripts/GTK`.

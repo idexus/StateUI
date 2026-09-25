@@ -3,6 +3,7 @@
 
 @_spi(Host) @testable import StateUI
 @testable import StateUIGTK
+import StateUIHostConformance
 import XCTest
 
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.

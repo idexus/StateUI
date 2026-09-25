@@ -14,6 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
+        .package(name: "StateUIHostConformance", path: "../StateUI.HostConformance"),
     ],
     targets: [
         // GTK's and libadwaita's headers and libraries, and nothing else.
@@ -26,7 +27,10 @@ let package = Package(
         ),
         .testTarget(
             name: "StateUIGTKTests",
-            dependencies: ["StateUIGTK", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: [
+                "StateUIGTK", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHostConformance", package: "StateUIHostConformance"),
+            ],
             path: "Tests",
             exclude: ["Resources"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]

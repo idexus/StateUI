@@ -60,27 +60,16 @@ final class GTKInputViewTests: XCTestCase {
         }
     }
 
-    /// An editor's words are heard as the user types them, kept within their bound; its placeholder shows only
-    /// while it holds none.
-    func testAnEditorsWordsAreHeardWithinTheirBound() throws {
+    /// An editor's placeholder shows only while it holds no words.
+    func testAnEditorsPlaceholderShowsOnlyWhileItHoldsNoWords() throws {
         try onUIThread {
-            let words = State(wrappedValue: "")
-            let heard = Received<String>()
-            let host = GTKRenderer.running {
-                VStack {
-                    TextEditor(words.projectedValue).placeholder("Notes").maximumLength(5)
-                        .onTextChanged { heard.values.append($0) }
-                }
-            }
+            let host = GTKRenderer.running { VStack { TextEditor("").placeholder("Notes") } }
             let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
             XCTAssertTrue(editor.showsPlaceholder)
 
-            editor.type("one\ntwo")
+            editor.type("one")
             host.pump.turn()
 
-            XCTAssertEqual(words.wrappedValue, "one\nt")
-            XCTAssertEqual(editor.text, "one\nt")
-            XCTAssertEqual(heard.values, ["one\nt"])
             XCTAssertFalse(editor.showsPlaceholder)
         }
     }
@@ -111,33 +100,6 @@ final class GTKInputViewTests: XCTestCase {
         }
     }
 
-    /// The user typing in a search field is heard once and Enter submits it; the program's words are shown and
-    /// heard by nobody.
-    func testTheUsersSearchIsHeardAndTheProgramsIsNot() throws {
-        try onUIThread {
-            let query = State(wrappedValue: "")
-            let heard = Received<String>()
-            let host = GTKRenderer.running {
-                VStack {
-                    SearchField(query.projectedValue)
-                        .onTextChanged { heard.values.append($0) }
-                        .onSubmitted { heard.values.append("submitted") }
-                    Button("Tea").onClicked { query.wrappedValue = "tea" }
-                }
-            }
-            let search = try XCTUnwrap(host.views(GTKSearchFieldView.self).first)
-
-            search.type("coffee")
-            GTKTestHost.emit(search.widget.opaque, "activate")
-            host.settle { query.wrappedValue == "coffee" && heard.values.count == 2 }
-            XCTAssertEqual(heard.values, ["coffee", "submitted"])
-
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.settle { search.text == "tea" }
-            XCTAssertEqual(search.text, "tea")
-            XCTAssertEqual(heard.values, ["coffee", "submitted"], "the program's words heard by nobody")
-        }
-    }
 }
 
 private extension GTKTextFieldView {

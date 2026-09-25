@@ -4,37 +4,8 @@
 import CStateUIGTK
 @_spi(Host) import StateUI
 @testable import StateUIGTK
+import StateUIHostConformance
 import XCTest
-
-/// The smallest complete application around one page: one scene, one window.
-struct OneWindowApplication: Application {
-    let page: @Sendable () -> any Page
-
-    var scene: any Scene { OneWindow(content: page) }
-}
-
-/// The window of a `OneWindowApplication`, its page built again each time the window is.
-struct OneWindow: Window {
-    let content: @Sendable () -> any Page
-
-    var page: any Page { content() }
-}
-
-/// What a handler heard, in order.
-final class Received<Value>: Sendable {
-    private let received = State(wrappedValue: [Value]())
-
-    var values: [Value] {
-        get { received.wrappedValue }
-        set { received.wrappedValue = newValue }
-    }
-}
-
-/// A clock a test winds by hand, in milliseconds.
-@MainActor
-final class TestClock {
-    var now = 0.0
-}
 
 /// The test thread as GTK's: libadwaita started once, and an application registered for the windows, with no
 /// loop of GLib's running a test.

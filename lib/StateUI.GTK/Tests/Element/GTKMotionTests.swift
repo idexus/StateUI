@@ -3,6 +3,7 @@
 
 @_spi(Host) @testable import StateUI
 @testable import StateUIGTK
+import StateUIHostConformance
 import XCTest
 
 final class GTKMotionTests: XCTestCase {

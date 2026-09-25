@@ -37,7 +37,8 @@ it.
   node type, its tiers and its members, and who reads it.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [layout](host/layout.md),
-  [motion](host/motion.md), [patches](host/patches.md).
+  [motion](host/motion.md), [patches](host/patches.md), and
+  [conformance](host/conformance.md), the suite every host runs.
 - `platforms/`: each platform's half of its runtime, one folder a platform.
   `platforms/appkit/`: [input](platforms/appkit/input.md),
   [views](platforms/appkit/views.md),

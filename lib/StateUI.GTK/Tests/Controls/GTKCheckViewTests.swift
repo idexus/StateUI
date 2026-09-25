@@ -7,31 +7,6 @@ import CStateUIGTK
 import XCTest
 
 final class GTKCheckViewTests: XCTestCase {
-    /// The user's tick reaches the state and the handler once; the program's tick is heard by nobody.
-    func testAUsersTickIsHeardAndTheProgramsIsNot() throws {
-        try onUIThread {
-            let ticked = State(wrappedValue: false)
-            let heard = Received<Bool>()
-            let host = GTKRenderer.running {
-                VStack {
-                    CheckBox(ticked.projectedValue).onToggled { heard.values.append($0) }
-                    Button("Untick").onClicked { ticked.wrappedValue = false }
-                }
-            }
-            let box = try XCTUnwrap(host.views(GTKCheckView.self).first)
-
-            box.toggle()
-            host.settle { ticked.wrappedValue }
-            XCTAssertTrue(ticked.wrappedValue)
-            XCTAssertEqual(heard.values, [true])
-
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.settle { !box.isOn }
-            XCTAssertFalse(box.isOn, "the state the button wrote reached the box")
-            XCTAssertEqual(heard.values, [true], "and nobody heard it as the user's")
-        }
-    }
-
     /// A check box is the box and nothing else: it takes no caption's room.
     func testACheckBoxTakesItsBoxsRoomAlone() throws {
         try onUIThread {
@@ -44,64 +19,6 @@ final class GTKCheckViewTests: XCTestCase {
 
             XCTAssertLessThanOrEqual(box.measure(width: nil, height: nil).width, 32, "no wider than its box")
             XCTAssertGreaterThan(box.measure(width: nil, height: nil).width, 0)
-        }
-    }
-
-    /// The user checks one radio button of a named set: the one checked before reports it is off, then the new one
-    /// that it is on, and the tree's choice follows.
-    func testAUsersChoiceTakesTheGroupsOtherCheckAway() {
-        onUIThread {
-            let choice = State(wrappedValue: "Small")
-            let heard = Received<String>()
-            let host = GTKRenderer.running {
-                VStack {
-                    ForEach(["Small", "Large"]) { name in
-                        RadioButton(name)
-                            .groupName("size")
-                            .isOn(choice.wrappedValue == name)
-                            .onToggled { chosen in
-                                heard.values.append("\(name) \(chosen)")
-                                if chosen { choice.wrappedValue = name }
-                            }
-                            .id(name)
-                    }
-                }
-            }
-            let radios = host.views(GTKCheckView.self)
-            XCTAssertEqual(radios.map(\.text), ["Small", "Large"])
-            XCTAssertEqual(radios.map(\.isOn), [true, false])
-
-            radios[1].toggle()
-            host.settle { choice.wrappedValue == "Large" }
-
-            XCTAssertEqual(heard.values, ["Small false", "Large true"])
-            XCTAssertEqual(choice.wrappedValue, "Large")
-            XCTAssertEqual(radios.map(\.isOn), [false, true])
-        }
-    }
-
-    /// Buttons that name no set are a set with their siblings alone, and each change is heard once: GTK takes no
-    /// check away itself, the host does.
-    func testButtonsNamingNoSetAreOneWithTheirSiblings() {
-        onUIThread {
-            let heard = Received<String>()
-            let host = GTKRenderer.running {
-                VStack {
-                    ForEach(["A", "B"]) { name in
-                        RadioButton(name).isOn(name == "A").onToggled { heard.values.append("\(name) \($0)") }.id(name)
-                    }
-                    HStack {
-                        RadioButton("C").isOn(true).onToggled { heard.values.append("C \($0)") }
-                    }
-                }
-            }
-            let radios = host.views(GTKCheckView.self)
-
-            radios[1].toggle()
-            host.settle { heard.values.count == 2 }
-
-            XCTAssertEqual(heard.values, ["A false", "B true"])
-            XCTAssertEqual(radios.map(\.isOn), [false, true, true], "C, beside no other, keeps its check")
         }
     }
 

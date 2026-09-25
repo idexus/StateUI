@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @testable import StateUIGTK
+import StateUIHostConformance
 import XCTest
 
 /// A box that says where it stands, into a state and to a handler, and a reader built from its own frame.
