@@ -19,8 +19,8 @@ private struct SpinnerPage: ContentView {
 
 final class WinUIIndicatorViewTests: XCTestCase {
     /// A bar fills in its tint as far as its work went, and no further; a fraction past the end is the end.
-    func testABarFillsInItsTintAsFarAsItsWorkWent() throws {
-        try onUIThread {
+    func testABarFillsInItsTintAsFarAsItsWorkWent() {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     ProgressBar(0.5).tint(Color("#FF0000")).width(200).height(8)

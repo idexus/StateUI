@@ -8,8 +8,8 @@ import XCTest
 final class WinUIRadioButtonViewTests: XCTestCase {
     /// The user checks one radio button of a named set: the one checked before reports it is off, then the new one
     /// that it is on, and the tree's choice follows.
-    func testAUsersChoiceTakesTheGroupsOtherCheckAway() throws {
-        try onUIThread {
+    func testAUsersChoiceTakesTheGroupsOtherCheckAway() {
+        onUIThread {
             let choice = State(wrappedValue: "Small")
             let heard = Received<String>()
             let host = WinUIRenderer.running {
@@ -41,8 +41,8 @@ final class WinUIRadioButtonViewTests: XCTestCase {
 
     /// Buttons that name no set are a set with their siblings alone, and each change is heard once: WinUI takes no
     /// check away itself, the host does.
-    func testButtonsNamingNoSetAreOneWithTheirSiblings() throws {
-        try onUIThread {
+    func testButtonsNamingNoSetAreOneWithTheirSiblings() {
+        onUIThread {
             let heard = Received<String>()
             let host = WinUIRenderer.running {
                 VStack {

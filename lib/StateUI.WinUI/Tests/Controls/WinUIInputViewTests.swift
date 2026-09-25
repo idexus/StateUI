@@ -9,8 +9,8 @@ import XCTest
 final class WinUIInputViewTests: XCTestCase {
     /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centred, its
     /// placeholder coloured, and its caret and selection where they were put.
-    func testAFieldTakesWordsAsTheTreeSays() throws {
-        try onUIThread {
+    func testAFieldTakesWordsAsTheTreeSays() {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     TextField("abcdefg")
