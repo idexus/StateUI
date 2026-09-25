@@ -22,6 +22,10 @@ final class GTKWindow {
 
     private var presented = false
 
+    /// The size and the smallest size last given.
+    private var size: (width: Double?, height: Double?) = (nil, nil)
+    private var minimumSize: (width: Double?, height: Double?) = (nil, nil)
+
     init(application: UnsafeMutablePointer<GtkApplication>) {
         widget = adw_application_window_new(application)!
         g_object_ref(widget)
@@ -40,6 +44,23 @@ final class GTKWindow {
         guard self.title != .some(title) else { return }
         self.title = .some(title)
         gtk_window_set_title(widget.of(GtkWindow.self), title)
+    }
+
+    /// The window's size as it opens, where the window element says one; a window already open takes it too.
+    func setSize(width: Double?, height: Double?) {
+        guard width != size.width || height != size.height else { return }
+        size = (width, height)
+        var current: (width: Int32, height: Int32) = (0, 0)
+        gtk_window_get_default_size(widget.of(GtkWindow.self), &current.width, &current.height)
+        gtk_window_set_default_size(
+            widget.of(GtkWindow.self), width.map { Int32($0) } ?? current.width, height.map { Int32($0) } ?? current.height)
+    }
+
+    /// How small the user may make the window; GNOME's smallest where the element says none.
+    func setMinimumSize(width: Double?, height: Double?) {
+        guard width != minimumSize.width || height != minimumSize.height else { return }
+        minimumSize = (width, height)
+        gtk_widget_set_size_request(widget, Int32(width ?? 360), Int32(height ?? 294))
     }
 
     /// Shows `view` as the window's content, as it stands: an arrangement whose pages carry their header bars.

@@ -51,6 +51,9 @@ final class GTKRenderer {
     /// The window told it was made.
     private weak var createdWindow: MountedElement?
 
+    /// Whether the screen the window stands on has been told.
+    private var reportedDisplay = false
+
     /// Whether the window's split view has been opened wide, once.
     private var openedWide = false
 
@@ -120,9 +123,18 @@ final class GTKRenderer {
         return renderer
     }
 
-    /// Renders the application whole, connecting its scene first.
+    /// Renders the application whole, connecting its scene first, told what the host stands on.
     func show() {
+        let identifier = g_application_get_application_id(application.of(GApplication.self)).map { String(cString: $0) }
+        GTKEnvironment.report(to: core, applicationID: identifier ?? "")
+        GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
         core.connectScene()
+        pump.turn()
+    }
+
+    /// The desktop's style turned dark or light: the core hears it, and renders what it changed.
+    func environmentChanged() {
+        GTKEnvironment.reportChanging(to: core)
         pump.turn()
     }
 
@@ -173,6 +185,12 @@ final class GTKRenderer {
             self.window = window
             frameClock.widget = window.widget
         }
+        if !reportedDisplay, gtk_widget_get_realized(window.widget) != 0 {
+            reportedDisplay = true
+            GTKEnvironment.reportDisplay(to: core, window: window.widget)
+        }
+        window.setSize(width: element.value(.width)?.number, height: element.value(.height)?.number)
+        window.setMinimumSize(width: element.value(.minimumWidth)?.number, height: element.value(.minimumHeight)?.number)
 
         let arrangement = element.children.first { GTKElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {

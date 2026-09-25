@@ -66,4 +66,17 @@ The first window element's arrangement of pages is the content of an
 the window's title bar, an arrangement as it stands, its pages carrying their
 own ([pages](pages.md)). The window is presented the first time it shows
 something, and told it was made once, in its turn. It opens at 560 by 440, as
-a desktop host's window does.
+a desktop host's window does, or at the size the window element says, which a
+window already open takes too; the user may make it no smaller than the
+element's smallest size, or GNOME's own - 360 by 294 - where it says none.
+GTK 4 gives a window no largest size.
+
+## The environment
+
+As the host starts it tells the core what it stands on: a desktop, Linux, the
+machine's model and maker as the kernel reads them, the host's name, the
+system's version, whether the machine is virtual; the application's name and
+its identifier. It tells the core the desktop's style - dark or light, as
+libadwaita's style manager reads it from the desktop's settings - and again
+whenever it turns, and once the window stands, the screen it stands on: its
+size in pixels, its scale and its refresh rate.

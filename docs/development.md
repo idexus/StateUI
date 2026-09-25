@@ -18,6 +18,7 @@ lib/StateUI.VSCode/                the editor extension
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/Android/    Gallery Android head
+apps/Gallery/Platforms/GTK/        Gallery GTK head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point

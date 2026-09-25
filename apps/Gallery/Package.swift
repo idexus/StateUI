@@ -42,6 +42,10 @@ let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "
 // STATEUI_WINUI.
 let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
 
+// And for Platforms/GTK, the GTK 4 head: .scripts/GTK/run-app.sh sets
+// STATEUI_GTK.
+let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
+
 // What every module of the application is compiled with. In an AppKit build
 // that includes APPKIT, the condition Swift written for that host alone stands
 // under - defined HERE rather than by a compiler flag, so the one variable
@@ -52,6 +56,7 @@ let settings: [SwiftSetting] =
     + (hasAppKitHead ? [.define("APPKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
     + (hasWinUIHead ? [.define("WINUI")] : [])
+    + (hasGTKHead ? [.define("GTK")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -176,6 +181,30 @@ if hasWinUIHead {
             swiftSettings: settings,
             // A windowed application: started by itself it opens no console, and started from one it writes there.
             linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
+        ))
+}
+
+if hasGTKHead {
+    // The same gallery module, an executable its GTK host runs on Linux: its
+    // main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "GalleryGTK",
+            targets: ["GalleryGTK"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
+
+    targets.append(
+        .executableTarget(
+            name: "GalleryGTK",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIGTK", package: "StateUIGTK"),
+            ],
+            path: "Platforms/GTK",
+            swiftSettings: settings
         ))
 }
 
