@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A window: its title, and a root of four rows - the window's chrome, its
-// menu bar, the row of tabs, and the arrangement of pages - shown and closed.
+// menu bar, the row of tabs, and the arrangement of pages - with the overlay
+// laid over the page, shown and closed.
 // Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 
 #include "Relay.h"
@@ -86,6 +87,31 @@ extern "C" void stateui_winui_window_set_content(StateUIObjectRef handle, StateU
         standInRow(root(borrow<xaml::Window>(handle)), 3, content);
     } catch (winrt::hresult_error const &error) {
         report(error, "filling a window");
+    }
+}
+
+extern "C" void stateui_winui_window_set_overlay(StateUIObjectRef handle, StateUIObjectRef overlay) {
+    try {
+        auto children = root(borrow<xaml::Window>(handle)).Children();
+        controls::Grid layer{nullptr};
+        for (auto const &child : children)
+            if (auto grid = child.try_as<controls::Grid>(); grid && winrt::unbox_value_or<winrt::hstring>(grid.Tag(), L"") == L"overlay")
+                layer = grid;
+        if (!layer && !overlay) return;
+        if (!layer) {
+            // Where the page stands, over it and over its sheets; with no background, a click beside what it holds
+            // goes on to them.
+            layer = controls::Grid();
+            layer.Tag(winrt::box_value(L"overlay"));
+            controls::Grid::SetRow(layer, 3);
+            controls::Canvas::SetZIndex(layer, 1);
+            children.Append(layer);
+        }
+        layer.Children().Clear();
+        if (overlay) layer.Children().Append(as<xaml::UIElement>(overlay));
+        else if (uint32_t index; children.IndexOf(layer, index)) children.RemoveAt(index);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "laying the overlay over a window");
     }
 }
 

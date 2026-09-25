@@ -40,6 +40,9 @@ final class WinUIRenderer {
     /// The arrangement of pages the window shows, held by its mounted element, which owns its WinUI half.
     private var shownArrangementElement: MountedElement?
 
+    /// What the window lays over everything it shows, held by its mounted element.
+    private var shownOverlayElement: MountedElement?
+
     /// The sheets the window shows, one for each page its modal stack presents, the last on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
 
@@ -296,8 +299,8 @@ final class WinUIRenderer {
         refreshWindowChrome()
     }
 
-    /// Shows the first window's arrangement of pages in a WinUI window, its pages hearing that they show, and tells
-    /// the window it was made, once, in its turn.
+    /// Shows the first window's arrangement of pages, its sheets and its overlay in a WinUI window, its pages hearing
+    /// that they show, and tells the window it was made, once, in its turn.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindow() {
         guard let element = tree.root?.first(type: .window) else { return }
@@ -321,6 +324,11 @@ final class WinUIRenderer {
             window.show(arrangement?.winUI.view)
         }
         showSheets(of: element, in: window)
+        let overlay = element.children.first { $0.type == .overlay }
+        if overlay !== shownOverlayElement {
+            shownOverlayElement = overlay
+            window.showOverlay(overlay?.winUI.view)
+        }
         let visible = sheets.last?.element ?? shownArrangementElement
         if visible !== previousVisible {
             let reason: WinUIPagePresentationReason = hadSheets || !sheets.isEmpty ? .navigation : .window

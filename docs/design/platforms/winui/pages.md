@@ -110,6 +110,16 @@ as a move. Escape takes the top sheet away, and so does the window's way back
 while a sheet shows, once the sheet's own stack has no page to go back to;
 the window is told how many sheets remain.
 
+## The window's overlay
+
+What a window lays over everything it shows - the inspector docked in it -
+stands where the page stands, beneath the chrome, over the page and over
+every sheet, whichever came first. It has no background of its own, so a
+click beside what it holds goes on to the page or the sheet under it. It and
+the sheets are layers of the window, not the content of a row: the chrome and
+the menu bar standing again, as a page's menus come and go, leave both where
+they are. The window takes the overlay out when it no longer describes it.
+
 ## Menus
 
 The visible page's menus stand on WinUI's `MenuBar` in a row of the window

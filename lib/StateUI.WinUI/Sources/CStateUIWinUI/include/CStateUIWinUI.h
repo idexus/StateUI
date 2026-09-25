@@ -307,6 +307,10 @@ StateUIObjectRef stateui_winui_sheet_make(void);
 void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
 void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef const *sheets, int32_t count);
 
+/// Lays `overlay` over the window's page and its sheets, where the page stands; a click beside what it holds goes on
+/// to them. Null takes it away.
+void stateui_winui_window_set_overlay(StateUIObjectRef window, StateUIObjectRef overlay);
+
 /// How many sheets a window shows - what a test reads.
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);
 
@@ -534,6 +538,10 @@ bool stateui_winui_press(StateUIObjectRef element);
 
 /// Whether a click at (x, y) DIPs of `element` would reach the element itself.
 bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
+
+/// Whether a click at (x, y) DIPs of `element` would reach it, or what stands in it, through everything its window
+/// shows over it - what a test reads.
+bool stateui_winui_reaches(StateUIObjectRef element, double x, double y);
 
 /// Tells `focused` whenever the keyboard comes into the element or leaves it, while `hearing`; false stops.
 void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool hearing);

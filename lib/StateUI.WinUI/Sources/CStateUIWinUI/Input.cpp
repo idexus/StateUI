@@ -262,6 +262,24 @@ extern "C" bool stateui_winui_hits(StateUIObjectRef handle, double x, double y) 
     }
 }
 
+extern "C" bool stateui_winui_reaches(StateUIObjectRef handle, double x, double y) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        auto point = element.TransformToVisual(nullptr).TransformPoint(
+            Point(static_cast<float>(x), static_cast<float>(y)));
+        // What the window holds at the point, the top first: the click is the top one's, or an element's it stands in.
+        for (auto const &hit : xaml::Media::VisualTreeHelper::FindElementsInHostCoordinates(point, element.XamlRoot().Content())) {
+            for (xaml::DependencyObject at = hit; at; at = xaml::Media::VisualTreeHelper::GetParent(at))
+                if (at == element) return true;
+            return false;
+        }
+        return false;
+    } catch (winrt::hresult_error const &error) {
+        report(error, "finding what a click reaches");
+        return false;
+    }
+}
+
 namespace {
     /// One view's focus heard: whether the keyboard is in it, and the handlers hung on its element.
     struct Focus {

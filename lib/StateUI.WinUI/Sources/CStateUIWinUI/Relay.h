@@ -64,8 +64,9 @@ namespace stateui {
 
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {
-        std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %ls\n", where,
-                     static_cast<unsigned>(error.code().value), error.message().c_str());
+        // As UTF-8: `%ls` stops at the first letter outside ASCII, the rest of the line with it.
+        std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %s\n", where,
+                     static_cast<unsigned>(error.code().value), winrt::to_string(error.message()).c_str());
         std::fflush(stderr);
     }
 
@@ -107,13 +108,19 @@ namespace stateui {
         return grid;
     }
 
+    /// Whether `element` is one of a window's layers over its rows - its sheets or its overlay - and no row's own.
+    inline bool isLayer(xaml::FrameworkElement const &element) {
+        auto name = winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"");
+        return name == L"sheets" || name == L"overlay";
+    }
+
     /// Stands `element` in `row` of `grid` in place of what stood there; nothing for null.
     inline void standInRow(controls::Grid const &grid, int32_t row, StateUIObjectRef element) {
         auto children = grid.Children();
         auto next = element ? as<xaml::FrameworkElement>(element) : xaml::FrameworkElement{nullptr};
         for (uint32_t index = children.Size(); index-- > 0;) {
             auto child = children.GetAt(index).as<xaml::FrameworkElement>();
-            if (controls::Grid::GetRow(child) != row) continue;
+            if (isLayer(child) || controls::Grid::GetRow(child) != row) continue;
             if (child == next) return;
             children.RemoveAt(index);
         }

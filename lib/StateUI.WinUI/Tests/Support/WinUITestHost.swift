@@ -217,6 +217,12 @@ extension WinUIView {
     func hits(_ x: Double, _ y: Double) -> Bool {
         stateui_winui_hits(handle, x, y)
     }
+
+    /// Whether a click at (`x`, `y`), in DIPs of the view, would reach it or what stands in it through everything
+    /// its window shows over it.
+    func reaches(_ x: Double, _ y: Double) -> Bool {
+        stateui_winui_reaches(handle, x, y)
+    }
 }
 
 extension WinUIButtonView {
