@@ -29,8 +29,17 @@ struct WinUILayoutItem: LayoutChild {
         } else {
             [width, values.maximumWidth].compactMap(\.self).min()
         }
-        var measured = view.measure(width: offer, height: nil)
-        if let layout = view as? WinUILayoutView { measured = layout.naturalSize(width: offer) }
+        // A layout of StateUI's is measured by WinUI at the width it stands at - so WinUI measures it again only where
+        // a change beneath marked it - and at a new place as it is put there; its size for any width is the
+        // arithmetic's.
+        // Design: docs/design/platforms/winui/layout.md#measured-every-pass
+        let measured: LayoutSize
+        if let layout = view as? WinUILayoutView {
+            if WinUIView.arranging == 0 { _ = view.measure(width: layout.standsAt ?? offer, height: nil) }
+            measured = layout.naturalSize(width: offer)
+        } else {
+            measured = view.measure(width: offer, height: nil)
+        }
 
         return LayoutSize(
             width: values.boundedWidth(values.width ?? measured.width),

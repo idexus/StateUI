@@ -150,6 +150,9 @@ class WinUILayoutView: WinUIView {
     /// How many StateUI layouts are measuring, one inside another.
     private static var measuring = 0
 
+    /// The width of the place this layout was last put in; nil before its first.
+    var standsAt: Double?
+
     /// The natural size last measured, and the width it was offered.
     private var measured: (offered: Double?, size: LayoutSize)?
 
@@ -164,10 +167,16 @@ class WinUILayoutView: WinUIView {
         placingLayout.invalidateMeasurements()
     }
 
-    /// The room the children take for the width offered, in DIPs, kept for the pass under way.
+    /// The room the children take for the width offered, in DIPs, kept until a change beneath marks the layout.
     func naturalSize(width: Double?) -> LayoutSize {
-        measurements.size(offering: width) { contentSize(width: width) }
+        measurements.size(offering: width) {
+            Self.sizings += 1
+            return contentSize(width: width)
+        }
     }
+
+    /// How many times a layout has sized its children - what a test counts.
+    static var sizings = 0
 
     /// Answers WinUI's arrange: places the box and every child in `width` by `height` DIPs, inside the pass.
     func arrange(width: Double, height: Double) {

@@ -16,9 +16,21 @@ asking: a child is placed only inside its parent's arrangement
 WinUI keeps each element's measure itself, and a child left unmeasured in a
 pass that marked it stays marked, which sets the pass going again - a pass
 that does not settle ends the process. So each measure the panel answers
-measures every shown child again; WinUI answers a child it measured at the
-same size from what it kept. The sizes the host keeps last for one pass,
-where the arithmetic asks for a child's size more than once.
+measures every shown child; WinUI answers a child it measured at the same
+size from what it kept, and measures one it did not.
+
+A native control is measured at each width the arithmetic offers it. A
+layout of StateUI's asks for no room, so it is measured at the width of the
+place it stands in: WinUI measures it again only where a change beneath
+marked it. Put in a place of another width, it is measured there first, which
+measures its own children at the widths its arrangement then gives them - a
+control arranged at a width other than the one it was last measured at would
+mark its layout again. Its size at any other width is the arithmetic's, kept
+per width until WinUI measures it again or a change forgets it on the way up.
+Measured at every width asked of it, a layout forgot its sizes each time and
+measured its whole subtree again: some seven hundred sizings for one word six
+grids deep, and 2910 measures - 150 ms of a debug build's frame - for one
+card of the home page's run turned.
 
 ## A place between passes
 
