@@ -32,6 +32,9 @@ namespace stateui {
     /// The host's callbacks, set once by run or embed.
     extern StateUIWinUICallbacks callbacks;
 
+    /// Runs `work` on the UI thread, in its turn; from any thread.
+    void post(void (*work)());
+
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {
         std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %ls\n", where,

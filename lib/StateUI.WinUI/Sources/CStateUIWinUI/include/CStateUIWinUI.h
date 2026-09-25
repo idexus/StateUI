@@ -74,7 +74,21 @@ typedef struct {
 
     /// A split view's sidebar opened or closed of WinUI's accord: a click beside it, or the window's room.
     void (*presented)(int64_t view, bool open);
+
+    /// Something the environment reports changed: the theme, the power, the network.
+    void (*environmentChanged)(void);
 } StateUIWinUICallbacks;
+
+/// What the environment is, in groups, each read at once.
+typedef enum {
+    StateUIFactsDevice,
+    StateUIFactsApplication,
+    StateUIFactsLocale,
+    StateUIFactsBattery,
+    StateUIFactsConnectivity,
+    StateUIFactsTheme,
+    StateUIFactsDisplay,
+} StateUIFacts;
 
 /// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
 int32_t stateui_winui_run(StateUIWinUICallbacks const *callbacks);
@@ -237,6 +251,14 @@ void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, Stat
 /// A tabbed view's row of tabs: a SelectorBar, `selected` chosen.
 StateUIObjectRef stateui_winui_tabs_make(int64_t view);
 void stateui_winui_tabs_set(StateUIObjectRef tabs, char const *const *titles, int32_t count, int32_t selected);
+
+/// A group of the environment's facts, in UTF-8, each ended by the unit separator (0x1F); the display's are the
+/// screen `window` stands on. Answers the length the facts need, their end not counted.
+int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef window, char *utf8, int32_t capacity);
+
+/// Watches the theme, the power and the network, `environmentChanged` called in the UI thread's turn after each
+/// change; once.
+void stateui_winui_watch_environment(void);
 
 #ifdef __cplusplus
 }

@@ -112,11 +112,19 @@ final class WinUIRenderer {
         shared = renderer
         renderer.show()
         WinUIDoorbell.install()
+        stateui_winui_watch_environment()
         return renderer
+    }
+
+    /// Windows said the theme, the power or the network changed: the core hears it, and renders what it changed.
+    func environmentChanged() {
+        WinUIEnvironment.reportChanging(to: core)
+        pump()
     }
 
     /// Renders the application whole, connecting its scene first.
     func show() {
+        WinUIEnvironment.report(to: core)
         core.connectScene()
         pump()
     }
@@ -259,8 +267,14 @@ final class WinUIRenderer {
     private func showWindow() {
         guard let element = tree.root?.first(type: .window) else { return }
 
-        let window = self.window ?? WinUIWindow()
-        self.window = window
+        if self.window == nil {
+            let window = WinUIWindow()
+            self.window = window
+            // The screen is known once there is a window; what reads it renders again in the next turn.
+            WinUIEnvironment.reportDisplay(to: core, window: window)
+            pumpAgain = true
+        }
+        guard let window = self.window else { return }
 
         let arrangement = element.children.first { WinUIElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {

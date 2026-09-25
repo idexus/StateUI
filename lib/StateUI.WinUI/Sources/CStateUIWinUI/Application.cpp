@@ -69,6 +69,16 @@ namespace stateui {
     }
 }
 
+namespace stateui {
+    void post(void (*work)()) {
+        try {
+            if (queue) queue.TryEnqueue([work] { work(); });
+        } catch (winrt::hresult_error const &error) {
+            report(error, "posting work to the UI thread");
+        }
+    }
+}
+
 using namespace stateui;
 
 extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given) {

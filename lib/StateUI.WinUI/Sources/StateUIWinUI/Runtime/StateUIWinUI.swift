@@ -77,6 +77,9 @@ enum WinUICallbacks {
             },
             presented: { view, open in
                 MainActor.assumeIsolated { WinUIView.find(view)?.presented(open) }
+            },
+            environmentChanged: {
+                MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             })
     }
 }

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
 import XCTest
@@ -56,10 +57,36 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 14, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 15, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
+        }
+    }
+
+    /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
+    /// has it now.
+    func testThePageReadsWindowsAndItsTheme() {
+        onUIThread {
+            let host = WinUIRenderer.running { EnvironmentPage() }
+            var bytes = [CChar](repeating: 0, count: 8)
+            _ = stateui_winui_facts(StateUIFactsTheme, nil, &bytes, 8)
+            let dark = bytes[0] == 0x31
+
+            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
+        }
+    }
+}
+
+/// A page saying what it runs on and the theme it runs in.
+private struct EnvironmentPage: ContentView {
+    @Environment private var device: DeviceInfo
+    @Environment private var app: AppInfo
+
+    var content: any View {
+        VStack {
+            Label("\(device.platform) \(device.formFactor)")
+            Label("\(app.requestedTheme)")
         }
     }
 }

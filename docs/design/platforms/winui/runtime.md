@@ -73,6 +73,18 @@ The first window element's arrangement of pages is the content of a WinUI
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
 the first time it shows a page, and told it was made once, in its turn.
 
+## The environment
+
+The host tells the core what it stands on as it starts: a desktop running
+Windows - the device's maker, model, name and version, and whether it is a
+virtual machine - the application's name, the system's theme, the user's
+locale, the battery and the network; and the screen once there is a window,
+at the system's scale, which a window on a second screen may not share. The
+theme is the one Windows paints its controls in, so a colour written for
+light and dark reads as WinUI's own text beside it. Windows says when the
+theme, the power or the network changes; the relay posts each change to the
+UI thread, and the host tells the core again and renders what it changed.
+
 ## Self-contained
 
 An application carries the Windows App SDK beside its executable, with no
