@@ -12,8 +12,8 @@ public enum CanvasContract: ElementContract {
     /// A canvas is a view.
     public static let tiers: [any Contract.Type] = [ViewContract.self]
 
-    /// A finger moved while down, to where it is now, in the canvas's
-    /// coordinates.
+    /// A press moved - a finger down, or the mouse with its button held - to
+    /// where it is now, in the canvas's coordinates.
     public static let dragged = ElementEvent<Self, Point>("dragged", layer: .native)
 
     /// What the canvas draws: its instructions, in order.

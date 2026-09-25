@@ -2,7 +2,7 @@
 
 # SearchField
 
-A text field with a search button on the keyboard.
+A text field for what to search for, shown as the platform's search field.
 
 Layer: `native`. Every base host presents it with its native toolkit.
 

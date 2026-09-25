@@ -102,7 +102,7 @@ public enum ViewContract: Contract {
     public static let swipeDirection = ElementProperty<Self, SwipeDirection>(
         "swipeDirection", layer: .structure, cleared: false)
 
-    /// How far a finger must travel for a swipe, in device units.
+    /// How far a swipe must travel to count, in device units.
     public static let swipeThreshold = ElementProperty<Self, Double>(
         "swipeThreshold", layer: .structure, travels: false, cleared: false)
 

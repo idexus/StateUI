@@ -192,7 +192,7 @@ page.toolbarItems = [
 ]
 ```
 
-`order` distinguishes primary actions from actions behind native overflow.
+`placement` distinguishes primary actions from actions behind native overflow.
 Within either group, lower `priority` appears first and equal values retain
 source order. The host chooses the native placement appropriate to the window
 and available space. Give stable identities to items whose list can change.

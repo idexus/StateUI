@@ -35,11 +35,13 @@ public final class WindowSession {
     @State public var title: String? = nil
 
     /// The horizontal position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space.
+    /// host's desktop coordinate space, where the platform lets an
+    /// application place its windows.
     @State public var x: Double? = nil
 
     /// The vertical position of the outer frame's top-left corner in the
-    /// host's desktop coordinate space.
+    /// host's desktop coordinate space, where the platform lets an
+    /// application place its windows.
     @State public var y: Double? = nil
 
     /// The requested width of the window's content area.
@@ -66,12 +68,12 @@ public final class WindowSession {
     /// A smaller value than `minimumHeight` is treated as `minimumHeight`.
     @State public var maximumHeight: Double? = nil
 
-    /// Whether the host permits the user to maximize the window through any
-    /// native affordance for that operation.
+    /// Whether the user may maximize the window through the platform's own
+    /// ways of doing so, where the platform lets an application say.
     @State public var isMaximizable: Bool? = nil
 
-    /// Whether the host permits the user to minimize the window through any
-    /// native affordance for that operation.
+    /// Whether the user may minimize the window through the platform's own
+    /// ways of doing so, where the platform lets an application say.
     @State public var isMinimizable: Bool? = nil
 
     /// Whether the desktop shows through the window, blurred - under whatever

@@ -173,9 +173,11 @@ struct RuntimeSummary: ContentView {
 }
 ```
 
-Use `DeviceInfo.formFactor` for a semantic form-factor decision. Use display points
-for layout (`pixels / density`) and handle zero density before the first host
-report. Use `AppInfo.requestedTheme` only when logic itself branches on the
+Use `DeviceInfo.formFactor` for a semantic form-factor decision, never for
+layout: a window can be smaller than its display, and resized. Lay out by the
+room a view is given - `.onFrameChanged` and `FrameReader`
+([layout](layout.md)) - and read display points (`pixels / density`) for the
+screen itself, handling zero density before the first host report. Use `AppInfo.requestedTheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
 `Connectivity.networkAccess == .internet` means ordinary internet access.

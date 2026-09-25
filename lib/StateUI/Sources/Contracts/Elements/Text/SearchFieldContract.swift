@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A text field with a search button on the keyboard.
+/// A text field for what to search for, shown as the platform's search field.
 public enum SearchFieldContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "SearchField"

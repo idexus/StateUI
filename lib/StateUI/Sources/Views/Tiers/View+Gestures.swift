@@ -43,7 +43,7 @@ extension View {
     /// - Parameters:
     ///   - direction: which ways to listen for. A view that listens for nothing
     ///     recognizes nothing, so the default is every direction.
-    ///   - threshold: how far the finger must travel, in device units.
+    ///   - threshold: how far a swipe must travel to count, in device units.
     public func onSwiped(
         direction: SwipeDirection = .all,
         threshold: Double? = nil,

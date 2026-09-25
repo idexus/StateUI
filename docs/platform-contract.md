@@ -12,7 +12,8 @@ surface and the implementation evidence for each host.
   element's page in [the control dictionary](controls/README.md) names what is
   missing.
 - – means the member is not planned for that host's family - a phone with no
-  menu bar, a desktop with no pull to refresh - and meets the contract there:
+  menu bar, a desktop whose keyboard captions no return key - and meets the
+  contract there:
   the element's page says why, and the Gallery shows that family no example of
   it. The totals count a host's ✅ and – as met.
 - An empty cell means the implementation is absent, incomplete, or not yet

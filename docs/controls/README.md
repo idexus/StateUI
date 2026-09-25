@@ -109,7 +109,7 @@ Members many elements share, declared once.
 - [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
 - [TintElement](tiers/TintElement.md) - A control's one accent colour.
 - [BarElement](tiers/BarElement.md) - The bar a page arrangement draws: its colour.
-- [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
+- [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
 <!-- tiers:end -->
 

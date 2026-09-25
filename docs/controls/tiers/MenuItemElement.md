@@ -2,7 +2,7 @@
 
 # MenuItemElement
 
-What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
+What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 
 Wears: [PropertyContainer](PropertyContainer.md)
 

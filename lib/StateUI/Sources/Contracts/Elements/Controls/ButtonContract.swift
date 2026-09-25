@@ -31,10 +31,10 @@ public enum ButtonContract: ElementContract {
     /// What happens to a caption too long for the button.
     public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
 
-    /// A finger went down on the button.
+    /// A press began on the button: a finger, a pen or a mouse button went down.
     public static let pressed = ElementEvent<Self, Void>("pressed", layer: .native)
 
-    /// The finger was lifted, wherever it ended up.
+    /// The press ended, wherever the pointer ended up.
     public static let released = ElementEvent<Self, Void>("released", layer: .native)
 
     /// The element's own members.

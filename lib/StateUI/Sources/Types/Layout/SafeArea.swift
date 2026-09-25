@@ -7,7 +7,8 @@
 /// What one edge of a layout stays clear of on the screen's unsafe strip -
 /// the notch, the bars, the on-screen keyboard.
 ///
-/// Only iOS has such a strip; the other platforms ignore this. A layout there
+/// Phones and tablets have such strips, and a desktop window may have one
+/// under its toolbar; where a platform has none, this does nothing. A layout
 /// defaults to `.container` - see `avoidsSafeArea`.
 public enum SafeArea: Int32, Sendable {
     /// Edge to edge: content may run under the notch, the bars and the
@@ -17,8 +18,8 @@ public enum SafeArea: Int32, Sendable {
     /// Clear of the on-screen keyboard, under everything else.
     case keyboard = 1
 
-    /// Clear of the bars and the notch, under the keyboard. What an iOS
-    /// layout does when nothing is said.
+    /// Clear of the bars and the notch, under the keyboard. What a layout
+    /// does when nothing is said.
     case container = 2
 
     /// Clear of everything - bars, notch and keyboard alike.

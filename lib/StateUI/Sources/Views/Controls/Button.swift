@@ -95,13 +95,13 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
         onEvent(ButtonContract.clicked, handler)
     }
 
-    /// Runs the moment the finger goes down, before it is lifted.
+    /// Runs the moment a press begins, before it ends.
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.pressed, handler)
     }
 
-    /// Runs when the finger is lifted, wherever it ends up - unlike `onClicked`,
-    /// which needs it lifted on the button.
+    /// Runs when the press ends, wherever the pointer ends up - unlike
+    /// `onClicked`, which needs it to end on the button.
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         onEvent(ButtonContract.released, handler)
     }

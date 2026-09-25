@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What every item a user chooses from has - a menu's entry, a toolbar's
-/// item, a swipe's action: a caption, a picture, and something to run.
+/// item: a caption, a picture, and something to run.
 public enum MenuItemElementContract: Contract {
     /// The tier's name.
     public static let name = "MenuItemElement"
