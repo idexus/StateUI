@@ -176,24 +176,11 @@ final class ControlDictionaryTests: XCTestCase {
             "Label": HostDeclaration.Element(members: ["text", "textCase"]),
             "TextField": HostDeclaration.Element(members: ["text"]),
         ])
-        let records = Set(ControlDictionary.records(of: declaration).map { "\($0.owner).\($0.member)" })
+        let records = Set(HostMarks.records(of: declaration).map { "\($0.owner).\($0.member)" })
 
         XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
         XCTAssertTrue(records.contains("Label.textCase"), "\(records.sorted())")
         XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
-    }
-
-    /// A written note about a tier's member judges it on every wearer: the export naming the member on one
-    /// element does not replace the note with a bare mark.
-    func testAWrittenNoteOnATierStaysOnAnElementTheExportNames() {
-        let written = ControlDictionary.Declaration(
-            host: "AppKit", source: "",
-            records: [.init(owner: "VisualElement", member: "background", judgement: .partial(missing: "A colour alone."))],
-            unrealized: [], viewless: [])
-        let declaration = written.and([.init(owner: "Button", member: "background", judgement: .complete)])
-
-        XCTAssertEqual(
-            declaration.mark(of: "background", on: "Button", from: "VisualElement").note, "A colour alone.")
     }
 
     func testEveryRecordIsWrittenOnce() throws {
@@ -229,20 +216,9 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
-    /// – meets the contract: a member not planned is marked –, its note saying why; a row whose members are all
-    /// realized or not planned is met, one of which none is planned is –, and an element not planned is – on
-    /// every member.
-    func testNotPlannedMeetsTheContract() {
-        let declaration = ControlDictionary.Declaration(
-            host: "WinUI 3", source: "",
-            records: [
-                .init(owner: "Button", member: "text", judgement: .complete),
-                .init(owner: "Button", member: "aspect", judgement: .notPlanned(reason: "No such screen.")),
-            ],
-            unrealized: [], viewless: [], notPlanned: ["MenuBar"])
-
-        XCTAssertTrue(declaration.mark(of: "aspect", on: "Button", from: nil) == ("–", "No such screen."))
-        XCTAssertEqual(declaration.mark(of: "text", on: "MenuBar", from: nil).mark, "–")
+    /// A row whose members are all realized or not planned is met, one of which none is planned is –, and the
+    /// counts say each mark's number.
+    func testNotPlannedMeetsTheContractInARow() {
         XCTAssertEqual(ControlDictionary.grouped(["✅", "–"]), "✅")
         XCTAssertEqual(ControlDictionary.grouped(["–", "–"]), "–")
         XCTAssertEqual(ControlDictionary.grouped(["☑️", "–"]), "☑️")

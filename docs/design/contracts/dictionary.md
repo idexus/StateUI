@@ -50,6 +50,11 @@ first, since a written record may say a realization is partial; the export
 adds presence for every member the written half does not speak for, so one
 member of one contract is recorded once.
 
+The rule is the host layer's `HostMarks`, a host's records as `HostRecord`s:
+the dictionary reads each host's column through it, and a conformance case
+asks it whether the host it runs on realizes what the case covers - one rule
+for the page and the test.
+
 ```text
   ✅   implemented, and covered by that host's tests
   ☑️   implemented and tested, but incomplete; the record names what is missing

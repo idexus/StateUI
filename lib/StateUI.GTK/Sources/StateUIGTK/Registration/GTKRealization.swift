@@ -1,19 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
+
 /// What this host realizes beyond its registry, whose export says the rest - the GTK 4 column of the control
 /// dictionary; a member is recorded once a test of this package covers it.
 /// Design: docs/design/contracts/dictionary.md#marks
 enum GTKRealization {
-    /// Realized in full.
-    case complete(_ owner: String, _ member: String)
-
-    /// Realized, but incomplete - `missing` says what is not.
-    case partial(_ owner: String, _ member: String, missing: String)
-
-    /// Not planned for GTK, which meets the contract there - `reason` says why.
-    case notPlanned(_ owner: String, _ member: String, reason: String)
-
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
@@ -28,7 +21,7 @@ enum GTKRealization {
     static let notPlanned: Set<String> = []
 
     /// Every record, the tiers' first.
-    static let records: [GTKRealization] = [
+    static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
@@ -57,4 +50,16 @@ enum GTKRealization {
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
     ]
+
+    /// What GTK's registry says it realizes: the export's content.
+    @MainActor static var declaration: HostDeclaration {
+        let registry = GTKRegistrations.registry
+        return HostDeclaration(
+            realization: registry.realization, shared: registry.sharedNames, acts: GTKRegistrations.acts.map(\.name))
+    }
+
+    /// What GTK realizes, member by member: these records before what its registry says.
+    @MainActor static var marks: HostMarks {
+        HostMarks(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
+    }
 }

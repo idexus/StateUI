@@ -68,23 +68,10 @@ struct ControlDictionary {
         let description: String
     }
 
-    /// One host's declaration of what it realizes, read out of its source.
+    /// One host's declaration of what it realizes, read out of its source: its marks, by the host layer's rule.
     struct Declaration {
-        /// One member judged - on an element, or on a tier for every element
-        /// wearing it.
-        struct Record: Hashable {
-            let owner: String
-            let member: String
-            let judgement: Judgement
-        }
-
-        /// What a record says of its member: realized in full, realized in part
-        /// and what is missing, or not planned for the host's family and why.
-        enum Judgement: Hashable {
-            case complete
-            case partial(missing: String)
-            case notPlanned(reason: String)
-        }
+        typealias Record = HostRecord
+        typealias Judgement = HostRecord.Judgement
 
         /// The host, as its column is headed.
         let host: String
@@ -92,69 +79,41 @@ struct ControlDictionary {
         /// Where the declaration is written, under the repository.
         let source: String
 
-        /// Every record, in the order written.
-        let records: [Record]
+        /// What the host realizes, member by member.
+        let marks: HostMarks
 
-        /// The elements the host realizes none of.
-        let unrealized: Set<String>
+        var records: [Record] { marks.records }
+        var unrealized: Set<String> { marks.unrealized }
+        var viewless: Set<String> { marks.viewless }
+        var notPlanned: Set<String> { marks.notPlanned }
 
-        /// The elements the host presents with no view of their own, which no
-        /// tier's record reaches.
-        let viewless: Set<String>
-
-        /// The elements the host's family will never have: each meets the
-        /// contract there, marked –.
-        var notPlanned: Set<String> = []
-
-        /// The same declaration with a host's own export behind it.
-        ///
-        /// WHAT IS WRITTEN COMES FIRST, and the order is the whole of it:
-        /// `mark` takes the first record for a member; an export says PRESENCE
-        /// and nothing else, while a written record may say the realization is
-        /// partial and what is missing. Exported first, a bare ✅ would quietly
-        /// replace every such note - so a judgement stays written and wins.
-        ///
-        /// A member the written half already speaks for is dropped from the
-        /// export rather than added behind it: one member of one contract is
-        /// recorded ONCE, and the record that says more is the one kept.
-        ///
-        /// A written record about a TIER's member judges it on every element
-        /// wearing that tier, so the export's record of one such element goes
-        /// as well: a note that a brush is not drawn stays on the button too.
-        ///
-        /// - Parameter runtime: what the host's runtime says it realizes.
-        func and(_ runtime: [Record]) -> Declaration {
-            let written = Set(records.map { "\($0.owner).\($0.member)" })
-            let exported = runtime.filter { record in
-                !written.contains("\(record.owner).\(record.member)")
-                    && !records.contains { $0.member == record.member && ControlDictionary.wears(record.owner, $0.owner) }
-            }
-
-            return Declaration(
-                host: host, source: source, records: records + exported,
-                unrealized: unrealized, viewless: viewless, notPlanned: notPlanned)
+        init(
+            host: String, source: String, records: [Record], unrealized: Set<String>, viewless: Set<String>,
+            notPlanned: Set<String> = []
+        ) {
+            self.init(host: host, source: source, marks: HostMarks(
+                records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned))
         }
 
-        /// The mark and the note one member of `element` has on this host: the
-        /// element's own record, else the record of the tier the member comes
-        /// from.
+        init(host: String, source: String, marks: HostMarks) {
+            self.host = host
+            self.source = source
+            self.marks = marks
+        }
+
+        /// The same declaration with a host's own export behind it: what is written wins (`HostMarks.and`).
+        func and(_ runtime: [Record]) -> Declaration {
+            Declaration(host: host, source: source, marks: marks.and(runtime))
+        }
+
+        /// The mark and the note one member of `element` has on this host (`HostMarks.mark`).
         func mark(of member: String, on element: String, from tier: String?) -> (mark: String, note: String) {
-            guard !unrealized.contains(element) else { return ("", "") }
-            guard !notPlanned.contains(element) else { return ("–", "") }
-
-            let owners = [element] + (viewless.contains(element) ? [] : [tier].compactMap { $0 })
-
-            for owner in owners {
-                if let record = records.first(where: { $0.owner == owner && $0.member == member }) {
-                    switch record.judgement {
-                    case .complete: return ("✅", "")
-                    case .partial(let missing): return ("☑️", missing)
-                    case .notPlanned(let reason): return ("–", reason)
-                    }
-                }
+            switch marks.mark(of: member, on: element, from: tier) {
+            case .complete: ("✅", "")
+            case .partial(let missing): ("☑️", missing)
+            case .notPlanned(let reason): ("–", reason)
+            case .absent: ("", "")
             }
-
-            return ("", "")
         }
     }
 
@@ -738,7 +697,7 @@ struct ControlDictionary {
     /// asks about a tier once - so the join's members are reduced to the pairs
     /// they are made of, which is also what keeps each record written once.
     static func exported(_ path: String) throws -> [Declaration.Record] {
-        records(of: try export(path))
+        HostMarks.records(of: try export(path))
     }
 
     /// The declaration a host's export holds.
@@ -751,59 +710,6 @@ struct ControlDictionary {
                 + "`swift test --package-path lib/StateUI.AppKit` or `.scripts/Android/test-android.sh`.")
         }
         return declaration
-    }
-
-    /// The records a declaration makes.
-    ///
-    /// A tier's record marks every element wearing the tier, so a member is
-    /// recorded on its tier only where the host realizes it on EVERY element
-    /// it registers that wears that tier; realized on some of them, it is a
-    /// record of each of those elements, and the others stay unmarked.
-    static func records(of declaration: HostDeclaration) -> [Declaration.Record] {
-        let realization = declaration.realization
-        var realizedOn: [Pair: Set<String>] = [:]
-
-        for member in realization.members {
-            realizedOn[Pair(owner: member.owner, member: member.member), default: []].insert(member.element)
-        }
-
-        var pairs: Set<Pair> = []
-        for (pair, elements) in realizedOn {
-            let wearers = realization.elements.filter { element in
-                LibraryContracts.elements.first { $0.nodeType.name == element }?
-                    .worn.contains { $0.name == pair.owner } == true
-            }
-            if elements.isSuperset(of: wearers) {
-                pairs.insert(pair)
-            } else {
-                for element in elements { pairs.insert(Pair(owner: element, member: pair.member)) }
-            }
-        }
-
-        // The shared members and the acts, then: they belong to a CONTRACT, so
-        // they are taken straight from it. Through the elements they would
-        // reach only the ones this host registers, and a tier worn by the
-        // elements its renderer still serves itself - `Layout`, worn by the
-        // layouts - would lose every mark it has.
-        for tier in declaration.tierMembers {
-            pairs.insert(Pair(owner: tier.owner, member: tier.member))
-        }
-
-        return pairs
-            .sorted { ($0.owner, $0.member) < ($1.owner, $1.member) }
-            .map { Declaration.Record(owner: $0.owner, member: $0.member, judgement: .complete) }
-    }
-
-    /// Whether `element` wears `tier` - a contract other than its own.
-    static func wears(_ element: String, _ tier: String) -> Bool {
-        element != tier && LibraryContracts.elements.first { $0.nodeType.name == element }?
-            .worn.contains { $0.name == tier } == true
-    }
-
-    /// One owner and one member: a record, before it is one.
-    private struct Pair: Hashable {
-        let owner: String
-        let member: String
     }
 
     /// The `on…` modifier each event is heard through, read from the sources

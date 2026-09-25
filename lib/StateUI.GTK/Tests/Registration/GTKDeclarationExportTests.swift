@@ -14,7 +14,7 @@ final class GTKDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {
-        let exported = Self.declaration().text
+        let exported = GTKRealization.declaration.text
         let file = Self.exports.appendingPathComponent("gtk.txt")
 
         if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
@@ -32,13 +32,13 @@ final class GTKDeclarationExportTests: XCTestCase {
     /// The export is deterministic: the same registry writes the same text.
     @MainActor
     func testTheSameRegistryWritesTheSameText() {
-        XCTAssertEqual(Self.declaration().text, Self.declaration().text)
+        XCTAssertEqual(GTKRealization.declaration.text, GTKRealization.declaration.text)
     }
 
     /// Every name in the export is one the contracts declare.
     @MainActor
     func testEveryNameInTheExportIsOneTheContractsKnow() {
-        let unknown = Self.declaration().undeclared
+        let unknown = GTKRealization.declaration.undeclared
 
         XCTAssertTrue(
             unknown.isEmpty,
@@ -70,14 +70,5 @@ final class GTKDeclarationExportTests: XCTestCase {
             .deletingLastPathComponent()    // lib
             .deletingLastPathComponent()    // the repository
             .appendingPathComponent("exports")
-    }
-
-    /// What this host declares, read off its registry.
-    @MainActor
-    private static func declaration() -> HostDeclaration {
-        let registry = GTKRegistrations.registry
-        return HostDeclaration(
-            realization: registry.realization, shared: registry.sharedNames,
-            acts: GTKRegistrations.acts.map(\.name))
     }
 }
