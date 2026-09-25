@@ -10,6 +10,7 @@ final class GTKConformanceTests: XCTestCase {
     func testValues() { conform(Values.self) }
     func testFields() { conform(Fields.self) }
     func testChoices() { conform(Choices.self) }
+    func testPresence() { conform(Presence.self) }
 
     /// Runs `family` on GTK, and holds what its passing cases proved to the family's file of GTK's proofs.
     private func conform(_ family: any ConformanceFamily.Type) {

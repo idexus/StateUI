@@ -83,6 +83,17 @@ final class ToolchainTests: XCTestCase {
         return release(try XCTUnwrap(manifests.first?.value))
     }
 
+    /// No Swift source takes a key path through an existential metatype - a key path to `nodeType` mapped over
+    /// `any ElementContract.Type`: Swift 6.4 crashes in SILGen on Windows and never finishes compiling on Linux.
+    /// A closure does the same.
+    func testNoSourceTakesAKeyPathThroughAContractsMetatype() throws {
+        let swift = Self.texts.filter { $0.path.hasSuffix(".swift") }
+        XCTAssertGreaterThan(swift.count, 300, "the walk read almost nothing")
+        let keyPath = "\\" + ".nodeType"
+        let offending = swift.filter { $0.text.contains(keyPath) }.map(\.path)
+        XCTAssertEqual(offending, [], "a key path through a contract's metatype: write a closure")
+    }
+
     /// The toolchains, images, SDKs and prose all name the manifests' release,
     /// and every one of them that names a patch release names the same one.
     func testEveryPlaceThatNamesSwiftNamesOneRelease() throws {

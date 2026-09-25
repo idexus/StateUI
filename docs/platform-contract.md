@@ -85,17 +85,17 @@ host whose passing test proved one of its members.
 | `Button` | native |  |  | ✅ |  |  |  |
 | `Canvas` | native |  |  |  |  |  |  |
 | `CheckBox` | stateUI |  |  | ✅ |  |  |  |
-| `ColorBox` | native |  |  |  |  |  |  |
+| `ColorBox` | native |  |  | ✅ |  |  |  |
 | `Content` | structure |  |  |  |  |  |  |
 | `ContextMenu` | structure |  |  |  |  |  |  |
 | `DatePicker` | native |  |  |  |  |  |  |
-| `Ellipse` | stateUI |  |  |  |  |  |  |
-| `Grid` | stateUI |  |  |  |  |  |  |
-| `HStack` | native |  |  |  |  |  |  |
-| `Image` | native |  |  |  |  |  |  |
+| `Ellipse` | stateUI |  |  | ✅ |  |  |  |
+| `Grid` | stateUI |  |  | ✅ |  |  |  |
+| `HStack` | native |  |  | ✅ |  |  |  |
+| `Image` | native |  |  | ✅ |  |  |  |
 | `Label` | native |  |  | ✅ |  |  |  |
 | `LeadingContent` | structure |  |  |  |  |  |  |
-| `Line` | stateUI |  |  |  |  |  |  |
+| `Line` | stateUI |  |  | ✅ |  |  |  |
 | `Map` | provider |  |  |  |  |  |  |
 | `Menu` | structure |  |  |  |  |  |  |
 | `MenuBar` | structure |  |  |  |  |  |  |
@@ -105,17 +105,17 @@ host whose passing test proved one of its members.
 | `NavigationStack` | adaptive |  |  |  |  |  |  |
 | `Overlay` | structure |  |  |  |  |  |  |
 | `Page` | adaptive |  |  |  |  |  |  |
-| `Path` | stateUI |  |  |  |  |  |  |
+| `Path` | stateUI |  |  | ✅ |  |  |  |
 | `Picker` | native |  |  | ✅ |  |  |  |
 | `Pin` | provider |  |  |  |  |  |  |
-| `Polygon` | stateUI |  |  |  |  |  |  |
-| `Polyline` | stateUI |  |  |  |  |  |  |
+| `Polygon` | stateUI |  |  | ✅ |  |  |  |
+| `Polyline` | stateUI |  |  | ✅ |  |  |  |
 | `PositionIndicator` | stateUI |  |  |  |  |  |  |
 | `ProgressBar` | native |  |  | ✅ |  |  |  |
 | `RadioButton` | stateUI |  |  | ✅ |  |  |  |
-| `Rectangle` | stateUI |  |  |  |  |  |  |
+| `Rectangle` | stateUI |  |  | ✅ |  |  |  |
 | `Scene` | structure |  |  |  |  |  |  |
-| `ScrollView` | native |  |  |  |  |  |  |
+| `ScrollView` | native |  |  | ✅ |  |  |  |
 | `SearchField` | native |  |  | ✅ |  |  |  |
 | `Slider` | native |  |  | ✅ |  |  |  |
 | `Span` | structure |  |  |  |  |  |  |
@@ -132,10 +132,10 @@ host whose passing test proved one of its members.
 | `ToolbarItem` | structure |  |  |  |  |  |  |
 | `ToolbarItems` | structure |  |  |  |  |  |  |
 | `TrailingContent` | structure |  |  |  |  |  |  |
-| `VStack` | native |  |  |  |  |  |  |
+| `VStack` | native |  |  | ✅ |  |  |  |
 | `WebView` | native |  |  |  |  |  |  |
 | `Window` | structure |  |  |  |  |  |  |
-| `ZStack` | native |  |  |  |  |  |  |
+| `ZStack` | native |  |  | ✅ |  |  |  |
 <!-- creation:end -->
 
 The AppKit split view uses `NSSplitViewController`.
@@ -421,40 +421,40 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 1 ✅ |  |  |  |
-| [Button](controls/Button.md) | 86 |  |  | 1 ✅ |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [Button](controls/Button.md) | 86 |  |  | 4 ✅ |  |  |  |
 | [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | 69 |  |  | 2 ✅ |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  |  |  |  |  |
+| [CheckBox](controls/CheckBox.md) | 69 |  |  | 5 ✅ |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  | 2 ✅ |  |  |  |
 | [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  |  |  |  |  |
-| [Grid](controls/Grid.md) | 77 |  |  |  |  |  |  |
-| [HStack](controls/HStack.md) | 74 |  |  |  |  |  |  |
-| [Image](controls/Image.md) | 69 |  |  |  |  |  |  |
-| [Label](controls/Label.md) | 81 |  |  | 1 ✅ |  |  |  |
-| [Line](controls/Line.md) | 80 |  |  |  |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  | 2 ✅ |  |  |  |
+| [Grid](controls/Grid.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [HStack](controls/HStack.md) | 74 |  |  | 2 ✅ |  |  |  |
+| [Image](controls/Image.md) | 69 |  |  | 2 ✅ |  |  |  |
+| [Label](controls/Label.md) | 81 |  |  | 3 ✅ |  |  |  |
+| [Line](controls/Line.md) | 80 |  |  | 2 ✅ |  |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 82 |  |  | 3 ✅ |  |  |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  |  |  |  |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  |  |  |  |  |
+| [Path](controls/Path.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [Picker](controls/Picker.md) | 82 |  |  | 6 ✅ |  |  |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  | 2 ✅ |  |  |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  | 2 ✅ |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 1 ✅ |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 81 |  |  | 3 ✅ |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 77 |  |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  | 3 ✅ |  |  |  |
-| [Slider](controls/Slider.md) | 73 |  |  | 4 ✅ |  |  |  |
-| [Stepper](controls/Stepper.md) | 71 |  |  | 5 ✅ |  |  |  |
-| [Switch](controls/Switch.md) | 69 |  |  | 2 ✅ |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  | 3 ✅ |  |  |  |
-| [TextField](controls/TextField.md) | 90 |  |  | 4 ✅ |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 81 |  |  | 6 ✅ |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  | 6 ✅ |  |  |  |
+| [Slider](controls/Slider.md) | 73 |  |  | 7 ✅ |  |  |  |
+| [Stepper](controls/Stepper.md) | 71 |  |  | 8 ✅ |  |  |  |
+| [Switch](controls/Switch.md) | 69 |  |  | 5 ✅ |  |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  | 6 ✅ |  |  |  |
+| [TextField](controls/TextField.md) | 90 |  |  | 7 ✅ |  |  |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 |  |  |  |  |  |  |
+| [VStack](controls/VStack.md) | 74 |  |  | 2 ✅ |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](controls/ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2515 |  |  | 33 of 2515 met |  |  |  |
+| [ZStack](controls/ZStack.md) | 73 |  |  | 2 ✅ |  |  |  |
+| **Met** - ✅ and – | 2515 |  |  | 95 of 2515 met |  |  |  |
 
 ### Application structure
 

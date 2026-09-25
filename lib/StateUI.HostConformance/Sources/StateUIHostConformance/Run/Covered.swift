@@ -26,6 +26,11 @@ public struct Covered: Hashable, Sendable, CustomStringConvertible {
         self.init(member: property.name, element: Element.nodeType.name, tier: Tier.name)
     }
 
+    /// A tier's property, on the element named `element` - as a tier's case made for each element names it.
+    public init<Tier: Contract, Value>(_ property: ElementProperty<Tier, Value>, on element: String) {
+        self.init(member: property.name, element: element, tier: Tier.name)
+    }
+
     /// An element's own event.
     public init<Owner: ElementContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         self.init(member: event.name, element: Owner.nodeType.name, tier: nil)

@@ -37,6 +37,16 @@ Cases stand in families - toggles, values, fields, choices - and a host's
 suite runs each family as one test, so a case added to a family runs on every
 host with no edit there.
 
+## A tier's cases
+
+A tier's member - a view's opacity, its being shown - is the contract's on
+every element wearing the tier, and each element's ✅ is proven apart. A
+tier's case is written once and made for each element: every view the
+library declares has a specimen, the smallest view of its kind, which the case
+dresses with the members it writes, through the control's own `setValue`,
+and finds by its id. The case runs on a host for each element the host
+realizes, and proves the member there.
+
 ## The driver
 
 Each host's test target supplies a driver: how its toolkit starts a page,

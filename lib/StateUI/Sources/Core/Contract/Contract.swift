@@ -34,7 +34,7 @@ extension Contract {
     public static var tiers: [any Contract.Type] { [] }
 
     /// This contract and every tier it wears, each once, nearest first.
-    static var worn: [any Contract.Type] {
+    @_spi(Host) public static var worn: [any Contract.Type] {
         var seen: Set<ObjectIdentifier> = []
         var order: [any Contract.Type] = []
 

@@ -79,6 +79,9 @@ final class GTKDriver: HostDriver {
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
             return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
                 .propValue
+        case (.isVisible, let view?): return (gtk_widget_get_visible(view.widget) != 0).propValue
+        case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
+        case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
     }

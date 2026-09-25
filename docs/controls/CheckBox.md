@@ -52,15 +52,15 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native |  |  |  |  |  |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native |  |  |  |  |  |  |  |
-| `isVisible` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `isVisible` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
 | `maximumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
 | `minimumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
 | `minimumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
-| `opacity` | property | `Double` | native |  |  |  |  |  |  |  |
+| `opacity` | property | `Double` | native |  |  | ✅ |  |  |  |  |
 | `pivotX` | property | `Double` | native |  |  |  |  |  |  |  |
 | `pivotY` | property | `Double` | native |  |  |  |  |  |  |  |
 | `rotation` | property | `Double` | native |  |  |  |  |  |  |  |

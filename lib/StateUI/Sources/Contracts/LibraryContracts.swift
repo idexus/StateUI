@@ -5,9 +5,9 @@
 /// holding the contracts read, and what the tables derived from them are
 /// built out of.
 /// Design: docs/design/contracts/README.md#the-contracts-of-the-library
-enum LibraryContracts {
+@_spi(Host) public enum LibraryContracts {
     /// The tiers, in the dictionary's order.
-    static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Contract.Type] = [
         PropertyContainerContract.self,
         VisualElementContract.self,
         ViewContract.self,
@@ -31,7 +31,7 @@ enum LibraryContracts {
     ]
 
     /// Every element: one contract per node type the library declares.
-    static let elements: [any ElementContract.Type] = [
+    public static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
         ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
         ColorBoxContract.self, ContentContract.self, ContextMenuContract.self, DatePickerContract.self,
