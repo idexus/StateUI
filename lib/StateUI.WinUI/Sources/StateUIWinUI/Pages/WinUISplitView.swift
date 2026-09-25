@@ -11,9 +11,6 @@
 /// Design: docs/design/platforms/winui/pages.md#a-split-view
 @MainActor
 final class WinUISplitView: WinUILayoutView {
-    /// How wide the sidebar opens, in DIPs.
-    static let sidebarWidth = 280.0
-
     /// Whether the sidebar shows.
     private(set) var isPresented = false
 
@@ -109,7 +106,7 @@ final class WinUISplitView: WinUILayoutView {
         ProgramWrite.perform {
             sidebar.set(
                 sidebar: pages.first?.view, detail: pages.dropFirst().first?.view, row: detailRow,
-                open: isPresented, paneWidth: Self.sidebarWidth)
+                open: isPresented)
         }
     }
 

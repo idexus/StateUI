@@ -20,6 +20,13 @@ final class WinUISliderView: WinUIView {
     /// The value the thumb stands at.
     var value: Double { stateui_winui_slider_value(handle) }
 
+    /// How far an arrow key, Page Up and a drag move the thumb, as WinUI holds them.
+    var steps: (key: Double, page: Double, drag: Double) {
+        var values = [0.0, 0.0, 0.0]
+        stateui_winui_slider_steps(handle, &values)
+        return (values[0], values[1], values[2])
+    }
+
     /// The range, then the value: `value` where `writeValue`, else the one the thumb stands at, kept inside the range.
     func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double) {
         let kept = writeValue ? value ?? self.value : self.value

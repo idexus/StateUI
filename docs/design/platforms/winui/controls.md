@@ -16,11 +16,13 @@ the element reports nothing. A control keeps no flag of its own.
 ## A slider in steps
 
 A `Slider` snaps its value to `StepFrequency`. The host sets the step to a
-ten-thousandth of the range, so a value the user reports has that as its
-finest step. A new range keeps the value the thumb stands at, inside the
-range, unless the tree wrote a new value with it: a hand on the thumb is never
-argued with. The range is widened before it is narrowed, so neither end
-clamps the value on its way.
+ten-thousandth of the range, so a value the user drags to has that as its
+finest step. On a desktop the keyboard moves a slider too: an arrow key
+moves it a hundredth of the range and Page Up a tenth, as WinUI's own slider
+steps 1 and 10 across 0 to 100. A new range keeps the value the thumb stands
+at, inside the range, unless the tree wrote a new value with it: a hand on the
+thumb is never argued with. The range is widened before it is narrowed, so
+neither end clamps the value on its way.
 
 ## A field and its words
 

@@ -174,9 +174,13 @@ void stateui_winui_switch_toggle(StateUIObjectRef toggle);
 
 StateUIObjectRef stateui_winui_slider_make(int64_t view);
 
-/// The range, then the value, kept inside it; the steps are a ten-thousandth of the range.
+/// The range, then the value, kept inside it: a drag lands on a ten-thousandth of the range, an arrow key moves a
+/// hundredth and Page Up a tenth.
 void stateui_winui_slider_set(StateUIObjectRef slider, double value, double minimum, double maximum);
 double stateui_winui_slider_value(StateUIObjectRef slider);
+
+/// The slider's steps as WinUI holds them - an arrow key's, Page Up's and a drag's: three values.
+void stateui_winui_slider_steps(StateUIObjectRef slider, double *steps);
 
 /// Moves a slider as UI Automation does, which the user's move is.
 void stateui_winui_slider_move(StateUIObjectRef slider, double value);
@@ -223,12 +227,12 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
 void stateui_winui_title_bar_set_slots(StateUIObjectRef bar, StateUIObjectRef leading, StateUIObjectRef center,
                                        StateUIObjectRef trailing);
 
-/// A split view: WinUI's NavigationView, the sidebar in its pane `paneWidth` DIPs wide - beside the detail from
+/// A split view: WinUI's NavigationView, the sidebar in its pane as wide as WinUI opens it - beside the detail from
 /// `expandsAt` DIPs, over it and closed by a click beside it below - with none of the view's own buttons, which the
 /// window's chrome carries; `row` stands across the top of the detail.
 StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
-                             StateUIObjectRef row, bool open, double paneWidth);
+                             StateUIObjectRef row, bool open);
 
 /// A tabbed view's row of tabs: a SelectorBar, `selected` chosen.
 StateUIObjectRef stateui_winui_tabs_make(int64_t view);

@@ -142,8 +142,10 @@ extern "C" void stateui_winui_slider_set(StateUIObjectRef handle, double value, 
             // Widened first, so neither end clamps the value on its way.
             slider.Minimum(std::min(lower, slider.Minimum()));
             slider.Maximum(std::max(upper, slider.Maximum()));
+            // A drag lands on a ten-thousandth of the range; an arrow key moves a hundredth, Page Up a tenth.
             slider.StepFrequency(step);
-            slider.SmallChange(step);
+            slider.SmallChange((upper - lower) / 100);
+            slider.LargeChange((upper - lower) / 10);
             slider.Minimum(lower);
             slider.Maximum(upper);
         }
@@ -151,6 +153,17 @@ extern "C" void stateui_winui_slider_set(StateUIObjectRef handle, double value, 
         if (slider.Value() != kept) slider.Value(kept);
     } catch (winrt::hresult_error const &error) {
         report(error, "setting a slider");
+    }
+}
+
+extern "C" void stateui_winui_slider_steps(StateUIObjectRef handle, double *steps) {
+    try {
+        auto slider = borrow<controls::Slider>(handle);
+        steps[0] = slider.SmallChange();
+        steps[1] = slider.LargeChange();
+        steps[2] = slider.StepFrequency();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a slider's steps");
     }
 }
 

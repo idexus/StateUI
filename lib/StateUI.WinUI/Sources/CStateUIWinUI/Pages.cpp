@@ -134,8 +134,7 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
 }
 
 extern "C" void stateui_winui_split_set(
-    StateUIObjectRef handle, StateUIObjectRef pane, StateUIObjectRef content, StateUIObjectRef row, bool open,
-    double paneWidth
+    StateUIObjectRef handle, StateUIObjectRef pane, StateUIObjectRef content, StateUIObjectRef row, bool open
 ) {
     try {
         auto split = borrow<controls::NavigationView>(handle);
@@ -144,7 +143,6 @@ extern "C" void stateui_winui_split_set(
         auto detail = split.Content().as<controls::Grid>();
         standInRow(detail, 0, row);
         standInRow(detail, 1, content);
-        split.OpenPaneLength(paneWidth);
         if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
     } catch (winrt::hresult_error const &error) {
         report(error, "setting a split view");
