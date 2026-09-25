@@ -5,11 +5,12 @@
 
 /// Children placed: the layout item each child gives its parent.
 extension WinUIElement {
-    /// Hands a layout its children's items, in order.
+    /// Hands a layout its children's items, in order; a page's slots furnish it and stand in none of its room.
     func arrangeChildren() {
+        let arranged = type == .page ? children.filter { !Self.slotTypes.contains($0.type) } : children
         let layout = view as? WinUILayoutView
         layout?.direction = element.layoutDirection
-        layout?.setItems(children.compactMap(\.layoutItem))
+        layout?.setItems(arranged.compactMap(\.layoutItem))
     }
 
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.

@@ -6,6 +6,13 @@ library: it applies the typed sparse patches of the
 [host contract](host-contract.md) directly and calls WinUI through a C++/WinRT
 relay behind plain C functions.
 
+A window stands as a Windows application's does: its content under WinUI's
+`TitleBar` over a Mica backdrop, the title bar carrying the visible page's
+title, the way back, the sidebar's toggle and the page's actions. A
+`NavigationStack` shows its top page; a `SplitView`'s sidebar stands in
+WinUI's navigation pane, beside the detail in a wide window and over it in a
+narrow one; a `TabbedView`'s tabs stand beneath the title bar.
+
 It presents `Label`, `Button`, `Switch`, `Slider`, `TextField`, `ColorBox`,
 `VStack`, `HStack`, `Grid`, `ZStack` and `ScrollView` in a window's page,
 over the runtime every host shares: a layout paints its box - its background,

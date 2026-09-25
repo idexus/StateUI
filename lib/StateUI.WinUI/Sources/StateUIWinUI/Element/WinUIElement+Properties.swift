@@ -48,6 +48,15 @@ extension WinUIElement {
         case .page, .overlay:
             return WinUISingleChildView()
 
+        case .navigationStack:
+            return WinUINavigationView()
+
+        case .splitView:
+            return WinUISplitView()
+
+        case .tabbedView:
+            return WinUITabbedView()
+
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
              .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
              .menu, .menuItem, .menuSeparator, .spans, .span:

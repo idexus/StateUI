@@ -54,9 +54,19 @@ class WinUILayoutView: WinUIView {
 
         self.items = items
         for item in items { item.view.placingLayout = self }
-        setChildren(items.map(\.view))
+        holdChildren()
         invalidateMeasurements()
         return true
+    }
+
+    /// The views the panel holds, in the order it draws them: every child's, unless a layout shows fewer.
+    func heldViews() -> [WinUIView] {
+        items.map(\.view)
+    }
+
+    /// Holds the views this layout shows now.
+    func holdChildren() {
+        setChildren(heldViews())
     }
 
     /// Holds `views` in the panel in this order, the one it draws them in, over the box.

@@ -69,8 +69,9 @@ performance counter's, in milliseconds.
 ## The window
 
 The first window element's arrangement of pages is the content of a WinUI
-`Window`, titled as the window says, and activated the first time it shows a
-page; the window is told it was made once, in its turn.
+`Window`, under the window's chrome, which names it after the visible page
+([the window's chrome](pages.md#the-windows-chrome)); the window is activated
+the first time it shows a page, and told it was made once, in its turn.
 
 ## Self-contained
 

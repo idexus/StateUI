@@ -67,6 +67,13 @@ typedef struct {
 
     /// The user took hold of a scroller, or let go of it.
     void (*held)(int64_t view, bool holding);
+
+    /// The user chose an entry by its place: an action of a window's chrome, or its way back (-1) or sidebar toggle
+    /// (-2); a tab.
+    void (*chosen)(int64_t view, int32_t index);
+
+    /// A split view's sidebar opened or closed of WinUI's accord: a click beside it, or the window's room.
+    void (*presented)(int64_t view, bool open);
 } StateUIWinUICallbacks;
 
 /// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
@@ -90,6 +97,10 @@ void stateui_winui_release(StateUIObjectRef object);
 StateUIObjectRef stateui_winui_window_make(void);
 void stateui_winui_window_set_title(StateUIObjectRef window, char const *title);
 void stateui_winui_window_set_content(StateUIObjectRef window, StateUIObjectRef content);
+
+/// The window's chrome across its top, and the row of tabs beneath it; null for none. The first chrome given also
+/// takes the window's way back: the mouse's back button, Alt+Left and the Back key choose its way back (-1).
+void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef titleBar, StateUIObjectRef tabs);
 void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 
@@ -200,6 +211,28 @@ void stateui_winui_scroller_move(StateUIObjectRef scroller, double x, double y);
 
 /// Where the scroller's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
+
+/// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions on it or
+/// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an
+/// action by its place.
+StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
+void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool back, bool paneToggle,
+                                 bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground);
+void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts, bool const *overflows,
+                                         bool const *enabled, int32_t count);
+void stateui_winui_title_bar_set_slots(StateUIObjectRef bar, StateUIObjectRef leading, StateUIObjectRef center,
+                                       StateUIObjectRef trailing);
+
+/// A split view: WinUI's NavigationView, the sidebar in its pane `paneWidth` DIPs wide - beside the detail from
+/// `expandsAt` DIPs, over it and closed by a click beside it below - with none of the view's own buttons, which the
+/// window's chrome carries; `row` stands across the top of the detail.
+StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
+void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
+                             StateUIObjectRef row, bool open, double paneWidth);
+
+/// A tabbed view's row of tabs: a SelectorBar, `selected` chosen.
+StateUIObjectRef stateui_winui_tabs_make(int64_t view);
+void stateui_winui_tabs_set(StateUIObjectRef tabs, char const *const *titles, int32_t count, int32_t selected);
 
 #ifdef __cplusplus
 }

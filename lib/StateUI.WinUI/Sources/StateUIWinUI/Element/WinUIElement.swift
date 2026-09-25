@@ -18,6 +18,10 @@ final class WinUIElement: NativeElement {
     /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
     var leaving = false
 
+    /// Whether this page tree is shown, as its pages last heard; and what an arrangement showed before a patch.
+    var pagePresented = false
+    private var previouslyShown: [MountedElement] = []
+
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
         self.host = host
@@ -35,7 +39,9 @@ final class WinUIElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {}
+    func willApply() {
+        previouslyShown = shownChildren.map(\.element)
+    }
 
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
@@ -54,6 +60,9 @@ final class WinUIElement: NativeElement {
         applyProperties(changed: changed)
         configureLayoutMotion()
         arrangeChildren()
+        arrangePages(changed: changed)
+        reconcilePresentation(from: previouslyShown.map(\.winUI))
+        previouslyShown = []
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {

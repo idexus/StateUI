@@ -60,6 +60,9 @@ final class WinUIRenderer {
     /// How deep the user's transactions stand; their events wait for the outermost to end.
     private var transactionDepth = 0
 
+    /// Work a layout pass left for the next turn.
+    private var afterPasses: [() -> Void] = []
+
     /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
     private var scrollers: [Int64: WeakScroller] = [:]
 
@@ -197,6 +200,10 @@ final class WinUIRenderer {
     private func turn() {
         _ = core.runJobs()
 
+        let deferred = afterPasses
+        afterPasses = []
+        for work in deferred { work() }
+
         if tree.root != nil, core.cyclesPending {
             displayCycle.drain(now: frameClock.now())
         }
@@ -243,9 +250,10 @@ final class WinUIRenderer {
 
         displayCycle.presentStateChannels()
         showWindow()
+        refreshWindowChrome()
     }
 
-    /// Shows the first window's arrangement of pages in a WinUI window, titled as the window says, and tells
+    /// Shows the first window's arrangement of pages in a WinUI window, its pages hearing that they show, and tells
     /// the window it was made, once, in its turn.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindow() {
@@ -253,12 +261,13 @@ final class WinUIRenderer {
 
         let window = self.window ?? WinUIWindow()
         self.window = window
-        window.setTitle(element.value(.title)?.string)
 
         let arrangement = element.children.first { WinUIElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {
+            shownArrangementElement?.winUI.setPagePresented(false, reason: .window)
             shownArrangementElement = arrangement
             window.show(arrangement?.winUI.view)
+            arrangement?.winUI.setPagePresented(true, reason: .window)
         }
 
         if element !== createdWindow {
@@ -269,6 +278,48 @@ final class WinUIRenderer {
 }
 
 extension WinUIRenderer {
+    /// Composes the window's one chrome again from what it shows now: the top page names the window, the stack's
+    /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the tabs of a
+    /// tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    func refreshWindowChrome() {
+        guard let window, let element = tree.root?.first(type: .window)?.winUI else { return }
+
+        let arrangement = element.children.first { WinUIElement.pageTypes.contains($0.type) }
+        arrangement?.markTabsShownByWindow()
+        let titleBar = element.children.first { $0.type == .titleBar }
+        let actions = arrangement?.visibleToolbarActions ?? (primary: [], overflow: [])
+
+        var chrome = WinUIWindowChrome()
+        chrome.title = arrangement?.visiblePage?.value(.title)?.string ?? element.value(.title)?.string ?? ""
+        chrome.back = arrangement?.visibleBackAction
+        chrome.sidebarToggle = arrangement?.visibleSidebarToggle
+        chrome.leading = titleBar?.firstView(in: .leadingContent)
+        chrome.center = titleBar?.firstView(in: .content) ?? arrangement?.visibleTitleView
+        chrome.trailing = titleBar?.firstView(in: .trailingContent)
+        chrome.actions = actions.primary
+        chrome.overflow = actions.overflow
+        chrome.background = arrangement?.visibleBarBackground ?? titleBar?.value(.background)
+        chrome.foreground = arrangement?.visibleBarForeground ?? titleBar?.value(.barForegroundColor)
+        window.apply(chrome, tabs: arrangement?.visibleWindowTabs)
+    }
+
+    /// Runs `work` in the next turn, after the layout pass under way: what a pass decides - a split view's first
+    /// room - is said once WinUI has finished laying out.
+    func afterPass(_ work: @escaping () -> Void) {
+        afterPasses.append(work)
+        stateui_winui_post_turn()
+    }
+
+    /// Goes the way back the arrangement the window shows offers - a stack's top page going; whether there was one.
+    /// Design: docs/design/platforms/winui/pages.md#the-way-back
+    func goBack() -> Bool {
+        guard let wayBack = shownArrangementElement?.winUI.wayBack else { return false }
+
+        wayBack()
+        return true
+    }
+
     /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
     func requestFrames(for scroller: WinUIScrollView) {
         scrollers[scroller.number] = WeakScroller(view: scroller)

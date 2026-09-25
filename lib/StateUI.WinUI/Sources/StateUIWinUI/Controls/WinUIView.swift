@@ -169,6 +169,13 @@ class WinUIView {
     /// The user clicked the view.
     func clicked() {}
 
+    /// The user chose one of the view's entries by its place: an action of the window's chrome, or its way back (-1)
+    /// or sidebar toggle (-2); a tab.
+    func chose(_ index: Int) {}
+
+    /// What the view presents opened or closed of WinUI's accord: a split view's sidebar.
+    func presented(_ open: Bool) {}
+
     /// The element left the tree: the view lets go of everything that would call back into it.
     func detach() {}
 

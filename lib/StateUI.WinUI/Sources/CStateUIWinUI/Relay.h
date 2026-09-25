@@ -65,4 +65,30 @@ namespace stateui {
     inline winrt::hstring text(char const *utf8) {
         return winrt::to_hstring(std::string_view(utf8 ? utf8 : ""));
     }
+
+    /// A grid of rows, each given its height: `Auto` for one sized to what stands in it, a star for the rest.
+    inline controls::Grid rows(std::initializer_list<bool> automatic) {
+        controls::Grid grid;
+        for (bool sized : automatic) {
+            controls::RowDefinition row;
+            row.Height(sized ? xaml::GridLengthHelper::Auto() : xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star));
+            grid.RowDefinitions().Append(row);
+        }
+        return grid;
+    }
+
+    /// Stands `element` in `row` of `grid` in place of what stood there; nothing for null.
+    inline void standInRow(controls::Grid const &grid, int32_t row, StateUIObjectRef element) {
+        auto children = grid.Children();
+        auto next = element ? as<xaml::FrameworkElement>(element) : xaml::FrameworkElement{nullptr};
+        for (uint32_t index = children.Size(); index-- > 0;) {
+            auto child = children.GetAt(index).as<xaml::FrameworkElement>();
+            if (controls::Grid::GetRow(child) != row) continue;
+            if (child == next) return;
+            children.RemoveAt(index);
+        }
+        if (!next) return;
+        controls::Grid::SetRow(next, row);
+        children.Append(next);
+    }
 }
