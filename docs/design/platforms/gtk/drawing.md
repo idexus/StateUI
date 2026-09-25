@@ -45,6 +45,22 @@ of logical pixels across: GTK reads the file - an SVG through gdk-pixbuf's
 loader - at that size times the display's scale, and again when the scale
 changes.
 
+## The shapes
+
+Each of the six shapes is a panel drawing its geometry with GSK's own paths
+in its snapshot, for the room its layout gives it, again whenever that room
+changes. A rectangle and an ellipse fill the room, drawn half their outline in
+from its edges so the outline stays inside; a rectangle's corners are each
+its own radius, an ellipse a rounded rectangle whose corners meet. A line, a
+path, a polygon and a polyline draw a geometry of their own - a path's data
+read by the core's parser, its arcs as curves - placed in the room by the host
+layer's rule ([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry))
+from the bounds GSK measures. The fill and the outline are the shape's
+brushes painted through the path - a gradient runs across the shape it fills;
+dashes, gaps and their offset are outline widths in StateUI and lengths in
+GSK, so they are multiplied by the width. A shape has no size of its own: it
+takes the room its layout gives it.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and

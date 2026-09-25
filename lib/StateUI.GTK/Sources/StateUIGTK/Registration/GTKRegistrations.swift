@@ -19,6 +19,7 @@ enum GTKRegistrations {
         fields(registry)
         layouts(registry)
         pictures(registry)
+        shapes(registry)
         shared(registry)
 
         return registry
