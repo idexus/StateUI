@@ -21,15 +21,14 @@ struct GTKLayoutItem: LayoutChild {
     /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
     var fadeIn: ((Motion) -> Void)?
 
-    /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
-    /// A stated width is the width it is measured at, so words wrap to it; a most width bounds the offer.
+    /// The view's size for the width offered to it, its margin already taken out by the layout, its stated sizes
+    /// and bounds applied. A stated width is the width it is measured at, so words wrap to it; a most width bounds
+    /// the offer.
     func size(offered width: Double?) -> LayoutSize {
-        let margin = values.margin
-        let available = width.map { max(0, $0 - margin.left - margin.right) }
         let offer: Double? = if let stated = values.width {
             values.boundedWidth(stated)
         } else {
-            [available, values.maximumWidth].compactMap(\.self).min()
+            [width, values.maximumWidth].compactMap(\.self).min()
         }
         let measured = view.measure(width: offer, height: nil)
 

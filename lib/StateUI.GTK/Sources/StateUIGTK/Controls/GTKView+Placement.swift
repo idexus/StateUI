@@ -35,20 +35,29 @@ extension GTKView {
         if let placingLayout { gtk_widget_queue_allocate(placingLayout.widget) }
     }
 
-    /// The place's corner, then the translation, then the turn and the scale about the pivot.
+    /// The place's corner, then a placing run's drawing, then the view's own transform: each the core's matrix
+    /// for the size allocated, the view's own applied first.
     /// Design: docs/design/platforms/gtk/motion.md#moved-turned-and-scaled
     private func allocation(at place: Rect, width: Double, height: Double) -> OpaquePointer? {
-        var corner = graphene_point_t(
-            x: Float(place.x + transform.translationX), y: Float(place.y + transform.translationY))
-        var moved = gsk_transform_translate(nil, &corner)
-        guard transform.rotation != 0 || transform.scaleX != 1 || transform.scaleY != 1 else { return moved }
+        var corner = graphene_point_t(x: Float(place.x), y: Float(place.y))
+        var drawn = gsk_transform_translate(nil, &corner)
+        for each in [placedDrawing, transform] {
+            guard let each, !each.isIdentity else { continue }
+            var matrix = Self.graphene(each.matrix(width: width, height: height))
+            drawn = gsk_transform_matrix(drawn, &matrix)
+        }
+        return drawn
+    }
 
-        var pivot = graphene_point_t(x: Float(transform.pivotX * width), y: Float(transform.pivotY * height))
-        var back = graphene_point_t(x: -pivot.x, y: -pivot.y)
-        moved = gsk_transform_translate(moved, &pivot)
-        moved = gsk_transform_rotate(moved, Float(transform.rotation))
-        moved = gsk_transform_scale(moved, Float(transform.scaleX), Float(transform.scaleY))
-        return gsk_transform_translate(moved, &back)
+    /// The core's matrix as graphene's: both act on row vectors, entry for entry.
+    private static func graphene(_ matrix: HostMatrix) -> graphene_matrix_t {
+        var native = graphene_matrix_t()
+        let entries = [
+            matrix.m11, matrix.m12, matrix.m13, matrix.m14, matrix.m21, matrix.m22, matrix.m23, matrix.m24,
+            matrix.m31, matrix.m32, matrix.m33, matrix.m34, matrix.m41, matrix.m42, matrix.m43, matrix.m44,
+        ].map { Float($0) }
+        _ = entries.withUnsafeBufferPointer { graphene_matrix_init_from_float(&native, $0.baseAddress) }
+        return native
     }
 }
 

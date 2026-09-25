@@ -22,12 +22,13 @@ host's own number, exactly.
 ## Moved, turned and scaled
 
 A widget's transform is part of its allocation: its parent hands GTK the place
-and the transform together. The host draws the place's corner, then the
-translation, then the turn and the scale about the pivot - a fraction of the
-size the widget was allocated - so moving one never moves the layout's
-arithmetic. A translation is in logical pixels, a rotation in degrees,
-clockwise in the screen's plane; `scale` multiplies both axes over `scaleX`
-and `scaleY`. A transform the tree changes asks the parent for a new
+and the transform together. The host draws the place's corner, then a placing
+run's drawing, then the widget's own transform - each the core's
+`HostDrawingTransform` matrix for the size allocated, handed to GSK as it is,
+since both act on row vectors. So the translation, the turn in the plane, the
+tip in depth about either axis - seen from the core's perspective distance -
+and the scale all pivot where the core says, and moving one never moves the
+layout's arithmetic. A transform the tree changes asks the parent for a new
 allocation, which draws it.
 
 ## Less motion

@@ -17,6 +17,7 @@ enum GTKRegistrations {
         values(registry)
         fields(registry)
         layouts(registry)
+        pictures(registry)
         shared(registry)
 
         return registry
@@ -39,6 +40,8 @@ enum GTKRegistrations {
         registry.everyElementRealizes(VisualElementContract.translationX)
         registry.everyElementRealizes(VisualElementContract.translationY)
         registry.everyElementRealizes(VisualElementContract.rotation)
+        registry.everyElementRealizes(VisualElementContract.rotationX)
+        registry.everyElementRealizes(VisualElementContract.rotationY)
         registry.everyElementRealizes(VisualElementContract.scale)
         registry.everyElementRealizes(VisualElementContract.scaleX)
         registry.everyElementRealizes(VisualElementContract.scaleY)

@@ -23,6 +23,10 @@ class GTKView {
     /// How the view's own properties move, turn and scale it.
     var transform = HostDrawingTransform.identity
 
+    /// How a placing layout's run draws the view over its own transform, and how opaque; nil while none does.
+    var placedDrawing: HostDrawingTransform?
+    private(set) var placedOpacity = 1.0
+
     /// How opaque the view's own property draws it, and whether it shows, as the host last wrote them.
     private(set) var opacity = 1.0
     private(set) var isShown = true
@@ -71,11 +75,25 @@ class GTKView {
         gtk_widget_set_visible(widget, shown ? 1 : 0)
     }
 
-    /// How opaque the view is drawn, written only where it differs from what was.
+    /// How opaque the view's own property draws it, under a placing run's opacity; written only where it differs.
     func setOpacity(_ opacity: Double) {
         guard opacity != self.opacity else { return }
         self.opacity = opacity
-        gtk_widget_set_opacity(widget, opacity)
+        gtk_widget_set_opacity(widget, opacity * placedOpacity)
+    }
+
+    /// How a placing layout's run draws the view, and how opaque, over its own; nil draws it as its own say.
+    func setPlacedDrawing(_ drawing: HostDrawingTransform?, opacity: Double) {
+        guard drawing != placedDrawing || opacity != placedOpacity else { return }
+        placedDrawing = drawing
+        placedOpacity = opacity
+        gtk_widget_set_opacity(widget, self.opacity * opacity)
+        if let placingLayout { gtk_widget_queue_allocate(placingLayout.widget) }
+    }
+
+    /// Whether clicks and touches go through the view to what is behind it.
+    func setIgnoresInput(_ ignores: Bool) {
+        gtk_widget_set_can_target(widget, ignores ? 0 : 1)
     }
 
     func setEnabled(_ enabled: Bool) {

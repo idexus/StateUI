@@ -24,7 +24,7 @@ enum GTKTransitionSurface {
     private static let viewProperties: Set<Prop> = [
         .opacity,
         .width, .height, .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
-        .rotation, .scale, .scaleX, .scaleY, .translationX, .translationY,
+        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .translationX, .translationY,
         .margin,
     ]
 }

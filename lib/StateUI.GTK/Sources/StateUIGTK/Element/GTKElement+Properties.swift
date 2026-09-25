@@ -20,11 +20,12 @@ extension GTKElement {
     static let unmeasuredProperties = Set<Prop>([
         .opacity, .background, .textColor, .isEnabled,
         .isOn, .value, .minimum, .maximum,
+        .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
     ]).union(transformProperties)
 
     /// Properties that move, turn and scale the view where its layout put it.
     static let transformProperties: Set<Prop> = [
-        .translationX, .translationY, .rotation, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
+        .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
     ]
 
     /// The arrangements of pages a window shows.
@@ -76,6 +77,7 @@ extension GTKElement {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
+                case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
                 case .padding where type == .page:
                     let sides = value(.padding)?.numbers ?? []
                     (view as? GTKSingleChildView)?.padding =
@@ -84,9 +86,22 @@ extension GTKElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if let layers = view as? GTKZStackView { layers.placement = placement }
         }
 
-        if !changed.isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// The layout's own placement run, where a state drives one: it moves the children without changing
+    /// what the layout measures.
+    var ownPlacementRun: Set<Prop> {
+        element.driven[.area]?.kind == .placement ? [.area] : []
+    }
+
+    /// The places an engine gives this layout's children, one each; nil while no state drives them.
+    var placement: HostPlacementRun? {
+        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.area) else { return nil }
+        return StateUIHost.placements(from: carried)
     }
 
     /// How the view is moved, turned and scaled; `scale` multiplies both axes on top of `scaleX` and `scaleY`.
@@ -96,8 +111,8 @@ extension GTKElement {
             translationX: value(.translationX)?.number ?? 0,
             translationY: value(.translationY)?.number ?? 0,
             rotation: value(.rotation)?.number ?? 0,
-            rotationX: 0,
-            rotationY: 0,
+            rotationX: value(.rotationX)?.number ?? 0,
+            rotationY: value(.rotationY)?.number ?? 0,
             scaleX: scale * (value(.scaleX)?.number ?? 1),
             scaleY: scale * (value(.scaleY)?.number ?? 1),
             pivotX: value(.pivotX)?.number ?? 0.5,

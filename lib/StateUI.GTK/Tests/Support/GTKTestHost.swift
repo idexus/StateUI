@@ -199,6 +199,45 @@ extension GTKView {
     }
 }
 
+extension GTKView {
+    /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB: the widget
+    /// rendered by its window's renderer, as the window draws it.
+    func pixels(at points: [(Double, Double)]) -> [UInt32] {
+        let width = Int(gtk_widget_get_width(widget))
+        let height = Int(gtk_widget_get_height(widget))
+        guard width > 0, height > 0, let native = gtk_widget_get_native(widget),
+              let renderer = gtk_native_get_renderer(native), let paintable = gtk_widget_paintable_new(widget)
+        else { return points.map { _ in 0 } }
+        defer { g_object_unref(UnsafeMutableRawPointer(paintable)) }
+
+        let snapshot = gtk_snapshot_new()
+        gdk_paintable_snapshot(paintable, snapshot, Double(width), Double(height))
+        guard let node = gtk_snapshot_free_to_node(snapshot) else { return points.map { _ in 0 } }
+        defer { gsk_render_node_unref(node) }
+        var viewport = graphene_rect_t(
+            origin: graphene_point_t(x: 0, y: 0), size: graphene_size_t(width: Float(width), height: Float(height)))
+        guard let texture = gsk_renderer_render_texture(renderer, node, &viewport) else { return points.map { _ in 0 } }
+        defer { g_object_unref(UnsafeMutableRawPointer(texture)) }
+
+        var bytes = [UInt8](repeating: 0, count: width * height * 4)
+        gdk_texture_download(texture, &bytes, gsize(width * 4))
+        return points.map { point in
+            let (x, y) = (Int(point.0), Int(point.1))
+            guard x >= 0, y >= 0, x < width, y < height else { return 0 }
+            let at = (y * width + x) * 4
+            return UInt32(bytes[at + 3]) << 24 | UInt32(bytes[at + 2]) << 16 | UInt32(bytes[at + 1]) << 8
+                | UInt32(bytes[at])
+        }
+    }
+}
+
+/// Whether two ARGB colours differ by at most `tolerance` in each channel - GTK rounds an opacity to 256 steps.
+func near(_ a: UInt32, _ b: UInt32, within tolerance: Int = 2) -> Bool {
+    (0..<4).allSatisfy { shift in
+        abs(Int((a >> (shift * 8)) & 0xFF) - Int((b >> (shift * 8)) & 0xFF)) <= tolerance
+    }
+}
+
 extension GTKSwitchView {
     /// Turns the switch as the user's click does.
     func toggle() {

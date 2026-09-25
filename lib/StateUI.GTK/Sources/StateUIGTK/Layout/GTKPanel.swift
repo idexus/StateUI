@@ -3,11 +3,11 @@
 
 import CStateUIGTK
 
-/// `StateUIPanel`, a `GtkWidget` subclass registered from Swift: it measures and allocates by asking the layout
-/// view whose number it carries, and lets its children go when it is disposed.
+/// `StateUIPanel`, a `GtkWidget` subclass registered from Swift: it measures, allocates and draws by asking the
+/// panel view whose number it carries, and lets its children go when it is disposed.
 /// Design: docs/design/platforms/gtk/c-api.md#a-subclass-from-swift
 enum GTKPanel {
-    /// Where a panel keeps its layout view's number.
+    /// Where a panel keeps its view's number.
     static let numberKey = "stateui-view"
 
     /// Widget's own dispose, which a panel's calls after letting its children go.
@@ -22,8 +22,7 @@ enum GTKPanel {
             widgetClass.pointee.measure = { widget, orientation, forSize, least, natural, leastBaseline, naturalBaseline in
                 let number = GTKPanel.number(of: widget)
                 let size = MainActor.assumeIsolated {
-                    (GTKView.find(number) as? GTKLayoutView)?
-                        .measure(across: orientation == GTK_ORIENTATION_HORIZONTAL, forSize: forSize) ?? 0
+                    GTKPanel.view(number)?.measure(across: orientation == GTK_ORIENTATION_HORIZONTAL, forSize: forSize) ?? 0
                 }
                 least?.pointee = 0
                 natural?.pointee = Int32(size.rounded(.up))
@@ -32,8 +31,15 @@ enum GTKPanel {
             }
             widgetClass.pointee.size_allocate = { widget, width, height, _ in
                 let number = GTKPanel.number(of: widget)
+                MainActor.assumeIsolated { GTKPanel.view(number)?.allocate(width: Double(width), height: Double(height)) }
+            }
+            widgetClass.pointee.snapshot = { widget, snapshot in
+                let number = GTKPanel.number(of: widget)
+                nonisolated(unsafe) let snapshot = snapshot
                 MainActor.assumeIsolated {
-                    (GTKView.find(number) as? GTKLayoutView)?.allocate(width: Double(width), height: Double(height))
+                    guard let snapshot, let view = GTKPanel.view(number) else { return }
+                    view.draw(snapshot, width: Double(gtk_widget_get_width(view.widget)),
+                              height: Double(gtk_widget_get_height(view.widget)))
                 }
             }
             let objectClass = theClass!.assumingMemoryBound(to: GObjectClass.self)
@@ -54,9 +60,13 @@ enum GTKPanel {
         return panel.of(GtkWidget.self)
     }
 
-    /// The number of the layout view a panel answers for.
+    /// The number of the view a panel answers for.
     static func number(of widget: GTKWidget?) -> Int64 {
         guard let widget else { return 0 }
         return viewNumber(g_object_get_data(widget.of(GObject.self), numberKey))
+    }
+
+    @MainActor private static func view(_ number: Int64) -> GTKPanelView? {
+        GTKView.find(number) as? GTKPanelView
     }
 }
