@@ -61,11 +61,13 @@ shown, said once GTK has laid the window out.
 
 ## Tabs
 
-A tabbed view is libadwaita's `AdwViewStack` of its tabs, each named by its
-page's title, and its `AdwViewSwitcher` stands in the middle of the header bar
-of the frame the tabbed view stands in. The switcher's choice is the user's:
-the pages hear it, then the selection's state, and the header bar follows the
-chosen tab whether or not the application renders again.
+A tabbed view is a `GtkStack` of its tabs, each named by its page's title,
+and its `GtkStackSwitcher` stands in the middle of the header bar of the
+frame the tabbed view stands in: the captions joined in one control, which
+reads as one choice among several beside the bar's own buttons. The
+switcher's choice is the user's: the pages hear it, then the selection's
+state, and the header bar follows the chosen tab whether or not the
+application renders again.
 
 ## A page's phases
 

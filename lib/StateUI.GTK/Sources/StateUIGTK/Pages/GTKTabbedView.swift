@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 import CStateUIGTK
 
-/// A TabbedView: libadwaita's `AdwViewStack` of its tabs, chosen by an `AdwViewSwitcher`, which stands in the
-/// middle of the header bar of the frame the tabbed view stands in.
+/// A TabbedView: a `GtkStack` of its tabs, chosen by a `GtkStackSwitcher` - its tabs' captions joined in one
+/// control - which stands in the middle of the header bar of the frame the tabbed view stands in.
 /// Design: docs/design/platforms/gtk/pages.md#tabs
 @MainActor
 final class GTKTabbedView: GTKLayoutView {
@@ -16,9 +16,9 @@ final class GTKTabbedView: GTKLayoutView {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
     /// The switcher its frame's header bar shows in its middle.
-    let switcher = GTKWidgetView { adw_view_switcher_new() }
+    let switcher = GTKWidgetView { gtk_stack_switcher_new() }
 
-    private let stack = GTKWidgetView { adw_view_stack_new() }
+    private let stack = GTKWidgetView { gtk_stack_new() }
     private var tabs: [GTKView] = []
     private var titles: [String] = []
 
@@ -26,8 +26,7 @@ final class GTKTabbedView: GTKLayoutView {
         super.init()
         stack.placingLayout = self
         setChildren([stack])
-        adw_view_switcher_set_stack(switcher.widget.opaque, stack.widget.opaque)
-        adw_view_switcher_set_policy(switcher.widget.opaque, ADW_VIEW_SWITCHER_POLICY_WIDE)
+        gtk_stack_switcher_set_stack(switcher.widget.opaque, stack.widget.opaque)
         connectNotify(UnsafeMutableRawPointer(stack.widget), "visible-child", number: number) { _, _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTabbedView)?.visibleChildMoved() }
         }
@@ -44,11 +43,11 @@ final class GTKTabbedView: GTKLayoutView {
 
         ProgramWrite.perform {
             for gone in tabs where !views.contains(where: { $0 === gone }) {
-                adw_view_stack_remove(stack.widget.opaque, gone.widget)
+                gtk_stack_remove(stack.widget.opaque, gone.widget)
             }
             for (index, view) in views.enumerated() where !tabs.contains(where: { $0 === view }) {
                 view.placingLayout = nil
-                adw_view_stack_add_titled(stack.widget.opaque, view.widget, "tab\(view.number)", title(at: index))
+                gtk_stack_add_titled(stack.widget.opaque, view.widget, "tab\(view.number)", title(at: index))
             }
             tabs = views
             showSelected()
@@ -61,8 +60,8 @@ final class GTKTabbedView: GTKLayoutView {
     func show(_ titles: [String], requested: Int?) {
         self.titles = titles
         for (index, view) in tabs.enumerated() {
-            guard let page = adw_view_stack_get_page(stack.widget.opaque, view.widget) else { continue }
-            adw_view_stack_page_set_title(page, title(at: index))
+            guard let page = gtk_stack_get_page(stack.widget.opaque, view.widget) else { continue }
+            gtk_stack_page_set_title(page, title(at: index))
         }
         if let requested, requested != selectedIndex {
             selectedIndex = requested
@@ -76,12 +75,12 @@ final class GTKTabbedView: GTKLayoutView {
 
     private func showSelected() {
         guard !tabs.isEmpty else { return }
-        adw_view_stack_set_visible_child(stack.widget.opaque, tabs[min(max(shownIndex, 0), tabs.count - 1)].widget)
+        gtk_stack_set_visible_child(stack.widget.opaque, tabs[min(max(shownIndex, 0), tabs.count - 1)].widget)
     }
 
     /// The switcher showed another tab: the user chose it.
     private func visibleChildMoved() {
-        guard !ProgramWrite.isWriting, let shown = adw_view_stack_get_visible_child(stack.widget.opaque),
+        guard !ProgramWrite.isWriting, let shown = gtk_stack_get_visible_child(stack.widget.opaque),
               let index = tabs.firstIndex(where: { $0.widget == shown }), index != shownIndex
         else { return }
 
@@ -93,7 +92,7 @@ final class GTKTabbedView: GTKLayoutView {
     /// Chooses a tab as the user's switcher does.
     func selectByUser(_ index: Int) {
         guard tabs.indices.contains(index) else { return }
-        adw_view_stack_set_visible_child(stack.widget.opaque, tabs[index].widget)
+        gtk_stack_set_visible_child(stack.widget.opaque, tabs[index].widget)
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
