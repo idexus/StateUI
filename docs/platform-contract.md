@@ -88,7 +88,7 @@ host that creates or interprets it.
 | `ColorBox` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Content` | structure | ✅ |  |  |  |  |  |
 | `ContextMenu` | structure | ✅ |  |  | ✅ |  |  |
-| `DatePicker` | native | ✅ |  |  | ✅ |  |  |
+| `DatePicker` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Ellipse` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Grid` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `HStack` | native | ✅ |  |  | ✅ | ✅ |  |
@@ -127,7 +127,7 @@ host that creates or interprets it.
 | `TabbedView` | adaptive | ✅ |  |  | ✅ | ✅ |  |
 | `TextEditor` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TextField` | native | ✅ |  |  | ✅ | ✅ |  |
-| `TimePicker` | native | ✅ |  |  | ✅ |  |  |
+| `TimePicker` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TitleBar` | adaptive | ✅ |  |  |  |  |  |
 | `TitleView` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `ToolbarItem` | structure | ✅ |  |  | ✅ | ✅ |  |
@@ -430,7 +430,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Canvas](controls/Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 53 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 53 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 51 ✅ |  |
-| [DatePicker](controls/DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
+| [DatePicker](controls/DatePicker.md) | 81 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 61 ✅ · 1 ☑️ |  |
 | [Ellipse](controls/Ellipse.md) | 77 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ | 59 ✅ |  |
 | [Grid](controls/Grid.md) | 78 | 62 ✅ · 2 ☑️ |  |  | 62 ✅ · 1 ☑️ | 60 ✅ |  |
 | [HStack](controls/HStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
@@ -453,12 +453,12 @@ Every control, and every part an application, its windows and its pages are made
 | [Switch](controls/Switch.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ | 53 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 88 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 67 ✅ |  |
 | [TextField](controls/TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ | 67 ✅ |  |
-| [TimePicker](controls/TimePicker.md) | 79 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [TimePicker](controls/TimePicker.md) | 79 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 56 ✅ · 1 ☑️ |  |
 | [TitleBar](controls/TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1568 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1685 of 2548 met |  |
 
 ### Application structure
 
@@ -528,7 +528,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ | ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | ✅ |  |  | ✅ | ✅ |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) |  |  |  | ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) |  |  |  | ✅ | ☑️ |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | ✅ |  |  | ✅ | ✅ |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | ✅ |  |  |  |  |  |
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | ✅ |  |  | ✅ | ✅ |  |

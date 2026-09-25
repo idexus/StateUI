@@ -86,6 +86,23 @@ with. `isOpen` opens and closes the list; the user's opening and closing are
 reported and the program's are not, so the user closing a list the program
 opened is reported. The chosen choice's mark in the list is the picker's tint.
 
+## A day and a time
+
+A DatePicker is WinUI's `CalendarDatePicker`: its day written short or long -
+"d" and "D" - in the user's own pattern, which WinUI's own formatter gives,
+between the bounds the tree set or WinUI's hundred years each way, and its
+calendar, whose opening and closing follow a picker's list. A day crosses as
+its year, month and day in the user's calendar, taken at noon so that no
+change of the clock moves it to another day.
+
+A TimePicker is WinUI's `TimePicker`, in the user's clock: hours and minutes,
+as the user's 12- or 24-hour choice writes them. WinUI's time picker has no
+way to open its face or to hear it open, so a time picker's `isOpen`,
+`onOpened` and `onClosed` are not realized, and a format beyond the user's
+own clock - seconds, a pattern - is not written.
+
+The user's day or time is reported, the program's is only shown.
+
 ## What shows work
 
 A ProgressBar is WinUI's `ProgressBar` over the range 0 to 1, a fraction past

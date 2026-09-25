@@ -129,6 +129,9 @@ typedef struct {
 
     /// A press on a canvas, followed from down to up: `phase` 0 pressed, 1 dragged, 2 released, at (x, y) DIPs of it.
     void (*canvasPressed)(int64_t view, int32_t phase, double x, double y);
+
+    /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
+    void (*picked)(int64_t view, int32_t first, int32_t second, int32_t third);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -305,6 +308,31 @@ int32_t stateui_winui_picker_selected(StateUIObjectRef picker);
 /// a test does.
 void stateui_winui_picker_open_as_user(StateUIObjectRef picker, bool open);
 void stateui_winui_picker_choose_as_user(StateUIObjectRef picker, int32_t index);
+
+/// A day: WinUI's CalendarDatePicker, its day (none where not `hasDate`), its bounds (null for WinUI's own), its day
+/// written short or long in the user's own way, and its calendar, whose opening and closing are told through
+/// `presented`; the user's day told through `picked`.
+StateUIObjectRef stateui_winui_date_make(int64_t view);
+void stateui_winui_date_set(StateUIObjectRef picker, bool hasDate, int32_t year, int32_t month, int32_t day);
+void stateui_winui_date_set_range(StateUIObjectRef picker, int32_t const *earliest, int32_t const *latest);
+void stateui_winui_date_set_format(StateUIObjectRef picker, bool longForm);
+void stateui_winui_date_set_open(StateUIObjectRef picker, bool open);
+bool stateui_winui_date_is_open(StateUIObjectRef picker);
+
+/// The day it shows, as year, month and day; whether it shows one.
+bool stateui_winui_date(StateUIObjectRef picker, int32_t *parts);
+
+/// A time of day: WinUI's TimePicker in the user's clock, its time (none where not `hasTime`); the user's time told
+/// through `picked`.
+StateUIObjectRef stateui_winui_time_make(int64_t view);
+void stateui_winui_time_set(StateUIObjectRef picker, bool hasTime, int32_t hour, int32_t minute);
+
+/// The time it shows, as hour and minute; whether it shows one.
+bool stateui_winui_time(StateUIObjectRef picker, int32_t *parts);
+
+/// Picks as the user does, outside the program's write - what a test does.
+void stateui_winui_date_pick_as_user(StateUIObjectRef picker, int32_t year, int32_t month, int32_t day);
+void stateui_winui_time_pick_as_user(StateUIObjectRef picker, int32_t hour, int32_t minute);
 
 /// What shows work: a progress bar, how far along from 0 to 1, and a spinner, turning while its work runs.
 StateUIObjectRef stateui_winui_progress_bar_make(void);

@@ -99,6 +99,9 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))
                 }
+            },
+            picked: { view, first, second, third in
+                MainActor.assumeIsolated { WinUIView.find(view)?.picked(first, second, third) }
             })
     }
 }

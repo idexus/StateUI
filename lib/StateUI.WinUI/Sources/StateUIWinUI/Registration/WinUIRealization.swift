@@ -16,9 +16,8 @@ enum WinUIRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
-        "MenuSeparator", "ModalStack", "Pin", "PositionIndicator", "Setters", "TimePicker", "TitleBar", "TrailingContent",
-        "VisualState", "WebView",
+        "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
+        "Pin", "PositionIndicator", "Setters", "TitleBar", "TrailingContent", "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -36,6 +35,7 @@ enum WinUIRealization {
         .complete("PageElement", "title"),
 
         // MARK: Entries - a control's or a part's own
+        .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasNavigationBar"),
@@ -51,6 +51,7 @@ enum WinUIRealization {
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
         .complete("TabbedView", "currentPage"),
+        .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
     ]

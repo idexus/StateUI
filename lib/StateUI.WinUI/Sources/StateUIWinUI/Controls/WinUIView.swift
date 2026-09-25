@@ -220,8 +220,12 @@ class WinUIView {
     /// or sidebar toggle (-2); a tab.
     func chose(_ index: Int) {}
 
-    /// What the view presents opened or closed of WinUI's accord: a split view's sidebar.
+    /// What the view presents opened or closed of WinUI's accord: a split view's sidebar, a picker's list, a date
+    /// picker's calendar.
     func presented(_ open: Bool) {}
+
+    /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
+    func picked(_ first: Int32, _ second: Int32, _ third: Int32) {}
 
     /// What of the user's input the view listens for, as the relay's bits; what hears it.
     private(set) var hearing: UInt32 = 0

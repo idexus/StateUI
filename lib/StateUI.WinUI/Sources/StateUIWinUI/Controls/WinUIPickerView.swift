@@ -16,9 +16,8 @@ final class WinUIPickerView: WinUIView {
     /// The choices the relay holds.
     private var options: [String]?
 
-    /// A change of the list's showing the program asked for, which the user did not make.
-    private var programOpens = false
-    private var programCloses = false
+    /// Whose the list's opening and closing are.
+    private var showing = WinUIShowing()
 
     init() {
         super.init { number in stateui_winui_picker_make(number) }
@@ -42,17 +41,9 @@ final class WinUIPickerView: WinUIView {
         stateui_winui_picker_set_alignment(handle, alignment.rawValue)
     }
 
-    /// Opens or closes the list; neither is the user's, so neither is reported. WinUI may show the list a moment
-    /// later, so the program's asking stands until the list says it opened or closed, or the program asks otherwise.
+    /// Opens or closes the list; neither is the user's, so neither is reported.
     func setOpen(_ open: Bool) {
-        programOpens = open
-        programCloses = !open
-        guard open != isOpen else {
-            programOpens = false
-            programCloses = false
-            return
-        }
-        stateui_winui_picker_set_open(handle, open)
+        if showing.programAsks(open: open, shown: isOpen) { stateui_winui_picker_set_open(handle, open) }
     }
 
     /// Whether the list shows.
@@ -71,11 +62,8 @@ final class WinUIPickerView: WinUIView {
 
     /// The list opened or closed: the user's, reported; the program's, not.
     override func presented(_ open: Bool) {
-        if open {
-            if programOpens { programOpens = false } else { onOpened?() }
-        } else {
-            if programCloses { programCloses = false } else { onClosed?() }
-        }
+        guard showing.heard(open: open) else { return }
+        if open { onOpened?() } else { onClosed?() }
     }
 
     override func detach() {
