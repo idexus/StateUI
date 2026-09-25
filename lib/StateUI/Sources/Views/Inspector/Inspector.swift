@@ -159,6 +159,6 @@ public enum Inspector {
     static func panel(in record: SceneRecord) -> Node? {
         guard let place = InspectorModel.shared.places[record.id] else { return nil }
 
-        return .overlay(InspectorPanel(scene: record.id, place: place))
+        return InspectorPanel(scene: record.id, place: place).body
     }
 }

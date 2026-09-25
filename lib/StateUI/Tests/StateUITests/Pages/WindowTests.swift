@@ -75,6 +75,42 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(bars.first?.children.first?.type, "LeadingContent")
     }
 
+    /// What a window lays over its page and the pages presented over it is one overlay, its last child: the
+    /// application's view, and a docked inspector's panel over that, in a layout letting a click beside them
+    /// through. With neither there is none.
+    func testAWindowLaysItsOverlayOverEverythingElseItHolds() throws {
+        let session = WindowSession()
+        let bare = PlainWindow().body(panel: nil, session: session).built
+        XCTAssertFalse(bare.children.contains { $0.type == .overlay })
+
+        session.overlay = ModifiedContent(node: label("banner"))
+        let node = PlainWindow().body(panel: { label("panel") }, session: session).built
+
+        let overlay = try XCTUnwrap(node.children.last)
+        XCTAssertEqual(overlay.type, .overlay)
+        let layers = try XCTUnwrap(overlay.children.first)
+        XCTAssertEqual(layers.type, .zStack)
+        XCTAssertEqual(layers.props["letsInputThrough"], .bool(true))
+        XCTAssertEqual(layers.children.map { $0.props["text"] }, [.string("banner"), .string("panel")])
+    }
+
+    /// Each keeps its element as the other comes and goes: a docked inspector's panel stays itself as the
+    /// application's view comes under it.
+    func testThePanelKeepsItsElementAsTheOverlaysViewComes() {
+        let session = WindowSession()
+        let renders = Renders()
+        let panel = { TextField("inspector").body }
+
+        let alone = entry(in: renders.render(PlainWindow().body(panel: panel, session: session)))
+
+        session.overlay = ModifiedContent(node: label("banner"))
+        let beneath = entry(in: renders.render(
+            PlainWindow().body(panel: panel, session: session), changed: Renderer.shared.pendingChanges))
+
+        XCTAssertNotNil(alone)
+        XCTAssertEqual(alone, beneath)
+    }
+
     /// A slot takes a BUILDER, so the two branches of an `if` inside one are
     /// two elements - the same rule that holds inside a `VStack`.
     ///

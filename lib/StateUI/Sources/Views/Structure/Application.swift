@@ -105,9 +105,9 @@ extension Window {
     ) -> Node {
         Node.composed(self, type: String(reflecting: Self.self)) {
             let session = session()
-            let overlay = panel?()
+            let overlay = Node.overlay(session.overlay, panel: panel?())
 
-            // Its page, the title bar and modal stack, the inspector: one order.
+            // Its page, the title bar and modal stack, the overlay: one order.
             // Design: docs/design/views/pages.md#the-children-of-a-window
             var node = Node(
                 contract: WindowContract.self,
@@ -131,9 +131,25 @@ extension Window {
 }
 
 extension Node {
-    /// A view laid over a whole window, above its page: an inspector's panel.
-    static func overlay(_ view: Element) -> Node {
-        Node(contract: OverlayContract.self, children: [view.body])
+    /// What a window lays over its page and the pages presented over it: the application's view, and a docked
+    /// inspector's panel over that, each under a key of its own so it keeps its elements as the other comes and
+    /// goes; nil for neither.
+    /// Design: docs/design/views/pages.md#the-children-of-a-window
+    static func overlay(_ view: (any View)?, panel: Node?) -> Node? {
+        var layers: [Node] = []
+        if var node = view?.body {
+            node.key = "view"
+            layers.append(node)
+        }
+        if var node = panel {
+            node.key = "inspector"
+            layers.append(node)
+        }
+        guard !layers.isEmpty else { return nil }
+
+        var stack = ZStack().letsInputThrough(true).node
+        stack.children = layers
+        return Node(contract: OverlayContract.self, children: [stack])
     }
 }
 

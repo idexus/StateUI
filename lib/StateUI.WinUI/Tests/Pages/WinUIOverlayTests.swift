@@ -6,19 +6,20 @@ import CStateUIWinUI
 @testable import StateUIWinUI
 import XCTest
 
-/// A page filled by a button, presenting its sheets from one state and writing its menus from another, which tells
-/// its scene.
+/// A page filled by a button, presenting its sheets from one state, writing its menus from another and laying a
+/// notice over its window from a third, which tells its scene.
 private struct OverlaidPage: ContentView {
     let sheets: State<[Int]>
     let menus: State<Bool>
     let scenes: Received<SceneSession>
+    var notice = State(wrappedValue: false)
 
     @Environment private var window: WindowSession
     @Environment private var scene: SceneSession
     @Environment private var page: PageSession
 
     var content: any View {
-        let (sheets, menus, scenes) = (self.sheets, self.menus, self.scenes)
+        let (sheets, menus, scenes, notice) = (self.sheets, self.menus, self.scenes, self.notice)
         let (window, scene, page) = (self.window, self.scene, self.page)
         return Button("Beneath")
             .horizontalAlignment(.fill)
@@ -30,10 +31,45 @@ private struct OverlaidPage: ContentView {
             .onChanged(menus.wrappedValue) {
                 page.menuBar = menus.wrappedValue ? [Menu("File") { MenuItem("New") }] : []
             }
+            .onChanged(notice.wrappedValue) {
+                window.overlay = notice.wrappedValue
+                    ? Label("Offline").horizontalAlignment(.center).verticalAlignment(.start) : nil
+            }
     }
 }
 
 final class WinUIOverlayTests: XCTestCase {
+    /// The application's own overlay stands over the page and over a sheet presented after it, where its alignments
+    /// put it; a click beside it reaches the page, and nil takes it away.
+    func testTheApplicationsOverlayStandsOverThePageAndItsSheets() throws {
+        try onUIThread {
+            let (sheets, notice) = (State(wrappedValue: [Int]()), State(wrappedValue: false))
+            let host = WinUIRenderer.running {
+                OverlaidPage(sheets: sheets, menus: State(wrappedValue: false), scenes: Received(), notice: notice)
+            }
+            let window = try XCTUnwrap(host.window)
+            let beneath = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            XCTAssertNil(window.overlay)
+
+            notice.wrappedValue = true
+            host.settle { window.overlay != nil }
+            host.layOut()
+            let words = try XCTUnwrap(host.views(WinUILabelView.self).first { $0.text == "Offline" })
+            let size = beneath.frame
+            XCTAssertEqual(words.frame.y, 0, "at the top, where its alignment puts it")
+            XCTAssertTrue(words.reaches(words.frame.width / 2, words.frame.height / 2))
+            XCTAssertTrue(beneath.reaches(size.width / 2, size.height / 2), "a click beside it reaches the page")
+
+            sheets.wrappedValue = [1]
+            host.settle { stateui_winui_window_sheets(window.handle) == 1 }
+            XCTAssertTrue(words.reaches(words.frame.width / 2, words.frame.height / 2), "over the sheet")
+
+            notice.wrappedValue = false
+            host.settle { window.overlay == nil }
+            XCTAssertNil(window.overlay)
+        }
+    }
+
     /// The window's overlay - the inspector docked in it - stands over its page and over a sheet presented after
     /// it, and a click beside what it holds goes on to the page; closed, it is gone.
     func testTheWindowsOverlayStandsOverItsPageLettingAClickBesideItThrough() throws {

@@ -140,6 +140,43 @@ the binding.
 The stack belongs to the window rather than to whichever page happened to
 present it. Replacing or closing that window tears down every modal it owns.
 
+## Over every page
+
+A window lays one view of the application's over its page and every page
+presented over it - a notice that stays while the pages change under it. It is
+the window's too, `window.overlay`:
+
+```swift
+struct OfflineNotice: ContentView {
+    @Environment private var window: WindowSession
+
+    var content: any View {
+        HStack {
+            Label("Working offline")
+            Button("Dismiss").onClicked { window.overlay = nil }
+        }
+        .spacing(12)
+        .horizontalAlignment(.center)
+        .verticalAlignment(.start)
+    }
+}
+
+struct LibraryPage: ContentView {
+    @Environment private var window: WindowSession
+    @State private var offline = false
+
+    var content: any View {
+        Switch($offline)
+            .onChanged(offline) { window.overlay = offline ? OfflineNotice() : nil }
+    }
+}
+```
+
+The view has the page's whole area and stands where its alignments put it. A
+click beside it goes on to what is under it; a layout of its own that fills
+the area passes a click on with `.letsInputThrough(true)`. `nil` takes it
+away. A docked inspector stands over it.
+
 ## Page titles and navigation furniture
 
 A view shown as a page changes its `PageSession`. An arrangement is a page

@@ -82,17 +82,25 @@ the window's own `@Environment` resolves it as well as everything under it.
 ## The children of a window
 
 A window node's children are its page, then what hangs off it - the title bar
-and the modal stack, read off the session as the window builds - then the
-inspector's panel. The host finds them by type, so the order is this side's to
-settle, and one order makes the window's children the same list in every run.
+and the modal stack, read off the session as the window builds - then its
+overlay. The host finds them by type, so the order is this side's to settle,
+and one order makes the window's children the same list in every run.
 
 ```text
   Window
    ├── Page          the window's page
    ├── TitleBar      from WindowSession.titleBar
    ├── ModalStack    from WindowSession.modalStack
-   └── Overlay       the inspector's panel, where it docks in this window
+   └── Overlay
+        └── ZStack       lets a click beside its layers through
+             ├── view        from WindowSession.overlay, keyed "view"
+             └── panel       the inspector's, where it docks here, keyed "inspector"
 ```
+
+The overlay is one node however many layers it holds, so a host lays one view
+over the page and the sheets. Each layer has a key of its own: the inspector
+opening or closing leaves the application's view the element it was, and the
+other way round.
 
 ## Lifecycle reports one by one
 

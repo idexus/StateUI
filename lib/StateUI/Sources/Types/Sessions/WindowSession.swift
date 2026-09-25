@@ -122,6 +122,19 @@ public final class WindowSession {
     /// `ModalStack`.
     @State public var modalStack: ModalStack? = nil
 
+    /// A view laid over the window's page and every page presented over it -
+    /// a notice that stays while the pages change under it.
+    ///
+    ///     .onChanged(connection.isOnline) {
+    ///         window.overlay = connection.isOnline ? nil : OfflineBanner()
+    ///     }
+    ///
+    /// It has the page's whole area and stands where its alignments put it; a
+    /// click beside it goes on to what is under it, and a layout of its own
+    /// that fills the area passes a click on with `.letsInputThrough(true)`.
+    /// `nil` takes it away.
+    @State public var overlay: (any View)? = nil
+
     /// The key the tree knows the window by in its scene.
     let key: String
 
@@ -182,9 +195,9 @@ public final class WindowSession {
         return props
     }
 
-    /// What hangs off the window besides its page: the chrome and the modal
-    /// stack, each as the node the host knows it by - built as the window is,
-    /// so the modal stack reads its array there.
+    /// What hangs off the window between its page and its overlay: the chrome
+    /// and the modal stack, each as the node the host knows it by - built as
+    /// the window is, so the modal stack reads its array there.
     var slots: [Node] {
         var slots: [Node] = []
 
