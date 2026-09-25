@@ -16,8 +16,8 @@ enum WinUIRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "Pin",
-        "PositionIndicator", "Setters", "TitleBar", "TrailingContent", "VisualState", "WebView",
+        "Content", "LeadingContent", "Map", "MenuBar", "Pin", "PositionIndicator", "Setters", "TitleBar",
+        "TrailingContent", "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -31,11 +31,14 @@ enum WinUIRealization {
     static let records: [WinUIRealization] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("MenuItemElement", "clicked"),
+        .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "title"),
 
         // MARK: Entries - a control's or a part's own
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
+        .complete("Menu", "isEnabled"),
+        .complete("Menu", "text"),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasNavigationBar"),

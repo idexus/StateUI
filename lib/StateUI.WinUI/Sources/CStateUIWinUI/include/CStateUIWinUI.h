@@ -132,6 +132,9 @@ typedef struct {
 
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     void (*picked)(int64_t view, int32_t first, int32_t second, int32_t third);
+
+    /// The user chose an item of a view's menu: its place among the menu's items, from 0.
+    void (*menuChosen)(int64_t view, int32_t index);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -301,6 +304,19 @@ void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef c
 
 /// How many sheets a window shows - what a test reads.
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);
+
+/// A view's context menu: `count` entries, each `kinds`' 0 an item, 1 a separator, 2 a submenu opening, 3 it closing,
+/// with its caption and whether it can be chosen; an item's choice told through `menuChosen` by its place among the
+/// items. None takes the menu away.
+void stateui_winui_set_context_menu(StateUIObjectRef element, int64_t view, int32_t const *kinds,
+                                    char const *const *titles, bool const *enabled, int32_t count);
+
+/// The context menu as a test reads it: items by caption, "!" before one that cannot be chosen, "-" a separator,
+/// a submenu's entries in brackets after its caption, ";" between - in UTF-8; the length it needs.
+int32_t stateui_winui_context_menu(StateUIObjectRef element, char *utf8, int32_t capacity);
+
+/// Chooses the item at `index` among the context menu's items, submenus' included, as assistive technology does.
+void stateui_winui_context_menu_choose(StateUIObjectRef element, int32_t index);
 
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
 /// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list

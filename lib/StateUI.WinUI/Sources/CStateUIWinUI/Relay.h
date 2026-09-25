@@ -45,6 +45,11 @@ namespace stateui {
     bool hearsTaps(int64_t view);
     void press(int64_t view);
 
+    /// Paints a panel clear while its view listens for the user or offers a context menu, so it is hit across its
+    /// bounds and not only where its children stand; takes that away once neither holds. An author's background
+    /// stays.
+    void holdHitArea(xaml::UIElement const &element, int64_t view);
+
     /// WinUI's input scope for StateUI's `InputPurpose`: the on-screen keyboard a field brings up.
     xaml::Input::InputScope inputScope(int32_t purpose);
 

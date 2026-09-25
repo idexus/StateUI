@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ☑️ |  |  | ✅ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
+| `accessibilityIdentifier` | property | `String` | native | ☑️ |  |  | ✅ | ✅ |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ |  |  |  |
+| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `icon` | property | `ImageSource` | adaptive | ✅ |  |  |  |  |  |  |
 | `isDestructive` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
-| `text` | property | `String` | native | ✅ |  |  | ✅ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |

@@ -28,6 +28,10 @@ final class WinUIElement: NativeElement {
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
+    /// Whether the view was last given a context menu, and whether its menu changed in this patch.
+    var hadContextMenu = false
+    var contextMenuChanged = false
+
     /// Where the element last said it stands; empty before it has said.
     var lastFrameReport: [Double] = []
 
@@ -73,6 +77,8 @@ final class WinUIElement: NativeElement {
         arrangePages(changed: changed)
         reconcilePresentation(from: previouslyShown.map(\.winUI))
         previouslyShown = []
+        if type == .contextMenu { parent?.contextMenuChanged = true }
+        refreshContextMenu()
         host?.follow(self, readsFrame: readsFrame)
     }
 

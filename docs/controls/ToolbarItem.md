@@ -45,5 +45,5 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 | `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
 | `isDestructive` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |

@@ -102,6 +102,9 @@ enum WinUICallbacks {
             },
             picked: { view, first, second, third in
                 MainActor.assumeIsolated { WinUIView.find(view)?.picked(first, second, third) }
+            },
+            menuChosen: { view, index in
+                MainActor.assumeIsolated { WinUIView.find(view)?.menuChosen(Int(index)) }
             })
     }
 }

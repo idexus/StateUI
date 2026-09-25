@@ -227,6 +227,28 @@ class WinUIView {
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     func picked(_ first: Int32, _ second: Int32, _ third: Int32) {}
 
+    /// What the items of the view's context menu do, in their order.
+    private var menuActions: [() -> Void] = []
+
+    /// Gives the view `menu` as its context menu; an empty one takes it away.
+    /// Design: docs/design/platforms/winui/pages.md#menus
+    func setContextMenu(_ menu: WinUIMenu) {
+        menuActions = menu.actions
+        WinUIStrings.withCStrings(menu.titles) { titles in
+            menu.kinds.withUnsafeBufferPointer { kinds in
+                menu.enabled.withUnsafeBufferPointer { enabled in
+                    stateui_winui_set_context_menu(
+                        handle, number, kinds.baseAddress, titles, enabled.baseAddress, Int32(kinds.count))
+                }
+            }
+        }
+    }
+
+    /// The user chose the item at `index` of the view's context menu.
+    func menuChosen(_ index: Int) {
+        if menuActions.indices.contains(index) { menuActions[index]() }
+    }
+
     /// What of the user's input the view listens for, as the relay's bits; what hears it.
     private(set) var hearing: UInt32 = 0
     private var onHeard: ((WinUIHeard) -> Void)?
@@ -250,6 +272,7 @@ class WinUIView {
     /// overrides this lets go of what every view holds first, then of its own.
     func detach() {
         hear(0) { _ in }
+        menuActions = []
     }
 
     private struct Weak {

@@ -9,6 +9,7 @@
 #include "Relay.h"
 
 #include <cmath>
+#include <optional>
 #include <unordered_map>
 
 #include <winrt/Windows.UI.h>
@@ -29,7 +30,6 @@ namespace {
     /// became a drag, and the handlers hung on its element.
     struct Listening {
         uint32_t hearing = 0;
-        bool gaveBackground = false;
 
         int32_t run = 0;
         ULONGLONG lastTap = 0;
@@ -179,7 +179,13 @@ namespace {
         element.ManipulationDelta(entry.delta);
         element.ManipulationCompleted(entry.completed);
         element.ManipulationMode(input::ManipulationModes::System);
-        if (auto panel = element.try_as<controls::Panel>(); panel && entry.gaveBackground) panel.Background(nullptr);
+    }
+
+    /// The clear brush a panel is painted with to be hit, told from an author's by being this one.
+    xaml::Media::SolidColorBrush const &clear() {
+        // Kept for the process's life: no XAML object is let go of after XAML has shut down.
+        static auto const *brush = new std::optional(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
+        return **brush;
     }
 }
 
@@ -191,6 +197,15 @@ namespace stateui {
     void press(int64_t view) {
         if (hearsTaps(view)) tell(view, StateUIHeardTap, 0, {});
     }
+
+    void holdHitArea(xaml::UIElement const &element, int64_t view) {
+        auto panel = element.try_as<controls::Panel>();
+        if (!panel) return;
+        bool wanted = listening.count(view) || element.ContextFlyout();
+        auto background = panel.Background();
+        if (wanted && !background) panel.Background(clear());
+        else if (!wanted && background == clear()) panel.Background(nullptr);
+    }
 }
 
 extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32_t hearing) {
@@ -201,6 +216,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
             if (found == listening.end()) return;
             unhook(element, found->second);
             listening.erase(found);
+            holdHitArea(element, view);
             return;
         }
         if (found == listening.end()) {
@@ -211,11 +227,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         entry.hearing = hearing;
         element.ManipulationMode(
             hearing & StateUIHearingPinches ? input::ManipulationModes::Scale : input::ManipulationModes::System);
-        // A panel draws nothing between its children, and nothing is hit there: listening, it paints that clear.
-        if (auto panel = element.try_as<controls::Panel>(); panel && !panel.Background()) {
-            panel.Background(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-            entry.gaveBackground = true;
-        }
+        holdHitArea(element, view);
     } catch (winrt::hresult_error const &error) {
         report(error, "listening for the user's input");
     }

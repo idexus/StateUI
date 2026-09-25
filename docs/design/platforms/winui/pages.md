@@ -101,3 +101,20 @@ changes, the page that stops showing hears it and then the one that starts,
 as a move. Escape takes the top sheet away, and so does the window's way back
 while a sheet shows, once the sheet's own stack has no page to go back to;
 the window is told how many sheets remain.
+
+## Menus
+
+A view's context menu is WinUI's `MenuFlyout` on the view: a right click and a
+long press open it where the user asked, and on a view that holds the
+keyboard, the menu key and Shift+F10 too. Its items
+are `MenuFlyoutItem`s, its separators `MenuFlyoutSeparator`s and its submenus
+`MenuFlyoutSubItem`s, one level inside another as the tree nests them; an
+entry that cannot be chosen is shown dimmed. The host hands the relay the
+menu flat - an item, a separator, a submenu opening and closing, each with its
+caption - and hears a choice by the item's place among the items, submenus'
+included; the item's own handler runs. Any entry the tree changes, adds or
+removes gives the view its menu again, and a menu with no entries is none.
+
+A stack with a menu is hit across its bounds, as a listening one is
+([listening](input.md#listening)): a right click anywhere across it opens the
+menu, not only on its children.

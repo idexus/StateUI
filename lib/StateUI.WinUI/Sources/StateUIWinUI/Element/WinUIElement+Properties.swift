@@ -34,6 +34,16 @@ extension WinUIElement {
         .translationX, .translationY, .rotation, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
     ]
 
+    /// Gives the view its context menu again once the menu changed or went.
+    /// Design: docs/design/platforms/winui/pages.md#menus
+    func refreshContextMenu() {
+        let menu = children.first { $0.type == .contextMenu }
+        guard contextMenuChanged || (hadContextMenu && menu == nil), let view else { return }
+        contextMenuChanged = false
+        hadContextMenu = menu != nil
+        view.setContextMenu(WinUIMenu(menu))
+    }
+
     /// The arrangements of pages a window shows.
     static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
 

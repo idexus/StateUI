@@ -16,8 +16,10 @@ and each asks what the view listens for as it runs; a view that stops
 listening, or leaves the tree, takes them off again.
 
 A panel draws nothing between its children, and WinUI hits nothing there. A
-listening panel with no background of its own is painted clear, so a row
-answers a click past its words as well as on them.
+panel with no background of its own is painted clear while it listens or
+offers a context menu, so a row answers a click past its words as well as on
+them; once it does neither, the clear paint goes, and an author's background
+is never touched.
 
 ## Taps
 
