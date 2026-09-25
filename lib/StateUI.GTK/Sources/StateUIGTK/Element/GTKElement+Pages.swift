@@ -109,17 +109,27 @@ extension GTKElement {
     }
 
     /// The colours this element's bar is painted in: the nearest stack's or tabbed view's around it, itself
-    /// included, and what stands on the bar in, the nearest stack's.
+    /// included, and what stands on the bar in, the nearest stack's - else the window's title bar's, whose
+    /// place on a desktop of header bars is every header bar no arrangement colours.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     private var barColors: (background: HostValue?, foreground: HostValue?) {
         var background: HostValue?
         var foreground: HostValue?
         var each: GTKElement? = self
         while let element = each, background == nil || foreground == nil {
-            if element.type == .navigationStack || element.type == .tabbedView {
+            switch element.type {
+            case .navigationStack:
                 background = background ?? element.value(.barBackgroundColor)
+                foreground = foreground ?? element.value(.barForegroundColor)
+            case .tabbedView:
+                background = background ?? element.value(.barBackgroundColor)
+            case .window:
+                let titleBar = element.children.first { $0.type == .titleBar }
+                background = background ?? titleBar?.value(.background)
+                foreground = foreground ?? titleBar?.value(.barForegroundColor)
+            default:
+                break
             }
-            if element.type == .navigationStack { foreground = foreground ?? element.value(.barForegroundColor) }
             each = element.parent
         }
         return (background, foreground)
