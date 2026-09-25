@@ -13,6 +13,8 @@ import XCTest
 enum GTKTestHost {
     /// The application every test's windows belong to.
     static let application: UnsafeMutablePointer<GtkApplication> = {
+        // Every test opens a window of its own; GTK's GL renderer takes 0.65 s to close one, the cairo one none.
+        g_setenv("GSK_RENDERER", "cairo", 0)
         adw_init()
         // GTK's own animations - a dialog closing - wait on frames a window behind another never gets.
         var animates = GValue()
@@ -115,7 +117,7 @@ extension GTKRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
-        GTKTestHost.pump()
+        GTKTestHost.pump(0.02)
         renderer.layOut()
         return renderer
     }

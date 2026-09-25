@@ -195,7 +195,7 @@ final class GTKActsTests: XCTestCase {
             let dialog = try XCTUnwrap(host.dialog)
             let focus = try XCTUnwrap(adw_dialog_get_focus(dialog.of(AdwDialog.self)))
 
-            XCTAssertTrue(GTKTestHost.holds(focus, gtk_entry_get_type()))
+            XCTAssertNotNil(gtk_widget_get_ancestor(focus, gtk_entry_get_type()), "the focus is the field, or its text")
             try host.answer("Cancel")
         }
     }
