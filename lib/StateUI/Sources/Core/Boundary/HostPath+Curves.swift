@@ -24,6 +24,17 @@ import CRT
     case quadratic(control: Point, end: Point)
     /// Closes the current subpath with a straight segment.
     case close
+
+    /// The command as a relay reads it: its kind - 0 move, 1 line, 2 cubic, 3 quadratic, 4 close - then its points.
+    public var numbers: [Double] {
+        switch self {
+        case .move(let point): [0, point.x, point.y]
+        case .line(let point): [1, point.x, point.y]
+        case .cubic(let first, let second, let end): [2, first.x, first.y, second.x, second.y, end.x, end.y]
+        case .quadratic(let control, let end): [3, control.x, control.y, end.x, end.y]
+        case .close: [4]
+        }
+    }
 }
 
 extension HostPath {

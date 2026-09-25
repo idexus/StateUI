@@ -24,10 +24,10 @@ let package = Package(
             path: "Sources/CStateUIWinUI",
             cxxSettings: [.headerSearchPath("../../.projection")],
             // An SVG is handed to WinUI from memory; a zone's offset is ICU's, and the kept values stand in the
-            // user's local data.
+            // user's local data; a canvas draws with Direct2D and DirectWrite on a Direct3D device.
             linkerSettings: [
                 .linkedLibrary("shcore"), .linkedLibrary("shlwapi"), .linkedLibrary("icu"), .linkedLibrary("shell32"),
-                .linkedLibrary("ole32"),
+                .linkedLibrary("ole32"), .linkedLibrary("d2d1"), .linkedLibrary("d3d11"), .linkedLibrary("dwrite"),
             ]
         ),
         .target(

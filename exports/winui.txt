@@ -12,6 +12,11 @@ Button
   textCase
   textColor
   clicked()
+Canvas
+  drawable
+  dragged()
+  pressed()
+  released()
 ColorBox
   color
   cornerRadius

@@ -62,12 +62,15 @@ function Get-StateUIPackage([string]$Id) {
 }
 
 # The C++/WinRT projection of the Windows SDK, WinUI and the Windows App SDK,
-# into the host's .projection/, generated again when the versions change.
+# into the host's .projection/, generated again when the versions change -
+# beside it, WinUI's header for drawing with DirectX into its elements.
 function Initialize-StateUIProjection {
     $projection = Join-Path $StateUIWinUIHost '.projection'
     $stamp = Join-Path $projection 'versions.txt'
+    $interop = 'microsoft.ui.xaml.media.dxinterop.h'
     $versions = ($StateUIPackages.GetEnumerator() | ForEach-Object { "$($_.Key) $($_.Value)" }) -join "`n"
-    if ((Test-Path $stamp) -and ((Get-Content $stamp -Raw).Trim() -eq $versions.Trim())) { return }
+    if ((Test-Path $stamp) -and ((Get-Content $stamp -Raw).Trim() -eq $versions.Trim()) -and
+        (Test-Path (Join-Path $projection $interop))) { return }
 
     $cppwinrt = Join-Path (Get-StateUIPackage 'microsoft.windows.cppwinrt') 'bin\cppwinrt.exe'
     $winui = Get-StateUIPackage 'microsoft.windowsappsdk.winui'
@@ -80,6 +83,7 @@ function Initialize-StateUIProjection {
         -input "$experiences\metadata\10.0.18362.0" -input "$webview\lib\Microsoft.Web.WebView2.Core.winmd" `
         -output $projection
     if ($LASTEXITCODE) { throw 'cppwinrt could not generate the projection' }
+    Copy-Item (Join-Path $winui "include\$interop") $projection
     Set-Content -Path $stamp -Value $versions -Encoding ascii
 }
 

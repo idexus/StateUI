@@ -62,3 +62,42 @@ layout gives it. Dashes, gaps and their offset are outline widths in WinUI
 as in StateUI; a mitred corner's limit WinUI measures against half the
 outline's width and StateUI against the whole, so it is doubled.
 
+
+## A canvas
+
+A Canvas replays its drawing with Direct2D, the drawing API WinUI itself
+draws with. The canvas is a panel of the relay's with no size of its own,
+painted with a `SurfaceImageSource` that Direct2D draws into: the drawing
+crosses in one call as StateUI's three lists
+([three lists for a relay](../../types/drawing.md#three-lists-for-a-relay)),
+the relay keeps it, and on the next display frame replays it on a surface of
+the canvas's size in pixels at the window's rasterization scale, cleared
+first, so everything is cut at the canvas's edge. The canvas draws again when
+it is given another drawing, another size or another scale, and when WinUI's
+surfaces lose what they held; a device Windows takes away is made again, and
+the drawing with it. One Direct2D device, and one DirectWrite factory, serve
+every canvas.
+
+The canvas hears its loading, which asks for a drawing, and never its
+unloading. WinUI tells an element taken out and put back before it loaded -
+a tabbed view holding its page again as the window takes its tabs - that it
+unloaded after it has loaded again, and a canvas stopping there would lose
+the drawing waiting for the next frame and stand empty until something else
+asked for one. What the canvas listens to beyond
+itself - its root's scale, the surfaces' loss - it hears for as long as it
+lives, through references that do not hold it.
+
+The replay keeps the colours, the widths, the text size, the opacity and the
+transform as the instructions set them, a saved set on a stack. A wedge and
+an arc of an oval are Direct2D arcs of a quarter turn at most; a path is the
+core's curves, filled by the nonzero rule. Text is DirectWrite's, in the
+system's family - Segoe UI Variable where Windows has it - at 14 until the
+drawing says otherwise, wrapped in its box, set in it by the two alignments,
+and cut at its edges by a layer, which cuts a turned box exactly where a clip
+takes its bounds.
+
+A press on the canvas is its own: the pointer's primary button, a finger or a
+pen tip going down holds the pointer, and the relay tells where it went down,
+each move while it is held, and where it was lifted - or where it last was
+when the pointer is taken away - in DIPs of the canvas. The canvas's
+background is never empty, so the whole canvas is hit, drawn on or not.

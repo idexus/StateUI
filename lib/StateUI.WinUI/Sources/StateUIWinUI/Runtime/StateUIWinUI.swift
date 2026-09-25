@@ -94,6 +94,11 @@ enum WinUICallbacks {
             answered: { ticket, accepted, utf8 in
                 let words = utf8.map { String(cString: $0) }
                 MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, accepted: accepted, words: words) }
+            },
+            canvasPressed: { view, phase, x, y in
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUICanvasView)?.pressed(phase: phase, at: Point(x: x, y: y))
+                }
             })
     }
 }

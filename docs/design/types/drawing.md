@@ -32,6 +32,32 @@ wrong instructions without a word from either side. The kinds are grouped
 in their declaration: what the canvas draws with, outlines, solid shapes,
 text, and where the canvas draws.
 
+## Three lists for a relay
+
+A host whose canvas stands beneath a relay - Java through JNI, C++ behind a
+C ABI - takes the whole drawing in one crossing, however many instructions it
+holds, as `HostDrawing` lays it out in three flat lists:
+
+- `ints`: each instruction's kind, then its whole numbers - a colour as ARGB,
+  a flag as 0 or 1, an alignment as its member's number, a text's index in
+  `strings`, a path's count of curves;
+- `numbers`: each instruction's numbers in order, a path's curves among them,
+  each curve its kind (0 move, 1 line, 2 cubic, 3 quadratic, 4 close) and
+  then its points;
+- `strings`: the text the instructions write.
+
+```text
+  Draw.fillColor(.red)                      ints     [0, #FFFF0000, 13, 17, 1, 0, 0]
+  Draw.fillRoundedRectangle(0, 0, 90, 30, 8)   numbers  [0, 0, 90, 30, 8, 0, 0, 90, 30]
+  Draw.drawText("Go", 0, 0, 90, 30, .center)   strings  ["Go"]
+```
+
+A path's arcs arrive as the shared parser's cubic curves, so no relay parses
+SVG. An instruction whose values do not read whole is left out on this side,
+and the relay reads each kind's values in the fixed order above: it trusts
+the lists' shape and still stops at the first record that runs past their
+ends.
+
 ## Settings hold until changed
 
 The instructions run in the order they are written, and a setting holds

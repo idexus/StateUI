@@ -31,8 +31,8 @@ extension WinUIRegistrations {
         registry.add(PathContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(shapeMembers + [PathContract.data]) { view, values in
                 paint(view, values)
-                view.draw(authored(commands(HostPath(svg: values[PathContract.data] ?? "")?.arcsAsCubics ?? []),
-                                   evenOdd: false, values))
+                let curves = HostPath(svg: values[PathContract.data] ?? "")?.arcsAsCubics ?? []
+                view.draw(authored(curves.flatMap(\.numbers), evenOdd: false, values))
             }
         }
         registry.add(PolygonContract.self, create: { _ in WinUIPathView() }) { shape in
@@ -98,18 +98,5 @@ extension WinUIRegistrations {
         let finite = points.filter { $0.x.isFinite && $0.y.isFinite }
         guard let first = finite.first else { return [] }
         return [0, first.x, first.y] + finite.dropFirst().flatMap { [1, $0.x, $0.y] } + (closed ? [4] : [])
-    }
-
-    /// The core's curves as the relay's flat commands.
-    private static func commands(_ curves: [HostCurveCommand]) -> [Double] {
-        curves.flatMap { curve -> [Double] in
-            switch curve {
-            case .move(let point): [0, point.x, point.y]
-            case .line(let point): [1, point.x, point.y]
-            case .cubic(let first, let second, let end): [2, first.x, first.y, second.x, second.y, end.x, end.y]
-            case .quadratic(let control, let end): [3, control.x, control.y, end.x, end.y]
-            case .close: [4]
-            }
-        }
     }
 }

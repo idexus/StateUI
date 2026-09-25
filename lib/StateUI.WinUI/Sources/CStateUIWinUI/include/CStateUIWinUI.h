@@ -126,6 +126,9 @@ typedef struct {
     /// The user answered the question asked under `ticket`: whether it was accepted, and the words chosen or
     /// typed, in UTF-8; null for none.
     void (*answered)(int64_t ticket, bool accepted, char const *utf8);
+
+    /// A press on a canvas, followed from down to up: `phase` 0 pressed, 1 dragged, 2 released, at (x, y) DIPs of it.
+    void (*canvasPressed)(int64_t view, int32_t phase, double x, double y);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -312,7 +315,7 @@ void stateui_winui_shape_set(StateUIObjectRef shape, double radius, StateUIBrush
 /// A shape: one WinUI Path, drawn by `stateui_winui_path_draw` and painted by `stateui_winui_path_paint`.
 StateUIObjectRef stateui_winui_path_make(void);
 
-/// Paints a shape: its fill and outline, the outline's width, its dashes and their offset in DIPs, its ends
+/// Paints a shape: its fill and outline, the outline's width, its dashes and their offset in outline widths, its ends
 /// (StateUI's LineCap), its joins (LineJoin) and how far a mitred join may reach.
 void stateui_winui_path_paint(StateUIObjectRef path, StateUIBrush fill, StateUIBrush stroke, double width,
                               double const *dashes, int32_t dashCount, double dashOffset, int32_t cap, int32_t join,
@@ -325,6 +328,15 @@ void stateui_winui_path_paint(StateUIObjectRef path, StateUIBrush fill, StateUIB
 void stateui_winui_path_draw(StateUIObjectRef path, int32_t kind, double const *radii, double const *commands,
                              int32_t count, bool evenOdd, int32_t aspect, double const *transform, double width,
                              double height, double inset);
+
+/// A canvas: a panel its drawing is replayed on, again for each size and scale it is shown at; a press on it is
+/// told through `canvasPressed` for the view `view`.
+StateUIObjectRef stateui_winui_canvas_make(int64_t view);
+
+/// The canvas's drawing, as StateUI's `HostDrawing` lays it out: each instruction's kind and whole numbers in
+/// `ints`, its numbers in `numbers`, and its text in `words`, `wordCount` UTF-8 runs of `lengths` bytes end to end.
+void stateui_winui_canvas_draw(StateUIObjectRef canvas, int32_t const *ints, int32_t intCount, double const *numbers,
+                               int32_t numberCount, char const *words, int32_t const *lengths, int32_t wordCount);
 
 /// A ColorBox: a Border filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.
@@ -390,6 +402,9 @@ bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
 
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);
+
+/// How many canvases WinUI holds - what a test counts to see every one let go.
+int32_t stateui_winui_canvases(void);
 
 /// The local time of day: hour, minute, second and millisecond, into `time`.
 void stateui_winui_clock(int32_t *time);
