@@ -116,7 +116,7 @@ host that creates or interprets it.
 | `Rectangle` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Scene` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `ScrollView` | native | ✅ |  |  | ✅ | ✅ |  |
-| `SearchField` | native | ✅ |  |  | ✅ |  |  |
+| `SearchField` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Setters` | structure |  |  |  |  |  |  |
 | `Slider` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Span` | structure | ✅ |  |  | ✅ | ✅ |  |
@@ -125,7 +125,7 @@ host that creates or interprets it.
 | `Stepper` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Switch` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TabbedView` | adaptive | ✅ |  |  | ✅ | ✅ |  |
-| `TextEditor` | native | ✅ |  |  | ✅ |  |  |
+| `TextEditor` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TextField` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TimePicker` | native | ✅ |  |  | ✅ |  |  |
 | `TitleBar` | adaptive | ✅ |  |  |  |  |  |
@@ -447,18 +447,18 @@ Every control, and every part an application, its windows and its pages are made
 | [RadioButton](controls/RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 61 ✅ |  |
-| [SearchField](controls/SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
+| [SearchField](controls/SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ | 59 ✅ |  |
 | [Slider](controls/Slider.md) | 74 | 60 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ | 55 ✅ |  |
 | [Stepper](controls/Stepper.md) | 72 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 55 ✅ |  |
 | [Switch](controls/Switch.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ | 53 ✅ |  |
-| [TextEditor](controls/TextEditor.md) | 88 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
-| [TextField](controls/TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ | 55 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | 88 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 67 ✅ |  |
+| [TextField](controls/TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ | 67 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 79 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [TitleBar](controls/TitleBar.md) | 71 | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1430 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1568 of 2548 met |  |
 
 ### Application structure
 
@@ -519,7 +519,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | ✅ |  |  | ✅ | ✅ |  |
 | [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` |  |  |  |  |  |  |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | ☑️ |  |  | ☑️ |  |  |
-| [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ |  |  |  | ✅ |  |
+| [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ |  |  |  |  |  |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ |  |  |  |  |  |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` |  |  |  |  |  |  |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | ✅ |  |  | ✅ |  |  |
@@ -555,7 +555,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ |  |  | ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) |  |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | ✅ |  |  |  |  |  |

@@ -346,9 +346,34 @@ double stateui_winui_stepper_value(StateUIObjectRef stepper);
 /// Moves a slider's or a stepper's value as UI Automation does, which the user's move is.
 void stateui_winui_value_move(StateUIObjectRef control, double value);
 
+/// The words the user types, each change told through `textChanged`: a field on one line, whose Enter is
+/// `submitted`; an editor of several lines, whose Enter starts a new one; a search box, whose query is `submitted`.
 StateUIObjectRef stateui_winui_field_make(int64_t view);
+StateUIObjectRef stateui_winui_editor_make(int64_t view);
+StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
+
+/// How a field or an editor takes words: read only, spell checked, predicting the next word, and what they are for
+/// (StateUI's `InputPurpose`), which picks the on-screen keyboard.
+void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bool spellChecked, bool predicted,
+                                       int32_t purpose);
+
+/// Its words across it (StateUI's `TextAlignment`) and its placeholder's colour, the platform's where not
+/// `placeholderColored`.
+void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uint32_t placeholderArgb,
+                                  bool placeholderColored);
+
+/// Puts the caret `start` characters in and selects `length` from it, both kept inside the words.
+void stateui_winui_field_select(StateUIObjectRef field, int32_t start, int32_t length);
+
+/// What a test reads of a field or an editor: read only, spell checked, predicting, its input scope's first name
+/// (-1 for none), its words' alignment, its selection's start and length, whether its placeholder is coloured,
+/// whether Enter starts a new line - nine values.
+void stateui_winui_field_facts(StateUIObjectRef field, int32_t *facts);
+
+/// Types in a search box as the user does, into the text box its template holds - what a test does.
+void stateui_winui_search_type(StateUIObjectRef search, char const *utf8);
 
 /// A shape drawn behind a layout's children: a rectangle, rounded or not, or an ellipse, filled and outlined.
 StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline);

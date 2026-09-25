@@ -150,9 +150,36 @@ WinUI reports as it reports the user's. UI Automation's value pattern on a
 does not type through it; a button, a switch and a slider are driven through
 their automation patterns.
 
+How the words are taken is the tree's where it says so and WinUI's where it
+does not: read only, spell checked and predicting the next word - WinUI's
+defaults, both on - and what they are for, which is the text box's input
+scope and so the on-screen keyboard. The words stand across the box as their
+alignment says, the placeholder takes its colour, and the caret and the
+selection are put where the tree put them, in the characters WinUI counts,
+only where the tree changed them.
+
+A test of a search box types into the text box its template holds: the
+search box's own words written from outside are the program's to it, and
+reported as such.
+
 ## Return
 
 A field submits when Enter goes down in it; the key's release reaches nothing.
+
+## An editor
+
+A TextEditor is a `TextBox` of several lines whose Enter starts a new line and
+submits nothing, its words wrapped and scrolled inside it. Growing with its
+words, it is measured with the room below it open and takes the height they
+take, WinUI telling its layout as they change; not growing, it is measured
+with none and keeps a line's height, whatever it holds - the height the
+layout gives it is the room it scrolls in.
+
+## A search field
+
+A SearchField is WinUI's `AutoSuggestBox` with its search glyph: its words and
+placeholder are the box's, its query - Enter or the glyph - submits, and only
+a change the box calls the user's is reported.
 
 ## Pictures
 

@@ -232,10 +232,15 @@ extension WinUIValueView {
     }
 }
 
-extension WinUITextFieldView {
-    /// Changes the field's words as the user does: written outside a program's write, WinUI reports them the same.
+extension WinUIInputView {
+    /// Changes the words as the user does: written outside a program's write, WinUI reports them the same - a
+    /// search box's through the text box its template holds, where its own words would be the program's.
     /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
     func type(_ text: String) {
-        stateui_winui_field_set_text(handle, text)
+        if self is WinUISearchFieldView {
+            stateui_winui_search_type(handle, text)
+        } else {
+            stateui_winui_field_set_text(handle, text)
+        }
     }
 }
