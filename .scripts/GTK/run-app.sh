@@ -53,6 +53,24 @@ if [[ -d "$app_dir/Resources/Images" ]]; then
   mkdir -p "$scratch/$configuration/Images"
   cp -R "$app_dir/Resources/Images/." "$scratch/$configuration/Images/"
 fi
+# The desktop shows a window with the icon of the entry named by its application's ID: both are installed for
+# the user, the entry starting this build.
+application_id="$(sed -n 's/.*applicationID: "\([^"]*\)".*/\1/p' "$app_dir/Platforms/GTK/main.swift" | head -1)"
+if [[ -n "$application_id" && -f "$app_dir/Resources/AppIcon/appicon_gnome.svg" ]]; then
+  data="${XDG_DATA_HOME:-$HOME/.local/share}"
+  mkdir -p "$data/icons/hicolor/scalable/apps" "$data/applications"
+  cp "$app_dir/Resources/AppIcon/appicon_gnome.svg" "$data/icons/hicolor/scalable/apps/$application_id.svg"
+  cat > "$data/applications/$application_id.desktop" <<ENTRY
+[Desktop Entry]
+Type=Application
+Name=$application
+Exec=$executable
+Icon=$application_id
+StartupWMClass=$product
+Terminal=false
+Categories=Development;
+ENTRY
+fi
 if [[ "$build_only" == 1 ]]; then
   echo "built:      $executable"
   exit 0

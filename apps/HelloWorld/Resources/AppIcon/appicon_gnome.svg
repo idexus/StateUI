@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app icon on GNOME: the identity gradient and the white mark, laid on
+       GNOME's icon grid. A GNOME app icon is a 128 canvas whose square body is
+       96 pixels, 16 in from each side, standing on a base 4 pixels deep in its
+       own colours darkened - the depth the desktop's icons stand on. The GTK
+       head's run script installs it as the icon named by the application's ID.
+
+       The mark fills 54.17% of the body, the proportion stateui_tile.svg sets, and
+       its path is the one stateui_mark.svg carries. -->
+  <defs>
+    <linearGradient id="identity" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#512BD4"/>
+      <stop offset="1" stop-color="#F05138"/>
+    </linearGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#361C8E"/>
+      <stop offset="1" stop-color="#A83926"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="96" height="96" rx="12" fill="url(#base)"/>
+  <rect x="16" y="12" width="96" height="96" rx="12" fill="url(#identity)"/>
+  <g transform="translate(32, 28)">
+    <path fill="#FFFFFF" fill-rule="evenodd"
+          d="M16,6 H32 A10,10 0 0 1 42,16 V32 A10,10 0 0 1 32,42 H16 A10,10 0 0 1 6,32 V16 A10,10 0 0 1 16,6 Z
+             M32,22 H48 A10,10 0 0 1 58,32 V48 A10,10 0 0 1 48,58 H32 A10,10 0 0 1 22,48 V32 A10,10 0 0 1 32,22 Z"/>
+  </g>
+</svg>

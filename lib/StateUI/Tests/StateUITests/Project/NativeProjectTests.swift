@@ -571,6 +571,37 @@ final class NativeProjectTests: XCTestCase {
             "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
     }
 
+    /// Every application's GTK head has its icon on GNOME's icon grid, which the run script installs, with the
+    /// desktop's entry, under the application's ID - the name GNOME finds a window's icon by.
+    ///
+    /// A GNOME app icon is a 128 canvas whose square body is 96 pixels, 16 in from each side, on a base 4
+    /// pixels deep: artwork drawn edge to edge stands larger than every icon beside it.
+    func testEveryGTKHeadShowsAnIconOnTheGNOMEGrid() throws {
+        let icon = "Resources/AppIcon/appicon_gnome.svg"
+        var heads = 0
+
+        for application in try SourceTree.applications() {
+            guard FileManager.default.fileExists(
+                atPath: application.appendingPathComponent("Platforms/GTK/main.swift").path)
+            else { continue }
+            heads += 1
+
+            let relative = application.path.replacingOccurrences(of: SourceTree.repository.path + "/", with: "")
+            let artwork = try String(contentsOf: application.appendingPathComponent(icon), encoding: .utf8)
+            XCTAssertTrue(
+                artwork.contains("viewBox=\"0 0 128 128\"")
+                    && artwork.contains("x=\"16\" y=\"12\" width=\"96\" height=\"96\""),
+                "\(relative)/\(icon) is not on GNOME's icon grid: a 96 body, 16 in, on a 128 canvas")
+        }
+
+        XCTAssertGreaterThan(heads, 1, "no GTK head found")
+        let script = try String(
+            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/GTK/run-app.sh"), encoding: .utf8)
+        for installed in ["appicon_gnome.svg", "/apps/$application_id.svg", "Icon=$application_id"] {
+            XCTAssertTrue(script.contains(installed), "the GTK run script does not install \(installed)")
+        }
+    }
+
     func testGalleryOwnsItsAcceptanceTests() {
         let repository = SourceTree.repository
 

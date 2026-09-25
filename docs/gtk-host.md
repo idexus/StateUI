@@ -75,7 +75,11 @@ as HelloWorld does.
 
 `run-app.sh` stops a running copy of the head, builds it and starts it, its
 output in the terminal. Everything a build writes stays in the application's
-`.build-gtk/`. `release` builds the optimized head, `--detach` returns once
+`.build-gtk/`, but for what the desktop shows the application by: its icon,
+`Resources/AppIcon/appicon_gnome.svg`, and an entry starting this build, both
+named by the application's ID and installed for the user in
+`~/.local/share/icons` and `~/.local/share/applications`. GNOME finds a
+window's icon through that entry. `release` builds the optimized head, `--detach` returns once
 the application has started, and `--build-only` builds it and starts
 nothing. Every `STATEUI_` variable of the shell that runs it -
 `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the application.
