@@ -1,3 +1,6 @@
+ActivityIndicator
+  isRunning
+  tint
 Button
   background
   fontAttributes
@@ -128,6 +131,9 @@ Polyline
   strokeLineJoin
   strokeMiterLimit
   strokeWidth
+ProgressBar
+  progress
+  tint
 RadioButton
   fontAttributes
   fontFamily
@@ -168,6 +174,13 @@ Slider
   isEnabled
   maximum
   minimum
+  value
+  valueChanged()
+Stepper
+  isEnabled
+  maximum
+  minimum
+  step
   value
   valueChanged()
 Switch

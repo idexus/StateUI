@@ -79,6 +79,22 @@ of the range, a page a tenth. A new range keeps the value the thumb stands
 at, inside the range, unless the tree wrote a new value with it: a hand on the
 thumb is never argued with.
 
+## A stepper
+
+A stepper is a `GtkSpinButton`: its number, which the user can also type,
+the buttons beside it and the arrow keys moving it a step, Page Up ten. The
+number is written with as many decimals as the step, the range and the value
+take ([a stepped number](../../host/runtime.md#a-stepped-number)), and the
+value is kept inside the range; a number typed past an end stands at that
+end.
+
+The box reads its words as GTK does, with `g_strtod`, from its own `input`
+handler. GTK's own reading takes empty words for 0 and, under the update
+policy that keeps the value inside the range, puts words that say no number
+at the range's lower end. The handler answers with the number the box stands
+at instead, so such words leave it where it was, heard by nobody, and GTK
+writes it back into the box.
+
 ## A field and its words
 
 A field is a `GtkEntry`. It reports all its words from `changed`, which GTK
@@ -121,3 +137,11 @@ and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and no way to open or close its list from outside, so
 the title and the list's opening and closing are not realized.
 
+## What shows work
+
+A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past
+either end standing at that end; an activity indicator is a `GtkSpinner`,
+turning while its work runs and drawing nothing while it does not. A tint is
+a class of the display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box)):
+the bar's done part - its trough's `progress` - takes it as its background,
+the spinner as its colour.

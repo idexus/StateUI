@@ -211,6 +211,12 @@ its key's kind reads back; a key the application does not list, or a value of
 another kind, is not kept. Where the file stands and how it is read and
 written is the host's.
 
+## A stepped number
+
+A number the user steps - a stepper's - is written with as many decimals as
+its step, its ends and its value take, so each reads exactly, and no more
+than six (`StepArithmetic`); a number that is no number counts none.
+
 ## Core link
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,

@@ -80,7 +80,7 @@ host that creates or interprets it.
 <!-- creation:begin -->
 | Element | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `ActivityIndicator` | native | ✅ |  |  | ✅ | ✅ |  |
+| `ActivityIndicator` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Application` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Button` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Canvas` | native | ✅ |  |  | ✅ | ✅ |  |
@@ -111,7 +111,7 @@ host that creates or interprets it.
 | `Polygon` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Polyline` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `PositionIndicator` | stateUI |  |  |  |  |  |  |
-| `ProgressBar` | native | ✅ |  |  | ✅ | ✅ |  |
+| `ProgressBar` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `RadioButton` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Rectangle` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Scene` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
@@ -121,7 +121,7 @@ host that creates or interprets it.
 | `Span` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Spans` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
 | `SplitView` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |
-| `Stepper` | native | ✅ |  |  | ✅ | ✅ |  |
+| `Stepper` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Switch` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `TabbedView` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |
 | `TextEditor` | native | ✅ |  |  | ✅ | ✅ |  |
@@ -421,7 +421,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 52 ✅ |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 54 ✅ · 2 ☑️ |  | 47 ✅ | 54 ✅ · 1 ☑️ | 52 ✅ |  |
 | [Button](controls/Button.md) | 86 | 66 ✅ · 5 ☑️ |  | 58 ✅ | 70 ✅ · 2 ☑️ | 65 ✅ |  |
 | [Canvas](controls/Canvas.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 54 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 69 | 56 ✅ · 2 ☑️ |  | 48 ✅ | 56 ✅ · 1 ☑️ | 55 ✅ |  |
@@ -439,13 +439,13 @@ Every control, and every part an application, its windows and its pages are made
 | [Polygon](controls/Polygon.md) | 78 | 63 ✅ · 3 ☑️ |  | 57 ✅ | 64 ✅ · 1 ☑️ | 62 ✅ |  |
 | [Polyline](controls/Polyline.md) | 78 | 63 ✅ · 3 ☑️ |  | 57 ✅ | 64 ✅ · 1 ☑️ | 62 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 52 ✅ |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 | 54 ✅ · 2 ☑️ |  | 47 ✅ | 54 ✅ · 1 ☑️ | 52 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | 81 | 63 ✅ · 2 ☑️ |  | 56 ✅ | 63 ✅ · 1 ☑️ | 62 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 | 62 ✅ · 3 ☑️ |  | 56 ✅ | 63 ✅ · 1 ☑️ | 61 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 77 | 62 ✅ · 3 ☑️ |  | 57 ✅ | 63 ✅ · 1 ☑️ | 62 ✅ |  |
 | [SearchField](controls/SearchField.md) | 89 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ | 60 ✅ |  |
 | [Slider](controls/Slider.md) | 73 | 60 ✅ · 2 ☑️ |  | 50 ✅ | 60 ✅ · 1 ☑️ | 56 ✅ |  |
-| [Stepper](controls/Stepper.md) | 71 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
+| [Stepper](controls/Stepper.md) | 71 | 58 ✅ · 2 ☑️ |  | 51 ✅ | 58 ✅ · 1 ☑️ | 56 ✅ |  |
 | [Switch](controls/Switch.md) | 69 | 56 ✅ · 2 ☑️ |  | 48 ✅ | 55 ✅ · 1 ☑️ | 55 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 68 ✅ |  |
 | [TextField](controls/TextField.md) | 90 | 70 ✅ · 2 ☑️ |  | 51 ✅ | 67 ✅ · 1 ☑️ | 68 ✅ |  |
@@ -454,7 +454,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 59 ✅ · 2 ☑️ |  | 54 ✅ | 59 ✅ · 1 ☑️ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 58 ✅ · 2 ☑️ |  | 53 ✅ | 58 ✅ · 1 ☑️ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  | 1174 of 2515 met | 1837 of 2515 met | 1719 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  | 1319 of 2515 met | 1837 of 2515 met | 1719 of 2515 met |  |
 
 ### Application structure
 
@@ -517,7 +517,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ |  |  |  |  |  |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` |  |  |  |  |  |  |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | ✅ |  |  | ✅ |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  |  | ✅ | ✅ |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) |  |  |  | ✅ |  |  |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ | ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  | ✅ | ✅ | ✅ |  |
@@ -537,7 +537,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  |  | ✅ | ✅ |  |
+| [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ |  |  |  |  |  |
@@ -546,7 +546,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ |  |  |
 | [Span](controls/Span.md) | `background` |  |  | ✅ |  | ✅ |  |
 | [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | ✅ |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ | ✅ |  |
+| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ |  |  | ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ | ✅ |  |

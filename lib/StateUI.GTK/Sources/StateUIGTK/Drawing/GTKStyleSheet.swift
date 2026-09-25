@@ -67,6 +67,18 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class giving a control its tint: the colour `part` of it - its own words and marks where `part` is nil -
+    /// is drawn in.
+    static func tint(_ color: GdkRGBA, of part: String?) -> String {
+        let name = "stateui-tint-" + hex(color) + (part == nil ? "" : "-part")
+        if let part {
+            write(name, "", states: ".\(name) > \(part) { background-color: \(css(color)); }\n")
+        } else {
+            write(name, "color: \(css(color));")
+        }
+        return name
+    }
+
     /// Writes the rule for `name` the first time it is asked for, with the rules for its states, the whole sheet in
     /// the rules' order.
     private static func write(_ name: String, _ body: String, states: String = "") {
