@@ -352,6 +352,17 @@ extension GTKTestHost {
         pump(0.05)
     }
 
+    /// The widgets directly under `widget`, in order.
+    static func children(of widget: GTKWidget) -> [GTKWidget] {
+        var found: [GTKWidget] = []
+        var child = gtk_widget_get_first_child(widget)
+        while let each = child {
+            found.append(each)
+            child = gtk_widget_get_next_sibling(each)
+        }
+        return found
+    }
+
     /// Every widget under `widget`, itself first, in order.
     static func descendants(of widget: GTKWidget) -> [GTKWidget] {
         var found = [widget]

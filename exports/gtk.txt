@@ -265,6 +265,9 @@ ZStack
   stroke
   strokeWidth
 (every element)
+  accessibilityHeadingLevel
+  accessibilityHint
+  accessibilityLabel
   area
   frame
   gridColumn

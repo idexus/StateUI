@@ -21,7 +21,7 @@ extension GTKElement {
         .opacity, .background, .textColor, .isEnabled,
         .isOn, .value, .minimum, .maximum,
         .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
-    ]).union(transformProperties)
+    ]).union(transformProperties).union(MountedElement.accessibilityProperties)
 
     /// Properties that move, turn and scale the view where its layout put it.
     static let transformProperties: Set<Prop> = [
@@ -99,6 +99,9 @@ extension GTKElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+                view.setAccessibility(element.accessibilityWords)
+            }
             if let layers = view as? GTKZStackView { layers.placement = placement }
         }
 

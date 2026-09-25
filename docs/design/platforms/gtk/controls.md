@@ -185,3 +185,22 @@ turning while its work runs and drawing nothing while it does not. A tint is
 a class of the display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box)):
 the bar's done part - its trough's `progress` - takes it as its background,
 the spinner as its colour.
+
+## What assistive technology meets
+
+What an element says for assistive technology is the host layer's
+([what assistive technology meets](../../host/tree.md#what-assistive-technology-meets));
+the host puts it on the widget as GTK's accessible label and description,
+reset where the element says nothing so a widget's own words stand. A heading
+takes GTK's heading role with its level. GTK fixes a widget's role once
+assistive technology has met it, so a widget becomes a heading only while it
+stands in no window - as the element's first properties find it - and a GTK
+widget in a role other than its own is not named by the words it shows, so a
+heading's label is its words, written again as they change.
+
+GTK 4.14 gives assistive technology no identifier for a widget: its
+`AccessibleId` is empty for every one, a builder's id and a widget's name
+alike. A hidden state leaves out the element itself and passes its children
+up to its parent, which is what a hidden element asks; an element left out
+with its children needs every widget under it hidden too.
+

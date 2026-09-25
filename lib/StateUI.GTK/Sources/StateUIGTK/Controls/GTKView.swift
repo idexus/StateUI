@@ -31,6 +31,12 @@ class GTKView {
     private(set) var opacity = 1.0
     private(set) var isShown = true
 
+    /// What assistive technology meets of the view, as the host last wrote it; nil before the element said any.
+    var accessibility: AccessibilityWords?
+
+    /// The words the view shows of itself, which name it where it is a heading; nil where it shows none.
+    var shownWords: String? { nil }
+
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
     private var onHeard: ((GTKHeard) -> Void)?

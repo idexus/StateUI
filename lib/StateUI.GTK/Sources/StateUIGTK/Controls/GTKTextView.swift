@@ -31,6 +31,7 @@ class GTKTextView: GTKView {
     func setText(_ text: String) {
         ownText = text
         if runs == nil { gtk_label_set_text(widget.opaque, text) }
+        shownWordsChanged()
     }
 
     /// Runs of words shown in place of the label's own, each in its own look; nil shows its own words again.
@@ -39,7 +40,10 @@ class GTKTextView: GTKView {
         self.runs = runs
         gtk_label_set_text(widget.opaque, runs.map { $0.map(\.text).joined() } ?? ownText)
         writeLook()
+        shownWordsChanged()
     }
+
+    override var shownWords: String? { text }
 
     /// The words the label shows now, read back from GTK.
     var text: String {
