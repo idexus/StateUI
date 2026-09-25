@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isPassword` | property | `Bool` | native | ✅ |  |  | ✅ |  |  |  |
+| `isPassword` | property | `Bool` | native | ✅ |  | ✅ | ✅ |  |  |  |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  | ✅ |  |  |  |
 | `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -123,15 +123,15 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  |  |
-| `isReadOnly` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
-| `isSpellCheckEnabled` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
-| `isTextPredictionEnabled` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
+| `cursorPosition` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `inputPurpose` | property | `InputPurpose` | adaptive |  |  | ✅ |  | ✅ |  |  |
+| `isReadOnly` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `isTextPredictionEnabled` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `maximumLength` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `placeholder` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `placeholderColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `selectionLength` | property | `Int` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `placeholderColor` | property | `Color` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `selectionLength` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
@@ -150,7 +150,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `textColor` | property | `Color` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -158,10 +158,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `fontSize` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontFamily` | property | `Name` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `fontSize` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -169,5 +169,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ |  |  |  | ✅ |  |  |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |

@@ -116,7 +116,7 @@ host that creates or interprets it.
 | `Rectangle` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Scene` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
 | `ScrollView` | native | ✅ |  | ✅ | ✅ | ✅ |  |
-| `SearchField` | native | ✅ |  |  | ✅ | ✅ |  |
+| `SearchField` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Slider` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Span` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Spans` | structure | ✅ |  | ✅ | ✅ | ✅ |  |
@@ -124,7 +124,7 @@ host that creates or interprets it.
 | `Stepper` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Switch` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `TabbedView` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |
-| `TextEditor` | native | ✅ |  |  | ✅ | ✅ |  |
+| `TextEditor` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `TextField` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `TimePicker` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TitleBar` | adaptive | ✅ |  | ✅ |  |  |  |
@@ -443,18 +443,18 @@ Every control, and every part an application, its windows and its pages are made
 | [RadioButton](controls/RadioButton.md) | 81 | 63 ✅ · 2 ☑️ |  | 56 ✅ | 63 ✅ · 1 ☑️ | 62 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 | 62 ✅ · 3 ☑️ |  | 56 ✅ | 63 ✅ · 1 ☑️ | 61 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 77 | 62 ✅ · 3 ☑️ |  | 57 ✅ | 63 ✅ · 1 ☑️ | 62 ✅ |  |
-| [SearchField](controls/SearchField.md) | 89 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ | 60 ✅ |  |
+| [SearchField](controls/SearchField.md) | 89 | 70 ✅ · 2 ☑️ |  | 63 ✅ | 66 ✅ · 1 ☑️ | 60 ✅ |  |
 | [Slider](controls/Slider.md) | 73 | 60 ✅ · 2 ☑️ |  | 50 ✅ | 60 ✅ · 1 ☑️ | 56 ✅ |  |
 | [Stepper](controls/Stepper.md) | 71 | 58 ✅ · 2 ☑️ |  | 51 ✅ | 58 ✅ · 1 ☑️ | 56 ✅ |  |
 | [Switch](controls/Switch.md) | 69 | 56 ✅ · 2 ☑️ |  | 48 ✅ | 55 ✅ · 1 ☑️ | 55 ✅ |  |
-| [TextEditor](controls/TextEditor.md) | 87 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 68 ✅ |  |
-| [TextField](controls/TextField.md) | 90 | 70 ✅ · 2 ☑️ |  | 51 ✅ | 67 ✅ · 1 ☑️ | 68 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | 87 | 69 ✅ · 2 ☑️ |  | 63 ✅ | 65 ✅ · 1 ☑️ | 68 ✅ |  |
+| [TextField](controls/TextField.md) | 90 | 70 ✅ · 2 ☑️ |  | 64 ✅ | 67 ✅ · 1 ☑️ | 68 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 57 ✅ · 1 ☑️ |  |
 | [TitleBar](controls/TitleBar.md) | 70 | 4 ✅ · 1 ☑️ |  | 47 ✅ |  |  |  |
 | [VStack](controls/VStack.md) | 74 | 59 ✅ · 2 ☑️ |  | 54 ✅ | 59 ✅ · 1 ☑️ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 58 ✅ · 2 ☑️ |  | 53 ✅ | 58 ✅ · 1 ☑️ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  | 1319 of 2515 met | 1837 of 2515 met | 1719 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  | 1458 of 2515 met | 1837 of 2515 met | 1719 of 2515 met |  |
 
 ### Application structure
 
@@ -502,7 +502,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` |  |  |  |  |  |  |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` |  |  |  |  |  |  |
 | [StackBase](controls/tiers/StackBase.md) | `spacing` | ✅ |  | ✅ | ✅ | ✅ |  |
-| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) |  |  |  |  |  |  |
+| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) |  |  | ✅ |  |  |  |
 | [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | ☑️ |  | ✅ | ✅ | ✅ |  |
 | [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` |  |  |  |  |  |  |
 | [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` |  |  |  |  |  |  |
@@ -549,7 +549,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ |  |  | ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ | ✅ |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) |  |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | ✅ |  |  |  |  |  |

@@ -170,6 +170,25 @@ ScrollView
   scrollStopped()
   scrollXChanged()
   scrollYChanged()
+SearchField
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  inputPurpose
+  isEnabled
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
 Slider
   isEnabled
   maximum
@@ -187,11 +206,43 @@ Switch
   isEnabled
   isOn
   toggled()
-TextField
+TextEditor
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  growsWithText
+  horizontalTextAlignment
+  inputPurpose
   isEnabled
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
+  placeholderColor
+  selectionLength
   text
+  textColor
+  textChanged()
+TextField
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  inputPurpose
+  isEnabled
+  isPassword
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
   submitted()
   textChanged()
 VStack

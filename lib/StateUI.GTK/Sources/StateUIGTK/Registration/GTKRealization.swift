@@ -17,8 +17,7 @@ enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
-        "MenuSeparator", "ModalStack", "Pin", "PositionIndicator", "SearchField", "TextEditor", "TimePicker",
-        "TrailingContent", "WebView",
+        "MenuSeparator", "ModalStack", "Pin", "PositionIndicator", "TimePicker", "TrailingContent", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no

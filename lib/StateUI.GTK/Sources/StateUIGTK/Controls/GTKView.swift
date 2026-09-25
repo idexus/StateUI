@@ -77,6 +77,15 @@ class GTKView {
         connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
     }
 
+    /// Takes class `current` off `target` - the view's widget where nil - and puts `wanted` on it, where they differ.
+    func swapClass(_ current: inout String?, to wanted: String?, on target: GTKWidget? = nil) {
+        guard wanted != current else { return }
+        let target = target ?? widget
+        if let current { gtk_widget_remove_css_class(target, current) }
+        if let wanted { gtk_widget_add_css_class(target, wanted) }
+        current = wanted
+    }
+
     // MARK: - What every view takes
 
     func setShown(_ shown: Bool) {

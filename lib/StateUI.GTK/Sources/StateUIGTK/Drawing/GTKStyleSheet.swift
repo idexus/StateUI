@@ -79,6 +79,52 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class drawing an editor's box as an entry's: faintly filled in its words' colour, its corners rounded,
+    /// ringed in the accent while it holds the focus, the text view on it clear.
+    static var editor: String {
+        let name = "stateui-editor"
+        write(name, "background-color: alpha(currentColor, 0.1); border-radius: 6px; outline: 0 solid transparent;",
+              states: ".\(name):focus-within { outline: 2px solid alpha(@accent_color, 0.5); outline-offset: -2px; }\n"
+                + ".\(name) > textview, .\(name) > textview > text { background-color: transparent; }\n")
+        return name
+    }
+
+    /// The class giving typed words their look - the font's size, weight, slant and family and the words' colour -
+    /// and the placeholder its colour, in a field's own text or as an editor's label; nil where nothing is given.
+    static func words(_ look: GTKTextLook, placeholder: GdkRGBA?) -> String? {
+        var name = "stateui-words"
+        var body = ""
+        if let size = look.size, size > 0 {
+            name += "-s" + css(size).replacing(".", with: "_")
+            body += "font-size: \(css(size))px; "
+        }
+        if look.attributes.contains(.bold) {
+            name += "-b"
+            body += "font-weight: bold; "
+        }
+        if look.attributes.contains(.italic) {
+            name += "-i"
+            body += "font-style: italic; "
+        }
+        if let family = look.family, !family.isEmpty {
+            name += "-f" + family.utf8.map { String($0, radix: 16) }.joined()
+            body += "font-family: \"\(family.replacing("\\", with: "\\\\").replacing("\"", with: "\\\""))\"; "
+        }
+        if let color = look.color {
+            name += "-c" + hex(color)
+            body += "color: \(css(color)); "
+        }
+        var states = ""
+        if let placeholder {
+            name += "-p" + hex(placeholder)
+            states = ".\(name) placeholder, .\(name) .\(GTKTextEditorView.placeholderClass) "
+                + "{ color: \(css(placeholder)); opacity: 1; }\n"
+        }
+        guard name != "stateui-words" else { return nil }
+        write(name, body, states: states)
+        return name
+    }
+
     /// Writes the rule for `name` the first time it is asked for, with the rules for its states, the whole sheet in
     /// the rules' order.
     private static func write(_ name: String, _ body: String, states: String = "") {

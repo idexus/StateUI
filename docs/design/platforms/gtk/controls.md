@@ -112,6 +112,46 @@ A field submits when Enter is pressed in it, through the entry's `activate`.
 A test types by writing the entry's words outside a program's write, which
 GTK reports as it reports the user's.
 
+A field's words stand in its `GtkText`, the text widget a `GtkEntry` and a
+`GtkSearchEntry` both hold, so the two are one view. How the words are taken
+is the tree's where it says so and GTK's where it does not: read only, and
+what the input method is told - spell checked or not, the next word
+suggested, and what the words are for, as GTK's input hints and purpose.
+GTK's text widgets mark no spelling themselves; the input method is what
+checks. A password field hides each character behind a dot. The words stand
+across the field as their alignment says, and the caret and the selection are
+put where the tree put them, in the characters GTK counts, only where the
+tree changed them: the caret at the selection's end, as GTK selects.
+
+A field's font and colour are a class of the display-wide sheet
+([a widget's own box](drawing.md#a-widgets-own-box)) rather than Pango
+attributes, since an editor's text view takes none: the class sets the font
+and the colour, which the placeholder takes too. GTK dims a placeholder with
+opacity; a placeholder colour is drawn in full.
+
+## An editor
+
+A TextEditor is a `GtkTextView` whose Enter starts a new line and submits
+nothing, its words wrapped, in a scrolled window drawn as an entry is - filled
+faintly, its corners rounded, ringed while it holds the focus - with an
+entry's room around its words. It is as wide as the room it is offered, its
+words wrapping in it; growing with its words it is as tall as they are, and
+not growing it keeps a line's height, whatever it holds - the room its
+layout gives it is the room it scrolls in. GTK allows a scrolled window no
+less than its scrollbar's length, so an editor is never shorter than that.
+
+A text view has no placeholder: the editor's is a label laid over its first
+line, shown only while it holds no words. A text view has no bound either:
+words going in past the editor's bound are cut in the buffer's `insert-text`
+to the first that fit, as a field's text cuts them, from a key, a paste and a
+program's write alike - so the words are never changed from inside the
+buffer's own `changed`, where GTK still holds its iterators.
+
+## A search field
+
+A SearchField is a `GtkSearchEntry` - its search icon and a button clearing
+it - taking its words as a field does; Enter submits it.
+
 ## Pictures
 
 An Image is a panel of the host's showing a picture from the application's

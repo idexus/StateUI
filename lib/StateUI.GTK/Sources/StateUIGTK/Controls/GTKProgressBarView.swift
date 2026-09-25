@@ -49,13 +49,3 @@ final class GTKActivityIndicatorView: GTKView {
         swapClass(&tintClass, to: tint.flatMap(GTKBrush.rgba).map { GTKStyleSheet.tint($0, of: nil) })
     }
 }
-
-extension GTKView {
-    /// Takes `current` off the widget and puts `wanted` on it, where they differ.
-    func swapClass(_ current: inout String?, to wanted: String?) {
-        guard wanted != current else { return }
-        if let current { gtk_widget_remove_css_class(widget, current) }
-        if let wanted { gtk_widget_add_css_class(widget, wanted) }
-        current = wanted
-    }
-}

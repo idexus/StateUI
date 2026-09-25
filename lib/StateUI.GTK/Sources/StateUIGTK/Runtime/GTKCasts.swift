@@ -36,6 +36,10 @@ typealias GTKScaleHandler = @convention(c) (UnsafeMutableRawPointer?, Double, gp
 /// A spin button's reading of its words: it writes the number they say, and answers whether it read them.
 typealias GTKInputHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutablePointer<Double>?, gpointer?) -> Int32
 
+/// A text buffer's insertion's handler: where the words go in, the words, and their length in bytes.
+typealias GTKInsertHandler = @convention(c) (
+    UnsafeMutableRawPointer?, UnsafeMutablePointer<GtkTextIter>?, UnsafePointer<CChar>?, Int32, gpointer?) -> Void
+
 /// Connects `handler` to `signal` of `instance`, handing it `number`.
 /// Design: docs/design/platforms/gtk/c-api.md#signals
 @discardableResult
@@ -71,6 +75,11 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKInputHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKInsertHandler) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 
