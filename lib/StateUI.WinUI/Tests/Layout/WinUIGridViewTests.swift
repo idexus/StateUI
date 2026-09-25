@@ -48,4 +48,23 @@ final class WinUIGridViewTests: XCTestCase {
             XCTAssertTrue(box.frame == (0, 30, grid.width, grid.height - 50), "\(box.frame) in \(grid)")
         }
     }
+
+    /// A child spanning two rows stands across both and the spacing between them.
+    func testAChildSpanningRowsStandsAcrossThem() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Grid {
+                    ColorBox(.red).gridRowSpan(2)
+                    Label("one").height(20).gridColumn(1)
+                    Label("two").height(30).gridRow(1).gridColumn(1)
+                }
+                .columns(.fixed(20), .fill)
+                .rows(.auto, .auto)
+                .rowSpacing(10)
+            }
+            let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
+
+            XCTAssertTrue(box.frame == (0, 0, 20, 60), "\(box.frame)")
+        }
+    }
 }

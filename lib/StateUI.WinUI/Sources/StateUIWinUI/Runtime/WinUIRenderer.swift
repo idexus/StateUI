@@ -123,6 +123,7 @@ final class WinUIRenderer {
         let previous = shared
         let renderer = WinUIRenderer()
         shared = renderer
+        renderer.core.setRealization(WinUIRegistrations.registry.realization, unrealized: WinUIRealization.unrealized)
         if previous == nil { WinUIPersistence.restore(into: renderer.core) }
         renderer.show()
         WinUIDoorbell.install()

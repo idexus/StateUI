@@ -31,6 +31,13 @@ extension WinUIElement {
     /// The arrangements of pages a window shows.
     static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
 
+    /// The entries that have no view of their own: structure, and the parts of another's view.
+    static let viewlessTypes: Set<NodeType> = [
+        .application, .scene, .window, .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
+        .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu, .menu, .menuItem, .menuSeparator, .spans,
+        .span,
+    ]
+
     func makeView() -> WinUIView? {
         if let registered = WinUIRegistrations.registry.makeView(
             for: type,
@@ -40,31 +47,22 @@ extension WinUIElement {
             if let scroll = registered as? WinUIScrollView { follow(scroll) }
             return registered
         }
+        guard !Self.viewlessTypes.contains(type) else { return nil }
 
         switch type {
-        case .application, .scene, .window:
-            return nil
-
-        case .page, .overlay:
-            return WinUISingleChildView()
-
-        case .navigationStack:
-            return WinUINavigationView()
-
-        case .splitView:
-            return WinUISplitView()
-
-        case .tabbedView:
-            return WinUITabbedView()
-
-        case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-             .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
-             .menu, .menuItem, .menuSeparator, .spans, .span:
-            return nil
-
-        default:
-            return WinUIUnsupportedView(type)
+        case .page, .overlay: return WinUISingleChildView()
+        case .navigationStack: return WinUINavigationView()
+        case .splitView: return WinUISplitView()
+        case .tabbedView: return WinUITabbedView()
+        default: return WinUIUnsupportedView(type)
         }
+    }
+
+    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page's, no part of
+    /// another view and no structure.
+    static func showsUnsupported(_ type: NodeType) -> Bool {
+        !WinUIRegistrations.registry.realization.elements.contains(type.name) && !viewlessTypes.contains(type)
+            && !pageTypes.contains(type) && type != .overlay
     }
 
     /// Puts the changed properties on the element as the program's write: its registration's first,

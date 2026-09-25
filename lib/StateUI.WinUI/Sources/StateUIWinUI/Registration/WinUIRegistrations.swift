@@ -23,6 +23,15 @@ enum WinUIRegistrations {
         return registry
     }()
 
+    /// The acts `WinUIActPerformer` performs.
+    static let acts: [any ContractMember] = [
+        VisualElementContract.focus, VisualElementContract.unfocus,
+        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
+        ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
+        ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
+        ApplicationContract.prompt, ApplicationContract.utcOffset,
+    ]
+
     /// What `WinUIElement` puts on every view wearing each member's contract, and what every layout reads of
     /// its children.
     static func shared(_ registry: Registry<WinUIView>) {
@@ -45,6 +54,28 @@ enum WinUIRegistrations {
         registry.everyElementRealizes(VisualElementContract.scaleY)
         registry.everyElementRealizes(VisualElementContract.pivotX)
         registry.everyElementRealizes(VisualElementContract.pivotY)
+        registry.everyElementRealizes(ViewContract.gridRow)
+        registry.everyElementRealizes(ViewContract.gridColumn)
+        registry.everyElementRealizes(ViewContract.gridRowSpan)
+        registry.everyElementRealizes(ViewContract.gridColumnSpan)
+        registry.everyElementRealizes(ViewContract.area)
+        registry.everyElementRealizes(VisualElementContract.frame)
+        registry.everyElementRaises(ViewContract.frameChanged)
+        registry.everyElementRaises(ViewContract.tapped)
+        registry.everyElementRealizes(ViewContract.tapCount)
+        registry.everyElementRealizes(ViewContract.panXChannel)
+        registry.everyElementRealizes(ViewContract.panYChannel)
+        registry.everyElementRealizes(ViewContract.panTouchCount)
+        registry.everyElementRealizes(ViewContract.swipeDirection)
+        registry.everyElementRealizes(ViewContract.swipeThreshold)
+        registry.everyElementRaises(ViewContract.panUpdated)
+        registry.everyElementRaises(ViewContract.pinchUpdated)
+        registry.everyElementRaises(ViewContract.swiped)
+        registry.everyElementRaises(ViewContract.pointerEntered)
+        registry.everyElementRaises(ViewContract.pointerExited)
+        registry.everyElementRaises(ViewContract.pointerMoved)
+        registry.everyElementRaises(ViewContract.pointerPressed)
+        registry.everyElementRaises(ViewContract.pointerReleased)
     }
 
     /// `text` in the case the tree asks for: as written, or in one case throughout.
