@@ -66,6 +66,7 @@ if ($Detach) {
     $process = Start-Process -FilePath $executable -WorkingDirectory $bin -PassThru
     Write-Host "process $($process.Id)"
 } else {
-    & $executable
-    exit $LASTEXITCODE
+    # A windowed application: the script waits for it, and what it writes comes out here.
+    $process = Start-Process -FilePath $executable -NoNewWindow -Wait -PassThru
+    exit $process.ExitCode
 }

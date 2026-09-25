@@ -8,6 +8,7 @@
 #include "Relay.h"
 
 #include <chrono>
+#include <io.h>
 
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
@@ -66,6 +67,25 @@ namespace stateui {
             auto ensure = reinterpret_cast<EnsureIsLoaded>(GetProcAddress(runtime, "WindowsAppRuntime_EnsureIsLoaded"));
             if (ensure) winrt::check_hresult(ensure());
         }
+
+        /// Whether the process was given no handle for the stream: a windowed application started with its output
+        /// left where it was.
+        bool unhanded(DWORD stream) {
+            auto handle = GetStdHandle(stream);
+            return handle == nullptr || handle == INVALID_HANDLE_VALUE;
+        }
+
+        /// A windowed application started from a console writes to that console - a terminal, the editor's task -
+        /// where its output was not sent elsewhere; started by itself it has none, and opens none.
+        /// Design: docs/design/platforms/winui/runtime.md#a-windowed-application
+        void writeToTheStartingConsole() {
+            bool out = unhanded(STD_OUTPUT_HANDLE), err = unhanded(STD_ERROR_HANDLE);
+            if (!(out || err) || !AttachConsole(ATTACH_PARENT_PROCESS)) return;
+
+            FILE *reopened = nullptr;
+            if (out && freopen_s(&reopened, "CONOUT$", "w", stdout) == 0) _dup2(_fileno(stdout), 1);
+            if (err && freopen_s(&reopened, "CONOUT$", "w", stderr) == 0) _dup2(_fileno(stderr), 2);
+        }
     }
 }
 
@@ -83,6 +103,7 @@ using namespace stateui;
 
 extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given) {
     callbacks = *given;
+    writeToTheStartingConsole();
     try {
         loadRuntime();
         winrt::init_apartment(winrt::apartment_type::single_threaded);

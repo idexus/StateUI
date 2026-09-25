@@ -179,7 +179,8 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// Every WINUI HEAD is an executable its application declares exactly when a
-    /// build says it is a WinUI one, whose main names the application to the host
+    /// build says it is a WinUI one, linked as a windowed application - started by
+    /// itself it opens no console - whose main names the application to the host
     /// and hands it the thread.
     func testEveryWinUIHeadRunsTheApplicationsModule() throws {
         var heads = 0
@@ -197,6 +198,7 @@ final class NativeProjectTests: XCTestCase {
             for shape in [
                 "environment[\"STATEUI_WINUI\"] == \"1\"", "hasWinUIHead ? [.define(\"WINUI\")] : []",
                 "name: \"\(name)WinUI\"", "name: \"StateUIWinUI\"", "path: \"Platforms/WinUI\"",
+                "\"/SUBSYSTEM:WINDOWS\"", "\"/ENTRY:mainCRTStartup\"",
             ] {
                 XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
             }

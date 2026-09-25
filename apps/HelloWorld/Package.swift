@@ -152,7 +152,9 @@ if hasWinUIHead {
                 .product(name: "StateUIWinUI", package: "StateUIWinUI"),
             ],
             path: "Platforms/WinUI",
-            swiftSettings: settings
+            swiftSettings: settings,
+            // A windowed application: started by itself it opens no console, and started from one it writes there.
+            linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
         ))
 }
 

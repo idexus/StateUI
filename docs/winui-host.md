@@ -64,7 +64,10 @@ StateUIWinUI.run()
 `STATEUI_WINUI=1` is what makes a build a WinUI one: the application's
 manifest reads it, declares the `Platforms/WinUI` target, the executable it
 makes and the `StateUIWinUI` dependency, and defines the `WINUI` compilation
-condition for every module of the application. Swift written for this host
+condition for every module of the application. The executable links as a
+windowed application - `/SUBSYSTEM:WINDOWS` with `/ENTRY:mainCRTStartup` -
+so started by itself it opens no console; started from a terminal it writes
+there. Swift written for this host
 alone stands under `#if WINUI`.
 
 A new application made in `apps/` - `.scripts/new-app.ps1` - has a WinUI
