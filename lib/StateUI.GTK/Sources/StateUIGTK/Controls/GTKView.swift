@@ -44,9 +44,11 @@ class GTKView {
         Self.live[number] = Weak(self)
     }
 
+    /// Lets go of the widget, taking it out of a StateUI panel; any other parent - a viewport, a window - is the
+    /// owner of its child, and takes it out itself.
     isolated deinit {
         Self.live[number] = nil
-        if gtk_widget_get_parent(widget) != nil { gtk_widget_unparent(widget) }
+        if let parent = gtk_widget_get_parent(widget), GTKPanel.holds(parent) { gtk_widget_unparent(widget) }
         g_object_unref(widget)
     }
 

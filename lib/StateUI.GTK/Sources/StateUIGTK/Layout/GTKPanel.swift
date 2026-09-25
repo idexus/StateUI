@@ -60,6 +60,11 @@ enum GTKPanel {
         return panel.of(GtkWidget.self)
     }
 
+    /// Whether `widget` is a panel.
+    static func holds(_ widget: GTKWidget) -> Bool {
+        g_type_check_instance_is_a(UnsafeMutableRawPointer(widget).assumingMemoryBound(to: GTypeInstance.self), type) != 0
+    }
+
     /// The number of the view a panel answers for.
     static func number(of widget: GTKWidget?) -> Int64 {
         guard let widget else { return 0 }

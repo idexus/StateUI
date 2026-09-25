@@ -53,28 +53,25 @@ enum GTKTestHost {
     /// The window a bare host's root stands in, made once.
     static let window = GTKWindow(application: application)
 
-    /// How many layouts the frame clocks of the test's windows have run.
-    nonisolated(unsafe) static var layouts = 0
-
-    /// The frame clocks counted.
-    private static var counted: Set<UInt> = []
-
-    /// Runs GTK's layout of `window` now: asks its frame clock for one, and turns the loop until it has run.
+    /// Lays `window` out now, at its surface's size: the surface's `layout` signal, which the frame clock raises
+    /// in a frame's layout. A window a test opens may stand behind another, where the desktop draws it no frames,
+    /// so a test lays out without waiting for one.
     static func layOut(_ window: GTKWidget) {
-        guard let clock = gtk_widget_get_frame_clock(window) else { return pump(0.05) }
-        if counted.insert(UInt(bitPattern: clock)).inserted {
-            let counter: @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> Void = { _, _ in GTKTestHost.layouts += 1 }
-            g_signal_connect_data(
-                UnsafeMutableRawPointer(clock), "layout", unsafeBitCast(counter, to: GCallback.self), nil, nil,
-                GConnectFlags(0))
-        }
+        guard let surface = gtk_native_get_surface(window.opaque) else { return pump(0.05) }
+        let width = gdk_surface_get_width(surface)
+        let height = gdk_surface_get_height(surface)
+        guard width > 0, height > 0 else { return pump(0.05) }
 
-        let before = layouts
-        gdk_frame_clock_request_phase(clock, GDK_FRAME_CLOCK_PHASE_LAYOUT)
-        let end = g_get_monotonic_time() + 1_000_000
-        while layouts == before, g_get_monotonic_time() < end {
-            g_main_context_iteration(nil, 0)
-            g_usleep(500)
+        var values = [GValue](repeating: GValue(), count: 3)
+        g_value_init(&values[0], gdk_surface_get_type())
+        g_value_set_object(&values[0], UnsafeMutableRawPointer(surface))
+        g_value_init(&values[1], g_type_from_name("gint"))
+        g_value_set_int(&values[1], width)
+        g_value_init(&values[2], g_type_from_name("gint"))
+        g_value_set_int(&values[2], height)
+        values.withUnsafeMutableBufferPointer { values in
+            g_signal_emitv(values.baseAddress, g_signal_lookup("layout", gdk_surface_get_type()), 0, nil)
+            for index in values.indices { g_value_unset(&values[index]) }
         }
     }
 
@@ -105,6 +102,7 @@ extension GTKRenderer {
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
         GTKTestHost.pump()
+        renderer.layOut()
         return renderer
     }
 
@@ -136,6 +134,7 @@ extension GTKRenderer {
         guard GTKTestHost.window.content !== root else { return }
         GTKTestHost.window.show(root)
         GTKTestHost.pump()
+        layOut()
     }
 
     /// The view of the element keyed `id`.
@@ -201,21 +200,22 @@ extension GTKView {
 
 extension GTKView {
     /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB: the widget
-    /// rendered by its window's renderer, as the window draws it.
+    /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
         let width = Int(gtk_widget_get_width(widget))
         let height = Int(gtk_widget_get_height(widget))
-        guard width > 0, height > 0, let native = gtk_widget_get_native(widget),
-              let renderer = gtk_native_get_renderer(native), let paintable = gtk_widget_paintable_new(widget)
+        var bounds = graphene_rect_t()
+        guard width > 0, height > 0, let parent = gtk_widget_get_parent(widget),
+              gtk_widget_compute_bounds(widget, parent, &bounds) != 0,
+              let native = gtk_widget_get_native(widget), let renderer = gtk_native_get_renderer(native)
         else { return points.map { _ in 0 } }
-        defer { g_object_unref(UnsafeMutableRawPointer(paintable)) }
 
         let snapshot = gtk_snapshot_new()
-        gdk_paintable_snapshot(paintable, snapshot, Double(width), Double(height))
+        gtk_widget_snapshot_child(parent, widget, snapshot)
         guard let node = gtk_snapshot_free_to_node(snapshot) else { return points.map { _ in 0 } }
         defer { gsk_render_node_unref(node) }
         var viewport = graphene_rect_t(
-            origin: graphene_point_t(x: 0, y: 0), size: graphene_size_t(width: Float(width), height: Float(height)))
+            origin: bounds.origin, size: graphene_size_t(width: Float(width), height: Float(height)))
         guard let texture = gsk_renderer_render_texture(renderer, node, &viewport) else { return points.map { _ in 0 } }
         defer { g_object_unref(UnsafeMutableRawPointer(texture)) }
 

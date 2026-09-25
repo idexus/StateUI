@@ -30,6 +30,8 @@ in that order, which is the order GTK draws them in and the reverse of the
 order a click tries them in, so the one drawn in front takes the click. A
 placed grid's second child is its shade, drawn as opaque as the run says.
 
-A test reads what is drawn: the widget rendered to a texture by its window's
-renderer and read back as premultiplied colour, sampled at the points the test
-names.
+A test reads what is drawn: the widget drawn afresh from its parent, as a
+frame's paint draws it, rendered to a texture by its window's renderer and
+read back as premultiplied colour, sampled at the points the test names. A
+widget's own paintable shows only the drawing GTK last kept, which a layout
+since has thrown away.

@@ -7,8 +7,8 @@ module and the library: it applies the typed sparse patches of the
 through their C API, with nothing beneath it in another language.
 
 It presents its first controls - `Label`, `Button`, `Switch`, `Slider`,
-`TextField` and `ColorBox`, the layouts `VStack`, `HStack`, `Grid` and
-`ZStack` - and a window's page under libadwaita's header bar, over the
+`TextField` and `ColorBox`, the layouts `VStack`, `HStack`, `Grid`, `ZStack`
+and `ScrollView` - and a window's page under libadwaita's header bar, over the
 runtime every host shares. A switch, a slider and a field carry their states
 both ways; opacity, sizes and transforms animate, a turn in depth included,
 a stack's children travel to their new places, and a child the tree hides

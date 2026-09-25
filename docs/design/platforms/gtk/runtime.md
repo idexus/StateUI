@@ -34,7 +34,10 @@ brings its window forward.
 
 A test process runs no main loop: it starts libadwaita, registers an
 application of its own so windows have one to belong to, and turns GLib's
-loop itself where GTK lays out and draws.
+loop itself. A window a test opens may stand behind another, and the desktop
+draws such a window no frames, so a test lays a window out by raising its
+surface's `layout` signal at the surface's size - the call a frame's layout
+makes - rather than by waiting for a frame.
 
 ## The doorbell
 

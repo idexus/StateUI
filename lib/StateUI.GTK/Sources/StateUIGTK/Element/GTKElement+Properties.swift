@@ -37,6 +37,7 @@ extension GTKElement {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            if let scroll = registered as? GTKScrollView { follow(scroll) }
             return registered
         }
 
@@ -128,6 +129,15 @@ extension GTKElement {
         }
 
         (view ?? parent?.nearestView)?.invalidateMeasure()
+    }
+
+    /// Hears the scroller's movement on the display's frames: where it went, and that it came to rest.
+    private func follow(_ scroll: GTKScrollView) {
+        scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
+        scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.onFramesWanted = { [weak self, weak scroll] in
+            if let scroll { self?.host?.requestFrames(for: scroll) }
+        }
     }
 
     /// The view of this element or the nearest one above it.

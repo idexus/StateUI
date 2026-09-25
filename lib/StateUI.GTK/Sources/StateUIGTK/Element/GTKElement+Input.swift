@@ -42,4 +42,22 @@ extension GTKElement {
             host.pump.turn()
         }
     }
+
+    /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state first, then
+    /// the events, as one user's transaction.
+    func scrolled(from old: Point, to new: Point) {
+        guard let host else { return }
+
+        host.performUserTransaction {
+            if old != new, let binding = element.driven[.scrollOffset] {
+                host.take([new.x, new.y], through: binding)
+            }
+            if old.x != new.x, let handler = element.handler(.scrollXChanged) {
+                host.dispatch(handler, payload: [.number(new.x)])
+            }
+            if old.y != new.y, let handler = element.handler(.scrollYChanged) {
+                host.dispatch(handler, payload: [.number(new.y)])
+            }
+        }
+    }
 }

@@ -51,6 +51,13 @@ final class GTKRenderer {
     /// The window told it was made.
     private weak var createdWindow: MountedElement?
 
+    /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
+    private var scrollers: [Int64: WeakScroller] = [:]
+
+    private struct WeakScroller {
+        weak var view: GTKScrollView?
+    }
+
     /// A runtime whose windows belong to `application`, on GLib's monotonic clock or on `clock`, with the motion
     /// `reducesMotion` allows.
     init(
@@ -122,6 +129,18 @@ final class GTKRenderer {
         pump.dispatch(handler, payload: payload)
     }
 
+    /// Runs `body` as one of the user's transactions: the handlers it raises run in order once it ends, and one
+    /// turn then renders everything it changed.
+    func performUserTransaction(_ body: () -> Void) {
+        pump.performUserTransaction(body)
+    }
+
+    /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
+    func requestFrames(for scroller: GTKScrollView) {
+        scrollers[scroller.number] = WeakScroller(view: scroller)
+        displayCycle.hold()
+    }
+
     /// Reports a value the user set through a bound state.
     @discardableResult
     func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
@@ -179,9 +198,26 @@ extension GTKRenderer: TurnPresenter {
 }
 
 extension GTKRenderer: FramePresenter {
-    var wantsFrames: Bool { false }
+    var wantsFrames: Bool {
+        scrollers.values.contains { $0.view?.wantsFrames == true }
+    }
 
-    func commitUserReports(now: Double) {}
+    /// Lets every moving scroller say what the frame saw it do, in the order its view was made, as one user's
+    /// transaction.
+    func commitUserReports(now: Double) {
+        guard !scrollers.isEmpty else { return }
+
+        performUserTransaction {
+            for number in scrollers.keys.sorted() {
+                guard let view = scrollers[number]?.view else {
+                    scrollers[number] = nil
+                    continue
+                }
+                view.frame(now: now)
+                if !view.wantsFrames { scrollers[number] = nil }
+            }
+        }
+    }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
         tree.present(states: states, properties: properties)

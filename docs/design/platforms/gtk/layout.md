@@ -45,3 +45,27 @@ is read back with `gtk_widget_compute_bounds`, which does too;
 A widget is measured at its natural width, no wider than offered and no
 narrower than its least, and then at its natural height for that width - a
 label wraps to the width it is given.
+
+## Scrolling
+
+A ScrollView is a StateUI layout holding GTK's `GtkScrolledWindow`, which
+holds the document the core's scroll arithmetic lays out - never smaller than
+the viewport, and several children stacked down. GTK puts the document in a
+`GtkViewport`, which the host tells to give it its natural size along the ways
+the view scrolls and the viewport's own size across them; the document's
+least is nothing, so a viewport giving it its least would scroll nothing. A
+way the view does not scroll holds the document to the viewport; a bar asked
+never to show still scrolls.
+
+The scroller says where its view stands through its adjustments'
+`value-changed`, and that the user holds it - a touchpad's fingers down -
+through a scroll controller's `scroll-begin` and `scroll-end`. The user's
+movement is joined up to the display's next frame, which reports it to its
+state and its handlers, and rests once it has stood still, as on every host
+([a scroller's movement](../../host/runtime.md#a-scrollers-movement)). The
+program moves the view by setting the adjustments, which GTK tells inside the
+program's write: `ProgramWrite` drops that echo, and nothing else is kept.
+
+A viewport owns its child: a view whose parent is not a StateUI panel is not
+taken out by the view as it goes, and the scroller takes its document out of
+the viewport before it goes itself.
