@@ -38,6 +38,10 @@ let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 // .scripts/Android/build-swift.sh sets STATEUI_ANDROID.
 let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
 
+// And for Platforms/WinUI, the WinUI 3 head: .scripts/WinUI/run-app.ps1 sets
+// STATEUI_WINUI.
+let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
+
 // What every module of the application is compiled with. In an AppKit build
 // that includes APPKIT, the condition Swift written for that host alone stands
 // under - defined HERE rather than by a compiler flag, so the one variable
@@ -47,6 +51,7 @@ let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
+    + (hasWinUIHead ? [.define("WINUI")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -144,6 +149,30 @@ if hasAndroidHead {
                 .product(name: "StateUIAndroid", package: "StateUIAndroid"),
             ],
             path: "Platforms/Android/Swift",
+            swiftSettings: settings
+        ))
+}
+
+if hasWinUIHead {
+    // The same gallery module, an executable its WinUI host runs on Windows:
+    // its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "GalleryWinUI",
+            targets: ["GalleryWinUI"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
+
+    targets.append(
+        .executableTarget(
+            name: "GalleryWinUI",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIWinUI", package: "StateUIWinUI"),
+            ],
+            path: "Platforms/WinUI",
             swiftSettings: settings
         ))
 }
