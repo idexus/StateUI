@@ -18,8 +18,8 @@
 #
 #   .\test-winui.ps1 [-Filter <test>] [-ScratchPath <dir>]
 #
-# The runner is linked again by every build, so the tests are built, the
-# runner given its manifest, and the run skips the build.
+# The tests are built, the Windows App SDK laid beside the runner, and the run
+# skips the build.
 # ---------------------------------------------------------------------------
 param(
     [string]$Filter,
@@ -31,8 +31,11 @@ Initialize-StateUIProjection
 $scratch = @()
 if ($ScratchPath) { $scratch = @('--scratch-path', $ScratchPath) }
 
+Write-Host 'building the WinUI host tests - SwiftPM reads the packages first, printing nothing'
+Write-StateUIEditorBuilds
 swift build --package-path $StateUIWinUIHost --build-tests @scratch
 if ($LASTEXITCODE) { throw 'the WinUI host tests did not build' }
+Write-Host 'laying the Windows App SDK beside the test runner'
 $bin = (swift build --package-path $StateUIWinUIHost @scratch --show-bin-path).Trim()
 Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWinUITests-test-runner.exe')
 

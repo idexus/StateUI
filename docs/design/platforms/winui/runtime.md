@@ -131,3 +131,8 @@ manifest registering every class each component declares - the registrations
 the SDK's own build writes - and `resources.pri`, where WinUI's controls find
 their resources. `.scripts/WinUI/tools.ps1` lays them out after each build,
 the test runner's included, and owns the versions.
+
+The manifest stands beside the executable as `<name>.exe.manifest`, which
+Windows reads for an executable carrying none of its own. It is not written
+into the executable: the build records what it linked, and the next build
+links an executable changed since again, even when nothing else has.

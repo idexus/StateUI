@@ -37,13 +37,20 @@ $name = Split-Path $application -Leaf
 $scratch = Join-Path $application '.build-winui'
 
 # A running head holds its executable, which the build writes again: it stops first.
-Get-Process -Name "${name}WinUI" -ErrorAction SilentlyContinue | Stop-Process -Force
+$running = Get-Process -Name "${name}WinUI" -ErrorAction SilentlyContinue
+if ($running) {
+    Write-Host "stopping the ${name}WinUI that runs"
+    $running | Stop-Process -Force
+}
 $global:LASTEXITCODE = 0
 
 Initialize-StateUIProjection
 $env:STATEUI_WINUI = '1'
+Write-Host "building ${name}WinUI, $Configuration - SwiftPM reads the packages first, printing nothing"
+Write-StateUIEditorBuilds
 swift build --package-path $application -c $Configuration --product "${name}WinUI" --scratch-path $scratch
 if ($LASTEXITCODE) { throw "the WinUI head of $name did not build" }
+Write-Host "laying the Windows App SDK beside ${name}WinUI.exe"
 $bin = (swift build --package-path $application -c $Configuration --scratch-path $scratch --show-bin-path).Trim()
 $executable = Join-Path $bin "${name}WinUI.exe"
 Set-StateUISelfContained -Directory $bin -Executables $executable

@@ -16,7 +16,7 @@
 # the Windows App SDK - here and nowhere else - the packages fetched where
 # they are missing, the projection the relay includes, and a directory made
 # self-contained: the Windows App SDK beside the executables, its classes
-# registered in each one's manifest, and resources.pri. No MSBuild.
+# registered in a manifest beside each one, and resources.pri. No MSBuild.
 # Design: docs/design/platforms/winui/runtime.md#self-contained
 # ---------------------------------------------------------------------------
 
@@ -78,6 +78,7 @@ function Initialize-StateUIProjection {
     $experiences = Get-StateUIPackage 'microsoft.windowsappsdk.interactiveexperiences'
     $webview = Get-StateUIPackage 'microsoft.web.webview2'
 
+    Write-Host 'generating the C++/WinRT projection'
     if (Test-Path $projection) { Remove-Item -Recurse -Force $projection }
     & $cppwinrt -input sdk -input "$winui\metadata" -input "$foundation\metadata" `
         -input "$experiences\metadata\10.0.18362.0" -input "$webview\lib\Microsoft.Web.WebView2.Core.winmd" `
@@ -87,19 +88,18 @@ function Initialize-StateUIProjection {
     Set-Content -Path $stamp -Value $versions -Encoding ascii
 }
 
-# The Windows SDK's tool `name` for this machine's architecture, newest SDK first.
-function Get-StateUIKitTool([string]$Name) {
-    $bin = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
-    $tool = Get-ChildItem $bin -Directory -Filter '10.*' | Sort-Object { [version]$_.Name } -Descending |
-        ForEach-Object { Join-Path $_.FullName "$StateUIArchitecture\$Name" } | Where-Object { Test-Path $_ } |
-        Select-Object -First 1
-    if (-not $tool) { throw "the Windows SDK's $Name is missing" }
-    return $tool
+# Says so when the editor is building for its index: it shares the processor
+# with a build, and can make it minutes longer.
+function Write-StateUIEditorBuilds {
+    $builds = Get-CimInstance Win32_Process -Filter "Name = 'swift-build.exe' OR Name = 'swiftc.exe' OR Name = 'clang.exe'" |
+        Where-Object { $_.CommandLine -match 'index-build' }
+    if ($builds) { Write-Host 'the editor is building for its index, which slows this build' }
 }
 
 # Makes `Directory` self-contained for each of `Executables`: the Windows App
 # SDK's runtime beside them, every class its components declare registered in
-# each one's manifest, and resources.pri.
+# the manifest beside each one, and resources.pri. An executable is never
+# rewritten after its build: the next build would link it again.
 function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
     $components = 'microsoft.windowsappsdk.winui', 'microsoft.windowsappsdk.foundation',
         'microsoft.windowsappsdk.interactiveexperiences' | ForEach-Object { Get-StateUIPackage $_ }
@@ -111,13 +111,8 @@ function Set-StateUISelfContained([string]$Directory, [string[]]$Executables) {
     }
     $global:LASTEXITCODE = 0
 
-    $manifest = Join-Path $Directory 'StateUI.WindowsAppSDK.manifest'
-    [IO.File]::WriteAllText($manifest, (New-StateUIManifest $components))
-    $mt = Get-StateUIKitTool 'mt.exe'
-    foreach ($executable in $Executables) {
-        & $mt -nologo -manifest $manifest "-outputresource:$executable;#1"
-        if ($LASTEXITCODE) { throw "mt.exe could not give $executable its manifest" }
-    }
+    $manifest = New-StateUIManifest $components
+    foreach ($executable in $Executables) { [IO.File]::WriteAllText("$executable.manifest", $manifest) }
 
     # WinUI's controls find their resources in the application's index.
     Copy-Item (Join-Path $Directory 'Microsoft.UI.Xaml.Controls.pri') (Join-Path $Directory 'resources.pri') -Force

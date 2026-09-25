@@ -43,8 +43,7 @@ The host builds on Windows 10 1809 or newer, on arm64 or x64:
 
 - Swift 6.4 from swift.org, `swift-6.4.0-RELEASE`;
 - Visual Studio 2026 with the C++ tools for the machine's architecture, and
-  the Windows SDK 10.0.26100, whose `mt.exe` gives an application its
-  manifest;
+  the Windows SDK 10.0.26100;
 - nothing else to install: `tools.ps1` fetches C++/WinRT and the Windows App
   SDK from nuget.org the first time, each checked against nuget.org's own
   hash, and generates the C++/WinRT projection the relay includes.

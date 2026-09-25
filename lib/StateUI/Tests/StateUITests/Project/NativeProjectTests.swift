@@ -165,6 +165,19 @@ final class NativeProjectTests: XCTestCase {
             "declared by the relay's header or defined by its sources, and not both")
     }
 
+    /// No WinUI script writes into an executable a build linked: the next build would link it again, however
+    /// little changed. The Windows App SDK's manifest stands beside each one.
+    func testTheWinUIScriptsLeaveWhatABuildLinked() throws {
+        let scripts = SourceTree.repository.appendingPathComponent(".scripts/WinUI")
+        let tools = try String(contentsOf: scripts.appendingPathComponent("tools.ps1"), encoding: .utf8)
+        XCTAssertTrue(tools.contains(#"WriteAllText("$executable.manifest""#), "the manifest stands beside each executable")
+
+        for name in try FileManager.default.contentsOfDirectory(atPath: scripts.path) where name.hasSuffix(".ps1") {
+            let text = try String(contentsOf: scripts.appendingPathComponent(name), encoding: .utf8)
+            XCTAssertFalse(text.contains("-outputresource"), "\(name) writes into an executable")
+        }
+    }
+
     /// Every WINUI HEAD is an executable its application declares exactly when a
     /// build says it is a WinUI one, whose main names the application to the host
     /// and hands it the thread.
