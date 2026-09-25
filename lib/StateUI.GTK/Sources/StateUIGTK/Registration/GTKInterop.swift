@@ -12,11 +12,11 @@ enum GTKInterop {
     /// What answers one act, and what it needs to answer it.
     enum Performer {
         /// An act of the application's, given the values it was called with.
-        case application(([HostValue]) throws -> [HostValue])
+        case application(@MainActor ([HostValue]) async throws -> [HostValue])
 
         /// An act aimed at one element, given that element's view and the values after the identity the aim put
         /// in argument 0.
-        case aimed((GTKView, [HostValue]) throws -> [HostValue])
+        case aimed(@MainActor (GTKView, [HostValue]) async throws -> [HostValue])
     }
 
     /// The performers, by the act - read where no act of the library's own answers the call.
@@ -89,7 +89,9 @@ public enum StateUIActs {
     ///     }
     ///
     /// The values are the act's own, as its contract declares them, so a performer of another shape does not
-    /// compile and a call carrying anything else fails with the reason. A second registration replaces the first.
+    /// compile and a call carrying anything else fails with the reason. A performer may await - GTK reads the
+    /// clipboard asynchronously - and the call is answered once it returns. A second registration replaces the
+    /// first.
     ///
     /// - Parameters:
     ///   - act: the member, written with its contract.
@@ -99,14 +101,14 @@ public enum StateUIActs {
         Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
-        _ perform: @escaping @MainActor (repeat each Argument) throws -> (repeat each Answer)
+        _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
     ) {
         GTKInterop.performers[act.token] = .application { values in
             guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
                 throw StateUIError(message: "`\(act.name)` was called with \(values.count) value(s), and its "
                     + "contract declares " + MemberValues.describe(repeat (each Argument).self))
             }
-            let answer = try perform(repeat each arguments)
+            let answer = try await perform(repeat each arguments)
             return MemberValues.encode(repeat each answer)
         }
     }
@@ -129,7 +131,7 @@ public enum StateUIActs {
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on control: Made.Type,
-        _ perform: @escaping @MainActor (Made, repeat each Argument) throws -> (repeat each Answer)
+        _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
     ) {
         GTKInterop.performers[act.token] = .aimed { view, values in
             guard let made = (view as? GTKHostedView<Made>)?.control else {
@@ -140,7 +142,7 @@ public enum StateUIActs {
                 throw StateUIError(message: "`\(act.name)` was called with \(values.count) value(s), and its "
                     + "contract declares " + MemberValues.describe(repeat (each Argument).self))
             }
-            let answer = try perform(made, repeat each arguments)
+            let answer = try await perform(made, repeat each arguments)
             return MemberValues.encode(repeat each answer)
         }
     }

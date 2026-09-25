@@ -64,16 +64,21 @@ final class GTKActPerformer {
             return fail(call, "the GTK host does not perform the act '\(call.act.name)'")
         }
 
-        do {
-            switch performer {
-            case .application(let perform):
-                reply(call, try perform(call.arguments))
-            case .aimed(let perform):
-                guard let view = aimed(call, in: tree) else { return }
-                reply(call, try perform(view, Array(call.arguments.dropFirst())))
+        var view: GTKView?
+        if case .aimed = performer {
+            view = aimed(call, in: tree)
+            guard view != nil else { return }
+        }
+        // A performer may await; the call is answered once it returns.
+        Task { @MainActor in
+            do {
+                switch performer {
+                case .application(let perform): reply(call, try await perform(call.arguments))
+                case .aimed(let perform): reply(call, try await perform(view!, Array(call.arguments.dropFirst())))
+                }
+            } catch {
+                fail(call, "\(error)")
             }
-        } catch {
-            fail(call, "\(error)")
         }
     }
 

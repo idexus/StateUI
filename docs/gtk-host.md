@@ -132,8 +132,9 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
 }
 ```
 
-A performer runs on the main thread. Its arguments and answer are the act's
-own types; a call carrying anything else fails with the reason. A thrown error
+A performer runs on the main thread, and may await - GTK reads the clipboard
+asynchronously - the call answered once it returns. Its arguments and answer
+are the act's own types; a call carrying anything else fails with the reason. A thrown error
 fails the act, and so does an aim at nothing; an act nobody registered is
 refused by name.
 

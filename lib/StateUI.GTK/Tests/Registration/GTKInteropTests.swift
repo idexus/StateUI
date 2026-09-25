@@ -188,6 +188,25 @@ final class GTKInteropTests: XCTestCase {
         }
     }
 
+    /// A performer may await before it answers - GTK reads a clipboard so - and the call is answered once it
+    /// returns.
+    func testAPerformerThatAwaitsAnswersOnceItReturns() throws {
+        try onUIThread {
+            GTKInterop.forgetPerformers()
+            defer { GTKInterop.forgetPerformers() }
+            StateUIActs.add(InteropTestContract.doubled) { number in
+                try await Task.sleep(nanoseconds: 20_000_000)
+                return number * 2
+            }
+            let host = GTKRenderer.running { Calling() }
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { host.said != "-" }
+
+            XCTAssertEqual(host.said, "42")
+        }
+    }
+
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
