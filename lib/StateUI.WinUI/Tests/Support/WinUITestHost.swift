@@ -121,7 +121,8 @@ extension WinUIRenderer {
 
     /// Pumps until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
     func settle(until done: () -> Bool) {
-        for _ in 0..<150 where !done() {
+        for _ in 0..<150 {
+            if done() { return }
             WinUITestHost.pump(0.01)
             _ = core.runJobs()
             pump()
