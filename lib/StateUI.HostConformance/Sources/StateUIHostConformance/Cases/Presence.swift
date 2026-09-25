@@ -82,7 +82,7 @@
     }
 
     /// `element`'s specimen wearing `write`.
-    private static func specimen(_ element: String, _ write: any Written) -> any View {
+    private static func specimen(_ element: String, _ write: any Worn) -> any View {
         Specimens.make(element, Dressing([write])) ?? Label("no specimen of \(element)")
     }
 }

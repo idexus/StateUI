@@ -74,6 +74,8 @@ final class GTKDriver: HostDriver {
         case (.text, let label as GTKTextView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
+        case (.text, let button as GTKButtonView): return button.text.propValue
+        case (.text, let check as GTKCheckView): return check.text.propValue
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }

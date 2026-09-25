@@ -43,6 +43,11 @@ public struct Covered: Hashable, Sendable, CustomStringConvertible {
         self.init(member: event.name, element: Element.nodeType.name, tier: Tier.name)
     }
 
+    /// A tier's event, on the element named `element` - as a tier's case made for each element names it.
+    public init<Tier: Contract, Payload>(_ event: ElementEvent<Tier, Payload>, on element: String) {
+        self.init(member: event.name, element: element, tier: Tier.name)
+    }
+
     init(member: String, element: String, tier: String?) {
         self.member = member
         self.element = element

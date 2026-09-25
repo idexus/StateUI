@@ -421,40 +421,40 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 4 ✅ |  |  |  |
-| [Button](controls/Button.md) | 86 |  |  | 4 ✅ |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 14 ✅ |  |  |  |
+| [Button](controls/Button.md) | 86 |  |  | 16 ✅ |  |  |  |
 | [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | 69 |  |  | 5 ✅ |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [CheckBox](controls/CheckBox.md) | 69 |  |  | 15 ✅ |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  | 13 ✅ |  |  |  |
 | [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  | 3 ✅ |  |  |  |
-| [Grid](controls/Grid.md) | 77 |  |  | 3 ✅ |  |  |  |
-| [HStack](controls/HStack.md) | 74 |  |  | 3 ✅ |  |  |  |
-| [Image](controls/Image.md) | 69 |  |  | 3 ✅ |  |  |  |
-| [Label](controls/Label.md) | 81 |  |  | 4 ✅ |  |  |  |
-| [Line](controls/Line.md) | 80 |  |  | 3 ✅ |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  | 13 ✅ |  |  |  |
+| [Grid](controls/Grid.md) | 77 |  |  | 13 ✅ |  |  |  |
+| [HStack](controls/HStack.md) | 74 |  |  | 13 ✅ |  |  |  |
+| [Image](controls/Image.md) | 69 |  |  | 13 ✅ |  |  |  |
+| [Label](controls/Label.md) | 81 |  |  | 15 ✅ |  |  |  |
+| [Line](controls/Line.md) | 80 |  |  | 13 ✅ |  |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  | 3 ✅ |  |  |  |
-| [Picker](controls/Picker.md) | 82 |  |  | 6 ✅ |  |  |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  | 3 ✅ |  |  |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  | 3 ✅ |  |  |  |
+| [Path](controls/Path.md) | 77 |  |  | 13 ✅ |  |  |  |
+| [Picker](controls/Picker.md) | 82 |  |  | 16 ✅ |  |  |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  | 13 ✅ |  |  |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  | 13 ✅ |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 4 ✅ |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 81 |  |  | 6 ✅ |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  | 3 ✅ |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 77 |  |  | 3 ✅ |  |  |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  | 6 ✅ |  |  |  |
-| [Slider](controls/Slider.md) | 73 |  |  | 7 ✅ |  |  |  |
-| [Stepper](controls/Stepper.md) | 71 |  |  | 8 ✅ |  |  |  |
-| [Switch](controls/Switch.md) | 69 |  |  | 5 ✅ |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  | 6 ✅ |  |  |  |
-| [TextField](controls/TextField.md) | 90 |  |  | 7 ✅ |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 14 ✅ |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 81 |  |  | 18 ✅ |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  | 13 ✅ |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 77 |  |  | 13 ✅ |  |  |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  | 16 ✅ |  |  |  |
+| [Slider](controls/Slider.md) | 73 |  |  | 17 ✅ |  |  |  |
+| [Stepper](controls/Stepper.md) | 71 |  |  | 18 ✅ |  |  |  |
+| [Switch](controls/Switch.md) | 69 |  |  | 15 ✅ |  |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  | 16 ✅ |  |  |  |
+| [TextField](controls/TextField.md) | 90 |  |  | 17 ✅ |  |  |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 |  |  | 3 ✅ |  |  |  |
+| [VStack](controls/VStack.md) | 74 |  |  | 13 ✅ |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](controls/ZStack.md) | 73 |  |  | 3 ✅ |  |  |  |
-| **Met** - ✅ and – | 2515 |  |  | 111 of 2515 met |  |  |  |
+| [ZStack](controls/ZStack.md) | 73 |  |  | 13 ✅ |  |  |  |
+| **Met** - ✅ and – | 2515 |  |  | 376 of 2515 met |  |  |  |
 
 ### Application structure
 

@@ -46,17 +46,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `background` | property | `Background` | native |  |  |  |  |  |  |  |
 | `focus` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure |  |  |  |  |  |  |  |
-| `height` | property | `Double` | native |  |  |  |  |  |  |  |
+| `height` | property | `Double` | native |  |  | ✅ |  |  |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native |  |  |  |  |  |  |  |
 | `isVisible` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
+| `maximumHeight` | property | `Double` | native |  |  | ✅ |  |  |  |  |
+| `maximumWidth` | property | `Double` | native |  |  | ✅ |  |  |  |  |
+| `minimumHeight` | property | `Double` | native |  |  | ✅ |  |  |  |  |
+| `minimumWidth` | property | `Double` | native |  |  | ✅ |  |  |  |  |
 | `opacity` | property | `Double` | native |  |  | ✅ |  |  |  |  |
 | `pivotX` | property | `Double` | native |  |  |  |  |  |  |  |
 | `pivotY` | property | `Double` | native |  |  |  |  |  |  |  |
@@ -70,7 +70,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `translationX` | property | `Double` | native |  |  |  |  |  |  |  |
 | `translationY` | property | `Double` | native |  |  |  |  |  |  |  |
 | `unfocus` | act | `() -> Void` |  |  |  |  |  |  |  |  |
-| `width` | property | `Double` | native |  |  |  |  |  |  |  |
+| `width` | property | `Double` | native |  |  | ✅ |  |  |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
@@ -88,13 +88,13 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | ✅ |  |  |  |  |
 | `gridColumn` | property | `Int` | stateUI |  |  |  |  |  |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
 | `gridRow` | property | `Int` | stateUI |  |  |  |  |  |  |  |
 | `gridRowSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  |  |  |  |  |
-| `margin` | property | `Insets` | native |  |  |  |  |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native |  |  | ✅ |  |  |  |  |
+| `margin` | property | `Insets` | native |  |  | ✅ |  |  |  |  |
 | `panTouchCount` | property | `Int` | structure |  |  |  |  |  |  |  |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  |  |  |  |
 | `panXChannel` | property | `Int` | structure |  |  |  |  |  |  |  |
@@ -110,7 +110,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  |  |  |  |
 | `tapCount` | property | `Int` | structure |  |  |  |  |  |  |  |
 | `onTapped` (`tapped`) | event |  | native |  |  |  |  |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  |  |  |  |  |
+| `verticalAlignment` | property | `Alignment` | native |  |  | ✅ |  |  |  |  |
 
 ## From [Shape](tiers/Shape.md)
 
