@@ -27,6 +27,9 @@ final class GTKElement: NativeElement {
     /// Where the states a press dragged carries stood as it began.
     var panFrom = (x: 0.0, y: 0.0)
 
+    /// Whether a label shows its spans' runs in place of its own words.
+    var hasRuns = false
+
     /// Where the element last said it stands; empty before it has said.
     var lastFrameReport: [Double] = []
 

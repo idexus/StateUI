@@ -11,15 +11,34 @@ class GTKTextView: GTKView {
     /// How the words look.
     private(set) var look = GTKTextLook()
 
+    /// A run of words and how it looks over the label's own look.
+    struct Run {
+        let text: String
+        let look: GTKTextLook
+    }
+
+    /// The label's own words, and the runs shown in their place; nil while none are.
+    private var ownText = ""
+    private var runs: [Run]?
+
     init() {
         super.init { _ in gtk_label_new(nil) }
         setLines(breaking: .wordWrap, maximum: nil)
         gtk_label_set_xalign(widget.opaque, 0)
     }
 
-    /// The words shown.
+    /// The label's own words, shown while it shows no runs.
     func setText(_ text: String) {
-        gtk_label_set_text(widget.opaque, text)
+        ownText = text
+        if runs == nil { gtk_label_set_text(widget.opaque, text) }
+    }
+
+    /// Runs of words shown in place of the label's own, each in its own look; nil shows its own words again.
+    /// Design: docs/design/platforms/gtk/controls.md#runs-of-words
+    func setRuns(_ runs: [Run]?) {
+        self.runs = runs
+        gtk_label_set_text(widget.opaque, runs.map { $0.map(\.text).joined() } ?? ownText)
+        writeLook()
     }
 
     /// The words the label shows now, read back from GTK.
@@ -30,8 +49,22 @@ class GTKTextView: GTKView {
     /// Changes how the words look.
     func setLook(_ change: (inout GTKTextLook) -> Void) {
         change(&look)
+        writeLook()
+    }
+
+    /// Writes the look on the words: the label's over all of them, or each run's over its own bytes.
+    private func writeLook() {
         let list = pango_attr_list_new()!
-        look.insert(into: list)
+        if let runs {
+            var start: UInt32 = 0
+            for run in runs {
+                let end = start + UInt32(run.text.utf8.count)
+                run.look.over(look).insert(into: list, from: start, to: end)
+                start = end
+            }
+        } else {
+            look.insert(into: list)
+        }
         gtk_label_set_attributes(widget.opaque, list)
         pango_attr_list_unref(list)
     }

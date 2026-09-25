@@ -23,6 +23,15 @@ over for a language written from the right.
 A label's padding is room inside its own box, around its words
 ([a widget's own box](drawing.md#a-widgets-own-box)).
 
+## Runs of words
+
+A label's spans are its words, run by run: the label's text is their words
+joined, and each run's look - its colour, size, weight, slant, lines and
+background - covers its own bytes of it, the label's look where the run says
+nothing. The runs stand in place of the label's own words; a label whose
+spans are taken away shows its own words again. A span that changes has its
+label apply again, so the runs are laid down whole each time.
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented
