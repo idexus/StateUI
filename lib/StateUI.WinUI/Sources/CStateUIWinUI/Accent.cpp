@@ -65,12 +65,16 @@ extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, b
                     alpha, static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}));
             }
         }
-        // A template reads its resources as its theme is read: the control reads its theme again.
-        auto requested = control.RequestedTheme();
-        control.RequestedTheme(control.ActualTheme() == xaml::ElementTheme::Dark ? xaml::ElementTheme::Light
-                                                                               : xaml::ElementTheme::Dark);
-        control.RequestedTheme(requested);
+        readThemeAgain(control);
     } catch (winrt::hresult_error const &error) {
         report(error, "tinting a control");
     }
+}
+
+void stateui::readThemeAgain(xaml::FrameworkElement const &control) {
+    // A template reads its resources as its theme is read.
+    auto requested = control.RequestedTheme();
+    control.RequestedTheme(control.ActualTheme() == xaml::ElementTheme::Dark ? xaml::ElementTheme::Light
+                                                                           : xaml::ElementTheme::Dark);
+    control.RequestedTheme(requested);
 }

@@ -60,6 +60,13 @@ reporting that it is off, in one transaction. WinUI's own grouping would
 uncheck the button's neighbours by itself - and the one that lost would be
 heard twice - so every button stands in a group of its own.
 
+A background given to one of them is what it is drawn over in every state:
+its templates paint their own backgrounds under the pointer, pressed and
+disabled - transparent until then - so the host writes the brush into each of
+those resources on the control as well, and the control reads its theme
+again so its template takes them. A checked radio button's wash is its
+Checked visual state's background, which the core lays as the user chooses.
+
 ## A control's accent
 
 A control's tint is its one accent colour, where WinUI draws the system's

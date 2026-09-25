@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The controls that are on or off: a switch, a check box and a radio button,
-// each turn told through `toggled`. Which of a radio button's set loses its
-// check is the host's: each button stands in a group of its own.
+// each turn told through `toggled`, and what they are drawn over. Which of a
+// radio button's set loses its check is the host's: each button stands in a
+// group of its own.
 // Design: docs/design/platforms/winui/controls.md#on-or-off
 
 #include "Automation.h"
 
 #include <string>
+#include <vector>
 
 using namespace stateui;
 namespace primitives = winrt::Microsoft::UI::Xaml::Controls::Primitives;
@@ -96,5 +98,32 @@ extern "C" void stateui_winui_toggle_press(StateUIObjectRef handle) {
             pattern<provider::IToggleProvider>(control, PatternInterface::Toggle).Toggle();
     } catch (winrt::hresult_error const &error) {
         report(error, "turning a control as the user");
+    }
+}
+
+extern "C" void stateui_winui_toggle_set_background(StateUIObjectRef handle, StateUIBrush background) {
+    try {
+        auto control = as<controls::Control>(handle);
+        // The template paints its own backgrounds in each state, transparent until a control is given one.
+        std::vector<std::wstring> named;
+        if (control.try_as<controls::RadioButton>()) named = {L"RadioButtonBackground"};
+        else if (control.try_as<controls::CheckBox>())
+            named = {L"CheckBoxBackgroundUnchecked", L"CheckBoxBackgroundChecked", L"CheckBoxBackgroundIndeterminate"};
+        else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
+
+        auto fill = brush(background);
+        auto resources = control.Resources();
+        for (auto const &name : named) {
+            for (auto suffix : {L"", L"PointerOver", L"Pressed", L"Disabled"}) {
+                auto key = winrt::box_value(winrt::hstring(name + suffix));
+                if (resources.HasKey(key)) resources.Remove(key);
+                if (fill) resources.Insert(key, fill);
+            }
+        }
+        if (fill) control.Background(fill);
+        else control.ClearValue(controls::Control::BackgroundProperty());
+        readThemeAgain(control);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "painting a control that is on or off");
     }
 }

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIWinUI
 
 /// A control that is on or off - a WinUI `ToggleSwitch`, `CheckBox` or `RadioButton` - whose turn reaches Swift
@@ -21,6 +22,11 @@ class WinUIToggleView: WinUIView {
 
     func setEnabled(_ enabled: Bool) {
         stateui_winui_set_enabled(handle, enabled)
+    }
+
+    /// What the control is drawn over; nil for WinUI's own.
+    func setBackground(_ value: HostValue?) {
+        WinUIBrush(value).withRelayBrush { stateui_winui_toggle_set_background(handle, $0) }
     }
 
     override func detach() {

@@ -23,6 +23,7 @@ Canvas
   pressed()
   released()
 CheckBox
+  background
   isEnabled
   isOn
   tint
@@ -165,6 +166,7 @@ ProgressBar
   progress
   tint
 RadioButton
+  background
   fontAttributes
   fontFamily
   fontSize
@@ -226,6 +228,7 @@ Stepper
   value
   valueChanged()
 Switch
+  background
   isEnabled
   isOn
   tint

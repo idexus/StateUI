@@ -424,7 +424,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 52 ✅ |  |
 | [Button](controls/Button.md) | 86 | 66 ✅ · 5 ☑️ |  |  | 70 ✅ · 2 ☑️ | 65 ✅ |  |
 | [Canvas](controls/Canvas.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 54 ✅ |  |
-| [CheckBox](controls/CheckBox.md) | 69 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 54 ✅ |  |
+| [CheckBox](controls/CheckBox.md) | 69 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 55 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | 68 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 52 ✅ |  |
 | [DatePicker](controls/DatePicker.md) | 80 | 61 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 62 ✅ · 1 ☑️ |  |
 | [Ellipse](controls/Ellipse.md) | 76 | 61 ✅ · 3 ☑️ |  |  | 62 ✅ · 1 ☑️ | 60 ✅ |  |
@@ -440,13 +440,13 @@ Every control, and every part an application, its windows and its pages are made
 | [Polyline](controls/Polyline.md) | 78 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 62 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 52 ✅ |  |
-| [RadioButton](controls/RadioButton.md) | 81 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 61 ✅ |  |
+| [RadioButton](controls/RadioButton.md) | 81 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 62 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 61 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 77 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 62 ✅ |  |
 | [SearchField](controls/SearchField.md) | 89 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ | 60 ✅ |  |
 | [Slider](controls/Slider.md) | 73 | 60 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ | 56 ✅ |  |
 | [Stepper](controls/Stepper.md) | 71 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| [Switch](controls/Switch.md) | 69 | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ | 54 ✅ |  |
+| [Switch](controls/Switch.md) | 69 | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ | 55 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ | 68 ✅ |  |
 | [TextField](controls/TextField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ | 68 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 59 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 57 ✅ · 1 ☑️ |  |
@@ -454,7 +454,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  |  | 1837 of 2515 met | 1716 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1773 of 2515 met |  |  | 1837 of 2515 met | 1719 of 2515 met |  |
 
 ### Application structure
 

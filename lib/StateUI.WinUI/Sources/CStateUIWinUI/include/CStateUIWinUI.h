@@ -384,6 +384,9 @@ StateUIObjectRef stateui_winui_switch_make(int64_t view);
 StateUIObjectRef stateui_winui_check_box_make(int64_t view);
 StateUIObjectRef stateui_winui_radio_make(int64_t view);
 void stateui_winui_toggle_set_on(StateUIObjectRef toggle, bool on);
+
+/// What a switch, a check box or a radio button is drawn over, in every state it can be in; none for WinUI's own.
+void stateui_winui_toggle_set_background(StateUIObjectRef toggle, StateUIBrush background);
 bool stateui_winui_toggle_is_on(StateUIObjectRef toggle);
 
 /// Turns a control as UI Automation does, which the user's turn is: a switch or a check box toggled, a radio
