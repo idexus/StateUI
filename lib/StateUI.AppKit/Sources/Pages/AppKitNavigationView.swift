@@ -41,7 +41,7 @@ final class AppKitNavigationView: AppKitHitTestView, AppKitWidthConstrainedMeasu
     /// The top page's size, measured by the page for the width offered.
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item = items.last else { return .zero }
-        let size = item.fittingSize(width: availableWidth)
+        let size = item.fittingSize(width: availableWidth.map { max(0, $0 - item.margin.left - item.margin.right) })
         return NSSize(
             width: size.width + item.margin.left + item.margin.right,
             height: size.height + item.margin.top + item.margin.bottom)

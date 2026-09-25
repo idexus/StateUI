@@ -12,7 +12,9 @@
         }
 
         let margin = item.values.margin
-        let size = item.size(offered: offered.map { max(0, $0 - padding.left - padding.right) })
+        let size = item.size(offered: offered.map {
+            max(0, $0 - padding.left - padding.right - margin.left - margin.right)
+        })
         return LayoutSize(
             width: padding.left + padding.right + margin.left + margin.right + size.width,
             height: padding.top + padding.bottom + margin.top + margin.bottom + size.height)

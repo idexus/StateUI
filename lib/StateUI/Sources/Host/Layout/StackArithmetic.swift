@@ -27,8 +27,8 @@
         case .vertical:
             let childWidth = offered.map { max(0, $0 - padding.left - padding.right) }
             for item in visible {
-                let size = item.size(offered: childWidth)
                 let margin = item.values.margin
+                let size = item.size(offered: childWidth.map { max(0, $0 - margin.left - margin.right) })
                 along += size.height + margin.top + margin.bottom
                 across = max(across, size.width + margin.left + margin.right)
             }
@@ -73,7 +73,7 @@
             let values = item.values
             let margin = values.margin
             let cross = axis == .vertical ? content.width : content.height
-            let natural = item.size(offered: axis == .vertical ? cross : nil)
+            let natural = item.size(offered: axis == .vertical ? max(0, cross - margin.left - margin.right) : nil)
 
             switch axis {
             case .vertical:

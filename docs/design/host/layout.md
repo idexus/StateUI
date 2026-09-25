@@ -43,6 +43,12 @@ leave a child with no answer. A child placed at its start sits at the slot's
 start; at its end, at the end; centred, or filling but stopped short by a
 stated or a most size, in the middle.
 
+The layout owns the margin both ways: it takes the margin out of the width it
+offers a child and adds it to the size the child answers, and a toolkit's
+child measures its own view alone. A margin taken out twice narrows the
+offer - words wrap where they had room, and on WinUI a label measured at two
+widths in one pass keeps the pass from settling.
+
 ## Measured once
 
 A view keeps the sizes it measured, by the width its parent offered, until

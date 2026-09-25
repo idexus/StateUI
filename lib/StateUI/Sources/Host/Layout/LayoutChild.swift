@@ -86,7 +86,8 @@
     /// Whether the child is shown; a hidden child takes no room.
     var isShown: Bool { get }
 
-    /// The child's size for an offered width, margin included in the offer; its stated sizes and bounds applied.
+    /// The child's own size for the width offered to it, its margin already taken out - the layout owns the
+    /// margin, both ways; its stated sizes and bounds applied.
     func size(offered width: Double?) -> LayoutSize
 }
 

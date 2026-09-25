@@ -49,9 +49,9 @@ struct AppKitLayoutItem: LayoutChild {
         LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
     }
 
-    /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
-    func fittingSize(width availableWidth: CGFloat? = nil) -> NSSize {
-        let available = availableWidth.map { max(0, $0 - margin.left - margin.right) }
+    /// The view's size for the width offered to it, its margin already taken out; its stated sizes and bounds
+    /// applied.
+    func fittingSize(width available: CGFloat? = nil) -> NSSize {
         let measured: NSSize
         if let measurable = view as? AppKitWidthConstrainedMeasuring {
             measured = measurable.fittingContentSize(width: available)

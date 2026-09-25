@@ -60,12 +60,12 @@
         case let .absolute(x, y, width, height)?:
             return LayoutSize(width: max(0, x + width), height: max(0, y + height))
         case let .proportional(_, _, width, height)?:
-            let natural = item.size(offered: offered.map { $0 * width })
+            let natural = item.size(offered: offered.map { max(0, $0 * width - margin.left - margin.right) })
             return LayoutSize(
                 width: width > 0 ? (natural.width + margin.left + margin.right) / width : 0,
                 height: height > 0 ? (natural.height + margin.top + margin.bottom) / height : 0)
         case nil:
-            let natural = item.size(offered: offered)
+            let natural = item.size(offered: offered.map { max(0, $0 - margin.left - margin.right) })
             return LayoutSize(
                 width: natural.width + margin.left + margin.right,
                 height: natural.height + margin.top + margin.bottom)

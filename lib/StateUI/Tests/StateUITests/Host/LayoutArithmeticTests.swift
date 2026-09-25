@@ -208,6 +208,48 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(place, Rect(10, 10, 80, 20))
     }
 
+    /// Every layout offers a child the room it stands in less the child's margin, once: the child answers for
+    /// itself, and the layout adds the margin back.
+    @MainActor
+    func testEveryLayoutOffersAChildItsRoomLessItsMarginOnce() {
+        let offers = Offers()
+        var child = Child(width: 10, height: 10)
+        child.values.margin = Insets(8, 4)
+        child.values.horizontal = 0
+        child.offers = offers
+        var half = child
+        half.values.area = .proportional(0, 0, 0.5, 1)
+        let room = Rect(0, 0, 100, 100)
+
+        func offered(_ layout: () -> Void) -> [Double?] {
+            offers.widths = []
+            layout()
+            return offers.widths
+        }
+
+        XCTAssertEqual(offered {
+            _ = StackArithmetic.size(of: [child], axis: .vertical, spacing: 0, padding: Insets(0), width: 100)
+        }, [84], "a stack measured")
+        XCTAssertEqual(offered {
+            _ = StackArithmetic.places(
+                of: [child], axis: .vertical, spacing: 0, padding: Insets(0), in: room, direction: .leftToRight)
+        }, [84], "a stack placing")
+        XCTAssertEqual(offered { _ = ZStackArithmetic.size(of: [child], padding: Insets(0), width: 100) }, [84], "a ZStack")
+        XCTAssertEqual(offered { _ = ZStackArithmetic.size(of: [half], padding: Insets(0), width: 100) }, [34], "its area")
+        XCTAssertEqual(offered { _ = SingleChildArithmetic.size(of: child, padding: Insets(0), width: 100) }, [84], "one child")
+        XCTAssertEqual(offered {
+            _ = SingleChildArithmetic.place(of: child, in: room, padding: Insets(0), direction: .leftToRight)
+        }, [84], "one child placed")
+        XCTAssertEqual(offered {
+            _ = GridArithmetic.places(
+                of: [child], rows: [.auto], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                in: room, direction: .leftToRight)
+        }, [84, 84], "a grid's row and its place")
+        XCTAssertEqual(offered {
+            _ = ScrollArithmetic.contentSize(of: child, padding: Insets(0), orientation: .vertical, width: 100)
+        }, [84], "a scroller's document")
+    }
+
     /// A kept size answers for its width until it is forgotten; a pass needs at most a few.
     @MainActor
     func testAMeasurementIsKeptPerOfferedWidth() {
@@ -233,12 +275,16 @@ private struct Child: LayoutChild {
     let isShown: Bool
     var wraps = false
 
+    /// Where the widths it is offered are written; nil keeps none.
+    var offers: Offers?
+
     init(width: Double, height: Double, shown: Bool = true) {
         natural = LayoutSize(width: width, height: height)
         isShown = shown
     }
 
     func size(offered width: Double?) -> LayoutSize {
+        offers?.widths.append(width)
         if wraps, let width, width > 0, width < natural.width {
             return LayoutSize(width: width, height: natural.height * (natural.width / width).rounded(.up))
         }
@@ -246,4 +292,10 @@ private struct Child: LayoutChild {
             width: values.boundedWidth(values.width ?? natural.width),
             height: values.boundedHeight(values.height ?? natural.height))
     }
+}
+
+/// The widths a child was offered, in order.
+@MainActor
+private final class Offers {
+    var widths: [Double?] = []
 }
