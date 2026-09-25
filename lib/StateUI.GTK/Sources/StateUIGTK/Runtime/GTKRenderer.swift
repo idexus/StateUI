@@ -159,8 +159,8 @@ final class GTKRenderer {
         return true
     }
 
-    /// Shows the first window's arrangement of pages in a GTK window, titled as the window says, and tells the
-    /// window it was made, once, in its turn.
+    /// Shows the first window's arrangement of pages in a GTK window - a page by itself in a frame of its own - its
+    /// pages hearing that they show, and tells the window it was made, once, in its turn.
     /// Design: docs/design/platforms/gtk/runtime.md#the-window
     private func showWindow() {
         guard let element = tree.root?.first(type: .window) else { return }
@@ -170,18 +170,42 @@ final class GTKRenderer {
             self.window = window
             frameClock.widget = window.widget
         }
-        window.setTitle(element.value(.title)?.string)
 
         let arrangement = element.children.first { GTKElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {
+            let previous = shownArrangementElement
             shownArrangementElement = arrangement
-            window.show(arrangement?.gtk.view)
+            if arrangement?.type == .page { window.show(page: arrangement?.gtk.view) } else { window.show(arrangement?.gtk.view) }
+            previous?.gtk.setPagePresented(false, reason: .window)
+            arrangement?.gtk.setPagePresented(true, reason: .window)
         }
+        refreshChrome()
 
         if element !== createdWindow {
             createdWindow = element
             if let handler = element.handler(.created) { pump.handlers.enqueuePhase(handler) }
         }
+    }
+
+    /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
+    /// Design: docs/design/platforms/gtk/pages.md#the-chrome
+    func refreshChrome() {
+        guard let window, let element = tree.root?.first(type: .window)?.gtk else { return }
+
+        let arrangement = shownArrangementElement?.gtk
+        if let arrangement, arrangement.type == .page {
+            window.pageFrame?.show(arrangement.chrome)
+        } else {
+            arrangement?.composeChrome()
+        }
+        let pageTitle = arrangement?.visiblePage?.value(.title)?.string
+        window.setTitle(pageTitle.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+    }
+
+    /// Goes the way back the arrangement the window shows offers, as the user does - a stack's top page going;
+    /// whether there was one.
+    func goBack() -> Bool {
+        shownArrangementElement?.gtk.goBack() ?? false
     }
 }
 

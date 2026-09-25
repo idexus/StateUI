@@ -5,11 +5,14 @@
 
 /// Children placed: the layout item each child gives its parent.
 extension GTKElement {
-    /// Hands a layout its children's items, in order.
+    /// Hands a layout its children's items, in order - a page's slots furnish its header bar and stand in none of
+    /// its room.
     func arrangeChildren() {
+        let arranged = type == .page ? children.filter { !Self.slotTypes.contains($0.type) } : children
+        (view as? GTKNavigationView)?.titles = arranged.map { $0.value(.title)?.string ?? "" }
         let layout = view as? GTKLayoutView
         layout?.direction = element.layoutDirection
-        layout?.setItems(children.compactMap(\.layoutItem))
+        layout?.setItems(arranged.compactMap(\.layoutItem))
     }
 
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.

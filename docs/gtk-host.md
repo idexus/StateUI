@@ -8,12 +8,14 @@ through their C API, with nothing beneath it in another language.
 
 It presents its first controls - `Label`, `Button`, `Switch`, `Slider`,
 `TextField` and `ColorBox`, the layouts `VStack`, `HStack`, `Grid`, `ZStack`
-and `ScrollView` - and a window's page under libadwaita's header bar, over the
+and `ScrollView`, and a `NavigationStack` of pages - each page under a header
+bar of its own that slides with it, as GNOME's applications stand, over the
 runtime every host shares. A switch, a slider and a field carry their states
 both ways; opacity, sizes and transforms animate, a turn in depth included,
 a stack's children travel to their new places, and a child the tree hides
-fades out first. A layout paints its own box and cuts what it holds to it. It shows any other control's name in red where the control belongs,
-so a gap is visible rather than silent. It looks as the desktop's own
+fades out first. A layout paints its own box and cuts what it holds to it.
+It shows any other control's name in red where the control belongs, so a gap
+is visible rather than silent. It looks as the desktop's own
 applications do: libadwaita's widgets, and the light or dark style the desktop
 is set to.
 

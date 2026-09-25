@@ -162,6 +162,12 @@ extension GTKRenderer {
         }
     }
 
+    /// The window's name, as GTK holds it.
+    var windowTitle: String? {
+        guard let window, let title = gtk_window_get_title(window.widget.of(GtkWindow.self)) else { return nil }
+        return String(cString: title)
+    }
+
     /// Every view of `type` in the tree, in order.
     func views<Native: GTKView>(_ type: Native.Type) -> [Native] {
         guard let root = tree.root else { return [] }
@@ -235,6 +241,17 @@ extension GTKView {
 func near(_ a: UInt32, _ b: UInt32, within tolerance: Int = 2) -> Bool {
     (0..<4).allSatisfy { shift in
         abs(Int((a >> (shift * 8)) & 0xFF) - Int((b >> (shift * 8)) & 0xFF)) <= tolerance
+    }
+}
+
+extension GTKNavigationView {
+    /// The title of the page GTK shows.
+    var visiblePageTitle: String? {
+        guard let navigation = gtk_widget_get_first_child(widget),
+              let page = adw_navigation_view_get_visible_page(navigation.opaque),
+              let title = adw_navigation_page_get_title(page)
+        else { return nil }
+        return String(cString: title)
     }
 }
 

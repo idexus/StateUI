@@ -61,8 +61,9 @@ monotonic clock, in milliseconds.
 
 ## The window
 
-The first window element's arrangement of pages stands in an
-`AdwApplicationWindow` - an `AdwToolbarView` whose top bar is an
-`AdwHeaderBar` over the page - titled as the window says, and presented the
-first time it shows a page; the window is told it was made once, in its turn.
-It opens at 560 by 440, as a desktop host's window does.
+The first window element's arrangement of pages is the content of an
+`AdwApplicationWindow`: a page shown by itself in a frame whose header bar is
+the window's title bar, an arrangement as it stands, its pages carrying their
+own ([pages](pages.md)). The window is presented the first time it shows
+something, and told it was made once, in its turn. It opens at 560 by 440, as
+a desktop host's window does.

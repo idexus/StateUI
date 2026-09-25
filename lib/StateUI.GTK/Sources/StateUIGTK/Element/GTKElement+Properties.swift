@@ -28,6 +28,13 @@ extension GTKElement {
         .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
     ]
 
+    /// The entries that have no view of their own: structure, and the parts of another's view.
+    static let viewlessTypes: Set<NodeType> = [
+        .application, .scene, .window, .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
+        .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu, .menu, .menuItem, .menuSeparator, .spans,
+        .span,
+    ]
+
     /// The arrangements of pages a window shows.
     static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
 
@@ -41,20 +48,12 @@ extension GTKElement {
             return registered
         }
 
+        guard !Self.viewlessTypes.contains(type) else { return nil }
+
         switch type {
-        case .application, .scene, .window:
-            return nil
-
-        case .page, .overlay:
-            return GTKSingleChildView()
-
-        case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-             .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
-             .menu, .menuItem, .menuSeparator, .spans, .span:
-            return nil
-
-        default:
-            return GTKUnsupportedView(type)
+        case .page, .overlay: return GTKSingleChildView()
+        case .navigationStack: return GTKNavigationView()
+        default: return GTKUnsupportedView(type)
         }
     }
 
