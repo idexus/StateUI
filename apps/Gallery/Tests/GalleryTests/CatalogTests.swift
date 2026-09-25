@@ -757,6 +757,26 @@ final class CatalogTests: XCTestCase {
     }
     #endif
 
+    #if GTK
+    /// Every example of the GTK interop group shows both halves, named by what they ARE: the application's half "In
+    /// StateUI" and the host's "In GTK".
+    func testEveryGTKInteropExampleShowsBothHalves() throws {
+        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "gtkInterop" })
+
+        XCTAssertFalse(interop.samples.isEmpty, "the group lists nothing")
+
+        for sample in interop.samples {
+            for (index, example) in sample.examples.enumerated() {
+                let where_ = "\(sample.id) example \(index + 1)"
+
+                XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
+                XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
+                XCTAssertEqual(example.hostCode.heading, "In GTK", "\(where_) heads the far side")
+            }
+        }
+    }
+    #endif
+
     /// A held sample's code tab is one scroller: each example's name, then its
     /// notes and its Swift, in turn - the notes in no scroller of their own.
     func testAHeldSamplesCodeTabGivesEachExamplesNotesThenItsSwift() throws {

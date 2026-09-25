@@ -327,6 +327,25 @@ final class Catalog {
                 ]))
         #endif
 
+        #if GTK
+        // The same three roads on GTK - calling the host, hearing from it, a control the application registers - and
+        // a cube drawn by OpenGL 3.3 in a GtkGLArea, declared for this host alone. The GTK halves stand beside the
+        // GTK head, in Platforms/GTK/Host.
+        groups.append(
+            SampleGroup(
+                route: "gtkInterop",
+                title: "GTK interop",
+                summary: "Calling the host, hearing from it, and controls the app registers - "
+                    + "one of them drawn by OpenGL.",
+                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
+                card: ImageSource("cat_interop.png"),
+                samples: [
+                    Sample(GTKActsSample()),
+                    Sample(GTKEventsSample()),
+                    Sample(GTKControlSample()),
+                ]))
+        #endif
+
         self.groups = groups
     }
 
