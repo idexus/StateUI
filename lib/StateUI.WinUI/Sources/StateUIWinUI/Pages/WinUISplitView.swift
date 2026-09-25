@@ -24,8 +24,9 @@ final class WinUISplitView: WinUILayoutView {
     private var pages: [WinUILayoutItem] = []
     private(set) weak var detailRow: WinUIView?
 
-    /// The size WinUI's navigation view was last arranged at, which it is measured at too.
+    /// The size WinUI's navigation view was last arranged at, which it is measured at too; and what it last asked.
     private var arranged: LayoutSize?
+    private var asked = LayoutSize.zero
     private var adapted = false
 
     override init() {
@@ -70,15 +71,16 @@ final class WinUISplitView: WinUILayoutView {
         configure()
     }
 
+    /// What WinUI's navigation view asked, never its pages' own sizes: WinUI measures them in the room it gives them.
     override func contentSize(width: Double?) -> LayoutSize {
-        (pages.dropFirst().first?.view as? WinUILayoutView)?.naturalSize(width: width) ?? .zero
+        asked
     }
 
     /// Measures WinUI's navigation view at the size it was last arranged at, the one its pages are laid out in.
     /// Design: docs/design/platforms/winui/pages.md#a-native-arrangement
     override func measure(width: Double, height: Double) -> LayoutSize {
         let size = arranged ?? LayoutSize(width: width.isFinite ? width : 0, height: height.isFinite ? height : 0)
-        _ = sidebar.measure(width: size.width, height: size.height)
+        asked = sidebar.measure(width: size.width, height: size.height)
         return super.measure(width: width, height: height)
     }
 
@@ -86,7 +88,7 @@ final class WinUISplitView: WinUILayoutView {
         let size = LayoutSize(width: bounds.width, height: bounds.height)
         if size != arranged {
             arranged = size
-            _ = sidebar.measure(width: size.width, height: size.height)
+            asked = sidebar.measure(width: size.width, height: size.height)
         }
         adaptToFirstRoom(width: bounds.width)
         sidebar.layout(bounds)

@@ -71,6 +71,12 @@ the room offered - and a new room measures it again at the new size before it
 is arranged there; the second pass then asks for what the first gave, and the
 layout settles ([no room asked](layout.md#no-room-asked)).
 
+The split view answers WinUI with what the navigation view asked and never
+measures its pages itself. WinUI arranges an element at no less than it was
+last measured, so a detail page measured at the split's whole width would
+keep that width beside an open pane and run past the window's edge by the
+pane's width.
+
 ## Tabs
 
 A tabbed view's tabs are a `SelectorBar`. The first tabbed view down the

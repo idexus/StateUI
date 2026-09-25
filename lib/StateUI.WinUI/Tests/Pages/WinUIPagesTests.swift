@@ -94,6 +94,36 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A detail page beside the open sidebar is laid out in the room beside it, however the sidebar opened: a
+    /// scroller's content there is as wide as the scroller.
+    func testADetailBesideTheSidebarTakesTheRoomBesideIt() throws {
+        try onUIThread {
+            let open = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                SplitView(open.projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    ScrollView {
+                        VStack { HStack { Label("row") } }
+                    }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { open.wrappedValue }
+            window.titleBar.chose(-2)
+            host.pump()
+            window.titleBar.chose(-2)
+            host.pump()
+            host.layOut()
+
+            let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
+            let row = try XCTUnwrap(host.views(WinUIStackView.self).last)
+            XCTAssertTrue(open.wrappedValue)
+            XCTAssertGreaterThan(scroller.frame.width, 0)
+            XCTAssertEqual(row.frame.width, scroller.frame.width, "the row across the scroller's content")
+        }
+    }
+
     /// A tabbed view on the window's page path shows its tabs in the window's row beneath its chrome, and none on
     /// its content; choosing in the row is the user choosing, and renames the window at once.
     func testAWindowsTabbedViewSelectsFromTheRowBeneathItsChrome() throws {
