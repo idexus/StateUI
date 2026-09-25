@@ -106,8 +106,8 @@ final class GTKCheckViewTests: XCTestCase {
     }
 
     /// A radio button is drawn as a radio - GTK draws a check button so only in a group - and a check box as a box.
-    func testARadioButtonIsDrawnAsARadio() throws {
-        try onUIThread {
+    func testARadioButtonIsDrawnAsARadio() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     CheckBox(State(wrappedValue: true).projectedValue)

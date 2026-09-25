@@ -89,8 +89,8 @@ final class GTKLabelViewTests: XCTestCase {
     }
 
     /// A label cut short keeps to one line, or to as many as it is allowed; wrapping, it takes as many as its words.
-    func testALabelKeepsToItsLines() throws {
-        try onUIThread {
+    func testALabelKeepsToItsLines() {
+        onUIThread {
             let words = "one two three four five six seven eight nine ten eleven twelve"
             let host = GTKRenderer.running {
                 VStack {

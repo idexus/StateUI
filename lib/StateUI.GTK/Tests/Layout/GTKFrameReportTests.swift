@@ -73,8 +73,8 @@ final class GTKFrameReportTests: XCTestCase {
 
     /// A view at the top of its page's content stands at zero from the page, and below the page's header bar in
     /// the window.
-    func testThePagesCornerIsBeneathItsHeaderBar() throws {
-        try onUIThread {
+    func testThePagesCornerIsBeneathItsHeaderBar() {
+        onUIThread {
             let heard = Received<String>()
             let host = GTKRenderer.running { PlacedOnAPage(heard: heard) }
             let lastWindow = { heard.values.last { $0.hasPrefix("window") }.flatMap { Int($0.dropFirst(7)) } ?? 0 }
