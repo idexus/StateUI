@@ -47,7 +47,7 @@ Swift protocols behind them refine each other.
   PageElement        Page, NavigationStack, TabbedView, SplitView
   text tiers only    Span
   no tier            Application, Scene, Window, Menu, MenuSeparator, ContextMenu,
-                     ModalStack, Overlay, VisualState, and the slots and collections
+                     ModalStack, Overlay, and the slots and collections
 ```
 
 An element adds the smaller tiers it needs beside its main one: a `Button`

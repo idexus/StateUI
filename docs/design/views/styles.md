@@ -62,51 +62,65 @@ arguments.
 ## Visual states
 
 A visual state is a named state a control can be in - Normal, Disabled,
-PointerOver, On - with the property values in force while it is there. Names
-are spelled exactly as the host matches them: a state is matched by its name,
-so unlike an enumeration member it is not camel-cased, and
-"PointerOver" is the state while "pointerOver" is nothing. A state's name and
-its group are names in the patch, not text: each repeats on every state sharing
-it, and one spelling means one state wherever it is written.
+PointerOver, On - with the property values in force while it is there. A
+control declares its states as data: each a name and its values. Nothing of a state crosses to a host; the differ resolves the
+states into the values the control shows, as it resolves a style.
+
+The two halves of a control meet a state as they meet everything else: a
+state's look is the property half - `.visualState`, which a style carries -
+and hearing a state is the event half - `.onVisualStateChanged`, which a
+style cannot. A look set from a handler would reach no style and cost a
+build of the body that holds it.
 
 `VisualState<Target>` carries its control type as a phantom, which makes the
 list after the dot the states that control actually enters:
 `Style<Switch>().visualState(.on)` compiles and
 `Style<Button>().visualState(.on)` does not, because nothing moves a Button
-into On, and a state nothing drives is a style that silently does nothing.
+into On, and a state nothing enters is a style that silently does nothing.
+For the same reason there is no state by a name of the author's own.
 
-States ride as children of the control, appended after whatever it lays out,
-where the host takes them out of the arrangement; a control's own states are
-written into the same list the same way.
+## Which state a control is in
 
-## The resting state
+A control's states come in one order: Disabled, Pressed, PointerOver,
+Focused, On and Checked, Off and Unchecked. The control is in the first of
+its declared states that holds, and in Normal, written or not, where none
+does; that is the state `.onVisualStateChanged` hears. What each follows:
 
-A control is in one state per group, and leaves a state only by entering
-another in the same group. A group that names no resting state is therefore
-given its target's, an empty state that changes nothing: a group whose only
-state is Disabled would otherwise have no way back, and a control disabled once
-would stay drawn that way for the rest of its life with nothing reporting it.
+- Disabled: `isEnabled` false.
+- Pressed: a button held down; PointerOver: a pointer over the control;
+  Focused: the keyboard in it ([what the user does](#what-the-user-does)).
+- On and Checked, Off and Unchecked: `isOn`, written or bound.
 
-The resting state is `.normal` for every control but a RadioButton, which rests
-in `.unchecked`. A RadioButton enters Checked or Unchecked first and Normal
-after, so a group declaring Normal would end every transition there and the
-pair would never be seen. A Switch and a CheckBox enter Normal first, so their
-own states win over a Normal beside them. `StyleTests` pins the resting state a
-group gets. `.unfocused` is entered straight after Normal, so a group declaring
-both rests in Unfocused: it is a second spelling of Normal rather than the pair
-of `.focused`.
+What the control shows lays the values of every state that holds over its
+own, the first in that order winning a value two set: a disabled switch that
+is on shows Disabled's values and On's where Disabled sets none. Normal's
+values show only where no other state holds. Leaving a state is its values
+stopping: the control's own come back, and a value only the state set is
+cleared to the platform's. The values are ordinary
+properties, so they cross under the control's motion: `.motion(.none)`
+changes them at once.
+
+A bound value is read as the element is described, which makes the element
+that value's reader: the user turning a switch describes that switch again,
+and no body.
+
+## What the user does
+
+What a state follows of the user is a contract event the control already
+reports: a button's `pressed` and `released`, a view's `pointerEntered` and
+`pointerExited`, the `isFocusedChanged` every visual element reports. The
+differ hears them with handlers of its own beside the author's, and only
+those a declared state follows. What they say is kept in the element's
+`VisualInput` across its builds and read as a state, so a press describes that
+element again from what its parent last wrote - the road a theme change takes
+- and nothing else.
 
 ## Arranging states
 
-`visualStates(_:adding:resting:)` is the one place a list of states is
-arranged, so a style and a control put theirs in the same shape:
-
-- A state replaces one of the same name in the same group, where the first one
-  was: a group holds one state of each name, so the second writing wins the
-  values and not the position, and writing order is what the list reads as.
-- A group that names no resting state is given its target's, empty.
-- The resting state stands first, because a group opens in the state it
-  declares first.
+`written(_:adding:)` is the one place a list of states is arranged, so a
+style and a control put theirs in the same shape: a state written over one of
+the same name stands where that one stood, with the second writing's values,
+and a new one joins after the rest.
 
 ## States on a control over its style
 
@@ -114,20 +128,19 @@ A state written on a control is written over the state of the same name in its
 style, one setter at a time, rather than replacing it - merging being what
 every other value here already does. A control that declares `.pointerOver`
 only to hear it keeps whatever its style paints there, and a state that sets
-nothing changes nothing, which is why declaring one is safe. A state in a group
-the style does not have is appended; both lists arrive arranged, so each
-group's resting state already stands first among its own.
+nothing changes nothing, which is why declaring one is safe. A state the
+style does not have joins after the style's.
 
 ## Hearing a state
 
-`onVisualStateChanged` runs when a control enters a state, which is where a
-state can animate rather than only be set: a style's setters change at once,
-and a handler can take as long as it likes. A control reports only the states
-it declares - a host knows a state only from the list it is sent - so the
-states named there are declared in `CommonStates`, merged into the style's
-without changing how the control looks. Declaring a state can change which one
-the control rests in, so only the states it should react to are named. A
-report carries the state's name as text, however it went out.
+`onVisualStateChanged` runs after the render in which the control entered a
+state, which is where a state can animate rather than only be set: a style's
+values change with the render, and a handler can take as long as it likes. It
+runs for a state entered, never for the one the control arrives in, as
+`.onChanged` does not. The states it names are declared without values,
+merged into the style's without changing how the control looks, and only
+they are heard; naming none hears every state the control declares, and
+Normal.
 
 ## The sheet
 
@@ -137,8 +150,7 @@ copies of it, which also lets a test see a style filed twice where a dictionary
 would show only the winner. A sheet is a value: two sheets saying the same
 thing are the same sheet. The differ compares sheets once per render, only to
 decide whether a composed view may still be carried - a sheet is not among a
-view's inputs - and compares their states by hand, since a state is a node
-carrying closures and cannot be `Equatable`.
+view's inputs - states included, which are values like the rest.
 
 ## Applying a style
 

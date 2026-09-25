@@ -42,11 +42,11 @@ enum LibraryContracts {
         PickerContract.self, PinContract.self, PolygonContract.self, PolylineContract.self,
         PositionIndicatorContract.self, ProgressBarContract.self, RadioButtonContract.self,
         RectangleContract.self, SceneContract.self, ScrollViewContract.self,
-        SearchFieldContract.self, SettersContract.self, SliderContract.self, SpanContract.self,
+        SearchFieldContract.self, SliderContract.self, SpanContract.self,
         SpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,
         TabbedViewContract.self, TextEditorContract.self, TextFieldContract.self, TimePickerContract.self,
         TitleBarContract.self, TitleViewContract.self, ToolbarItemContract.self, ToolbarItemsContract.self,
-        TrailingContentContract.self, VStackContract.self, VisualStateContract.self, WebViewContract.self,
+        TrailingContentContract.self, VStackContract.self, WebViewContract.self,
         WindowContract.self, ZStackContract.self,
     ]
 

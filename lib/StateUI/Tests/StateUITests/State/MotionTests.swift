@@ -261,25 +261,26 @@ final class MotionTests: XCTestCase {
             Motion.none)
     }
 
-    /// A VISUAL STATE is applied by the platform, outside every message, so a
-    /// control that has one has to say how the values it changes travel.
-    func testAControlWithVisualStatesSaysHowItMoves() {
-        let renders = Renders()
-
-        func button(_ still: Bool) -> Node {
+    /// A VISUAL STATE's values cross as the control's own: under the
+    /// application's motion, and at once under `.motion(.none)`.
+    func testAVisualStatesValuesTravelAsTheControlsOwn() {
+        func button(_ enabled: Bool, still: Bool) -> Node {
             let base = Button("Save")
+                .isEnabled(enabled)
                 .visualState(.disabled) { $0.background(Color("#CCCCCC")) }
 
             return (still ? base.motion(.none) : base).id("b").body
         }
 
-        XCTAssertNil(
-            renders.render(button(false)).motion,
-            "a control that travels the way the application does says nothing")
+        let travelling = Renders()
+        travelling.render(button(true, still: false))
+        let entered = travelling.render(button(false, still: false))
+        XCTAssertEqual(entered.props["background"], Color("#CCCCCC").propValue)
+        XCTAssertNotNil(entered.transitions["background"], "it crosses as the application's values do")
 
-        XCTAssertEqual(
-            renders.render(button(true)).motion?.motion, Motion.none,
-            "and one that does not, says so")
+        let still = Renders()
+        still.render(button(true, still: true))
+        XCTAssertNil(still.render(button(false, still: true)).transitions["background"], "and at once under none")
     }
 
     // ---- Which values a motion is about --------------------------------------

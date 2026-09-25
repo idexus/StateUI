@@ -105,8 +105,11 @@ application branch.
 
 ## Visual states
 
-Visual states describe property overrides while a native control is in a
-semantic state:
+A visual state is a set of values a control shows while it is in a state:
+disabled, held down, under the pointer, holding the keyboard, on or off. Two
+modifiers work with it, one for each half of a control: `.visualState` says
+what the control looks like in a state, in a style or on the control, and
+`.onVisualStateChanged` says what happens when it enters one.
 
 ```swift
 Style<Button>()
@@ -121,28 +124,35 @@ Style<Button>()
     }
 ```
 
-The state type is tied to the control target. Common states include normal,
-disabled, focused, unfocused, pointer-over, and selected; controls add their
-own states such as a button's pressed state or a switch's on and off states.
-The compiler prevents a state that the target cannot declare through the typed
-conveniences.
+The states offered after the dot are the ones that control enters. Every
+view has normal, disabled, focused and pointer-over; a button adds pressed, a
+switch on and off, a check box on, a radio button checked and unchecked. A
+state the control never enters does not compile.
 
-Each group contains at most one state with a given name. Writing the same state
-again replaces its earlier declaration without changing its position. The
-`group` argument defaults to `"CommonStates"`; states that exclude one another
-belong in the same group because entering another state in that group is what
-leaves the current one.
+StateUI decides which state a control is in, the same way on every platform:
+the first that holds of disabled, pressed, pointer-over, focused, on or
+checked, off or unchecked - and normal when none does. What the control shows
+is every state that holds at once, the earlier in that order winning a value
+two of them set. A disabled switch that is on is dimmed, and green:
 
-Every declared group begins with its target's `restingVisualState`. StateUI
-inserts an empty resting state when the author did not write one, providing a
-state to return to without changing any property. An explicitly written
-resting state keeps its setters and is moved to the front. The default for a
-`StyleTarget` is `.normal`; `RadioButton` declares `.unchecked`. A custom style
-target is responsible for declaring the state in which its native control
-rests.
+```swift
+@State var isOn = true
 
-A control can override or add states locally. Setters merge by state, group,
-and property, so a local change does not erase unrelated style setters:
+Switch($isOn)
+    .isEnabled(false)
+    .visualState(.disabled) { $0.opacity(0.5) }
+    .visualState(.on) { $0.background(.green) }
+```
+
+Normal's values show only when no other state holds.
+
+Leaving a state gives the control its own values back. A state's values are
+ordinary property changes: they move under the control's `.motion(_:)` like
+any other value, and `.motion(.none)` makes them change at once.
+
+A control can override or add states locally. Its values merge with its
+style's by state and property, so a local change does not erase the
+style's other values:
 
 ```swift
 Button("Save")
@@ -151,9 +161,10 @@ Button("Save")
     }
 ```
 
-`onVisualStateChanged` is for behavior that must react to entering a state. It
-declares the states it listens to and receives the typed state after the
-native control enters it:
+`onVisualStateChanged` runs after the control entered a state - never for the
+state it starts in - and receives the typed state. Naming states declares
+them without changing how the control looks and hears only them; naming none
+hears every state the control declares, normal included:
 
 ```swift quote
 @State private var scale = 1.0
@@ -167,20 +178,10 @@ Button("Hold")
 }
 ```
 
-Visual-state setters are host-owned changes: a native control enters a state
-outside a render, so there is no property patch on which StateUI could place a
-`HostTransition`. The control's base `.motion(_:)` supplies the law for
-compatible setter values instead. With no local override the host uses the
-application motion; `.motion(.none)` makes state setters arrive immediately.
-The state declaration remains the destination, while the host owns the frames
-between the standing value and that destination.
-
-The `onVisualStateChanged` handler is separate from that property motion. Use
-it when entering a state must start or sequence another `Journey`, as in the
-scale example, rather than to reassign the state's own setters.
-
-Visual-state setters and their motion still require host evidence. Check the
-matrix before relying on a state on a target.
+Use the handler when entering a state starts or sequences another `Journey`,
+as the scale does here, or when the application acts on it. A look belongs
+in `.visualState`: a style can carry it for every control of a type, and a
+style carries no handlers.
 
 ## Flat colors and brushes
 

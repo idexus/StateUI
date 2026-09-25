@@ -17,10 +17,10 @@ and this table maps the two.
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
 | slot | named placeholder | a structural child that holds authored content in a known place: `Content`, `LeadingContent`, `TitleView` |
-| slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu, visual states |
+| slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu |
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
-| resting state | default visual state | the visual state a control shows when no other applies |
+| Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
 | arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view |
 | arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |

@@ -259,12 +259,10 @@ nothing on the first report.
 
 ## Layout motion
 
-Where children go and what visual states change are the host's own arithmetic
-- a placement comes from a measurement, a visual state is applied by the
-platform outside every message - so neither has a property for a transition to
-ride beside. A layout that places children, an element with visual states, and
-an element that answered `.motion(_:)` for itself say how their children
-animate in `HostPatch.motion`.
+Where children go is the host's own arithmetic - a placement comes from a
+measurement - so it has no property for a transition to ride beside. A layout
+that places children, and an element that answered `.motion(_:)` for itself,
+say how their children animate in `HostPatch.motion`.
 
 `.inherited` is what a layout is until told otherwise, on both sides, so a
 layout that animates the way the application does says nothing on any message.

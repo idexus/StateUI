@@ -62,283 +62,18 @@ final class StyleTests: XCTestCase {
 
     /// A style can only set properties, and that is the COMPILER's promise
     /// rather than this test's: `Style<Button>().onClicked { }` does not
-    /// compile, a style conforming to the property tiers alone. What is left
-    /// to pin at run time is that the states a maximal style carries hold no
-    /// handlers anywhere in them.
-    func testAStyleCarriesNoHandlers() {
+    /// compile, a style conforming to the property tiers alone. Its states are
+    /// values too: a name, a group and what they set.
+    func testAStyleCarriesValuesAndStatesOnly() {
         let style = Style<Button>()
             .strokeWidth(2)
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
 
         XCTAssertEqual(style.props["strokeWidth"], .number(2))
-        XCTAssertTrue(style.states.allSatisfy { $0.events.isEmpty })
-        XCTAssertTrue(style.states.allSatisfy { $0.children.allSatisfy { $0.events.isEmpty } })
-    }
-
-    // MARK: - Visual states
-
-    func testAVisualStateIsASetterBagOfItsOwn() throws {
-        let states = Style<Switch>()
-            .background(.white)
-            .visualState(.disabled) { $0.background(.gray) }
-            .visualState(.on, group: "SwitchStates") { $0.background(.green) }
-            .erased
-            .states
-
-        // Four: the two written down, and a Normal for each group - see below.
-        XCTAssertEqual(states.count, 4)
-
-        // The name is spelled as a host matches it: states are compared as
-        // strings, so this one is NOT camelCased in the patch.
-        let disabled = try XCTUnwrap(states.first { $0.props["name"] == .name("Disabled") })
-        XCTAssertEqual(disabled.props["group"], .name("CommonStates"))
-        XCTAssertEqual(states.last?.props["group"], .name("SwitchStates"))
-
-        let setters = try XCTUnwrap(disabled.children.first { $0.type == "Setters" })
-        XCTAssertEqual(setters.props["background"], Color("#808080").propValue)
-    }
-
-    /// A control starts in the FIRST state its group declares, so a style that
-    /// only says what Disabled looks like would draw everything disabled. So
-    /// an empty Normal stands above every other state; a style that did not
-    /// write one gets it.
-    func testAGroupOfStatesAlwaysStartsWithNormal() {
-        let states = Style<Button>()
-            .textColor(.white)
-            .visualState(.disabled) { $0.textColor(.gray) }
-            .erased
-            .states
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-        XCTAssertTrue(states.first?.children.isEmpty ?? false,
-                      "the one that was added changes nothing - it is only somewhere to return to")
-    }
-
-    /// And a style that wrote its own is left exactly as it was: two states of
-    /// the same name in one group would contradict each other.
-    func testAStyleThatWroteItsOwnNormalKeepsIt() {
-        let states = Style<Button>()
-            .textColor(.white)
-            .visualState(.normal) { $0.background(.transparent) }
-            .visualState(.disabled) { $0.textColor(.gray) }
-            .erased
-            .states
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-        XCTAssertFalse(states.first?.children.isEmpty ?? true, "and it is the one that was written")
-    }
-
-    /// The resting state stands FIRST whatever order it was written in, since a
-    /// group opens in the state it declares first.
-    func testTheRestingStateStandsFirstWhereverItWasWritten() {
-        let states = Style<Button>()
-            .visualState(.disabled) { $0.textColor(.gray) }
-            .visualState(.normal) { $0.background(.transparent) }
-            .erased
-            .states
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-    }
-
-    /// A state written twice is written once - two states of one name in one
-    /// group contradict each other, so the second has to win rather than stand
-    /// beside it.
-    func testAStateWrittenTwiceIsTheSecondWriting() throws {
-        let states = Style<Button>()
-            .visualState(.disabled) { $0.textColor(.gray) }
-            .visualState(.disabled) { $0.textColor(.white) }
-            .erased
-            .states
-
-        let disabled = try XCTUnwrap(states.first { $0.props["name"] == .name("Disabled") })
-
-        XCTAssertEqual(states.count, 2, "the Normal and the one Disabled")
-        XCTAssertEqual(
-            disabled.children.first { $0.type == "Setters" }?.props["textColor"],
-            Color("#FFFFFF").propValue)
-    }
-
-    /// A RadioButton rests in Unchecked, not Normal: its checked pair is its
-    /// resting group, and a Normal beside the pair would end every transition
-    /// so the pair was never seen. What this pins is that the resting state a
-    /// style is given follows the TARGET.
-    func testARadioButtonRestsInUncheckedRatherThanNormal() {
-        let states = Style<RadioButton>()
-            .visualState(.checked) { $0.textColor(.white) }
-            .erased
-            .states
-
-        XCTAssertEqual(
-            states.map { $0.props["name"] }, [.name("Unchecked"), .name("Checked")])
-    }
-
-    // MARK: - States on the control itself
-
-    func testAControlCarriesTheStatesItWroteForItself() throws {
-        let node = Button("Save")
-            .visualState(.disabled) { $0.textColor(.gray) }
-            .node
-
-        let states = node.children.filter { $0.type == "VisualState" }
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-
-        let disabled = try XCTUnwrap(states.last)
-
-        XCTAssertEqual(disabled.props["group"], .name("CommonStates"))
-        XCTAssertEqual(
-            disabled.children.first { $0.type == "Setters" }?.props["textColor"],
-            Color("#808080").propValue)
-    }
-
-    /// The same arrangement a style gets, since it is the same code: written
-    /// once, the resting state first, and a second writing winning.
-    func testAControlsStatesAreArrangedTheWayAStylesAre() {
-        let node = Switch()
-            .visualState(.on) { $0.background(.green) }
-            .visualState(.off) { $0.background(.gray) }
-            .visualState(.on) { $0.background(.white) }
-            .node
-
-        let states = node.children.filter { $0.type == "VisualState" }
-
-        XCTAssertEqual(
-            states.map { $0.props["name"] },
-            [.name("Normal"), .name("On"), .name("Off")])
-        XCTAssertEqual(
-            states.last(where: { $0.props["name"] == .name("On") })?
-                .children.first { $0.type == "Setters" }?.props["background"],
-            Color("#FFFFFF").propValue)
-    }
-
-    /// And they are appended AFTER whatever the control lays out, which is where
-    /// a host subtracts them - the `.contextMenu` rule.
-    func testAControlsStatesComeAfterWhatItLaysOut() {
-        var node = VStack {
-            Label("one")
-            Label("two")
-        }
-        .visualState(.disabled) { $0.opacity(0.5) }
-        .node
-
-        // A raw tree keeps a container's content in its closure - the differ
-        // is who runs it - so a test reading the children materializes first.
-        node.materialize()
-
-        XCTAssertEqual(
-            node.children.map { $0.type },
-            ["Label", "Label", "VisualState", "VisualState"])
-    }
-
-    /// A setter the author stops writing is NAMED as gone, on the setters it
-    /// sat in, and the state keeps the rest - which is what lets the host take
-    /// that one out of the state it holds rather than go on painting with it.
-    func testASetterThatLeavesIsNamedOnItsSetters() throws {
-        let renders = Renders()
-
-        renders.render(
-            Button("Save")
-                .visualState(.disabled) { $0.textColor(.red).background(.blue) }
-                .body)
-
-        let patch = renders.render(
-            Button("Save")
-                .visualState(.disabled) { $0.textColor(.red) }
-                .body)
-
-        func clearing(_ node: HostPatch) -> HostPatch? {
-            node.cleared.isEmpty ? node.children.lazy.compactMap(clearing).first : node
-        }
-
-        let setters = try XCTUnwrap(clearing(patch), "the setter that went away is named somewhere")
-
-        XCTAssertEqual(setters.cleared, ["background"])
-        XCTAssertFalse(setters.replace, "the setters stay, with what is left in them")
-        XCTAssertTrue(setters.props.isEmpty, "the colour that stayed says nothing")
-    }
-
-    // MARK: - Hearing which state it entered
-
-    /// A listener DECLARES the states it names, because a state announces
-    /// itself with a setter and a setter has to sit in a state somebody wrote
-    /// down.
-    func testAListenerDeclaresTheStatesItNames() {
-        let node = Button("Save")
-            .onVisualStateChanged(.pressed) { _ in }
-            .node
-
-        let states = node.children.filter { $0.type == "VisualState" }
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Pressed")])
-        XCTAssertTrue(states.allSatisfy { $0.children.isEmpty },
-                      "declaring a state to hear it must not change what it looks like")
-        XCTAssertNotNil(node.events["visualStateChanged"])
-    }
-
-    /// And it leaves a state that was already written exactly as it was.
-    func testAListenerLeavesAStateThatWasWrittenAlone() throws {
-        let node = Button("Save")
-            .visualState(.pressed) { $0.background(.green) }
-            .onVisualStateChanged(.pressed, .disabled) { _ in }
-            .node
-
-        let states = node.children.filter { $0.type == "VisualState" }
-        let pressed = try XCTUnwrap(states.first { $0.props["name"] == .name("Pressed") })
-
-        XCTAssertEqual(
-            states.map { $0.props["name"] },
-            [.name("Normal"), .name("Pressed"), .name("Disabled")])
-        XCTAssertEqual(
-            pressed.children.first { $0.type == "Setters" }?.props["background"],
-            Color("#008000").propValue)
-    }
-
-    /// Naming none declares none - what is heard is then whatever the control
-    /// declared for itself.
-    func testAListenerThatNamesNoStateDeclaresNone() {
-        let node = Button("Save")
-            .onVisualStateChanged { _ in }
-            .node
-
-        XCTAssertTrue(node.children.filter { $0.type == "VisualState" }.isEmpty)
-        XCTAssertNotNil(node.events["visualStateChanged"])
-    }
-
-    /// The report carries the state's NAME, which is what a state is matched by -
-    /// and it arrives as the typed state, so it can be compared to `.pressed`.
-    func testTheReportArrivesAsTheStateItself() {
-        let renders = Renders()
-        var heard: [String] = []
-
-        let patch = renders.render(
-            Button("Save")
-                .onVisualStateChanged(.pressed) { state in
-                    heard.append(state == .pressed ? "it is pressed" : state.name)
-                }
-                .body)
-
-        let id = patch.events?["visualStateChanged"] ?? -1
-
-        XCTAssertTrue(renders.fire(id, with: [.string("Pressed")]))
-        XCTAssertTrue(renders.fire(id, with: [.string("Normal")]))
-
-        XCTAssertEqual(heard, ["it is pressed", "Normal"])
-    }
-
-    /// A payload of another shape leaves the handler alone - the rule every
-    /// typed event follows, so a state nobody can name never runs one.
-    func testAReportOfTheWrongShapeLeavesTheHandlerAlone() {
-        let renders = Renders()
-        var heard: [String] = []
-
-        let patch = renders.render(
-            Button("Save")
-                .onVisualStateChanged(.pressed) { heard.append($0.name) }
-                .body)
-
-        XCTAssertTrue(renders.fire(patch.events?["visualStateChanged"] ?? -1, with: [.number(3)]))
-        XCTAssertTrue(heard.isEmpty)
+        XCTAssertEqual(style.states, [
+            DeclaredState(name: "Disabled", setters: ["textColor": Color("#808080").propValue]),
+        ])
     }
 
     // MARK: - The sheet
@@ -478,85 +213,6 @@ final class StyleTests: XCTestCase {
 
         XCTAssertEqual(patch.props["text"], .string("Hi"))
         XCTAssertNil(patch.props["fontSize"])
-    }
-
-    /// The style's states become the control's own, which is the one shape a
-    /// host knows.
-    func testAStylesStatesArriveAsTheControlsOwn() throws {
-        let sheet = StyleSheet {
-            Style<Button>().visualState(.disabled) { $0.textColor(.gray) }
-        }
-
-        let patch = Renders().render(Button("Save").body, styles: sheet)
-        let states = patch.children.filter { $0.type == "VisualState" }
-
-        XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-
-        let setters = try XCTUnwrap(states.last?.children.first { $0.type == "Setters" })
-        XCTAssertEqual(setters.props["textColor"], Color("#808080").propValue)
-    }
-
-    /// A state written on the CONTROL is written OVER the style's state of the
-    /// same name, one setter at a time - merging is what every other value
-    /// here does, so a state does it too.
-    func testAControlsStateIsWrittenOverItsStylesState() throws {
-        let sheet = StyleSheet {
-            Style<Button>().visualState(.disabled) { $0
-                .textColor(.gray)
-                .background(.white)
-            }
-        }
-
-        let patch = Renders().render(
-            Button("Save")
-                .visualState(.disabled) { $0.textColor(.red) }
-                .body,
-            styles: sheet)
-
-        let disabled = try XCTUnwrap(
-            patch.children.first { $0.props["name"] == .name("Disabled") })
-        let setters = try XCTUnwrap(disabled.children.first { $0.type == "Setters" })
-
-        XCTAssertEqual(setters.props["textColor"], Color("#FF0000").propValue, "the control's own")
-        XCTAssertEqual(setters.props["background"], Color("#FFFFFF").propValue, "and the style's rest")
-    }
-
-    /// Which is what lets a control HEAR a state its style paints: the listener
-    /// declares an empty state, and an empty state changes nothing.
-    func testDeclaringAStateToHearItKeepsWhatTheStylePaints() throws {
-        let sheet = StyleSheet {
-            Style<Button>().visualState(.pressed) { $0.background(.green) }
-        }
-
-        let patch = Renders().render(
-            Button("Save").onVisualStateChanged(.pressed) { _ in }.body,
-            styles: sheet)
-
-        let pressed = try XCTUnwrap(
-            patch.children.first { $0.props["name"] == .name("Pressed") })
-
-        XCTAssertEqual(
-            pressed.children.first { $0.type == "Setters" }?.props["background"],
-            Color("#008000").propValue)
-    }
-
-    /// A state in a group the style never mentioned joins the list rather than
-    /// replacing it.
-    func testAStateTheStyleNeverMentionedIsAddedToIt() {
-        let sheet = StyleSheet {
-            Style<Switch>().visualState(.disabled) { $0.opacity(0.5) }
-        }
-
-        let patch = Renders().render(
-            Switch(true)
-                .visualState(.on, group: "SwitchStates") { $0.background(.green) }
-                .body,
-            styles: sheet)
-
-        XCTAssertEqual(
-            patch.children.filter { $0.type == "VisualState" }.map { $0.props["group"] },
-            [.name("CommonStates"), .name("CommonStates"),
-             .name("SwitchStates"), .name("SwitchStates")])
     }
 
     /// A sheet that MOVED is one thing a composed view's inputs cannot see:
@@ -1065,19 +721,17 @@ final class StyleTests: XCTestCase {
             "text": .string("Body text"), "fontSize": .number(14), "textColor": ink,
         ])
 
-        // The button with the states its style declared, the disabled one's
-        // values the half of the theme in force.
+        // The button in the state its style declared for a disabled one, that
+        // state's values the half of the theme in force; no state crosses.
         let button = try XCTUnwrap(stack.at(.auto(6)))
-        XCTAssertEqual(button.props["background"], Color("#512BD4").propValue)
+        XCTAssertEqual(button.props["background"], Color("#C8C8C8").propValue)
+        XCTAssertEqual(button.props["textColor"], Color("#141414").propValue)
         XCTAssertEqual(button.props["isEnabled"], .bool(false))
-        XCTAssertEqual(button.children.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
-        XCTAssertEqual(button.at(.auto(8), .auto(9))?.props, [
-            "background": Color("#C8C8C8").propValue, "textColor": Color("#141414").propValue,
-        ])
+        XCTAssertTrue(button.children.isEmpty)
 
         // A card's style, and the default label's inside it.
-        XCTAssertEqual(stack.at(.auto(10))?.props["strokeWidth"], .number(1))
-        XCTAssertEqual(stack.at(.auto(10), .auto(11))?.props["fontSize"], .number(14))
+        XCTAssertEqual(stack.at(.auto(7))?.props["strokeWidth"], .number(1))
+        XCTAssertEqual(stack.at(.auto(7), .auto(8))?.props["fontSize"], .number(14))
 
         XCTAssertFalse(
             stack.subtree.contains { $0.props.keys.contains("style") },

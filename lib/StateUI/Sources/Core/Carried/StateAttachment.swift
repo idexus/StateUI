@@ -56,6 +56,9 @@ struct StateRegistration {
 
     /// Which of the view's values this is, which `.inherited` is resolved against.
     let values: MotionValues
+
+    /// The value as this side reads it now, the read noted as a build's; nil where nothing can.
+    var current: (() -> StateCarried)? = nil
 }
 
 /// One registration as a host is handed it: the state by its number, which is

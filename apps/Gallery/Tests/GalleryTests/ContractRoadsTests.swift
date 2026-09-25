@@ -175,6 +175,38 @@ final class ContractRoadsTests: XCTestCase {
             name: "the withdrawn proportions",
             removed: #"_ = Label("Half").absoluteLayoutProportions(.all)"#,
             contract: #"_ = Label("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
+        Road(
+            name: "a visual state by a name of the author's own",
+            removed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
+            contract: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the withdrawn resting state",
+            removed: "_ = RadioButton.restingVisualState",
+            contract: "_ = VisualState<RadioButton>.unchecked"),
+        Road(
+            name: "a visual state's withdrawn group",
+            removed: #"_ = Switch().visualState(.on, group: "Value") { $0.opacity(0.5) }"#,
+            contract: "_ = Switch().visualState(.on) { $0.opacity(0.5) }"),
+        Road(
+            name: "the withdrawn unfocused state",
+            removed: #"_ = Button("Save").visualState(.unfocused) { $0.opacity(0.5) }"#,
+            contract: #"_ = Button("Save").visualState(.focused) { $0.opacity(1) }"#),
+        Road(
+            name: "the withdrawn selected state",
+            removed: #"_ = Label("Row").visualState(.selected) { $0.opacity(0.5) }"#,
+            contract: #"_ = Label("Row").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the host's withdrawn visual state report",
+            removed: #"_ = Button("Save").onEvent(VisualElementContract.visualStateChanged) { _ in }"#,
+            contract: #"_ = Button("Save").onVisualStateChanged { _ in }"#),
+        Road(
+            name: "the withdrawn VisualState node",
+            removed: "_ = Node(contract: VisualStateContract.self)",
+            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the withdrawn Setters node",
+            removed: "_ = Node(contract: SettersContract.self)",
+            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {

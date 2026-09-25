@@ -72,7 +72,6 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
-| `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI |  |  |  |  |  |  |  |
 | `width` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 

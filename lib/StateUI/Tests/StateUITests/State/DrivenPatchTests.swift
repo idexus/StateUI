@@ -64,25 +64,29 @@ final class DrivenPatchTests: XCTestCase {
     /// A STATED VALUE, A VISUAL STATE AND A DRIVEN STATE ON ONE PROPERTY, which is the
     /// pair the whole design turns on: the value crosses as a value, the
     /// registration says the host also reads that property off a driven state, and
-    /// neither is a complaint about the other. The state is there so the host
-    /// side can be held to what a state LEAVING does to a driven
-    /// property.
+    /// neither is a complaint about the other. A state the control is in crosses
+    /// as its value, the tie beside it.
     func testADrivenPropertyBesideAStatedValueCrossesAsBoth() throws {
         let fade = State(wrappedValue: 1.0)
 
-        let page = try page(
-            ZStack { Label("dimmed") }
-                .opacity(0.5)
-                .opacity(fade.projectedValue)
-                .visualState(.disabled) { $0.opacity(0.1) }
-                .body)
-        let card = try XCTUnwrap(page.at(.auto(3)))
+        func card(enabled: Bool) throws -> (patch: HostPatch, card: HostPatch) {
+            let page = try page(
+                ZStack { Label("dimmed") }
+                    .opacity(0.5)
+                    .opacity(fade.projectedValue)
+                    .isEnabled(enabled)
+                    .visualState(.disabled) { $0.opacity(0.1) }
+                    .body)
+            return (page, try XCTUnwrap(page.at(.auto(3))))
+        }
 
-        XCTAssertEqual(card.props["opacity"], .number(0.5), "the stated value crosses as a value")
-        XCTAssertEqual(ties(page, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
+        let enabled = try card(enabled: true)
+        XCTAssertEqual(enabled.card.props["opacity"], .number(0.5), "the stated value crosses as a value")
+        XCTAssertEqual(ties(enabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
 
-        let disabled = card.children.first { $0.type == .visualState && $0.props["name"] == .name("Disabled") }
-        XCTAssertEqual(disabled?.children.first?.props, ["opacity": .number(0.1)], "and the state its own")
+        let disabled = try card(enabled: false)
+        XCTAssertEqual(disabled.card.props["opacity"], .number(0.1), "and the state's in its place")
+        XCTAssertEqual(ties(disabled.patch, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
     }
 
     /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, as a host is handed them: a journey

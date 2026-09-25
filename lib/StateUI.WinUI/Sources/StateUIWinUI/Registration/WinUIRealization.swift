@@ -16,8 +16,8 @@ enum WinUIRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "Setters", "TitleBar", "TrailingContent",
-        "VisualState", "WebView",
+        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
+        "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no

@@ -114,6 +114,11 @@ final class RenderedNode {
     /// And which parts of a child's place animated.
     var lanes: MotionLanes = .all
 
+    /// What the user is doing to it that its visual states follow, and the state it is in; nil for an element that
+    /// declares none.
+    var visualInput: VisualInput?
+    var visualState: String?
+
     /// One element as the host has it. Made by the differ.
     init(
         id: ElementId,

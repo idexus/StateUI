@@ -9,22 +9,6 @@
 public protocol StyleTarget: VisualElement {
     /// A control with nothing set. Where a style reads its target's type.
     init()
-
-    /// The state a control of this type rests in, given to a group of states
-    /// that names none so it has somewhere to return to: `.normal` for
-    /// everything but a RadioButton.
-    static var restingVisualState: VisualState<Self> { get }
-}
-
-extension StyleTarget {
-    /// Where nearly everything rests: an enabled, unfocused, un-hovered control
-    /// is in Normal.
-    public static var restingVisualState: VisualState<Self> { .normal }
-}
-
-extension RadioButton {
-    /// Unchecked, not Normal - see the note on `VisualState.unchecked`.
-    public static var restingVisualState: VisualState<RadioButton> { .unchecked }
 }
 
 extension Label: StyleTarget {}

@@ -94,18 +94,8 @@ public struct StyleSheet {
             mine.target == theirs.target
                 && mine.key == theirs.key
                 && mine.props == theirs.props
-                && same(mine.states, theirs.states)
+                && mine.states == theirs.states
         }
-    }
-
-    private static func same(_ one: [Node], _ other: [Node]) -> Bool {
-        one.count == other.count && zip(one, other).allSatisfy { mine, theirs in
-            mine.props == theirs.props && setters(of: mine) == setters(of: theirs)
-        }
-    }
-
-    private static func setters(of state: Node) -> [Prop: PropValue] {
-        state.children.first { $0.type == .setters }?.props ?? [:]
     }
 }
 
@@ -128,57 +118,9 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
         node.props = style.props.merging(node.props) { _, own in own }
     }
 
-    guard !style.states.isEmpty else { return node }
-
-    // States ride as children after what the control lays out.
-    node.states = true
-
-    let laid = node.children.filter { $0.type != .visualState }
-    let own = node.children.filter { $0.type == .visualState }
-
-    node.children = laid + merged(style.states, with: own)
-
-    return node
-}
-
-/// The states of a control that also has a style: the style's, with the
-/// control's written over them one setter at a time.
-/// Design: docs/design/views/styles.md#states-on-a-control-over-its-style
-func merged(_ base: [Node], with own: [Node]) -> [Node] {
-    guard !own.isEmpty else { return base }
-    guard !base.isEmpty else { return own }
-
-    var result = base
-
-    for state in own {
-        let group = state.visualStateGroup
-        let name = state.visualStateName
-
-        if let at = result.firstIndex(where: {
-            $0.visualStateGroup == group && $0.visualStateName == name
-        }) {
-            result[at] = overlaid(result[at], with: state)
-        } else {
-            result.append(state)
-        }
+    if !style.states.isEmpty {
+        node.visualStates = merged(style.states, with: node.visualStates)
     }
 
-    return result
-}
-
-/// One state written over another, one setter at a time; a state that sets
-/// nothing changes nothing.
-private func overlaid(_ base: Node, with own: Node) -> Node {
-    let mine = own.children.first { $0.type == .setters }?.props ?? [:]
-
-    guard !mine.isEmpty else { return base }
-
-    let theirs = base.children.first { $0.type == .setters }?.props ?? [:]
-
-    var result = base
-    var setters = Node(contract: SettersContract.self)
-    setters.props = theirs.merging(mine) { _, m in m }
-    result.children = [setters]
-
-    return result
+    return node
 }

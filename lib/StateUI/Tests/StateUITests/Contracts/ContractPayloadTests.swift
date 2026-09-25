@@ -22,7 +22,6 @@ final class ContractPayloadTests: XCTestCase {
 
         // What every drawn element and every view reports.
         check(VisualElementContract.isFocusedChanged, [.bool(true)])
-        check(VisualElementContract.visualStateChanged, [.string("Pressed")])
         check(ViewContract.dragLeave)
         check(ViewContract.dragOver)
         check(ViewContract.dragStarting)

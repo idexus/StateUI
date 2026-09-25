@@ -3,48 +3,37 @@
 
 /// One state a control can be in, for the control type `Target`: after the
 /// dot are the states that control enters, so `Style<Switch>().visualState(.on)`
-/// compiles and `Style<Button>().visualState(.on)` does not. Names are spelled
-/// as the host matches them: "PointerOver", not "pointerOver".
+/// compiles and `Style<Button>().visualState(.on)` does not.
 public struct VisualState<Target>: Equatable, Sendable {
-    /// The name a state is matched on, spelled exactly.
+    /// The state's name.
     public let name: String
 
-    /// A state by its name, for one this type does not name yet. Spell it as
-    /// the host matches it: `VisualState("PointerOver")`, not "pointerOver".
-    public init(_ name: String) {
+    /// A state by its name - only the states offered below, each of which
+    /// StateUI enters.
+    init(_ name: String) {
         self.name = name
     }
 }
 
-/// The states every view has, driven for every visual element.
+/// The states every view has.
 extension VisualState where Target: VisualElement {
-    /// The ordinary state - nothing pressed, focused or disabled. What a control
-    /// returns to.
+    /// The ordinary state - what a control is in when none of its other states
+    /// holds, written or not.
     public static var normal: Self { Self("Normal") }
 
     /// While `isEnabled` is false.
     public static var disabled: Self { Self("Disabled") }
 
-    /// While the control has the keyboard focus.
+    /// While the control has the keyboard focus, or what stands in it does.
     public static var focused: Self { Self("Focused") }
-
-    /// While the control does not have the keyboard focus. A control enters it
-    /// right after Normal, so a group declaring both rests here.
-    public static var unfocused: Self { Self("Unfocused") }
 
     /// While a mouse or pen is over the control. Never on a touch-only device.
     public static var pointerOver: Self { Self("PointerOver") }
-
-    /// While the control is the chosen one - entered by whatever does the
-    /// choosing, such as a `PositionIndicator`'s dots drawn from views.
-    public static var selected: Self { Self("Selected") }
-
 }
 
 /// A Button is held down.
 extension VisualState where Target == Button {
-    /// While the button is held down. The host raises it from the platform, so
-    /// this is a real press rather than a gesture recognized on this side.
+    /// While the button is held down - by a finger, a pointer or a key.
     public static var pressed: Self { Self("Pressed") }
 }
 
@@ -57,10 +46,9 @@ extension VisualState where Target == Switch {
     public static var off: Self { Self("Off") }
 }
 
-/// A CheckBox has ONE state of its own - the Switch's word for it.
+/// A CheckBox has one state of its own - the Switch's word for it.
 extension VisualState where Target == CheckBox {
-    /// While `isOn` is true. There is no off state beside it: a CheckBox that
-    /// is not on is in `.normal`.
+    /// While `isOn` is true. A CheckBox that is not on is in `.normal`.
     public static var on: Self { Self("On") }
 }
 
@@ -69,7 +57,6 @@ extension VisualState where Target == RadioButton {
     /// While `isOn` is true.
     public static var checked: Self { Self("Checked") }
 
-    /// While `isOn` is false - where a RadioButton rests, since it enters
-    /// Checked or Unchecked before Normal.
+    /// While `isOn` is false.
     public static var unchecked: Self { Self("Unchecked") }
 }

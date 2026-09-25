@@ -45,6 +45,5 @@ How each of them realizes these members is on its own page.
 | `translationX` | property | `Double` | native |
 | `translationY` | property | `Double` | native |
 | `unfocus` | act | `() -> Void` |  |
-| `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI |
 | `width` | property | `Double` | native |
 | `zIndex` | property | `Int` | native |

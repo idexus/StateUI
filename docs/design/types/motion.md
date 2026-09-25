@@ -99,8 +99,8 @@ Every other property says its group through its member's `moves`; see
 [moves](../contracts/member-facts.md#moves).
 
 A selective rule steers the properties the tree describes. What a host
-decides with no property of its own - where a layout puts its children, what
-a visual state changes, showing and hiding - follows the plain
+decides with no property of its own - where a layout puts its children,
+showing and hiding - follows the plain
 `.motion(_:)`. A child's placement is also split into `.place`, `.width` and
 `.height`, so a rule can snap those parts alone.
 

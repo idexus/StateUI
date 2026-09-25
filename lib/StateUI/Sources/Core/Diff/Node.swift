@@ -262,9 +262,10 @@ public struct Node {
         children = make() + children
     }
 
-    /// Whether any child is a visual state - set where one is added, so the differ
-    /// needs no walk to know.
-    var states = false
+    /// The visual states it declares, its style's merged in by the differ; and what
+    /// `.onVisualStateChanged` runs (DeclaredState.swift).
+    var visualStates: [DeclaredState] = []
+    var visualStateListeners: [VisualStateListener] = []
 
     /// Each event's handler; the ids belong to the element, assigned by the differ.
     var events: [Event: EventHandler]

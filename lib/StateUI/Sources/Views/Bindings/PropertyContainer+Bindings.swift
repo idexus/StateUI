@@ -88,7 +88,8 @@ extension PropertyContainer {
                 conversion: state.conversion,
                 mode: mode,
                 kind: kind,
-                values: property.facts.moves.union(Value.moving))
+                values: property.facts.moves.union(Value.moving),
+                current: { state.wrappedValue.carried })
         }
     }
 

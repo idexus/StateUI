@@ -63,7 +63,6 @@ extension NodeType {
     static let scene = SceneContract.nodeType
     static let scrollView = ScrollViewContract.nodeType
     static let searchField = SearchFieldContract.nodeType
-    static let setters = SettersContract.nodeType
     static let slider = SliderContract.nodeType
     static let span = SpanContract.nodeType
     static let stepper = StepperContract.nodeType
@@ -75,7 +74,6 @@ extension NodeType {
     static let toolbarItems = ToolbarItemsContract.nodeType
     static let trailingContent = TrailingContentContract.nodeType
     static let vStack = VStackContract.nodeType
-    static let visualState = VisualStateContract.nodeType
     static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
     static let zStack = ZStackContract.nodeType
@@ -132,7 +130,6 @@ extension NodeType {
     static let gridColumnSpan = ViewContract.gridColumnSpan.token
     static let gridRow = ViewContract.gridRow.token
     static let gridRowSpan = ViewContract.gridRowSpan.token
-    static let group = VisualStateContract.group.token
     static let groupName = RadioButtonContract.groupName.token
     static let height = VisualElementContract.height.token
     static let hideSingle = PositionIndicatorContract.hideSingle.token
@@ -184,7 +181,6 @@ extension NodeType {
     static let minimumDate = DatePickerContract.minimumDate.token
     static let minimumHeight = VisualElementContract.minimumHeight.token
     static let minimumWidth = VisualElementContract.minimumWidth.token
-    static let name = VisualStateContract.name.token
     static let backButtonTitle = PageContract.backButtonTitle.token
     static let hasBackButton = PageContract.hasBackButton.token
     static let hasNavigationBar = PageContract.hasNavigationBar.token
@@ -316,7 +312,6 @@ extension NodeType {
     static let timeChanged = TimePickerContract.timeChanged.token
     static let toggled = CheckBoxContract.toggled.token
     static let valueChanged = SliderContract.valueChanged.token
-    static let visualStateChanged = VisualElementContract.visualStateChanged.token
     static let windowClosed = SceneContract.windowClosed.token
     static let windowRestored = SceneContract.windowRestored.token
 }

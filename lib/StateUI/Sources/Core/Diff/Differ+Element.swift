@@ -278,6 +278,20 @@ extension Differ {
         // control (Style.swift).
         node = styled(node, with: styles)
 
+        // And its visual states resolved, the element reading what they follow.
+        // Design: docs/design/views/styles.md#which-state-a-control-is-in
+        let visualInput = node.visualStates.isEmpty ? nil : (rendered?.visualInput ?? VisualInput())
+        var visualState: String?
+
+        if let visualInput {
+            visualState = resolveVisualStates(
+                &node, input: visualInput, previous: rendered?.visualState, reads: &reads)
+
+            if placeholder == nil {
+                placeholder = authored
+            }
+        }
+
         // Themed values are picked here, which makes this element the theme's reader.
         // Design: docs/design/core/identity-and-diffing.md#themes
         if node.props.values.contains(where: \.isThemed) {
@@ -327,12 +341,10 @@ extension Differ {
         // What values with no kind of their own animate at.
         let travels = travel(.all)
 
-        // An element that places children, has visual states, or answered `.motion(_:)`
-        // for itself says how its children animate; `.inherited`, the default on both
-        // sides, is never said.
+        // An element that places children or answered `.motion(_:)` for itself says how
+        // its children animate; `.inherited`, the default on both sides, is never said.
         // Design: docs/design/core/identity-and-diffing.md#layout-motion
         if NodeType.saysMotion.contains(node.type)
-            || node.states
             || plan?.base != nil {
             let mine = node.type == .application
                 ? motion
@@ -505,6 +517,8 @@ extension Differ {
             children: children
         )
         result.sizesArrive = sizesArrive
+        result.visualInput = visualInput
+        result.visualState = visualState
 
         // What it runs as it leaves: this build's closures, the newest.
         result.destroying = node.destroying

@@ -34,8 +34,8 @@ public struct StyleBag<Target: StyleTarget, Context> {
     /// sheet is built.
     var basedOn: String?
 
-    /// The states written so far, arranged - the resting one first.
-    var states: [Node] = []
+    /// The states written so far, in writing order.
+    var states: [DeclaredState] = []
 
     init(key: String?) {
         node = Node(type: Target().node.type)
@@ -92,49 +92,27 @@ extension StyleBag where Context == StyleBase {
     /// - Parameters:
     ///   - state: which state these setters describe. What is offered after
     ///     the dot is the states this target actually enters.
-    ///   - group: which group of states the state belongs to. A control is in
-    ///     one state per group and leaves a state only by entering another in
-    ///     the SAME group, so states that exclude one another belong together.
-    ///     Every group has a name and nearly everything is in `CommonStates`,
-    ///     so that is the default.
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Target>,
-        group: String = "CommonStates",
         _ setters: (StyleBag<Target, StyleState>) -> StyleBag<Target, StyleState>
     ) -> Self {
         var copy = self
-
-        copy.states = visualStates(
-            copy.states,
-            adding: visualStateSetting(
-                setters(StyleBag<Target, StyleState>(key: nil)).node.props, named: state.name, in: group),
-            resting: Target.restingVisualState.name)
-
+        let values = setters(StyleBag<Target, StyleState>(key: nil)).node.props
+        copy.states = written(copy.states, adding: DeclaredState(name: state.name, setters: values))
         return copy
     }
 
-    /// A state that changes nothing, which is how a control gets back to it.
+    /// A state that changes nothing - declared so the control can be heard entering it.
     ///
     ///     Style<Button>()
     ///         .visualState(.normal)
     ///         .visualState(.disabled) { $0.textColor(.gray) }
     ///
-    /// Worth writing where it says something - and not required, since a group
-    /// that wrote none is given its target's resting state anyway.
-    ///
-    /// - Parameters:
-    ///   - state: the state the control returns to, changing nothing.
-    ///   - group: which group of states it belongs to, `CommonStates` unless
-    ///     said otherwise.
-    public func visualState(_ state: VisualState<Target>, group: String = "CommonStates") -> Self {
+    /// - Parameter state: the state, changing nothing.
+    public func visualState(_ state: VisualState<Target>) -> Self {
         var copy = self
-
-        copy.states = visualStates(
-            copy.states,
-            adding: emptyVisualState(named: state.name, in: group),
-            resting: Target.restingVisualState.name)
-
+        copy.states = written(copy.states, adding: DeclaredState(name: state.name))
         return copy
     }
 }
@@ -168,6 +146,6 @@ public struct AnyStyle {
     /// What it sets.
     var props: [Prop: PropValue]
 
-    /// The states it declares, arranged, the resting one first.
-    var states: [Node]
+    /// The states it declares, in writing order.
+    var states: [DeclaredState]
 }

@@ -27,7 +27,6 @@ own.
   Content, LeadingContent,           a title bar's middle, leading and trailing views
   TrailingContent
   Spans, Span                        the runs of text a label is made of
-  VisualState, Setters               a state a control can be in, and the values it sets there
 ```
 
 ## Slots
@@ -41,16 +40,8 @@ again when that state moves.
 ## Collections as one node
 
 A page's toolbar items hang off it as one `ToolbarItems` node holding them
-all, its menus as one `MenuBar`, a label's runs as one `Spans`, and a
-visual state's values as one `Setters`. The host has a list to keep in step,
-and a list needs a parent of its own to be matched against. Where the host
+all, its menus as one `MenuBar`, and a label's runs as one `Spans`. The host
+has a list to keep in step, and a list needs a parent of its own to be matched
+against. Where the host
 puts an item of such a collection - a toolbar item's placement - is a value no default answers for, so its member is not cleared; see
 [cleared](member-facts.md#cleared).
-
-## Visual states
-
-A `VisualState` is one state a control can be in, named in its group: a
-control is in one state of each group, and the state's `Setters` are the
-values it sets there. The names are `Name` values matched exactly. A
-control entering one of its states reports `visualStateChanged` with the
-state's name.

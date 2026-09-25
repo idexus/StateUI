@@ -47,15 +47,7 @@ final class ResourceTests: XCTestCase {
             XCTAssertFalse(style.props.isEmpty, "\(key) sets nothing")
 
             for state in style.states {
-                let name = state.props["name"]?.string ?? "?"
-
-                // A state with no setters at all is the one the library adds so
-                // a control has somewhere to return to. One that brought a
-                // Setters node and left it empty is a mistake.
-                guard let stateSetters = state.children.first(where: { $0.type == "Setters" })
-                else { continue }
-
-                XCTAssertFalse(stateSetters.props.isEmpty, "\(key) in \(name) sets nothing")
+                XCTAssertFalse(state.setters.isEmpty, "\(key) in \(state.name) sets nothing")
             }
         }
     }
@@ -108,23 +100,6 @@ final class ResourceTests: XCTestCase {
         // What the menu's rows are written against - see Gallery/Views/MenuRow.swift.
         XCTAssertTrue(keys.contains("MenuRow"))
         XCTAssertTrue(keys.contains("MenuRowText"))
-    }
-
-    /// A control starts in the FIRST state its group declares, so a style whose
-    /// only state is Selected draws everything as selected. Measured, not
-    /// assumed - it is what the flyout did before Normal was written down.
-    ///
-    /// Which state a control rests in belongs to its semantic state family, not
-    /// always `Normal`: a `RadioButton` rests in `Unchecked`.
-    func testAStyleWithStatesDeclaresItsTargetsRestingStateFirst() {
-        for style in styles {
-            guard let first = style.states.first?.props["name"]?.string else { continue }
-
-            let resting = style.target == "RadioButton" ? "Unchecked" : "Normal"
-
-            XCTAssertEqual(first, resting,
-                           "\(style.key ?? style.target.name) starts in \(first)")
-        }
     }
 
     /// The menu is a page and its selected section is application state. A

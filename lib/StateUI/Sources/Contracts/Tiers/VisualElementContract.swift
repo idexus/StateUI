@@ -129,10 +129,6 @@ public enum VisualElementContract: Contract {
     /// Takes the keyboard focus off the element.
     public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
 
-    /// The element entered one of its visual states, the one it names.
-    public static let visualStateChanged = ElementEvent<Self, String>(
-        "visualStateChanged", layer: .stateUI)
-
     /// The width the element asks for.
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
@@ -147,6 +143,6 @@ public enum VisualElementContract: Contract {
         isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, translationX,
-        translationY, unfocus, visualStateChanged, width, zIndex,
+        translationY, unfocus, width, zIndex,
     ]
 }
