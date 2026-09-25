@@ -5,6 +5,24 @@ field - and hears what the user does to them. The value a control carries
 belongs to a state; the host writes the control where the tree changed that
 value and reports the user's change back ([patches](../../host/patches.md)).
 
+## Words
+
+A label's words are a `GtkLabel`'s, and how they look is one list of Pango
+attributes written whole whenever any of it changes: the font's size in
+logical pixels, its weight, slant and family, the colour, the space between
+the letters, a line's height as a multiple of the font's own, and the lines
+under or through the words - each GTK's own where the tree says nothing.
+
+A label wraps at word boundaries, breaking a word only where it alone is
+wider than the label, or at any character; cut short, it shows an ellipsis
+where the tree asks. GTK cuts a word short at its start or middle on one line
+only, so a label allowed several lines is cut at its end. Its lines stand
+from its leading edge, in its middle or at its trailing edge, which GTK turns
+over for a language written from the right.
+
+A label's padding is room inside its own box, around its words
+([a widget's own box](drawing.md#a-widgets-own-box)).
+
 ## Nothing the program writes is heard
 
 Every native write of an element - a patch applied, a display frame presented
