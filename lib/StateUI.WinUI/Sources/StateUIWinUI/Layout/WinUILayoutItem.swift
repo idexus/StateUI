@@ -29,9 +29,7 @@ struct WinUILayoutItem: LayoutChild {
         } else {
             [width, values.maximumWidth].compactMap(\.self).min()
         }
-        // A layout of StateUI's is measured by WinUI at the width it stands at - so WinUI measures it again only where
-        // a change beneath marked it - and at a new place as it is put there; its size for any width is the
-        // arithmetic's.
+        // A layout of StateUI's is measured at the width it stands at; its size for any width is the arithmetic's.
         // Design: docs/design/platforms/winui/layout.md#measured-every-pass
         let measured: LayoutSize
         if let layout = view as? WinUILayoutView {
