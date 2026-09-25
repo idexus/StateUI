@@ -67,6 +67,87 @@ module of the application. Swift written for this host alone stands under
 A new application made in `apps/` - `.scripts/new-app.sh` - has a GTK head,
 as HelloWorld does.
 
+## Controls, acts, and events registered in Swift
+
+An application extends the host from its GTK head. Registrations run before
+`StateUIGTK.run`, on the main thread. Registering a contract or an act again
+replaces the earlier registration. Every registration is written against the
+application's own contracts, so they are `public`: the host lives in a module
+of its own and must see them. The Gallery's GTK halves are in
+`apps/Gallery/Platforms/GTK/Host/`.
+
+### A control
+
+A control of the application's own is an object that makes and holds the GTK
+widget it shows, a `GTKControl`; `StateUIControls.add` says which contract it
+realizes:
+
+```swift quote
+public static func add<Realized: ElementContract, Made: GTKControl>(
+    _ contract: Realized.Type,
+    create: @escaping (GTKReports<Realized>) -> Made,
+    members: (GTKRegistration<Realized, Made>) -> Void = { _ in })
+```
+
+- **`create`** makes the control once per element, and wires what it reports:
+  `reports.raise(Contract.member, values)` for an event of the element's own,
+  and `reports.report(property, value, as: event)` for a value the USER
+  changed.
+- **`members`** registers what the control takes: `property(_:_:)` hands a
+  value over as the type its contract declares, `nil` where it is no longer
+  described, and `raises(_:)` records an event the control raises.
+
+```swift quote
+StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
+    let light = TrafficLightWidget()
+    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+    return light
+}) { light in
+    light.property(TrafficLightContract.signal) { control, signal in
+        control.signal = signal ?? .stop
+    }
+    light.raises(TrafficLightContract.lampTapped)
+}
+```
+
+The host places, sizes and shows the control's widget as it does its own -
+margins, alignment, opacity, gestures, frame reports - and measures it by the
+widget's own measure. A registered control is a leaf. A control that runs a
+loop of its own, a `GtkGLArea` turning a cube, stops it when its widget is
+unmapped, so nothing turns behind a page the user has left.
+
+### An act
+
+`StateUIActs.add` registers a function the application calls by its act, and
+`StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
+that element's control:
+
+```swift quote
+StateUIActs.add(GalleryContract.readClipboard) { () -> String in
+    clipboardText()
+}
+
+StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
+    bar.flash()
+}
+```
+
+A performer runs on the main thread. Its arguments and answer are the act's
+own types; a call carrying anything else fails with the reason. A thrown error
+fails the act, and so does an aim at nothing; an act nobody registered is
+refused by name.
+
+### An event without a control
+
+`StateUIEvents.raise` pushes an event of the application's that belongs to no
+element, from any thread; `StateUIEvents.raises` declares it before the host
+runs, so a handler listening for one no source raises is told so.
+
+```swift quote
+StateUIEvents.raises(GalleryContract.batteryChanged)
+StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```
+
 ## Running
 
 ```bash

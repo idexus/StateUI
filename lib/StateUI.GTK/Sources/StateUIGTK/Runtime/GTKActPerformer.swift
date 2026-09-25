@@ -53,7 +53,27 @@ final class GTKActPerformer {
             GTKLog.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
         default:
-            fail(call, "the GTK host does not perform the act '\(call.act.name)'")
+            perform(registered: call, in: tree)
+        }
+    }
+
+    /// Performs an act the application registered: its own, or one aimed at its own element, handed that
+    /// element's control; an act nobody registered is refused by name.
+    private func perform(registered call: HostActCall, in tree: MountedTree) {
+        guard let performer = GTKInterop.performers[call.act] else {
+            return fail(call, "the GTK host does not perform the act '\(call.act.name)'")
+        }
+
+        do {
+            switch performer {
+            case .application(let perform):
+                reply(call, try perform(call.arguments))
+            case .aimed(let perform):
+                guard let view = aimed(call, in: tree) else { return }
+                reply(call, try perform(view, Array(call.arguments.dropFirst())))
+            }
+        } catch {
+            fail(call, "\(error)")
         }
     }
 
