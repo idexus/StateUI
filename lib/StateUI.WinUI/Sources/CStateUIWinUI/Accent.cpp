@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A control's one accent colour: the brushes its template takes from the
-// system's accent, written into the control's own resources - the default,
-// under the pointer and pressed, as WinUI's accent brushes are - and the
-// control's theme read again so its template takes them.
+// A control's one accent colour: a progress bar's and a spinner's foreground,
+// and otherwise the brushes a template takes from the system's accent, written
+// into the control's own resources - the default, under the pointer and
+// pressed, as WinUI's accent brushes are - and the control's theme read again
+// so its template takes them.
 // Design: docs/design/platforms/winui/controls.md#a-controls-accent
 
 #include "Relay.h"
@@ -32,6 +33,14 @@ namespace {
 extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, bool tinted) {
     try {
         auto control = as<xaml::FrameworkElement>(handle);
+        if (auto shows = control.try_as<controls::Control>();
+            shows && (control.try_as<controls::ProgressBar>() || control.try_as<controls::ProgressRing>())) {
+            auto colour = winrt::Windows::UI::Color{static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16),
+                                                    static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
+            if (tinted) shows.Foreground(media::SolidColorBrush(colour));
+            else shows.ClearValue(controls::Control::ForegroundProperty());
+            return;
+        }
         auto resources = control.Resources();
         // WinUI's accent brushes: the colour, then nine tenths of it under the pointer and eight tenths pressed.
         struct Variant { wchar_t const *suffix; double opacity; };

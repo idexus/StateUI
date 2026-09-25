@@ -39,10 +39,10 @@ down whole each time.
 
 Every native write of an element - a patch applied, a display frame presented
 - runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s `Toggled`, a
-check box's or a radio button's `Checked` and `Unchecked`, a `Slider`'s
-`ValueChanged` and a `TextBox`'s `TextChanging` inside the write that sets the
-value, so a report during that write is the write's echo, and the element
-reports nothing. A control keeps no flag of its own.
+check box's or a radio button's `Checked` and `Unchecked`, a `Slider`'s and a
+`NumberBox`'s `ValueChanged` and a `TextBox`'s `TextChanging` inside the write
+that sets the value, so a report during that write is the write's echo, and
+the element reports nothing. A control keeps no flag of its own.
 
 ## On or off
 
@@ -64,7 +64,9 @@ heard twice - so every button stands in a group of its own.
 
 A control's tint is its one accent colour, where WinUI draws the system's
 accent: a ticked box, a switch's track while it is on, a slider's thumb and
-the track up to it. WinUI's templates take those brushes from resources named
+the track up to it, a progress bar and a spinner. A progress bar and a spinner
+draw with their foreground, which the tint is. The other templates take their
+brushes from resources named
 for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
 `SliderTrackValueFill` and their kin - so the tint is written into the
 control's own resources under those names, the colour itself and nine and
@@ -72,6 +74,21 @@ eight tenths of it under the pointer and pressed, as WinUI's accent brushes
 are. A template reads its resources as its theme is read, so the control
 reads its theme again at once; a tint changed after the control is drawn is
 drawn. No tint takes the names away, and the system's accent returns.
+
+## What shows work
+
+A ProgressBar is WinUI's `ProgressBar` over the range 0 to 1, a fraction past
+either end standing at that end; an ActivityIndicator is its `ProgressRing`,
+turning while its work runs and gone while it does not.
+
+## A stepper
+
+A Stepper is WinUI's `NumberBox` with its spin buttons beside its number: the
+number the user can also type, the buttons and the arrow keys moving it a
+step, Page Up ten. The number is written in the user's own way with as many
+decimals as the step and the range take, and the value is kept inside the
+range. An emptied box holds no number and reports none: the state keeps the
+number it had.
 
 ## What assistive technology meets
 

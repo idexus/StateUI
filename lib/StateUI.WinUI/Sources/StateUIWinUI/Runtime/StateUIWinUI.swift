@@ -60,7 +60,7 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIToggleView)?.onToggled?(on) }
             },
             valueChanged: { view, value in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUISliderView)?.onValueChanged?(value) }
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIValueView)?.onValueChanged?(value) }
             },
             textChanged: { view, utf8 in
                 let text = utf8.map { String(cString: $0) } ?? ""

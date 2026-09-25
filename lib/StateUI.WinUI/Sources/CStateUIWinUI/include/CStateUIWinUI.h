@@ -95,7 +95,7 @@ typedef struct {
     /// A switch, a check box or a radio button the user turned on or off.
     void (*toggled)(int64_t view, bool on);
 
-    /// A slider's value moved.
+    /// A slider's or a stepper's value moved.
     void (*valueChanged)(int64_t view, double value);
 
     /// A field's words changed, all of them handed over in UTF-8.
@@ -286,8 +286,16 @@ void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush backgro
 void stateui_winui_button_invoke(StateUIObjectRef button);
 
 /// A control's one accent colour, `argb`, where `tinted`, and the platform's accent otherwise: a check box's tick,
-/// a switch's track while it is on, a slider's thumb and the track behind it.
+/// a switch's track while it is on, a slider's thumb and the track behind it, a progress bar and a spinner.
 void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted);
+
+/// What shows work: a progress bar, how far along from 0 to 1, and a spinner, turning while its work runs.
+StateUIObjectRef stateui_winui_progress_bar_make(void);
+void stateui_winui_progress_bar_set(StateUIObjectRef bar, double progress);
+double stateui_winui_progress_bar_value(StateUIObjectRef bar);
+StateUIObjectRef stateui_winui_progress_ring_make(void);
+void stateui_winui_progress_ring_set_running(StateUIObjectRef ring, bool running);
+bool stateui_winui_progress_ring_running(StateUIObjectRef ring);
 
 /// The controls that are on or off - a switch, a check box with no caption, and a radio button in a group of its
 /// own - each telling its turn through `toggled`.
@@ -311,8 +319,15 @@ double stateui_winui_slider_value(StateUIObjectRef slider);
 /// The slider's steps as WinUI holds them - an arrow key's, Page Up's and a drag's: three values.
 void stateui_winui_slider_steps(StateUIObjectRef slider, double *steps);
 
-/// Moves a slider as UI Automation does, which the user's move is.
-void stateui_winui_slider_move(StateUIObjectRef slider, double value);
+/// A stepper: WinUI's NumberBox, its spin buttons beside its number; the value kept inside the range, a step a spin
+/// button's and an arrow key's, and `fractionDigits` decimals written in the user's own way.
+StateUIObjectRef stateui_winui_stepper_make(int64_t view);
+void stateui_winui_stepper_set(StateUIObjectRef stepper, double value, double minimum, double maximum, double step,
+                               int32_t fractionDigits);
+double stateui_winui_stepper_value(StateUIObjectRef stepper);
+
+/// Moves a slider's or a stepper's value as UI Automation does, which the user's move is.
+void stateui_winui_value_move(StateUIObjectRef control, double value);
 
 StateUIObjectRef stateui_winui_field_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);

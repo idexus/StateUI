@@ -225,10 +225,10 @@ extension WinUIToggleView {
     }
 }
 
-extension WinUISliderView {
-    /// Moves the thumb to `value` as UI Automation does.
+extension WinUIValueView {
+    /// Moves the value to `value` as UI Automation does: a slider's thumb, a stepper's number.
     func move(to value: Double) {
-        stateui_winui_slider_move(handle, value)
+        stateui_winui_value_move(handle, value)
     }
 }
 

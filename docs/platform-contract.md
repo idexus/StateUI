@@ -80,7 +80,7 @@ host that creates or interprets it.
 <!-- creation:begin -->
 | Element | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `ActivityIndicator` | native | ✅ |  |  | ✅ |  |  |
+| `ActivityIndicator` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Application` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `Button` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Canvas` | native | ✅ |  |  | ✅ | ✅ |  |
@@ -111,7 +111,7 @@ host that creates or interprets it.
 | `Polygon` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Polyline` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `PositionIndicator` | stateUI |  |  |  |  |  |  |
-| `ProgressBar` | native | ✅ |  |  | ✅ |  |  |
+| `ProgressBar` | native | ✅ |  |  | ✅ | ✅ |  |
 | `RadioButton` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Rectangle` | stateUI | ✅ |  |  | ✅ | ✅ |  |
 | `Scene` | structure | ✅ |  |  | ✅ | ✅ |  |
@@ -122,7 +122,7 @@ host that creates or interprets it.
 | `Span` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `Spans` | structure | ✅ |  |  | ✅ | ✅ |  |
 | `SplitView` | adaptive | ✅ |  |  | ✅ | ✅ |  |
-| `Stepper` | native | ✅ |  |  | ✅ |  |  |
+| `Stepper` | native | ✅ |  |  | ✅ | ✅ |  |
 | `Switch` | native | ✅ |  |  | ✅ | ✅ |  |
 | `TabbedView` | adaptive | ✅ |  |  | ✅ | ✅ |  |
 | `TextEditor` | native | ✅ |  |  | ✅ |  |  |
@@ -425,7 +425,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 51 ✅ |  |
 | [Button](controls/Button.md) | 87 | 66 ✅ · 5 ☑️ |  |  | 70 ✅ · 2 ☑️ | 62 ✅ |  |
 | [Canvas](controls/Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 53 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ | 53 ✅ |  |
@@ -443,13 +443,13 @@ Every control, and every part an application, its windows and its pages are made
 | [Polygon](controls/Polygon.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [Polyline](controls/Polyline.md) | 79 | 63 ✅ · 3 ☑️ |  |  | 64 ✅ · 1 ☑️ | 61 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 75 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ | 51 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | 82 | 63 ✅ · 2 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 60 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 78 | 62 ✅ · 3 ☑️ |  |  | 63 ✅ · 1 ☑️ | 61 ✅ |  |
 | [SearchField](controls/SearchField.md) | 90 | 70 ✅ · 2 ☑️ |  |  | 66 ✅ · 1 ☑️ |  |  |
 | [Slider](controls/Slider.md) | 74 | 60 ✅ · 2 ☑️ |  |  | 60 ✅ · 1 ☑️ | 55 ✅ |  |
-| [Stepper](controls/Stepper.md) | 72 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ |  |  |
+| [Stepper](controls/Stepper.md) | 72 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 55 ✅ |  |
 | [Switch](controls/Switch.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 55 ✅ · 1 ☑️ | 53 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 88 | 69 ✅ · 2 ☑️ |  |  | 65 ✅ · 1 ☑️ |  |  |
 | [TextField](controls/TextField.md) | 91 | 70 ✅ · 2 ☑️ |  |  | 67 ✅ · 1 ☑️ | 55 ✅ |  |
@@ -458,7 +458,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 75 | 59 ✅ · 2 ☑️ |  |  | 59 ✅ · 1 ☑️ | 57 ✅ |  |
 | [WebView](controls/WebView.md) | 78 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
 | [ZStack](controls/ZStack.md) | 74 | 58 ✅ · 2 ☑️ |  |  | 58 ✅ · 1 ☑️ | 56 ✅ |  |
-| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1210 of 2548 met |  |
+| **Met** - ✅ and – | 2548 | 1773 of 2548 met |  |  | 1837 of 2548 met | 1367 of 2548 met |  |
 
 ### Application structure
 
@@ -523,7 +523,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ |  |  |  |  |  |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` |  |  |  |  |  |  |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | ✅ |  |  | ✅ |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  |  | ✅ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  |  | ✅ | ✅ |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) |  |  |  | ✅ |  |  |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ | ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
@@ -543,7 +543,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | ✅ |  |  | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | ✅ |  |  | ✅ | ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  |  | ✅ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  |  | ✅ | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | ✅ |  |  | ✅ | ✅ |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ |  |  |  |  |  |
@@ -552,7 +552,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ |  |  |
 | [Span](controls/Span.md) | `background` |  |  |  |  | ✅ |  |
 | [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | ✅ |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ |  |  |
+| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ |  |  | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | ✅ |  |  | ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | ✅ |  |  | ✅ |  |  |

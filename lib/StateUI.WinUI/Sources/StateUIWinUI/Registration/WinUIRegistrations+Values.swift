@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 
 extension WinUIRegistrations {
-    /// A Slider: one number the user moves inside its range. The value is written only where the tree changed
-    /// it, so a hand on the thumb is never argued with.
+    /// A Slider and a Stepper: one number the user moves inside its range. The value is written only where the tree
+    /// changed it, so a hand on the thumb or the spin buttons is never argued with.
     static func values(_ registry: Registry<WinUIView>) {
         registry.add(SliderContract.self, create: { reports in
             let slider = WinUISliderView()
@@ -25,6 +25,26 @@ extension WinUIRegistrations {
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.raises(SliderContract.valueChanged)
+        })
+        registry.add(StepperContract.self, create: { reports in
+            let stepper = WinUIStepperView()
+            stepper.onValueChanged = { stepped in
+                reports.report(StepperContract.value, stepped, as: StepperContract.valueChanged)
+            }
+            return stepper
+        }, members: { stepper in
+            stepper.applies([
+                StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
+            ]) { view, values in
+                view.apply(
+                    value: values[StepperContract.value],
+                    writeValue: values.changed(StepperContract.value),
+                    minimum: values[StepperContract.minimum] ?? 0,
+                    maximum: values[StepperContract.maximum] ?? 100,
+                    step: values[StepperContract.step] ?? 1)
+            }
+            stepper.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            stepper.raises(StepperContract.valueChanged)
         })
     }
 }

@@ -5,10 +5,7 @@ import CStateUIWinUI
 
 /// A Slider: a WinUI `Slider` over the range, stepping by a ten-thousandth of it.
 @MainActor
-final class WinUISliderView: WinUIView {
-    /// What the slider does when its value moves, handed the value it stands at.
-    var onValueChanged: ((Double) -> Void)?
-
+final class WinUISliderView: WinUIValueView {
     /// The range's ends, the lower first.
     private(set) var minimum = 0.0
     private(set) var maximum = 1.0
@@ -33,14 +30,5 @@ final class WinUISliderView: WinUIView {
         self.minimum = Swift.min(minimum, maximum)
         self.maximum = Swift.max(minimum, maximum)
         stateui_winui_slider_set(handle, kept, minimum, maximum)
-    }
-
-    func setEnabled(_ enabled: Bool) {
-        stateui_winui_set_enabled(handle, enabled)
-    }
-
-    override func detach() {
-        super.detach()
-        onValueChanged = nil
     }
 }

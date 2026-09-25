@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The controls: a text block, a button, a slider and a field, and what the
-// user does to them. Each handler names its view by number and holds nothing
-// of the control it is on.
+// The controls: a text block, a button and a field, and what the user does to
+// them. Each handler names its view by number and holds nothing of the control
+// it is on.
 
 #include "Automation.h"
 
@@ -94,72 +94,6 @@ extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *u
         as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
     } catch (winrt::hresult_error const &error) {
         report(error, "setting a caption");
-    }
-}
-
-extern "C" StateUIObjectRef stateui_winui_slider_make(int64_t view) {
-    try {
-        controls::Slider slider;
-        slider.ValueChanged([view](IInspectable const &, controls::Primitives::RangeBaseValueChangedEventArgs const &args) {
-            callbacks.valueChanged(view, args.NewValue());
-        });
-        return detach(slider);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a slider");
-        return nullptr;
-    }
-}
-
-extern "C" void stateui_winui_slider_set(StateUIObjectRef handle, double value, double minimum, double maximum) {
-    try {
-        auto slider = borrow<controls::Slider>(handle);
-        auto lower = std::min(minimum, maximum);
-        auto upper = std::max(minimum, maximum);
-        auto step = upper > lower ? (upper - lower) / 10000 : 1;
-        if (slider.Minimum() != lower || slider.Maximum() != upper) {
-            // Widened first, so neither end clamps the value on its way.
-            slider.Minimum(std::min(lower, slider.Minimum()));
-            slider.Maximum(std::max(upper, slider.Maximum()));
-            // A drag lands on a ten-thousandth of the range; an arrow key moves a hundredth, Page Up a tenth.
-            slider.StepFrequency(step);
-            slider.SmallChange((upper - lower) / 100);
-            slider.LargeChange((upper - lower) / 10);
-            slider.Minimum(lower);
-            slider.Maximum(upper);
-        }
-        auto kept = std::min(std::max(value, lower), upper);
-        if (slider.Value() != kept) slider.Value(kept);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a slider");
-    }
-}
-
-extern "C" void stateui_winui_slider_steps(StateUIObjectRef handle, double *steps) {
-    try {
-        auto slider = borrow<controls::Slider>(handle);
-        steps[0] = slider.SmallChange();
-        steps[1] = slider.LargeChange();
-        steps[2] = slider.StepFrequency();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a slider's steps");
-    }
-}
-
-extern "C" double stateui_winui_slider_value(StateUIObjectRef handle) {
-    try {
-        return borrow<controls::Slider>(handle).Value();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a slider");
-        return 0;
-    }
-}
-
-extern "C" void stateui_winui_slider_move(StateUIObjectRef handle, double value) {
-    try {
-        pattern<provider::IRangeValueProvider>(borrow<controls::Slider>(handle), PatternInterface::RangeValue)
-            .SetValue(value);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "moving a slider");
     }
 }
 
