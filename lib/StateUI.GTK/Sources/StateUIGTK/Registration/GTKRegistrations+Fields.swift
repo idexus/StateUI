@@ -75,11 +75,11 @@ extension GTKRegistrations {
         if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
             || values.changed(InputViewContract.placeholderColor) {
-            var look = GTKTextLook()
+            var look = TextLook()
             look.size = values[FontElementContract.fontSize]
             look.attributes = values[FontElementContract.fontAttributes] ?? .none
             look.family = values[FontElementContract.fontFamily]?.text
-            look.color = values[TextStyleElementContract.textColor].flatMap { GTKBrush.rgba($0.propValue) }
+            look.color = values[TextStyleElementContract.textColor]?.propValue
             view.setWordsClass(GTKStyleSheet.words(
                 look, placeholder: values[InputViewContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) }))
         }

@@ -4,41 +4,23 @@
 @_spi(Host) import StateUI
 import CStateUIGTK
 
-/// An outline: a rectangle, one with rounded corners, or an ellipse - as GSK's rounded rectangle over a size.
-enum GTKOutline: Equatable {
-    case rectangle
-
-    /// Corners rounded by a radius in logical pixels.
-    case rounded(Double)
-
-    case ellipse
-
-    /// A layout's shape as it crosses: its kind, then a rectangle's radius.
-    init(container value: HostValue?) {
-        guard let parts = value?.values, let kind = parts.first?.enumeration else {
-            self = .rectangle
-            return
-        }
-
-        switch kind {
-        case 1: self = .rounded(max(0, parts.value(1)?.number ?? 0))
-        case 2: self = .ellipse
-        default: self = .rectangle
-        }
-    }
-
-    /// The outline over `bounds`, each corner's radius no more than half the side it rounds.
+/// An outline over a size as GSK's rounded rectangle: a rectangle, one with rounded corners, or an ellipse.
+extension ContainerShape {
+    /// The outline over `bounds`, each corner fitted to the room (`BoxArithmetic.fitted`).
     func rounded(_ bounds: graphene_rect_t) -> GskRoundedRect {
-        let (width, height) = (bounds.size.width, bounds.size.height)
-        let corner: graphene_size_t = switch self {
-        case .rectangle: graphene_size_t(width: 0, height: 0)
-        case .rounded(let radius):
-            graphene_size_t(width: min(Float(radius), width / 2), height: min(Float(radius), height / 2))
-        case .ellipse: graphene_size_t(width: width / 2, height: height / 2)
+        let (width, height) = (Double(bounds.size.width), Double(bounds.size.height))
+        let fitted: (width: Double, height: Double) = switch self {
+        case .rectangle: (0, 0)
+        case .roundedRectangle(let radius): BoxArithmetic.fitted(radius, width: width, height: height)
+        case .ellipse: (width / 2, height / 2)
         }
+        let corner = graphene_size_t(width: Float(fitted.width), height: Float(fitted.height))
         return GTKOutline.rounded(bounds, corners: [corner, corner, corner, corner])
     }
+}
 
+/// GSK's rounded rectangle.
+enum GTKOutline {
     /// `bounds` with its corners - top left, top right, bottom right, bottom left - rounded each by its own size.
     static func rounded(_ bounds: graphene_rect_t, corners: [graphene_size_t]) -> GskRoundedRect {
         var rounded = GskRoundedRect()
@@ -48,3 +30,4 @@ enum GTKOutline: Equatable {
         return rounded
     }
 }
+

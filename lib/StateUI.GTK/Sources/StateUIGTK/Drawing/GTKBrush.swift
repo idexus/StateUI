@@ -12,31 +12,21 @@ enum GTKBrush: Equatable {
     case linear(from: (Double, Double), to: (Double, Double), stops: [GTKColorStop])
     case radial(center: (Double, Double), radius: Double, stops: [GTKColorStop])
 
+    /// The brush the tree's `value` describes, read by the host layer's rule (`HostBrush`), in GDK's colours.
     init(_ value: HostValue?) {
-        if let value, let color = GTKBrush.rgba(value) {
-            self = .solid(color)
-            return
+        switch HostBrush(value) {
+        case .none: self = .none
+        case .solid(let color): self = GTKBrush.rgba(color).map { .solid($0) } ?? .none
+        case .linear(let from, let to, let stops):
+            self = .linear(from: (from.x, from.y), to: (to.x, to.y), stops: GTKBrush.stops(stops))
+        case .radial(let center, let radius, let stops):
+            self = .radial(center: (center.x, center.y), radius: radius, stops: GTKBrush.stops(stops))
         }
-        guard let parts = value?.values, let kind = parts.first?.enumeration else {
-            self = .none
-            return
-        }
-        if kind == 1 {
-            self = parts.value(1).flatMap(GTKBrush.rgba).map { .solid($0) } ?? .none
-            return
-        }
+    }
 
-        var stops: [GTKColorStop] = []
-        var index = 2
-        while index + 1 < parts.count, let offset = parts[index].number, let color = GTKBrush.rgba(parts[index + 1]) {
-            stops.append(GTKColorStop(offset: min(max(offset, 0), 1), color: color))
-            index += 2
-        }
-        let given = parts.value(1)?.numbers ?? []
-        func at(_ index: Int, _ standing: Double) -> Double { index < given.count ? given[index] : standing }
-        self = kind == 3
-            ? .radial(center: (at(0, 0.5), at(1, 0.5)), radius: at(2, 0.5), stops: stops)
-            : .linear(from: (at(0, 0), at(1, 0)), to: (at(2, 0), at(3, 1)), stops: stops)
+    /// A gradient's stops in GDK's colours.
+    private static func stops(_ stops: [HostBrush.Stop]) -> [GTKColorStop] {
+        stops.compactMap { stop in rgba(stop.color).map { GTKColorStop(offset: stop.offset, color: $0) } }
     }
 
     /// The brush's colour, or its first stop's - what a line of one colour draws with it.

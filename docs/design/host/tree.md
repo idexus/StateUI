@@ -74,6 +74,48 @@ same parent. A native group of the platform's is not used: it holds only its
 own direct children, while StateUI's may stand anywhere in a window's
 layouts.
 
+## Drawn over its place
+
+How an element's view is drawn over the place its layout gave it is put
+together once (`MountedElement.drawingTransform`): moved, turned and scaled,
+`scale` multiplying both axes on top of their own, turned about its middle
+where the tree names no pivot. A layout a state places - a placing run - keeps
+its measure: the run moves its children without the layout measuring again.
+
+## What every element realizes
+
+What the host layer's own rules realize on every element - a view's place in
+its layout, its drawing over that place, where it stands as the tree reads it
+and what the user does to it - is declared once, as groups a host's registry
+names (`everyElementTakesItsPlace`, `everyElementIsDrawnOverItsPlace`,
+`everyElementHearsTheUser`): a host realizing them through those rules says
+so in one line each, and the control dictionary reads the members as every
+host alike.
+
+## Views by number
+
+A host's views are numbered as they are made and held weakly by their number
+(`LiveViews`): a toolkit's callback crossing C names a view by its number, as
+it cannot hold an object, and finds nothing once the view is gone; a test
+counts the numbers held to see every view let go.
+
+## A window shown
+
+A window shows the first arrangement of pages among its children - a page, a
+stack of them, tabs, a split view - and what it lays over them, and says
+each to its host only when it changed; it is told it was made once, in its
+turn (`WindowPresentation`). The host shows them in its toolkit's window.
+
+## Runs of words
+
+A label's spans are runs of its words, put together once
+(`MountedElement.textRuns`): each span's words in its own case, else the
+label's, and its own look - size, weight and slant, colour, what stands
+behind it, its lines - in the contract's terms (`TextLook`). A run's look
+stands over its label's: where the run says nothing, the label's says it.
+A host turns the finished look into its toolkit's attributes and nothing
+more.
+
 ## What assistive technology meets
 
 What an element says for assistive technology is put together once, the same

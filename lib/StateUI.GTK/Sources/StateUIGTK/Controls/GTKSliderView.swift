@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIGTK
 
 /// A Slider: a horizontal `GtkScale` over the range, drawing no number and rounding nothing the hand sets.
@@ -34,11 +35,10 @@ final class GTKSliderView: GTKView {
     /// The range, then the value: `value` where `writeValue`, else the one the thumb stands at, kept inside the range.
     func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double) {
         let kept = writeValue ? value ?? self.value : self.value
-        self.minimum = Swift.min(minimum, maximum)
-        self.maximum = Swift.max(minimum, maximum)
-        let span = self.maximum - self.minimum
+        (self.minimum, self.maximum) = ValueArithmetic.range(minimum, maximum)
+        let steps = ValueArithmetic.sliderSteps(lower: self.minimum, upper: self.maximum)
         gtk_range_set_range(range, self.minimum, self.maximum)
-        gtk_range_set_increments(range, span / 100, span / 10)
+        gtk_range_set_increments(range, steps.key, steps.page)
         gtk_range_set_value(range, kept)
     }
 

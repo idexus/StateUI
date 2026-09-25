@@ -58,6 +58,14 @@ natural width and the width it then lays it out in - so four kept answers
 cover a pass and the next. The toolkit forgets them upward from the change to
 the nearest room, and nothing beside the change is measured again.
 
+## A child measured
+
+A layout measures a child the same way on every host: at its stated width,
+within its bounds, so its words wrap to it - else at the smaller of the width
+offered and its most width; and its size is its stated width and height
+before what it measured, each within its bounds (`LayoutValues.offer`,
+`sized`). A host measures its native view at that width and nothing more.
+
 ## Stacks
 
 A stack sets its shown children one after another with its spacing between
@@ -100,6 +108,14 @@ natural size is the room its neediest child needs at its natural size: a
 rectangle in points to its far corner, a fraction as much as leaves the child
 its natural size in its share, and anything else its size and margins.
 
+## A placing run
+
+A state that places a ZStack's children - a placing run - stands each child
+where the run says, no size below nothing, drawn at the run's opacity within
+0 and 1, and draws them back to front by their z-index, the earlier first
+among equals, the children it places none of after them in their order
+(`ZStackArithmetic.drawingOrder`, `HostPlacement.place`, `drawnOpacity`).
+
 ## Drawing order
 
 A grid's and a ZStack's children can overlap, so their order is
@@ -118,6 +134,19 @@ measured only where its natural size places it - on an axis it does not fill
 and states no size for - so a child that fills both ways takes the room
 whatever it would measure. A container with no shown child is its padding.
 
+## A box
+
+A box - a layout's, a button's, a colour box's, a rectangle's - is read the
+same way on every host (`BoxArithmetic`): its corners' radii stand clockwise
+from the top left, the order toolkits take them in, each never below nothing;
+a corner rounds no more than half the side it rounds; its outline is a
+rectangle where the tree asks none, a rounded one's radius never below
+nothing; and the outline is drawn one wide where the tree gives it a colour
+and no width, and not at all without a colour. A fill is read as the tree
+sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
+between 0 and 1, and a gradient given no geometry runs top to bottom, or from
+the middle to the edge. A line drawn in one colour takes the brush's first.
+
 ## A shape's own geometry
 
 A line, a path, a polygon and a polyline draw a geometry of their own
@@ -127,6 +156,11 @@ its proportions, to cover, each axis on its own, or not at all - and centred;
 then moved by the shape's own transform, as a transform moves a view after
 its layout, so a translation shows under every aspect. A geometry flat along
 one axis, a straight line, fits by the axis it has.
+
+A polygon's and a polyline's points are joined by lines as flat commands,
+closed where the shape is, a point that is no number left out; a stroke's
+dashes and gaps are measured in stroke widths
+(`ShapeArithmetic.commands`, `dashLengths`).
 
 ## Right to left
 
@@ -156,3 +190,13 @@ width is its own to decide. A filling child stated no width takes the width
 it is held to. The document the content stands in is never smaller than the
 viewport: along an axis the scroller scrolls it is as large as the content
 with its padding and margin, and along any other it is the viewport's.
+
+## An offset the tree writes
+
+An offset the tree writes moves a scroller the same way on every host: one
+that scrolls neither way stands at its origin; no offset, one that is no
+number, or one it stands at already - within half a point, as the user's own
+scrolling comes back as the state it wrote - moves nothing; any other moves
+it, kept between its origin and what it reaches. A host moves its toolkit's
+scroller there as the program's write, or holds the offset until its first
+layout.

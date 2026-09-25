@@ -91,7 +91,7 @@ enum GTKStyleSheet {
 
     /// The class giving typed words their look - the font's size, weight, slant and family and the words' colour -
     /// and the placeholder its colour, in a field's own text or as an editor's label; nil where nothing is given.
-    static func words(_ look: GTKTextLook, placeholder: GdkRGBA?) -> String? {
+    static func words(_ look: TextLook, placeholder: GdkRGBA?) -> String? {
         var name = "stateui-words"
         var body = ""
         if let size = look.size, size > 0 {
@@ -110,7 +110,7 @@ enum GTKStyleSheet {
             name += "-f" + family.utf8.map { String($0, radix: 16) }.joined()
             body += "font-family: \"\(family.replacing("\\", with: "\\\\").replacing("\"", with: "\\\""))\"; "
         }
-        if let color = look.color {
+        if let color = look.rgbaColor {
             name += "-c" + hex(color)
             body += "color: \(css(color)); "
         }

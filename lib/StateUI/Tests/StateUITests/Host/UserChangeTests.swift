@@ -4,27 +4,6 @@
 @_spi(Host) @testable import StateUI
 import XCTest
 
-/// A clock no display drives.
-@MainActor
-private final class StillClock: FrameClock {
-    let now: () -> Double = { 0 }
-    var held = false
-    var onFrame: ((Double) -> Void)?
-}
-
-/// A native half with nothing native behind it.
-@MainActor
-private final class NoView: NativeElement {
-    let presentsView = true
-    func willApply() {}
-    func standingValue(_ property: Prop) -> HostValue? { nil }
-    func animates(_ property: Prop) -> Bool { false }
-    func applied(changed: Set<Prop>, wasDescribed: Bool) {}
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact { .none }
-    func arrangeChildren() {}
-    func leave() {}
-}
-
 /// How every host carries what the user changes: the value a state takes, the program's write heard by nobody,
 /// and a radio set's other checks taken away.
 @MainActor
@@ -43,8 +22,7 @@ final class UserChangeTests: XCTestCase {
     /// A radio button the user checks turns off the checked peers of its set, and only those; what the program
     /// writes turns nothing off.
     func testARadioCheckedTakesItsSetsOtherChecksAway() throws {
-        let runtime = HostRuntime(
-            clock: StillClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        let runtime = HostRuntime.still()
         func radio(_ id: String, on: Bool) -> HostPatch {
             var radio = HostPatch(id: .manual(id), type: .radioButton)
             radio.properties = [.isOn: .bool(on)]

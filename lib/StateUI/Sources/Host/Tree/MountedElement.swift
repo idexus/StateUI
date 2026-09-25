@@ -38,6 +38,12 @@
     /// Whether this element's frame, or any frame under it, is read.
     public private(set) var framesRead = false
 
+    /// The frame report this element last said, which a report the same says again to nobody.
+    var reportedFrame: [Double] = []
+
+    /// Where the states a press dragged carries stood as it began.
+    var dragStart = Point(x: 0, y: 0)
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

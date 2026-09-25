@@ -34,6 +34,9 @@
     /// The turn: jobs, a pending cycle, a render, the handlers, then the acts.
     public let pump: Pump
 
+    /// What the display's frames serve besides the core's cycle: moving scrollers, and frames the tree reads.
+    public private(set) lazy var frames = FrameFollowers(runtime: self)
+
     /// The host's frame clock, whose frames run the display cycle.
     public let clock: any FrameClock
 

@@ -12,8 +12,8 @@ import CStateUIGTK
 final class GTKActPerformer {
     private let core: CoreLink
 
-    /// What the dialogs ask, the one showing first; each answers under its ticket.
-    private var questions: [GTKQuestion] = []
+    /// What the dialogs ask, one showing at a time; each answers under its ticket.
+    private let questions = QuestionQueue<GTKQuestion>()
 
     init(core: CoreLink) {
         self.core = core
@@ -32,9 +32,13 @@ final class GTKActPerformer {
         case .utcOffset:
             utcOffset(call)
         case .alert, .confirm, .chooseAction, .prompt:
-            guard let window else { return fail(call, "there is no window to ask the user in") }
-            questions.append(GTKQuestion(call, window: window))
-            if questions.count == 1 { questions[0].show() }
+            guard let window, let question = HostQuestion(call) else {
+                return fail(call, "there is no window to ask the user in")
+            }
+            let asked = GTKQuestion(call, question, window: window)
+            let (ticket, showsNow) = questions.ask(asked)
+            asked.ticket = ticket
+            if showsNow { asked.show() }
         case .announce:
             if let window {
                 gtk_accessible_announce(
@@ -84,17 +88,10 @@ final class GTKActPerformer {
 
     /// The question under `ticket` was answered by the response `id`; the next question shows.
     func respond(_ ticket: Int64, _ id: String) {
-        guard let index = questions.firstIndex(where: { $0.ticket == ticket }) else { return }
-        let question = questions.remove(at: index)
-        let call = question.call
-        let (accepted, words) = question.answer(id)
-
-        switch call.act {
-        case .confirm: reply(call, [.bool(accepted)])
-        case .chooseAction, .prompt: reply(call, [(accepted ? words : nil).propValue])
-        default: reply(call, [])
-        }
-        if index == 0, let next = questions.first { next.show() }
+        guard let (asked, next) = questions.answered(ticket) else { return }
+        let (accepted, words) = asked.answer(id)
+        reply(asked.call, asked.question.answer(accepted: accepted, words: words))
+        next?.show()
     }
 
     /// The local time of day: hour, minute, second, millisecond.
@@ -145,34 +142,23 @@ final class GTKActPerformer {
         reply(call, [])
     }
 
-    /// The view the act is aimed at, which its first argument names; nil, the act failed, where there is none.
+    /// The view the act is aimed at (`MountedTree.aimed`); nil, the act failed, where there is none.
     private func aimed(_ call: HostActCall, in tree: MountedTree) -> GTKView? {
-        let target: ElementId? = switch call.arguments.first {
-        case .string(let name)?: .manual(name)
-        case .number(let number)?: .auto(Int(number))
-        default: nil
+        do {
+            let element = try tree.aimed(call)
+            if let view = (element.native as? GTKElement)?.view { return view }
+            fail(call, "\(element.id) has no view")
+        } catch {
+            fail(call, error.reason)
         }
-        guard let target else {
-            fail(call, "\(call.act.name) has to say which view it is for")
-            return nil
-        }
-        guard let view = (tree.root?.first(id: target)?.native as? GTKElement)?.view else {
-            fail(call, "there is no view \(target) on screen")
-            return nil
-        }
-        return view
+        return nil
     }
 
     private func reply(_ call: HostActCall, _ values: [HostValue]) {
-        if let completion = call.completion { _ = core.reply(completion, with: values) }
+        core.reply(call, values)
     }
 
-    /// Fails an act: a caller waiting on it throws the reason, and one nobody waits for is logged.
     private func fail(_ call: HostActCall, _ reason: String) {
-        if let completion = call.completion {
-            _ = core.fail(completion, reason: reason)
-        } else {
-            GTKLog.error(reason)
-        }
+        core.fail(call, reason, log: { GTKLog.error($0) })
     }
 }

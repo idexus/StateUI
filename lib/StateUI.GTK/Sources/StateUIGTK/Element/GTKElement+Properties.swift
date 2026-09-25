@@ -21,12 +21,7 @@ extension GTKElement {
         .opacity, .background, .textColor, .isEnabled,
         .isOn, .value, .minimum, .maximum,
         .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
-    ]).union(transformProperties).union(MountedElement.accessibilityProperties)
-
-    /// Properties that move, turn and scale the view where its layout put it.
-    static let transformProperties: Set<Prop> = [
-        .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
-    ]
+    ]).union(MountedElement.transformProperties).union(MountedElement.accessibilityProperties)
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     static let viewlessTypes: Set<NodeType> = [
@@ -34,9 +29,6 @@ extension GTKElement {
         .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu, .menu, .menuItem, .menuSeparator, .spans,
         .span,
     ]
-
-    /// The arrangements of pages a window shows.
-    static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
 
     func makeView() -> GTKView? {
         if let registered = GTKRegistrations.registry.makeView(
@@ -67,7 +59,7 @@ extension GTKElement {
     /// another view and no structure.
     static func showsUnsupported(_ type: NodeType) -> Bool {
         !GTKRegistrations.registry.realization.elements.contains(type.name) && !viewlessTypes.contains(type)
-            && !pageTypes.contains(type) && type != .overlay
+            && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
     /// Puts the changed properties on the widget as the program's write: its registration's first, then what
@@ -99,41 +91,16 @@ extension GTKElement {
                 default: break
                 }
             }
-            if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
             if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
                 view.setAccessibility(element.accessibilityWords)
             }
-            if let layers = view as? GTKZStackView { layers.placement = placement }
+            if let layers = view as? GTKZStackView { layers.placement = element.placement }
         }
 
-        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
-    }
-
-    /// The layout's own placement run, where a state drives one: it moves the children without changing
-    /// what the layout measures.
-    var ownPlacementRun: Set<Prop> {
-        element.driven[.area]?.kind == .placement ? [.area] : []
-    }
-
-    /// The places an engine gives this layout's children, one each; nil while no state drives them.
-    var placement: HostPlacementRun? {
-        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.area) else { return nil }
-        return StateUIHost.placements(from: carried)
-    }
-
-    /// How the view is moved, turned and scaled; `scale` multiplies both axes on top of `scaleX` and `scaleY`.
-    var transform: HostDrawingTransform {
-        let scale = value(.scale)?.number ?? 1
-        return HostDrawingTransform(
-            translationX: value(.translationX)?.number ?? 0,
-            translationY: value(.translationY)?.number ?? 0,
-            rotation: value(.rotation)?.number ?? 0,
-            rotationX: value(.rotationX)?.number ?? 0,
-            rotationY: value(.rotationY)?.number ?? 0,
-            scaleX: scale * (value(.scaleX)?.number ?? 1),
-            scaleY: scale * (value(.scaleY)?.number ?? 1),
-            pivotX: value(.pivotX)?.number ?? 0.5,
-            pivotY: value(.pivotY)?.number ?? 0.5)
+        if !changed.subtracting(element.ownPlacementRun).isSubset(of: Self.unmeasuredProperties) {
+            invalidateMeasurements()
+        }
     }
 
     /// Forgets the sizes kept by this element's layout and every one above it, and asks GTK to measure again.
@@ -152,7 +119,7 @@ extension GTKElement {
         scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
         scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
         scroll.onFramesWanted = { [weak self, weak scroll] in
-            if let scroll { self?.host?.requestFrames(for: scroll) }
+            if let scroll { self?.host?.runtime.frames.serve(scroll, order: scroll.number) }
         }
     }
 

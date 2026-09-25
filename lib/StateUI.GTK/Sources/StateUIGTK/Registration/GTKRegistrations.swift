@@ -26,56 +26,18 @@ enum GTKRegistrations {
         return registry
     }()
 
-    /// What `GTKElement` puts on every view wearing each member's contract, and what every layout reads of its
-    /// children.
+    /// What `GTKElement` puts on every view wearing each member's contract, and what the host layer's rules realize
+    /// on every element GTK shows.
     static func shared(_ registry: Registry<GTKView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
-        registry.everyElementRealizes(VisualElementContract.width)
-        registry.everyElementRealizes(VisualElementContract.height)
-        registry.everyElementRealizes(VisualElementContract.minimumWidth)
-        registry.everyElementRealizes(VisualElementContract.minimumHeight)
-        registry.everyElementRealizes(VisualElementContract.maximumWidth)
-        registry.everyElementRealizes(VisualElementContract.maximumHeight)
-        registry.everyElementRealizes(ViewContract.margin)
-        registry.everyElementRealizes(ViewContract.horizontalAlignment)
-        registry.everyElementRealizes(ViewContract.verticalAlignment)
-        registry.everyElementRealizes(VisualElementContract.translationX)
-        registry.everyElementRealizes(VisualElementContract.translationY)
-        registry.everyElementRealizes(VisualElementContract.rotation)
-        registry.everyElementRealizes(VisualElementContract.rotationX)
-        registry.everyElementRealizes(VisualElementContract.rotationY)
-        registry.everyElementRealizes(VisualElementContract.scale)
-        registry.everyElementRealizes(VisualElementContract.scaleX)
-        registry.everyElementRealizes(VisualElementContract.scaleY)
-        registry.everyElementRealizes(VisualElementContract.pivotX)
-        registry.everyElementRealizes(VisualElementContract.pivotY)
-        registry.everyElementRealizes(ViewContract.gridRow)
-        registry.everyElementRealizes(ViewContract.gridColumn)
-        registry.everyElementRealizes(ViewContract.gridRowSpan)
-        registry.everyElementRealizes(ViewContract.gridColumnSpan)
-        registry.everyElementRealizes(ViewContract.area)
-        registry.everyElementRealizes(VisualElementContract.frame)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
         registry.everyElementRealizes(VisualElementContract.accessibilityHint)
         registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
-        registry.everyElementRaises(ViewContract.frameChanged)
-        registry.everyElementRaises(ViewContract.tapped)
-        registry.everyElementRealizes(ViewContract.tapCount)
-        registry.everyElementRealizes(ViewContract.panXChannel)
-        registry.everyElementRealizes(ViewContract.panYChannel)
-        registry.everyElementRealizes(ViewContract.panTouchCount)
-        registry.everyElementRealizes(ViewContract.swipeDirection)
-        registry.everyElementRealizes(ViewContract.swipeThreshold)
-        registry.everyElementRaises(ViewContract.panUpdated)
-        registry.everyElementRaises(ViewContract.pinchUpdated)
-        registry.everyElementRaises(ViewContract.swiped)
-        registry.everyElementRaises(ViewContract.pointerEntered)
-        registry.everyElementRaises(ViewContract.pointerExited)
-        registry.everyElementRaises(ViewContract.pointerMoved)
-        registry.everyElementRaises(ViewContract.pointerPressed)
-        registry.everyElementRaises(ViewContract.pointerReleased)
+        registry.everyElementTakesItsPlace()
+        registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementHearsTheUser()
     }
 
     /// The acts `GTKActPerformer` performs.
@@ -87,12 +49,4 @@ enum GTKRegistrations {
         ApplicationContract.prompt, ApplicationContract.utcOffset,
     ]
 
-    /// `text` in the case the tree asks for: as written, or in one case throughout.
-    static func cased(_ text: String, _ textCase: TextCase?) -> String {
-        switch textCase {
-        case .lowercase: text.lowercased()
-        case .uppercase: text.uppercased()
-        default: text
-        }
-    }
 }

@@ -67,6 +67,20 @@
     /// Values with every part at its default.
     public init() {}
 
+    /// The width a child is measured at for the width its layout offers: its stated width, within its bounds - so
+    /// its words wrap to it - else the smaller of the offer and its most width.
+    /// Design: docs/design/host/layout.md#a-child-measured
+    public func offer(_ width: Double?) -> Double? {
+        if let stated = self.width { return boundedWidth(stated) }
+        return [width, maximumWidth].compactMap { $0 }.min()
+    }
+
+    /// A child's size from what it measured: a stated width or height before the measured one, each within its
+    /// bounds.
+    public func sized(_ measured: LayoutSize) -> LayoutSize {
+        LayoutSize(width: boundedWidth(width ?? measured.width), height: boundedHeight(height ?? measured.height))
+    }
+
     /// `proposed`, held within the child's least and most width and the room `available`.
     public func boundedWidth(_ proposed: Double, available: Double? = nil) -> Double {
         Extent.bounded(proposed, minimum: minimumWidth, maximum: maximumWidth, available: available)

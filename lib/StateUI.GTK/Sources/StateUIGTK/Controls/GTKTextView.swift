@@ -9,17 +9,11 @@ import CStateUIGTK
 @MainActor
 class GTKTextView: GTKView {
     /// How the words look.
-    private(set) var look = GTKTextLook()
-
-    /// A run of words and how it looks over the label's own look.
-    struct Run {
-        let text: String
-        let look: GTKTextLook
-    }
+    private(set) var look = TextLook()
 
     /// The label's own words, and the runs shown in their place; nil while none are.
     private var ownText = ""
-    private var runs: [Run]?
+    private var runs: [TextRun]?
 
     init() {
         super.init { _ in gtk_label_new(nil) }
@@ -36,7 +30,7 @@ class GTKTextView: GTKView {
 
     /// Runs of words shown in place of the label's own, each in its own look; nil shows its own words again.
     /// Design: docs/design/platforms/gtk/controls.md#runs-of-words
-    func setRuns(_ runs: [Run]?) {
+    func setRuns(_ runs: [TextRun]?) {
         self.runs = runs
         gtk_label_set_text(widget.opaque, runs.map { $0.map(\.text).joined() } ?? ownText)
         writeLook()
@@ -51,7 +45,7 @@ class GTKTextView: GTKView {
     }
 
     /// Changes how the words look.
-    func setLook(_ change: (inout GTKTextLook) -> Void) {
+    func setLook(_ change: (inout TextLook) -> Void) {
         change(&look)
         writeLook()
     }

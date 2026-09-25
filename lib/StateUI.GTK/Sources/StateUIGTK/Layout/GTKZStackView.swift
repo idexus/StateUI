@@ -30,14 +30,7 @@ final class GTKZStackView: GTKTravellingLayout {
     /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
     /// children in that order and a click reaches the last first.
     override func heldViews() -> [GTKView] {
-        let placements = placement?.placements ?? []
-        let count = min(items.count, placements.count)
-        let ordered = (0..<count).sorted {
-            placements[$0].zIndex == placements[$1].zIndex
-                ? $0 < $1
-                : placements[$0].zIndex < placements[$1].zIndex
-        } + Array(count..<items.count)
-        return ordered.map { items[$0].view }
+        ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? []).map { items[$0].view }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -65,10 +58,8 @@ final class GTKZStackView: GTKTravellingLayout {
         for index in 0..<count {
             let placement = placements[index]
             let view = items[index].view
-            view.setPlacedDrawing(placement.drawing, opacity: min(max(placement.opacity, 0), 1))
-            view.layout(Rect(
-                x: placement.bounds.x, y: placement.bounds.y,
-                width: max(0, placement.bounds.width), height: max(0, placement.bounds.height)))
+            view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
+            view.layout(placement.place)
             (view as? GTKGridView)?.setShadeOpacity(placement.shade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }

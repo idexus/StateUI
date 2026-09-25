@@ -24,14 +24,10 @@ final class GTKElement: NativeElement {
     /// What an arrangement showed before the patch now applied.
     private var previouslyShown: [MountedElement] = []
 
-    /// Where the states a press dragged carries stood as it began.
-    var panFrom = (x: 0.0, y: 0.0)
-
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
     /// Where the element last said it stands; empty before it has said.
-    var lastFrameReport: [Double] = []
 
     init(_ element: MountedElement, host: GTKRenderer) {
         self.element = element
@@ -75,7 +71,7 @@ final class GTKElement: NativeElement {
         arrangePages(changed: changed)
         reconcilePresentation(from: previouslyShown.map(\.gtk))
         previouslyShown = []
-        host?.follow(self, readsFrame: readsFrame)
+        if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -90,7 +86,7 @@ final class GTKElement: NativeElement {
 
     func leave() {
         leaving = false
-        host?.follow(self, readsFrame: false)
+        if let view { host?.runtime.frames.follow(self, order: view.number, reads: false) }
         view?.detach()
     }
 }

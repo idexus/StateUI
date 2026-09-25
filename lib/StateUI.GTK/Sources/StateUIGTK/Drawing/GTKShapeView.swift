@@ -33,7 +33,7 @@ final class GTKShapeView: GTKPanelView {
         fill: GTKBrush, stroke: GTKBrush, width: Double, dashes: [Double], dashOffset: Double, cap: LineCap,
         join: LineJoin, miter: Double
     ) {
-        (self.fill, self.stroke, strokeWidth) = (fill, stroke, width.isFinite ? max(0, width) : 0)
+        (self.fill, self.stroke, strokeWidth) = (fill, stroke, ShapeArithmetic.strokeWidth(width))
         (self.dashes, self.dashOffset, self.cap, self.join, self.miter) = (dashes, dashOffset, cap, join, miter)
         gtk_widget_queue_draw(widget)
     }
@@ -68,8 +68,7 @@ final class GTKShapeView: GTKPanelView {
         gsk_stroke_set_line_cap(outline, cap == .round ? GSK_LINE_CAP_ROUND : cap == .square ? GSK_LINE_CAP_SQUARE : GSK_LINE_CAP_BUTT)
         gsk_stroke_set_line_join(outline, join == .round ? GSK_LINE_JOIN_ROUND : join == .bevel ? GSK_LINE_JOIN_BEVEL : GSK_LINE_JOIN_MITER)
         gsk_stroke_set_miter_limit(outline, Float(miter))
-        // StateUI measures dashes and gaps in outline widths, GSK in lengths.
-        let lengths = dashes.map { Float(max(0, $0) * strokeWidth) }
+        let lengths = ShapeArithmetic.dashLengths(dashes, strokeWidth: strokeWidth).map(Float.init)
         if lengths.contains(where: { $0 > 0 }) {
             gsk_stroke_set_dash(outline, lengths, gsize(lengths.count))
             gsk_stroke_set_dash_offset(outline, Float(dashOffset * strokeWidth))

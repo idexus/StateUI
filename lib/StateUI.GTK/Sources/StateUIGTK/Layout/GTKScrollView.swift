@@ -82,12 +82,9 @@ final class GTKScrollView: GTKLayoutView {
         document.padding = padding
         document.orientation = orientation
 
-        guard orientation != .neither else { return move(to: Point(x: 0, y: 0)) }
-        guard let offset, offset.x.isFinite, offset.y.isFinite else { return }
-
-        // The user's own scrolling comes back as the state it wrote: a scroller already there is left alone.
-        if abs(offset.x - self.offset.x) < 0.5, abs(offset.y - self.offset.y) < 0.5 { return }
-        if laidOut { move(to: offset) } else { pendingOffset = offset }
+        guard let target = ScrollArithmetic.offsetWritten(offset, standing: self.offset, orientation: orientation)
+        else { return }
+        if laidOut || orientation == .neither { move(to: target) } else { pendingOffset = target }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -155,11 +152,9 @@ final class GTKScrollView: GTKLayoutView {
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move.
     private func move(to target: Point) {
         let standing = scroller.standing
-        let kept = Point(
-            x: min(max(target.x, 0), standing.reach.x),
-            y: min(max(target.y, 0), standing.reach.y))
+        let kept = ScrollArithmetic.kept(target, reach: standing.reach)
         offset = kept
-        guard abs(kept.x - standing.offset.x) >= 0.5 || abs(kept.y - standing.offset.y) >= 0.5 else { return }
+        guard ScrollArithmetic.differs(kept, standing.offset) else { return }
 
         ProgramWrite.perform { scroller.move(to: kept) }
     }

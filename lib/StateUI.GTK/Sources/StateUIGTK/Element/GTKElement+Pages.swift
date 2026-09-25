@@ -185,7 +185,7 @@ extension GTKElement {
     /// Shows or hides this page tree, each page hearing its phases in its turn.
     /// Design: docs/design/platforms/gtk/pages.md#a-pages-phases
     func setPagePresented(_ presented: Bool, reason: GTKPagePresentationReason) {
-        guard Self.pageTypes.contains(type), pagePresented != presented else { return }
+        guard NodeType.pageTypes.contains(type), pagePresented != presented else { return }
         pagePresented = presented
 
         switch type {

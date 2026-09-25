@@ -25,7 +25,7 @@ class GTKLayoutView: GTKPanelView {
         var fill = GTKBrush.none
         var stroke = GTKBrush.none
         var width = 0.0
-        var outline = GTKOutline.rectangle
+        var outline = ContainerShape.rectangle
         var clips = false
     }
 
@@ -63,8 +63,8 @@ class GTKLayoutView: GTKPanelView {
     /// The box's outline, its shape, and whether it cuts what the layout shows to that shape.
     func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         box.stroke = GTKBrush(stroke)
-        box.width = stroke == nil ? 0 : max(0, width ?? 1)
-        box.outline = GTKOutline(container: shape)
+        box.width = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
+        box.outline = BoxArithmetic.outline(shape)
         box.clips = clips
         gtk_widget_set_overflow(widget, clips ? GTK_OVERFLOW_HIDDEN : GTK_OVERFLOW_VISIBLE)
         gtk_widget_queue_draw(widget)

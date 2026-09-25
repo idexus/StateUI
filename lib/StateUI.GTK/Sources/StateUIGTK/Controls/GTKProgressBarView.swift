@@ -18,7 +18,7 @@ final class GTKProgressBarView: GTKView {
     var progress: Double { gtk_progress_bar_get_fraction(widget.opaque) }
 
     func setProgress(_ progress: Double) {
-        gtk_progress_bar_set_fraction(widget.opaque, progress.isFinite ? min(max(progress, 0), 1) : 0)
+        gtk_progress_bar_set_fraction(widget.opaque, ValueArithmetic.share(progress))
     }
 
     /// The colour the done part is drawn in; nil for the platform's accent.

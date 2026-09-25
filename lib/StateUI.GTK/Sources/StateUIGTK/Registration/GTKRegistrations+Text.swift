@@ -40,7 +40,8 @@ extension GTKRegistrations {
     /// Puts `textMembers` on a label or a button.
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            view.setText(cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase]))
+            let text = values[TextElementContract.text] ?? ""
+            view.setText(values[TextElementContract.textCase]?.applied(to: text) ?? text)
         }
         if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor) {
@@ -48,7 +49,7 @@ extension GTKRegistrations {
                 look.size = values[FontElementContract.fontSize]
                 look.attributes = values[FontElementContract.fontAttributes] ?? .none
                 look.family = values[FontElementContract.fontFamily]?.text
-                look.color = values[TextStyleElementContract.textColor].flatMap { GTKBrush.rgba($0.propValue) }
+                look.color = values[TextStyleElementContract.textColor]?.propValue
             }
         }
         if values.changed(PaddingElementContract.padding) {

@@ -19,7 +19,7 @@ final class GTKButtonView: GTKView {
     }
 
     /// How the caption's words look.
-    private(set) var look = GTKTextLook()
+    private(set) var look = TextLook()
 
     /// The style sheet's class drawing the button's box.
     private var boxClass: String?
@@ -31,7 +31,7 @@ final class GTKButtonView: GTKView {
     }
 
     /// Changes how the caption's words look.
-    func setLook(_ change: (inout GTKTextLook) -> Void) {
+    func setLook(_ change: (inout TextLook) -> Void) {
         change(&look)
         writeLook()
     }
@@ -51,15 +51,16 @@ final class GTKButtonView: GTKView {
     /// sheet; what is nil stays the platform's.
     /// Design: docs/design/platforms/gtk/controls.md#a-buttons-box
     func setBox(fill: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
-        let radius: Double? = switch shape.map({ GTKOutline(container: $0) }) {
-        case .rounded(let radius)?: radius
+        let radius: Double? = switch shape.map(BoxArithmetic.outline) {
+        case .roundedRectangle(let radius)?: radius
         case .ellipse?: 9999
         case .rectangle?: 0
         case nil: nil
         }
         let drawn = GTKStyleSheet.box(
             fill: fill.flatMap { GTKBrush($0).firstColor }, stroke: stroke.flatMap { GTKBrush($0).firstColor },
-            strokeWidth: stroke == nil ? nil : max(0, strokeWidth ?? 1), radius: radius)
+            strokeWidth: stroke == nil ? nil : BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth),
+            radius: radius)
         guard drawn != boxClass else { return }
         if let boxClass { gtk_widget_remove_css_class(widget, boxClass) }
         if let drawn { gtk_widget_add_css_class(widget, drawn) }

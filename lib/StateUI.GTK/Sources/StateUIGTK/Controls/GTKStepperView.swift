@@ -45,9 +45,9 @@ final class GTKStepperView: GTKView {
     /// the range; written with as many decimals as they take.
     func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double, step: Double) {
         let kept = writeValue ? value ?? self.value : self.value
-        let (low, high) = (Swift.min(minimum, maximum), Swift.max(minimum, maximum))
-        let step = step.isFinite && step > 0 ? step : 1
-        gtk_spin_button_set_digits(button, guint(StepArithmetic.decimals(of: [step, low, high, kept])))
+        let (low, high) = ValueArithmetic.range(minimum, maximum)
+        let step = ValueArithmetic.step(step)
+        gtk_spin_button_set_digits(button, guint(ValueArithmetic.decimals(of: [step, low, high, kept])))
         gtk_spin_button_set_range(button, low, high)
         gtk_spin_button_set_increments(button, step, step * 10)
         gtk_spin_button_set_value(button, kept)

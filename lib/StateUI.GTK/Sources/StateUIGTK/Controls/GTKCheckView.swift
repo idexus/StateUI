@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIGTK
 
 /// A CheckBox - a `GtkCheckButton` with no caption, the box alone - or a RadioButton, one with its caption, drawn as
@@ -13,7 +14,7 @@ final class GTKCheckView: GTKToggleView {
     private let partner: GTKWidget?
 
     /// How the caption's words look.
-    private(set) var look = GTKTextLook()
+    private(set) var look = TextLook()
 
     init(radio: Bool) {
         partner = radio ? gtk_check_button_new() : nil
@@ -49,7 +50,7 @@ extension GTKCheckView: GTKWordsView {
     }
 
     /// Changes how the caption's words look.
-    func setLook(_ change: (inout GTKTextLook) -> Void) {
+    func setLook(_ change: (inout TextLook) -> Void) {
         change(&look)
         writeLook()
     }

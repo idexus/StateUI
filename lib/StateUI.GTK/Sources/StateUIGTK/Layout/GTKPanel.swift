@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIGTK
 
 /// `StateUIPanel`, a `GtkWidget` subclass registered from Swift: it measures, allocates and draws by asking the
@@ -39,7 +40,7 @@ enum GTKPanel {
                 let number = GTKPanel.number(of: widget)
                 MainActor.assumeIsolated {
                     GTKPanel.view(number)?.allocate(width: Double(width), height: Double(height))
-                    GTKRenderer.shared?.laidOut()
+                    GTKRenderer.shared?.runtime.frames.laidOut()
                 }
             }
             widgetClass.pointee.snapshot = { widget, snapshot in

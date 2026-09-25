@@ -84,7 +84,7 @@ thumb is never argued with.
 A stepper is a `GtkSpinButton`: its number, which the user can also type,
 the buttons beside it and the arrow keys moving it a step, Page Up ten. The
 number is written with as many decimals as the step, the range and the value
-take ([a stepped number](../../host/runtime.md#a-stepped-number)), and the
+take ([a value in a range](../../host/runtime.md#a-value-in-a-range)), and the
 value is kept inside the range; a number typed past an end stands at that
 end.
 

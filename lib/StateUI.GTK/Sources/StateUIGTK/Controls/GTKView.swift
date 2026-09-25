@@ -39,35 +39,33 @@ class GTKView {
 
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
-    private var onHeard: ((GTKHeard) -> Void)?
+    private var onHeard: ((HeardInput) -> Void)?
 
     /// The style sheet's class giving the view its padding.
     private var paddingClass: String?
 
-    private static var nextNumber: Int64 = 0
-    private static var live: [Int64: Weak] = [:]
+    private static let live = LiveViews<GTKView>()
 
     /// Takes the next number and holds the widget `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> GTKWidget?) {
-        Self.nextNumber += 1
-        number = Self.nextNumber
+        number = Self.live.reserve()
         guard let widget = make(number) else { fatalError("GTK made no widget") }
         self.widget = widget
         g_object_ref_sink(widget)
-        Self.live[number] = Weak(self)
+        Self.live.hold(self, as: number)
     }
 
     /// Lets go of the widget, taking it out of a StateUI panel; any other parent - a viewport, a window - is the
     /// owner of its child, and takes it out itself.
     isolated deinit {
-        Self.live[number] = nil
+        Self.live.release(number)
         if let parent = gtk_widget_get_parent(widget), GTKPanel.holds(parent) { gtk_widget_unparent(widget) }
         g_object_unref(widget)
     }
 
     /// The live view a signal names; nil once it has left.
     static func find(_ number: Int64) -> GTKView? {
-        live[number]?.view
+        live.find(number)
     }
 
     /// How many views Swift holds - what a test counts to see every one let go.
@@ -192,12 +190,12 @@ class GTKView {
     }
 
     /// What the view listens for of the user's input.
-    var hearing: GTKHearing { listening?.hearing ?? [] }
+    var hearing: Hearing { listening?.hearing ?? [] }
 
     /// Listens for what `hearing` names, `heard` hearing it; a panel listening for taps is pressable by
     /// assistive technology.
     /// Design: docs/design/platforms/gtk/input.md#listening
-    func hear(_ hearing: GTKHearing, _ heard: @escaping (GTKHeard) -> Void) {
+    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Void) {
         onHeard = hearing.isEmpty ? nil : heard
         guard hearing != self.hearing else { return }
 
@@ -208,7 +206,7 @@ class GTKView {
     }
 
     /// What the view heard, handed to what hears it.
-    func heard(_ heard: GTKHeard) {
+    func heard(_ heard: HeardInput) {
         onHeard?(heard)
     }
 
@@ -219,11 +217,5 @@ class GTKView {
     /// calls this first.
     func detach() {
         hear([]) { _ in }
-    }
-
-    private struct Weak {
-        weak var view: GTKView?
-
-        init(_ view: GTKView) { self.view = view }
     }
 }

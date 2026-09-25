@@ -36,34 +36,14 @@ final class GTKRenderer {
     /// The window the first window element shows in; nil before it says it is there.
     private(set) var window: GTKWindow?
 
-    /// The arrangement of pages the window shows, and what it lays over them, held by their mounted elements.
-    private var shownArrangementElement: MountedElement?
-    private var shownOverlayElement: MountedElement?
-
-    /// The window told it was made.
-    private weak var createdWindow: MountedElement?
+    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlay, and that it was made.
+    private let presentation = WindowPresentation()
 
     /// Whether the screen the window stands on has been told.
     private var reportedDisplay = false
 
     /// Whether the window's split view has been opened wide, once.
     private var openedWide = false
-
-    /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
-    private var scrollers: [Int64: WeakScroller] = [:]
-
-    private struct WeakScroller {
-        weak var view: GTKScrollView?
-    }
-
-    /// The elements whose frame the tree reads, by their view's number, and whether any may have moved since
-    /// they last said where they stand.
-    private var frameReaders: [Int64: WeakElement] = [:]
-    private var framesMoved = false
-
-    private struct WeakElement {
-        weak var element: GTKElement?
-    }
 
     /// A runtime whose windows belong to `application`, on GLib's monotonic clock or on `clock`, with the motion
     /// `reducesMotion` allows.
@@ -126,29 +106,6 @@ final class GTKRenderer {
         runtime.pump.turn()
     }
 
-    /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
-    func requestFrames(for scroller: GTKScrollView) {
-        scrollers[scroller.number] = WeakScroller(view: scroller)
-        runtime.displayCycle.hold()
-    }
-
-    /// Follows where `element` stands while the tree reads it, and lets it go once nothing does.
-    /// Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
-    func follow(_ element: GTKElement, readsFrame: Bool) {
-        guard let number = element.view?.number, readsFrame != (frameReaders[number] != nil) else { return }
-
-        frameReaders[number] = readsFrame ? WeakElement(element: element) : nil
-        if readsFrame { laidOut() }
-    }
-
-    /// GTK allocated a StateUI panel, or a scroller moved: whoever reads a frame says it on the display's next frame.
-    func laidOut() {
-        guard !frameReaders.isEmpty, !framesMoved else { return }
-
-        framesMoved = true
-        runtime.displayCycle.hold()
-    }
-
     /// Shows the first window's arrangement of pages in a GTK window - a page by itself in a frame of its own - its
     /// pages hearing that they show, and tells the window it was made, once, in its turn.
     /// Design: docs/design/platforms/gtk/runtime.md#the-window
@@ -167,10 +124,8 @@ final class GTKRenderer {
         window.setSize(width: element.value(.width)?.number, height: element.value(.height)?.number)
         window.setMinimumSize(width: element.value(.minimumWidth)?.number, height: element.value(.minimumHeight)?.number)
 
-        let arrangement = element.children.first { GTKElement.pageTypes.contains($0.type) }
-        if arrangement !== shownArrangementElement {
-            let previous = shownArrangementElement
-            shownArrangementElement = arrangement
+        let changes = presentation.show(element)
+        if let (previous, arrangement) = changes.arrangement {
             if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
                 window.show(page: arrangement.gtk.view)
             } else {
@@ -179,17 +134,10 @@ final class GTKRenderer {
             previous?.gtk.setPagePresented(false, reason: .window)
             arrangement?.gtk.setPagePresented(true, reason: .window)
         }
-        let overlay = element.children.first { $0.type == .overlay }
-        if overlay !== shownOverlayElement {
-            shownOverlayElement = overlay
-            window.showOverlay(overlay?.gtk.view)
-        }
+        if let overlay = changes.overlay { window.showOverlay(overlay?.gtk.view) }
         refreshChrome()
 
-        if element !== createdWindow {
-            createdWindow = element
-            if let handler = element.handler(.created) { runtime.pump.handlers.enqueuePhase(handler) }
-        }
+        if let handler = changes.created { runtime.pump.handlers.enqueuePhase(handler) }
     }
 
     /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
@@ -197,7 +145,7 @@ final class GTKRenderer {
     func refreshChrome() {
         guard let window, let element = runtime.tree.root?.first(type: .window)?.gtk else { return }
 
-        let arrangement = shownArrangementElement?.gtk
+        let arrangement = presentation.arrangement?.gtk
         if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
             window.pageFrame?.show(arrangement.chrome)
         }
@@ -210,7 +158,7 @@ final class GTKRenderer {
     /// Collapses the window's split view where the window is narrow, and opens it wide with its sidebar shown once
     /// the window first stands - said in the next turn, as the user's.
     private func adaptSplitViews(in window: GTKWindow) {
-        guard let split = shownArrangementElement?.gtk, split.type == .splitView, let view = split.view as? GTKSplitView
+        guard let split = presentation.arrangement?.gtk, split.type == .splitView, let view = split.view as? GTKSplitView
         else { return }
 
         view.adapt(in: window.widget)
@@ -225,7 +173,7 @@ final class GTKRenderer {
     /// Goes the way back the arrangement the window shows offers, as the user does - a stack's top page going;
     /// whether there was one.
     func goBack() -> Bool {
-        shownArrangementElement?.gtk.goBack() ?? false
+        presentation.arrangement?.gtk.goBack() ?? false
     }
 }
 
@@ -241,34 +189,11 @@ extension GTKRenderer: TurnPresenter {
 
 extension GTKRenderer: FramePresenter {
     var wantsFrames: Bool {
-        framesMoved || scrollers.values.contains { $0.view?.wantsFrames == true }
+        runtime.frames.wantsFrames
     }
 
-    /// Lets every moving scroller say what the frame saw it do, then every element whose frame the tree reads say
-    /// where it stands, each in the order its view was made, as one user's transaction.
     func commitUserReports(now: Double) {
-        guard !scrollers.isEmpty || framesMoved else { return }
-
-        runtime.performUserTransaction {
-            for number in scrollers.keys.sorted() {
-                guard let view = scrollers[number]?.view else {
-                    scrollers[number] = nil
-                    continue
-                }
-                view.frame(now: now)
-                if !view.wantsFrames { scrollers[number] = nil }
-            }
-
-            guard framesMoved else { return }
-            framesMoved = false
-            for number in frameReaders.keys.sorted() {
-                guard let element = frameReaders[number]?.element else {
-                    frameReaders[number] = nil
-                    continue
-                }
-                element.reportFrame()
-            }
-        }
+        runtime.frames.commit(now: now)
     }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {

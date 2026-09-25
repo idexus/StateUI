@@ -397,6 +397,69 @@ final class MountedTreeTests: XCTestCase {
             identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: nil))
     }
 
+    /// An element is drawn moved, turned and scaled as it says: `scale` on top of each axis's own, about its middle
+    /// where it names no pivot.
+    @MainActor
+    func testAnElementIsDrawnOverItsPlaceAsItSays() {
+        let (tree, _) = Self.tree()
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [.scale: .number(2), .scaleX: .number(1.5), .translationY: .number(8), .rotation: .number(30)]
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([label, HostPatch(id: .manual("plain"), type: .label)])
+        tree.apply(root, complete: true)
+
+        let drawn = tree.root?.first(id: .manual("label"))?.drawingTransform
+        XCTAssertEqual(drawn?.scaleX, 3)
+        XCTAssertEqual(drawn?.scaleY, 2)
+        XCTAssertEqual(drawn?.translationY, 8)
+        XCTAssertEqual(drawn?.rotation, 30)
+        XCTAssertEqual(drawn?.pivotX, 0.5)
+        XCTAssertEqual(tree.root?.first(id: .manual("plain"))?.drawingTransform, .identity)
+    }
+
+    /// A label's spans are runs of its words, each in its own case else the label's, with its own look; a label
+    /// with no spans has no runs.
+    @MainActor
+    func testALabelsSpansAreRunsOfItsWords() {
+        let (tree, _) = Self.tree()
+        func span(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var span = HostPatch(id: .manual(id), type: .span)
+            span.properties = properties
+            return span
+        }
+        var spans = HostPatch(id: .manual("spans"), type: .spans)
+        spans.children = .arranged([
+            span("one", [.text: .string("Big "), .fontSize: .number(20)]),
+            span("two", [.text: .string("Small"), .textCase: .enumeration(TextCase.lowercase.rawValue)]),
+        ])
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [.textCase: .enumeration(TextCase.uppercase.rawValue)]
+        label.children = .arranged([spans])
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([label, HostPatch(id: .manual("plain"), type: .label)])
+        tree.apply(root, complete: true)
+
+        let runs = tree.root?.first(id: .manual("label"))?.textRuns
+        XCTAssertEqual(runs?.map(\.text), ["BIG ", "small"], "each in its own case, else the label's")
+        XCTAssertEqual(runs?.first?.look.size, 20)
+        XCTAssertNil(tree.root?.first(id: .manual("plain"))?.textRuns)
+    }
+
+    /// A run's look stands over its label's: where the run says nothing, the label's says it.
+    func testARunsLookStandsOverItsLabels() {
+        var run = TextLook()
+        run.size = 20
+        var label = TextLook()
+        label.size = 12
+        label.family = "Serif"
+        label.letterSpacing = 1
+
+        let drawn = run.over(label)
+        XCTAssertEqual(drawn.size, 20)
+        XCTAssertEqual(drawn.family, "Serif")
+        XCTAssertEqual(drawn.letterSpacing, 1)
+    }
+
     /// A direction is inherited: a view left at `.inherited` takes its parent's, one that states its own
     /// keeps it under any parent, and the root takes the language's, as the host reported the locale.
     @MainActor

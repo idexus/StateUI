@@ -191,6 +191,19 @@ motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
 
+## Where a view stands
+
+An element whose frame the tree reads - a state its frame drives, or a
+handler of its changes - says where it stands on the display's next frame
+after anything was laid out or moved: its place in its parent onto the
+state, the whole report to its handler, and nothing where the report is the
+one it last said (`MountedElement.reportFrame`). The runtime's
+`FrameFollowers` keeps the frames coming while a scroller moves or has
+something to say, or a frame read may have moved, and on each frame lets the
+scrollers say what they did, then the elements where they stand, each in the
+order its view was made, as one user's transaction. A host says only what its
+toolkit knows: the numbers of the place.
+
 ## A scroller's movement
 
 The scrolling is the platform's: a drag, a throw, a wheel and a key move a
@@ -213,6 +226,21 @@ its movement on, so it still rests once. A moving scroller keeps the frames
 coming, so the quiet is counted in the display's own time and a hand-wound
 clock reproduces every rest.
 
+## What the user does with a finger
+
+What the user does to a view with a finger, a pen or the mouse becomes the
+element's events by one rule on every host (`MountedElement.hearing`,
+`hear`): a view listens for taps where a handler hears them, for the pointer,
+for a press dragged where a pan, a swipe or a state a pan carries asks - one
+pointer's alone - and for a pinch. A tap answers each time a quick run
+reaches the count asked for, and at once for a press assistive technology
+made; the pointer says where it is, but not as it enters or leaves; a press
+dragged moves the states it carries by how far it has come from where they
+stood as it began, in one user's transaction, and is a swipe as it ends far
+enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
+and where, as shares of the view (`PinchStep`). A host's toolkit hears the
+input and says it as `HeardInput`.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,
@@ -221,6 +249,30 @@ way it moved most - across when it moved at least as far across as down - if
 that movement reaches the view's threshold and the view listens for that way.
 A way it does not listen for is no swipe, even where the press also moved far
 along the other axis: the dominant way decides, never a second one.
+
+## Acts
+
+An act the application calls is answered on every host the same way: with
+a reply carrying its values, or a failure carrying the reason - a caller
+waiting on it throws that, and one nobody waits on goes to the host's log - so
+no caller waits on an act nobody performs. An act aimed at a view names it by
+its first argument, the element's own id or its number; one naming none, or
+none on screen, fails with that reason (`MountedTree.aimed`). A host performs
+the act in its toolkit's terms and nothing more.
+
+## Questions for the user
+
+A question - an alert, a confirmation, a choice of actions, a prompt - is
+read from its act the same way on every host (`HostQuestion`): its title and
+message, the accepting caption ("OK" where it names none), the cancelling one
+("Cancel" for a confirmation or a prompt; a choice's only where it names
+one), a choice's dangerous action and its others, a prompt's placeholder,
+bound, purpose and starting words. It answers as its kind does: a
+confirmation yes or no, a choice or a prompt its words where the user
+accepted and nothing where not, an alert nothing. Questions show one at a
+time in the order asked, each under a ticket of its own across the process
+(`QuestionQueue`), so an answer after its runtime has gone answers nothing
+of another's.
 
 ## Kept values
 
@@ -233,11 +285,15 @@ its key's kind reads back; a key the application does not list, or a value of
 another kind, is not kept. Where the file stands and how it is read and
 written is the host's.
 
-## A stepped number
+## A value in a range
 
-A number the user steps - a stepper's - is written with as many decimals as
-its step, its ends and its value take, so each reads exactly, and no more
-than six (`StepArithmetic`); a number that is no number counts none.
+A value a control holds inside a range - a slider's, a stepper's, a progress
+bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
+ends stand in order whichever the tree gave first; a step that does not move
+is 1; a share of work past an end stands at that end, one that is no number
+at the start; a slider's key moves a hundredth of its range and a page a
+tenth; and a stepped number is written with as many decimals as its step,
+its ends and its value take, so each reads exactly, and no more than six.
 
 ## Core link
 

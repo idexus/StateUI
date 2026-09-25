@@ -11,10 +11,11 @@ import CStateUIGTK
 final class GTKQuestion {
     let call: HostActCall
 
-    /// The question's number: one across the process, so an answer after its renderer has gone answers nothing of
-    /// another's.
-    let ticket: Int64
-    private static var nextTicket: Int64 = 1
+    /// What the act asks, read by the host layer's rule.
+    let question: HostQuestion
+
+    /// The question's ticket, which its queue gives it.
+    var ticket: Int64 = 0
 
     private weak var window: GTKWindow?
 
@@ -24,39 +25,36 @@ final class GTKQuestion {
     /// Each response's caption, by its id.
     private var captions: [String: String] = [:]
 
-    init(_ call: HostActCall, window: GTKWindow) {
+    init(_ call: HostActCall, _ question: HostQuestion, window: GTKWindow) {
         self.call = call
+        self.question = question
         self.window = window
-        ticket = Self.nextTicket
-        Self.nextTicket += 1
     }
 
     /// Shows the dialog over the window.
     func show() {
         guard let window else { return }
-        func text(_ index: Int) -> String? { call.arguments.value(index)?.string }
 
         let dialog: UnsafeMutablePointer<AdwDialog>
-        switch call.act {
+        switch question.kind {
         case .alert:
-            dialog = adw_alert_dialog_new(text(0), text(1))
-            respond(dialog, "accept", text(2) ?? "OK", .suggested, closes: true)
+            dialog = adw_alert_dialog_new(question.title, question.message)
+            respond(dialog, "accept", question.accept, .suggested, closes: true)
         case .confirm:
-            dialog = adw_alert_dialog_new(text(0), text(1))
-            respond(dialog, "cancel", text(3) ?? "Cancel", nil, closes: true)
-            respond(dialog, "accept", text(2) ?? "OK", .suggested)
+            dialog = adw_alert_dialog_new(question.title, question.message)
+            respond(dialog, "cancel", question.cancel ?? "Cancel", nil, closes: true)
+            respond(dialog, "accept", question.accept, .suggested)
         case .chooseAction:
             // Dismissed any other way than by a button - Escape among them - nothing was chosen.
-            dialog = adw_alert_dialog_new(text(0), nil)
+            dialog = adw_alert_dialog_new(question.title, nil)
             adw_alert_dialog_set_close_response(dialog.of(AdwAlertDialog.self), "close")
-            if let destruction = text(2) { respond(dialog, "destroy", destruction, .destructive) }
-            let choices = call.arguments.value(3).flatMap { [String](propValue: $0) } ?? []
-            for (index, choice) in choices.enumerated() { respond(dialog, "choice-\(index)", choice, nil) }
-            if let cancel = text(1) { respond(dialog, "cancel", cancel, nil) }
-        default:
-            dialog = adw_alert_dialog_new(text(0), text(1))
-            respond(dialog, "cancel", text(3) ?? "Cancel", nil, closes: true)
-            respond(dialog, "accept", text(2) ?? "OK", .suggested)
+            if let destruction = question.destruction { respond(dialog, "destroy", destruction, .destructive) }
+            for (index, choice) in question.choices.enumerated() { respond(dialog, "choice-\(index)", choice, nil) }
+            if let cancel = question.cancel { respond(dialog, "cancel", cancel, nil) }
+        case .prompt:
+            dialog = adw_alert_dialog_new(question.title, question.message)
+            respond(dialog, "cancel", question.cancel ?? "Cancel", nil, closes: true)
+            respond(dialog, "accept", question.accept, .suggested)
             let field = makeField()
             adw_alert_dialog_set_extra_child(dialog.of(AdwAlertDialog.self), field)
             // The words are typed at once: the dialog gives the keyboard to its field as it shows.
@@ -72,13 +70,13 @@ final class GTKQuestion {
 
     /// What the user answered by the response `id`: whether it was accepted, and the words chosen or typed.
     func answer(_ id: String) -> (accepted: Bool, words: String?) {
-        switch call.act {
+        switch question.kind {
         case .chooseAction:
             return (captions[id] != nil, captions[id])
         case .prompt:
             let words = field.map { String(cString: gtk_editable_get_text($0.opaque)) }
             return (id == "accept", words)
-        default:
+        case .alert, .confirm:
             return (id == "accept", nil)
         }
     }
@@ -113,12 +111,10 @@ final class GTKQuestion {
     /// starts holding; Enter in it accepts.
     private func makeField() -> GTKWidget {
         let entry = gtk_entry_new()!
-        let arguments = call.arguments
-        if let placeholder = arguments.value(4)?.string { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
-        if let most = arguments.value(5)?.number, most > 0 { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(most)) }
-        let purpose = arguments.value(6).flatMap { InputPurpose(propValue: $0) } ?? .default
-        gtk_entry_set_input_purpose(entry.of(GtkEntry.self), Self.purpose(purpose))
-        gtk_editable_set_text(entry.opaque, arguments.value(7)?.string ?? "")
+        if let placeholder = question.placeholder { gtk_entry_set_placeholder_text(entry.of(GtkEntry.self), placeholder) }
+        if let most = question.maximumLength { gtk_entry_set_max_length(entry.of(GtkEntry.self), Int32(clamping: most)) }
+        gtk_entry_set_input_purpose(entry.of(GtkEntry.self), Self.purpose(question.purpose))
+        gtk_editable_set_text(entry.opaque, question.words)
         gtk_entry_set_activates_default(entry.of(GtkEntry.self), 1)
         field = entry
         return entry

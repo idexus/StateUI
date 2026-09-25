@@ -13,10 +13,10 @@ final class GTKListening {
     private let number: Int64
 
     /// What the view listens for.
-    private(set) var hearing: GTKHearing = []
+    private(set) var hearing: Hearing = []
 
     /// The controllers hung on the widget for each kind of input.
-    private(set) var controllers: [GTKHearing: [OpaquePointer]] = [:]
+    private(set) var controllers: [Hearing: [OpaquePointer]] = [:]
 
     /// Where the press a tap follows went down, and whether it has since moved too far to be a tap.
     private var tapFrom = Point(x: 0, y: 0)
@@ -31,7 +31,7 @@ final class GTKListening {
     private var dragging = false
 
     /// The scale the pinch last said, since it began.
-    private var pinchScale = 1.0
+    private var pinch = PinchStep()
 
     init(widget: GTKWidget, number: Int64) {
         self.widget = widget
@@ -40,8 +40,8 @@ final class GTKListening {
 
     /// Listens for what `hearing` names: a kind newly asked for gets its controllers, one no longer asked for loses
     /// them.
-    func listen(for hearing: GTKHearing) {
-        for kind in GTKHearing.kinds where hearing.contains(kind) != self.hearing.contains(kind) {
+    func listen(for hearing: Hearing) {
+        for kind in Hearing.kinds where hearing.contains(kind) != self.hearing.contains(kind) {
             if hearing.contains(kind) {
                 let made = makeControllers(for: kind)
                 for controller in made { gtk_widget_add_controller(widget, controller) }
@@ -57,11 +57,11 @@ final class GTKListening {
         }
     }
 
-    private func tell(_ heard: GTKHeard) {
+    private func tell(_ heard: HeardInput) {
         GTKView.find(number)?.heard(heard)
     }
 
-    private func makeControllers(for kind: GTKHearing) -> [OpaquePointer] {
+    private func makeControllers(for kind: Hearing) -> [OpaquePointer] {
         switch kind {
         case .taps: [makeTaps()]
         case .pointer: makePointer()
@@ -193,9 +193,9 @@ final class GTKListening {
             guard moved(from: Point(x: 0, y: 0), to: now) else { return }
             dragging = true
             if let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
-            tell(.drag(phase: 0, x: 0, y: 0))
+            tell(.drag(.started, x: 0, y: 0))
         }
-        tell(.drag(phase: 1, x: now.x, y: now.y))
+        tell(.drag(.running, x: now.x, y: now.y))
     }
 
     /// The press ended: a drag it became ends with it - let go, or cancelled.
@@ -208,7 +208,7 @@ final class GTKListening {
             let type = gdk_event_get_event_type(last)
             letGo = type == GDK_BUTTON_RELEASE || type == GDK_TOUCH_END
         }
-        tell(.drag(phase: letGo ? 2 : 3, x: dragMoved.x, y: dragMoved.y))
+        tell(.drag(letGo ? .completed : .canceled, x: dragMoved.x, y: dragMoved.y))
     }
 
     // MARK: - A pinch
@@ -218,40 +218,36 @@ final class GTKListening {
         connectSignal(UnsafeMutableRawPointer(zoom), "begin", number: number) { (gesture, _: UnsafeMutableRawPointer?, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: 0, scale: 1) }
+            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .started, scale: 1) }
         }
         connectSignal(UnsafeMutableRawPointer(zoom), "scale-changed", number: number) { (gesture, scale: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
             MainActor.assumeIsolated {
-                GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: 1, scale: scale)
+                GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .running, scale: scale)
             }
         }
         connectSignal(UnsafeMutableRawPointer(zoom), "end", number: number) { (gesture, _: UnsafeMutableRawPointer?, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
-            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: 2, scale: 1) }
+            MainActor.assumeIsolated { GTKListening.find(number)?.pinched(OpaquePointer(gesture), phase: .completed, scale: 1) }
         }
         return zoom
     }
 
     /// A pinch's step: its scale since the last, and where, as shares of the view's size. Begun, it is claimed,
     /// so no scroller around the view pans with its fingers.
-    private func pinched(_ gesture: OpaquePointer?, phase: Int32, scale: Double) {
-        if phase == 0, let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
-        let step = phase == 1 && pinchScale > 0 ? scale / pinchScale : 1
-        pinchScale = phase == 1 ? scale : 1
+    private func pinched(_ gesture: OpaquePointer?, phase: GesturePhase, scale: Double) {
+        if phase == .started, let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
+        let step = pinch.step(phase, scale: scale)
 
-        var at = Point(x: 0.5, y: 0.5)
         var x = 0.0
         var y = 0.0
-        let width = Double(gtk_widget_get_width(widget))
-        let height = Double(gtk_widget_get_height(widget))
-        if let gesture, gtk_gesture_is_active(gesture) != 0, gtk_gesture_get_bounding_box_center(gesture, &x, &y) != 0,
-           width > 0, height > 0 {
-            at = Point(x: x / width, y: y / height)
-        }
-        tell(.pinch(phase: phase, scale: step, at: at))
+        let center: Point? = if let gesture, gtk_gesture_is_active(gesture) != 0,
+                                gtk_gesture_get_bounding_box_center(gesture, &x, &y) != 0 { Point(x: x, y: y) } else { nil }
+        let at = PinchStep.share(
+            of: center, width: Double(gtk_widget_get_width(widget)), height: Double(gtk_widget_get_height(widget)))
+        tell(.pinch(phase, scale: step, at: at))
     }
 
     // MARK: - Measures
@@ -296,7 +292,7 @@ final class GTKListening {
         GTKView.find(number)?.listening
     }
 
-    nonisolated private static func tell(_ heard: GTKHeard, to number: Int64) {
+    nonisolated private static func tell(_ heard: HeardInput, to number: Int64) {
         MainActor.assumeIsolated { GTKView.find(number)?.heard(heard) }
     }
 }

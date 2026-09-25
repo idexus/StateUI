@@ -15,14 +15,7 @@ final class GTKColorBoxView: GTKPanelView {
     /// The box's colour, and the radii of its corners - one for all four, or four in StateUI's order: top left,
     /// top right, bottom left, bottom right; nil draws no colour.
     func apply(color: HostValue?, corners: HostValue?) {
-        let given: [Double] = if let radius = corners?.number {
-            [radius, radius, radius, radius]
-        } else if let four = corners?.numbers, four.count >= 4 {
-            [four[0], four[1], four[3], four[2]]
-        } else {
-            [0, 0, 0, 0]
-        }
-        radii = given.map { $0.isFinite ? max(0, $0) : 0 }
+        radii = BoxArithmetic.clockwise(corners.flatMap(CornerRadius.init(propValue:)))
         self.color = color.flatMap(GTKBrush.rgba)
         gtk_widget_queue_draw(widget)
     }
@@ -36,7 +29,10 @@ final class GTKColorBoxView: GTKPanelView {
             return
         }
 
-        let corners = radii.map { graphene_size_t(width: Float(min($0, width / 2)), height: Float(min($0, height / 2))) }
+        let corners = radii.map { radius in
+            let fitted = BoxArithmetic.fitted(radius, width: width, height: height)
+            return graphene_size_t(width: Float(fitted.width), height: Float(fitted.height))
+        }
         var outline = GTKOutline.rounded(bounds, corners: corners)
         gtk_snapshot_push_rounded_clip(snapshot, &outline)
         gtk_snapshot_append_color(snapshot, &color, &bounds)
