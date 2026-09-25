@@ -112,7 +112,6 @@ final class GTKPagesTests: XCTestCase {
     /// application does not hold shows its title, and the overflow's menu shows titles.
     func testAnActionWithAPictureStandsAsAnIcon() throws {
         try onUIThread {
-            GTKPictures.folder = GTKTestHost.pictures
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
                     ToolbarItem("Wide").icon("test_wide.png"),

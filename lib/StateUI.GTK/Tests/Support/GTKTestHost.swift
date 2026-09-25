@@ -123,9 +123,9 @@ enum GTKTestHost {
 
 extension XCTestCase {
     /// Runs `body` as the main actor's on the test thread, which holds GTK: a drain makes it MainActor's first.
-    func onUIThread(_ body: @MainActor () throws -> Void) rethrows {
+    func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
         _ = CoreLink().runJobs()
-        try MainActor.assumeIsolated(body)
+        return try MainActor.assumeIsolated(body)
     }
 }
 
@@ -152,6 +152,7 @@ extension GTKRenderer {
 
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
+        GTKPictures.folder = GTKTestHost.pictures
         shared?.tree.root?.leave()
         shared?.window?.close()
         GTKTestHost.window.show(nil)

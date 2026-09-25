@@ -66,3 +66,19 @@ a program's write alike.
 A field submits when Enter is pressed in it, through the entry's `activate`.
 A test types by writing the entry's words outside a program's write, which
 GTK reports as it reports the user's.
+
+## Pictures
+
+An Image is a panel of the host's showing a picture from the application's
+folder ([the application's pictures](drawing.md#the-applications-pictures)),
+its own size, whatever room its layout offers: an SVG the size it declares,
+a bitmap its pixels, both as gdk-pixbuf reads them from the file.
+
+The panel draws the picture in the place its layout gives it, as the aspect
+says - whole in its room, covering it, stretched across it, or at its own
+size in the middle - cut at the room's edge. A bitmap is read once. An SVG is
+read at the size it shows at, at the display's scale, and again only for more
+pixels, so a size in motion does not read it every frame. An SVG keeps its
+own proportions as it is read, leaving bands where the room has others, so a
+stretched one is read covering its room and drawn squeezed into it - never
+enlarged.
