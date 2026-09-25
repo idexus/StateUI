@@ -40,6 +40,24 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "a frame is the DisplayCycle's, in its one order")
     }
 
+    /// A turn is the `Pump`'s: only it renders the core and takes the acts, in its one order. The runtimes
+    /// named here still turn on their own; each is built on the `Pump` on the machine that runs it.
+    func testOnlyThePumpRendersAndTakesTheActs() throws {
+        let awaiting = ["/AppKitRenderer.swift", "/AndroidRenderer.swift", "/WinUIRenderer.swift"]
+        var found: [String] = []
+
+        for (path, text) in try SourceTree.runtimeSources()
+        where !path.hasSuffix("/Pump.swift") && !awaiting.contains(where: path.hasSuffix) {
+            for (number, line) in code(text) {
+                for step in ["core.render(", "core.takeActCalls("] where line.contains(step) {
+                    found.append("\(path):\(number): \(step)")
+                }
+            }
+        }
+
+        XCTAssertEqual(found, [], "a turn is the Pump's, in its one order")
+    }
+
     /// Every call into the running core crosses `CoreLink`. No other file of a
     /// runtime calls `StateUIHost`, except for the lane codecs, which are
     /// arithmetic on values the runtime already holds.

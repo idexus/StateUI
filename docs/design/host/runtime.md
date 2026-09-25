@@ -22,12 +22,14 @@ Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
   Sources/Host             Animator        StateChannels
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
+                           Pump            HandlerDispatch
        |
        v
   toolkit half             frame signal, each element's native half,
   one package per host     realizations, layout views, scrolling, gestures,
   (lib/StateUI.AppKit,     focus, accessibility, windows and menus
-  lib/StateUI.Android)
+  lib/StateUI.Android,
+  lib/StateUI.WinUI)
        |
        v
   native views
@@ -45,7 +47,8 @@ paths, the journey's animations and the frame they run on.
 | --- | --- | --- | --- |
 | S | one `@State` is one state channel, shared by every control bound to it | `StateChannels` | host layer |
 | D | reactive path 1: a body rebuilds, is diffed, arrives as a patch | `PatchIntake`, `MountedTree`, `MountedElement`, `DescribedMotion`, `LayoutMotion` | host layer |
-| | | each element's native half (`NativeElement`), one realization per control family, the handler queue | toolkit half |
+| | | `HandlerDispatch` | host layer |
+| | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
 | | | the user's reports | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
@@ -54,7 +57,8 @@ paths, the journey's animations and the frame they run on.
 | P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `ZStackArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
 | | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
-| | | the pump, the act performer | toolkit half |
+| | | `Pump` | host layer |
+| | | the doorbell's post, the act performer | toolkit half |
 
 ## One frame
 
@@ -103,6 +107,28 @@ always runs in the same order.
 
 The acts come last, so an act lands on the interface its handler just changed.
 
+`Pump` is that turn, once for every runtime. A toolkit gives it a
+`TurnPresenter`: what a render changed around the tree - the windows, their
+pages, their chrome - and the performer of an act. A turn asked for while one
+runs runs when it ends; the handlers a render created run and the turn goes
+round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
+before what comes after it, and the turn goes round again; only then the acts.
+
+## The handlers' order
+
+The application's handlers run in the order the user caused them, each on the
+interface the last one left. `HandlerDispatch` holds a handler raised while a
+patch applies - the tree is half old, half new until the patch is in - and
+one raised inside the user's transaction, a gesture that changes two things at
+once, such as a radio button turning one off and the next on. Both run in
+their order once the hold is over. A turn asked for inside the transaction,
+by a report that wrote a state, waits for it too: the two halves of one
+gesture render together or not at all.
+
+A page's or a window's phase - it showed, it went - is queued as a phase. It
+is rendered before the handler after it runs, so an application watching the
+phase sees each one.
+
 ## A user's change
 
 ```text
@@ -128,11 +154,13 @@ mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
 write, a scroller's movement, the patch intake and the line to the core. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
-`FrameClock`, presents a frame through `FramePresenter`, and hands
+`FrameClock`, presents a frame through `FramePresenter` and a turn through
+`TurnPresenter`, and hands
 `LayoutMotion` the views it places as `PlacedView`. The core suite tests them
 on every platform the core builds on, and `RuntimeArchitectureTests` holds
 every Swift runtime to them: only `Animator` samples a timing law, only
-`DisplayCycle` advances the animator and runs the core's cycle, only `CoreLink`
+`DisplayCycle` advances the animator and runs the core's cycle, only `Pump`
+renders and takes the acts, only `CoreLink`
 calls into the core, only `ProgramWrite` marks a write, and no runtime type is
 an engine or a channel other than a state's. [Motion](motion.md) gives the
 reasons of the animator, the state channels, the described motion and the layout
