@@ -118,6 +118,16 @@ measured only where its natural size places it - on an axis it does not fill
 and states no size for - so a child that fills both ways takes the room
 whatever it would measure. A container with no shown child is its padding.
 
+## A shape's own geometry
+
+A line, a path, a polygon and a polyline draw a geometry of their own
+numbers, which every host places in the room the shape's layout gives it by
+one rule (`ShapeArithmetic`): scaled by the shape's aspect - to fit keeping
+its proportions, to cover, each axis on its own, or not at all - and centred;
+then moved by the shape's own transform, as a transform moves a view after
+its layout, so a translation shows under every aspect. A geometry flat along
+one axis, a straight line, fits by the axis it has.
+
 ## Right to left
 
 A layout works its places out left to right, then turns each about the
