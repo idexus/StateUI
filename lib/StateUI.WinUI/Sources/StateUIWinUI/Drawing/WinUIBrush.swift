@@ -20,43 +20,27 @@ struct WinUIBrush: Equatable {
 
     init() {}
 
+    /// The brush the tree's `value` describes, read by the host layer's rule (`HostBrush`), in ARGB.
     init(_ value: HostValue?) {
-        if let value, let argb = Self.argb(value) {
-            self = .solid(argb)
-            return
+        switch HostBrush(value) {
+        case .none: self.init()
+        case .solid(let color): self.init(kind: 1, geometry: [0, 0, 0, 0], [(0, color.argb ?? 0)])
+        case .linear(let from, let to, let stops):
+            self.init(kind: 2, geometry: [from.x, from.y, to.x, to.y], stops.compactMap(Self.stop))
+        case .radial(let center, let radius, let stops):
+            self.init(kind: 3, geometry: [center.x, center.y, radius, 0], stops.compactMap(Self.stop))
         }
-        guard let parts = value?.values, let brush = parts.first?.enumeration else { return }
-
-        if brush == 1 {
-            if let argb = parts.value(1).flatMap(Self.argb) { self = .solid(argb) }
-            return
-        }
-        var index = 2
-        while index + 1 < parts.count, let offset = parts[index].number, let argb = Self.argb(parts[index + 1]) {
-            colors.append(argb)
-            offsets.append(min(max(offset, 0), 1))
-            index += 2
-        }
-        kind = Int32(brush)
-        let given = parts.value(1)?.numbers ?? []
-        let standing: [Double] = brush == 3 ? [0.5, 0.5, 0.5, 0] : [0, 0, 0, 1]
-        geometry = (0..<4).map { $0 < given.count ? given[$0] : standing[$0] }
     }
 
-    private static func solid(_ argb: UInt32) -> WinUIBrush {
-        var brush = WinUIBrush()
-        brush.kind = 1
-        brush.colors = [argb]
-        brush.offsets = [0]
-        return brush
+    private init(kind: Int32, geometry: [Double], _ stops: [(offset: Double, argb: UInt32)]) {
+        self.kind = kind
+        self.geometry = geometry
+        colors = stops.map(\.argb)
+        offsets = stops.map(\.offset)
     }
 
-    /// A colour as ARGB.
-    static func argb(_ value: HostValue) -> UInt32? {
-        guard let channels = value.color else { return nil }
-
-        return UInt32(channels.alpha) << 24 | UInt32(channels.red) << 16
-            | UInt32(channels.green) << 8 | UInt32(channels.blue)
+    private static func stop(_ stop: HostBrush.Stop) -> (offset: Double, argb: UInt32)? {
+        stop.color.argb.map { (stop.offset, $0) }
     }
 
     /// Runs `body` with the brush as the relay's struct, its stops held for the call.

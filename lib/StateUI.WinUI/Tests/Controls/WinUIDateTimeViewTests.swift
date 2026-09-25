@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// A day and a time the user picks, a program's buttons writing them too and opening the calendar.

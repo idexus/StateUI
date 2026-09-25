@@ -8,6 +8,10 @@
 
 #include "Automation.h"
 
+#include <algorithm>
+#include <cstring>
+#include <string>
+
 #include <winrt/Windows.UI.Xaml.Interop.h>
 
 using namespace stateui;
@@ -87,6 +91,26 @@ extern "C" int32_t stateui_winui_picker_selected(StateUIObjectRef handle) {
     } catch (winrt::hresult_error const &error) {
         report(error, "reading a picker's choice");
         return -1;
+    }
+}
+
+extern "C" int32_t stateui_winui_picker_choices(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+    try {
+        std::wstring joined;
+        for (auto const &item : borrow<controls::ComboBox>(handle).Items()) {
+            if (!joined.empty()) joined += L'\n';
+            joined += winrt::unbox_value_or<winrt::hstring>(item, L"");
+        }
+        auto words = winrt::to_string(joined);
+        if (utf8 && capacity > 0) {
+            auto count = std::min<size_t>(words.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, words.data(), count);
+            utf8[count] = 0;
+        }
+        return static_cast<int32_t>(words.size());
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a picker's choices");
+        return 0;
     }
 }
 

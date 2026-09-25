@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What this runtime says about itself, written to exports/ and held to it: the registrations are the declaration,
-// so nothing here can disagree with the code. Run with STATEUI_UPDATE_EXPORTS=1 to write the export instead of
-// checking it, then read it in the diff.
+// What this runtime says about itself, written to exports/ and held to it (`WinUIExports`): the registrations are
+// the declaration, so nothing here can disagree with the code.
 
 import Foundation
 @_spi(Host) @testable import StateUI
@@ -14,31 +13,19 @@ final class WinUIDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {
-        let exported = Self.declaration().text
-        let file = Self.exports.appendingPathComponent("winui.txt")
-
-        if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
-            try FileManager.default.createDirectory(at: Self.exports, withIntermediateDirectories: true)
-            try exported.write(to: file, atomically: true, encoding: .utf8)
-            return
-        }
-
-        XCTAssertEqual(
-            exported, try String(contentsOf: file, encoding: .utf8),
-            "exports/winui.txt: either a registration changed - run the suite again with STATEUI_UPDATE_EXPORTS=1 "
-                + "and read the diff - or something stopped being realized.")
+        try WinUIExports.hold(WinUIRealization.declaration.text, at: "winui.txt")
     }
 
     /// The export is deterministic: the same registry writes the same text.
     @MainActor
     func testTheSameRegistryWritesTheSameText() {
-        XCTAssertEqual(Self.declaration().text, Self.declaration().text)
+        XCTAssertEqual(WinUIRealization.declaration.text, WinUIRealization.declaration.text)
     }
 
     /// Every name in the export is one the contracts declare.
     @MainActor
     func testEveryNameInTheExportIsOneTheContractsKnow() {
-        let unknown = Self.declaration().undeclared
+        let unknown = WinUIRealization.declaration.undeclared
 
         XCTAssertTrue(
             unknown.isEmpty,
@@ -57,27 +44,5 @@ final class WinUIDeclarationExportTests: XCTestCase {
 
         XCTAssertEqual(unsupported.subtracting(WinUIRealization.unrealized).sorted(), [])
         XCTAssertEqual(made.intersection(WinUIRealization.unrealized).sorted(), [])
-    }
-
-    // MARK: - Support
-
-    /// `exports`, beside `lib`: an export is written by a runtime saying what it realizes.
-    private static var exports: URL {
-        URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Registration
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.WinUI
-            .deletingLastPathComponent()    // lib
-            .deletingLastPathComponent()    // the repository
-            .appendingPathComponent("exports")
-    }
-
-    /// What this host declares, read off its registry.
-    @MainActor
-    private static func declaration() -> HostDeclaration {
-        let registry = WinUIRegistrations.registry
-        return HostDeclaration(
-            realization: registry.realization, shared: registry.sharedNames,
-            acts: WinUIRegistrations.acts.map(\.name))
     }
 }

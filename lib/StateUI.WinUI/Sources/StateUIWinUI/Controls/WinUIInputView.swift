@@ -20,7 +20,13 @@ class WinUIInputView: WinUIView {
 
     /// The words the view shows now, read back from WinUI.
     var text: String {
-        WinUIView.words(of: handle)
+        Self.lines(WinUIView.words(of: handle))
+    }
+
+    /// `words` with each line ending as StateUI's does: WinUI's text box ends a line with a carriage return.
+    /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
+    private static func lines(_ words: String) -> String {
+        words.replacing("\r\n", with: "\n").replacing("\r", with: "\n")
     }
 
     /// Writes the words where they differ from the view's, with the caret after them.
@@ -44,23 +50,25 @@ class WinUIInputView: WinUIView {
 
     /// The words across the view, and the placeholder's colour; nil for the platform's.
     func setLook(alignment: TextAlignment, placeholderColor: HostValue?) {
-        let argb = placeholderColor.flatMap(WinUIBrush.argb)
+        let argb = placeholderColor?.argb
         stateui_winui_field_set_look(handle, alignment.rawValue, argb ?? 0, argb != nil)
     }
 
-    /// Puts the caret `start` characters in and selects `length` from it.
+    /// Puts the caret `start` characters in and selects `length` from it, in the UTF-16 units WinUI counts
+    /// (`InputWords.utf16Selection`).
     func select(start: Int, length: Int) {
-        stateui_winui_field_select(handle, Int32(clamping: start), Int32(clamping: length))
+        let units = InputWords.utf16Selection(start: start, length: length, in: text)
+        stateui_winui_field_select(handle, Int32(clamping: units.start), Int32(clamping: units.length))
     }
 
     /// The words changed: kept within `maximumLength`, then handed on - a program's own write says nothing.
     func typed(_ text: String) {
         guard !ProgramWrite.isWriting else { return }
 
-        var kept = text
-        if let maximumLength, text.count > maximumLength {
-            kept = String(text.prefix(maximumLength))
-            ProgramWrite.perform { setText(kept) }
+        var kept = Self.lines(text)
+        if let cut = InputWords.cut(kept, toBound: maximumLength) {
+            kept = cut
+            ProgramWrite.perform { setText(cut) }
         }
         onTextChanged?(kept)
     }

@@ -18,12 +18,11 @@ final class WinUIElement: NativeElement {
     /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
     var leaving = false
 
-    /// Whether this page tree is shown, as its pages last heard; and what an arrangement showed before a patch.
+    /// Whether this page tree is shown, as its pages last heard.
     var pagePresented = false
-    private var previouslyShown: [MountedElement] = []
 
-    /// Where the states a press dragged carries stood as it began.
-    var panFrom = (x: 0.0, y: 0.0)
+    /// What an arrangement showed before the patch now applied.
+    private var previouslyShown: [MountedElement] = []
 
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
@@ -31,9 +30,6 @@ final class WinUIElement: NativeElement {
     /// Whether the view was last given a context menu, and whether its menu changed in this patch.
     var hadContextMenu = false
     var contextMenuChanged = false
-
-    /// Where the element last said it stands; empty before it has said.
-    var lastFrameReport: [Double] = []
 
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
@@ -82,14 +78,14 @@ final class WinUIElement: NativeElement {
         previouslyShown = []
         if type == .contextMenu { parent?.contextMenuChanged = true }
         refreshContextMenu()
-        host?.follow(self, readsFrame: readsFrame)
+        if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         applyProperties(changed: changed)
 
         var impact = FrameImpact(content: true)
-        if view == nil || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties) {
+        if view == nil || !changed.subtracting(element.ownPlacementRun).isDisjoint(with: MountedElement.arrangedProperties) {
             impact.arrangement = true
         }
         return impact
@@ -97,7 +93,7 @@ final class WinUIElement: NativeElement {
 
     func leave() {
         leaving = false
-        host?.follow(self, readsFrame: false)
+        if let view { host?.runtime.frames.follow(self, order: view.number, reads: false) }
         view?.detach()
     }
 }

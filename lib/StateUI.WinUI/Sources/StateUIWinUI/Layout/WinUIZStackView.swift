@@ -54,13 +54,7 @@ final class WinUIZStackView: WinUITravellingLayout {
     /// Draws the children back to front as the run ranks them, or in their order without one - the order a click
     /// reaches them in too, with nothing moved and nothing laid out again.
     private func holdInDrawingOrder() {
-        let placements = placement?.placements ?? []
-        let count = min(items.count, placements.count)
-        let ordered = (0..<count).sorted {
-            placements[$0].zIndex == placements[$1].zIndex
-                ? $0 < $1
-                : placements[$0].zIndex < placements[$1].zIndex
-        } + Array(count..<items.count)
+        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
         for (rank, index) in ordered.enumerated() {
             items[index].view.setZIndex(ordered == Array(items.indices) ? 0 : Int32(rank))
         }
@@ -73,11 +67,9 @@ final class WinUIZStackView: WinUITravellingLayout {
         for index in 0..<count {
             let placement = placements[index]
             let view = items[index].view
-            view.layout(Rect(
-                x: placement.bounds.x, y: placement.bounds.y,
-                width: max(0, placement.bounds.width), height: max(0, placement.bounds.height)))
-            view.setPlacedDrawing(placement.drawing, opacity: min(max(placement.opacity, 0), 1))
-            (view as? WinUIGridView)?.setShadeOpacity(placement.shade)
+            view.layout(placement.place)
+            view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
+            (view as? WinUIGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }
     }

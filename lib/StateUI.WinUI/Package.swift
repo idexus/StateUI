@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
+        .package(name: "StateUIHostConformance", path: "../StateUI.HostConformance"),
     ],
     targets: [
         // The relay: WinUI's subclasses, its events, the doorbell's post and the
@@ -38,7 +39,10 @@ let package = Package(
         ),
         .testTarget(
             name: "StateUIWinUITests",
-            dependencies: ["StateUIWinUI", "CStateUIWinUI", .product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: [
+                "StateUIWinUI", "CStateUIWinUI", .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHostConformance", package: "StateUIHostConformance"),
+            ],
             path: "Tests",
             // The pictures a test shows, read from where they stand rather than bundled.
             exclude: ["Resources"],

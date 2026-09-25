@@ -3,7 +3,8 @@
 
 // A window: its title, and a root of four rows - the window's chrome, its
 // menu bar, the row of tabs, and the arrangement of pages - with the overlay
-// laid over the page, shown and closed.
+// laid over the page, shown and closed; its activation and its minimizing
+// told as the application's phase.
 // Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 
 #include "Relay.h"
@@ -17,6 +18,8 @@
 using namespace stateui;
 using winrt::Windows::System::VirtualKey;
 using winrt::Windows::System::VirtualKeyModifiers;
+
+namespace windowing = winrt::Microsoft::UI::Windowing;
 
 namespace {
     controls::Grid root(xaml::Window const &window) {
@@ -60,13 +63,31 @@ namespace {
         });
         grid.KeyboardAccelerators().Append(escape);
     }
+
+    /// The application's phase as `window` stands: minimized, else in use where it is `activated`, else behind
+    /// another.
+    int32_t phase(windowing::AppWindow const &window, bool activated) {
+        auto presenter = window.Presenter().try_as<windowing::OverlappedPresenter>();
+        if (presenter && presenter.State() == windowing::OverlappedPresenterState::Minimized) return 2;
+        return activated ? 0 : 1;
+    }
 }
 
-extern "C" StateUIObjectRef stateui_winui_window_make(void) {
+extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
     try {
         xaml::Window window;
         window.SystemBackdrop(xaml::Media::MicaBackdrop());
         window.Content(rows({true, true, true, false}));
+        // The window's state is read at each of them: a minimized window is also told it lost its activation.
+        window.Activated([number](IInspectable const &sender, xaml::WindowActivatedEventArgs const &args) {
+            auto activated = args.WindowActivationState() != xaml::WindowActivationState::Deactivated;
+            callbacks.phaseChanged(number, phase(sender.as<xaml::Window>().AppWindow(), activated));
+        });
+        window.AppWindow().Changed(
+            [number](windowing::AppWindow const &sender, windowing::AppWindowChangedEventArgs const &args) {
+                if (!args.DidPresenterChange() && !args.DidSizeChange()) return;
+                if (phase(sender, false) == 2) callbacks.phaseChanged(number, 2);
+            });
         return detach(window);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a window");

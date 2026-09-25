@@ -10,7 +10,7 @@ extension WinUIRegistrations {
         registry.add(RectangleContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(shapeMembers + [RectangleContract.cornerRadius]) { view, values in
                 paint(view, values)
-                view.draw(.rectangle(radii(values[RectangleContract.cornerRadius])))
+                view.draw(.rectangle(BoxArithmetic.clockwise(values[RectangleContract.cornerRadius])))
             }
         }
         registry.add(EllipseContract.self, create: { _ in WinUIPathView() }) { shape in
@@ -39,7 +39,7 @@ extension WinUIRegistrations {
             shape.applies(shapeMembers + [PolygonContract.points, PolygonContract.fillRule]) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    polyline(values[PolygonContract.points] ?? [], closed: true),
+                    ShapeArithmetic.commands(through: values[PolygonContract.points] ?? [], closed: true),
                     evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
@@ -47,7 +47,7 @@ extension WinUIRegistrations {
             shape.applies(shapeMembers + [PolylineContract.points, PolylineContract.fillRule]) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    polyline(values[PolylineContract.points] ?? [], closed: false),
+                    ShapeArithmetic.commands(through: values[PolylineContract.points] ?? [], closed: false),
                     evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
@@ -80,23 +80,6 @@ extension WinUIRegistrations {
         let transform = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
         return .authored(
             commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit,
-            transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
-    }
-
-    /// A rectangle's corners, clockwise from the top left.
-    private static func radii(_ corners: CornerRadius?) -> [Double] {
-        switch corners {
-        case .uniform(let radius): [radius, radius, radius, radius]
-        case .corners(let topLeft, let topRight, let bottomLeft, let bottomRight):
-            [topLeft, topRight, bottomRight, bottomLeft]
-        case nil: [0, 0, 0, 0]
-        }
-    }
-
-    /// Points joined by lines, and closed where the shape is.
-    private static func polyline(_ points: [Point], closed: Bool) -> [Double] {
-        let finite = points.filter { $0.x.isFinite && $0.y.isFinite }
-        guard let first = finite.first else { return [] }
-        return [0, first.x, first.y] + finite.dropFirst().flatMap { [1, $0.x, $0.y] } + (closed ? [4] : [])
+            transform: transform)
     }
 }

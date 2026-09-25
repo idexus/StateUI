@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
+#include <vector>
 
 #include <winrt/Windows.Globalization.NumberFormatting.h>
 
@@ -28,20 +30,18 @@ extern "C" StateUIObjectRef stateui_winui_slider_make(int64_t view) {
     }
 }
 
-extern "C" void stateui_winui_slider_set(StateUIObjectRef handle, double value, double minimum, double maximum) {
+extern "C" void stateui_winui_slider_set(
+    StateUIObjectRef handle, double value, double lower, double upper, double key, double page, double drag
+) {
     try {
         auto slider = borrow<controls::Slider>(handle);
-        auto lower = std::min(minimum, maximum);
-        auto upper = std::max(minimum, maximum);
-        auto step = upper > lower ? (upper - lower) / 10000 : 1;
         if (slider.Minimum() != lower || slider.Maximum() != upper) {
             // Widened first, so neither end clamps the value on its way.
             slider.Minimum(std::min(lower, slider.Minimum()));
             slider.Maximum(std::max(upper, slider.Maximum()));
-            // A drag lands on a ten-thousandth of the range; an arrow key moves a hundredth, Page Up a tenth.
-            slider.StepFrequency(step);
-            slider.SmallChange((upper - lower) / 100);
-            slider.LargeChange((upper - lower) / 10);
+            slider.StepFrequency(drag);
+            slider.SmallChange(key);
+            slider.LargeChange(page);
             slider.Minimum(lower);
             slider.Maximum(upper);
         }
@@ -78,9 +78,17 @@ extern "C" StateUIObjectRef stateui_winui_stepper_make(int64_t view) {
         controls::NumberBox box;
         box.SpinButtonPlacementMode(controls::NumberBoxSpinButtonPlacementMode::Inline);
         box.ValidationMode(controls::NumberBoxValidationMode::InvalidInputOverwritten);
-        box.ValueChanged([view](controls::NumberBox const &, controls::NumberBoxValueChangedEventArgs const &args) {
-            // An emptied box holds no number: it keeps the one it had.
-            if (!std::isnan(args.NewValue())) callbacks.valueChanged(view, args.NewValue());
+        // Words that say no number leave the number where it was: the box is given it back, and nobody hears it.
+        auto restoring = std::make_shared<bool>(false);
+        box.ValueChanged([view, restoring](controls::NumberBox const &box, controls::NumberBoxValueChangedEventArgs const &args) {
+            if (*restoring) return;
+            if (std::isnan(args.NewValue())) {
+                *restoring = true;
+                if (!std::isnan(args.OldValue())) box.Value(args.OldValue());
+                *restoring = false;
+                return;
+            }
+            callbacks.valueChanged(view, args.NewValue());
         });
         return detach(box);
     } catch (winrt::hresult_error const &error) {
@@ -90,12 +98,12 @@ extern "C" StateUIObjectRef stateui_winui_stepper_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_stepper_set(
-    StateUIObjectRef handle, double value, double minimum, double maximum, double step, int32_t fractionDigits
+    StateUIObjectRef handle, double value, double lower, double upper, double step, int32_t fractionDigits
 ) {
     try {
         auto box = borrow<controls::NumberBox>(handle);
-        box.Minimum(std::min(minimum, maximum));
-        box.Maximum(std::max(minimum, maximum));
+        box.Minimum(lower);
+        box.Maximum(upper);
         // A spin button and an arrow key move one step, Page Up ten.
         box.SmallChange(step);
         box.LargeChange(step * 10);
@@ -117,6 +125,36 @@ extern "C" double stateui_winui_stepper_value(StateUIObjectRef handle) {
     } catch (winrt::hresult_error const &error) {
         report(error, "reading a stepper");
         return 0;
+    }
+}
+
+extern "C" void stateui_winui_stepper_step_as_user(StateUIObjectRef handle, bool up) {
+    try {
+        // The spin button the box's template holds, pressed as UI Automation presses it.
+        std::vector<xaml::DependencyObject> left{as<xaml::DependencyObject>(handle)};
+        auto name = up ? L"UpSpinButton" : L"DownSpinButton";
+        while (!left.empty()) {
+            auto at = left.back();
+            left.pop_back();
+            if (auto button = at.try_as<xaml::FrameworkElement>(); button && button.Name() == name) {
+                pattern<provider::IInvokeProvider>(button, PatternInterface::Invoke).Invoke();
+                return;
+            }
+            for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(at); index < count; ++index)
+                left.push_back(xaml::Media::VisualTreeHelper::GetChild(at, index));
+        }
+        report(winrt::hresult_error(E_FAIL, L"the box has no spin button"), "stepping a stepper as the user");
+    } catch (winrt::hresult_error const &error) {
+        report(error, "stepping a stepper as the user");
+    }
+}
+
+extern "C" void stateui_winui_stepper_enter_as_user(StateUIObjectRef handle, char const *utf8) {
+    try {
+        // The box reads its words as it does when Enter is pressed in it.
+        borrow<controls::NumberBox>(handle).Text(text(utf8));
+    } catch (winrt::hresult_error const &error) {
+        report(error, "entering words in a stepper as the user");
     }
 }
 

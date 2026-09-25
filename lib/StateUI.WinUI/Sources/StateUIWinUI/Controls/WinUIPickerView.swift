@@ -13,8 +13,8 @@ final class WinUIPickerView: WinUIView {
     var onOpened: (() -> Void)?
     var onClosed: (() -> Void)?
 
-    /// The choices the relay holds.
-    private var options: [String]?
+    /// The choices and the choice as the tree last wrote them (`PickerChoices`).
+    private var written = PickerChoices()
 
     /// Whose the list's opening and closing are.
     private var showing = WinUIShowing()
@@ -26,14 +26,13 @@ final class WinUIPickerView: WinUIView {
     /// The choices, the one chosen - written only where `writeChosen` or the choices changed, so the user's choice
     /// is never argued with - and what the picker says while none is.
     func setChoices(_ choices: [String], chosen: Int, writeChosen: Bool, title: String) {
-        let changed = choices != options
-        if changed {
-            options = choices
+        let write = written.write(choices, chosen: chosen, choiceChanged: writeChosen)
+        if let choices = write.choices {
             WinUIStrings.withCStrings(choices) { pointers in
                 stateui_winui_picker_set_options(handle, pointers, Int32(choices.count))
             }
         }
-        stateui_winui_picker_set(handle, Int32(clamping: chosen), writeChosen || changed, title)
+        stateui_winui_picker_set(handle, Int32(clamping: write.chosen ?? -1), write.writesChoice, title)
     }
 
     /// Where the choices stand across the picker.

@@ -86,12 +86,9 @@ final class WinUIScrollView: WinUILayoutView {
         document.padding = padding
         document.orientation = orientation
 
-        guard orientation != .neither else { return move(to: Point(x: 0, y: 0)) }
-        guard let offset, offset.x.isFinite, offset.y.isFinite else { return }
-
-        // The user's own scrolling comes back as the state it wrote: a scroller already there is left alone.
-        if abs(offset.x - self.offset.x) < 0.5, abs(offset.y - self.offset.y) < 0.5 { return }
-        if laidOut { move(to: offset) } else { pendingOffset = offset }
+        guard let target = ScrollArithmetic.offsetWritten(offset, standing: self.offset, orientation: orientation)
+        else { return }
+        if laidOut || orientation == .neither { move(to: target) } else { pendingOffset = target }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -130,7 +127,7 @@ final class WinUIScrollView: WinUILayoutView {
 
         if let target = programTarget {
             programTarget = nil
-            if abs(target.x - standing.x) < 0.5, abs(target.y - standing.y) < 0.5 {
+            if !ScrollArithmetic.differs(target, standing) {
                 offset = standing
                 return
             }
@@ -182,10 +179,8 @@ final class WinUIScrollView: WinUILayoutView {
     /// left alone, as the scroller would say nothing of it.
     private func move(to target: Point) {
         let standing = scroller.standing
-        let kept = Point(
-            x: min(max(target.x, 0), standing.reach.x),
-            y: min(max(target.y, 0), standing.reach.y))
-        guard abs(kept.x - standing.offset.x) >= 0.5 || abs(kept.y - standing.offset.y) >= 0.5 else {
+        let kept = ScrollArithmetic.kept(target, reach: standing.reach)
+        guard ScrollArithmetic.differs(kept, standing.offset) else {
             offset = standing.offset
             return
         }

@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 private enum Sheet: Hashable {

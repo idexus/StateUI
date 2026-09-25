@@ -155,7 +155,7 @@ final class WinUICanvasViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { ShowingPage() }
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
-            _ = host.core.runJobs()
+            _ = host.runtime.core.runJobs()
             let stack = try XCTUnwrap(host.views(WinUIStackView.self).first)
             let held = stack.heldViews()
             stack.setChildren([])

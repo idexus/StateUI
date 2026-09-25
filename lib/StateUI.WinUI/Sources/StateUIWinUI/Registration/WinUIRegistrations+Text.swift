@@ -8,7 +8,7 @@ extension WinUIRegistrations {
     /// the lines.
     static func text(_ registry: Registry<WinUIView>) {
         registry.add(LabelContract.self, create: { _ in WinUILabelView() }) { label in
-            label.applies(textMembers) { view, values in applyText(view, values) }
+            label.applies(TextMembers.members) { view, values in applyText(view, values) }
             label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
                 view.setLines(
                     breaking: values[LabelContract.lineBreak] ?? .wordWrap,
@@ -27,33 +27,17 @@ extension WinUIRegistrations {
         }
     }
 
-    /// What every element showing words takes: the words in their case, the font, their colour, and the room
-    /// around them.
-    static let textMembers: [any ContractMember] = [
-        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
-        PaddingElementContract.padding,
-    ]
-
-    /// Puts `textMembers` on a label, a button or a radio button.
+    /// Puts the text tiers' members (`TextMembers`) on a label, a button or a radio button: the words in their case,
+    /// the font and the colour, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: WinUIView, _ values: ElementValues<Realized>) {
-        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            let words = cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase])
-            (view as? WinUIWordsView)?.setText(words)
-        }
-        if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
-            || values.changed(FontElementContract.fontFamily) {
-            let size = values[FontElementContract.fontSize]
-            let attributes = values[FontElementContract.fontAttributes]
-            let family = values[FontElementContract.fontFamily]?.text
+        if let words = TextMembers.words(values) { (view as? WinUIWordsView)?.setText(words) }
+        if let look = TextMembers.look(values) {
             if let text = view as? WinUITextView {
-                text.setTextFont(size: size, attributes: attributes, family: family)
+                text.setTextFont(size: look.size, attributes: look.attributes, family: look.family)
             } else {
-                view.setFont(size: size, attributes: attributes, family: family)
+                view.setFont(size: look.size, attributes: look.attributes, family: look.family)
             }
-        }
-        if values.changed(TextStyleElementContract.textColor) {
-            view.setForeground(values[TextStyleElementContract.textColor]?.propValue)
+            view.setForeground(look.color)
         }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])

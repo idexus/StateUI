@@ -3,6 +3,7 @@
 
 @_spi(Host) @testable import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// A red box cut to its outline, which a click moves.
@@ -63,7 +64,7 @@ final class WinUIMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(label.drawnOpacity, 0.75, accuracy: 1e-6)
-            XCTAssertFalse(host.describedMotion.isActive)
+            XCTAssertFalse(host.runtime.describedMotion.isActive)
         }
     }
 
@@ -80,7 +81,7 @@ final class WinUIMotionTests: XCTestCase {
             host.apply(changed)
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).drawnOpacity, 0.75, accuracy: 1e-6)
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 

@@ -4,37 +4,8 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
-
-/// The smallest complete application around one page: one scene, one window.
-struct OneWindowApplication: Application {
-    let page: @Sendable () -> any Page
-
-    var scene: any Scene { OneWindow(content: page) }
-}
-
-/// The window of a `OneWindowApplication`, its page built again each time the window is.
-struct OneWindow: Window {
-    let content: @Sendable () -> any Page
-
-    var page: any Page { content() }
-}
-
-/// What a handler heard, in order.
-final class Received<Value>: Sendable {
-    private let received = State(wrappedValue: [Value]())
-
-    var values: [Value] {
-        get { received.wrappedValue }
-        set { received.wrappedValue = newValue }
-    }
-}
-
-/// A clock a test winds by hand, in milliseconds.
-@MainActor
-final class TestClock {
-    var now = 0.0
-}
 
 /// The test thread as WinUI's: WinUI embedded in it once, since no loop of WinUI's runs a test.
 enum WinUITestHost {
@@ -86,13 +57,13 @@ extension WinUIRenderer {
     /// render is taken and set aside, so no frame renders the core's tree over the test's.
     static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> WinUIRenderer {
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
-        _ = renderer.core.render(baseline: 0)
+        _ = renderer.runtime.core.render(baseline: 0)
         return renderer
     }
 
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> WinUIRenderer {
-        shared?.tree.root?.leave()
+        shared?.runtime.tree.root?.leave()
         shared?.window?.close()
         WinUITestHost.window.show(nil)
 
@@ -103,8 +74,8 @@ extension WinUIRenderer {
 
     /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
     func apply(_ patch: HostPatch) {
-        intake.take(patch, generation: intake.baseline &+ 1) { tree.apply($0, complete: true) }
-        let root = (tree.root?.native as? WinUIElement)?.view
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
+        let root = (runtime.tree.root?.native as? WinUIElement)?.view
         guard WinUITestHost.window.content !== root else { return }
         WinUITestHost.window.show(root)
         WinUITestHost.pump()
@@ -112,12 +83,12 @@ extension WinUIRenderer {
 
     /// The view of the element keyed `id`.
     func view(id: ElementId) -> WinUIView? {
-        (tree.root?.first(id: id)?.native as? WinUIElement)?.view
+        (runtime.tree.root?.first(id: id)?.native as? WinUIElement)?.view
     }
 
     /// One display frame at the clock's time, then the layout pass WinUI runs in it.
     func frame() {
-        displayCycle.frame(now: frameClock.now())
+        runtime.displayCycle.frame(now: frameClock.now())
         layOut()
     }
 
@@ -127,19 +98,24 @@ extension WinUIRenderer {
         if let root { stateui_winui_update_layout(root.handle) }
     }
 
-    /// Pumps until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
+    /// Turns until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 {
             if done() { return }
-            WinUITestHost.pump(0.01)
-            _ = core.runJobs()
-            pump()
+            step()
         }
+    }
+
+    /// One bounded step: the thread's messages a moment - WinUI's frames among them - the jobs, and a turn.
+    func step() {
+        WinUITestHost.pump(0.01)
+        _ = runtime.core.runJobs()
+        runtime.pump.turn()
     }
 
     /// Every view of `type` in the tree, in order.
     func views<Native: WinUIView>(_ type: Native.Type) -> [Native] {
-        guard let root = tree.root else { return [] }
+        guard let root = runtime.tree.root else { return [] }
         return Self.views(type, in: root)
     }
 
@@ -230,6 +206,17 @@ extension WinUIButtonView {
     func invoke() {
         stateui_winui_button_invoke(handle)
         WinUITestHost.pump(0.05)
+    }
+}
+
+extension WinUIPickerView {
+    /// The choices the picker holds, as WinUI has them.
+    var choices: [String] {
+        let length = Int(stateui_winui_picker_choices(handle, nil, 0))
+        var bytes = [CChar](repeating: 0, count: length + 1)
+        _ = stateui_winui_picker_choices(handle, &bytes, Int32(bytes.count))
+        let joined = String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        return joined.isEmpty ? [] : joined.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
     }
 }
 

@@ -32,8 +32,11 @@ final class WinUIImageView: WinUIView {
         file = source?.file ?? ""
         self.aspect = aspect
         var size = [0.0, 0.0]
-        found = stateui_winui_image_set(handle, file, aspect.rawValue, &size)
-        if !found { WinUILog.error("no picture \(file) among the application's pictures") }
+        let files = PictureArithmetic.files(for: file)
+        found = WinUIStrings.withCStrings(files) { names in
+            stateui_winui_image_set(handle, names, Int32(files.count), aspect.rawValue, &size)
+        }
+        if !found { WinUIRenderer.log.error("no picture \(file) among the application's pictures") }
         declared = size[0] > 0 && size[1] > 0 ? LayoutSize(width: size[0], height: size[1]) : nil
         drawn = nil
         if let placed { draw(in: placed) }

@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 final class WinUIScrollViewTests: XCTestCase {

@@ -28,8 +28,8 @@ final class WinUIButtonView: WinUIView {
 
     /// What fills the button, its outline and its shape; nil for the platform's own.
     func setLook(background: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
-        let radius: Double = switch shape.map({ WinUIOutline(container: $0) }) {
-        case .rounded(let radius)?: radius
+        let radius: Double = switch shape.map(BoxArithmetic.outline) {
+        case .roundedRectangle(let radius)?: radius
         case .ellipse?: .greatestFiniteMagnitude
         case .rectangle?: 0
         case nil: -1
@@ -37,7 +37,8 @@ final class WinUIButtonView: WinUIView {
         WinUIBrush(background).withRelayBrush { fill in
             WinUIBrush(stroke).withRelayBrush { outline in
                 stateui_winui_button_set_look(
-                    handle, fill, outline, stroke == nil ? 0 : max(0, strokeWidth ?? 1), radius)
+                    handle, fill, outline, BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth), radius,
+                    PressedFill.underPointer, PressedFill.pressed)
             }
         }
     }

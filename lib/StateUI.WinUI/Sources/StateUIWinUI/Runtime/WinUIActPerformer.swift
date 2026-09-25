@@ -12,12 +12,22 @@ import CStateUIWinUI
 final class WinUIActPerformer {
     private let core: CoreLink
 
-    /// The questions not answered yet, by ticket.
-    private var waiting: [Int64: HostActCall] = [:]
+    /// What the dialogs ask, one showing at a time; each answers under its ticket.
+    private let questions = QuestionQueue<Asked>()
 
-    /// The next ticket: one number across every renderer of the process, so an answer that comes after its
-    /// renderer is gone answers nothing of another's.
-    private static var nextTicket: Int64 = 1
+    /// A question the application asked, the window it is asked in, and the ticket its answer comes back under.
+    private final class Asked {
+        let call: HostActCall
+        let question: HostQuestion
+        weak var window: WinUIWindow?
+        var ticket: Int64 = 0
+
+        init(call: HostActCall, question: HostQuestion, window: WinUIWindow) {
+            self.call = call
+            self.question = question
+            self.window = window
+        }
+    }
 
     init(core: CoreLink) {
         self.core = core
@@ -29,13 +39,20 @@ final class WinUIActPerformer {
         case .currentTime:
             var time: [Int32] = [0, 0, 0, 0]
             stateui_winui_clock(&time)
-            reply(call, [time.map(Double.init).propValue])
+            reply(call, HostActs.currentTime(
+                hour: Int(time[0]), minute: Int(time[1]), second: Int(time[2]), millisecond: Int(time[3])))
         case .currentTimeZone:
             reply(call, [.string(WinUIStrings.read { stateui_winui_time_zone($0, $1) })])
         case .utcOffset:
             utcOffset(call)
         case .alert, .confirm, .chooseAction, .prompt:
-            ask(call, window: window)
+            guard let window, window.content != nil, let question = HostQuestion(call) else {
+                return fail(call, "there is no window to ask the user in")
+            }
+            let asked = Asked(call: call, question: question, window: window)
+            let (ticket, showsNow) = questions.ask(asked)
+            asked.ticket = ticket
+            if showsNow { show(asked) }
         case .announce:
             if let content = window?.content { stateui_winui_announce(content.handle, call.arguments.first?.string ?? "") }
             reply(call, [])
@@ -47,85 +64,65 @@ final class WinUIActPerformer {
             WinUIPersistence.keep(call, core: core)
             reply(call, [])
         case .handlerFailed:
-            WinUILog.error("a handler failed: \(call.arguments.first?.string ?? "")")
+            WinUIRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
         default:
             fail(call, "the WinUI host does not perform the act '\(call.act.name)'")
         }
     }
 
-    /// The question asked under `ticket` was answered: accepted or not, and the words chosen or typed.
+    /// The question asked under `ticket` was answered: accepted or not, and the words chosen or typed; the next
+    /// question shows.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        guard let call = waiting.removeValue(forKey: ticket) else { return }
-
-        switch call.act {
-        case .confirm: reply(call, [.bool(accepted)])
-        case .chooseAction, .prompt: reply(call, [(accepted ? words : nil).propValue])
-        default: reply(call, [])
-        }
+        guard let (asked, next) = questions.answered(ticket) else { return }
+        reply(asked.call, asked.question.answer(accepted: accepted, words: words))
+        if let next { show(next) }
     }
 
-    /// Puts a question to the user in WinUI's own dialog; its answer comes back by ticket.
+    /// Puts a question to the user in WinUI's own dialog; its answer comes back by its ticket. A window gone by its
+    /// turn fails it, and the next question takes its turn.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
-    private func ask(_ call: HostActCall, window: WinUIWindow?) {
-        guard let content = window?.content else { return fail(call, "there is no window to ask the user in") }
-
-        let arguments = call.arguments
-        func text(_ index: Int) -> String? { arguments.value(index)?.string }
-
-        // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
-        var kind: Int32 = 3
-        var words: [String?] = [text(0), text(1), text(2) ?? "OK", text(3) ?? "Cancel", nil, text(4), text(7) ?? ""]
-        var choices: [String] = []
-        var maximum: Int32 = 0
-        var purpose = InputPurpose.default
-        switch call.act {
-        case .alert:
-            kind = 0
-            words = [text(0), text(1), text(2) ?? "OK", nil, nil, nil, nil]
-        case .confirm:
-            kind = 1
-            words = [text(0), text(1), text(2) ?? "OK", text(3) ?? "Cancel", nil, nil, nil]
-        case .chooseAction:
-            kind = 2
-            words = [text(0), nil, nil, text(1), text(2), nil, nil]
-            choices = arguments.value(3).flatMap { [String](propValue: $0) } ?? []
-        default:
-            maximum = Int32(arguments.value(5)?.number ?? 0)
-            purpose = arguments.value(6).flatMap { InputPurpose(propValue: $0) } ?? .default
+    private func show(_ asked: Asked) {
+        guard let content = asked.window?.content else {
+            fail(asked.call, "there is no window to ask the user in")
+            if let (_, next) = questions.answered(asked.ticket), let next { show(next) }
+            return
         }
 
-        let ticket = wait(call)
-        WinUIStrings.withCStrings(words.map { $0 ?? "" } + choices) { pointers in
+        // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
+        let question = asked.question
+        let kind: Int32 = switch question.kind {
+        case .alert: 0
+        case .confirm: 1
+        case .chooseAction: 2
+        case .prompt: 3
+        }
+        let words: [String?] = [
+            question.title, question.message, question.accept, question.cancel, question.destruction,
+            question.placeholder, question.words,
+        ]
+        WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
-                var question = StateUIQuestion(
+                var relayed = StateUIQuestion(
                     kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3), destruction: at(4),
-                    choices: offered.baseAddress, choiceCount: Int32(choices.count), placeholder: at(5),
-                    maximumLength: maximum, purpose: purpose.rawValue, initial: at(6))
-                stateui_winui_ask(content.handle, ticket, &question)
+                    choices: offered.baseAddress, choiceCount: Int32(question.choices.count), placeholder: at(5),
+                    maximumLength: Int32(question.maximumLength ?? 0), purpose: question.purpose.rawValue,
+                    initial: at(6))
+                stateui_winui_ask(content.handle, asked.ticket, &relayed)
             }
         }
     }
 
-    /// Keeps `call` waiting for its answer, under the ticket this answers.
-    private func wait(_ call: HostActCall) -> Int64 {
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
-        waiting[ticket] = call
-        return ticket
-    }
-
     /// How far a zone is from UTC on a day, in minutes, as ICU says; a zone it does not know fails the act.
     private func utcOffset(_ call: HostActCall) {
-        let zone = call.arguments.value(0)?.string
-        let day = call.arguments.value(1).flatMap { CalendarDate(propValue: $0) }
+        let (zone, day) = HostActs.utcOffsetQuestion(call)
         var minutes: Int32 = 0
         guard stateui_winui_utc_offset(
             zone, Int32(day?.year ?? 0), Int32(day?.month ?? 0), Int32(day?.day ?? 0), &minutes)
-        else { return fail(call, "no time zone '\(zone ?? "")' is known") }
+        else { return fail(call, HostActs.unknownZone(zone).reason) }
 
-        reply(call, [.number(Double(minutes))])
+        reply(call, HostActs.utcOffset(minutes: Int(minutes)))
     }
 
     /// Puts the focus on the view the act names, or takes it off; `focus` answers whether the view took it.
@@ -136,34 +133,23 @@ final class WinUIActPerformer {
         reply(call, call.act == .focus ? [.bool(done)] : [])
     }
 
-    /// The view the act is aimed at, which its first argument names; nil, the act failed, where there is none.
+    /// The view the act is aimed at (`MountedTree.aimed`); nil, the act failed, where there is none.
     private func aimed(_ call: HostActCall, in tree: MountedTree) -> WinUIView? {
-        let target: ElementId? = switch call.arguments.first {
-        case .string(let name)?: .manual(name)
-        case .number(let number)?: .auto(Int(number))
-        default: nil
+        do {
+            let element = try tree.aimed(call)
+            if let view = (element.native as? WinUIElement)?.view { return view }
+            fail(call, "\(element.id) has no view")
+        } catch {
+            fail(call, error.reason)
         }
-        guard let target else {
-            fail(call, "\(call.act.name) has to say which view it is for")
-            return nil
-        }
-        guard let view = (tree.root?.first(id: target)?.native as? WinUIElement)?.view else {
-            fail(call, "there is no view \(target) on screen")
-            return nil
-        }
-        return view
+        return nil
     }
 
     private func reply(_ call: HostActCall, _ values: [HostValue]) {
-        if let completion = call.completion { _ = core.reply(completion, with: values) }
+        core.reply(call, values)
     }
 
-    /// Fails an act: a caller waiting on it throws the reason, and one nobody waits for is logged.
     private func fail(_ call: HostActCall, _ reason: String) {
-        if let completion = call.completion {
-            _ = core.fail(completion, reason: reason)
-        } else {
-            WinUILog.error(reason)
-        }
+        core.fail(call, reason, log: { WinUIRenderer.log.error($0) })
     }
 }

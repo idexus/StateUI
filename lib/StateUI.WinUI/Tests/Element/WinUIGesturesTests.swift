@@ -106,9 +106,9 @@ final class WinUIGesturesTests: XCTestCase {
             let host = WinUIRenderer.running { DragPage() }
             let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
 
-            box.heard(.drag(phase: 0, x: 0, y: 0))
-            box.heard(.drag(phase: 1, x: -60, y: 5))
-            box.heard(.drag(phase: 2, x: -60, y: 5))
+            box.heard(.drag(.started, x: 0, y: 0))
+            box.heard(.drag(.running, x: -60, y: 5))
+            box.heard(.drag(.completed, x: -60, y: 5))
             let expected = "x -50 pan 0 0; pan 1 -60; pan 2 0; swiped 2; "
             host.settle { host.texts.first == expected }
 
@@ -123,8 +123,8 @@ final class WinUIGesturesTests: XCTestCase {
             let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
 
             for moved in [(20.0, 0.0), (0.0, -80.0)] {
-                box.heard(.drag(phase: 0, x: 0, y: 0))
-                box.heard(.drag(phase: 2, x: moved.0, y: moved.1))
+                box.heard(.drag(.started, x: 0, y: 0))
+                box.heard(.drag(.completed, x: moved.0, y: moved.1))
             }
             host.settle { host.texts.first?.contains("pan 2 0; pan 0 0; pan 2 0;") == true }
 
@@ -138,7 +138,7 @@ final class WinUIGesturesTests: XCTestCase {
             let host = WinUIRenderer.running { DragPage() }
             let box = try XCTUnwrap(host.views(WinUIColorBoxView.self).first)
 
-            box.heard(.pinch(phase: 1, scale: 1.5, at: Point(x: 0.25, y: 0.75)))
+            box.heard(.pinch(.running, scale: 1.5, at: Point(x: 0.25, y: 0.75)))
             box.heard(.pointer(.pointerMoved, Point(x: 12, y: 7)))
             let expected = "x 10 pinch 1.5 at 0.25; moved 12,7; "
             host.settle { host.texts.first == expected }
@@ -147,21 +147,29 @@ final class WinUIGesturesTests: XCTestCase {
         }
     }
 
+    /// The relay listens by the host layer's own bits, which a view hands it as they are.
+    func testTheRelayListensByTheHostLayersBits() {
+        XCTAssertEqual(Hearing.taps.rawValue, UInt32(StateUIHearingTaps.rawValue))
+        XCTAssertEqual(Hearing.pointer.rawValue, UInt32(StateUIHearingPointer.rawValue))
+        XCTAssertEqual(Hearing.drags.rawValue, UInt32(StateUIHearingDrags.rawValue))
+        XCTAssertEqual(Hearing.pinches.rawValue, UInt32(StateUIHearingPinches.rawValue))
+    }
+
     /// A view listens for what its handlers ask, and stops once it leaves the tree.
     func testAViewListensForWhatItsHandlersAskAndStopsAsItLeaves() throws {
         try onUIThread {
             let host = WinUIRenderer.running { TapsPage(count: 1) }
             let rows = host.views(WinUIStackView.self)
             let row = try XCTUnwrap(rows.dropFirst().first)
-            XCTAssertEqual(row.hearing, UInt32(StateUIHearingTaps.rawValue))
-            XCTAssertEqual(try XCTUnwrap(rows.last).hearing, 0)
+            XCTAssertEqual(row.hearing, .taps)
+            XCTAssertEqual(try XCTUnwrap(rows.last).hearing, [])
             let listening = stateui_winui_listeners()
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { stateui_winui_listeners() == listening - 1 }
 
             XCTAssertEqual(stateui_winui_listeners(), listening - 1)
-            XCTAssertEqual(row.hearing, 0)
+            XCTAssertEqual(row.hearing, [])
         }
     }
 }

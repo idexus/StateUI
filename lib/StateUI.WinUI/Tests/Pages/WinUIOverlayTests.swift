@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 extension OverlayKey {
@@ -89,7 +90,7 @@ final class WinUIOverlayTests: XCTestCase {
 
             Inspector.open(in: scene)
             host.settle { window.overlay != nil }
-            let overlay = try XCTUnwrap((host.tree.root?.first(type: .overlay)?.native as? WinUIElement)?.view)
+            let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? WinUIElement)?.view)
             XCTAssertTrue(window.overlay === overlay)
             host.layOut()
             XCTAssertEqual(overlay.frame.width, size.width, "laid over the page, as wide")

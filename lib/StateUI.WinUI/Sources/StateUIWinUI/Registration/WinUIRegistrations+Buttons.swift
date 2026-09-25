@@ -13,7 +13,7 @@ extension WinUIRegistrations {
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
-            button.applies(textMembers) { view, values in applyText(view, values) }
+            button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.applies([
                 VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,

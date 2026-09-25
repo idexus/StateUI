@@ -34,8 +34,14 @@ final class WinUIWindow {
 
     private var activated = false
 
+    /// The number the window's own events name it by: its chrome's.
+    var number: Int64 { titleBar.number }
+
+    /// Whether the window was closed: what it tells after that is its closing's, and no one's to hear.
+    private(set) var isClosed = false
+
     init() {
-        handle = stateui_winui_window_make()!
+        handle = stateui_winui_window_make(titleBar.number)!
         stateui_winui_window_set_chrome(handle, titleBar.handle, nil, nil)
     }
 
@@ -114,6 +120,7 @@ final class WinUIWindow {
 
     /// Closes the window.
     func close() {
+        isClosed = true
         stateui_winui_window_close(handle)
     }
 }

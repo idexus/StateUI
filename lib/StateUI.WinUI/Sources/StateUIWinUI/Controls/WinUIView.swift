@@ -39,29 +39,27 @@ class WinUIView {
     private var writtenOpacity = 1.0
     private var writtenZIndex: Int32 = 0
 
-    private static var nextNumber: Int64 = 0
-    private static var live: [Int64: Weak] = [:]
+    private static let live = LiveViews<WinUIView>()
 
     /// Takes the next number and holds the element `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> StateUIObjectRef?) {
-        Self.nextNumber += 1
-        number = Self.nextNumber
+        number = Self.live.reserve()
         guard let handle = make(number) else { fatalError("the relay made no element - its log says why") }
         self.handle = handle
-        Self.live[number] = Weak(self)
+        Self.live.hold(self, as: number)
         // A control's style aligns it inside its place; a StateUI layout decides the place, so it fills it.
         // Design: docs/design/platforms/winui/layout.md#a-place-filled
         stateui_winui_fill_place(handle)
     }
 
     isolated deinit {
-        Self.live[number] = nil
+        Self.live.release(number)
         stateui_winui_release(handle)
     }
 
     /// The live view a callback names; nil once it has left.
     static func find(_ number: Int64) -> WinUIView? {
-        live[number]?.view
+        live.find(number)
     }
 
     /// How many views Swift holds - what a test counts to see every one let go.
@@ -178,10 +176,7 @@ class WinUIView {
     /// Where the view stands, in DIPs: its frame in its parent, its place in the window, and that place from
     /// `safeArea`, the safe area's top left in the window.
     func frameReport(safeArea: Point) -> [Double] {
-        let place = placedFrame
-        let corner = origin
-        return [place.x, place.y, place.width, place.height, corner.x, corner.y,
-                corner.x - safeArea.x, corner.y - safeArea.y]
+        MountedElement.frameNumbers(place: placedFrame, corner: origin, content: safeArea)
     }
 
     /// Where WinUI laid the element out in its parent, in DIPs.
@@ -194,29 +189,20 @@ class WinUIView {
     /// The control's one accent colour; nil for the platform's.
     /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
     func setTint(_ tint: HostValue?) {
-        let argb = tint.flatMap(WinUIBrush.argb)
-        stateui_winui_set_tint(handle, argb ?? 0, argb != nil)
-    }
-
-    /// Whether assistive technology meets a view: met, skipped, or skipped with everything that stands in it.
-    enum AccessibilityPresence {
-        case met
-        case hidden
-        case hiddenWithChildren
+        let argb = tint?.argb
+        stateui_winui_set_tint(handle, argb ?? 0, argb != nil, PressedFill.underPointer, PressedFill.pressed)
     }
 
     /// What assistive technology meets of the view: nil words and presence for the control's own, a heading level
     /// of 0 for none.
     /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
-    func setAccessibility(
-        identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: AccessibilityPresence?
-    ) {
-        let met: Int32 = switch presence {
+    func setAccessibility(_ words: AccessibilityWords) {
+        let met: Int32 = switch words.presence {
         case nil: 0
         case .met: 1
         case .hidden, .hiddenWithChildren: 2
         }
-        stateui_winui_set_accessibility(handle, identifier, label, hint, headingLevel, met)
+        stateui_winui_set_accessibility(handle, words.identifier, words.label, words.hint, words.headingLevel, met)
     }
 
     /// The user clicked the view.
@@ -272,37 +258,32 @@ class WinUIView {
         if menuActions.indices.contains(index) { menuActions[index]() }
     }
 
-    /// What of the user's input the view listens for, as the relay's bits; what hears it.
-    private(set) var hearing: UInt32 = 0
-    private var onHeard: ((WinUIHeard) -> Void)?
+    /// What of the user's input the view listens for; what hears it.
+    private(set) var hearing: Hearing = []
+    private var onHeard: ((HeardInput) -> Void)?
 
-    /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change.
+    /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change, in its bits, which
+    /// are `Hearing`'s.
     /// Design: docs/design/platforms/winui/input.md
-    func hear(_ hearing: UInt32, _ heard: @escaping (WinUIHeard) -> Void) {
-        onHeard = hearing == 0 ? nil : heard
+    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Void) {
+        onHeard = hearing.isEmpty ? nil : heard
         guard hearing != self.hearing else { return }
 
         self.hearing = hearing
-        stateui_winui_hear(handle, number, hearing)
+        stateui_winui_hear(handle, number, hearing.rawValue)
     }
 
     /// What the relay says the view heard.
-    func heard(_ heard: WinUIHeard) {
+    func heard(_ heard: HeardInput) {
         onHeard?(heard)
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it. A view that
     /// overrides this lets go of what every view holds first, then of its own.
     func detach() {
-        hear(0) { _ in }
+        hear([]) { _ in }
         setFocusChanged(nil)
         menuActions = []
-    }
-
-    private struct Weak {
-        weak var view: WinUIView?
-
-        init(_ view: WinUIView) { self.view = view }
     }
 }
 

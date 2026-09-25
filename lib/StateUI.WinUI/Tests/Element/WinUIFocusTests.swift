@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// Two fields saying whether each holds the keyboard.

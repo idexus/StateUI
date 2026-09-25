@@ -2,22 +2,24 @@
 
 The WinUI host is the runtime every host shares
 ([the runtime](../../host/runtime.md)), over WinUI 3: the core's host layer
-supplies the mounted tree, the patch intake, the animator, the state channels
-and the display cycle, and the WinUI half supplies what only the toolkit can -
-the frame signal, the doorbell's post, the elements, their layout, and the
-window around them. What WinUI asks of C++ stands in the relay beneath it
+supplies the mounted tree, the patch intake, the animator, the state channels,
+the display cycle and the turn, and the WinUI half supplies what only the
+toolkit can - the frame signal, the doorbell's post, the elements, their
+layout, and the window around them. What WinUI asks of C++ stands in the relay beneath it
 ([the relay](relay.md)).
 
 ## The WinUI runtime
 
-`WinUIRenderer` owns the runtime's elements, as every runtime does: the core
-link, the intake, the mounted tree whose native halves are `WinUIElement`s,
-the animator and what follows it, the display cycle, and the frame clock. Its
-turn is the one every runtime keeps: the jobs a resumed handler left, a
-pending display cycle, a render when the core needs one, the handlers the
-render created, and then the acts - on the interface their handler has just
-changed. A turn asked for inside a turn runs when it ends, and an event raised
-while a patch applies waits for the patch.
+`WinUIRenderer` holds the parts every runtime holds alike (`HostRuntime`): the
+core link, the intake, the mounted tree whose native halves are
+`WinUIElement`s, the animator and what follows it, the display cycle on
+WinUI's frame clock, and the pump. Its turn is the one every runtime keeps
+(`Pump`): the jobs a resumed handler left, a pending display cycle, a render
+when the core needs one, the handlers the render created, and then the acts -
+on the interface their handler has just changed. A turn asked for inside a
+turn runs when it ends, and an event raised while a patch applies waits for
+the patch. What the renderer adds is WinUI's: the window, its sheets and its
+chrome shown after each render, and the acts performed.
 
 A view is let go of in the turn after its element left: its `deinit` is
 `MainActor`'s, and a release outside a task's context puts it in the UI
@@ -66,6 +68,8 @@ A handler that awaits resumes on `MainActor`, whose jobs wait in StateUI's UI
 executor until the host drains them. A thread of the host's own parks until
 the core has work, and posts one turn to the UI thread's `DispatcherQueue`
 through the relay; the turn runs on the UI thread among WinUI's own work.
+What a layout pass decides - a split view's first room - waits in the doorbell
+until the pass is over, and runs as the next turn it posts begins.
 
 The thread is started from a nonisolated function: a closure written inside a
 `MainActor` function is `MainActor`'s, and the runtime reports it as a data
@@ -84,7 +88,18 @@ performance counter's, in milliseconds.
 The first window element's arrangement of pages is the content of a WinUI
 `Window`, under the window's chrome, which names it after the visible page
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
-the first time it shows a page, and told it was made once, in its turn.
+the first time it shows a page, and told it was made once, in its turn
+(`WindowPresentation`); the pages the window's modal stack presents stand on
+sheets over it.
+
+## The application's phase
+
+The window's activation and its minimizing are the application's phase, told
+on by the host layer's rule ([the application's
+phase](../../host/runtime.md#the-applications-phase)): activated, it is in
+use; deactivated, it shows behind another window; minimized, it is seen
+nowhere. The window's state is read at each of WinUI's events, because a
+window being minimized is also told it lost its activation, in either order.
 
 ## The environment
 
@@ -118,8 +133,10 @@ A question - an alert, a confirmation, a choice of actions, a prompt - is
 WinUI's own dialog, over the window, and its call waits under a ticket the
 dialog hands back as the user answers; a ticket is one number across the
 process, so an answer that arrives after its renderer has gone answers
-nothing of another's. A window shows one dialog at a time, so a question
-asked while one shows waits for it to close. A choice of actions is a
+nothing of another's. Questions are asked one at a time, in the order the
+application asked them, by the host layer's queue ([questions for the
+user](../../host/runtime.md#questions-for-the-user)): the next shows once the
+one before is answered. A choice of actions is a
 button a choice, the dangerous one first, and the pressed caption is the
 answer - the cancelling one too; a dialog dismissed any other way, Escape
 among them, answers that nothing was chosen. A prompt's field takes the
@@ -129,8 +146,8 @@ placeholder, the most characters and the keyboard its purpose asks for.
 
 Windows keeps no store for an application that is no package, so the host
 keeps one of its own: a file in the user's local data, in a folder named
-after the executable, a line a key - its name and its words apart by a tab,
-the tabs, line ends and backslashes in either escaped. Every key the
+after the executable, holding the host layer's text ([kept
+values](../../host/runtime.md#kept-values)). Every key the
 application lists is read before the first scene connects and handed to the
 core ahead of the first view; a key's new value writes the whole file again,
 its keys in order, beside the old one first and then in its place, so a

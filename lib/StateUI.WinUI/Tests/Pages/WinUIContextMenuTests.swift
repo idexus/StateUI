@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// A row with a context menu whose entries follow the page's states, saying what the user chose.

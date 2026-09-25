@@ -36,18 +36,4 @@ final class WinUIIndicatorViewTests: XCTestCase {
             XCTAssertEqual(bars.map(\.progress), [0.5, 1])
         }
     }
-
-    /// A spinner turns while its work runs, and stops when it stops.
-    func testASpinnerTurnsWhileItsWorkRuns() throws {
-        try onUIThread {
-            let host = WinUIRenderer.running { SpinnerPage() }
-            let spinner = try XCTUnwrap(host.views(WinUIActivityIndicatorView.self).first)
-            XCTAssertTrue(spinner.isRunning)
-
-            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
-            host.settle { !spinner.isRunning }
-
-            XCTAssertFalse(spinner.isRunning)
-        }
-    }
 }

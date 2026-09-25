@@ -54,9 +54,12 @@ rectangle's corners are its own arcs, each corner its radius. A line, a
 path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by their
 aspect: fitted, covering, stretched or at their own size, centred, then
-moved by their transform, as every host places them. WinUI measures the
-geometry's bounds itself; a geometry left where it stands takes no
-transform, since WinUI draws nothing of one given the identity. A shape has
+moved by their transform, as every host places them
+([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)). WinUI
+measures the geometry's bounds, once for each geometry, and the host hands
+the relay the place the arithmetic gives for the room; a geometry left where
+it stands takes no transform, since WinUI draws nothing of one given the
+identity. A shape has
 no size of its own and asks WinUI for none: it is drawn in the place its
 layout gives it. Dashes, gaps and their offset are outline widths in WinUI
 as in StateUI; a mitred corner's limit WinUI measures against half the

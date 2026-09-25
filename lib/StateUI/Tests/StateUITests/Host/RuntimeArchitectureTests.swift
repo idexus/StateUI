@@ -43,7 +43,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     /// A turn is the `Pump`'s: only it renders the core and takes the acts, in its one order. The runtimes
     /// named here still turn on their own; each is built on the `Pump` on the machine that runs it.
     func testOnlyThePumpRendersAndTakesTheActs() throws {
-        let awaiting = ["/AppKitRenderer.swift", "/AndroidRenderer.swift", "/WinUIRenderer.swift"]
+        let awaiting = ["/AppKitRenderer.swift", "/AndroidRenderer.swift"]
         var found: [String] = []
 
         for (path, text) in try SourceTree.runtimeSources()

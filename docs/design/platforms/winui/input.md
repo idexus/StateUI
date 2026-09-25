@@ -10,7 +10,10 @@ and stays there ([controls](controls.md)).
 
 A view listens only for what its element's handlers and channels ask: taps
 for a tap handler, the pointer for a pointer handler, a press dragged for a
-pan, a swipe or a state a pan carries, a pinch for a pinch handler. The relay
+pan, a swipe or a state a pan carries, a pinch for a pinch handler; and what
+it hears becomes the element's events by the host layer's rule ([what the
+user does with a finger](../../host/runtime.md#what-the-user-does-with-a-finger)).
+The relay takes what a view listens for in the host layer's own bits, and
 hangs its handlers on the element once, each naming the view by its number,
 and each asks what the view listens for as it runs; a view that stops
 listening, or leaves the tree, takes them off again.

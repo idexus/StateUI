@@ -102,14 +102,12 @@ extern "C" void stateui_winui_set_padding(StateUIObjectRef handle, double left, 
     }
 }
 
-extern "C" void stateui_winui_text_set_lines(StateUIObjectRef handle, int32_t breaking, int32_t maximum) {
+extern "C" void stateui_winui_text_set_lines(StateUIObjectRef handle, bool wraps, int32_t lines, bool trims) {
     try {
         auto block = borrow<controls::TextBlock>(handle);
-        // StateUI's LineBreak: no wrap, word wrap, character wrap, then head, tail and middle truncation.
-        bool wraps = breaking == 1 || breaking == 2;
         block.TextWrapping(wraps ? xaml::TextWrapping::Wrap : xaml::TextWrapping::NoWrap);
-        block.TextTrimming(breaking >= 3 ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
-        block.MaxLines(wraps ? std::max(0, maximum) : 1);
+        block.TextTrimming(trims ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
+        block.MaxLines(std::max(0, lines));
     } catch (winrt::hresult_error const &error) {
         report(error, "setting a label's lines");
     }

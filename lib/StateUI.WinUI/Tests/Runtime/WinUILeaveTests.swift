@@ -30,7 +30,7 @@ final class WinUILeaveTests: XCTestCase {
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             // A view's deinit is MainActor's, and runs in the turn after the one it left in.
-            _ = host.core.runJobs()
+            _ = host.runtime.core.runJobs()
 
             XCTAssertEqual(host.views(WinUILabelView.self).count, 0)
             XCTAssertEqual(WinUIView.liveCount, before - 1, "the label's view outlived its element")

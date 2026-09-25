@@ -35,7 +35,7 @@ class WinUILayoutView: WinUIView {
     private(set) var boxView: WinUIShapeView?
 
     /// The cut last written, over the size it was written at.
-    private var cut: (outline: WinUIOutline, width: Double, height: Double)?
+    private var cut: (outline: ContainerShape, width: Double, height: Double)?
 
     /// The elements the panel holds, in the order it draws them, back to front.
     private var held: [WinUIView] = []
@@ -99,10 +99,10 @@ class WinUILayoutView: WinUIView {
     /// arrangement to place it and its cut.
     /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
     private func paintBox() {
-        let outline = WinUIOutline(container: box.shape)
+        let outline = BoxArithmetic.outline(box.shape)
         let fill = WinUIBrush(box.fill)
         let stroke = WinUIBrush(box.stroke)
-        let width = box.stroke == nil ? 0 : max(0, box.width ?? 1)
+        let width = BoxArithmetic.outlineWidth(stroke: box.stroke, width: box.width)
 
         if fill == .none, stroke == .none || width == 0 {
             boxView = nil
@@ -188,17 +188,14 @@ class WinUILayoutView: WinUIView {
     }
 
     /// A layout skipped with its children hides from assistive technology all that stands in it.
-    override func setAccessibility(
-        identifier: String?, label: String?, hint: String?, headingLevel: Int32, presence: AccessibilityPresence?
-    ) {
-        super.setAccessibility(
-            identifier: identifier, label: label, hint: hint, headingLevel: headingLevel, presence: presence)
-        stateui_winui_panel_hide_children(handle, presence == .hiddenWithChildren)
+    override func setAccessibility(_ words: AccessibilityWords) {
+        super.setAccessibility(words)
+        stateui_winui_panel_hide_children(handle, words.presence == .hiddenWithChildren)
     }
 
     /// Cuts what the layout shows to its outline at its size, written only where it differs.
     private func writeCut(width: Double, height: Double) {
-        let outline = WinUIOutline(container: box.shape)
+        let outline = BoxArithmetic.outline(box.shape)
         let wanted = box.clips ? (outline, width, height) : nil
         guard wanted?.0 != cut?.outline || wanted?.1 != cut?.width || wanted?.2 != cut?.height else { return }
 

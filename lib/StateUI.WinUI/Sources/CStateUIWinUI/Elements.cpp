@@ -209,6 +209,25 @@ extern "C" double stateui_winui_opacity(StateUIObjectRef handle) {
     }
 }
 
+extern "C" bool stateui_winui_is_shown(StateUIObjectRef handle) {
+    try {
+        return as<xaml::UIElement>(handle).Visibility() == xaml::Visibility::Visible;
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading whether an element shows");
+        return false;
+    }
+}
+
+extern "C" bool stateui_winui_is_enabled(StateUIObjectRef handle) {
+    try {
+        auto control = as<IInspectable>(handle).try_as<controls::Control>();
+        return !control || control.IsEnabled();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading whether a control is enabled");
+        return false;
+    }
+}
+
 extern "C" bool stateui_winui_animations_enabled(void) {
     try {
         // One, kept: a fresh UISettings for every reading is a WinRT activation each time.

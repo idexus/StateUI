@@ -58,30 +58,6 @@ final class WinUIInputViewTests: XCTestCase {
             XCTAssertEqual(editors[1].frame.height, before[1], "a line's height, however many it holds")
         }
     }
-
-    /// The user typing in a search box is heard once; the program's words are shown and heard by nobody.
-    func testTheUsersSearchIsHeardAndTheProgramsIsNot() throws {
-        try onUIThread {
-            let query = State(wrappedValue: "")
-            let heard = Received<String>()
-            let host = WinUIRenderer.running {
-                VStack {
-                    SearchField(query.projectedValue).onTextChanged { heard.values.append($0) }
-                    Button("Clear").onClicked { query.wrappedValue = "tea" }
-                }
-            }
-            let search = try XCTUnwrap(host.views(WinUISearchFieldView.self).first)
-
-            search.type("coffee")
-            host.settle { query.wrappedValue == "coffee" }
-            XCTAssertEqual(heard.values, ["coffee"])
-
-            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
-            host.settle { search.text == "tea" }
-            XCTAssertEqual(search.text, "tea")
-            XCTAssertEqual(heard.values, ["coffee"], "the program's words heard by nobody")
-        }
-    }
 }
 
 private extension WinUIInputView {

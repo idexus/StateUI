@@ -1,0 +1,5 @@
+Button.clicked
+Label.text
+Picker.options
+Picker.selectedIndex
+Picker.selectedIndexChanged

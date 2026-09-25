@@ -53,7 +53,8 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_button_set_look(
-    StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double strokeWidth, double cornerRadius
+    StateUIObjectRef handle, StateUIBrush background, StateUIBrush stroke, double strokeWidth, double cornerRadius,
+    double underPointer, double pressed
 ) {
     try {
         auto button = borrow<controls::Button>(handle);
@@ -63,7 +64,7 @@ extern "C" void stateui_winui_button_set_look(
             if (resources.HasKey(name)) resources.Remove(name);
             if (value) resources.Insert(name, value);
         };
-        // Under the pointer and pressed, WinUI's own buttons draw their fill a little fainter each time.
+        // Under the pointer and pressed, the fill is drawn a little fainter each time, as WinUI's own buttons draw it.
         auto fill = brush(background);
         auto faded = [&](double opacity) {
             auto made = brush(background);
@@ -73,8 +74,8 @@ extern "C" void stateui_winui_button_set_look(
         if (fill) button.Background(fill);
         else button.ClearValue(controls::Control::BackgroundProperty());
         keep(L"ButtonBackground", fill);
-        keep(L"ButtonBackgroundPointerOver", faded(0.9));
-        keep(L"ButtonBackgroundPressed", faded(0.8));
+        keep(L"ButtonBackgroundPointerOver", faded(underPointer));
+        keep(L"ButtonBackgroundPressed", faded(pressed));
 
         auto outline = strokeWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
         if (outline) {

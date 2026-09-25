@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// A page writing its menus into its session - File, with a submenu of what a state lists, and Edit - and saying
@@ -88,12 +89,12 @@ final class WinUIMenuBarTests: XCTestCase {
             XCTAssertTrue(window.menuBarStands)
 
             path.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertFalse(window.menuBarStands, "a page with no menus")
             XCTAssertEqual(window.menuBar.menus, "")
 
             path.wrappedValue = []
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertTrue(window.menuBarStands, "back on the page with menus")
             XCTAssertEqual(window.menuBar.menus, "File[New;-;Recent[a.txt]];Edit[!Undo]")
         }

@@ -21,14 +21,9 @@ struct WinUILayoutItem: LayoutChild {
     /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
     var fadeIn: ((Motion) -> Void)?
 
-    /// The view's size for the width offered to it, its stated sizes and bounds applied. A stated width is the
-    /// width it is measured at, so words wrap to it; a most width bounds the offer.
+    /// The view's size for the width offered it, margin taken out (`LayoutValues.offer`, `sized`).
     func size(offered width: Double?) -> LayoutSize {
-        let offer: Double? = if let stated = values.width {
-            values.boundedWidth(stated)
-        } else {
-            [width, values.maximumWidth].compactMap(\.self).min()
-        }
+        let offer = values.offer(width)
         // A layout of StateUI's is measured at the width it stands at; its size for any width is the arithmetic's.
         // Design: docs/design/platforms/winui/layout.md#measured-every-pass
         let measured: LayoutSize
@@ -39,9 +34,7 @@ struct WinUILayoutItem: LayoutChild {
             measured = view.measure(width: offer, height: nil)
         }
 
-        return LayoutSize(
-            width: values.boundedWidth(values.width ?? measured.width),
-            height: values.boundedHeight(values.height ?? measured.height))
+        return values.sized(measured)
     }
 
     /// Whether a parent would place this item as it places `other`.

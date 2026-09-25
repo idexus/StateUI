@@ -16,8 +16,10 @@ and its lines, and the lines under or through its words.
 WinUI spaces letters in thousandths of an em and lines in DIPs, where StateUI
 gives the first in points and the second as a multiple of the font's own
 line: both are worked out against the font's size, a line of Segoe UI taken as
-four thirds of it. A `TextBlock` cuts words short only at their end, so a label
-cut at its start or in its middle is cut at its end.
+four thirds of it. The lines a label's break allows are the host layer's
+([runs of words](../../host/tree.md#runs-of-words)); a `TextBlock` cuts words
+short only at their end, so a label cut at its start or in its middle is cut
+at its end.
 
 A button drawn in the application's colours keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
@@ -76,9 +78,9 @@ draw with their foreground, which the tint is. The other templates take their
 brushes from resources named
 for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
 `SliderTrackValueFill` and their kin - so the tint is written into the
-control's own resources under those names, the colour itself and nine and
-eight tenths of it under the pointer and pressed, as WinUI's accent brushes
-are. A template reads its resources as its theme is read, so the control
+control's own resources under those names, the colour itself and fainter
+under the pointer and pressed, by the host layer's shares ([a
+box](../../host/layout.md#a-box)), as WinUI's accent brushes are. A template reads its resources as its theme is read, so the control
 reads its theme again at once; a tint changed after the control is drawn is
 drawn. No tint takes the names away, and the system's accent returns.
 
@@ -113,7 +115,8 @@ The user's day or time is reported, the program's is only shown.
 ## What shows work
 
 A ProgressBar is WinUI's `ProgressBar` over the range 0 to 1, a fraction past
-either end standing at that end; an ActivityIndicator is its `ProgressRing`,
+either end standing at that end ([a value in a
+range](../../host/runtime.md#a-value-in-a-range)); an ActivityIndicator is its `ProgressRing`,
 turning while its work runs and gone while it does not.
 
 ## A stepper
@@ -122,8 +125,9 @@ A Stepper is WinUI's `NumberBox` with its spin buttons beside its number: the
 number the user can also type, the buttons and the arrow keys moving it a
 step, Page Up ten. The number is written in the user's own way with as many
 decimals as the step and the range take, and the value is kept inside the
-range. An emptied box holds no number and reports none: the state keeps the
-number it had.
+range ([a value in a range](../../host/runtime.md#a-value-in-a-range)). Words
+that say no number - an emptied box among them - leave the number where it
+was: the box is given it back, and nobody hears it as the user's.
 
 ## What assistive technology meets
 
@@ -145,7 +149,8 @@ already keeps out of what is read.
 ## A slider in steps
 
 A `Slider` snaps its value to `StepFrequency`. The host sets the step to a
-ten-thousandth of the range, so a value the user drags to has that as its
+ten-thousandth of the range - WinUI's own, where the other steps are the host
+layer's - so a value the user drags to has that as its
 finest step. On a desktop the keyboard moves a slider too: an arrow key
 moves it a hundredth of the range and Page Up a tenth, as WinUI's own slider
 steps 1 and 10 across 0 to 100. A new range keeps the value the thumb stands
@@ -166,7 +171,9 @@ them.
 
 `maximumLength` counts characters, as the contract does. The field keeps the
 first characters that fit and writes them back, as the program, when typing
-goes past the bound.
+goes past the bound. An editor's `TextBox` ends each line with a carriage
+return, where StateUI's words end it with a line feed: the host reads and
+hears every line's end as a line feed.
 
 A test types by writing the field's words outside a program's write, which
 WinUI reports as it reports the user's. UI Automation's value pattern on a
@@ -184,7 +191,10 @@ only where the tree changed them.
 
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and
-reported as such.
+reported as such. The search box tells those words a moment after it takes
+them, so a test waits for them before it submits the query - as a key is
+told before the next is pressed - and submits through the search box's
+automation peer, as its own button does.
 
 ## Return
 
@@ -208,8 +218,10 @@ a change the box calls the user's is reported.
 ## Pictures
 
 An Image shows a picture from the application's `Images` folder, beside the
-executable, by the file name the tree gives it. Where the tree asks for a PNG
-the folder holds as an SVG, the SVG is shown: the application's pictures are
+executable, by the file name the tree gives it: the first of the files the
+name stands for that the folder holds ([a
+picture](../../host/layout.md#a-picture)), so where the tree asks for a PNG
+the folder holds as an SVG, the SVG is shown - the application's pictures are
 written once, as SVGs, for every host.
 
 A picture is its own size, whatever room its layout offers: an SVG the size

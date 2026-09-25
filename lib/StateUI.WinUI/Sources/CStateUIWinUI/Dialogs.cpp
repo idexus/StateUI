@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A question for the user in WinUI's own dialog - an alert, a confirmation, a
-// choice of actions, a prompt - its answer handed back by ticket. A window
-// shows one dialog at a time: the next waits for it to close.
+// choice of actions, a prompt - its answer handed back by ticket. The host
+// asks one at a time: the next once this one is answered.
 // Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
 
 #include "Relay.h"
 
-#include <deque>
 #include <functional>
 #include <string>
 #include <vector>
@@ -25,30 +24,15 @@ namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
 namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
-    /// The questions waiting for the dialog showing to close, and whether one shows.
-    std::deque<std::function<void()>> waiting;
-    bool showing = false;
-
     void answer(int64_t ticket, bool accepted, std::string const &words, bool hasWords) {
         callbacks.answered(ticket, accepted, hasWords ? words.c_str() : nullptr);
     }
 
-    /// Shows the next question waiting, if no dialog shows.
-    void next() {
-        if (showing || waiting.empty()) return;
-        auto show = std::move(waiting.front());
-        waiting.pop_front();
-        show();
-    }
-
-    /// Shows `dialog`, handing its result to `closed` and the next question its turn once it closes.
+    /// Shows `dialog`, handing its result to `closed` once it closes.
     void show(controls::ContentDialog const &dialog, std::function<void(controls::ContentDialogResult)> closed) {
-        showing = true;
         dialog.ShowAsync().Completed(
             [closed](IAsyncOperation<controls::ContentDialogResult> const &operation, AsyncStatus status) {
-                showing = false;
                 closed(status == AsyncStatus::Completed ? operation.GetResults() : controls::ContentDialogResult::None);
-                next();
             });
     }
 
@@ -174,37 +158,8 @@ namespace stateui {
 extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, StateUIQuestion const *question) {
     try {
         auto root = as<xaml::UIElement>(handle).XamlRoot();
-        if (!root) {
-            answer(ticket, false, {}, false);
-            return;
-        }
-        // The question's words are copied now: they are the caller's only for this call.
-        auto owned = std::make_shared<std::vector<std::string>>();
-        auto keep = [&](char const *words) { return words ? owned->emplace_back(words).c_str() : nullptr; };
-        auto copy = *question;
-        owned->reserve(8 + static_cast<size_t>(question->choiceCount));
-        copy.title = keep(question->title);
-        copy.message = keep(question->message);
-        copy.accept = keep(question->accept);
-        copy.cancel = keep(question->cancel);
-        copy.destruction = keep(question->destruction);
-        copy.placeholder = keep(question->placeholder);
-        copy.initial = keep(question->initial);
-        auto choices = std::make_shared<std::vector<char const *>>();
-        for (int32_t index = 0; index < question->choiceCount; ++index) choices->push_back(keep(question->choices[index]));
-        copy.choices = choices->data();
-
-        waiting.push_back([root, ticket, copy, owned, choices]() {
-            try {
-                ask(root, ticket, copy);
-            } catch (winrt::hresult_error const &error) {
-                report(error, "showing a dialog");
-                showing = false;
-                answer(ticket, false, {}, false);
-                next();
-            }
-        });
-        next();
+        if (!root) return answer(ticket, false, {}, false);
+        ask(root, ticket, *question);
     } catch (winrt::hresult_error const &error) {
         report(error, "asking the user");
         answer(ticket, false, {}, false);

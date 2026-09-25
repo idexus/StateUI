@@ -17,7 +17,7 @@ extension WinUIView {
 
     /// The words' colour; nil puts back the platform's.
     func setForeground(_ color: HostValue?) {
-        let argb = color.flatMap(WinUIBrush.argb)
+        let argb = color?.argb
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)
     }
 

@@ -14,9 +14,6 @@ enum WinUIPagePresentationReason {
 /// the visible arrangement gives - its title, the way back, the page's actions, the sidebar's toggle, the tabs.
 /// Design: docs/design/platforms/winui/pages.md
 extension WinUIElement {
-    /// A page's children that furnish it rather than stand in it.
-    static let slotTypes: Set<NodeType> = [.toolbarItems, .titleView, .menuBar, .contextMenu]
-
     /// The page the user sees in this arrangement: a stack's top, the selected tab, a split view's detail.
     var visiblePage: WinUIElement? {
         switch type {
@@ -167,7 +164,7 @@ extension WinUIElement {
     /// Shows or hides this page tree, each page hearing its phases in its turn.
     /// Design: docs/design/platforms/winui/pages.md#a-pages-phases
     func setPagePresented(_ presented: Bool, reason: WinUIPagePresentationReason) {
-        guard Self.pageTypes.contains(type), pagePresented != presented else { return }
+        guard NodeType.pageTypes.contains(type), pagePresented != presented else { return }
         pagePresented = presented
 
         switch type {
@@ -211,7 +208,7 @@ extension WinUIElement {
     /// Hands a page's phase to its handler, rendered before the next phase is heard.
     private func announce(_ event: Event) {
         guard let handler = element.handler(event) else { return }
-        host?.enqueuePhase(handler)
+        host?.runtime.pump.handlers.enqueuePhase(handler)
     }
 
     /// Keeps an arrangement's own parts with the tree: a tabbed view's row, a split view's sidebar.
@@ -225,7 +222,7 @@ extension WinUIElement {
             guard let split = view as? WinUISplitView else { return }
             // The split's first room is decided inside a layout pass, and said once the pass is over.
             split.onPresentationChanged = { [weak self] presented in
-                self?.host?.afterPass { [weak self] in self?.sidebarChanged(to: presented) }
+                WinUIDoorbell.afterPass { [weak self] in self?.sidebarChanged(to: presented) }
             }
             if changed.contains(.isSidebarVisible) { split.present(value(.isSidebarVisible)?.bool == true) }
         default:
@@ -257,7 +254,7 @@ extension WinUIElement {
     /// The stack's top page goes: the path is told it is one shorter.
     func popNavigation() {
         guard type == .navigationStack, children.count > 1, let handler = element.handler(.popped) else { return }
-        host?.dispatch(handler, payload: [.number(Double(children.count - 2))])
+        host?.runtime.dispatch(handler, payload: [.number(Double(children.count - 2))])
     }
 
     /// The user showed or hid a split view's sidebar through the window's chrome.

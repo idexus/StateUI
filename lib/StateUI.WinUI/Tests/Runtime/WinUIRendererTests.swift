@@ -57,10 +57,26 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 21, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 22, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
+        }
+    }
+
+    /// The phase a window tells moves the application's, and its scene's and window's, rendered before it returns:
+    /// minimized, the window stops; shown again, it resumes on its way to being in use.
+    func testTheWindowsPhaseMovesTheApplicationsAndItsOwn() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { PhasePage() }
+            let window = try XCTUnwrap(host.window).number
+            defer { WinUICallbacks.table.phaseChanged(window, 0) }
+
+            WinUICallbacks.table.phaseChanged(window, 2)
+            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["background stopped"])
+
+            WinUICallbacks.table.phaseChanged(window, 0)
+            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["active activated"])
         }
     }
 
@@ -75,6 +91,16 @@ final class WinUIRendererTests: XCTestCase {
 
             XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
         }
+    }
+}
+
+/// A page saying the application's phase and its window's.
+private struct PhasePage: ContentView {
+    @Environment private var application: ApplicationSession
+    @Environment private var window: WindowSession
+
+    var content: any View {
+        Label("\(application.phase) \(window.phase)")
     }
 }
 

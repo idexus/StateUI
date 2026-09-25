@@ -3,7 +3,7 @@
 
 // The six shapes, each one WinUI Path: a rectangle and an ellipse filling
 // their room, and a geometry of their own - a line, a path, a polygon, a
-// polyline - placed in it by their aspect and moved by their transform.
+// polyline - placed in it where Swift says.
 // Design: docs/design/platforms/winui/drawing.md#the-shapes
 
 #include "Relay.h"
@@ -147,9 +147,21 @@ extern "C" void stateui_winui_path_paint(
     }
 }
 
+extern "C" void stateui_winui_path_bounds(double const *commands, int32_t count, double *bounds) {
+    try {
+        auto box = authored(commands, count, false).Bounds();
+        bool known = std::isfinite(box.X) && std::isfinite(box.Y) && std::isfinite(box.Width)
+            && std::isfinite(box.Height);
+        double const read[] = {known ? box.X : 0, known ? box.Y : 0, known ? box.Width : 0, known ? box.Height : 0};
+        std::copy(read, read + 4, bounds);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "measuring a shape");
+    }
+}
+
 extern "C" void stateui_winui_path_draw(
     StateUIObjectRef handle, int32_t kind, double const *radii, double const *commands, int32_t count, bool evenOdd,
-    int32_t aspect, double const *transform, double width, double height, double inset
+    double const *placement, double width, double height, double inset
 ) {
     try {
         auto path = borrow<shapes::Path>(handle);
@@ -166,26 +178,9 @@ extern "C" void stateui_winui_path_draw(
             return;
         }
 
-        // Placed by the aspect - fit, fill, stretch, centre - centred, then moved by the transform.
         auto geometry = authored(commands, count, evenOdd);
-        auto box = geometry.Bounds();
-        double across = box.Width > 0 ? width / box.Width : 0, down = box.Height > 0 ? height / box.Height : 0;
-        double sx = 1, sy = 1;
-        if (box.Width > 0 || box.Height > 0) {
-            switch (aspect) {
-            case 2: sx = box.Width > 0 ? across : 1; sy = box.Height > 0 ? down : 1; break;
-            case 3: break;
-            case 1: sx = sy = std::max(across, down); break;
-            default:
-                sx = sy = box.Width > 0 && box.Height > 0 ? std::min(across, down) : std::max(across, down);
-            }
-        }
-        double ox = width / 2 - (box.X + box.Width / 2) * sx, oy = height / 2 - (box.Y + box.Height / 2) * sy;
-        winrt::Microsoft::UI::Xaml::Media::Matrix place{sx, 0, 0, sy, ox, oy};
-        if (transform) {
-            auto a = transform[0], b = transform[1], c = transform[2], d = transform[3];
-            place = {sx * a, sx * b, sy * c, sy * d, ox * a + oy * c + transform[4], ox * b + oy * d + transform[5]};
-        }
+        winrt::Microsoft::UI::Xaml::Media::Matrix place{
+            placement[0], placement[1], placement[2], placement[3], placement[4], placement[5]};
         // WinUI draws nothing of a geometry whose transform is the identity: a geometry left in place takes none.
         bool identity = place.M11 == 1 && place.M12 == 0 && place.M21 == 0 && place.M22 == 1 && place.OffsetX == 0
             && place.OffsetY == 0;

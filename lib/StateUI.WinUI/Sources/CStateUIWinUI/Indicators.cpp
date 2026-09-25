@@ -6,9 +6,6 @@
 
 #include "Relay.h"
 
-#include <algorithm>
-#include <cmath>
-
 using namespace stateui;
 
 extern "C" StateUIObjectRef stateui_winui_progress_bar_make(void) {
@@ -25,7 +22,7 @@ extern "C" StateUIObjectRef stateui_winui_progress_bar_make(void) {
 
 extern "C" void stateui_winui_progress_bar_set(StateUIObjectRef handle, double progress) {
     try {
-        borrow<controls::ProgressBar>(handle).Value(std::isfinite(progress) ? std::clamp(progress, 0.0, 1.0) : 0);
+        borrow<controls::ProgressBar>(handle).Value(progress);
     } catch (winrt::hresult_error const &error) {
         report(error, "moving a progress bar");
     }

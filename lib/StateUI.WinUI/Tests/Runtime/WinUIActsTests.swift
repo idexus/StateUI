@@ -199,21 +199,20 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
-    /// The kept values' store reads back what it was given, whatever the words hold, and the same values write the
-    /// same file.
+    /// The kept values' store reads back what it was given, whatever the words hold.
     func testTheStoreReadsBackWhatItKept() {
         onUIThread {
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-store").path
             stateui_winui_set_store(folder)
             defer { stateui_winui_set_store("") }
 
-            let values = ["com.example.name": "Zażółć\tgęślą\njaźń \\ end", "com.example.on": "true"]
-            WinUIPersistence.write(values)
+            let keys = [PersistentKey("com.example.name", of: String.self), PersistentKey("com.example.on", of: Bool.self)]
+            var kept = KeptValuesText("")
+            kept.keep([.name("com.example.name"), .string("Zażółć\tgęślą\njaźń \\ end")], keys: keys)
+            kept.keep([.name("com.example.on"), .bool(true)], keys: keys)
+            WinUIPersistence.write(kept)
 
-            XCTAssertEqual(WinUIPersistence.read(), values)
-            XCTAssertEqual(WinUIPersistence.word(of: .number(3), kind: .integer), "3")
-            XCTAssertEqual(WinUIPersistence.word(of: .bool(false), kind: .boolean), "false")
-            XCTAssertNil(WinUIPersistence.word(of: .string("x"), kind: .number))
+            XCTAssertEqual(WinUIPersistence.read(), kept)
         }
     }
 }

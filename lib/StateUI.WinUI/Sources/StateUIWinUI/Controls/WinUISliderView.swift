@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIWinUI
 
 /// A Slider: a WinUI `Slider` over the range, stepping by a ten-thousandth of it.
@@ -27,8 +28,10 @@ final class WinUISliderView: WinUIValueView {
     /// The range, then the value: `value` where `writeValue`, else the one the thumb stands at, kept inside the range.
     func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double) {
         let kept = writeValue ? value ?? self.value : self.value
-        self.minimum = Swift.min(minimum, maximum)
-        self.maximum = Swift.max(minimum, maximum)
-        stateui_winui_slider_set(handle, kept, minimum, maximum)
+        (self.minimum, self.maximum) = ValueArithmetic.range(minimum, maximum)
+        let steps = ValueArithmetic.sliderSteps(lower: self.minimum, upper: self.maximum)
+        // A drag lands on a ten-thousandth of the range.
+        let drag = self.maximum > self.minimum ? (self.maximum - self.minimum) / 10000 : 1
+        stateui_winui_slider_set(handle, kept, self.minimum, self.maximum, steps.key, steps.page, drag)
     }
 }

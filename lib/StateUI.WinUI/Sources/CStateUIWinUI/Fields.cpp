@@ -7,7 +7,7 @@
 // through `textChanged` as it happens.
 // Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 
-#include "Relay.h"
+#include "Automation.h"
 
 #include <algorithm>
 #include <cstring>
@@ -180,5 +180,14 @@ extern "C" void stateui_winui_search_type(StateUIObjectRef handle, char const *u
         }
     } catch (winrt::hresult_error const &error) {
         report(error, "typing in a search box");
+    }
+}
+
+extern "C" void stateui_winui_search_submit_as_user(StateUIObjectRef handle) {
+    try {
+        // A search box's automation peer submits its query as its own button does.
+        pattern<provider::IInvokeProvider>(as<xaml::UIElement>(handle), PatternInterface::Invoke).Invoke();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "submitting a search as the user");
     }
 }

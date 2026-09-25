@@ -37,7 +37,9 @@ namespace {
     }
 }
 
-extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, bool tinted) {
+extern "C" void stateui_winui_set_tint(
+    StateUIObjectRef handle, uint32_t argb, bool tinted, double underPointer, double pressed
+) {
     try {
         auto control = as<xaml::FrameworkElement>(handle);
         if (auto shows = control.try_as<controls::Control>();
@@ -49,9 +51,9 @@ extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, b
             return;
         }
         auto resources = control.Resources();
-        // WinUI's accent brushes: the colour, then nine tenths of it under the pointer and eight tenths pressed.
+        // WinUI's accent brushes: the colour, then fainter under the pointer and pressed.
         struct Variant { wchar_t const *suffix; double opacity; };
-        Variant const variants[] = {{L"", 1}, {L"PointerOver", 0.9}, {L"Pressed", 0.8}};
+        Variant const variants[] = {{L"", 1}, {L"PointerOver", underPointer}, {L"Pressed", pressed}};
         for (auto const &accented : accentResources(control)) {
             for (auto const &variant : variants) {
                 if (!accented.varies && *variant.suffix) continue;

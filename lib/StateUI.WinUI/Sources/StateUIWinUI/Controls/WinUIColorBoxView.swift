@@ -14,14 +14,7 @@ final class WinUIColorBoxView: WinUIView {
     /// The box's colour, and the radii of its corners - one for all four, or four in StateUI's order: top left,
     /// top right, bottom left, bottom right; nil draws no colour.
     func apply(color: HostValue?, corners: HostValue?) {
-        let radii: [Double] = if let radius = corners?.number {
-            [radius, radius, radius, radius]
-        } else if let four = corners?.numbers, four.count >= 4 {
-            [four[0], four[1], four[3], four[2]]
-        } else {
-            [0, 0, 0, 0]
-        }
-        let kept = radii.map { $0.isFinite ? max(0, $0) : 0 }
-        stateui_winui_color_box_set(handle, color.flatMap(WinUIBrush.argb) ?? 0, kept)
+        let radii = BoxArithmetic.clockwise(corners.flatMap(CornerRadius.init(propValue:)))
+        stateui_winui_color_box_set(handle, color?.argb ?? 0, radii)
     }
 }

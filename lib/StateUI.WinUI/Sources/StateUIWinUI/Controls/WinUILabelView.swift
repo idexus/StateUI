@@ -8,29 +8,32 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#runs-of-words
 @MainActor
 final class WinUILabelView: WinUITextView {
-    /// One run of a label's words, and how it differs from the label's own.
-    struct Run: Equatable {
-        var text: String
-        var color: HostValue?
-        var size: Double?
-        var attributes: FontAttributes?
-        var background: HostValue?
-        var decorations: TextDecorations?
+    /// The label's own words, and the runs shown in their place; nil while it shows its own.
+    private var ownText = ""
+    private var runs: [TextRun]?
+
+    override func setText(_ text: String) {
+        ownText = text
+        if runs == nil { super.setText(text) }
     }
 
-    /// The runs shown, in place of the label's own words.
-    func setRuns(_ runs: [Run]) {
+    /// Runs of words shown in place of the label's own (`MountedElement.textRuns`), each in its own look over the
+    /// label's; nil shows its own words again.
+    func setRuns(_ runs: [TextRun]?) {
+        self.runs = runs
+        guard let runs else { return super.setText(ownText) }
+
         WinUIStrings.withCStrings(runs.map(\.text)) { texts in
-            let color = runs.map { $0.color.flatMap(WinUIBrush.argb) }
-            let background = runs.map { $0.background.flatMap(WinUIBrush.argb) }
             let words = runs.indices.map { index in
-                let run = runs[index]
+                let look = runs[index].look
+                let color = look.color?.argb
+                let background = look.background?.argb
                 return StateUIWordsRun(
-                    text: texts[index], color: color[index] ?? 0, background: background[index] ?? 0,
-                    size: run.size ?? 0, hasColor: color[index] != nil, hasBackground: background[index] != nil,
-                    bold: run.attributes?.contains(.bold) == true, italic: run.attributes?.contains(.italic) == true,
-                    underline: run.decorations?.contains(.underline) == true,
-                    strikethrough: run.decorations?.contains(.strikethrough) == true)
+                    text: texts[index], color: color ?? 0, background: background ?? 0, size: look.size ?? 0,
+                    hasColor: color != nil, hasBackground: background != nil,
+                    bold: look.attributes.contains(.bold), italic: look.attributes.contains(.italic),
+                    underline: look.decorations.contains(.underline),
+                    strikethrough: look.decorations.contains(.strikethrough))
             }
             stateui_winui_text_set_runs(handle, words, Int32(words.count))
         }

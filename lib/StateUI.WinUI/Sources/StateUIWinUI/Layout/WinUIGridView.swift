@@ -32,7 +32,7 @@ final class WinUIGridView: WinUITravellingLayout {
     /// Design: docs/design/platforms/winui/drawing.md#a-placed-child
     func setShadeOpacity(_ opacity: Double) {
         guard items.count > 1 else { return }
-        items[1].view.setOpacity(min(max(opacity, 0), 1))
+        items[1].view.setOpacity(opacity)
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

@@ -4,6 +4,7 @@
 import CStateUIWinUI
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 /// A picker whose choice and list a button of the program's changes too, saying what it heard.
@@ -32,25 +33,6 @@ private struct PickerPage: ContentView {
 }
 
 final class WinUIPickerViewTests: XCTestCase {
-    /// The user's choice is heard once and reaches the state; the program's is shown and heard by nobody.
-    func testAUsersChoiceIsHeardAndTheProgramsIsNot() throws {
-        try onUIThread {
-            let heard = Received<String>()
-            let host = WinUIRenderer.running { PickerPage(heard: heard) }
-            let picker = try XCTUnwrap(host.views(WinUIPickerView.self).first)
-            XCTAssertEqual(picker.chosen, 1)
-
-            stateui_winui_picker_choose_as_user(picker.handle, 2)
-            host.settle { heard.values == ["chose 2"] }
-            XCTAssertEqual(heard.values, ["chose 2"])
-
-            try XCTUnwrap(host.views(WinUIButtonView.self).last).invoke()
-            host.settle { picker.chosen == 0 }
-            XCTAssertEqual(picker.chosen, 0, "the program's choice shown")
-            XCTAssertEqual(heard.values, ["chose 2"], "and heard by nobody")
-        }
-    }
-
     /// The list the user opens and closes is heard; the program's opening is not, and the user closing the list
     /// the program opened is.
     func testTheUsersOpeningAndClosingAreHeardAndTheProgramsOpeningIsNot() throws {

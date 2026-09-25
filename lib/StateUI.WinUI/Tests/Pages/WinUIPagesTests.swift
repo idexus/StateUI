@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @testable import StateUIWinUI
+import StateUIHostConformance
 import XCTest
 
 final class WinUIPagesTests: XCTestCase {
@@ -23,7 +24,7 @@ final class WinUIPagesTests: XCTestCase {
             XCTAssertFalse(host.goBack(), "no way back from the root")
 
             path.wrappedValue.append(7)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(window.titleBar.chrome.title, "Detail 7")
             XCTAssertEqual(window.titleBar.chrome.back?.title, "Back")
             let navigation = try XCTUnwrap(host.views(WinUINavigationView.self).first)
@@ -52,7 +53,7 @@ final class WinUIPagesTests: XCTestCase {
 
             log.values = []
             path.wrappedValue.append(1)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(log.values, [
                 "Root navigatingFrom", "Root disappearing", "Root navigatedFrom",
                 "Pushed appearing", "Pushed navigatedTo",
@@ -111,9 +112,9 @@ final class WinUIPagesTests: XCTestCase {
             let window = try XCTUnwrap(host.window)
             host.settle { open.wrappedValue }
             window.titleBar.chose(-2)
-            host.pump()
+            host.runtime.pump.turn()
             window.titleBar.chose(-2)
-            host.pump()
+            host.runtime.pump.turn()
             host.layOut()
 
             let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
@@ -187,7 +188,7 @@ final class WinUIPagesTests: XCTestCase {
             XCTAssertEqual(chrome.chrome.overflow.map(\.title), ["Delete"])
 
             for index in 0..<3 { chrome.chose(index) }
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
         }
     }
@@ -209,12 +210,12 @@ final class WinUIPagesTests: XCTestCase {
             XCTAssertTrue(chrome.chrome.center === field)
 
             path.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertNil(chrome.chrome.center)
             XCTAssertEqual(chrome.chrome.title, "Result")
 
             XCTAssertTrue(host.goBack())
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertTrue(chrome.chrome.center === field)
         }
     }

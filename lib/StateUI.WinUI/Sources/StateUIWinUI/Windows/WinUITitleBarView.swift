@@ -26,8 +26,8 @@ final class WinUITitleBarView: WinUIView {
         let previous = self.chrome
         self.chrome = chrome
 
-        let background = chrome.background.flatMap(WinUIBrush.argb)
-        let foreground = chrome.foreground.flatMap(WinUIBrush.argb)
+        let background = chrome.background?.argb
+        let foreground = chrome.foreground?.argb
         stateui_winui_title_bar_set(
             handle, chrome.title, chrome.back != nil, chrome.sidebarToggle != nil,
             background != nil, background ?? 0, foreground != nil, foreground ?? 0)

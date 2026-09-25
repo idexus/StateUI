@@ -9,7 +9,7 @@ import CStateUIWinUI
 @MainActor
 final class WinUIPathView: WinUIView {
     /// What the shape draws: a rectangle, its corners clockwise from the top left; an ellipse; or a geometry of
-    /// its own, as flat commands, placed by its aspect and moved by its transform.
+    /// its own, as flat commands, placed by its aspect and moved by its transform (`ShapeArithmetic.placement`).
     enum Geometry: Equatable {
         case rectangle([Double])
         case ellipse
@@ -18,6 +18,9 @@ final class WinUIPathView: WinUIView {
 
     private var geometry = Geometry.rectangle([0, 0, 0, 0])
     private var strokeWidth = 1.0
+
+    /// Where a geometry of the shape's own stands before it is placed, as WinUI measures it.
+    private var bounds = Rect(x: 0, y: 0, width: 0, height: 0)
 
     /// The geometry and the room it was last drawn for.
     private var drawn: (geometry: Geometry, width: Double, height: Double, inset: Double)?
@@ -31,11 +34,11 @@ final class WinUIPathView: WinUIView {
         fill: WinUIBrush, stroke: WinUIBrush, width: Double, dashes: [Double], dashOffset: Double, cap: LineCap,
         join: LineJoin, miter: Double
     ) {
-        strokeWidth = width
+        strokeWidth = ShapeArithmetic.strokeWidth(width)
         fill.withRelayBrush { fill in
             stroke.withRelayBrush { stroke in
                 stateui_winui_path_paint(
-                    handle, fill, stroke, width, dashes, Int32(dashes.count), dashOffset, cap.rawValue, join.rawValue,
+                    handle, fill, stroke, strokeWidth, dashes, Int32(dashes.count), dashOffset, cap.rawValue, join.rawValue,
                     miter)
             }
         }
@@ -44,6 +47,11 @@ final class WinUIPathView: WinUIView {
 
     /// Draws `geometry`, now and whenever the room changes.
     func draw(_ geometry: Geometry) {
+        if case .authored(let commands, _, _, _) = geometry, geometry != self.geometry {
+            var read = [0.0, 0.0, 0.0, 0.0]
+            stateui_winui_path_bounds(commands, Int32(commands.count), &read)
+            bounds = Rect(x: read[0], y: read[1], width: read[2], height: read[3])
+        }
         self.geometry = geometry
         if let placed { draw(in: placed) }
     }
@@ -68,17 +76,15 @@ final class WinUIPathView: WinUIView {
         drawn = (geometry, room.width, room.height, inset)
         switch geometry {
         case .rectangle(let radii):
-            stateui_winui_path_draw(handle, 0, radii, nil, 0, false, 0, nil, room.width, room.height, inset)
+            stateui_winui_path_draw(handle, 0, radii, nil, 0, false, nil, room.width, room.height, inset)
         case .ellipse:
-            stateui_winui_path_draw(handle, 1, nil, nil, 0, false, 0, nil, room.width, room.height, inset)
-        case .authored(let commands, let evenOdd, let aspect, let transform?):
+            stateui_winui_path_draw(handle, 1, nil, nil, 0, false, nil, room.width, room.height, inset)
+        case .authored(let commands, let evenOdd, let aspect, let transform):
+            let placement = ShapeArithmetic.placement(
+                of: bounds, in: LayoutSize(width: room.width, height: room.height), aspect: aspect,
+                transform: transform)
             stateui_winui_path_draw(
-                handle, 2, nil, commands, Int32(commands.count), evenOdd, aspect.rawValue, transform, room.width,
-                room.height, inset)
-        case .authored(let commands, let evenOdd, let aspect, nil):
-            stateui_winui_path_draw(
-                handle, 2, nil, commands, Int32(commands.count), evenOdd, aspect.rawValue, nil, room.width,
-                room.height, inset)
+                handle, 2, nil, commands, Int32(commands.count), evenOdd, placement, room.width, room.height, inset)
         }
     }
 }

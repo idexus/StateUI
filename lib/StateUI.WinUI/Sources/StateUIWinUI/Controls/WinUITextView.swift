@@ -8,12 +8,9 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/controls.md#words
 @MainActor
 class WinUITextView: WinUIView {
-    /// The font's size, in DIPs - what the letters' and the lines' spacing is measured against.
-    private var fontSize = WinUITextView.platformFontSize
-
-    /// The space between the letters in DIPs, and the height of a line as a multiple of the font's.
-    private var letterSpacing = 0.0
-    private var lineHeight: Double?
+    /// The font's size, the space between the letters and the height of a line - what the spacing is measured
+    /// against, and what it is.
+    private var look = TextLook()
 
     /// The size WinUI draws body text at, in DIPs.
     static let platformFontSize = 14.0
@@ -38,13 +35,15 @@ class WinUITextView: WinUIView {
     /// The font, remembering its size for the spacing measured against it.
     func setTextFont(size: Double?, attributes: FontAttributes?, family: String?) {
         setFont(size: size, attributes: attributes, family: family)
-        fontSize = size.flatMap { $0 > 0 ? $0 : nil } ?? Self.platformFontSize
+        look.size = size.flatMap { $0 > 0 ? $0 : nil }
         writeSpacing()
     }
 
-    /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any.
+    /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
+    /// (`LineBreak.lines`).
     func setLines(breaking: LineBreak, maximum: Int?) {
-        stateui_winui_text_set_lines(handle, breaking.rawValue, Int32(maximum ?? 0))
+        stateui_winui_text_set_lines(
+            handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0), breaking.truncates)
     }
 
     /// Where the words stand across the label.
@@ -54,13 +53,13 @@ class WinUITextView: WinUIView {
 
     /// The space between the letters, in DIPs.
     func setLetterSpacing(_ points: Double) {
-        letterSpacing = points
+        look.letterSpacing = points
         writeSpacing()
     }
 
     /// The height of a line, as a multiple of the font's own; nil for the font's.
     func setLineHeight(_ multiple: Double?) {
-        lineHeight = multiple.flatMap { $0 > 0 ? $0 : nil }
+        look.lineHeight = multiple.flatMap { $0 > 0 ? $0 : nil }
         writeSpacing()
     }
 
@@ -72,8 +71,9 @@ class WinUITextView: WinUIView {
 
     /// WinUI spaces letters in thousandths of an em and lines in DIPs: both measured against the font's size.
     private func writeSpacing() {
-        let thousandths = Int32((letterSpacing / fontSize * 1000).rounded())
-        let line = lineHeight.map { $0 * fontSize * Self.lineHeightOfFont } ?? 0
+        let size = look.size ?? Self.platformFontSize
+        let thousandths = Int32((look.letterSpacing(inEmsOf: size) * 1000).rounded())
+        let line = look.lineHeight.map { $0 * size * Self.lineHeightOfFont } ?? 0
         stateui_winui_text_set_spacing(handle, thousandths, line)
     }
 }

@@ -156,7 +156,9 @@ extern "C" StateUIObjectRef stateui_winui_image_make(void) {
     }
 }
 
-extern "C" bool stateui_winui_image_set(StateUIObjectRef handle, char const *name, int32_t aspect, double *size) {
+extern "C" bool stateui_winui_image_set(
+    StateUIObjectRef handle, char const *const *names, int32_t count, int32_t aspect, double *size
+) {
     size[0] = size[1] = 0;
     try {
         auto image = borrow<controls::Image>(handle);
@@ -170,18 +172,20 @@ extern "C" bool stateui_winui_image_set(StateUIObjectRef handle, char const *nam
         image.ClearValue(xaml::FrameworkElement::WidthProperty());
         image.ClearValue(xaml::FrameworkElement::HeightProperty());
 
-        std::wstring file(winrt::to_hstring(std::string_view(name ? name : "")).c_str());
+        // The first of the files the name stands for that the pictures hold.
+        std::wstring file;
+        for (int32_t index = 0; index < count && file.empty(); ++index) {
+            std::wstring each(winrt::to_hstring(std::string_view(names[index] ? names[index] : "")).c_str());
+            if (!each.empty() && exists(pictures() + each)) file = each;
+        }
+        auto named = count > 0 && names[0] && *names[0];
+        if (file.empty()) {
+            image.Source(nullptr);
+            return !named;
+        }
         auto path = pictures() + file;
         auto dot = file.find_last_of(L'.');
         auto extension = dot == std::wstring::npos ? std::wstring() : file.substr(dot);
-        if (!file.empty() && !exists(path) && extension == L".png") {
-            path = pictures() + file.substr(0, dot) + L".svg";
-            extension = L".svg";
-        }
-        if (file.empty() || !exists(path)) {
-            image.Source(nullptr);
-            return file.empty();
-        }
         if (extension != L".svg") {
             // A bitmap's size is known once it is read; the layout holding it measures it again then.
             imaging::BitmapImage bitmap(address(path));

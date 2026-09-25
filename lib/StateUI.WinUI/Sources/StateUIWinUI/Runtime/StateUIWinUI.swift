@@ -35,7 +35,7 @@ enum WinUICallbacks {
     static var table: StateUIWinUICallbacks {
         StateUIWinUICallbacks(
             launched: { WinUIRenderer.launch() },
-            turn: { MainActor.assumeIsolated { WinUIRenderer.shared?.pump() } },
+            turn: { MainActor.assumeIsolated { WinUIDoorbell.turn() } },
             frame: { MainActor.assumeIsolated { WinUIFrameClock.current?.frame() } },
             measure: { view, width, height, size in
                 // The relay's own out-parameter, written on the thread that handed it over.
@@ -50,7 +50,7 @@ enum WinUICallbacks {
             arrange: { view, width, height in
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUILayoutView)?.arrange(width: width, height: height)
-                    WinUIRenderer.shared?.laidOut()
+                    WinUIRenderer.shared?.runtime.frames.laidOut()
                 }
             },
             clicked: { view in
@@ -72,7 +72,7 @@ enum WinUICallbacks {
             scrolled: { view, x, y in
                 MainActor.assumeIsolated {
                     (WinUIView.find(view) as? WinUIScrollerView)?.onScrolled?(Point(x: x, y: y))
-                    WinUIRenderer.shared?.laidOut()
+                    WinUIRenderer.shared?.runtime.frames.laidOut()
                 }
             },
             held: { view, holding in
@@ -88,7 +88,7 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
-                guard let heard = WinUIHeard(what, phase: phase, x: x, y: y, scale: scale) else { return }
+                guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },
             answered: { ticket, accepted, utf8 in
@@ -108,6 +108,11 @@ enum WinUICallbacks {
             },
             focused: { view, focused in
                 MainActor.assumeIsolated { WinUIView.find(view)?.focusChanged(focused) }
+            },
+            phaseChanged: { window, phase in
+                MainActor.assumeIsolated {
+                    WinUIRenderer.shared?.phaseChanged(ApplicationPhase(rawValue: phase) ?? .active, window: window)
+                }
             })
     }
 }
