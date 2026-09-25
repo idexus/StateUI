@@ -638,6 +638,8 @@ final class UIThreadTests: XCTestCase {
         guard !text.contains("typealias"), !text.hasPrefix("///"), !text.hasPrefix("//") else {
             return false
         }
+        // A function type isolated to the main actor says where it runs.
+        guard !text.contains("@MainActor (") else { return false }
 
         // `(Value) async throws -> Void` in an alias continuation, not a
         // signature of its own.

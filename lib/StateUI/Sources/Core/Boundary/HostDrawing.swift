@@ -31,9 +31,7 @@
 
         switch command.kind {
         case .fillColor, .strokeColor, .textColor:
-            guard let channels = arguments.value(0)?.color else { return }
-            let argb = UInt32(channels.alpha) << 24 | UInt32(channels.red) << 16
-                | UInt32(channels.green) << 8 | UInt32(channels.blue)
+            guard let argb = arguments.value(0)?.argb else { return }
             ints += [kind, Int32(bitPattern: argb)]
         case .strokeWidth, .fontSize, .alpha, .rotate:
             guard let read = read(1) else { return }

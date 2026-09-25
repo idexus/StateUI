@@ -250,6 +250,33 @@ that movement reaches the view's threshold and the view listens for that way.
 A way it does not listen for is no swipe, even where the press also moved far
 along the other axis: the dominant way decides, never a second one.
 
+## The environment
+
+What a host reads of the machine it stands on is told to the core the same
+way on every host: the locale as eight words - language, region, name, time
+zone, a 24-hour clock, the week's first day from Sunday's 0, metric measures,
+a language written right to left - the network as its access and a set of
+bits for its connections, a desktop's power as a battery present or not,
+charging, on mains or full, and a screen that turns with nothing as landscape
+where it is at least as wide as it is tall. When any of it changes, one step
+follows on every host (`HostRuntime.environmentChanged`): the core is told
+what stands now, the tree follows the language's direction, and one turn
+renders what it all changed.
+
+## The application's phase
+
+A toolkit tells the application's phase as its lifecycle moves it - in use,
+showing behind another application, or seen nowhere - and every host tells it
+on alike (`ApplicationLifecycle`, `HostRuntime.enterPhase`): the core hears the
+phase, then the scene and its window hear what it means for them - activated,
+deactivated or stopped - each rendered before the next. A window shown again
+after it stopped hears first that it resumed. They are heard in their turn,
+as a window's being made is, so a toolkit telling a phase in the middle of
+one - a window activated as the host shows it - waits for it to end. The
+phase the application stands in already tells nothing: a lifecycle is a
+state, not a count of the toolkit's callbacks. As the application ends, the
+window hears that it is going, then the scene.
+
 ## Acts
 
 An act the application calls is answered on every host the same way: with
@@ -259,6 +286,17 @@ no caller waits on an act nobody performs. An act aimed at a view names it by
 its first argument, the element's own id or its number; one naming none, or
 none on screen, fails with that reason (`MountedTree.aimed`). A host performs
 the act in its toolkit's terms and nothing more.
+
+## An application's own acts
+
+An act the application performs itself on its host - one no control stands
+behind, or one aimed at an element of its own - is registered by its member
+and performed the same way on every host (`InteropActs`): handed the values
+its contract declares, an aimed one also the control of the element its first
+argument names, and answered once it returns, or failed with why - a call
+carrying other values than its act declares, an element the host shows
+otherwise, or what the performer threw. What a host adds is its toolkit's:
+the control it hands an aimed act.
 
 ## Questions for the user
 
@@ -285,6 +323,17 @@ its key's kind reads back; a key the application does not list, or a value of
 another kind, is not kept. Where the file stands and how it is read and
 written is the host's.
 
+## Typed words
+
+Words a user types past a field's bound are cut to their first characters
+that fit, as the contract counts characters (`InputWords.cut`), and written
+back as the program's. A caret and a selection the tree puts, in characters,
+reach a toolkit counting UTF-16 units as the units those characters take
+(`InputWords.utf16Selection`), so a character outside the basic plane - an
+emoji - is never split. A picker is given its choices where they changed, and
+its choice only where the tree changed it or the choices (`PickerChoices`):
+the user's own choice is never argued with.
+
 ## A value in a range
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
@@ -294,6 +343,14 @@ is 1; a share of work past an end stands at that end, one that is no number
 at the start; a slider's key moves a hundredth of its range and a page a
 tenth; and a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six.
+
+## The log
+
+What a host says for whoever reads its log rather than its screen is one
+line a message, begun by `StateUI` and the host's name (`HostLog`), written
+to standard error, which nothing buffers, so a line stands in the log before
+whatever went wrong next; a platform whose log is its own - Android's - hands
+the lines there.
 
 ## Core link
 

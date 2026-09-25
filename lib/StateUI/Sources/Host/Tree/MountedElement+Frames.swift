@@ -22,4 +22,11 @@ extension MountedElement {
             runtime.dispatch(handler, payload: [.numbers(numbers)])
         }
     }
+
+    /// A frame report's eight numbers for a view standing at `place` in its parent, its top left corner at
+    /// `corner` in its window, and the window's content - clear of its chrome - beginning at `content`: the place,
+    /// the corner in the window, and the corner from the content's.
+    public static func frameNumbers(place: Rect, corner: Point, content: Point) -> [Double] {
+        [place.x, place.y, place.width, place.height, corner.x, corner.y, corner.x - content.x, corner.y - content.y]
+    }
 }

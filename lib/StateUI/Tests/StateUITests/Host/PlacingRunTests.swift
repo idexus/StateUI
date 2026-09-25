@@ -6,10 +6,10 @@ import XCTest
 
 /// Where a placing run stands a ZStack's children, and in what order it draws them.
 final class PlacingRunTests: XCTestCase {
-    private func placed(z: Int, width: Double = 10, opacity: Double = 1) -> HostPlacement {
+    private func placed(z: Int, width: Double = 10, opacity: Double = 1, shade: Double = 0) -> HostPlacement {
         HostPlacement(
             bounds: Rect(x: 1, y: 2, width: width, height: -4), translationX: 0, translationY: 0, rotation: 0,
-            scaleX: 1, scaleY: 1, opacity: opacity, zIndex: z, shade: 0)
+            scaleX: 1, scaleY: 1, opacity: opacity, zIndex: z, shade: shade)
     }
 
     /// Children are drawn back to front by their z-index, the earlier first among equals, those the run places
@@ -24,5 +24,12 @@ final class PlacingRunTests: XCTestCase {
     func testAPlaceHasNoSizeBelowNothing() {
         XCTAssertEqual(placed(z: 0, width: -3).place, Rect(x: 1, y: 2, width: 0, height: 0))
         XCTAssertEqual([placed(z: 0, opacity: 1.5), placed(z: 0, opacity: -1)].map(\.drawnOpacity), [1, 0])
+    }
+
+    /// A card's shade is drawn between nothing and whole.
+    func testAShadeIsDrawnWithinWhole() {
+        XCTAssertEqual(placed(z: 0, shade: -0.2).drawnShade, 0)
+        XCTAssertEqual(placed(z: 0, shade: 1.5).drawnShade, 1)
+        XCTAssertEqual(placed(z: 0, shade: 0.4).drawnShade, 0.4)
     }
 }

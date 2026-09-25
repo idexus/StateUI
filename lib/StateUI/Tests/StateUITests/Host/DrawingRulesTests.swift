@@ -21,6 +21,12 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
+    /// A colour crosses to a relay as one number, alpha highest; what is no colour gives none.
+    func testAColourIsOneARGBNumber() {
+        XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78).propValue.argb, 0x7812_3456)
+        XCTAssertNil(PropValue.number(1).argb)
+    }
+
     /// Corners stand clockwise from the top left, never below nothing, and no corner rounds more than half its
     /// side.
     func testABoxsCornersStandClockwiseAndFitTheirRoom() {

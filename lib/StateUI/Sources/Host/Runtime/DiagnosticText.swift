@@ -40,7 +40,7 @@ import CRT
     /// The switches this process's environment sets, written to its standard error.
     public static var environment: DiagnosticText {
         DiagnosticText(
-            tallies: switched("STATEUI_TALLY"), inspects: switched("STATEUI_INSPECT"), write: writeStandardError)
+            tallies: switched("STATEUI_TALLY"), inspects: switched("STATEUI_INSPECT"), write: HostLog.writeStandardError)
     }
 
     /// One message applied, which began at `began` milliseconds on the runtime's clock.
@@ -90,17 +90,5 @@ import CRT
         #else
         return getenv(name).map { String(cString: $0) == "1" } ?? false
         #endif
-    }
-
-    /// Writes to file descriptor 2, which nothing buffers.
-    private static func writeStandardError(_ text: String) {
-        var text = text
-        text.withUTF8 { bytes in
-            #if os(Windows)
-            _ = _write(2, bytes.baseAddress, UInt32(bytes.count))
-            #else
-            _ = write(2, bytes.baseAddress, bytes.count)
-            #endif
-        }
     }
 }

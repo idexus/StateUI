@@ -43,6 +43,9 @@
     /// Whether the user asked for less motion: every animation arrives at once.
     public let reducesMotion: () -> Bool
 
+    /// The application's phase, as the toolkit told it.
+    public private(set) var lifecycle = ApplicationLifecycle()
+
     /// A runtime on `clock`, its elements' native halves made by `makeNative`, a drift the intake refused told to
     /// `log`.
     public init(
@@ -106,5 +109,38 @@
         guard core.moveGestureValue(value, state: state) else { return false }
         displayCycle.drain(now: clock.now())
         return true
+    }
+
+    /// What the application stands on changed - the theme, the locale, the power, the network: `report` tells the
+    /// core what stands now, the tree follows the language's direction, and a turn renders what it all changed.
+    /// Design: docs/design/host/runtime.md#the-environment
+    public func environmentChanged(_ report: () -> Void) {
+        report()
+        tree.followTheLanguagesDirection()
+        pump.turn()
+    }
+
+    /// The toolkit moved the application into `phase`: the core hears it, then the scene and its window hear what
+    /// it means for them (`ApplicationLifecycle.enter`), each rendered before the next - in their turn, so a toolkit
+    /// telling it in the middle of one waits for it.
+    /// Design: docs/design/host/runtime.md#the-applications-phase
+    public func enterPhase(_ phase: ApplicationPhase) {
+        guard let told = lifecycle.enter(phase) else { return }
+        core.setApplicationPhase(phase)
+        tell(told)
+    }
+
+    /// The application is ending: its window hears it is going, then its scene.
+    public func ending() {
+        tell(ApplicationLifecycle.ending)
+    }
+
+    private func tell(_ told: [ApplicationLifecycle.Told]) {
+        for each in told {
+            if let handler = tree.root?.first(type: each.element)?.handler(each.event) {
+                pump.handlers.enqueuePhase(handler)
+            }
+        }
+        pump.turn()
     }
 }

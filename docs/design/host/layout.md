@@ -56,7 +56,12 @@ something that can change them happens: its own content, its arrangement, or a
 change beneath it. A parent offers a child one or two widths in a pass - its
 natural width and the width it then lays it out in - so four kept answers
 cover a pass and the next. The toolkit forgets them upward from the change to
-the nearest room, and nothing beside the change is measured again.
+the nearest room, and nothing beside the change is measured again. Which
+change is which is one list on every host (`MountedElement.arrangedProperties`,
+`unmeasuredProperties`): a property a parent reads into its child's place
+arranges the parent again, and one that is only drawn - an opacity, a colour,
+a toggle's state, a transform, what assistive technology meets - measures
+nothing.
 
 ## A child measured
 
@@ -146,6 +151,19 @@ and no width, and not at all without a colour. A fill is read as the tree
 sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
 between 0 and 1, and a gradient given no geometry runs top to bottom, or from
 the middle to the edge. A line drawn in one colour takes the brush's first.
+A fill a host draws for a control itself - a button's background, an accent -
+keeps nine tenths of its opacity under the pointer and eight tenths pressed
+(`PressedFill`), as the platforms' own controls fade theirs.
+
+## A picture
+
+An application's picture is the file its name stands for, looked for in one
+order (`PictureArithmetic.files`): the name, then - for a PNG - an SVG of the
+same name, which a host drawing vector pictures reads in its place. A host
+drawing the picture itself stands it in its room by its aspect
+(`PictureArithmetic.place`): fitted in or covering the room with its
+proportions kept, or at its own size - each in the room's middle - or
+stretched over the whole of it.
 
 ## A shape's own geometry
 

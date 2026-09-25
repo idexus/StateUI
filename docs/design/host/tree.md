@@ -116,6 +116,15 @@ stands over its label's: where the run says nothing, the label's says it.
 A host turns the finished look into its toolkit's attributes and nothing
 more.
 
+An element showing words - a label, a button, a radio button - reads the
+text tiers the same way on every host (`TextMembers`): its words in their
+case where the words or the case changed, and the look its font and colour
+give them where one of those did. A break keeps the words on one line unless
+it wraps - word and character wrapping do - and wrapped words stand on as
+many lines as the tree allows, none where it allows none or fewer than one
+(`LineBreak.lines`); a truncating break cuts them with an ellipsis. A toolkit
+spacing letters in ems is handed the space as a share of the font's size.
+
 ## What assistive technology meets
 
 What an element says for assistive technology is put together once, the same

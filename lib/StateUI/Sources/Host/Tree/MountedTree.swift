@@ -91,7 +91,7 @@
     let makeNative: (MountedElement) -> any NativeElement
     private var nextMount: UInt64 = 0
     private var patchTime: Double?
-    private var languageDirection: LayoutDirection?
+    private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
 
     /// What the message being applied costs, while an inspector records or the tally is written; nil otherwise.

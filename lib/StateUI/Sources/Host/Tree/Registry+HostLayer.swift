@@ -38,6 +38,17 @@ extension Registry {
         everyElementRealizes(VisualElementContract.pivotY)
     }
 
+    /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
+    /// its identifier, label, hint and heading level, and whether it is met at all.
+    public func everyElementMeetsAssistiveTechnology() {
+        everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+        everyElementRealizes(VisualElementContract.accessibilityLabel)
+        everyElementRealizes(VisualElementContract.accessibilityHint)
+        everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        everyElementRealizes(VisualElementContract.isAccessibilityHidden)
+        everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+    }
+
     /// Where a view stands, said as the tree reads it (`MountedElement.reportFrame`), and what the user does to it
     /// with a finger, a pen or the mouse (`MountedElement.hear`).
     public func everyElementHearsTheUser() {

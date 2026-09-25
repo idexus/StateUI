@@ -32,6 +32,12 @@
     /// A look saying nothing: the host's own throughout.
     public init() {}
 
+    /// The space between the letters as a share of a font `size` points tall - what a toolkit spacing letters in
+    /// ems takes; nothing for a size that is none.
+    public func letterSpacing(inEmsOf size: Double) -> Double {
+        size > 0 && size.isFinite ? letterSpacing / size : 0
+    }
+
     /// This look where it says something, `other` where it says nothing: a run of words over its label's look.
     public func over(_ other: TextLook) -> TextLook {
         var look = self

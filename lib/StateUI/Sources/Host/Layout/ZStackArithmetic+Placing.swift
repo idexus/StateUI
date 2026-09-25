@@ -26,4 +26,9 @@ extension HostPlacement {
     public var drawnOpacity: Double {
         min(max(opacity, 0), 1)
     }
+
+    /// How opaque the shade over its child is drawn - a card's second layer - 0 to 1.
+    public var drawnShade: Double {
+        min(max(shade, 0), 1)
+    }
 }

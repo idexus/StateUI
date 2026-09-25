@@ -1,11 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-@_spi(Host) extension NodeType {
-    /// The arrangements of pages a window shows: a page, a stack of them, tabs, a split view.
-    public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
-}
-
 /// What a window element asks its host to show, as it changes, the same on every host: the arrangement of pages
 /// among its children, what it lays over them, and that it was made - said once.
 /// Design: docs/design/host/tree.md#a-window-shown
