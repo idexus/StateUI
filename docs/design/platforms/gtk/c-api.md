@@ -21,6 +21,12 @@ capture nothing, and a widget's pointer is not `Sendable`: the number is, so
 the handler finds its view by the number, on the main actor, and does
 nothing once the view has gone.
 
+A handler's type is the C shape GTK calls it with - the instance, what the
+signal hands, the number - one for each shape the host hears: nothing, one
+argument by address, a press (its run and point), a point, a scale. A
+property's change notice has a road of its own, `connectNotify`, which names
+the property alone.
+
 ## A view and its number
 
 Every view takes a number when it is made and holds its widget with a

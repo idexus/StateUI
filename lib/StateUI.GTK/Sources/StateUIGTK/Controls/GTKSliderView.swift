@@ -43,6 +43,7 @@ final class GTKSliderView: GTKView {
     }
 
     override func detach() {
+        super.detach()
         onValueChanged = nil
     }
 }

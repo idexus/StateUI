@@ -75,6 +75,35 @@ enum GTKTestHost {
         }
     }
 
+    /// Emits `signal` of `instance` as GTK does, handing it `numbers` in order - each parameter an integer or a
+    /// double, and nothing for a parameter GTK hands by address.
+    static func emit(_ instance: OpaquePointer, _ signal: String, _ numbers: [Double] = []) {
+        let type = UnsafeMutablePointer<GTypeInstance>(instance).pointee.g_class.pointee.g_type
+        let id = g_signal_lookup(signal, type)
+        precondition(id != 0, "no signal \(signal)")
+        var query = GSignalQuery()
+        g_signal_query(id, &query)
+
+        var values = [GValue](repeating: GValue(), count: Int(query.n_params) + 1)
+        g_value_init(&values[0], type)
+        g_value_set_object(&values[0], UnsafeMutableRawPointer(instance))
+        for index in 0..<Int(query.n_params) {
+            let parameter = query.param_types[index] & ~GType(1)
+            g_value_init(&values[index + 1], parameter)
+            let number = index < numbers.count ? numbers[index] : 0
+            switch g_type_fundamental(parameter) {
+            case g_type_from_name("gint"): g_value_set_int(&values[index + 1], Int32(number))
+            case g_type_from_name("guint"): g_value_set_uint(&values[index + 1], UInt32(number))
+            case g_type_from_name("gdouble"): g_value_set_double(&values[index + 1], number)
+            default: break
+            }
+        }
+        values.withUnsafeMutableBufferPointer { values in
+            g_signal_emitv(values.baseAddress, id, 0, nil)
+            for index in values.indices { g_value_unset(&values[index]) }
+        }
+    }
+
     /// Turns GLib's loop for `seconds`: a window's first frame, and the layout GTK does on it.
     static func pump(_ seconds: Double = 0.2) {
         let end = g_get_monotonic_time() + gint64(seconds * 1_000_000)

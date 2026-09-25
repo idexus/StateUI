@@ -24,6 +24,9 @@ final class GTKElement: NativeElement {
     /// What an arrangement showed before the patch now applied.
     private var previouslyShown: [MountedElement] = []
 
+    /// Where the states a press dragged carries stood as it began.
+    var panFrom = (x: 0.0, y: 0.0)
+
     init(_ element: MountedElement, host: GTKRenderer) {
         self.element = element
         self.host = host
@@ -60,6 +63,7 @@ final class GTKElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        configureGestures()
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)

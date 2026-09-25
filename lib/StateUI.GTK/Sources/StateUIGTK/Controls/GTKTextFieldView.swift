@@ -51,6 +51,7 @@ final class GTKTextFieldView: GTKView {
     }
 
     override func detach() {
+        super.detach()
         onTextChanged = nil
         onSubmitted = nil
     }

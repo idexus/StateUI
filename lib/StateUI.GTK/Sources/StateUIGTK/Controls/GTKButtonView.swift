@@ -32,6 +32,7 @@ final class GTKButtonView: GTKView {
     }
 
     override func detach() {
+        super.detach()
         onClicked = nil
     }
 }

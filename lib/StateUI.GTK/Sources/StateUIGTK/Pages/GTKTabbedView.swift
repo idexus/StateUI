@@ -28,7 +28,7 @@ final class GTKTabbedView: GTKLayoutView {
         setChildren([stack])
         adw_view_switcher_set_stack(switcher.widget.opaque, stack.widget.opaque)
         adw_view_switcher_set_policy(switcher.widget.opaque, ADW_VIEW_SWITCHER_POLICY_WIDE)
-        connectSignal(UnsafeMutableRawPointer(stack.widget), "notify::visible-child", number: number) { _, _, data in
+        connectNotify(UnsafeMutableRawPointer(stack.widget), "visible-child", number: number) { _, _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTabbedView)?.visibleChildMoved() }
         }
     }

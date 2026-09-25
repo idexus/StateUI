@@ -36,7 +36,7 @@ final class GTKSplitView: GTKLayoutView {
         super.init()
         split.placingLayout = self
         setChildren([split])
-        connectSignal(UnsafeMutableRawPointer(split.widget), "notify::show-sidebar", number: number) { _, _, data in
+        connectNotify(UnsafeMutableRawPointer(split.widget), "show-sidebar", number: number) { _, _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKSplitView)?.sidebarMoved() }
         }
     }

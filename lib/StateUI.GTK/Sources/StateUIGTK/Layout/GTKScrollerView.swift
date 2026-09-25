@@ -95,6 +95,7 @@ final class GTKScrollerView: GTKView {
     }
 
     override func detach() {
+        super.detach()
         onScrolled = nil
         onHeld = nil
     }

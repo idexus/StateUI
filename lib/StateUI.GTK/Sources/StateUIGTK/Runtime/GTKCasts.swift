@@ -20,8 +20,18 @@ extension UnsafeMutablePointer {
 /// A signal's handler, handed the number of the view it belongs to.
 typealias GTKSignalHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> Void
 
-/// A property's change notice, handed the number of the view it belongs to.
-typealias GTKNotifyHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, gpointer?) -> Void
+/// A signal's handler handed one argument by address - a changed property's description, a gesture's sequence of
+/// events - and the number of the view it belongs to.
+typealias GTKArgumentHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, gpointer?) -> Void
+
+/// A press's handler: its place in a quick run, and where it is in the widget.
+typealias GTKPressHandler = @convention(c) (UnsafeMutableRawPointer?, Int32, Double, Double, gpointer?) -> Void
+
+/// A handler handed a point, or how far a drag has come.
+typealias GTKPointHandler = @convention(c) (UnsafeMutableRawPointer?, Double, Double, gpointer?) -> Void
+
+/// A handler handed one number: a pinch's scale.
+typealias GTKScaleHandler = @convention(c) (UnsafeMutableRawPointer?, Double, gpointer?) -> Void
 
 /// Connects `handler` to `signal` of `instance`, handing it `number`.
 /// Design: docs/design/platforms/gtk/c-api.md#signals
@@ -30,9 +40,29 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 
-/// Connects `handler` to the `notify::` signal named `signal` of `instance`, handing it `number`.
 @discardableResult
-func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKNotifyHandler) -> gulong {
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKArgumentHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+/// Connects `handler` to the change notice of `instance`'s `property`, handing it `number`.
+@discardableResult
+func connectNotify(_ instance: UnsafeMutableRawPointer, _ property: String, number: Int64, _ handler: GTKArgumentHandler) -> gulong {
+    connect(instance, "notify::" + property, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKPressHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKPointHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKScaleHandler) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 

@@ -38,7 +38,7 @@ enum GTKEnvironment {
         guard !watching else { return }
         watching = true
         let style = adw_style_manager_get_default()!
-        connectSignal(UnsafeMutableRawPointer(style), "notify::dark", number: 0) { _, _, _ in
+        connectNotify(UnsafeMutableRawPointer(style), "dark", number: 0) { _, _, _ in
             MainActor.assumeIsolated { GTKEnvironment.onChange?() }
         }
     }

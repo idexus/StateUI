@@ -28,6 +28,7 @@ final class GTKSwitchView: GTKView {
     }
 
     override func detach() {
+        super.detach()
         onToggled = nil
     }
 }

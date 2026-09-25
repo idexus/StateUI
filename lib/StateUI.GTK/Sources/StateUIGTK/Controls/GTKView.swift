@@ -31,6 +31,10 @@ class GTKView {
     private(set) var opacity = 1.0
     private(set) var isShown = true
 
+    /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
+    private(set) var listening: GTKListening?
+    private var onHeard: ((GTKHeard) -> Void)?
+
     private static var nextNumber: Int64 = 0
     private static var live: [Int64: Weak] = [:]
 
@@ -66,8 +70,8 @@ class GTKView {
     }
 
     /// Connects `handler` to the widget's `notify::<property>`, handing it this view's number.
-    func notify(_ property: String, _ handler: GTKNotifyHandler) {
-        connectSignal(UnsafeMutableRawPointer(widget), "notify::" + property, number: number, handler)
+    func notify(_ property: String, _ handler: GTKArgumentHandler) {
+        connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
     }
 
     // MARK: - What every view takes
@@ -131,11 +135,35 @@ class GTKView {
             width: Double(bounds.size.width), height: Double(bounds.size.height))
     }
 
+    /// What the view listens for of the user's input.
+    var hearing: GTKHearing { listening?.hearing ?? [] }
+
+    /// Listens for what `hearing` names, `heard` hearing it; a panel listening for taps is pressable by
+    /// assistive technology.
+    /// Design: docs/design/platforms/gtk/input.md#listening
+    func hear(_ hearing: GTKHearing, _ heard: @escaping (GTKHeard) -> Void) {
+        onHeard = hearing.isEmpty ? nil : heard
+        guard hearing != self.hearing else { return }
+
+        if GTKPanel.holds(widget) { GTKPanel.setPressable(widget, hearing.contains(.taps)) }
+        let listening = listening ?? GTKListening(widget: widget, number: number)
+        listening.listen(for: hearing)
+        self.listening = hearing.isEmpty ? nil : listening
+    }
+
+    /// What the view heard, handed to what hears it.
+    func heard(_ heard: GTKHeard) {
+        onHeard?(heard)
+    }
+
     /// The user clicked the view.
     func clicked() {}
 
-    /// The element left the tree: the view lets go of everything that would call back into it.
-    func detach() {}
+    /// The element left the tree: the view lets go of everything that would call back into it. An override
+    /// calls this first.
+    func detach() {
+        hear([]) { _ in }
+    }
 
     private struct Weak {
         weak var view: GTKView?

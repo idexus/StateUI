@@ -4,11 +4,16 @@
 import CStateUIGTK
 
 /// `StateUIPanel`, a `GtkWidget` subclass registered from Swift: it measures, allocates and draws by asking the
-/// panel view whose number it carries, and lets its children go when it is disposed.
+/// panel view whose number it carries, offers assistive technology a press while it listens for taps, and lets its
+/// children go when it is disposed.
 /// Design: docs/design/platforms/gtk/c-api.md#a-subclass-from-swift
 enum GTKPanel {
     /// Where a panel keeps its view's number.
     static let numberKey = "stateui-view"
+
+    /// The action assistive technology presses a panel by, which answers as one tap.
+    /// Design: docs/design/platforms/gtk/input.md#pressed-by-assistive-technology
+    static let pressAction = "panel.click"
 
     /// Widget's own dispose, which a panel's calls after letting its children go.
     nonisolated(unsafe) private static var widgetDispose: (@convention(c) (UnsafeMutablePointer<GObject>?) -> Void)?
@@ -42,6 +47,13 @@ enum GTKPanel {
                               height: Double(gtk_widget_get_height(view.widget)))
                 }
             }
+            gtk_widget_class_install_action(widgetClass, GTKPanel.pressAction, nil) { widget, _, _ in
+                let number = GTKPanel.number(of: widget)
+                MainActor.assumeIsolated {
+                    guard let view = GTKView.find(number), view.hearing.contains(.taps) else { return }
+                    view.heard(.tap(run: 0))
+                }
+            }
             let objectClass = theClass!.assumingMemoryBound(to: GObjectClass.self)
             GTKPanel.widgetDispose = g_type_class_peek(gtk_widget_get_type())!
                 .assumingMemoryBound(to: GObjectClass.self).pointee.dispose
@@ -57,7 +69,13 @@ enum GTKPanel {
     static func make(number: Int64) -> GTKWidget {
         let panel = g_object_new_with_properties(type, 0, nil, nil)!
         g_object_set_data(panel, numberKey, UnsafeMutableRawPointer(bitPattern: Int(number)))
+        setPressable(panel.of(GtkWidget.self), false)
         return panel.of(GtkWidget.self)
+    }
+
+    /// Whether assistive technology can press `panel`.
+    static func setPressable(_ panel: GTKWidget, _ pressable: Bool) {
+        gtk_widget_action_set_enabled(panel, pressAction, pressable ? 1 : 0)
     }
 
     /// Whether `widget` is a panel.
