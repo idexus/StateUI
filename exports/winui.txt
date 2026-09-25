@@ -20,6 +20,7 @@ Canvas
 CheckBox
   isEnabled
   isOn
+  tint
   toggled()
 ColorBox
   color
@@ -166,11 +167,13 @@ Slider
   isEnabled
   maximum
   minimum
+  tint
   value
   valueChanged()
 Switch
   isEnabled
   isOn
+  tint
   toggled()
 TextField
   isEnabled

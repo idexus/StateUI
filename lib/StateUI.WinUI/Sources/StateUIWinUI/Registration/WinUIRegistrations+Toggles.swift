@@ -14,6 +14,7 @@ extension WinUIRegistrations {
         }, members: { toggle in
             toggle.property(SwitchContract.isOn) { view, on in view.setOn(on ?? false) }
             toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             toggle.raises(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
@@ -23,6 +24,7 @@ extension WinUIRegistrations {
         }, members: { box in
             box.property(CheckBoxContract.isOn) { view, on in view.setOn(on ?? false) }
             box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             box.raises(CheckBoxContract.toggled)
         })
         registry.add(RadioButtonContract.self, create: { reports in

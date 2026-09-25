@@ -185,6 +185,13 @@ class WinUIView {
         return Rect(x: frame[0], y: frame[1], width: frame[2], height: frame[3])
     }
 
+    /// The control's one accent colour; nil for the platform's.
+    /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
+    func setTint(_ tint: HostValue?) {
+        let argb = tint.flatMap(WinUIBrush.argb)
+        stateui_winui_set_tint(handle, argb ?? 0, argb != nil)
+    }
+
     /// Whether assistive technology meets a view: met, skipped, or skipped with everything that stands in it.
     enum AccessibilityPresence {
         case met

@@ -285,6 +285,10 @@ void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush backgro
 /// Presses a button as UI Automation does, which raises its Click.
 void stateui_winui_button_invoke(StateUIObjectRef button);
 
+/// A control's one accent colour, `argb`, where `tinted`, and the platform's accent otherwise: a check box's tick,
+/// a switch's track while it is on, a slider's thumb and the track behind it.
+void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted);
+
 /// The controls that are on or off - a switch, a check box with no caption, and a radio button in a group of its
 /// own - each telling its turn through `toggled`.
 StateUIObjectRef stateui_winui_switch_make(int64_t view);

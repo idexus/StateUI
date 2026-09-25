@@ -60,6 +60,19 @@ reporting that it is off, in one transaction. WinUI's own grouping would
 uncheck the button's neighbours by itself - and the one that lost would be
 heard twice - so every button stands in a group of its own.
 
+## A control's accent
+
+A control's tint is its one accent colour, where WinUI draws the system's
+accent: a ticked box, a switch's track while it is on, a slider's thumb and
+the track up to it. WinUI's templates take those brushes from resources named
+for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
+`SliderTrackValueFill` and their kin - so the tint is written into the
+control's own resources under those names, the colour itself and nine and
+eight tenths of it under the pointer and pressed, as WinUI's accent brushes
+are. A template reads its resources as its theme is read, so the control
+reads its theme again at once; a tint changed after the control is drawn is
+drawn. No tint takes the names away, and the system's accent returns.
+
 ## What assistive technology meets
 
 What an element says for assistive technology - its identifier, its label,

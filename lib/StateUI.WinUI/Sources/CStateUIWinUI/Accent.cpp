@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// A control's one accent colour: the brushes its template takes from the
+// system's accent, written into the control's own resources - the default,
+// under the pointer and pressed, as WinUI's accent brushes are - and the
+// control's theme read again so its template takes them.
+// Design: docs/design/platforms/winui/controls.md#a-controls-accent
+
+#include "Relay.h"
+
+#include <string>
+#include <vector>
+
+#include <winrt/Windows.UI.h>
+
+using namespace stateui;
+namespace media = winrt::Microsoft::UI::Xaml::Media;
+
+namespace {
+    /// The resources a control's template fills with the accent, each named again for under the pointer and
+    /// pressed; none for a control that takes no accent.
+    std::vector<std::wstring> accentResources(IInspectable const &control) {
+        if (control.try_as<controls::CheckBox>())
+            return {L"CheckBoxCheckBackgroundFillChecked", L"CheckBoxCheckBackgroundStrokeChecked"};
+        if (control.try_as<controls::ToggleSwitch>()) return {L"ToggleSwitchFillOn", L"ToggleSwitchStrokeOn"};
+        if (control.try_as<controls::Slider>()) return {L"SliderThumbBackground", L"SliderTrackValueFill"};
+        return {};
+    }
+}
+
+extern "C" void stateui_winui_set_tint(StateUIObjectRef handle, uint32_t argb, bool tinted) {
+    try {
+        auto control = as<xaml::FrameworkElement>(handle);
+        auto resources = control.Resources();
+        // WinUI's accent brushes: the colour, then nine tenths of it under the pointer and eight tenths pressed.
+        struct Variant { wchar_t const *suffix; double opacity; };
+        Variant const variants[] = {{L"", 1}, {L"PointerOver", 0.9}, {L"Pressed", 0.8}};
+        for (auto const &name : accentResources(control)) {
+            for (auto const &variant : variants) {
+                auto key = winrt::box_value(winrt::hstring(name + variant.suffix));
+                if (!tinted) {
+                    if (resources.HasKey(key)) resources.Remove(key);
+                    continue;
+                }
+                auto alpha = static_cast<uint8_t>(((argb >> 24) & 0xFF) * variant.opacity + 0.5);
+                resources.Insert(key, media::SolidColorBrush(winrt::Windows::UI::Color{
+                    alpha, static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}));
+            }
+        }
+        // A template reads its resources as its theme is read: the control reads its theme again.
+        auto requested = control.RequestedTheme();
+        control.RequestedTheme(control.ActualTheme() == xaml::ElementTheme::Dark ? xaml::ElementTheme::Light
+                                                                               : xaml::ElementTheme::Dark);
+        control.RequestedTheme(requested);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "tinting a control");
+    }
+}

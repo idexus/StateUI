@@ -126,4 +126,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `tint` | property | `Color` | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
