@@ -80,3 +80,43 @@ its identifier. It tells the core the desktop's style - dark or light, as
 libadwaita's style manager reads it from the desktop's settings - and again
 whenever it turns, and once the window stands, the screen it stands on: its
 size in pixels, its scale and its refresh rate.
+
+## Acts
+
+The acts the application calls are performed after each turn's render and
+answered, a reply or a failure with its reason, so no caller waits on an act
+nobody performs. The time of day is GLib's local time; the zone is GLib's
+local zone, an IANA name; a zone's distance from UTC on a day is GLib's,
+taken at the day's noon, so the day decides summer time, and a zone GLib
+does not know fails the act. The screen reader is told through the window,
+GTK's own announcement. The focus is put on the view the act names, or the
+first control in it that takes it, and taken off by leaving it nowhere,
+which GTK allows. A desktop's keyboard is its own, so taking the on-screen
+keyboard down answers that no field had brought one up.
+
+## Questions for the user
+
+A question - an alert, a confirmation, a choice of actions, a prompt - is
+libadwaita's `AdwAlertDialog` over the window, and its call waits under a
+ticket the dialog's answer comes back with; a ticket is one number across
+the process, so an answer that arrives after its renderer has gone answers
+nothing of another's. A window shows one question at a time, as a desktop's
+sheets are, so a question asked while one shows waits for it to close. A
+choice of actions is a button a choice, the dangerous one first, and the
+pressed caption is the answer - the cancelling one too; a dialog dismissed
+any other way, Escape among them, answers that nothing was chosen. A
+prompt's field takes the placeholder, the most characters and the keyboard
+its purpose asks for, holds the keyboard as the dialog shows, and Enter in
+it accepts.
+
+## Kept values
+
+The desktop keeps no store an application can use without a schema
+installed, so the host keeps one of its own: `kept values.txt` in the user's
+state folder, in a folder named by the application's ID, in the host
+layer's text ([kept values](../../host/runtime.md#kept-values)). Every key
+the application lists is read before the first scene connects and handed to
+the core ahead of the first view; a key's new value writes the whole file
+again, beside the old one and then in its place, so a failed write leaves
+the old.
+

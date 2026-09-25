@@ -43,6 +43,13 @@ enum GTKTestHost {
     /// The application every test's windows belong to.
     static let application: UnsafeMutablePointer<GtkApplication> = {
         adw_init()
+        // GTK's own animations - a dialog closing - wait on frames a window behind another never gets.
+        var animates = GValue()
+        g_value_init(&animates, g_type_from_name("gboolean"))
+        g_value_set_boolean(&animates, 0)
+        g_object_set_property(
+            gtk_settings_get_default().map { UnsafeMutablePointer<GObject>($0) }, "gtk-enable-animations", &animates)
+        g_value_unset(&animates)
         let application = adw_application_new("com.stateui.GTKTests", G_APPLICATION_NON_UNIQUE)!
         precondition(
             g_application_register(application.of(GApplication.self), nil, nil) != 0,
@@ -153,6 +160,7 @@ extension GTKRenderer {
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
         GTKPictures.folder = GTKTestHost.pictures
+        GTKKeptValues.folder = String(cString: g_get_tmp_dir()) + "/stateui-gtk-tests"
         shared?.tree.root?.leave()
         shared?.window?.close()
         GTKTestHost.window.show(nil)
@@ -326,11 +334,34 @@ extension GTKButtonView {
     /// Clicks the button as the pointer's release does - its `clicked` signal - then lets GTK lay out what that
     /// changed.
     func click() {
+        GTKTestHost.click(widget)
+    }
+}
+
+extension GTKTestHost {
+    /// Clicks a `GtkButton` as the pointer's release does, then lets GTK lay out what that changed.
+    static func click(_ button: GTKWidget) {
         var instance = GValue()
         g_value_init(&instance, gtk_button_get_type())
-        g_value_set_object(&instance, UnsafeMutableRawPointer(widget))
+        g_value_set_object(&instance, UnsafeMutableRawPointer(button))
         g_signal_emitv(&instance, g_signal_lookup("clicked", gtk_button_get_type()), 0, nil)
         g_value_unset(&instance)
-        GTKTestHost.pump(0.05)
+        pump(0.05)
+    }
+
+    /// Every widget under `widget`, itself first, in order.
+    static func descendants(of widget: GTKWidget) -> [GTKWidget] {
+        var found = [widget]
+        var child = gtk_widget_get_first_child(widget)
+        while let each = child {
+            found += descendants(of: each)
+            child = gtk_widget_get_next_sibling(each)
+        }
+        return found
+    }
+
+    /// Whether `widget` is of the class `type` names.
+    static func holds(_ widget: GTKWidget, _ type: GType) -> Bool {
+        g_type_check_instance_is_a(widget.of(GTypeInstance.self), type) != 0
     }
 }

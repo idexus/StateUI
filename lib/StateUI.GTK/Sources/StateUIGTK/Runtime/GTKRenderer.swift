@@ -42,6 +42,14 @@ final class GTKRenderer {
         core: core, intake: intake, tree: tree, displayCycle: displayCycle, now: frameClock.now,
         log: { GTKLog.error($0) })
 
+    /// What performs the acts the application calls, and answers them.
+    private(set) lazy var acts = GTKActPerformer(core: core)
+
+    /// The application's ID, which the desktop knows it by.
+    var applicationID: String {
+        g_application_get_application_id(application.of(GApplication.self)).map { String(cString: $0) } ?? ""
+    }
+
     /// The window the first window element shows in; nil before it says it is there.
     private(set) var window: GTKWindow?
 
@@ -134,8 +142,8 @@ final class GTKRenderer {
 
     /// Renders the application whole, connecting its scene first, told what the host stands on.
     func show() {
-        let identifier = g_application_get_application_id(application.of(GApplication.self)).map { String(cString: $0) }
-        GTKEnvironment.report(to: core, applicationID: identifier ?? "")
+        GTKEnvironment.report(to: core, applicationID: applicationID)
+        GTKKeptValues.restore(into: core, applicationID: applicationID)
         GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
         core.connectScene()
         pump.turn()
@@ -294,9 +302,7 @@ extension GTKRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        if let completion = call.completion {
-            _ = core.fail(completion, reason: "the GTK host performs no act yet: \(call.act.name)")
-        }
+        acts.perform(call, in: tree, window: window, applicationID: applicationID)
     }
 }
 
