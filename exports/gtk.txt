@@ -6,7 +6,6 @@ Button
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   padding
   shape
   stroke
@@ -16,7 +15,6 @@ Button
   textColor
   clicked()
 CheckBox
-  isEnabled
   isOn
   toggled()
 ColorBox
@@ -101,7 +99,6 @@ Path
   strokeMiterLimit
   strokeWidth
 Picker
-  isEnabled
   options
   selectedIndex
   selectedIndexChanged()
@@ -138,7 +135,6 @@ RadioButton
   fontAttributes
   fontFamily
   fontSize
-  isEnabled
   isOn
   padding
   text
@@ -177,7 +173,6 @@ SearchField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -190,20 +185,17 @@ SearchField
   submitted()
   textChanged()
 Slider
-  isEnabled
   maximum
   minimum
   value
   valueChanged()
 Stepper
-  isEnabled
   maximum
   minimum
   step
   value
   valueChanged()
 Switch
-  isEnabled
   isOn
   toggled()
 TextEditor
@@ -214,7 +206,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
@@ -232,7 +223,6 @@ TextField
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isEnabled
   isPassword
   isReadOnly
   isSpellCheckEnabled
@@ -276,6 +266,7 @@ ZStack
   gridRowSpan
   height
   horizontalAlignment
+  isEnabled
   isVisible
   margin
   maximumHeight

@@ -89,6 +89,7 @@ extension GTKElement {
             for property in own {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
+                case .isEnabled: view.setEnabled(value(.isEnabled)?.bool ?? true)
                 case .isVisible: view.setShown(isShown)
                 case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
                 case .padding where type == .page:

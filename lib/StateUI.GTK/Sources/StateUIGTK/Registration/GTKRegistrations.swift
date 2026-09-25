@@ -56,6 +56,7 @@ enum GTKRegistrations {
         registry.everyElementRealizes(ViewContract.gridColumnSpan)
         registry.everyElementRealizes(ViewContract.area)
         registry.everyElementRealizes(VisualElementContract.frame)
+        registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
         registry.everyElementRealizes(VisualElementContract.accessibilityHint)
         registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)

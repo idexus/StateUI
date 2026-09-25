@@ -15,28 +15,28 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 <!-- controls:begin -->
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  | 4 ✅ |  |  |  |
 | [Button](Button.md) | 86 |  |  | 4 ✅ |  |  |  |
 | [Canvas](Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](CheckBox.md) | 69 |  |  | 5 ✅ |  |  |  |
-| [ColorBox](ColorBox.md) | 68 |  |  | 2 ✅ |  |  |  |
+| [ColorBox](ColorBox.md) | 68 |  |  | 3 ✅ |  |  |  |
 | [DatePicker](DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](Ellipse.md) | 76 |  |  | 2 ✅ |  |  |  |
-| [Grid](Grid.md) | 77 |  |  | 2 ✅ |  |  |  |
-| [HStack](HStack.md) | 74 |  |  | 2 ✅ |  |  |  |
-| [Image](Image.md) | 69 |  |  | 2 ✅ |  |  |  |
-| [Label](Label.md) | 81 |  |  | 3 ✅ |  |  |  |
-| [Line](Line.md) | 80 |  |  | 2 ✅ |  |  |  |
+| [Ellipse](Ellipse.md) | 76 |  |  | 3 ✅ |  |  |  |
+| [Grid](Grid.md) | 77 |  |  | 3 ✅ |  |  |  |
+| [HStack](HStack.md) | 74 |  |  | 3 ✅ |  |  |  |
+| [Image](Image.md) | 69 |  |  | 3 ✅ |  |  |  |
+| [Label](Label.md) | 81 |  |  | 4 ✅ |  |  |  |
+| [Line](Line.md) | 80 |  |  | 3 ✅ |  |  |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
-| [Path](Path.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [Path](Path.md) | 77 |  |  | 3 ✅ |  |  |  |
 | [Picker](Picker.md) | 82 |  |  | 6 ✅ |  |  |  |
-| [Polygon](Polygon.md) | 78 |  |  | 2 ✅ |  |  |  |
-| [Polyline](Polyline.md) | 78 |  |  | 2 ✅ |  |  |  |
+| [Polygon](Polygon.md) | 78 |  |  | 3 ✅ |  |  |  |
+| [Polyline](Polyline.md) | 78 |  |  | 3 ✅ |  |  |  |
 | [PositionIndicator](PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [ProgressBar](ProgressBar.md) | 68 |  |  | 4 ✅ |  |  |  |
 | [RadioButton](RadioButton.md) | 81 |  |  | 6 ✅ |  |  |  |
-| [Rectangle](Rectangle.md) | 77 |  |  | 2 ✅ |  |  |  |
-| [ScrollView](ScrollView.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [Rectangle](Rectangle.md) | 77 |  |  | 3 ✅ |  |  |  |
+| [ScrollView](ScrollView.md) | 77 |  |  | 3 ✅ |  |  |  |
 | [SearchField](SearchField.md) | 89 |  |  | 6 ✅ |  |  |  |
 | [Slider](Slider.md) | 73 |  |  | 7 ✅ |  |  |  |
 | [Stepper](Stepper.md) | 71 |  |  | 8 ✅ |  |  |  |
@@ -45,10 +45,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TextField](TextField.md) | 90 |  |  | 7 ✅ |  |  |  |
 | [TimePicker](TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](VStack.md) | 74 |  |  | 2 ✅ |  |  |  |
+| [VStack](VStack.md) | 74 |  |  | 3 ✅ |  |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](ZStack.md) | 73 |  |  | 2 ✅ |  |  |  |
-| **Met** - ✅ and – | 2515 |  |  | 95 of 2515 met |  |  |  |
+| [ZStack](ZStack.md) | 73 |  |  | 3 ✅ |  |  |  |
+| **Met** - ✅ and – | 2515 |  |  | 111 of 2515 met |  |  |  |
 <!-- controls:end -->
 
 ## Application structure

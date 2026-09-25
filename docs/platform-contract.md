@@ -421,28 +421,28 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 4 ✅ |  |  |  |
 | [Button](controls/Button.md) | 86 |  |  | 4 ✅ |  |  |  |
 | [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](controls/CheckBox.md) | 69 |  |  | 5 ✅ |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  | 2 ✅ |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  | 3 ✅ |  |  |  |
 | [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  | 2 ✅ |  |  |  |
-| [Grid](controls/Grid.md) | 77 |  |  | 2 ✅ |  |  |  |
-| [HStack](controls/HStack.md) | 74 |  |  | 2 ✅ |  |  |  |
-| [Image](controls/Image.md) | 69 |  |  | 2 ✅ |  |  |  |
-| [Label](controls/Label.md) | 81 |  |  | 3 ✅ |  |  |  |
-| [Line](controls/Line.md) | 80 |  |  | 2 ✅ |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  | 3 ✅ |  |  |  |
+| [Grid](controls/Grid.md) | 77 |  |  | 3 ✅ |  |  |  |
+| [HStack](controls/HStack.md) | 74 |  |  | 3 ✅ |  |  |  |
+| [Image](controls/Image.md) | 69 |  |  | 3 ✅ |  |  |  |
+| [Label](controls/Label.md) | 81 |  |  | 4 ✅ |  |  |  |
+| [Line](controls/Line.md) | 80 |  |  | 3 ✅ |  |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [Path](controls/Path.md) | 77 |  |  | 3 ✅ |  |  |  |
 | [Picker](controls/Picker.md) | 82 |  |  | 6 ✅ |  |  |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  | 2 ✅ |  |  |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  | 2 ✅ |  |  |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  | 3 ✅ |  |  |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  | 3 ✅ |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 3 ✅ |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 4 ✅ |  |  |  |
 | [RadioButton](controls/RadioButton.md) | 81 |  |  | 6 ✅ |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  | 2 ✅ |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 77 |  |  | 2 ✅ |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  | 3 ✅ |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 77 |  |  | 3 ✅ |  |  |  |
 | [SearchField](controls/SearchField.md) | 89 |  |  | 6 ✅ |  |  |  |
 | [Slider](controls/Slider.md) | 73 |  |  | 7 ✅ |  |  |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  | 8 ✅ |  |  |  |
@@ -451,10 +451,10 @@ Every control, and every part an application, its windows and its pages are made
 | [TextField](controls/TextField.md) | 90 |  |  | 7 ✅ |  |  |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 |  |  | 2 ✅ |  |  |  |
+| [VStack](controls/VStack.md) | 74 |  |  | 3 ✅ |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](controls/ZStack.md) | 73 |  |  | 2 ✅ |  |  |  |
-| **Met** - ✅ and – | 2515 |  |  | 95 of 2515 met |  |  |  |
+| [ZStack](controls/ZStack.md) | 73 |  |  | 3 ✅ |  |  |  |
+| **Met** - ✅ and – | 2515 |  |  | 111 of 2515 met |  |  |  |
 
 ### Application structure
 
