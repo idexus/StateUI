@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 import CStateUIGTK
 
-/// A `GtkButton`: its caption, whether it takes a press, and the click it raises.
+/// A `GtkButton`: its caption and how it looks, whether it takes a press, and the click it raises.
 @MainActor
 final class GTKButtonView: GTKView {
     /// What the button does when the user clicks it.
@@ -17,9 +18,52 @@ final class GTKButtonView: GTKView {
         }
     }
 
+    /// How the caption's words look.
+    private(set) var look = GTKTextLook()
+
+    /// The style sheet's class drawing the button's box.
+    private var boxClass: String?
+
     /// The caption.
     func setText(_ text: String) {
         gtk_button_set_label(widget.of(GtkButton.self), text)
+        writeLook()
+    }
+
+    /// Changes how the caption's words look.
+    func setLook(_ change: (inout GTKTextLook) -> Void) {
+        change(&look)
+        writeLook()
+    }
+
+    /// Writes the look on the label the button shows its caption in.
+    private func writeLook() {
+        guard let label = gtk_button_get_child(widget.of(GtkButton.self)),
+              g_type_check_instance_is_a(label.of(GTypeInstance.self), gtk_label_get_type()) != 0
+        else { return }
+        let list = pango_attr_list_new()!
+        look.insert(into: list)
+        gtk_label_set_attributes(label.opaque, list)
+        pango_attr_list_unref(list)
+    }
+
+    /// The button's box - its fill, its outline's colour and width, and its shape - as a class of the host's style
+    /// sheet; what is nil stays the platform's.
+    /// Design: docs/design/platforms/gtk/controls.md#a-buttons-box
+    func setBox(fill: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
+        let radius: Double? = switch shape.map({ GTKOutline(container: $0) }) {
+        case .rounded(let radius)?: radius
+        case .ellipse?: 9999
+        case .rectangle?: 0
+        case nil: nil
+        }
+        let drawn = GTKStyleSheet.box(
+            fill: fill.flatMap { GTKBrush($0).firstColor }, stroke: stroke.flatMap { GTKBrush($0).firstColor },
+            strokeWidth: stroke == nil ? nil : max(0, strokeWidth ?? 1), radius: radius)
+        guard drawn != boxClass else { return }
+        if let boxClass { gtk_widget_remove_css_class(widget, boxClass) }
+        if let drawn { gtk_widget_add_css_class(widget, drawn) }
+        boxClass = drawn
     }
 
     /// A picture in place of the caption, `size` logical pixels across; the caption stays the button's name to

@@ -4,15 +4,23 @@
 @_spi(Host) import StateUI
 
 extension GTKRegistrations {
-    /// A Button: its caption, whether it takes a press, and the click.
+    /// A Button: its caption and its look, whether it takes a press, and the click.
     static func buttons(_ registry: Registry<GTKView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = GTKButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             return button
         }, members: { button in
-            button.applies([TextElementContract.text, TextElementContract.textCase]) { view, values in
-                view.setText(cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase]))
+            button.applies(textMembers) { view, values in applyText(view, values) }
+            button.applies([
+                VisualElementContract.background,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                view.setBox(
+                    fill: values[VisualElementContract.background]?.propValue,
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    strokeWidth: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
             }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)

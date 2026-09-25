@@ -37,8 +37,8 @@ extension GTKRegistrations {
         PaddingElementContract.padding,
     ]
 
-    /// Puts `textMembers` on a label.
-    static func applyText<Realized: ElementContract>(_ view: GTKTextView, _ values: ElementValues<Realized>) {
+    /// Puts `textMembers` on a label or a button.
+    static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
             view.setText(cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase]))
         }

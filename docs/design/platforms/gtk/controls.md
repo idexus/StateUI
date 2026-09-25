@@ -21,7 +21,19 @@ from its leading edge, in its middle or at its trailing edge, which GTK turns
 over for a language written from the right.
 
 A label's padding is room inside its own box, around its words
-([a widget's own box](drawing.md#a-widgets-own-box)).
+([a widget's own box](drawing.md#a-widgets-own-box)). A button's caption is
+the `GtkLabel` the button shows it in, and takes the same look, font and
+colour, and the button its padding.
+
+## A button's box
+
+A button the tree gives a fill, an outline or a shape wears a class of the
+host's style sheet drawing them - the fill as its background, the outline as
+its border, the shape as its corners' radius, an ellipse as round ends - and
+what the tree says nothing of stays the theme's. The sheet stands above the
+theme, so its fill would stand under the pointer and pressed too: the class
+draws the fill a little fainter under the pointer and fainter again pressed,
+as the theme's own buttons answer.
 
 ## Runs of words
 

@@ -262,8 +262,11 @@ extension GTKTestHost {
     /// The colours GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
     /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
     static func pixels(of widget: GTKWidget, at points: [(Double, Double)]) -> [UInt32] {
-        let width = Int(gtk_widget_get_width(widget))
-        let height = Int(gtk_widget_get_height(widget))
+        // The widget's whole box, its CSS padding and border included, which its width and height leave out.
+        var own = graphene_rect_t()
+        _ = gtk_widget_compute_bounds(widget, widget, &own)
+        let width = Int(own.size.width.rounded())
+        let height = Int(own.size.height.rounded())
         var bounds = graphene_rect_t()
         guard width > 0, height > 0, let parent = gtk_widget_get_parent(widget),
               gtk_widget_compute_bounds(widget, parent, &bounds) != 0,
@@ -358,6 +361,19 @@ extension GTKTestHost {
             child = gtk_widget_get_next_sibling(each)
         }
         return found
+    }
+
+    /// The CSS classes `widget` wears.
+    static func classes(of widget: GTKWidget) -> [String] {
+        guard let names = gtk_widget_get_css_classes(widget) else { return [] }
+        defer { g_strfreev(names) }
+        var classes: [String] = []
+        var index = 0
+        while let name = names[index] {
+            classes.append(String(cString: name))
+            index += 1
+        }
+        return classes
     }
 
     /// Whether `widget` is of the class `type` names.

@@ -36,10 +36,42 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// Writes the rule for `name` the first time it is asked for, the whole sheet in the rules' order.
-    private static func write(_ name: String, _ body: String) {
+    /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,
+    /// which the theme's own states would otherwise lose under it - its outline and its corners' radius; nil where
+    /// nothing is given.
+    static func box(fill: GdkRGBA?, stroke: GdkRGBA?, strokeWidth: Double?, radius: Double?) -> String? {
+        guard fill != nil || stroke != nil || radius != nil else { return nil }
+        var name = "stateui-box"
+        var body = ""
+        var states = ""
+        if let fill {
+            name += "-f" + hex(fill)
+            body += "background: \(css(fill)); box-shadow: none; "
+        }
+        if let stroke, let strokeWidth {
+            name += "-s" + hex(stroke) + "-w" + css(strokeWidth).replacing(".", with: "_")
+            body += "border: \(css(strokeWidth))px solid \(css(stroke)); "
+        }
+        if let radius {
+            name += "-r" + css(radius).replacing(".", with: "_")
+            body += "border-radius: \(css(radius))px; "
+        }
+        if var fill {
+            let alpha = fill.alpha
+            fill.alpha = alpha * 0.9
+            states += ".\(name):hover { background: \(css(fill)); }\n"
+            fill.alpha = alpha * 0.8
+            states += ".\(name):active { background: \(css(fill)); }\n"
+        }
+        write(name, body, states: states)
+        return name
+    }
+
+    /// Writes the rule for `name` the first time it is asked for, with the rules for its states, the whole sheet in
+    /// the rules' order.
+    private static func write(_ name: String, _ body: String, states: String = "") {
         guard rules[name] == nil else { return }
-        rules[name] = body
+        rules[name] = ".\(name) { \(body) }\n" + states
 
         let provider = self.provider ?? {
             let made = gtk_css_provider_new()!
@@ -48,7 +80,7 @@ enum GTKStyleSheet {
             self.provider = made
             return made
         }()
-        let sheet = rules.keys.sorted().map { ".\($0) { \(rules[$0]!) }" }.joined(separator: "\n")
+        let sheet = rules.keys.sorted().map { rules[$0]! }.joined()
         gtk_css_provider_load_from_string(provider, sheet)
     }
 
