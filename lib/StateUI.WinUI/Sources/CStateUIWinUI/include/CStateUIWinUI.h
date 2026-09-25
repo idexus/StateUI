@@ -155,6 +155,9 @@ void stateui_winui_invalidate_measure(StateUIObjectRef element);
 void stateui_winui_set_shown(StateUIObjectRef element, bool shown);
 void stateui_winui_set_opacity(StateUIObjectRef element, double opacity);
 
+/// Where `element`'s top left corner stands in its window's content, in DIPs, into `origin` (x, y).
+void stateui_winui_origin(StateUIObjectRef element, double *origin);
+
 /// Where WinUI laid the element out in its parent: x, y, width, height, in DIPs.
 void stateui_winui_frame(StateUIObjectRef element, double *frame);
 

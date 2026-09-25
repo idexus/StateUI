@@ -48,7 +48,10 @@ enum WinUICallbacks {
                 }
             },
             arrange: { view, width, height in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUILayoutView)?.arrange(width: width, height: height) }
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUILayoutView)?.arrange(width: width, height: height)
+                    WinUIRenderer.shared?.laidOut()
+                }
             },
             clicked: { view in
                 MainActor.assumeIsolated { WinUIView.find(view)?.clicked() }
@@ -67,7 +70,10 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUITextFieldView)?.onSubmitted?() }
             },
             scrolled: { view, x, y in
-                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIScrollerView)?.onScrolled?(Point(x: x, y: y)) }
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUIScrollerView)?.onScrolled?(Point(x: x, y: y))
+                    WinUIRenderer.shared?.laidOut()
+                }
             },
             held: { view, holding in
                 MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIScrollerView)?.onHeld?(holding) }

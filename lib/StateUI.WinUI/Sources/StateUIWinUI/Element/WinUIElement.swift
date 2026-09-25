@@ -28,6 +28,9 @@ final class WinUIElement: NativeElement {
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
+    /// Where the element last said it stands; empty before it has said.
+    var lastFrameReport: [Double] = []
+
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
         self.host = host
@@ -70,6 +73,7 @@ final class WinUIElement: NativeElement {
         arrangePages(changed: changed)
         reconcilePresentation(from: previouslyShown.map(\.winUI))
         previouslyShown = []
+        host?.follow(self, readsFrame: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -84,6 +88,7 @@ final class WinUIElement: NativeElement {
 
     func leave() {
         leaving = false
+        host?.follow(self, readsFrame: false)
         view?.detach()
     }
 }

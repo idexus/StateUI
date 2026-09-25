@@ -70,6 +70,15 @@ final class WinUIRenderer {
         weak var view: WinUIScrollView?
     }
 
+    /// The elements whose frame the tree reads, by their view's number, and whether a pass or a scroll moved
+    /// anything since they last said where they stand.
+    private var frameReaders: [Int64: WeakElement] = [:]
+    private var framesMoved = false
+
+    private struct WeakElement {
+        weak var element: WinUIElement?
+    }
+
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
     /// the motion `reducesMotion` allows.
     init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
@@ -352,17 +361,40 @@ extension WinUIRenderer {
         scrollers[scroller.number] = WeakScroller(view: scroller)
         displayCycle.hold()
     }
+
+    /// Follows where `element` stands while the tree reads it, and lets it go once nothing does.
+    /// Design: docs/design/platforms/winui/layout.md#where-a-view-stands
+    func follow(_ element: WinUIElement, readsFrame: Bool) {
+        guard let number = element.view?.number, readsFrame != (frameReaders[number] != nil) else { return }
+
+        frameReaders[number] = readsFrame ? WeakElement(element: element) : nil
+        if readsFrame { laidOut() }
+    }
+
+    /// WinUI arranged a layout, or a scroller moved: whoever reads a frame says it on the display's next frame.
+    func laidOut() {
+        guard !frameReaders.isEmpty, !framesMoved else { return }
+
+        framesMoved = true
+        displayCycle.hold()
+    }
+
+    /// The page's corner in the window, in DIPs: where content stands clear of the window's chrome.
+    var safeAreaOrigin: Point {
+        guard let content = window?.content else { return Point(x: 0, y: 0) }
+        return content.origin
+    }
 }
 
 extension WinUIRenderer: FramePresenter {
     var wantsFrames: Bool {
-        scrollers.values.contains { $0.view?.wantsFrames == true }
+        framesMoved || scrollers.values.contains { $0.view?.wantsFrames == true }
     }
 
-    /// Lets every moving scroller say what the frame saw it do, in the order they were made, as one user's
-    /// transaction.
+    /// Lets every moving scroller say what the frame saw it do, then every element whose frame the tree reads say
+    /// where it stands, each in the order its view was made, as one user's transaction.
     func commitUserReports(now: Double) {
-        guard !scrollers.isEmpty else { return }
+        guard !scrollers.isEmpty || framesMoved else { return }
 
         performUserTransaction {
             for number in scrollers.keys.sorted() {
@@ -372,6 +404,16 @@ extension WinUIRenderer: FramePresenter {
                 }
                 view.frame(now: now)
                 if !view.wantsFrames { scrollers[number] = nil }
+            }
+
+            guard framesMoved else { return }
+            framesMoved = false
+            for number in frameReaders.keys.sorted() {
+                guard let element = frameReaders[number]?.element else {
+                    frameReaders[number] = nil
+                    continue
+                }
+                element.reportFrame()
             }
         }
     }

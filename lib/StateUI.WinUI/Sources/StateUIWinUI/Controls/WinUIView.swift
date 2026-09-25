@@ -162,6 +162,22 @@ class WinUIView {
         if resized, transform != .identity || placedDrawing != nil { writeTransform() }
     }
 
+    /// Where the element's top left corner stands in its window's content, in DIPs.
+    var origin: Point {
+        var corner = [0.0, 0.0]
+        stateui_winui_origin(handle, &corner)
+        return Point(x: corner[0], y: corner[1])
+    }
+
+    /// Where the view stands, in DIPs: its frame in its parent, its place in the window, and that place from
+    /// `safeArea`, the safe area's top left in the window.
+    func frameReport(safeArea: Point) -> [Double] {
+        let place = placedFrame
+        let corner = origin
+        return [place.x, place.y, place.width, place.height, corner.x, corner.y,
+                corner.x - safeArea.x, corner.y - safeArea.y]
+    }
+
     /// Where WinUI laid the element out in its parent, in DIPs.
     var laidOutFrame: Rect {
         var frame = [0.0, 0.0, 0.0, 0.0]

@@ -88,6 +88,19 @@ extern "C" void stateui_winui_frame(StateUIObjectRef handle, double *frame) {
     }
 }
 
+extern "C" void stateui_winui_origin(StateUIObjectRef handle, double *origin) {
+    origin[0] = origin[1] = 0;
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        if (!element.XamlRoot()) return;
+        auto corner = element.TransformToVisual(nullptr).TransformPoint({0, 0});
+        origin[0] = corner.X;
+        origin[1] = corner.Y;
+    } catch (winrt::hresult_error const &error) {
+        report(error, "finding where an element stands in its window");
+    }
+}
+
 extern "C" void stateui_winui_invalidate_arrange(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).InvalidateArrange();

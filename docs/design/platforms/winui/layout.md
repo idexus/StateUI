@@ -65,6 +65,17 @@ measures again, and so on up; a layout measured inside its parent's own
 measure is read there and tells nothing. A picture read after its layouts
 were measured tells the layout holding it through the relay.
 
+## Where a view stands
+
+A view whose frame the tree reads - a state its frame drives, or a handler
+for its changes - says where it stands on the display's next frame after a
+layout pass or a scroll: its frame in its parent, its place in the window's
+content, and that place from the page's corner, all in DIPs. The host hears
+every StateUI layout WinUI arranges and every scroller's movement, and asks
+only the views that are read, in the order they were made; a view that did
+not move says nothing. It speaks on a frame rather than inside WinUI's pass,
+so what a handler renders is laid out in a pass of its own.
+
 ## Scrolling
 
 A ScrollView is a StateUI layout holding WinUI's `ScrollViewer`, which holds
