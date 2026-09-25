@@ -93,14 +93,15 @@ and one order makes the window's children the same list in every run.
    ├── ModalStack    from WindowSession.modalStack
    └── Overlay
         └── ZStack       lets a click beside its layers through
-             ├── view        from WindowSession.overlay, keyed "view"
-             └── panel       the inspector's, where it docks here, keyed "inspector"
+             ├── …           WindowSession.overlays, each keyed by its OverlayKey's name
+             └── panel       a docked inspector's, OverlayKey.inspector, zIndex over every other
 ```
 
 The overlay is one node however many layers it holds, so a host lays one view
-over the page and the sheets. Each layer has a key of its own: the inspector
-opening or closing leaves the application's view the element it was, and the
-other way round.
+over the page and the sheets. Each layer is keyed by its `OverlayKey`, so a
+layer coming or going leaves the others the elements they were. The inspector
+docks by writing its own layer into its main window's session like any other,
+the one road to the stack.
 
 ## Lifecycle reports one by one
 

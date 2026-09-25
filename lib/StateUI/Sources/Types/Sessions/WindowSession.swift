@@ -122,18 +122,23 @@ public final class WindowSession {
     /// `ModalStack`.
     @State public var modalStack: ModalStack? = nil
 
-    /// A view laid over the window's page and every page presented over it -
-    /// a notice that stays while the pages change under it.
+    /// The views laid over the window's page and every page presented over
+    /// it - a notice that stays while the pages change under it - each under
+    /// a key of the application's.
     ///
-    ///     .onChanged(connection.isOnline) {
-    ///         window.overlay = connection.isOnline ? nil : OfflineBanner()
+    ///     extension OverlayKey {
+    ///         static let offline = OverlayKey("offline")
     ///     }
     ///
-    /// It has the page's whole area and stands where its alignments put it; a
-    /// click beside it goes on to what is under it, and a layout of its own
+    ///     .onChanged(connection.isOnline) {
+    ///         window.overlays[.offline] = connection.isOnline ? nil : OfflineBanner()
+    ///     }
+    ///
+    /// Each has the page's whole area and stands where its alignments put it;
+    /// a click beside it goes on to what is under it, and a layout of its own
     /// that fills the area passes a click on with `.letsInputThrough(true)`.
-    /// `nil` takes it away.
-    @State public var overlay: (any View)? = nil
+    /// See `WindowOverlays`.
+    @State public var overlays = WindowOverlays()
 
     /// The key the tree knows the window by in its scene.
     let key: String

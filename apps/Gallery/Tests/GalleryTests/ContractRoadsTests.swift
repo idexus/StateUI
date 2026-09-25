@@ -180,6 +180,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
             contract: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
         Road(
+            name: "the window's one overlay",
+            removed: "WindowSession().overlay = nil",
+            contract: #"WindowSession().overlays[OverlayKey("notice")] = nil"#),
+        Road(
             name: "the withdrawn resting state",
             removed: "_ = RadioButton.restingVisualState",
             contract: "_ = VisualState<RadioButton>.unchecked"),

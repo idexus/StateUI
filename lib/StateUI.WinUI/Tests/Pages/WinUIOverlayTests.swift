@@ -6,6 +6,10 @@ import CStateUIWinUI
 @testable import StateUIWinUI
 import XCTest
 
+extension OverlayKey {
+    fileprivate static let notice = OverlayKey("notice")
+}
+
 /// A page filled by a button, presenting its sheets from one state, writing its menus from another and laying a
 /// notice over its window from a third, which tells its scene.
 private struct OverlaidPage: ContentView {
@@ -32,7 +36,7 @@ private struct OverlaidPage: ContentView {
                 page.menuBar = menus.wrappedValue ? [Menu("File") { MenuItem("New") }] : []
             }
             .onChanged(notice.wrappedValue) {
-                window.overlay = notice.wrappedValue
+                window.overlays[.notice] = notice.wrappedValue
                     ? Label("Offline").horizontalAlignment(.center).verticalAlignment(.start) : nil
             }
     }

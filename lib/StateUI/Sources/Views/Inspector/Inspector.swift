@@ -110,14 +110,14 @@ public enum Inspector {
         let model = InspectorModel.shared
 
         if place == .window, windowed(record) {
-            model.places[record.id] = nil
+            dock(nil, in: record)
             try? record.open(.debugInspector)
         } else {
             if windowed(record) {
                 try? record.close(.debugInspector)
             }
 
-            model.places[record.id] = place == .window ? (offersSide ? .side : .bottom) : place
+            dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record)
         }
 
         if folded, model.places[record.id] == .bottom {
@@ -137,7 +137,7 @@ public enum Inspector {
             try? record.close(.debugInspector)
         }
 
-        model.places[record.id] = nil
+        dock(nil, in: record)
         model.expand(record.id)
         model.settle()
     }
@@ -149,16 +149,18 @@ public enum Inspector {
 
         guard model.places[record.id] != nil else { return }
 
-        model.places[record.id] = nil
+        dock(nil, in: record)
         model.expand(record.id)
         model.settle()
     }
 
-    /// The panel over a scene's main window, if its inspector docks there -
-    /// asked inside the window's build, so the window builds again when it moves.
-    static func panel(in record: SceneRecord) -> Node? {
-        guard let place = InspectorModel.shared.places[record.id] else { return nil }
-
-        return InspectorPanel(scene: record.id, place: place).body
+    /// Docks a scene's inspector at `place` in its main window, or nowhere: its panel is one of the window's
+    /// overlays, over every other.
+    /// Design: docs/design/views/inspector.md#where-it-docks
+    private static func dock(_ place: Place?, in record: SceneRecord) {
+        InspectorModel.shared.places[record.id] = place
+        record.windowSession(SceneElement.mainKey).overlays[.inspector] = place.map {
+            InspectorPanel(scene: record.id, place: $0).zIndex(Int(Int32.max))
+        }
     }
 }

@@ -142,18 +142,23 @@ present it. Replacing or closing that window tears down every modal it owns.
 
 ## Over every page
 
-A window lays one view of the application's over its page and every page
-presented over it - a notice that stays while the pages change under it. It is
-the window's too, `window.overlay`:
+A window lays views of the application's over its page and every page
+presented over it - a notice that stays while the pages change under it. They
+are the window's too, `window.overlays`, each under a key the application
+declares:
 
 ```swift
+extension OverlayKey {
+    static let offline = OverlayKey("offline")
+}
+
 struct OfflineNotice: ContentView {
     @Environment private var window: WindowSession
 
     var content: any View {
         HStack {
             Label("Working offline")
-            Button("Dismiss").onClicked { window.overlay = nil }
+            Button("Dismiss").onClicked { window.overlays[.offline] = nil }
         }
         .spacing(12)
         .horizontalAlignment(.center)
@@ -167,15 +172,19 @@ struct LibraryPage: ContentView {
 
     var content: any View {
         Switch($offline)
-            .onChanged(offline) { window.overlay = offline ? OfflineNotice() : nil }
+            .onChanged(offline) { window.overlays[.offline] = offline ? OfflineNotice() : nil }
     }
 }
 ```
 
-The view has the page's whole area and stands where its alignments put it. A
-click beside it goes on to what is under it; a layout of its own that fills
-the area passes a click on with `.letsInputThrough(true)`. `nil` takes it
-away. A docked inspector stands over it.
+The layers stand in one ZStack, each written later over the ones before, and
+`.zIndex` on a layer's view reorders them. A key is the layer's identity: a
+view written again under it replaces the one there in its place, and the
+other layers keep their controls as it comes and goes. Each view has the
+page's whole area and stands where its alignments put it. A click beside it
+goes on to what is under it; a layout of its own that fills the area passes a
+click on with `.letsInputThrough(true)`. `nil` takes a layer away. A docked
+inspector is one of these layers, over every other.
 
 ## Page titles and navigation furniture
 

@@ -99,7 +99,7 @@ private struct EveryPropertyWindow: Window {
         session.isMinimizable = true
         session.isTranslucent = true
 
-        return EveryPropertyWindow().body(panel: nil, session: session).built
+        return EveryPropertyWindow().body(session: session).built
     }
 }
 

@@ -381,6 +381,24 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(slots(), [[.page, .overlay], [.page]])
     }
 
+    /// A docked inspector is one of its main window's overlays, over every other: the application's own layer
+    /// stays under it, and hiding the inspector leaves that layer.
+    func testADockedInspectorIsOneOfTheWindowsOverlays() throws {
+        Scenes.shared.connected(restoring: [:])
+        let record = try XCTUnwrap(Scenes.shared.list.first)
+        let window = record.windowSession(SceneElement.mainKey)
+        window.overlays[OverlayKey("notice")] = ModifiedContent(node: label("notice"))
+
+        Inspector.show(in: record, .bottom)
+        XCTAssertEqual(window.overlays.keys, [OverlayKey("notice"), .inspector])
+        let stack = try XCTUnwrap(Renders().render(Scenes.shared.tree(of: Plain())).children.first?
+            .children.first?.children.last?.children.first)
+        XCTAssertEqual(stack.children.last?.props["zIndex"], .number(Double(Int32.max)))
+
+        Inspector.hide(in: record)
+        XCTAssertEqual(window.overlays.keys, [OverlayKey("notice")])
+    }
+
     /// In a window of its own, an inspector is a window OF ITS SCENE - the
     /// scene's `DebugInspector`, beside its main window.
     func testAnInspectorInAWindowIsAWindowOfItsScene() {

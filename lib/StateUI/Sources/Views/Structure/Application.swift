@@ -82,16 +82,15 @@ extension Window {
     public var body: Node {
         let request = ElementSession(WindowSession.self) { WindowSession() }
 
-        var node = composed(panel: nil) { request.held(as: WindowSession.self) }
+        var node = composed { request.held(as: WindowSession.self) }
         node.session = request
         return node
     }
 
-    /// The same, for a window of a scene: the session it keeps, and a main
-    /// window's inspector panel, both asked for inside the window's build.
+    /// The same, for a window of a scene: the session it keeps.
     /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
-    func body(panel: (() -> Node?)?, session: WindowSession) -> Node {
-        var node = composed(panel: panel) { session }
+    func body(session: WindowSession) -> Node {
+        var node = composed { session }
 
         // On the placeholder, so the window's own `@Environment` resolves it too.
         node.environments.append((key: ObjectIdentifier(WindowSession.self), object: session))
@@ -99,13 +98,10 @@ extension Window {
         return node
     }
 
-    private func composed(
-        panel: (() -> Node?)?,
-        session: @escaping () -> WindowSession
-    ) -> Node {
+    private func composed(session: @escaping () -> WindowSession) -> Node {
         Node.composed(self, type: String(reflecting: Self.self)) {
             let session = session()
-            let overlay = Node.overlay(session.overlay, panel: panel?())
+            let overlay = Node.overlay(session.overlays)
 
             // Its page, the title bar and modal stack, the overlay: one order.
             // Design: docs/design/views/pages.md#the-children-of-a-window
@@ -131,24 +127,18 @@ extension Window {
 }
 
 extension Node {
-    /// What a window lays over its page and the pages presented over it: the application's view, and a docked
-    /// inspector's panel over that, each under a key of its own so it keeps its elements as the other comes and
-    /// goes; nil for neither.
+    /// What a window lays over its page and the pages presented over it: one ZStack of its overlays, each under
+    /// its key, so a layer keeps its elements as the others come and go; nil for none.
     /// Design: docs/design/views/pages.md#the-children-of-a-window
-    static func overlay(_ view: (any View)?, panel: Node?) -> Node? {
-        var layers: [Node] = []
-        if var node = view?.body {
-            node.key = "view"
-            layers.append(node)
-        }
-        if var node = panel {
-            node.key = "inspector"
-            layers.append(node)
-        }
-        guard !layers.isEmpty else { return nil }
+    static func overlay(_ overlays: WindowOverlays) -> Node? {
+        guard !overlays.layers.isEmpty else { return nil }
 
         var stack = ZStack().letsInputThrough(true).node
-        stack.children = layers
+        stack.children = overlays.layers.map { key, view in
+            var node = view.body
+            node.key = key.name
+            return node
+        }
         return Node(contract: OverlayContract.self, children: [stack])
     }
 }

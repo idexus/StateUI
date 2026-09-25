@@ -1,5 +1,10 @@
 import StateUI
 
+extension OverlayKey {
+    /// The sample's notice.
+    static let notice = OverlayKey("notice")
+}
+
 /// A notice the window lays over every page, which stays while the pages change under it.
 struct WindowOverlaySample: SampleContent, ExampleContent {
     @Environment private var window: WindowSession
@@ -11,11 +16,15 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
     static let summary = "Lay a notice over the window, then open another page."
 
     static let code = """
+        extension OverlayKey {
+            static let notice = OverlayKey("notice")
+        }
+
         @Environment private var window: WindowSession
         @State private var shown = false
 
         Switch($shown).onChanged(shown) {
-            window.overlay = shown ? WindowNotice() : nil
+            window.overlays[.notice] = shown ? WindowNotice() : nil
         }
 
         struct WindowNotice: ContentView {
@@ -24,7 +33,7 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
             var content: any View {
                 HStack {
                     Label("Over every page")
-                    Button("Dismiss").onClicked { window.overlay = nil }
+                    Button("Dismiss").onClicked { window.overlays[.notice] = nil }
                 }
                 .horizontalAlignment(.center)
                 .verticalAlignment(.start)
@@ -43,12 +52,12 @@ struct WindowOverlaySample: SampleContent, ExampleContent {
         }
         .spacing(8)
         .onChanged(shown) {
-            guard shown != (window.overlay != nil) else { return }
-            window.overlay = shown ? WindowNotice() : nil
+            guard shown != (window.overlays[.notice] != nil) else { return }
+            window.overlays[.notice] = shown ? WindowNotice() : nil
         }
         // The switch follows the notice, which its own button takes away.
-        .onChanged(window.overlay != nil) { shown = window.overlay != nil }
-        .onCreated { shown = window.overlay != nil }
+        .onChanged(window.overlays[.notice] != nil) { shown = window.overlays[.notice] != nil }
+        .onCreated { shown = window.overlays[.notice] != nil }
     }
 }
 
@@ -63,7 +72,7 @@ private struct WindowNotice: ContentView {
                 .verticalAlignment(.center)
             Button("Dismiss")
                 .accessibilityIdentifier("window.overlay.dismiss")
-                .onClicked { window.overlay = nil }
+                .onClicked { window.overlays[.notice] = nil }
         }
         .spacing(12)
         .padding(16, 8)

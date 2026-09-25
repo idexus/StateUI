@@ -192,7 +192,8 @@ A badge over a view is a ZStack of the view and the badge aligned to a
 corner; a picture behind words is a ZStack with the picture first. Either
 counts towards the stack's room, so a badge or a picture larger than the view
 makes the stack larger - give it a size, or keep it smaller. What stays over
-every page of a window is the window's own overlay (navigation-and-presentation.md).
+every page of a window is one of the window's overlays
+(navigation-and-presentation.md).
 
 ## Scrolling
 
