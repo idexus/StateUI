@@ -16,15 +16,15 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
+| `appearing` | event |  | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `backButtonTitle` | property | `String` | adaptive | ✅ |  |  |  |  |  |  |
 | `background` | property | `Color` | native | ✅ |  |  | ✅ |  |  |  |
-| `disappearing` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
+| `disappearing` | event |  | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `hasBackButton` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `navigatedFrom` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
+| `hasNavigationBar` | property | `Bool` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `navigatedFrom` | event |  | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `navigatedTo` | event |  | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `navigatingFrom` | event |  | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `padding` | property | `Insets` | native | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
@@ -43,4 +43,4 @@ What a page shows about itself where another container presents it as an item - 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `title` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |

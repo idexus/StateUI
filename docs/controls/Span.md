@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native |  |  |  |  | ✅ |  |  |
+| `background` | property | `Color` | native |  |  | ✅ |  | ✅ |  |  |
 
 Realization:
 
@@ -41,7 +41,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native | ✅ |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -51,7 +51,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native |  |  |  |  | ✅ |  |  |
+| `textColor` | property | `Color` | native |  |  | ✅ |  | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -59,10 +59,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  |  | ✅ |  |  |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `fontFamily` | property | `Name` | native |  |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `fontSize` | property | `Double` | native |  |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
@@ -78,4 +78,4 @@ The lines drawn through or under text.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native |  |  |  |  | ✅ |  |  |
+| `textDecorations` | property | `TextDecorations` | native |  |  | ✅ |  | ✅ |  |  |

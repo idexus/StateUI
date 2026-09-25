@@ -136,6 +136,7 @@ final class GTKRenderer {
 
         let renderer = GTKRenderer(application: application)
         shared = renderer
+        renderer.core.setRealization(GTKRegistrations.registry.realization, unrealized: GTKRealization.unrealized)
         renderer.show()
         GTKDoorbell.install()
         return renderer

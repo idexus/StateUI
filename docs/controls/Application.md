@@ -16,18 +16,18 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  |  |  |  | ✅ | ✅ |  |  |
-| `announce` | act | `(String) -> Void` |  |  |  |  | ✅ | ✅ |  |  |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  | ✅ | ✅ |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  | ✅ | ✅ |  |  |
-| `currentTime` | act | `() -> [Double]` |  |  |  |  | ✅ | ✅ |  |  |
-| `currentTimeZone` | act | `() -> String` |  |  |  |  | ✅ | ✅ |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  |  |  |  | ✅ | ✅ |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `announce` | act | `(String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `currentTime` | act | `() -> [Double]` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `currentTimeZone` | act | `() -> String` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ |  |  |  |  |  |  |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  | ✅ | ✅ |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  | ✅ | ✅ |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  | ✅ | ✅ | ✅ |  |  |
 
 Realization:
 

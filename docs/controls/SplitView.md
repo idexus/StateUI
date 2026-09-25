@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
+| `isSidebarVisible` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
@@ -43,4 +43,4 @@ What a page shows about itself where another container presents it as an item - 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `title` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |

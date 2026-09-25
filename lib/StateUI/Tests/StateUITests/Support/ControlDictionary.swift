@@ -678,7 +678,7 @@ struct ControlDictionary {
 
     // MARK: - What the pages are rendered from
 
-    /// What AppKit, Android Views and WinUI 3 declare they realize.
+    /// What AppKit, Android Views, WinUI 3 and GTK 4 declare they realize.
     ///
     /// Each is read twice over: what its RUNTIME wrote to its export - every
     /// element it registers, with the owner of each member worked out against
@@ -709,16 +709,26 @@ struct ControlDictionary {
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
             notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
 
+        let gtk = try Declaration(
+            host: "GTK 4",
+            reading: "lib/StateUI.GTK/Sources/StateUIGTK/Registration/GTKRealization.swift",
+            records: #"\.(complete|partial|notPlanned)"#,
+            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
+            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
+            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
+
         return [
             try appKit.and(exported(exports["AppKit"]!)),
             try android.and(exported(exports["Android Views"]!)),
             try winUI.and(exported(exports["WinUI 3"]!)),
+            try gtk.and(exported(exports["GTK 4"]!)),
         ]
     }
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.
     static let exports = [
         "AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt", "WinUI 3": "exports/winui.txt",
+        "GTK 4": "exports/gtk.txt",
     ]
 
     /// The records a host's own export carries: its declaration joined with

@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `priority` | property | `Int` | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
+| `placement` | property | `ToolbarItemPlacement` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `priority` | property | `Int` | adaptive | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -42,8 +42,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `onClicked` (`clicked`) | event |  | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ |  | ✅ | ✅ |  |  |  |
 | `isDestructive` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |

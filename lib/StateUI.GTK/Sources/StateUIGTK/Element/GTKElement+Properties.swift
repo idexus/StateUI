@@ -63,6 +63,13 @@ extension GTKElement {
         }
     }
 
+    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page's, no part of
+    /// another view and no structure.
+    static func showsUnsupported(_ type: NodeType) -> Bool {
+        !GTKRegistrations.registry.realization.elements.contains(type.name) && !viewlessTypes.contains(type)
+            && !pageTypes.contains(type) && type != .overlay
+    }
+
     /// Puts the changed properties on the widget as the program's write: its registration's first, then what
     /// every element takes.
     /// Design: docs/design/host/patches.md#program-write
