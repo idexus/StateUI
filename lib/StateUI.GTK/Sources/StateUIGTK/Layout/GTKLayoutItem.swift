@@ -15,6 +15,12 @@ struct GTKLayoutItem: LayoutChild {
     /// Whether the child is shown; a hidden child takes no room.
     var isShown = true
 
+    /// The mounted element the view presents, whose place its layout animates; 0 for none.
+    var mount: UInt64 = 0
+
+    /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
+    var fadeIn: ((Motion) -> Void)?
+
     /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
     /// A stated width is the width it is measured at, so words wrap to it; a most width bounds the offer.
     func size(offered width: Double?) -> LayoutSize {

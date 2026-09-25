@@ -20,6 +20,22 @@ struct OneWindow: Window {
     var page: any Page { content() }
 }
 
+/// What a handler heard, in order.
+final class Received<Value>: Sendable {
+    private let received = State(wrappedValue: [Value]())
+
+    var values: [Value] {
+        get { received.wrappedValue }
+        set { received.wrappedValue = newValue }
+    }
+}
+
+/// A clock a test winds by hand, in milliseconds.
+@MainActor
+final class TestClock {
+    var now = 0.0
+}
+
 /// The test thread as GTK's: libadwaita started once, and an application registered for the windows, with no
 /// loop of GLib's running a test.
 @MainActor
@@ -33,6 +49,34 @@ enum GTKTestHost {
             "the test application could not register")
         return application.of(GtkApplication.self)
     }()
+
+    /// The window a bare host's root stands in, made once.
+    static let window = GTKWindow(application: application)
+
+    /// How many layouts the frame clocks of the test's windows have run.
+    nonisolated(unsafe) static var layouts = 0
+
+    /// The frame clocks counted.
+    private static var counted: Set<UInt> = []
+
+    /// Runs GTK's layout of `window` now: asks its frame clock for one, and turns the loop until it has run.
+    static func layOut(_ window: GTKWidget) {
+        guard let clock = gtk_widget_get_frame_clock(window) else { return pump(0.05) }
+        if counted.insert(UInt(bitPattern: clock)).inserted {
+            let counter: @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> Void = { _, _ in GTKTestHost.layouts += 1 }
+            g_signal_connect_data(
+                UnsafeMutableRawPointer(clock), "layout", unsafeBitCast(counter, to: GCallback.self), nil, nil,
+                GConnectFlags(0))
+        }
+
+        let before = layouts
+        gdk_frame_clock_request_phase(clock, GDK_FRAME_CLOCK_PHASE_LAYOUT)
+        let end = g_get_monotonic_time() + 1_000_000
+        while layouts == before, g_get_monotonic_time() < end {
+            g_main_context_iteration(nil, 0)
+            g_usleep(500)
+        }
+    }
 
     /// Turns GLib's loop for `seconds`: a window's first frame, and the layout GTK does on it.
     static func pump(_ seconds: Double = 0.2) {
@@ -53,17 +97,70 @@ extension XCTestCase {
 }
 
 extension GTKRenderer {
-    /// A host showing `page` in a window of its own, laid out; the host before it leaves, and its window closes.
-    static func running(_ page: @escaping @Sendable () -> any Page) -> GTKRenderer {
-        shared?.tree.root?.leave()
-        shared?.window?.close()
-
+    /// A host showing `page` in a window of its own, laid out, on `clock` where one is given.
+    static func running(
+        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+    ) -> GTKRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
-        let renderer = GTKRenderer(application: GTKTestHost.application)
-        shared = renderer
+        let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
         GTKTestHost.pump()
         return renderer
+    }
+
+    /// A host whose tree takes only what a test applies; its root stands in the test's window. The core's own
+    /// render is taken and set aside, so no frame renders the core's tree over the test's.
+    static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> GTKRenderer {
+        let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
+        _ = renderer.core.render(baseline: 0)
+        return renderer
+    }
+
+    /// A host in place of the one before it, which leaves; its window closes.
+    private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
+        shared?.tree.root?.leave()
+        shared?.window?.close()
+        GTKTestHost.window.show(nil)
+
+        let renderer = GTKRenderer(
+            application: GTKTestHost.application, clock: clock.map { clock in { clock.now } },
+            reducesMotion: { reducesMotion })
+        shared = renderer
+        return renderer
+    }
+
+    /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
+    func apply(_ patch: HostPatch) {
+        intake.take(patch, generation: intake.baseline &+ 1) { tree.apply($0, complete: true) }
+        let root = (tree.root?.native as? GTKElement)?.view
+        guard GTKTestHost.window.content !== root else { return }
+        GTKTestHost.window.show(root)
+        GTKTestHost.pump()
+    }
+
+    /// The view of the element keyed `id`.
+    func view(id: ElementId) -> GTKView? {
+        (tree.root?.first(id: id)?.native as? GTKElement)?.view
+    }
+
+    /// One display frame at the clock's time, then the layout GTK runs in it.
+    func frame() {
+        displayCycle.frame(now: frameClock.now())
+        layOut()
+    }
+
+    /// Runs GTK's layout of the shown window now.
+    func layOut() {
+        GTKTestHost.layOut((window ?? GTKTestHost.window).widget)
+    }
+
+    /// Turns until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
+    func settle(until done: () -> Bool) {
+        for _ in 0..<150 where !done() {
+            GTKTestHost.pump(0.01)
+            _ = core.runJobs()
+            pump.turn()
+        }
     }
 
     /// Every view of `type` in the tree, in order.
@@ -75,6 +172,51 @@ extension GTKRenderer {
     private static func views<Native: GTKView>(_ type: Native.Type, in element: MountedElement) -> [Native] {
         let own = ((element.native as? GTKElement)?.view as? Native).map { [$0] } ?? []
         return own + element.children.flatMap { views(type, in: $0) }
+    }
+}
+
+extension GTKView {
+    /// Where GTK laid the widget out, rounded to whole pixels.
+    var frame: (x: Double, y: Double, width: Double, height: Double) {
+        let frame = laidOutFrame
+        return (frame.x.rounded(), frame.y.rounded(), frame.width.rounded(), frame.height.rounded())
+    }
+
+    /// One step of the opacity GTK keeps, in 256 steps.
+    static let opacityStep = 1.0 / 255
+
+    /// The opacity GTK draws the widget at.
+    var drawnOpacity: Double {
+        gtk_widget_get_opacity(widget)
+    }
+
+    /// Where GTK draws the widget's own point `point`, in its parent's coordinates.
+    func drawn(_ point: (x: Double, y: Double)) -> (x: Double, y: Double) {
+        var from = graphene_point_t(x: Float(point.x), y: Float(point.y))
+        var to = graphene_point_t()
+        _ = gtk_widget_compute_point(widget, gtk_widget_get_parent(widget), &from, &to)
+        return (Double(to.x), Double(to.y))
+    }
+}
+
+extension GTKSwitchView {
+    /// Turns the switch as the user's click does.
+    func toggle() {
+        gtk_switch_set_active(widget.opaque, isOn ? 0 : 1)
+    }
+}
+
+extension GTKSliderView {
+    /// Moves the thumb to `value` as the user's drag does.
+    func move(to value: Double) {
+        gtk_range_set_value(widget.of(GtkRange.self), value)
+    }
+}
+
+extension GTKTextFieldView {
+    /// Changes the field's words as the user's typing does: written outside a program's write.
+    func type(_ text: String) {
+        gtk_editable_set_text(widget.opaque, text)
     }
 }
 

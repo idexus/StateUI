@@ -20,13 +20,24 @@ extension UnsafeMutablePointer {
 /// A signal's handler, handed the number of the view it belongs to.
 typealias GTKSignalHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> Void
 
+/// A property's change notice, handed the number of the view it belongs to.
+typealias GTKNotifyHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, gpointer?) -> Void
+
 /// Connects `handler` to `signal` of `instance`, handing it `number`.
 /// Design: docs/design/platforms/gtk/c-api.md#signals
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKSignalHandler) -> gulong {
-    g_signal_connect_data(
-        instance, signal, unsafeBitCast(handler, to: GCallback.self),
-        UnsafeMutableRawPointer(bitPattern: Int(number)), nil, GConnectFlags(0))
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+/// Connects `handler` to the `notify::` signal named `signal` of `instance`, handing it `number`.
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKNotifyHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+private func connect(_ instance: UnsafeMutableRawPointer, _ signal: String, _ number: Int64, _ callback: GCallback) -> gulong {
+    g_signal_connect_data(instance, signal, callback, UnsafeMutableRawPointer(bitPattern: Int(number)), nil, GConnectFlags(0))
 }
 
 /// The view number a signal's data carries.

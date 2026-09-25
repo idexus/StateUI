@@ -13,6 +13,9 @@ enum GTKRegistrations {
 
         text(registry)
         buttons(registry)
+        toggles(registry)
+        values(registry)
+        fields(registry)
         layouts(registry)
         shared(registry)
 
@@ -33,6 +36,14 @@ enum GTKRegistrations {
         registry.everyElementRealizes(ViewContract.margin)
         registry.everyElementRealizes(ViewContract.horizontalAlignment)
         registry.everyElementRealizes(ViewContract.verticalAlignment)
+        registry.everyElementRealizes(VisualElementContract.translationX)
+        registry.everyElementRealizes(VisualElementContract.translationY)
+        registry.everyElementRealizes(VisualElementContract.rotation)
+        registry.everyElementRealizes(VisualElementContract.scale)
+        registry.everyElementRealizes(VisualElementContract.scaleX)
+        registry.everyElementRealizes(VisualElementContract.scaleY)
+        registry.everyElementRealizes(VisualElementContract.pivotX)
+        registry.everyElementRealizes(VisualElementContract.pivotY)
     }
 
     /// `text` in the case the tree asks for: as written, or in one case throughout.

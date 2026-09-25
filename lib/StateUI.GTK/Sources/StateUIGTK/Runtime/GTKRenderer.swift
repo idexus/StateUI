@@ -56,7 +56,7 @@ final class GTKRenderer {
     init(
         application: UnsafeMutablePointer<GtkApplication>,
         clock: (() -> Double)? = nil,
-        reducesMotion: @escaping () -> Bool = { false }
+        reducesMotion: @escaping () -> Bool = { MainActor.assumeIsolated { GTKEnvironment.reducesMotion } }
     ) {
         self.application = application
         let frameClock = clock.map { GTKFrameClock(now: $0, ticksWithGTK: false) } ?? GTKFrameClock()

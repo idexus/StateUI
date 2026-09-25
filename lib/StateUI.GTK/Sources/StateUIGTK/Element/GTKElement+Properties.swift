@@ -17,8 +17,14 @@ extension GTKElement {
     ]
 
     /// Properties drawn without changing any measurement; any other one measures the element again.
-    static let unmeasuredProperties: Set<Prop> = [
+    static let unmeasuredProperties = Set<Prop>([
         .opacity, .background, .textColor, .isEnabled,
+        .isOn, .value, .minimum, .maximum,
+    ]).union(transformProperties)
+
+    /// Properties that move, turn and scale the view where its layout put it.
+    static let transformProperties: Set<Prop> = [
+        .translationX, .translationY, .rotation, .scale, .scaleX, .scaleY, .pivotX, .pivotY,
     ]
 
     /// The arrangements of pages a window shows.
@@ -65,7 +71,8 @@ extension GTKElement {
                 reading: { [element] in element.value($0) },
                 carriedIn: { [element] in element.driven[$0]?.mode == .in })
 
-            for property in changed.subtracting(taken) {
+            let own = changed.subtracting(taken)
+            for property in own {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
@@ -76,9 +83,25 @@ extension GTKElement {
                 default: break
                 }
             }
+            if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
         }
 
         if !changed.isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// How the view is moved, turned and scaled; `scale` multiplies both axes on top of `scaleX` and `scaleY`.
+    var transform: HostDrawingTransform {
+        let scale = value(.scale)?.number ?? 1
+        return HostDrawingTransform(
+            translationX: value(.translationX)?.number ?? 0,
+            translationY: value(.translationY)?.number ?? 0,
+            rotation: value(.rotation)?.number ?? 0,
+            rotationX: 0,
+            rotationY: 0,
+            scaleX: scale * (value(.scaleX)?.number ?? 1),
+            scaleY: scale * (value(.scaleY)?.number ?? 1),
+            pivotX: value(.pivotX)?.number ?? 0.5,
+            pivotY: value(.pivotY)?.number ?? 0.5)
     }
 
     /// Forgets the sizes kept by this element's layout and every one above it, and asks GTK to measure again.

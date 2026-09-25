@@ -15,6 +15,9 @@ final class GTKElement: NativeElement {
 
     weak var host: GTKRenderer?
 
+    /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
+    var leaving = false
+
     init(_ element: MountedElement, host: GTKRenderer) {
         self.element = element
         self.host = host
@@ -35,15 +38,21 @@ final class GTKElement: NativeElement {
     func willApply() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
-        nil
+        switch (type, property) {
+        case (_, .opacity): view.map { .number($0.opacity) }
+        case (.slider, .value): (view as? GTKSliderView).map { .number($0.value) }
+        default: nil
+        }
     }
 
     func animates(_ property: Prop) -> Bool {
-        false
+        GTKTransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        configureLayoutMotion()
         arrangeChildren()
     }
 
@@ -58,6 +67,7 @@ final class GTKElement: NativeElement {
     }
 
     func leave() {
+        leaving = false
         view?.detach()
     }
 }

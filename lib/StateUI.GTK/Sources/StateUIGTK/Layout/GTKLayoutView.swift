@@ -34,6 +34,7 @@ class GTKLayoutView: GTKView {
         else { return false }
 
         self.items = items
+        for item in items { item.view.placingLayout = self }
         setChildren(items.map(\.view))
         invalidateMeasurements()
         return true
@@ -78,8 +79,10 @@ class GTKLayoutView: GTKView {
         return measurements.size(offering: offered) { contentSize(width: offered) }.height
     }
 
-    /// Answers GTK's allocation: places every child in `width` by `height`.
+    /// Answers GTK's allocation: places every child in `width` by `height`, inside the allocation.
     func allocate(width: Double, height: Double) {
+        GTKView.allocating += 1
+        defer { GTKView.allocating -= 1 }
         arrange(in: Rect(x: 0, y: 0, width: width, height: height))
     }
 

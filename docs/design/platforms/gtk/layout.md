@@ -13,6 +13,17 @@ pass GTK runs. A child's size is whole logical pixels, and never less than the
 least GTK measured it at; its position is a translation, which may fall
 between pixels, so a travelling child moves smoothly.
 
+## A place between passes
+
+A child is allocated only inside its parent's allocation, so a view keeps the
+place it was last given and writes it according to when it comes. Inside an
+allocation - the host counts the allocations under way - the place is
+allocated at once. Between allocations, as a display frame moves a travelling
+child, the view asks the layout that placed it for a new allocation
+(`gtk_widget_queue_allocate`); GTK runs it in the same frame, after the tick
+that moved the child and before it draws, and the layout's arrangement gives
+the child the place it keeps.
+
 ## Measured per axis
 
 GTK asks a widget for its size one axis at a time: its width, then its height
