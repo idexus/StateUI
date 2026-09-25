@@ -80,6 +80,10 @@ enum WinUICallbacks {
             },
             environmentChanged: {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
+            },
+            heard: { view, what, phase, x, y, scale in
+                guard let heard = WinUIHeard(what, phase: phase, x: x, y: y, scale: scale) else { return }
+                MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             })
     }
 }

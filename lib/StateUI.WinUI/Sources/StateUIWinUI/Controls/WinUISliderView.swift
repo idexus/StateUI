@@ -40,6 +40,7 @@ final class WinUISliderView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onValueChanged = nil
     }
 }

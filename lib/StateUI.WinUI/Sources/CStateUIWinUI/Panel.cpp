@@ -9,12 +9,41 @@
 
 #include <vector>
 
+#include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
+#include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
+
 using namespace stateui;
 using winrt::Windows::Foundation::Size;
+namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
+namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
+    /// What assistive technology reads of a panel: one it can press, as a tap, while its view listens for taps.
+    /// Design: docs/design/platforms/winui/input.md#pressed-by-assistive-technology
+    struct StateUIPanelPeer : peers::FrameworkElementAutomationPeerT<StateUIPanelPeer, provider::IInvokeProvider> {
+        using Base = peers::FrameworkElementAutomationPeerT<StateUIPanelPeer, provider::IInvokeProvider>;
+
+        StateUIPanelPeer(xaml::FrameworkElement const &owner, int64_t view) : Base(owner), view(view) {}
+
+        IInspectable GetPatternCore(peers::PatternInterface const &pattern) {
+            if (pattern == peers::PatternInterface::Invoke && hearsTaps(view)) return *this;
+            return Base::GetPatternCore(pattern);
+        }
+
+        void Invoke() {
+            press(view);
+        }
+
+        int64_t view;
+    };
+
     struct StateUIPanel : controls::PanelT<StateUIPanel> {
         explicit StateUIPanel(int64_t view) : view(view) {}
+
+        peers::AutomationPeer OnCreateAutomationPeer() {
+            IInspectable self = *this;
+            return winrt::make<StateUIPanelPeer>(self.as<xaml::FrameworkElement>(), view);
+        }
 
         Size MeasureOverride(Size available) {
             double size[2] = {0, 0};

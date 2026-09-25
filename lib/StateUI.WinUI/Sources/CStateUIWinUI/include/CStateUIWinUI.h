@@ -30,6 +30,29 @@ typedef struct {
 /// An outline: 0 a rectangle, 1 one rounded by `radius` DIPs, 2 an ellipse.
 typedef enum { StateUIOutlineRectangle, StateUIOutlineRounded, StateUIOutlineEllipse } StateUIOutline;
 
+/// What of the user's input a view listens for, each a bit: taps; the pointer entering, leaving, moving, and its
+/// button going down and up; a press dragged; two fingers pinching.
+typedef enum {
+    StateUIHearingTaps = 1,
+    StateUIHearingPointer = 2,
+    StateUIHearingDrags = 4,
+    StateUIHearingPinches = 8,
+} StateUIHearing;
+
+/// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
+/// pointer at (x, y) DIPs of the view; a drag's phase - 0 began, 1 moved, 2 ended, 3 cancelled - moved by (x, y)
+/// DIPs since it began; a pinch's phase, its scale since the last, at (x, y) as shares of the view's size.
+typedef enum {
+    StateUIHeardTap,
+    StateUIHeardPointerEntered,
+    StateUIHeardPointerExited,
+    StateUIHeardPointerMoved,
+    StateUIHeardPointerPressed,
+    StateUIHeardPointerReleased,
+    StateUIHeardDrag,
+    StateUIHeardPinch,
+} StateUIHeard;
+
 /// What the relay calls on the UI thread. Every one is set: the relay calls them unchecked.
 typedef struct {
     /// WinUI stands on the thread: the host's first render.
@@ -77,6 +100,9 @@ typedef struct {
 
     /// Something the environment reports changed: the theme, the power, the network.
     void (*environmentChanged)(void);
+
+    /// What a view heard of the user's input, as `StateUIHeard` says: `phase` a tap's place or a gesture's phase.
+    void (*heard)(int64_t view, StateUIHeard what, int32_t phase, double x, double y, double scale);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -285,6 +311,19 @@ int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef window, char *ut
 /// Watches the theme, the power and the network, `environmentChanged` called in the UI thread's turn after each
 /// change; once.
 void stateui_winui_watch_environment(void);
+
+/// Listens on `element`, which the view `view` shows, for what `hearing` names, each heard through `heard`; 0
+/// stops. A panel that listens is hit where it draws nothing, and one that hears taps assistive technology presses.
+void stateui_winui_hear(StateUIObjectRef element, int64_t view, uint32_t hearing);
+
+/// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
+bool stateui_winui_press(StateUIObjectRef element);
+
+/// Whether a click at (x, y) DIPs of `element` would reach the element itself.
+bool stateui_winui_hits(StateUIObjectRef element, double x, double y);
+
+/// How many views listen for the user's input - what a test counts to see every one stop.
+int32_t stateui_winui_listeners(void);
 
 /// The folder the application's pictures are read from, in UTF-8; empty for `Images` beside the executable.
 void stateui_winui_set_pictures(char const *folder);

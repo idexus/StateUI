@@ -53,6 +53,7 @@ final class WinUIScrollerView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onScrolled = nil
         onHeld = nil
     }

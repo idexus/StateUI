@@ -30,6 +30,7 @@ final class WinUISidebarView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onPresented = nil
     }
 }

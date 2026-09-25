@@ -179,8 +179,30 @@ class WinUIView {
     /// What the view presents opened or closed of WinUI's accord: a split view's sidebar.
     func presented(_ open: Bool) {}
 
-    /// The element left the tree: the view lets go of everything that would call back into it.
-    func detach() {}
+    /// What of the user's input the view listens for, as the relay's bits; what hears it.
+    private(set) var hearing: UInt32 = 0
+    private var onHeard: ((WinUIHeard) -> Void)?
+
+    /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change.
+    /// Design: docs/design/platforms/winui/input.md
+    func hear(_ hearing: UInt32, _ heard: @escaping (WinUIHeard) -> Void) {
+        onHeard = hearing == 0 ? nil : heard
+        guard hearing != self.hearing else { return }
+
+        self.hearing = hearing
+        stateui_winui_hear(handle, number, hearing)
+    }
+
+    /// What the relay says the view heard.
+    func heard(_ heard: WinUIHeard) {
+        onHeard?(heard)
+    }
+
+    /// The element left the tree: the view lets go of everything that would call back into it. A view that
+    /// overrides this lets go of what every view holds first, then of its own.
+    func detach() {
+        hear(0) { _ in }
+    }
 
     private struct Weak {
         weak var view: WinUIView?

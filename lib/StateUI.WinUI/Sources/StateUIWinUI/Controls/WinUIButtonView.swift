@@ -49,6 +49,7 @@ final class WinUIButtonView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onClicked = nil
     }
 }

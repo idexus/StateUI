@@ -39,6 +39,11 @@ namespace stateui {
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
+    /// Whether the view numbered `view` listens for taps; and a press assistive technology made on it, told as
+    /// a tap.
+    bool hearsTaps(int64_t view);
+    void press(int64_t view);
+
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {
         std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %ls\n", where,

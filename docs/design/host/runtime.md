@@ -162,6 +162,15 @@ its movement on, so it still rests once. A moving scroller keeps the frames
 coming, so the quiet is counted in the display's own time and a hand-wound
 clock reproduces every rest.
 
+## A swipe
+
+A host whose toolkit tells it a press and how far it has moved, and no swipe,
+tells a swipe by one rule (`SwipeDirection.swiped`): the press went the one
+way it moved most - across when it moved at least as far across as down - if
+that movement reaches the view's threshold and the view listens for that way.
+A way it does not listen for is no swipe, even where the press also moved far
+along the other axis: the dominant way decides, never a second one.
+
 ## Core link
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,

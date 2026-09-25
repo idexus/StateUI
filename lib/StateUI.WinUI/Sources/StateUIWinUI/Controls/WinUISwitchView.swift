@@ -26,6 +26,7 @@ final class WinUISwitchView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onToggled = nil
     }
 }

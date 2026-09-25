@@ -22,6 +22,9 @@ final class WinUIElement: NativeElement {
     var pagePresented = false
     private var previouslyShown: [MountedElement] = []
 
+    /// Where the states a press dragged carries stood as it began.
+    var panFrom = (x: 0.0, y: 0.0)
+
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
         self.host = host
@@ -58,6 +61,7 @@ final class WinUIElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        configureGestures()
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)

@@ -60,6 +60,7 @@ final class WinUITitleBarView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         chrome = WinUIWindowChrome()
         drawn = []
     }

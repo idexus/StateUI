@@ -179,6 +179,18 @@ extension WinUIView {
     }
 }
 
+extension WinUIView {
+    /// Presses the view as assistive technology does, through its automation peer; whether it could be pressed.
+    func press() -> Bool {
+        stateui_winui_press(handle)
+    }
+
+    /// Whether a click at (`x`, `y`), in DIPs of the view, would reach the view itself.
+    func hits(_ x: Double, _ y: Double) -> Bool {
+        stateui_winui_hits(handle, x, y)
+    }
+}
+
 extension WinUIButtonView {
     /// Presses the button as UI Automation does, then lets WinUI lay out what that changed.
     func invoke() {

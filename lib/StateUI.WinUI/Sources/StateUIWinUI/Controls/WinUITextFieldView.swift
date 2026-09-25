@@ -53,6 +53,7 @@ final class WinUITextFieldView: WinUIView {
     }
 
     override func detach() {
+        super.detach()
         onTextChanged = nil
         onSubmitted = nil
     }
