@@ -48,6 +48,12 @@ $bin = (swift build --package-path $application -c $Configuration --scratch-path
 $executable = Join-Path $bin "${name}WinUI.exe"
 Set-StateUISelfContained -Directory $bin -Executables $executable
 
+# The application's pictures stand beside it, where its WinUI host reads them.
+$images = Join-Path $application 'Resources\Images'
+if (Test-Path $images) {
+    Copy-Item -Path (Join-Path $images '*') -Destination (New-Item -ItemType Directory -Force (Join-Path $bin 'Images')) -Recurse -Force
+}
+
 Write-Host "starting $executable"
 if ($Detach) {
     $process = Start-Process -FilePath $executable -WorkingDirectory $bin -PassThru

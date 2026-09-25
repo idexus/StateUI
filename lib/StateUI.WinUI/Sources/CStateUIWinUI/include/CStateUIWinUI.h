@@ -286,6 +286,22 @@ int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef window, char *ut
 /// change; once.
 void stateui_winui_watch_environment(void);
 
+/// The folder the application's pictures are read from, in UTF-8; empty for `Images` beside the executable.
+void stateui_winui_set_pictures(char const *folder);
+
+/// An Image showing the picture `name` names - an SVG where a PNG of that name is asked for and absent - filling
+/// its room as StateUI's Aspect says: fit, fill, stretch, centre. Answers whether the picture was found; `size`
+/// takes the size an SVG declares, in DIPs, and zero for a bitmap, whose size WinUI knows once it has read it.
+StateUIObjectRef stateui_winui_image_make(void);
+bool stateui_winui_image_set(StateUIObjectRef image, char const *name, int32_t aspect, double *size);
+
+/// The size of the bitmap `image` shows, in DIPs; zero until it is read, and for an SVG. Once it is read, the
+/// layout holding the image is asked to measure again.
+void stateui_winui_image_size(StateUIObjectRef image, double *size);
+
+/// Draws an SVG `image` shows at `width` by `height` DIPs, at the display's scale; nothing for a bitmap.
+void stateui_winui_image_draw(StateUIObjectRef image, double width, double height);
+
 #ifdef __cplusplus
 }
 #endif

@@ -67,3 +67,30 @@ their automation patterns.
 ## Return
 
 A field submits when Enter goes down in it; the key's release reaches nothing.
+
+## Pictures
+
+An Image shows a picture from the application's `Images` folder, beside the
+executable, by the file name the tree gives it. Where the tree asks for a PNG
+the folder holds as an SVG, the SVG is shown: the application's pictures are
+written once, as SVGs, for every host.
+
+A picture is its own size, whatever room its layout offers: an SVG the size
+it declares - its width and height, or its viewBox - and a bitmap its pixels,
+once WinUI has read it. WinUI measures an `Image` at as much room as it is
+offered, and an SVG at the size it last drew it, so the host reads the size
+itself, and the image asks WinUI for no room
+([no room asked](layout.md#no-room-asked)): it is drawn in the place its
+layout gives it. A bitmap is read after its layouts were measured; once it
+is, the relay asks the layout holding it to measure again
+([a change told upward](layout.md#a-change-told-upward)).
+
+WinUI draws an SVG into pixels and takes those pixels for DIPs. The host has
+it drawn at the size it shows at in its room, in its own proportions, at the
+display's scale - again only for more pixels, so a size in motion does not
+draw it every frame - and WinUI's `Stretch` fits it, fills with it, or
+centres it. A centred SVG gives the image its declared size, in the middle
+of the room. A stretched picture keeps no proportions, and WinUI draws a
+stretched SVG at its room's size, where the SVG would keep its own and leave
+bands: the relay hands WinUI the picture from memory with its proportions
+let go (`preserveAspectRatio="none"`).

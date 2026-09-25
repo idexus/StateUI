@@ -55,6 +55,16 @@ Measuring a child again inside an arrangement, at its place, is no answer: the
 child's new size tells its parent to measure again, the next measure asks for
 the whole content, and the pass never settles.
 
+## A change told upward
+
+WinUI hears of a child's new size only as a change in what the child asks
+for, and a StateUI layout placed by another asks for no room, as a picture
+does. So a layout WinUI measures by itself - a picture read below it, words
+changed - whose natural size has changed tells the layout placing it, which
+measures again, and so on up; a layout measured inside its parent's own
+measure is read there and tells nothing. A picture read after its layouts
+were measured tells the layout holding it through the relay.
+
 ## Scrolling
 
 A ScrollView is a StateUI layout holding WinUI's `ScrollViewer`, which holds

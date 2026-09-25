@@ -22,7 +22,9 @@ let package = Package(
         .target(
             name: "CStateUIWinUI",
             path: "Sources/CStateUIWinUI",
-            cxxSettings: [.headerSearchPath("../../.projection")]
+            cxxSettings: [.headerSearchPath("../../.projection")],
+            // An SVG is handed to WinUI from memory.
+            linkerSettings: [.linkedLibrary("shcore"), .linkedLibrary("shlwapi")]
         ),
         .target(
             name: "StateUIWinUI",
@@ -34,6 +36,8 @@ let package = Package(
             name: "StateUIWinUITests",
             dependencies: ["StateUIWinUI", "CStateUIWinUI", .product(name: "StateUI", package: "StateUIRoot")],
             path: "Tests",
+            // The pictures a test shows, read from where they stand rather than bundled.
+            exclude: ["Resources"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ],

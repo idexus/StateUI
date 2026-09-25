@@ -135,11 +135,33 @@ class WinUILayoutView: WinUIView {
     /// reads its size from `naturalSize(width:)`, and otherwise the room the children take, within the room offered.
     /// Design: docs/design/platforms/winui/layout.md#no-room-asked
     func measure(width: Double, height: Double) -> LayoutSize {
+        Self.measuring += 1
+        defer { Self.measuring -= 1 }
+
         forgetMeasurements()
         _ = boxView?.measure(width: width, height: height)
-        let size = naturalSize(width: width.isFinite ? width : nil)
+        let offered = width.isFinite ? width : nil
+        let size = naturalSize(width: offered)
+        reportChange(of: size, offered: offered)
         guard placingLayout == nil else { return .zero }
         return LayoutSize(width: min(size.width, width), height: min(size.height, height))
+    }
+
+    /// How many StateUI layouts are measuring, one inside another.
+    private static var measuring = 0
+
+    /// The natural size last measured, and the width it was offered.
+    private var measured: (offered: Double?, size: LayoutSize)?
+
+    /// A natural size that changed outside the placing layout's own measure - a picture loaded, a word changed -
+    /// asks that layout to measure again: WinUI hears no change from a layout that asks it for no room.
+    /// Design: docs/design/platforms/winui/layout.md#a-change-told-upward
+    private func reportChange(of size: LayoutSize, offered: Double?) {
+        defer { measured = (offered, size) }
+        guard let placingLayout, Self.measuring == 1, let measured, measured.offered == offered, measured.size != size
+        else { return }
+
+        placingLayout.invalidateMeasurements()
     }
 
     /// The room the children take for the width offered, in DIPs, kept for the pass under way.

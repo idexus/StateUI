@@ -38,11 +38,19 @@ final class TestClock {
 
 /// The test thread as WinUI's: WinUI embedded in it once, since no loop of WinUI's runs a test.
 enum WinUITestHost {
-    /// Makes the test thread hold WinUI elements, once.
+    /// Makes the test thread hold WinUI elements, once, the tests' own pictures the application's.
     static func embed() {
         var callbacks = WinUICallbacks.table
         precondition(stateui_winui_embed(&callbacks) == 0, "WinUI could not stand on the test thread")
+        stateui_winui_set_pictures(pictures)
     }
+
+    /// Tests/Resources/Images, beside this file's folder.
+    static let pictures: String = {
+        var path = #filePath
+        for _ in 0..<2 { path = String(path[..<(path.lastIndex { $0 == "\\" || $0 == "/" } ?? path.endIndex)]) }
+        return path + "/Resources/Images"
+    }()
 
     /// Runs the thread's messages for `seconds`: a window's first frame, and the layout WinUI asks for.
     static func pump(_ seconds: Double = 0.2) {
@@ -55,10 +63,10 @@ enum WinUITestHost {
 
 extension XCTestCase {
     /// Runs `body` as the main actor's on the test thread, which holds WinUI: a drain makes it MainActor's first.
-    func onUIThread(_ body: @MainActor () throws -> Void) rethrows {
+    func onUIThread<Result: Sendable>(_ body: @MainActor () throws -> Result) rethrows -> Result {
         WinUITestHost.embed()
         _ = CoreLink().runJobs()
-        try MainActor.assumeIsolated(body)
+        return try MainActor.assumeIsolated(body)
     }
 }
 
