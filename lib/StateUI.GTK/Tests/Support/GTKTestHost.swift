@@ -50,6 +50,13 @@ enum GTKTestHost {
         return application.of(GtkApplication.self)
     }()
 
+    /// Tests/Resources/Images, beside this file's folder.
+    static let pictures: String = {
+        var path = #filePath
+        for _ in 0..<2 { path = String(path[..<(path.lastIndex(of: "/") ?? path.endIndex)]) }
+        return path + "/Resources/Images"
+    }()
+
     /// The window a bare host's root stands in, made once.
     static let window = GTKWindow(application: application)
 

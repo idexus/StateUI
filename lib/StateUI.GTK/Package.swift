@@ -28,6 +28,7 @@ let package = Package(
             name: "StateUIGTKTests",
             dependencies: ["StateUIGTK", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot")],
             path: "Tests",
+            exclude: ["Resources"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

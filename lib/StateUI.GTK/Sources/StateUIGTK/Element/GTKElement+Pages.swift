@@ -98,7 +98,8 @@ extension GTKElement {
         }.map(\.element)
         for item in ordered {
             let action = GTKToolbarAction(
-                title: item.value(.text)?.string ?? "", isEnabled: item.value(.isEnabled)?.bool ?? true,
+                title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
+                isEnabled: item.value(.isEnabled)?.bool ?? true,
                 perform: { [weak item] in item?.send(.clicked, []) })
             if item.value(.placement)?.enumeration == 2 { chrome.overflow.append(action) } else { chrome.actions.append(action) }
         }

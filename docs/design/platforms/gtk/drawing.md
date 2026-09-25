@@ -20,6 +20,19 @@ that does not clip cuts nothing.
 A colour box is a panel of one colour, its corners rounded each by its own
 radius; it takes the room its layout gives it and asks for none.
 
+## The application's pictures
+
+The application's pictures stand in an `Images` folder beside its
+executable, which the run script fills from the application's
+`Resources/Images`, and the tree names each by its file. Where the tree asks
+for a PNG the folder holds as an SVG, the SVG is shown: the application's
+pictures are written once, as SVGs, for every host.
+
+A picture shown as an icon is a `GtkImage` of the file's icon, a given number
+of logical pixels across: GTK reads the file - an SVG through gdk-pixbuf's
+loader - at that size times the display's scale, and again when the scale
+changes.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and

@@ -5,12 +5,15 @@
 @MainActor
 struct GTKToolbarAction {
     let title: String
+
+    /// The picture the button shows in place of its title, by file name; nil for the title.
+    var icon: String? = nil
     let isEnabled: Bool
     let perform: () -> Void
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: GTKToolbarAction) -> Bool {
-        title == other.title && isEnabled == other.isEnabled
+        title == other.title && icon == other.icon && isEnabled == other.isEnabled
     }
 }
 

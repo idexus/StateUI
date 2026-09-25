@@ -117,7 +117,7 @@ final class GTKPageFrame {
         let popover = gtk_popover_new()!
         overflowPopover = popover
         overflowButtons = overflow.map { action in
-            let button = GTKButtonView.action(action)
+            let button = GTKButtonView.action(action, inMenu: true)
             gtk_widget_add_css_class(button.widget, "flat")
             button.onClicked = closingOverflow(action)
             gtk_box_append(list.of(GtkBox.self), button.widget)
@@ -143,10 +143,14 @@ extension GTKPageFrame {
 }
 
 extension GTKButtonView {
-    /// A button of a header bar performing `action`.
-    static func action(_ action: GTKToolbarAction) -> GTKButtonView {
+    /// A button performing `action`: on the header bar its picture as an icon, else its title; in the overflow's
+    /// menu its title.
+    /// Design: docs/design/platforms/gtk/pages.md#the-chrome
+    static func action(_ action: GTKToolbarAction, inMenu: Bool = false) -> GTKButtonView {
         let button = GTKButtonView()
-        button.setText(action.title)
+        if inMenu || action.icon.map({ button.setIcon($0, size: 16, caption: action.title) }) != true {
+            button.setText(action.title)
+        }
         button.setEnabled(action.isEnabled)
         button.onClicked = action.perform
         return button

@@ -24,7 +24,12 @@ every render, and written on the header bar of each page shown:
 - the page's title, at the middle of its bar, or its title view in its place,
   where an application puts its search;
 - the page's actions, at the bar's end in their priority's order, those it
-  places in overflow behind the bar's menu;
+  places in overflow behind the bar's menu. An action with a picture stands
+  on the bar as an icon, the way a header bar's buttons stand, its title its
+  tooltip and its name to assistive technology; one whose picture the
+  application does not hold shows its title, and the overflow's menu shows
+  titles. So the bar's own buttons never read as one more choice of a
+  tabbed view's switcher beside them;
 - the way back, the bar's own back button, which libadwaita shows while the
   page has one below it and the page does not refuse it;
 - no bar at all, for a page that hides its navigation bar;

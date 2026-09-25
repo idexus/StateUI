@@ -108,6 +108,31 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// An action with a picture stands on the header bar as an icon named by its title; one whose picture the
+    /// application does not hold shows its title, and the overflow's menu shows titles.
+    func testAnActionWithAPictureStandsAsAnIcon() throws {
+        try onUIThread {
+            GTKPictures.folder = GTKTestHost.pictures
+            let host = GTKRenderer.running {
+                TitledPage(title: "Notes", actions: [
+                    ToolbarItem("Wide").icon("test_wide.png"),
+                    ToolbarItem("Lost").icon("missing.png"),
+                    ToolbarItem("Later").icon("test_wide.png").placement(.overflow),
+                ])
+            }
+            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let wide = try XCTUnwrap(frame.buttons.first)
+            let image = try XCTUnwrap(gtk_button_get_child(wide.widget.of(GtkButton.self)))
+
+            XCTAssertEqual(g_type_name(UnsafeMutablePointer<GTypeInstance>(image.opaque).pointee.g_class.pointee.g_type)
+                .map { String(cString: $0) }, "GtkImage")
+            XCTAssertNotEqual(gtk_widget_has_css_class(wide.widget, "image-button"), 0)
+            XCTAssertEqual(gtk_widget_get_tooltip_text(wide.widget).map { String(cString: $0) }, "Wide")
+            XCTAssertEqual(frame.buttons.map(\.text), ["", "Lost"])
+            XCTAssertEqual(frame.overflowButtons.map(\.text), ["Later"])
+        }
+    }
+
     /// A page's title view stands at the middle of its header bar; a page pushed over it has its own title.
     func testAPagesTitleViewStandsInItsHeaderBar() throws {
         try onUIThread {

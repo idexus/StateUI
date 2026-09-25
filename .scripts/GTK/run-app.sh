@@ -48,6 +48,11 @@ STATEUI_GTK=1 swift build \
   --configuration "$configuration" \
   --product "$product"
 
+# The application's pictures stand in Images beside the executable, where the host reads them.
+if [[ -d "$app_dir/Resources/Images" ]]; then
+  mkdir -p "$scratch/$configuration/Images"
+  cp -R "$app_dir/Resources/Images/." "$scratch/$configuration/Images/"
+fi
 if [[ "$build_only" == 1 ]]; then
   echo "built:      $executable"
   exit 0
