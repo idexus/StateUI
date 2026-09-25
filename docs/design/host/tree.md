@@ -73,3 +73,14 @@ window, or, where it names no group, the radio buttons beside it under the
 same parent. A native group of the platform's is not used: it holds only its
 own direct children, while StateUI's may stand anywhere in a window's
 layouts.
+
+## What assistive technology meets
+
+What an element says for assistive technology is put together once, the same
+on every host: its identifier, its label, its hint, its level as a heading,
+and whether it is met at all - left out with everything in it where it says
+so, else left out itself where it is hidden, its children still met, else met
+where it says it is not hidden, and as its view is of itself where it says
+nothing. A host puts those words on its view in its platform's terms, and puts
+them again whenever any of them changes.
+

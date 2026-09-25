@@ -365,6 +365,38 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(peers("red"), [])
     }
 
+    /// What assistive technology meets of an element is its words and its presence: left out with its children
+    /// before hidden, hidden before met, and nothing said where the element says nothing.
+    @MainActor
+    func testAnElementsAccessibilityWordsAreItsOwn() {
+        let (tree, _) = Self.tree()
+        func label(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var label = HostPatch(id: .manual(id), type: .label)
+            label.properties = properties
+            return label
+        }
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([
+            label("said", [
+                .accessibilityIdentifier: .string("greeting"), .accessibilityLabel: .string("Hello"),
+                .accessibilityHint: .string("Says hello"), .accessibilityHeadingLevel: .enumeration(2),
+                .isAccessibilityHidden: .bool(false),
+            ]),
+            label("both", [.isAccessibilityHidden: .bool(true), .automationExcludedWithChildren: .bool(true)]),
+            label("hidden", [.isAccessibilityHidden: .bool(true)]),
+            label("silent", [:]),
+        ])
+        tree.apply(root, complete: true)
+        func words(_ id: String) -> AccessibilityWords? { tree.root?.first(id: .manual(id))?.accessibilityWords }
+
+        XCTAssertEqual(words("said"), AccessibilityWords(
+            identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .met))
+        XCTAssertEqual(words("both")?.presence, .hiddenWithChildren)
+        XCTAssertEqual(words("hidden")?.presence, .hidden)
+        XCTAssertEqual(words("silent"), AccessibilityWords(
+            identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: nil))
+    }
+
     /// A direction is inherited: a view left at `.inherited` takes its parent's, one that states its own
     /// keeps it under any parent, and the root takes the language's, as the host reported the locale.
     @MainActor
