@@ -8,7 +8,7 @@ Layer: `adaptive`. Every base host presents it by its platform's conventions, ke
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [PageElement](tiers/PageElement.md)
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · – not planned for that host's family, which meets the contract there - the note says why · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
 
@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
+| `isSidebarVisible` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive |  |  |  |  |  |  |  |
 
 Realization:
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
+| `title` | property | `String` | native |  |  |  |  |  |  |  |

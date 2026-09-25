@@ -49,9 +49,9 @@ struct ControlDictionary {
     static let platforms = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 
     /// What a mark means.
-    static let legend = "✅ realized by that host and covered by its tests · ☑️ realized and tested, but "
-        + "incomplete - the note says what is missing · – not planned for that host's family, which meets the "
-        + "contract there - the note says why · empty: absent, partial and unverified, or not looked at yet"
+    static let legend = "✅ proven on that host by its own passing test · ☑️ proven by its test, but the host "
+        + "records what is missing - the note says what · – never on that host's family, which meets the contract "
+        + "there - its register says why · empty: not proven on that host yet"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what "
@@ -104,6 +104,11 @@ struct ControlDictionary {
         /// The same declaration with a host's own export behind it: what is written wins (`HostMarks.and`).
         func and(_ runtime: [Record]) -> Declaration {
             Declaration(host: host, source: source, marks: marks.and(runtime))
+        }
+
+        /// The same declaration with what the host's passing tests proved (`HostMarks.proving`).
+        func proving(_ covered: Set<String>) -> Declaration {
+            Declaration(host: host, source: source, marks: marks.proving(covered))
         }
 
         /// The mark and the note one member of `element` has on this host (`HostMarks.mark`).
@@ -386,7 +391,8 @@ struct ControlDictionary {
                 guard let declaration = declaration(of: platform) else { return "" }
 
                 if declaration.notPlanned.contains(element.name) { return "–" }
-                return declaration.unrealized.contains(element.name) ? "" : "✅"
+                let proven = declaration.marks.proven.contains { $0.hasPrefix("\(element.name).") }
+                return proven && !declaration.unrealized.contains(element.name) ? "✅" : ""
             }
 
             lines.append(Self.row(["`\(element.name)`", "\(element.layer)"] + marks))
@@ -677,11 +683,24 @@ struct ControlDictionary {
             notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
 
         return [
-            try appKit.and(exported(exports["AppKit"]!)),
-            try android.and(exported(exports["Android Views"]!)),
-            try winUI.and(exported(exports["WinUI 3"]!)),
-            try gtk.and(exported(exports["GTK 4"]!)),
+            try appKit.and(exported(exports["AppKit"]!)).proving(proven("appkit")),
+            try android.and(exported(exports["Android Views"]!)).proving(proven("android")),
+            try winUI.and(exported(exports["WinUI 3"]!)).proving(proven("winui")),
+            try gtk.and(exported(exports["GTK 4"]!)).proving(proven("gtk")),
         ]
+    }
+
+    /// What a host's passing tests proved, as its runs write it under `exports/covered/<host>/`: every
+    /// "Element.member" a line. A host none of whose tests has written a proof has proved nothing.
+    static func proven(_ host: String) throws -> Set<String> {
+        let folder = SourceTree.repository.appendingPathComponent("exports/covered/\(host)")
+        guard FileManager.default.fileExists(atPath: folder.path) else { return [] }
+        var proven: Set<String> = []
+        for file in try SourceTree.files(under: folder, entering: { _ in false }) where file.hasSuffix(".txt") {
+            let text = try String(contentsOf: folder.appendingPathComponent(file), encoding: .utf8)
+            proven.formUnion(text.split(separator: "\n").map { String($0.hasSuffix("\r") ? $0.dropLast() : $0) })
+        }
+        return proven
     }
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.

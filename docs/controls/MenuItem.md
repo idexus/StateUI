@@ -8,7 +8,7 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · – not planned for that host's family, which meets the contract there - the note says why · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
 
@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ☑️ |  |  | ✅ | ✅ |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not. |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ |  |  |  |  |  |  |
-| `isDestructive` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onClicked` (`clicked`) | event |  | native |  |  |  |  |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `text` | property | `String` | native |  |  |  |  |  |  |  |

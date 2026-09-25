@@ -41,14 +41,21 @@ own documentation.
 
 ## Marks
 
-Each host declares what it realizes in a source of its own: a record per
-member, realized in full or in part, the part naming what is missing, and
-the elements it does not realize. Its suite also exports what its runtime
-registers, and the dictionary joins that export with the contracts, naming
-each member under the contract that declares it. What is written comes
-first, since a written record may say a realization is partial; the export
-adds presence for every member the written half does not speak for, so one
-member of one contract is recorded once.
+A mark is earned by a test. A host's column shows ✅ for a member only where a
+test of that host's own suite covered the member on its element and passed
+on that host: each run writes what its passing tests proved under
+`exports/covered/<host>/`, one "Element.member" a line, and the dictionary
+reads those files. A host none of whose tests has written a proof has
+proved nothing, whatever it implements.
+
+What a host implements decides only whether its tests of a member run. It
+declares that in a source of its own - a record per member, realized in full
+or in part, the part naming what is missing - and its suite exports what its
+runtime registers; the dictionary joins the export with the contracts,
+naming each member under the contract that declares it, what is written
+first. A member proven while its record says what is missing is ☑️. – comes
+from the host's register alone: the members and elements its family will
+never have, each with why.
 
 The rule is the host layer's `HostMarks`, a host's records as `HostRecord`s:
 the dictionary reads each host's column through it, and a conformance case
@@ -56,9 +63,10 @@ asks it whether the host it runs on realizes what the case covers - one rule
 for the page and the test.
 
 ```text
-  ✅   implemented, and covered by that host's tests
-  ☑️   implemented and tested, but incomplete; the record names what is missing
-       (empty) absent, partial and unverified, or not examined
+  ✅   proven on that host by its own passing test
+  ☑️   proven by its test, but the host records what is missing
+  –    never on that host's family; its register says why
+       (empty) not proven on that host yet
 ```
 
 ## Rendering again

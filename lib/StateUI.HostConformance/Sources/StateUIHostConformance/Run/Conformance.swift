@@ -8,13 +8,16 @@
 /// Design: docs/design/host/conformance.md#the-runner
 @MainActor
 @_spi(Host) public enum Conformance {
-    /// Runs `family` on `driver`'s host, handing every failure to `report` and a line for each case to `log`.
-    /// A family none of whose cases ran fails: a suite that tested nothing is not green.
+    /// Runs `family` on `driver`'s host, handing every failure to `report` and a line for each case to `log`;
+    /// what its passing cases proved. A family none of whose cases ran fails: a suite that tested nothing is not
+    /// green.
+    @discardableResult
     public static func run(
         _ family: any ConformanceFamily.Type, on driver: any HostDriver,
         report: @escaping (Failure) -> Void, log: (String) -> Void
-    ) {
+    ) -> Set<Covered> {
         var ran = 0
+        var proven: Set<Covered> = []
         for each in family.cases {
             let title = "Conformance \(driver.host) · \(family.name)/\(each.name)"
             guard !each.covers.isEmpty else {
@@ -28,19 +31,22 @@
                 log("\(title): a gap - \(covered) is not realized")
             case .runs:
                 ran += 1
-                log("\(title): " + run(each, as: title, on: driver, report: report))
+                let passed = run(each, as: title, on: driver, report: report)
+                log("\(title): " + (passed ?? "passed"))
+                if passed == nil { proven.formUnion(each.covers) }
             }
         }
         if ran == 0 {
             report(Failure(
                 message: "Conformance \(driver.host) · \(family.name): no case ran", file: #filePath, line: #line))
         }
+        return proven
     }
 
-    /// Runs one case; what came of it.
+    /// Runs one case; nil where it passed, else what came of it.
     private static func run(
         _ each: ConformanceCase, as title: String, on driver: any HostDriver, report: @escaping (Failure) -> Void
-    ) -> String {
+    ) -> String? {
         let session = Session(driver: driver, case: "\(each.name)", report: report)
         do {
             try each.body(session)
@@ -50,6 +56,6 @@
         } catch {
             session.fail("threw \(error)")
         }
-        return session.failures == 0 ? "passed" : "failed"
+        return session.failures == 0 ? nil : "failed"
     }
 }

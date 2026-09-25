@@ -1,0 +1,9 @@
+Button.clicked
+CheckBox.isOn
+CheckBox.toggled
+Label.text
+RadioButton.groupName
+RadioButton.isOn
+RadioButton.toggled
+Switch.isOn
+Switch.toggled

@@ -63,3 +63,15 @@ failed, not planned, a gap, or what the driver cannot do and why. Nothing is
 passed over in silence: a case covering no member fails, and so does a
 family none of whose cases ran. A failure names the host and the case, at the
 line of the case's expectation.
+
+## What a run proves
+
+A case that passes proves every member it covers on its host: the runner
+returns them, and each host's suite holds a family's proofs to
+`exports/covered/<host>/<Family>.txt` - one "Element.member" a line - or
+writes them there on a run with `STATEUI_UPDATE_EXPORTS=1`, read in the diff
+as an export is. Those files are every ✅ a host's column shows: nothing a
+host implements is marked until its own test proves it. A test of a host's
+look proves a member the same way, as a case of a family its own suite
+holds.
+

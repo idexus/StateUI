@@ -8,7 +8,7 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · – not planned for that host's family, which meets the contract there - the note says why · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
 
@@ -16,12 +16,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `deactivated` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `destroying` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `stopped` | event |  | adaptive | ✅ |  |  | ✅ |  |  |  |
-| `windowClosed` | event | `String` | adaptive | ✅ |  |  |  |  |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  |  |  |  |  |
+| `activated` | event |  | adaptive |  |  |  |  |  |  |  |
+| `deactivated` | event |  | adaptive |  |  |  |  |  |  |  |
+| `destroying` | event |  | adaptive |  |  |  |  |  |  |  |
+| `stopped` | event |  | adaptive |  |  |  |  |  |  |  |
+| `windowClosed` | event | `String` | adaptive |  |  |  |  |  |  |  |
+| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  |  |  |  |
 
 Realization:
 

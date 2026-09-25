@@ -46,23 +46,25 @@
     }
 }
 
-/// What a host realizes of the contracts, member by member: its judgements written by hand, then what its runtime
-/// says it realizes. The one rule a host's column of the dictionary and a conformance case both read.
+/// What a host realizes of the contracts and what its own tests prove, member by member: its judgements written by
+/// hand, what its runtime says it realizes, and the members its passing tests covered. A mark is earned by a test
+/// alone; realization decides only whether a test runs. The one rule a host's column of the dictionary and a
+/// conformance case both read.
 /// Design: docs/design/contracts/dictionary.md#marks
 @_spi(Host) public struct HostMarks: Sendable {
-    /// What a host realizes of one member of one element.
+    /// What a host's column says of one member of one element.
     public enum Mark: Equatable, Sendable {
-        /// Realized in full.
+        /// Proven whole by the host's own passing test.
         case complete
-        /// Realized in part; what is missing.
+        /// Proven by its test, while the host records what is missing.
         case partial(missing: String)
-        /// Not planned for the host's family; why.
+        /// Never on the host's family, which meets the contract there: its register says why.
         case notPlanned(reason: String)
-        /// Not realized, or not judged yet.
+        /// Not proven yet.
         case absent
     }
 
-    /// Every record: the written ones first.
+    /// Every judgement: the written ones first, then what the runtime realizes.
     public let records: [HostRecord]
 
     /// The elements the host realizes none of.
@@ -74,13 +76,20 @@
     /// The elements the host's family will never have: each meets the contract there.
     public let notPlanned: Set<String>
 
-    /// Marks from `records`, written before anything a runtime adds, and the elements realized none of, shown with
-    /// no view, and not planned.
-    public init(records: [HostRecord], unrealized: Set<String>, viewless: Set<String>, notPlanned: Set<String> = []) {
+    /// The members the host's passing tests covered, each on its element: "Label.text".
+    public let proven: Set<String>
+
+    /// Marks from `records`, written before anything a runtime adds; the elements realized none of, shown with no
+    /// view, and never had; and the members the host's passing tests proved.
+    public init(
+        records: [HostRecord], unrealized: Set<String>, viewless: Set<String>, notPlanned: Set<String> = [],
+        proven: Set<String> = []
+    ) {
         self.records = records
         self.unrealized = unrealized
         self.viewless = viewless
         self.notPlanned = notPlanned
+        self.proven = proven
     }
 
     /// These marks with what the host's runtime realizes behind them. What is written comes first: a runtime says
@@ -93,7 +102,8 @@
                 && !records.contains { $0.member == record.member && Self.wears(record.owner, $0.owner) }
         }
         return HostMarks(
-            records: records + realized, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned)
+            records: records + realized, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned,
+            proven: proven)
     }
 
     /// These marks with a host's declaration of what its runtime realizes behind them.
@@ -101,9 +111,34 @@
         and(Self.records(of: declaration))
     }
 
-    /// What the host realizes of `member` on `element`: the element's own record, else the record of the tier the
-    /// member comes from.
+    /// These marks with the members the host's passing tests covered, each "Element.member".
+    public func proving(_ covered: Set<String>) -> HostMarks {
+        HostMarks(
+            records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned,
+            proven: proven.union(covered))
+    }
+
+    /// Whether the host realizes `member` on `element` - in full or in part - so a test of it runs there.
+    public func realizes(_ member: String, on element: String, from tier: String?) -> Bool {
+        switch judgement(of: member, on: element, from: tier) {
+        case .complete, .partial: true
+        case .notPlanned, .absent: false
+        }
+    }
+
+    /// What the column says of `member` on `element`: never, where the register says so; else proven by the
+    /// host's passing test - whole, or with what the host records as missing - or not yet.
     public func mark(of member: String, on element: String, from tier: String?) -> Mark {
+        let judged = judgement(of: member, on: element, from: tier)
+        if case .notPlanned = judged { return judged }
+        guard proven.contains("\(element).\(member)") else { return .absent }
+        if case .partial = judged { return judged }
+        return .complete
+    }
+
+    /// What the host's records say of `member` on `element`: the element's own record, else the record of the tier
+    /// the member comes from.
+    private func judgement(of member: String, on element: String, from tier: String?) -> Mark {
         guard !unrealized.contains(element) else { return .absent }
         guard !notPlanned.contains(element) else { return .notPlanned(reason: "") }
 

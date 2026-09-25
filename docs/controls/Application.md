@@ -8,7 +8,7 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · – not planned for that host's family, which meets the contract there - the note says why · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
 
@@ -16,18 +16,18 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `announce` | act | `(String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `currentTime` | act | `() -> [Double]` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `currentTimeZone` | act | `() -> String` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ |  |  |  |  |  |  |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  | ✅ | ✅ | ✅ |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  | ✅ | ✅ | ✅ |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  |  |  |  |  |  |  |  |
+| `announce` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  |  |  |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  |  |  |  |  |
+| `currentTime` | act | `() -> [Double]` |  |  |  |  |  |  |  |  |
+| `currentTimeZone` | act | `() -> String` |  |  |  |  |  |  |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
+| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  |  |  |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  |  |  |  |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  |  |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  |  |  |  |  |
 
 Realization:
 

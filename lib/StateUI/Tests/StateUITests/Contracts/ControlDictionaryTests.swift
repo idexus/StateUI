@@ -183,6 +183,26 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
     }
 
+    /// Every member a host's run says its tests proved is one a contract declares on that element, itself or
+    /// through a tier it wears: a proof of nothing marks nothing.
+    func testEveryProofNamesAMemberOfItsElement() throws {
+        var read = 0
+        for host in ["appkit", "android", "winui", "gtk"] {
+            for proof in try ControlDictionary.proven(host).sorted() {
+                read += 1
+                let parts = proof.split(separator: ".").map(String.init)
+                let element = LibraryContracts.elements.first { $0.nodeType.name == parts.first }
+                let declared = element.map { element in
+                    ([element] + element.worn).contains { contract in contract.members.contains { $0.name == parts.last } }
+                } ?? false
+                if parts.count != 2 || !declared {
+                    XCTFail("exports/covered/\(host) proves \(proof), which no contract of that element declares")
+                }
+            }
+        }
+        XCTAssertGreaterThan(read, 10, "the proofs read almost nothing")
+    }
+
     func testEveryRecordIsWrittenOnce() throws {
         for declaration in try ControlDictionary.declarations() {
             var seen: Set<String> = []

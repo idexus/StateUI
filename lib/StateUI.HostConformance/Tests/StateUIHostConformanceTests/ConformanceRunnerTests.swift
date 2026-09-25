@@ -85,6 +85,20 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(lines, ["Conformance Nowhere · Handed/sums: failed"])
     }
 
+    /// A run proves what its passing cases covered, and nothing a failing case covered.
+    func testOnlyAPassingCaseProvesWhatItCovers() {
+        Handed.cases = [
+            ConformanceCase("passes", covers: [Covered(SwitchContract.isOn)]) { _ in },
+            ConformanceCase("fails", covers: [Covered(SwitchContract.toggled)]) { s in s.expect(true, false) },
+        ]
+        let proven = Conformance.run(
+            Handed.self, on: MarksOnly(realizing: [.complete("Switch", "isOn"), .complete("Switch", "toggled")]),
+            report: { _ in }, log: { _ in })
+
+        XCTAssertEqual(proven, [Covered(SwitchContract.isOn)])
+        XCTAssertEqual(Coverage.text(proven), "Switch.isOn\n")
+    }
+
     /// What a driver cannot do is a failure unless the driver says why it cannot.
     func testADriverThatCannotSaysWhyOrFails() {
         let driver = MarksOnly(realizing: [.complete("Switch", "isOn")])
