@@ -200,6 +200,17 @@ that movement reaches the view's threshold and the view listens for that way.
 A way it does not listen for is no swipe, even where the press also moved far
 along the other axis: the dominant way decides, never a second one.
 
+## Kept values
+
+A host whose platform keeps no store an application can use keeps the
+application's kept values in a file of its own, and one codec says what the
+file holds (`KeptValuesText`): a line a key, its name and its words apart by
+a tab - a tab, a line's end and a backslash in either escaped - the keys in
+order, so the same values write the same file. A value is kept as the words
+its key's kind reads back; a key the application does not list, or a value of
+another kind, is not kept. Where the file stands and how it is read and
+written is the host's.
+
 ## Core link
 
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,
