@@ -9,16 +9,22 @@ child an engine places, and the application's pictures.
 A layout's own box, a ColorBox and any background that is not one plain colour are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
 rectangle with rounded corners, or an ellipse, filled with a brush and
-outlined in one colour. The Swift host tells it every part - the shape's kind
-and its corners' radii in pixels, the brush's kind, its stops' colours and
-offsets and its geometry - and it builds the gradient for the bounds it is
-drawn at, so the geometry stays in fractions of the thing painted, as
+outlined in one colour. The Swift host tells it every part as the host layer
+reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
+corner's width and height in pixels, the brush's kind, its stops' colours and
+offsets and its whole geometry, the outline's colour and width - and it
+builds the gradient for the bounds it is drawn at, so the geometry stays in
+fractions of the thing painted, as
 [brushes](../../types/brushes.md#geometry-in-fractions) says. A plain colour
 stays the view's own colour background; a background cleared gives back the
 one the view was made with.
 
-Radii that two corners on one side would overlap with are shrunk together,
-so a radius larger than the shape never draws a shape inside out.
+A corner rounds no more than half the side it rounds within the outline,
+so a radius wider than a short box rounds it in a quarter of an ellipse.
+Swift fits the corners to the size its view is placed at, and again each
+time that size changes; the drawable draws them as given. A view clipping
+to the shape cuts with one radius, the top left corner's narrower way, as an
+outline takes it.
 
 ## A layout's own box
 
@@ -97,8 +103,9 @@ polyline is its own geometry, placed in the view by the host layer's rule
 the bounds Android measures it at, then moved by the transform. Swift works
 the six numbers out each time the room changes, and the view draws by them.
 A path's arcs come as the shared parser's cubic curves. The geometry crosses
-as one array of commands in pixels, and the brush, the outline and the six
-numbers one call each. The fill is the brush
+as one array of commands in pixels, and the brush, the outline, a
+rectangle's corners - fitted as a box's are - and the six numbers one call
+each. The fill is the brush
 every shape of the host's paints with; the outline is a colour - a gradient's
 first - and its dashes count in the outline's width, as StateUI's do. A
 shape asks for no room of its own.

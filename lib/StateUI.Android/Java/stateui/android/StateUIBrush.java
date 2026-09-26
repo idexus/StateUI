@@ -30,32 +30,34 @@ final class StateUIBrush {
         geometry = fractions;
     }
 
-    /** Puts the brush's colour or shader for `bounds` on `paint`; false when there is nothing to paint. */
+    /**
+     * Puts the brush's colour or shader for `bounds` on `paint`; false when there is nothing to paint. The Swift
+     * host gives a gradient two stops or more and its whole geometry.
+     */
     boolean paint(Paint paint, Rect bounds) {
         paint.setShader(null);
         if (kind == SOLID && colors.length > 0) {
             paint.setColor(colors[0]);
             return true;
         }
-        if (colors.length == 0) return false;
 
         float width = bounds.width();
         float height = bounds.height();
-        int[] stops = colors.length == 1 ? new int[] {colors[0], colors[0]} : colors;
-        float[] at = colors.length == 1 ? null : offsets;
-        Shader shader = null;
-        if (kind == LINEAR && geometry.length >= 4) {
+        Shader shader;
+        if (kind == LINEAR && colors.length > 1 && geometry.length >= 4) {
             shader = new LinearGradient(
                     bounds.left + width * geometry[0], bounds.top + height * geometry[1],
                     bounds.left + width * geometry[2], bounds.top + height * geometry[3],
-                    stops, at, Shader.TileMode.CLAMP);
-        } else if (kind == RADIAL && geometry.length >= 3) {
+                    colors, offsets, Shader.TileMode.CLAMP);
+        } else if (kind == RADIAL && colors.length > 1 && geometry.length >= 3) {
+            // A radial shader takes no radius of nothing.
             float radius = Math.max(Math.max(width, height) * geometry[2], 0.001f);
             shader = new RadialGradient(
                     bounds.left + width * geometry[0], bounds.top + height * geometry[1],
-                    radius, stops, at, Shader.TileMode.CLAMP);
+                    radius, colors, offsets, Shader.TileMode.CLAMP);
+        } else {
+            return false;
         }
-        if (shader == null) return false;
 
         paint.setColor(0xFF000000);
         paint.setShader(shader);

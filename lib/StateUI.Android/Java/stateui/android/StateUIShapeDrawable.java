@@ -46,13 +46,13 @@ final class StateUIShapeDrawable extends Drawable {
         stroke.setStyle(Paint.Style.STROKE);
     }
 
-    /** The shape: a rectangle, one with the corners' radii in pixels - top left, top right, bottom right, bottom left - or an ellipse. */
+    /**
+     * The shape: a rectangle, one with rounded corners - each corner's width and height in pixels, clockwise
+     * from the top left, as the Swift host fitted them - or an ellipse.
+     */
     void setShape(int kind, float[] corners) {
         shape = kind;
-        for (int corner = 0; corner < 4; corner++) {
-            radii[corner * 2] = corners[corner];
-            radii[corner * 2 + 1] = corners[corner];
-        }
+        System.arraycopy(corners, 0, radii, 0, Math.min(corners.length, radii.length));
         invalidateSelf();
     }
 
@@ -77,7 +77,7 @@ final class StateUIShapeDrawable extends Drawable {
         box.set(bounds.left + inset, bounds.top + inset, bounds.right - inset, bounds.bottom - inset);
         path.rewind();
         switch (shape) {
-            case ROUNDED: path.addRoundRect(box, fitted(box), Path.Direction.CW); break;
+            case ROUNDED: path.addRoundRect(box, radii, Path.Direction.CW); break;
             case ELLIPSE: path.addOval(box, Path.Direction.CW); break;
             default: path.addRect(box, Path.Direction.CW);
         }
@@ -115,32 +115,16 @@ final class StateUIShapeDrawable extends Drawable {
         return true;
     }
 
-    /** The corners' radii, shrunk together where two meeting on one side would overlap. */
-    private float[] fitted(RectF rect) {
-        float factor = 1;
-        factor = Math.min(factor, share(rect.width(), radii[0] + radii[2]));
-        factor = Math.min(factor, share(rect.width(), radii[4] + radii[6]));
-        factor = Math.min(factor, share(rect.height(), radii[0] + radii[6]));
-        factor = Math.min(factor, share(rect.height(), radii[2] + radii[4]));
-        if (factor >= 1) return radii;
-
-        float[] scaled = new float[8];
-        for (int index = 0; index < 8; index++) scaled[index] = radii[index] * factor;
-        return scaled;
-    }
-
-    private static float share(float length, float taken) {
-        return taken > 0 ? Math.max(0, length) / taken : 1;
-    }
-
-    /** The shape as the view's outline, which is what a view clipping its content cuts to. */
+    /**
+     * The shape as the view's outline, which is what a view clipping its content cuts to: one radius for every
+     * corner, the top left's narrower way, as an outline takes it.
+     */
     @Override
     public void getOutline(Outline outline) {
         Rect bounds = getBounds();
         switch (shape) {
             case ROUNDED:
-                box.set(bounds);
-                outline.setRoundRect(bounds, fitted(box)[0]);
+                outline.setRoundRect(bounds, Math.min(radii[0], radii[1]));
                 break;
             case ELLIPSE:
                 outline.setOval(bounds);

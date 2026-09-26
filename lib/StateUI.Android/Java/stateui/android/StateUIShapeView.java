@@ -12,6 +12,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.View;
+import java.util.Arrays;
 
 /**
  * A shape: a rectangle or an ellipse filling the view, or drawn geometry - a line, a path, a polygon, a
@@ -51,16 +52,9 @@ final class StateUIShapeView extends View {
         stroke.setStyle(Paint.Style.STROKE);
     }
 
-    /**
-     * The shape: its kind, a rectangle's corners' radii in pixels - top left, top right, bottom right, bottom
-     * left - and drawn geometry as commands in pixels, filled even-odd or not.
-     */
-    void setGeometry(int shape, float[] corners, float[] commands, boolean evenOdd) {
+    /** The shape: its kind, and drawn geometry as commands in pixels, filled even-odd or not. */
+    void setGeometry(int shape, float[] commands, boolean evenOdd) {
         kind = shape;
-        for (int corner = 0; corner < 4 && corner < corners.length; corner++) {
-            radii[corner * 2] = corners[corner];
-            radii[corner * 2 + 1] = corners[corner];
-        }
         authored.rewind();
         int index = 0;
         while (index < commands.length) {
@@ -80,6 +74,16 @@ final class StateUIShapeView extends View {
             }
         }
         authored.setFillType(evenOdd ? Path.FillType.EVEN_ODD : Path.FillType.WINDING);
+        invalidate();
+    }
+
+    /**
+     * A rectangle's corners: each one's width and height in pixels, clockwise from the top left, as the Swift
+     * host fitted them; none for square ones.
+     */
+    void setCorners(float[] corners) {
+        Arrays.fill(radii, 0);
+        System.arraycopy(corners, 0, radii, 0, Math.min(corners.length, radii.length));
         invalidate();
     }
 

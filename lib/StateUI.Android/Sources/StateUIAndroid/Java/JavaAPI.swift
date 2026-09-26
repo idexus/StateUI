@@ -196,7 +196,8 @@ enum JavaAPI {
 
     static let shapeView = Java.findClass("stateui/android/StateUIShapeView")
     static let newShapeView = Java.method(shapeView, "<init>", "(Landroid/content/Context;)V")
-    static let setShapeGeometry = Java.method(shapeView, "setGeometry", "(I[F[FZ)V")
+    static let setShapeGeometry = Java.method(shapeView, "setGeometry", "(I[FZ)V")
+    static let setShapeCorners = Java.method(shapeView, "setCorners", "([F)V")
     static let setShapeFill = Java.method(shapeView, "setFill", "(I[I[F[F)V")
     static let setShapeStroke = Java.method(shapeView, "setStroke", "(IF[FFIIF)V")
     static let setShapePlacing = Java.method(shapeView, "setPlacing", "([F)V")

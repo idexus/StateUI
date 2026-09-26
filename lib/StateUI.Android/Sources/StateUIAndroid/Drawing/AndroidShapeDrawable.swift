@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A shape filled with a brush and outlined: the host's `StateUIShapeDrawable`, told every part by Swift.
+/// A shape filled with a brush and outlined: the host's `StateUIShapeDrawable`, told every part by Swift as the host
+/// layer reads a box (`BoxArithmetic`, `HostBrush`) - its corners fitted to the size it is drawn at.
 /// Design: docs/design/platforms/android/drawing.md#a-shape-and-its-brush
 @MainActor
 final class AndroidShapeDrawable {
@@ -13,41 +14,39 @@ final class AndroidShapeDrawable {
     enum Shape: Equatable {
         case rectangle
 
-        /// The corners' radii in points: top left, top right, bottom right, bottom left.
+        /// The corners' radii in points, clockwise from the top left.
         case rounded([Double])
 
         case ellipse
 
-        /// A layout's shape as it crosses: its kind, then a rectangle's radius.
+        /// A layout's or a button's outline as the tree's `value` asks for it.
         init(container value: HostValue?) {
-            guard let parts = value?.values, let kind = parts.first?.enumeration else {
-                self = .rectangle
-                return
-            }
-
-            switch kind {
-            case 1:
-                let radius = max(0, parts.value(1)?.number ?? 0)
-                self = .rounded([radius, radius, radius, radius])
-            case 2: self = .ellipse
-            default: self = .rectangle
+            switch BoxArithmetic.outline(value) {
+            case .rectangle: self = .rectangle
+            case .roundedRectangle(let radius): self = .rounded([radius, radius, radius, radius])
+            case .ellipse: self = .ellipse
             }
         }
 
-        /// A corner radius as it crosses: one for every corner, or four in StateUI's order -
-        /// top left, top right, bottom left, bottom right.
-        init(corners value: HostValue?) {
-            if let radius = value?.number {
-                self = .rounded([radius, radius, radius, radius].map(Self.sanitized))
-            } else if let radii = value?.numbers, radii.count >= 4 {
-                self = .rounded([radii[0], radii[1], radii[3], radii[2]].map(Self.sanitized))
-            } else {
-                self = .rectangle
-            }
+        /// A box's own corners; a rectangle where none are said.
+        init(corners: CornerRadius?) {
+            self = corners == nil ? .rectangle : .rounded(BoxArithmetic.clockwise(corners))
         }
 
-        private static func sanitized(_ radius: Double) -> Double {
-            radius.isFinite ? max(0, radius) : 0
+        /// The Java side's kind, and each corner's width and height in pixels, clockwise from the top left: no more
+        /// than half the side it rounds of a room `size` pixels, where the size is known.
+        func drawn(density: Double, in size: (width: Double, height: Double)?) -> (kind: Int32, radii: [Float]) {
+            switch self {
+            case .rectangle: (0, Array(repeating: 0, count: 8))
+            case .ellipse: (2, Array(repeating: 0, count: 8))
+            case .rounded(let radii):
+                (1, radii.flatMap { radius -> [Float] in
+                    let pixels = radius * density
+                    guard let size else { return [Float(pixels), Float(pixels)] }
+                    let fitted = BoxArithmetic.fitted(pixels, width: size.width, height: size.height)
+                    return [Float(fitted.width), Float(fitted.height)]
+                })
+            }
         }
     }
 
@@ -56,17 +55,41 @@ final class AndroidShapeDrawable {
 
     var reference: jobject { object.reference }
 
+    private var shape = Shape.rectangle
+    private var density = 1.0
+
+    /// The size the drawable is drawn at, in pixels; nil before its view is placed.
+    private var size: (width: Int32, height: Int32)?
+
+    /// The outline's width in pixels, which the shape stands inside of.
+    private var strokeWidth = 0.0
+
+    /// The radii last told the Java side.
+    private var told: (kind: Int32, radii: [Float])?
+
     /// The shape, its radii in points turned into pixels at `density`.
     func setShape(_ shape: Shape, density: Double) {
-        let (kind, radii): (Int32, [Double]) = switch shape {
-        case .rectangle: (0, [0, 0, 0, 0])
-        case .rounded(let radii): (1, radii)
-        case .ellipse: (2, [0, 0, 0, 0])
-        }
+        self.shape = shape
+        self.density = density
+        tellShape()
+    }
 
-        let corners = Java.floats(radii.map { Float($0 * density) })
-        Java.call(reference, JavaAPI.setShape, .int(kind), .object(corners))
-        Java.release(local: corners)
+    /// The size the drawable is drawn at, in pixels: its corners are fitted to it.
+    func fit(width: Int32, height: Int32) {
+        guard size.map({ $0 != (width, height) }) ?? true else { return }
+        size = (width, height)
+        tellShape()
+    }
+
+    /// Tells the Java side the shape, its corners fitted within the outline where the drawable's size is known.
+    private func tellShape() {
+        let room = size.map { (Double($0.width) - strokeWidth, Double($0.height) - strokeWidth) }
+        let drawn = shape.drawn(density: density, in: room)
+        guard told.map({ $0.kind != drawn.kind || $0.radii != drawn.radii }) ?? true else { return }
+        told = drawn
+        let radii = Java.floats(drawn.radii)
+        Java.call(reference, JavaAPI.setShape, .int(drawn.kind), .object(radii))
+        Java.release(local: radii)
     }
 
     /// What fills the shape: a colour, or a brush as it crosses; nil for nothing.
@@ -81,34 +104,35 @@ final class AndroidShapeDrawable {
         Java.release(local: colors)
     }
 
-    /// A brush as the Java side takes it: its kind, then a colour and an offset for each stop, and its
-    /// geometry in fractions of the shape - from a colour, or a brush as it crosses: its kind, its geometry,
-    /// then an offset and a colour for each stop.
+    /// A brush as the Java side takes it, from the host layer's reading of it: its kind, then a colour and an offset
+    /// for each stop, and its geometry in fractions of the shape.
     /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
     static func brush(_ value: HostValue?) -> (kind: Int32, colors: [Int32], offsets: [Float], geometry: [Float]) {
-        if let value, let argb = AndroidView.argb(value) { return (1, [argb], [0], []) }
-        guard let parts = value?.values, let brush = parts.first?.enumeration else { return (0, [], [], []) }
+        func stops(_ stops: [HostBrush.Stop]) -> (colors: [Int32], offsets: [Float]) {
+            let drawn = stops.compactMap { stop in AndroidView.argb(stop.color).map { ($0, Float(stop.offset)) } }
+            return (drawn.map(\.0), drawn.map(\.1))
+        }
 
-        if brush == 1 {
-            let argb = parts.value(1).flatMap(AndroidView.argb)
-            return (1, argb.map { [$0] } ?? [], argb == nil ? [] : [0], [])
+        switch HostBrush(value) {
+        case .none:
+            return (0, [], [], [])
+        case .solid(let color):
+            return AndroidView.argb(color).map { (1, [$0], [0], []) } ?? (0, [], [], [])
+        case .linear(let from, let to, let run):
+            let (colors, offsets) = stops(run)
+            return (2, colors, offsets, [from.x, from.y, to.x, to.y].map(Float.init))
+        case .radial(let center, let radius, let run):
+            let (colors, offsets) = stops(run)
+            return (3, colors, offsets, [center.x, center.y, radius].map(Float.init))
         }
-        var colors: [Int32] = []
-        var offsets: [Float] = []
-        var index = 2
-        while index + 1 < parts.count, let offset = parts[index].number, let argb = AndroidView.argb(parts[index + 1]) {
-            colors.append(argb)
-            offsets.append(Float(min(max(offset, 0), 1)))
-            index += 2
-        }
-        return (brush, colors, offsets, (parts.value(1)?.numbers ?? []).map(Float.init))
     }
 
-    /// The outline: a colour, or a brush's first colour, `width` pixels wide; none for nil.
-    func setStroke(_ value: HostValue?, width: Double) {
-        let argb = value.flatMap { value in
-            AndroidView.argb(value) ?? value.values?.lazy.compactMap(AndroidView.argb).first
-        }
-        Java.call(reference, JavaAPI.setStroke, .int(argb ?? 0), .float(argb == nil ? 0 : Float(width)))
+    /// The outline: the brush's colour, `width` points wide as the host layer reads it - one where none is said,
+    /// none without a colour - at `density`.
+    func setStroke(_ value: HostValue?, width: Double?, density: Double) {
+        let argb = HostBrush(value).firstColor.flatMap(AndroidView.argb)
+        strokeWidth = argb == nil ? 0 : BoxArithmetic.outlineWidth(stroke: value, width: width) * density
+        Java.call(reference, JavaAPI.setStroke, .int(argb ?? 0), .float(Float(strokeWidth)))
+        tellShape()
     }
 }

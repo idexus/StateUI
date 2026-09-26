@@ -16,9 +16,13 @@ final class AndroidColorBoxView: AndroidView {
     }
 
     /// The box's colour, and the radii of its corners; nil draws no colour.
-    func apply(color: HostValue?, corners: AndroidShapeDrawable.Shape) {
+    func apply(color: HostValue?, corners: CornerRadius?) {
         drawing.setFill(color)
-        drawing.setShape(corners, density: density)
+        drawing.setShape(AndroidShapeDrawable.Shape(corners: corners), density: density)
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        drawing.fit(width: width, height: height)
     }
 
     /// A box has nothing to show but its colour: it takes the room its layout gives it, and asks for none.

@@ -68,24 +68,33 @@ final class AndroidButtonView: AndroidTextView {
     /// rectangle and no fill keep the theme's look.
     func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
         look.stroke = stroke
-        look.strokeWidth = width ?? 1
+        look.strokeWidth = width
         look.shape = AndroidShapeDrawable.Shape(container: shape)
         drawLook()
     }
 
+    /// The shape its look is drawn in, and the one its pressed ripple is kept within; none while the theme's
+    /// look shows.
+    private var drawn: (shape: AndroidShapeDrawable, mask: AndroidShapeDrawable)?
+
     /// One shape under the platform's pressed ripple, or the theme's background where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     private func drawLook() {
-        guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else { return showBackground(nil) }
+        guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else {
+            drawn = nil
+            return showBackground(nil)
+        }
 
         let corners = look.shape
         let shape = AndroidShapeDrawable()
+        shape.setStroke(look.stroke, width: look.strokeWidth, density: density)
         shape.setShape(corners, density: density)
         shape.setFill(look.fill)
-        shape.setStroke(look.stroke, width: look.strokeWidth * density)
         let mask = AndroidShapeDrawable()
         mask.setShape(corners, density: density)
         mask.setFill(Color("#000000").propValue)
+        drawn = (shape, mask)
+        if let size = placedSize { sized(width: size.width, height: size.height) }
 
         let pressable = withExtendedLifetime((shape, mask)) {
             Java.callStaticObject(
@@ -125,6 +134,11 @@ final class AndroidButtonView: AndroidTextView {
         let room = (width: pixels(place.width), height: pixels(place.height))
         if !hasWords, placedSize.map({ $0 != room }) ?? true { showIcon(room: room) }
         super.layout(place)
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        drawn?.shape.fit(width: width, height: height)
+        drawn?.mask.fit(width: width, height: height)
     }
 
     /// The padding is the icon's room too.
@@ -197,7 +211,7 @@ final class AndroidButtonView: AndroidTextView {
     private struct Look {
         var fill: HostValue?
         var stroke: HostValue?
-        var strokeWidth: Double = 1
+        var strokeWidth: Double?
         var shape = AndroidShapeDrawable.Shape.rectangle
     }
 

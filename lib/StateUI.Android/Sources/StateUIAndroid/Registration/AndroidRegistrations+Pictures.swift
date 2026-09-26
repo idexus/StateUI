@@ -16,8 +16,7 @@ extension AndroidRegistrations {
         registry.add(ColorBoxContract.self, create: { _ in AndroidColorBoxView() }) { box in
             box.applies([ColorBoxContract.color, ColorBoxContract.cornerRadius]) { view, values in
                 view.apply(
-                    color: values[ColorBoxContract.color]?.propValue,
-                    corners: AndroidShapeDrawable.Shape(corners: values[ColorBoxContract.cornerRadius]?.propValue))
+                    color: values[ColorBoxContract.color]?.propValue, corners: values[ColorBoxContract.cornerRadius])
             }
         }
     }

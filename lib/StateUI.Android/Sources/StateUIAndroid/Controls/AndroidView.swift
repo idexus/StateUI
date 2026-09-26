@@ -355,7 +355,11 @@ class AndroidView {
             JavaAPI.views, JavaAPI.placeView, .object(reference),
             .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
         if resized, pivot != (0.5, 0.5) { applyTransform() }
+        if resized { sized(width: frame.right - frame.left, height: frame.bottom - frame.top) }
     }
+
+    /// The view was placed at a new size, in pixels: what it draws to its size is drawn again.
+    func sized(width: Int32, height: Int32) {}
 
     /// The size the view was last placed at, in pixels; nil before its first place.
     var placedSize: (width: Int32, height: Int32)? {
@@ -382,13 +386,9 @@ class AndroidView {
         Int32((points * density).rounded())
     }
 
-    /// A colour as Android's packed ARGB; nil for a value that is no colour.
+    /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
     static func argb(_ value: HostValue) -> Int32? {
-        guard let channels = value.color else { return nil }
-
-        let value = UInt32(channels.alpha) << 24 | UInt32(channels.red) << 16
-            | UInt32(channels.green) << 8 | UInt32(channels.blue)
-        return Int32(bitPattern: value)
+        value.argb.map { Int32(bitPattern: $0) }
     }
 
     private struct Weak {

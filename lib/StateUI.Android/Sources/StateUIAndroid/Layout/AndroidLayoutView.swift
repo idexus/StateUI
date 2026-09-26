@@ -116,11 +116,16 @@ class AndroidLayoutView: AndroidView {
         let box = self.box ?? AndroidShapeDrawable()
         self.box = box
         box.setFill(fill)
-        box.setStroke(outline.stroke, width: max(0, outline.width ?? 1) * density)
+        box.setStroke(outline.stroke, width: outline.width, density: density)
         box.setShape(AndroidShapeDrawable.Shape(container: outline.shape), density: density)
+        if let size = placedSize { box.fit(width: size.width, height: size.height) }
         showBackground(box.object)
         Java.call(reference, JavaAPI.setClipToOutline, .bool(outline.clips))
         Java.call(reference, JavaAPI.invalidateOutline)
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        box?.fit(width: width, height: height)
     }
 
     /// Makes the layout and everything in it deaf to touches, which go to whatever stands behind it.

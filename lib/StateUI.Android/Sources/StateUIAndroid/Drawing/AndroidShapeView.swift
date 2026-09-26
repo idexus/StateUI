@@ -37,31 +37,39 @@ final class AndroidShapeView: AndroidView {
     /// The six numbers the shape was last moved by, in pixels; none before it was.
     private var placing: [Float]?
 
+    /// A rectangle's corners' radii in points, clockwise from the top left; the outline's width in pixels; and the
+    /// radii last told the Java side, fitted to the room.
+    private var corners: [Double] = []
+    private var strokePixels = 0.0
+    private var toldCorners: [Float]?
+
     /// Everything the shape draws, from what the tree says.
     func draw(
         _ geometry: Geometry, fill: HostValue?, stroke: HostValue?, strokeWidth: Double, dashes: [Double],
         dashOffset: Double, cap: Int32, join: Int32, miterLimit: Double, aspect: Int32, transform: [Double]?
     ) {
-        let (kind, corners, commands, evenOdd) = Self.flattened(geometry, density: density)
+        let (kind, commands, evenOdd) = Self.flattened(geometry, density: density)
+        if case .rectangle(let radius) = geometry { corners = BoxArithmetic.clockwise(radius) } else { corners = [] }
+        // Dashes are counted in the outline's own width, as StateUI's are.
+        let width = ShapeArithmetic.strokeWidth(strokeWidth)
+        let argb = HostBrush(stroke).firstColor.flatMap(AndroidView.argb)
+        strokePixels = argb == nil ? 0 : width * density
         Java.frame {
             Java.call(
-                reference, JavaAPI.setShapeGeometry, .int(kind), .object(Java.floats(corners)),
-                .object(Java.floats(commands)), .bool(evenOdd))
+                reference, JavaAPI.setShapeGeometry, .int(kind), .object(Java.floats(commands)), .bool(evenOdd))
 
             let brush = AndroidShapeDrawable.brush(fill)
             Java.call(
                 reference, JavaAPI.setShapeFill, .int(brush.kind), .object(Java.ints(brush.colors)),
                 .object(Java.floats(brush.offsets)), .object(Java.floats(brush.geometry)))
 
-            // Dashes are counted in the outline's own width, as StateUI's are.
-            let width = strokeWidth.isFinite ? max(0, strokeWidth) : 0
-            let argb = stroke.flatMap { AndroidView.argb($0) ?? $0.values?.lazy.compactMap(AndroidView.argb).first }
+            let dashes = ShapeArithmetic.dashLengths(dashes, strokeWidth: width).map { Float($0 * density) }
             Java.call(
-                reference, JavaAPI.setShapeStroke, .int(argb ?? 0), .float(argb == nil ? 0 : Float(width * density)),
-                .object(Java.floats(dashes.map { Float(max(0, $0) * width * density) })),
-                .float(Float(dashOffset * width * density)), .int(cap), .int(join), .float(Float(max(0, miterLimit))))
-
+                reference, JavaAPI.setShapeStroke, .int(argb ?? 0), .float(Float(strokePixels)),
+                .object(Java.floats(dashes)), .float(Float(dashOffset * width * density)), .int(cap), .int(join),
+                .float(Float(max(0, miterLimit))))
         }
+        fitCorners()
         drawsGeometry = kind == 2
         self.aspect = Aspect(rawValue: aspect) ?? .fit
         self.transform = transform
@@ -72,6 +80,25 @@ final class AndroidShapeView: AndroidView {
     override func layout(_ place: Rect) {
         super.layout(place)
         self.place()
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        fitCorners()
+    }
+
+    /// Tells the Java side a rectangle's corners, each no more than half the side it rounds within the outline
+    /// (`BoxArithmetic`); unfitted before the shape is placed.
+    private func fitCorners() {
+        let room = placedSize.map { (Double($0.width) - strokePixels, Double($0.height) - strokePixels) }
+        let fitted = corners.flatMap { radius -> [Float] in
+            let pixels = radius * density
+            guard let room else { return [Float(pixels), Float(pixels)] }
+            let corner = BoxArithmetic.fitted(pixels, width: room.0, height: room.1)
+            return [Float(corner.width), Float(corner.height)]
+        }
+        guard fitted != toldCorners else { return }
+        toldCorners = fitted
+        Java.frame { Java.call(reference, JavaAPI.setShapeCorners, .object(Java.floats(fitted))) }
     }
 
     /// Moves what the shape draws for the room it stands in: drawn geometry placed by its aspect, then moved by
@@ -103,37 +130,36 @@ final class AndroidShapeView: AndroidView {
             height: Double(read[3]) / density)
     }
 
-    /// The Java side's kind, corners and commands in pixels, and fill rule.
-    private static func flattened(_ geometry: Geometry, density: Double) -> (Int32, [Float], [Float], Bool) {
-        func at(_ point: Point) -> [Float] { [Float(point.x * density), Float(point.y * density)] }
-
+    /// The Java side's kind, drawn geometry as commands in pixels, and fill rule; a rectangle and an ellipse fill
+    /// the view.
+    private static func flattened(_ geometry: Geometry, density: Double) -> (Int32, [Float], Bool) {
         switch geometry {
-        case .rectangle(let radius):
-            guard case .rounded(let radii) = AndroidShapeDrawable.Shape(corners: radius?.propValue) else {
-                return (0, [0, 0, 0, 0], [], false)
-            }
-            return (0, radii.map { Float($0 * density) }, [], false)
-        case .ellipse:
-            return (1, [], [], false)
-        case .line(let from, let to):
-            return (2, [], [0] + at(from) + [1] + at(to), false)
+        case .rectangle: (0, [], false)
+        case .ellipse: (1, [], false)
+        case .line(let from, let to): (2, pixels([0, from.x, from.y, 1, to.x, to.y], density), false)
         case .points(let points, let closed, let evenOdd):
-            let finite = points.filter { $0.x.isFinite && $0.y.isFinite }
-            guard let first = finite.first else { return (2, [], [], evenOdd) }
-            let drawn = [0] + at(first) + finite.dropFirst().flatMap { [1] + at($0) } + (closed ? [4] : [])
-            return (2, [], drawn, evenOdd)
+            (2, pixels(ShapeArithmetic.commands(through: points, closed: closed), density), evenOdd)
         case .path(let data):
-            let commands = HostPath(svg: data)?.arcsAsCubics ?? []
-            let drawn: [Float] = commands.flatMap { command -> [Float] in
-                switch command {
-                case .move(let point): [0] + at(point)
-                case .line(let point): [1] + at(point)
-                case .cubic(let first, let second, let end): [2] + at(first) + at(second) + at(end)
-                case .quadratic(let control, let end): [3] + at(control) + at(end)
-                case .close: [4]
-                }
-            }
-            return (2, [], drawn, false)
+            (2, pixels((HostPath(svg: data)?.arcsAsCubics ?? []).flatMap(\.numbers), density), false)
         }
+    }
+
+    /// Flat commands in points as pixels: each command's number as it is, the coordinates after it scaled.
+    private static func pixels(_ commands: [Double], _ density: Double) -> [Float] {
+        var drawn: [Float] = []
+        var index = 0
+        while index < commands.count {
+            let command = commands[index]
+            let coordinates = switch command {
+            case 0, 1: 2
+            case 2: 6
+            case 3: 4
+            default: 0
+            }
+            drawn.append(Float(command))
+            drawn += commands.dropFirst(index + 1).prefix(coordinates).map { Float($0 * density) }
+            index += 1 + coordinates
+        }
+        return drawn
     }
 }
