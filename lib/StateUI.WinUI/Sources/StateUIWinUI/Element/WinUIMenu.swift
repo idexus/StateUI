@@ -12,6 +12,7 @@ struct WinUIMenu {
     private(set) var kinds: [Int32] = []
     private(set) var titles: [String] = []
     private(set) var enabled: [Bool] = []
+    private(set) var identifiers: [String] = []
     private(set) var actions: [() -> Void] = []
 
     /// The entries `container` holds, in order; none for no container.
@@ -29,30 +30,31 @@ struct WinUIMenu {
 
     /// Whether the menu draws as `other` does: the same entries, captions and choosable ones.
     func draws(like other: WinUIMenu) -> Bool {
-        kinds == other.kinds && titles == other.titles && enabled == other.enabled
+        kinds == other.kinds && titles == other.titles && enabled == other.enabled && identifiers == other.identifiers
     }
 
     private mutating func add(_ entries: [WinUIElement]) {
         for entry in entries {
             switch entry.type {
             case .menuItem:
-                append(0, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true)
+                append(0, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true, entry)
                 actions.append { [weak entry] in entry?.send(.clicked, []) }
             case .menuSeparator:
-                append(1, "", true)
+                append(1, "", true, nil)
             case .menu:
-                append(2, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true)
+                append(2, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true, entry)
                 add(entry.children)
-                append(3, "", true)
+                append(3, "", true, nil)
             default:
                 break
             }
         }
     }
 
-    private mutating func append(_ kind: Int32, _ title: String, _ isEnabled: Bool) {
+    private mutating func append(_ kind: Int32, _ title: String, _ isEnabled: Bool, _ entry: WinUIElement?) {
         kinds.append(kind)
         titles.append(title)
         enabled.append(isEnabled)
+        identifiers.append(entry?.value(.accessibilityIdentifier)?.string ?? "")
     }
 }

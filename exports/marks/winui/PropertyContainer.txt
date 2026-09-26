@@ -1,40 +1,40 @@
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Button.clicked: ✅
-Canvas.accessibilityIdentifier: not realized
+Canvas.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
-ColorBox.accessibilityIdentifier: not realized
+ColorBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
-Ellipse.accessibilityIdentifier: not realized
+Ellipse.accessibilityIdentifier: ✅
 Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 Label.accessibilityIdentifier: ✅
-Line.accessibilityIdentifier: not realized
+Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
-MenuItem.accessibilityIdentifier: not realized
-NavigationStack.accessibilityIdentifier: not realized
-Path.accessibilityIdentifier: not realized
+MenuItem.accessibilityIdentifier: ✅
+NavigationStack.accessibilityIdentifier: ✅
+Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
-Polygon.accessibilityIdentifier: not realized
-Polyline.accessibilityIdentifier: not realized
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
 PositionIndicator.accessibilityIdentifier: not realized
 ProgressBar.accessibilityIdentifier: ✅
 RadioButton.accessibilityIdentifier: ✅
-Rectangle.accessibilityIdentifier: not realized
+Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
 Span.accessibilityIdentifier: not realized
-SplitView.accessibilityIdentifier: not realized
+SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
-TabbedView.accessibilityIdentifier: not realized
+TabbedView.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
-ToolbarItem.accessibilityIdentifier: not realized
+ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: not realized
 ZStack.accessibilityIdentifier: ✅

@@ -7,7 +7,7 @@
 // press on it is followed from down to up, the pointer held.
 // Design: docs/design/platforms/winui/drawing.md#a-canvas
 
-#include "Relay.h"
+#include "Figure.h"
 
 #include <algorithm>
 #include <cmath>
@@ -383,6 +383,11 @@ namespace {
 
         ~StateUICanvas() {
             canvases -= 1;
+        }
+
+        winrt::Microsoft::UI::Xaml::Automation::Peers::AutomationPeer OnCreateAutomationPeer() {
+            IInspectable self = *this;
+            return figurePeer(self.as<xaml::FrameworkElement>(), view);
         }
 
         Size MeasureOverride(Size) {

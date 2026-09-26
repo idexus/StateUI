@@ -4,11 +4,11 @@
 @_spi(Host) import StateUI
 import CStateUIWinUI
 
-/// A ColorBox: a WinUI `Border` of one colour, which takes the room its layout gives it and asks for none.
+/// A ColorBox: a figure of one colour, which takes the room its layout gives it and asks for none.
 @MainActor
 final class WinUIColorBoxView: WinUIView {
     init() {
-        super.init { _ in stateui_winui_color_box_make() }
+        super.init { number in stateui_winui_color_box_make(number) }
     }
 
     /// The box's colour, and the radii of its corners - one for all four, or four in StateUI's order: top left,

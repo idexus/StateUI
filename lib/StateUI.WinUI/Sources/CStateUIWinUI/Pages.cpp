@@ -8,6 +8,7 @@
 
 #include "Relay.h"
 
+#include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 
@@ -75,7 +76,8 @@ extern "C" void stateui_winui_title_bar_set(
 }
 
 extern "C" void stateui_winui_title_bar_set_actions(
-    StateUIObjectRef handle, char const *const *texts, bool const *overflows, bool const *enabled, int32_t count
+    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, bool const *overflows,
+    bool const *enabled, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -87,6 +89,9 @@ extern "C" void stateui_winui_title_bar_set_actions(
             controls::AppBarButton button;
             button.Label(text(texts[index]));
             button.IsEnabled(enabled[index]);
+            if (identifiers[index] && *identifiers[index]) {
+                xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifiers[index]));
+            }
             button.Click([view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
             });

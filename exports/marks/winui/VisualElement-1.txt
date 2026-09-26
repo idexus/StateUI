@@ -17,7 +17,7 @@ Button.opacity: ✅
 Button.pivotY: ✅
 Button.scale: ✅
 Button.translationY: ✅
-Canvas.accessibilityHint: not realized
+Canvas.accessibilityHint: ✅
 Canvas.background: not realized
 Canvas.frame: ✅
 Canvas.isEnabled: not realized
@@ -35,7 +35,7 @@ CheckBox.scaleY: ✅
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 ColorBox.frameChanged: ✅
-ColorBox.isAccessibilityHidden: not realized
+ColorBox.isAccessibilityHidden: ✅
 ColorBox.isVisible: ✅
 ColorBox.maximumHeight: ✅
 ColorBox.maximumWidth: ✅
@@ -46,13 +46,13 @@ ColorBox.rotationY: not realized
 ColorBox.style: not realized
 ColorBox.translationX: ✅
 DatePicker.accessibilityLabel: ✅
-DatePicker.automationExcludedWithChildren: not realized
+DatePicker.automationExcludedWithChildren: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.opacity: ✅
 DatePicker.pivotY: ✅
 DatePicker.scale: ✅
 DatePicker.translationY: ✅
-Ellipse.accessibilityHint: not realized
+Ellipse.accessibilityHint: ✅
 Ellipse.background: not realized
 Ellipse.frame: ✅
 Ellipse.isEnabled: not realized
@@ -94,7 +94,7 @@ Label.isEnabled: not realized
 Label.rotation: ✅
 Label.scaleX: ✅
 Label.zIndex: not realized
-Line.accessibilityHeadingLevel: not realized
+Line.accessibilityHeadingLevel: ✅
 Line.focus: ✅
 Line.frameChanged: ✅
 Line.height: ✅
@@ -115,8 +115,8 @@ Map.pivotX: not realized
 Map.rotationY: not realized
 Map.style: not realized
 Map.translationX: not realized
-Path.accessibilityLabel: not realized
-Path.automationExcludedWithChildren: not realized
+Path.accessibilityLabel: ✅
+Path.automationExcludedWithChildren: ✅
 Path.ignoresInput: not realized
 Path.opacity: ✅
 Path.pivotY: ✅
@@ -129,7 +129,7 @@ Picker.isEnabled: ✅
 Picker.rotation: ✅
 Picker.scaleX: ✅
 Picker.zIndex: not realized
-Polygon.accessibilityHeadingLevel: not realized
+Polygon.accessibilityHeadingLevel: ✅
 Polygon.focus: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
@@ -140,7 +140,7 @@ Polygon.scaleY: ✅
 Polygon.unfocus: ✅
 Polygon.width: ✅
 Polyline.frameChanged: ✅
-Polyline.isAccessibilityHidden: not realized
+Polyline.isAccessibilityHidden: ✅
 Polyline.isVisible: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
@@ -175,7 +175,7 @@ RadioButton.scaleY: ✅
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
 Rectangle.frameChanged: ✅
-Rectangle.isAccessibilityHidden: not realized
+Rectangle.isAccessibilityHidden: ✅
 Rectangle.isVisible: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
@@ -221,7 +221,7 @@ Stepper.rotationY: not realized
 Stepper.style: not realized
 Stepper.translationX: ✅
 Switch.accessibilityLabel: ✅
-Switch.automationExcludedWithChildren: not realized
+Switch.automationExcludedWithChildren: ✅
 Switch.ignoresInput: not realized
 Switch.opacity: ✅
 Switch.pivotY: ✅

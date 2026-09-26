@@ -20,8 +20,8 @@ Button.pivotX: ✅
 Button.rotationY: not realized
 Button.style: not realized
 Button.translationX: ✅
-Canvas.accessibilityLabel: not realized
-Canvas.automationExcludedWithChildren: not realized
+Canvas.accessibilityLabel: ✅
+Canvas.automationExcludedWithChildren: ✅
 Canvas.ignoresInput: not realized
 Canvas.opacity: ✅
 Canvas.pivotY: ✅
@@ -34,7 +34,7 @@ CheckBox.isEnabled: ✅
 CheckBox.rotation: ✅
 CheckBox.scaleX: ✅
 CheckBox.zIndex: not realized
-ColorBox.accessibilityHeadingLevel: not realized
+ColorBox.accessibilityHeadingLevel: ✅
 ColorBox.focus: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
@@ -55,8 +55,8 @@ DatePicker.pivotX: ✅
 DatePicker.rotationY: not realized
 DatePicker.style: not realized
 DatePicker.translationX: ✅
-Ellipse.accessibilityLabel: not realized
-Ellipse.automationExcludedWithChildren: not realized
+Ellipse.accessibilityLabel: ✅
+Ellipse.automationExcludedWithChildren: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.opacity: ✅
 Ellipse.pivotY: ✅
@@ -97,7 +97,7 @@ Label.opacity: ✅
 Label.pivotY: ✅
 Label.scale: ✅
 Label.translationY: ✅
-Line.accessibilityHint: not realized
+Line.accessibilityHint: ✅
 Line.background: not realized
 Line.frame: ✅
 Line.isEnabled: not realized
@@ -115,7 +115,7 @@ Map.scaleY: not realized
 Map.unfocus: not realized
 Map.width: not realized
 Path.frameChanged: ✅
-Path.isAccessibilityHidden: not realized
+Path.isAccessibilityHidden: ✅
 Path.isVisible: ✅
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
@@ -132,14 +132,14 @@ Picker.opacity: ✅
 Picker.pivotY: ✅
 Picker.scale: ✅
 Picker.translationY: ✅
-Polygon.accessibilityHint: not realized
+Polygon.accessibilityHint: ✅
 Polygon.background: not realized
 Polygon.frame: ✅
 Polygon.isEnabled: not realized
 Polygon.rotation: ✅
 Polygon.scaleX: ✅
 Polygon.zIndex: not realized
-Polyline.accessibilityHeadingLevel: not realized
+Polyline.accessibilityHeadingLevel: ✅
 Polyline.focus: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
@@ -174,7 +174,7 @@ RadioButton.isEnabled: ✅
 RadioButton.rotation: ✅
 RadioButton.scaleX: ✅
 RadioButton.zIndex: not realized
-Rectangle.accessibilityHeadingLevel: not realized
+Rectangle.accessibilityHeadingLevel: ✅
 Rectangle.focus: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
@@ -196,7 +196,7 @@ ScrollView.rotationY: not realized
 ScrollView.style: not realized
 ScrollView.translationX: ✅
 SearchField.accessibilityLabel: ✅
-SearchField.automationExcludedWithChildren: not realized
+SearchField.automationExcludedWithChildren: ✅
 SearchField.ignoresInput: not realized
 SearchField.opacity: ✅
 SearchField.pivotY: ✅
@@ -231,7 +231,7 @@ Switch.rotationY: not realized
 Switch.style: not realized
 Switch.translationX: ✅
 TextEditor.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: not realized
+TextEditor.automationExcludedWithChildren: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.opacity: ✅
 TextEditor.pivotY: ✅

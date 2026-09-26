@@ -1,5 +1,5 @@
 ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.automationExcludedWithChildren: not realized
+ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.opacity: ✅
 ActivityIndicator.pivotY: ✅
@@ -13,7 +13,7 @@ Button.isEnabled: ✅
 Button.rotation: ✅
 Button.scaleX: ✅
 Button.zIndex: not realized
-Canvas.accessibilityHeadingLevel: not realized
+Canvas.accessibilityHeadingLevel: ✅
 Canvas.focus: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
@@ -34,8 +34,8 @@ CheckBox.pivotX: ✅
 CheckBox.rotationY: not realized
 CheckBox.style: not realized
 CheckBox.translationX: ✅
-ColorBox.accessibilityLabel: not realized
-ColorBox.automationExcludedWithChildren: not realized
+ColorBox.accessibilityLabel: ✅
+ColorBox.automationExcludedWithChildren: ✅
 ColorBox.ignoresInput: not realized
 ColorBox.opacity: ✅
 ColorBox.pivotY: ✅
@@ -48,7 +48,7 @@ DatePicker.isEnabled: ✅
 DatePicker.rotation: ✅
 DatePicker.scaleX: ✅
 DatePicker.zIndex: not realized
-Ellipse.accessibilityHeadingLevel: not realized
+Ellipse.accessibilityHeadingLevel: ✅
 Ellipse.focus: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
@@ -94,7 +94,7 @@ Label.scaleY: ✅
 Label.unfocus: ✅
 Label.width: ✅
 Line.frameChanged: ✅
-Line.isAccessibilityHidden: not realized
+Line.isAccessibilityHidden: ✅
 Line.isVisible: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
@@ -111,7 +111,7 @@ Map.opacity: not realized
 Map.pivotY: not realized
 Map.scale: not realized
 Map.translationY: not realized
-Path.accessibilityHint: not realized
+Path.accessibilityHint: ✅
 Path.background: not realized
 Path.frame: ✅
 Path.isEnabled: not realized
@@ -129,7 +129,7 @@ Picker.scaleY: ✅
 Picker.unfocus: ✅
 Picker.width: ✅
 Polygon.frameChanged: ✅
-Polygon.isAccessibilityHidden: not realized
+Polygon.isAccessibilityHidden: ✅
 Polygon.isVisible: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
@@ -139,8 +139,8 @@ Polygon.pivotX: ✅
 Polygon.rotationY: not realized
 Polygon.style: not realized
 Polygon.translationX: ✅
-Polyline.accessibilityLabel: not realized
-Polyline.automationExcludedWithChildren: not realized
+Polyline.accessibilityLabel: ✅
+Polyline.automationExcludedWithChildren: ✅
 Polyline.ignoresInput: not realized
 Polyline.opacity: ✅
 Polyline.pivotY: ✅
@@ -174,8 +174,8 @@ RadioButton.pivotX: ✅
 RadioButton.rotationY: not realized
 RadioButton.style: not realized
 RadioButton.translationX: ✅
-Rectangle.accessibilityLabel: not realized
-Rectangle.automationExcludedWithChildren: not realized
+Rectangle.accessibilityLabel: ✅
+Rectangle.automationExcludedWithChildren: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.opacity: ✅
 Rectangle.pivotY: ✅
@@ -210,7 +210,7 @@ Slider.rotationY: not realized
 Slider.style: not realized
 Slider.translationX: ✅
 Stepper.accessibilityLabel: ✅
-Stepper.automationExcludedWithChildren: not realized
+Stepper.automationExcludedWithChildren: ✅
 Stepper.ignoresInput: not realized
 Stepper.opacity: ✅
 Stepper.pivotY: ✅
@@ -245,7 +245,7 @@ TextField.rotationY: not realized
 TextField.style: not realized
 TextField.translationX: ✅
 TimePicker.accessibilityLabel: ✅
-TimePicker.automationExcludedWithChildren: not realized
+TimePicker.automationExcludedWithChildren: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.opacity: ✅
 TimePicker.pivotY: ✅

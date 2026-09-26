@@ -47,7 +47,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  |  |
 | `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  |  |
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
 | `background` | property | `Background` | native |  |  |  |  |  |  |  |
 | `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
 | `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |

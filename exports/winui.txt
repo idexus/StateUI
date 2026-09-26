@@ -1,22 +1,11 @@
 ActivityIndicator
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  isAccessibilityHidden
   isRunning
   tint
 Button
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   fontAttributes
   fontFamily
   fontSize
-  isAccessibilityHidden
   isEnabled
   padding
   shape
@@ -34,13 +23,7 @@ Canvas
   pressed()
   released()
 CheckBox
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
-  isAccessibilityHidden
   isEnabled
   isOn
   tint
@@ -49,16 +32,11 @@ ColorBox
   color
   cornerRadius
 DatePicker
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   date
   fontAttributes
   fontFamily
   fontSize
   format
-  isAccessibilityHidden
   isEnabled
   isOpen
   maximumDate
@@ -79,17 +57,11 @@ Ellipse
   strokeMiterLimit
   strokeWidth
 Grid
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   clipsContent
   columnSpacing
   columns
   ignoresInput
-  isAccessibilityHidden
   padding
   rowSpacing
   rows
@@ -97,41 +69,23 @@ Grid
   stroke
   strokeWidth
 HStack
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   clipsContent
   ignoresInput
-  isAccessibilityHidden
   padding
   shape
   spacing
   stroke
   strokeWidth
 Image
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   aspect
-  automationExcludedWithChildren
-  isAccessibilityHidden
   source
 Label
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   characterSpacing
   fontAttributes
   fontFamily
   fontSize
   horizontalTextAlignment
-  isAccessibilityHidden
   lineBreak
   lineHeight
   maximumLines
@@ -168,16 +122,10 @@ Path
   strokeMiterLimit
   strokeWidth
 Picker
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   fontAttributes
   fontFamily
   fontSize
   horizontalTextAlignment
-  isAccessibilityHidden
   isEnabled
   isOpen
   options
@@ -215,25 +163,13 @@ Polyline
   strokeMiterLimit
   strokeWidth
 ProgressBar
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
-  isAccessibilityHidden
   progress
   tint
 RadioButton
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   fontAttributes
   fontFamily
   fontSize
-  isAccessibilityHidden
   isEnabled
   isOn
   padding
@@ -254,14 +190,8 @@ Rectangle
   strokeMiterLimit
   strokeWidth
 ScrollView
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   horizontalScrollBarVisibility
-  isAccessibilityHidden
   orientation
   padding
   scrollOffset
@@ -273,14 +203,9 @@ ScrollView
   scrollXChanged()
   scrollYChanged()
 SearchField
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   fontAttributes
   fontFamily
   fontSize
-  isAccessibilityHidden
   isEnabled
   maximumLength
   placeholder
@@ -289,11 +214,6 @@ SearchField
   submitted()
   textChanged()
 Slider
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  isAccessibilityHidden
   isEnabled
   maximum
   minimum
@@ -301,11 +221,6 @@ Slider
   value
   valueChanged()
 Stepper
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  isAccessibilityHidden
   isEnabled
   maximum
   minimum
@@ -313,21 +228,12 @@ Stepper
   value
   valueChanged()
 Switch
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   background
-  isAccessibilityHidden
   isEnabled
   isOn
   tint
   toggled()
 TextEditor
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   cursorPosition
   fontAttributes
   fontFamily
@@ -335,7 +241,6 @@ TextEditor
   growsWithText
   horizontalTextAlignment
   inputPurpose
-  isAccessibilityHidden
   isEnabled
   isReadOnly
   isSpellCheckEnabled
@@ -348,17 +253,12 @@ TextEditor
   textColor
   textChanged()
 TextField
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   cursorPosition
   fontAttributes
   fontFamily
   fontSize
   horizontalTextAlignment
   inputPurpose
-  isAccessibilityHidden
   isEnabled
   isReadOnly
   isSpellCheckEnabled
@@ -372,50 +272,38 @@ TextField
   submitted()
   textChanged()
 TimePicker
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
   fontAttributes
   fontFamily
   fontSize
   format
-  isAccessibilityHidden
   isEnabled
   textColor
   time
   timeChanged()
 VStack
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   clipsContent
   ignoresInput
-  isAccessibilityHidden
   padding
   shape
   spacing
   stroke
   strokeWidth
 ZStack
-  accessibilityHeadingLevel
-  accessibilityHint
-  accessibilityIdentifier
-  accessibilityLabel
-  automationExcludedWithChildren
   background
   clipsContent
   ignoresInput
-  isAccessibilityHidden
   padding
   shape
   stroke
   strokeWidth
 (every element)
+  accessibilityHeadingLevel
+  accessibilityHint
+  accessibilityIdentifier
+  accessibilityLabel
   area
+  automationExcludedWithChildren
   frame
   gridColumn
   gridColumnSpan
@@ -423,6 +311,7 @@ ZStack
   gridRowSpan
   height
   horizontalAlignment
+  isAccessibilityHidden
   isVisible
   margin
   maximumHeight

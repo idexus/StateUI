@@ -327,15 +327,16 @@ void stateui_winui_window_set_overlay(StateUIObjectRef window, StateUIObjectRef 
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);
 
 /// A view's context menu: `count` entries, each `kinds`' 0 an item, 1 a separator, 2 a submenu opening, 3 it closing,
-/// with its caption and whether it can be chosen; an item's choice told through `menuChosen` by its place among the
-/// items. None takes the menu away.
+/// with its caption, whether it can be chosen and the identifier automation finds it by (empty for none); an item's
+/// choice told through `menuChosen` by its place among the items. None takes the menu away.
 void stateui_winui_set_context_menu(StateUIObjectRef element, int64_t view, int32_t const *kinds,
-                                    char const *const *titles, bool const *enabled, int32_t count);
+                                    char const *const *titles, bool const *enabled, char const *const *identifiers,
+                                    int32_t count);
 
 /// A window's menu bar: WinUI's MenuBar, written as a context menu is, each menu at the top one of the bar's own.
 StateUIObjectRef stateui_winui_menu_bar_make(int64_t view);
 void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t const *kinds, char const *const *titles,
-                                bool const *enabled, int32_t count);
+                                bool const *enabled, char const *const *identifiers, int32_t count);
 
 /// A view's context menu, or a bar's menus, as a test reads them: items by caption, "!" before one that cannot be
 /// chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets after its caption, ";" between -
@@ -344,6 +345,10 @@ int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capaci
 
 /// Chooses the item at `index` among those menus' items, submenus' included, as assistive technology does.
 void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
+
+/// The identifiers of those menus' items, submenus' included, in their order, ";" between, in UTF-8 - what a test
+/// reads; the length it needs.
+int32_t stateui_winui_menus_identifiers(StateUIObjectRef element, char *utf8, int32_t capacity);
 
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
 /// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list
@@ -479,7 +484,7 @@ void stateui_winui_shape_set(StateUIObjectRef shape, double radius, StateUIBrush
                              double strokeWidth);
 
 /// A shape: one WinUI Path, drawn by `stateui_winui_path_draw` and painted by `stateui_winui_path_paint`.
-StateUIObjectRef stateui_winui_path_make(void);
+StateUIObjectRef stateui_winui_path_make(int64_t view);
 
 /// Paints a shape: its fill and outline, the outline's width, its dashes and their offset in outline widths, its ends
 /// (StateUI's LineCap), its joins (LineJoin) and how far a mitred join may reach.
@@ -511,7 +516,7 @@ void stateui_winui_canvas_draw(StateUIObjectRef canvas, int32_t const *ints, int
 
 /// A ColorBox: a Border filled with one colour, its corners rounded in DIPs - top left, top right, bottom right,
 /// bottom left.
-StateUIObjectRef stateui_winui_color_box_make(void);
+StateUIObjectRef stateui_winui_color_box_make(int64_t view);
 void stateui_winui_color_box_set(StateUIObjectRef box, uint32_t argb, double const *corners);
 
 /// Renders the element and reads the colour, as ARGB, at each of `count` points given as x and y in DIPs of it -
@@ -537,8 +542,9 @@ void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool back, bool paneToggle,
                                  bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground);
-void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts, bool const *overflows,
-                                         bool const *enabled, int32_t count);
+void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
+                                         char const *const *identifiers, bool const *overflows, bool const *enabled,
+                                         int32_t count);
 void stateui_winui_title_bar_set_slots(StateUIObjectRef bar, StateUIObjectRef leading, StateUIObjectRef center,
                                        StateUIObjectRef trailing);
 
@@ -585,7 +591,8 @@ void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool heari
 int32_t stateui_winui_listeners(void);
 
 /// What assistive technology meets of the element: its automation id, name and help text - null for the control's
-/// own - its heading level (0 none, 1 to 9), and `presence`: 0 as the control is of itself, 1 met, 2 skipped.
+/// own - its heading level (0 none, 1 to 9), and `presence`: 0 as the control is of itself, 1 met, 2 skipped, 3
+/// skipped with every part its template draws.
 void stateui_winui_set_accessibility(StateUIObjectRef element, char const *identifier, char const *label,
                                      char const *hint, int32_t heading, int32_t presence);
 

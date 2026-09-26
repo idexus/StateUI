@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The shape a layout's box is, and the brushes it is painted with, built from
-// the parts the host hands over; and a ColorBox, a Border of one colour.
+// the parts the host hands over; and a ColorBox, a figure of one colour.
 // Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
 
-#include "Relay.h"
+#include "Figure.h"
 
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
@@ -91,9 +91,9 @@ extern "C" void stateui_winui_shape_set(
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_color_box_make(void) {
+extern "C" StateUIObjectRef stateui_winui_color_box_make(int64_t view) {
     try {
-        return detach(controls::Border());
+        return detach(figure(view));
     } catch (winrt::hresult_error const &error) {
         report(error, "making a colour box");
         return nullptr;
@@ -102,7 +102,7 @@ extern "C" StateUIObjectRef stateui_winui_color_box_make(void) {
 
 extern "C" void stateui_winui_color_box_set(StateUIObjectRef handle, uint32_t fill, double const *corners) {
     try {
-        auto box = borrow<controls::Border>(handle);
+        auto box = borrow<controls::Grid>(handle);
         box.Background(media::SolidColorBrush(color(fill)));
         box.CornerRadius({corners[0], corners[1], corners[2], corners[3]});
     } catch (winrt::hresult_error const &error) {

@@ -6,10 +6,11 @@
 struct WinUIToolbarAction {
     let title: String
     let isEnabled: Bool
+    var identifier: String?
     let perform: () -> Void
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
-        title == other.title && isEnabled == other.isEnabled
+        title == other.title && isEnabled == other.isEnabled && identifier == other.identifier
     }
 }

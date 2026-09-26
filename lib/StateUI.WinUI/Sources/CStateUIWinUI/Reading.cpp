@@ -7,7 +7,7 @@
 // told, which WinUI keeps nowhere a test can ask.
 // Design: docs/design/platforms/winui/relay.md#what-a-test-reads
 
-#include "Relay.h"
+#include "Figure.h"
 
 #include <cstdio>
 #include <cstring>
@@ -195,6 +195,19 @@ namespace {
             };
             return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
         }
+        if (what == "actionIdentifiers") {
+            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
+            auto listed = [](auto const &commands) {
+                std::string words;
+                for (auto const &command : commands) {
+                    auto button = command.template try_as<controls::AppBarButton>();
+                    if (!button) continue;
+                    words += (words.empty() ? "" : ";") + narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+                }
+                return words;
+            };
+            return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
+        }
         return std::nullopt;
     }
 
@@ -254,7 +267,7 @@ namespace {
             if (auto found = block(text, what)) return found;
         }
         if (auto found = field(object, what)) return found;
-        if (auto shape = object.try_as<shapes::Shape>()) {
+        if (auto shape = figureShape(object)) {
             if (auto found = painted(shape, what)) return found;
         }
         if (auto panel = object.try_as<controls::Panel>(); panel && what.rfind("box.", 0) == 0) {
@@ -306,6 +319,10 @@ namespace {
         if (auto border = object.try_as<controls::Border>()) {
             if (what == "background") return colour(border.Background());
             if (what == "cornerRadius") return corners(border.CornerRadius());
+        }
+        if (auto held = object.try_as<controls::Grid>(); held && what.rfind("box.", 0) != 0) {
+            if (what == "background") return colour(held.Background());
+            if (what == "cornerRadius") return corners(held.CornerRadius());
         }
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
             if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(element));

@@ -22,10 +22,13 @@ final class WinUIMenuBarView: WinUIView {
 
         shown = menu
         WinUIStrings.withCStrings(menu.titles) { titles in
-            menu.kinds.withUnsafeBufferPointer { kinds in
-                menu.enabled.withUnsafeBufferPointer { enabled in
-                    stateui_winui_menu_bar_set(
-                        handle, number, kinds.baseAddress, titles, enabled.baseAddress, Int32(kinds.count))
+            WinUIStrings.withCStrings(menu.identifiers) { identifiers in
+                menu.kinds.withUnsafeBufferPointer { kinds in
+                    menu.enabled.withUnsafeBufferPointer { enabled in
+                        stateui_winui_menu_bar_set(
+                            handle, number, kinds.baseAddress, titles, enabled.baseAddress, identifiers,
+                            Int32(kinds.count))
+                    }
                 }
             }
         }

@@ -37,8 +37,10 @@ final class WinUITitleBarView: WinUIView {
         if actions.count != drawn.count || overflows != drawnOverflow
             || !zip(actions, drawn).allSatisfy({ $0.draws(like: $1) }) {
             WinUIStrings.withCStrings(actions.map(\.title)) { titles in
-                stateui_winui_title_bar_set_actions(
-                    handle, titles, overflows, actions.map(\.isEnabled), Int32(actions.count))
+                WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
+                    stateui_winui_title_bar_set_actions(
+                        handle, titles, identifiers, overflows, actions.map(\.isEnabled), Int32(actions.count))
+                }
             }
             drawnOverflow = overflows
         }

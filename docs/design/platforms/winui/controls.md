@@ -147,17 +147,15 @@ needs nothing more: what its template draws - a button's words - WinUI
 already keeps out of what is read.
 
 Assistive technology meets an element only through its automation peer, and
-WinUI gives a shape, a colour box and a canvas none: the words written on
-them reach nobody. A menu's item and a toolbar's are WinUI's own, and carry
-no identifier yet. The registry says so
-(`WinUIRegistrations.unmetByAssistiveTechnology`), so the dictionary shows
-those cells empty rather than promise what no screen reader hears; a peer of
-the host's own on each is what fills them. A control whose template holds
-parts with peers of their own - an activity indicator, a date picker, a
-search box, a slider, a stepper, a switch, a time picker, a field and an
-editor - left out with its children still offers its parts
-(`partsMetWhenLeftOut`); a peer that holds them back, as a layout's panel
-holds its children back, is what fills those cells.
+WinUI gives a shape, a colour box and a canvas none. Each stands in a figure
+of the relay's - a panel whose peer is an image, pressed as a tap while the
+view listens for taps - met by itself only while it has a name or says it is
+met, so a decoration says nothing to a screen reader. A menu's item and a
+toolbar's carry the element's identifier as their automation id. A control
+left out with its children leaves out with it the parts its template draws -
+a thumb, a field, a button - now and as it draws them anew, and each comes
+back with the view it had; a layout holds its children back through its
+panel's peer.
 
 ## A slider in steps
 

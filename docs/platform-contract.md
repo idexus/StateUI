@@ -347,16 +347,16 @@ which a host serves without a member of its own.
 <!-- shared:begin -->
 | Member | Tier | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property |  |  |  |  |  |  |
-| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
+| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property |  |  |  |  | ✅ |  |
+| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
+| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
+| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
+| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
 | `background` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
 | `frame` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
 | `height` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  | ✅ |  | ✅ |  |
 | `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
+| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  | ✅ |  |
 | `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  | ✅ |  |  |  |
 | `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event |  |  |  |  | ✅ |  |
 | `isVisible` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  | ✅ |  | ✅ |  |
@@ -422,40 +422,40 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 14 ✅ |  | 51 ✅ |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  | 14 ✅ |  | 52 ✅ |  |
 | [Button](controls/Button.md) | 86 |  |  | 16 ✅ |  | 65 ✅ |  |
-| [Canvas](controls/Canvas.md) | 70 |  |  |  |  | 48 ✅ |  |
+| [Canvas](controls/Canvas.md) | 70 |  |  |  |  | 54 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 69 |  |  | 15 ✅ |  | 55 ✅ |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  | 13 ✅ |  | 46 ✅ |  |
-| [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  | 61 ✅ · 1 ☑️ |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  | 13 ✅ |  | 54 ✅ |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  | 13 ✅ |  | 52 ✅ |  |
+| [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  | 62 ✅ · 1 ☑️ |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  | 13 ✅ |  | 60 ✅ |  |
 | [Grid](controls/Grid.md) | 77 |  |  | 13 ✅ |  | 61 ✅ |  |
 | [HStack](controls/HStack.md) | 74 |  |  | 13 ✅ |  | 58 ✅ |  |
 | [Image](controls/Image.md) | 69 |  |  | 13 ✅ |  | 52 ✅ |  |
 | [Label](controls/Label.md) | 81 |  |  | 15 ✅ |  | 63 ✅ |  |
-| [Line](controls/Line.md) | 80 |  |  | 13 ✅ |  | 58 ✅ |  |
+| [Line](controls/Line.md) | 80 |  |  | 13 ✅ |  | 64 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  | 13 ✅ |  | 55 ✅ |  |
+| [Path](controls/Path.md) | 77 |  |  | 13 ✅ |  | 61 ✅ |  |
 | [Picker](controls/Picker.md) | 82 |  |  | 16 ✅ |  | 64 ✅ |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  | 13 ✅ |  | 56 ✅ |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  | 13 ✅ |  | 56 ✅ |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  | 13 ✅ |  | 62 ✅ |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  | 13 ✅ |  | 62 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 68 |  |  | 14 ✅ |  | 52 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | 81 |  |  | 18 ✅ |  | 62 ✅ |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  | 13 ✅ |  | 55 ✅ |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  | 13 ✅ |  | 61 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 77 |  |  | 13 ✅ |  | 62 ✅ |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  | 16 ✅ |  | 59 ✅ |  |
-| [Slider](controls/Slider.md) | 73 |  |  | 17 ✅ |  | 55 ✅ |  |
-| [Stepper](controls/Stepper.md) | 71 |  |  | 18 ✅ |  | 55 ✅ |  |
-| [Switch](controls/Switch.md) | 69 |  |  | 15 ✅ |  | 54 ✅ |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  | 16 ✅ |  | 67 ✅ |  |
-| [TextField](controls/TextField.md) | 90 |  |  | 17 ✅ |  | 66 ✅ |  |
-| [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  | 56 ✅ |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  | 16 ✅ |  | 60 ✅ |  |
+| [Slider](controls/Slider.md) | 73 |  |  | 17 ✅ |  | 56 ✅ |  |
+| [Stepper](controls/Stepper.md) | 71 |  |  | 18 ✅ |  | 56 ✅ |  |
+| [Switch](controls/Switch.md) | 69 |  |  | 15 ✅ |  | 55 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  | 16 ✅ |  | 68 ✅ |  |
+| [TextField](controls/TextField.md) | 90 |  |  | 17 ✅ |  | 67 ✅ |  |
+| [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  | 57 ✅ |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 |  |  | 13 ✅ |  | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  | 13 ✅ |  | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 |  |  | 376 of 2515 met |  | 1661 of 2515 met |  |
+| **Met** - ✅ and – | 2515 |  |  | 376 of 2515 met |  | 1718 of 2515 met |  |
 
 ### Application structure
 
@@ -467,24 +467,24 @@ Every control, and every part an application, its windows and its pages are made
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | 2 |  |  |  |  | 2 ✅ |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 |  |  |  |  | 3 ✅ |  |
+| [MenuItem](controls/MenuItem.md) | 6 |  |  |  |  | 4 ✅ |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 6 |  |  |  |  | 2 ✅ |  |
+| [NavigationStack](controls/NavigationStack.md) | 6 |  |  |  |  | 3 ✅ |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 |  |  |  |  | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 |  |  |  |  | 3 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  |  | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 |  |  |  |  | 3 ✅ |  |
-| [TabbedView](controls/TabbedView.md) | 6 |  |  |  |  | 3 ✅ |  |
+| [SplitView](controls/SplitView.md) | 5 |  |  |  |  | 4 ✅ |  |
+| [TabbedView](controls/TabbedView.md) | 6 |  |  |  |  | 4 ✅ |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  | 5 ✅ |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 |  |  |  |  | 5 ✅ |  |
-| **Met** - ✅ and – | 104 |  |  |  |  | 52 of 104 met |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 57 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

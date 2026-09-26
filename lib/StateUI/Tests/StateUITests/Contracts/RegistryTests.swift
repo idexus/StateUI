@@ -217,21 +217,6 @@ final class RegistryTests: XCTestCase {
             HostRealizedMember(element: "Test.Plain", owner: "VisualElement", member: "isVisible")))
     }
 
-    /// An element the shared machinery does not reach is left out of what it realizes, though it wears the
-    /// contract; every other wearer keeps it.
-    func testAnElementTheSharedMachineryDoesNotReachIsLeftOut() {
-        let registry = Self.lamps()
-
-        registry.everyElementRealizes(VisualElementContract.isVisible)
-        registry.everyElementRealizes(VisualElementContract.translationX, except: [LampContract.nodeType])
-
-        XCTAssertTrue(registry.realization.members.contains(
-            HostRealizedMember(element: "Test.Lamp", owner: "VisualElement", member: "isVisible")))
-        XCTAssertFalse(registry.realization.members.contains(
-            HostRealizedMember(element: "Test.Lamp", owner: "VisualElement", member: "translationX")))
-        XCTAssertEqual(registry.sharedNames, ["isVisible"], "a member some wearers lack is not every element's")
-    }
-
     /// A registration that makes something no platform view is refused where
     /// the view would be made: nothing stands for the element.
     func testARegistrationMakingNoPlatformViewMakesNothing() {

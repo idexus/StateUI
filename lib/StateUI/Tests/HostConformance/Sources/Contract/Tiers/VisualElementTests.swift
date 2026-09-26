@@ -19,8 +19,9 @@
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
                 Aspects.holds(VisualElementContract.accessibilityHeadingLevel, on: element, .level2, then: .level3),
-                Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true),
-                Aspects.holds(VisualElementContract.automationExcludedWithChildren, on: element, false, then: true),
+                Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
+                Aspects.holds(
+                    VisualElementContract.automationExcludedWithChildren, on: element, false, then: true, with: named),
                 Aspects.holds(VisualElementContract.background, on: element, .color(.red), then: .color(.blue)),
                 Aspects.holds(VisualElementContract.layoutDirection, on: element, .leftToRight, then: .rightToLeft),
                 Aspects.holds(VisualElementContract.pivotX, on: element, 0.5, then: 0, with: turned),
@@ -151,6 +152,12 @@
             s.expect(narrowed.values.last.map(FrameReport.size), [60, 50], "no wider than its maximum, no lower than its minimum")
             s.expect(widened.values.last.map(FrameReport.size), [50, 60], "no narrower than its minimum, no taller than its maximum")
         }
+    }
+
+    /// A view with something to say, which assistive technology meets unless the view is left out: a decoration
+    /// with no name is met by no one either way.
+    static var named: [any Worn] {
+        [Write(VisualElementContract.accessibilityLabel, "Named")]
     }
 
     /// What a pivot is seen by: a view turned, with a size to take a part of.

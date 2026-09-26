@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The six shapes, each one WinUI Path: a rectangle and an ellipse filling
-// their room, and a geometry of their own - a line, a path, a polygon, a
-// polyline - placed in it where Swift says.
+// The six shapes, each one WinUI Path in a figure: a rectangle and an ellipse
+// filling their room, and a geometry of their own - a line, a path, a polygon,
+// a polyline - placed in it where Swift says.
 // Design: docs/design/platforms/winui/drawing.md#the-shapes
 
-#include "Relay.h"
+#include "Figure.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,6 +22,11 @@ namespace shapes = winrt::Microsoft::UI::Xaml::Shapes;
 namespace {
     Point at(double x, double y) {
         return {static_cast<float>(x), static_cast<float>(y)};
+    }
+
+    /// The Path a shape's figure holds.
+    shapes::Path path(StateUIObjectRef handle) {
+        return figureShape(as<IInspectable>(handle)).as<shapes::Path>();
     }
 
     /// A rectangle from (x0, y0) to (x1, y1), its corners rounded clockwise from the top left.
@@ -110,11 +115,13 @@ namespace {
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_path_make(void) {
+extern "C" StateUIObjectRef stateui_winui_path_make(int64_t view) {
     try {
-        shapes::Path path;
-        path.Stretch(media::Stretch::None);
-        return detach(path);
+        shapes::Path figure;
+        figure.Stretch(media::Stretch::None);
+        auto held = stateui::figure(view);
+        held.Children().Append(figure);
+        return detach(held);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a shape");
         return nullptr;
@@ -126,7 +133,7 @@ extern "C" void stateui_winui_path_paint(
     int32_t dashCount, double dashOffset, int32_t cap, int32_t join, double miter
 ) {
     try {
-        auto path = borrow<shapes::Path>(handle);
+        auto path = ::path(handle);
         path.Fill(brush(fill));
         path.Stroke(brush(stroke));
         path.StrokeThickness(width);
@@ -164,7 +171,7 @@ extern "C" void stateui_winui_path_draw(
     double const *placement, double width, double height, double inset
 ) {
     try {
-        auto path = borrow<shapes::Path>(handle);
+        auto path = ::path(handle);
         media::Geometry geometry{nullptr};
         if (kind == 0) {
             geometry = rounded(inset, inset, width - inset, height - inset, radii);

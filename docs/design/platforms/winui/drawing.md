@@ -46,8 +46,10 @@ begins at its corner.
 
 ## The shapes
 
-Each of the six shapes is one WinUI `Path`, whose geometry the host hands
-over for the room its layout gives it, again whenever that room changes. A
+Each of the six shapes is one WinUI `Path` in a figure of the relay's (see
+[what assistive technology meets](controls.md#what-assistive-technology-meets)),
+whose geometry the host hands over for the room its layout gives it, again
+whenever that room changes. A
 rectangle and an ellipse fill the room, drawn half their outline in from its
 edges so the outline stays inside, as WinUI's own `Rectangle` does, then
 moved by their transform; a rectangle's corners are its own arcs, each
@@ -64,9 +66,9 @@ identity. A shape has
 no size of its own and asks its layout for none: it is drawn in the place its
 layout gives it. WinUI cuts an element to the place it is put in where it
 measured larger, so a figure a lean or a cap takes past its room would be
-cut there: the shape is measured with no bound, which tells how far its
-figure reaches, and WinUI puts it in a place from its room's corner as far
-as that - the frame StateUI reports stays the room. Dashes, gaps and their offset are outline widths in WinUI
+cut there: the figure measures its `Path` with no bound, which tells how far
+it reaches, and puts it in a place from the room's corner as far as that -
+the frame StateUI reports stays the room. Dashes, gaps and their offset are outline widths in WinUI
 as in StateUI; a mitred corner's limit WinUI measures against half the
 outline's width and StateUI against the whole, so it is doubled.
 

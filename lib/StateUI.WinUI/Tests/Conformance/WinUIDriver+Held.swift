@@ -320,6 +320,11 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
+        case "accessibilityIdentifier" where kind == .menuItem:
+            let identifiers = WinUIStrings.read { stateui_winui_menus_identifiers(owner.handle, $0, $1) }
+                .split(separator: ";", omittingEmptySubsequences: false)
+            let index = menuPlace(of: element)?.index ?? 0
+            return identifiers.indices.contains(index) ? .string(String(identifiers[index])) : nil
         default: return nil
         }
     }
@@ -338,6 +343,12 @@ extension WinUIDriver {
         case "isEnabled": return (!row[index].hasPrefix("!")).propValue
         case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
         case "priority": return index.propValue
+        case "accessibilityIdentifier":
+            let rows = try read(window().titleBar, "actionIdentifiers").split(separator: "|", omittingEmptySubsequences: false)
+            let identifiers = (row == bar ? rows.first : rows.last).map {
+                $0.split(separator: ";", omittingEmptySubsequences: false).map(String.init)
+            } ?? []
+            return identifiers.indices.contains(index) ? .string(identifiers[index]) : nil
         default: return nil
         }
     }

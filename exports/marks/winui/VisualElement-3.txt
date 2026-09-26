@@ -17,7 +17,7 @@ Button.scaleY: ✅
 Button.unfocus: ✅
 Button.width: ✅
 Canvas.frameChanged: ✅
-Canvas.isAccessibilityHidden: not realized
+Canvas.isAccessibilityHidden: ✅
 Canvas.isVisible: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
@@ -34,7 +34,7 @@ CheckBox.opacity: ✅
 CheckBox.pivotY: ✅
 CheckBox.scale: ✅
 CheckBox.translationY: ✅
-ColorBox.accessibilityHint: not realized
+ColorBox.accessibilityHint: ✅
 ColorBox.background: not realized
 ColorBox.frame: ✅
 ColorBox.isEnabled: not realized
@@ -52,7 +52,7 @@ DatePicker.scaleY: ✅
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 Ellipse.frameChanged: ✅
-Ellipse.isAccessibilityHidden: not realized
+Ellipse.isAccessibilityHidden: ✅
 Ellipse.isVisible: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -97,8 +97,8 @@ Label.pivotX: ✅
 Label.rotationY: not realized
 Label.style: not realized
 Label.translationX: ✅
-Line.accessibilityLabel: not realized
-Line.automationExcludedWithChildren: not realized
+Line.accessibilityLabel: ✅
+Line.automationExcludedWithChildren: ✅
 Line.ignoresInput: not realized
 Line.opacity: ✅
 Line.pivotY: ✅
@@ -111,7 +111,7 @@ Map.isEnabled: not realized
 Map.rotation: not realized
 Map.scaleX: not realized
 Map.zIndex: not realized
-Path.accessibilityHeadingLevel: not realized
+Path.accessibilityHeadingLevel: ✅
 Path.focus: ✅
 Path.frameChanged: ✅
 Path.height: ✅
@@ -132,14 +132,14 @@ Picker.pivotX: ✅
 Picker.rotationY: not realized
 Picker.style: not realized
 Picker.translationX: ✅
-Polygon.accessibilityLabel: not realized
-Polygon.automationExcludedWithChildren: not realized
+Polygon.accessibilityLabel: ✅
+Polygon.automationExcludedWithChildren: ✅
 Polygon.ignoresInput: not realized
 Polygon.opacity: ✅
 Polygon.pivotY: ✅
 Polygon.scale: ✅
 Polygon.translationY: ✅
-Polyline.accessibilityHint: not realized
+Polyline.accessibilityHint: ✅
 Polyline.background: not realized
 Polyline.frame: ✅
 Polyline.isEnabled: not realized
@@ -174,7 +174,7 @@ RadioButton.opacity: ✅
 RadioButton.pivotY: ✅
 RadioButton.scale: ✅
 RadioButton.translationY: ✅
-Rectangle.accessibilityHint: not realized
+Rectangle.accessibilityHint: ✅
 Rectangle.background: not realized
 Rectangle.frame: ✅
 Rectangle.isEnabled: not realized
@@ -203,7 +203,7 @@ SearchField.rotationY: not realized
 SearchField.style: not realized
 SearchField.translationX: ✅
 Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: not realized
+Slider.automationExcludedWithChildren: ✅
 Slider.ignoresInput: not realized
 Slider.opacity: ✅
 Slider.pivotY: ✅
@@ -238,7 +238,7 @@ TextEditor.rotationY: not realized
 TextEditor.style: not realized
 TextEditor.translationX: ✅
 TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: not realized
+TextField.automationExcludedWithChildren: ✅
 TextField.ignoresInput: not realized
 TextField.opacity: ✅
 TextField.pivotY: ✅

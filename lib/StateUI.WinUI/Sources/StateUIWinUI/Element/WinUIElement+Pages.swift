@@ -83,6 +83,7 @@ extension WinUIElement {
         let actions = ordered.map { item in
             (overflows: item.value(.placement)?.enumeration == 2, action: WinUIToolbarAction(
                 title: item.value(.text)?.string ?? "", isEnabled: item.value(.isEnabled)?.bool ?? true,
+                identifier: item.value(.accessibilityIdentifier)?.string,
                 perform: { [weak item] in item?.send(.clicked, []) }))
         }
         return (actions.filter { !$0.overflows }.map(\.action), actions.filter(\.overflows).map(\.action))

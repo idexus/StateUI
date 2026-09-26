@@ -39,16 +39,14 @@ extension Registry {
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
-    /// its identifier, label, hint and heading level, and whether it is met at all - on every element but `types`,
-    /// which assistive technology does not meet on this host. An element of `partsMetOn` left out with its children
-    /// still has its parts met.
-    public func everyElementMeetsAssistiveTechnology(except types: Set<NodeType> = [], partsMetOn: Set<NodeType> = []) {
-        everyElementRealizes(PropertyContainerContract.accessibilityIdentifier, except: types)
-        everyElementRealizes(VisualElementContract.accessibilityLabel, except: types)
-        everyElementRealizes(VisualElementContract.accessibilityHint, except: types)
-        everyElementRealizes(VisualElementContract.accessibilityHeadingLevel, except: types)
-        everyElementRealizes(VisualElementContract.isAccessibilityHidden, except: types)
-        everyElementRealizes(VisualElementContract.automationExcludedWithChildren, except: types.union(partsMetOn))
+    /// its identifier, label, hint and heading level, and whether it is met at all.
+    public func everyElementMeetsAssistiveTechnology() {
+        everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+        everyElementRealizes(VisualElementContract.accessibilityLabel)
+        everyElementRealizes(VisualElementContract.accessibilityHint)
+        everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        everyElementRealizes(VisualElementContract.isAccessibilityHidden)
+        everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
     }
 
     /// Where a view stands, said as the tree reads it (`MountedElement.reportFrame`), and what the user does to it

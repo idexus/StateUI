@@ -159,18 +159,11 @@ class WinUIView {
                 _ = measure(width: place.width, height: nil)
                 layout.standsAt = place.width
             }
-            let native = arranged(place)
-            stateui_winui_arrange(handle, native.x, native.y, native.width, native.height)
+            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
         } else {
             placingLayout?.invalidateArrange()
         }
         if resized, transform != .identity || placedDrawing != nil { writeTransform() }
-    }
-
-    /// The place WinUI puts the element in for StateUI's `place`: the place itself, but where the element draws
-    /// past it.
-    func arranged(_ place: Rect) -> Rect {
-        place
     }
 
     /// Where the element's top left corner stands in its window's content, in DIPs.
@@ -207,7 +200,9 @@ class WinUIView {
         let met: Int32 = switch words.presence {
         case nil: 0
         case .met: 1
-        case .hidden, .hiddenWithChildren: 2
+        case .hidden: 2
+        // A control's parts are its template's, left out with it; a layout holds its children back itself.
+        case .hiddenWithChildren: self is WinUILayoutView ? 2 : 3
         }
         stateui_winui_set_accessibility(handle, words.identifier, words.label, words.hint, words.headingLevel, met)
     }
@@ -234,10 +229,13 @@ class WinUIView {
     func setContextMenu(_ menu: WinUIMenu) {
         menuActions = menu.actions
         WinUIStrings.withCStrings(menu.titles) { titles in
-            menu.kinds.withUnsafeBufferPointer { kinds in
-                menu.enabled.withUnsafeBufferPointer { enabled in
-                    stateui_winui_set_context_menu(
-                        handle, number, kinds.baseAddress, titles, enabled.baseAddress, Int32(kinds.count))
+            WinUIStrings.withCStrings(menu.identifiers) { identifiers in
+                menu.kinds.withUnsafeBufferPointer { kinds in
+                    menu.enabled.withUnsafeBufferPointer { enabled in
+                        stateui_winui_set_context_menu(
+                            handle, number, kinds.baseAddress, titles, enabled.baseAddress, identifiers,
+                            Int32(kinds.count))
+                    }
                 }
             }
         }

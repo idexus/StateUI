@@ -10,7 +10,10 @@
 
 #include "Automation.h"
 
+#include <winrt/Microsoft.UI.Xaml.Automation.h>
+
 #include <algorithm>
+#include <functional>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -19,6 +22,13 @@ using namespace stateui;
 using Entries = winrt::Windows::Foundation::Collections::IVector<controls::MenuFlyoutItemBase>;
 
 namespace {
+    /// Gives `entry` the identifier whatever drives the application finds it by; none for an empty one.
+    void identify(xaml::UIElement const &entry, char const *identifier) {
+        if (identifier && *identifier) {
+            xaml::Automation::AutomationProperties::SetAutomationId(entry, text(identifier));
+        }
+    }
+
     /// Writes a menu's flat entries into the lists they belong to: an item (0), a separator (1), a submenu opening
     /// (2) and closing (3). On a bar, a menu at the top is one of the bar's own.
     struct Writer {
@@ -27,7 +37,7 @@ namespace {
         std::vector<Entries> levels;
         int32_t chosen = 0;
 
-        void write(int32_t kind, char const *title, bool enabled) {
+        void write(int32_t kind, char const *title, bool enabled, char const *identifier) {
             if (kind == 3) {
                 if (levels.size() > (bar ? 0u : 1u)) levels.pop_back();
                 return;
@@ -37,6 +47,7 @@ namespace {
                 controls::MenuBarItem menu;
                 menu.Title(text(title));
                 menu.IsEnabled(enabled);
+                identify(menu, identifier);
                 bar.Items().Append(menu);
                 levels.push_back(menu.Items());
                 return;
@@ -46,6 +57,7 @@ namespace {
                 controls::MenuFlyoutItem item;
                 item.Text(text(title));
                 item.IsEnabled(enabled);
+                identify(item, identifier);
                 item.Click([view = view, place = chosen++](IInspectable const &, xaml::RoutedEventArgs const &) {
                     callbacks.menuChosen(view, place);
                 });
@@ -59,6 +71,7 @@ namespace {
                 controls::MenuFlyoutSubItem sub;
                 sub.Text(text(title));
                 sub.IsEnabled(enabled);
+                identify(sub, identifier);
                 levels.back().Append(sub);
                 levels.push_back(sub.Items());
                 break;
@@ -110,7 +123,7 @@ namespace {
 
 extern "C" void stateui_winui_set_context_menu(
     StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
-    int32_t count
+    char const *const *identifiers, int32_t count
 ) {
     try {
         auto element = as<xaml::UIElement>(handle);
@@ -119,7 +132,9 @@ extern "C" void stateui_winui_set_context_menu(
         } else {
             controls::MenuFlyout flyout;
             Writer writer{view, nullptr, {flyout.Items()}};
-            for (int32_t index = 0; index < count; ++index) writer.write(kinds[index], titles[index], enabled[index]);
+            for (int32_t index = 0; index < count; ++index) {
+                writer.write(kinds[index], titles[index], enabled[index], identifiers[index]);
+            }
             element.ContextFlyout(flyout);
         }
         holdHitArea(element, view);
@@ -139,13 +154,15 @@ extern "C" StateUIObjectRef stateui_winui_menu_bar_make(int64_t) {
 
 extern "C" void stateui_winui_menu_bar_set(
     StateUIObjectRef handle, int64_t view, int32_t const *kinds, char const *const *titles, bool const *enabled,
-    int32_t count
+    char const *const *identifiers, int32_t count
 ) {
     try {
         auto bar = borrow<controls::MenuBar>(handle);
         bar.Items().Clear();
         Writer writer{view, bar, {}};
-        for (int32_t index = 0; index < count; ++index) writer.write(kinds[index], titles[index], enabled[index]);
+        for (int32_t index = 0; index < count; ++index) {
+            writer.write(kinds[index], titles[index], enabled[index], identifiers[index]);
+        }
     } catch (winrt::hresult_error const &error) {
         report(error, "writing a menu bar");
     }
@@ -186,5 +203,32 @@ extern "C" void stateui_winui_menus_choose(StateUIObjectRef handle, int32_t inde
         }
     } catch (winrt::hresult_error const &error) {
         report(error, "choosing in a view's menus");
+    }
+}
+
+extern "C" int32_t stateui_winui_menus_identifiers(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+    try {
+        std::wstring text;
+        std::function<void(Entries const &)> each = [&](Entries const &entries) {
+            for (auto const &entry : entries) {
+                if (auto sub = entry.try_as<controls::MenuFlyoutSubItem>()) {
+                    each(sub.Items());
+                } else if (auto item = entry.try_as<controls::MenuFlyoutItem>()) {
+                    if (!text.empty()) text += L";";
+                    text += std::wstring(xaml::Automation::AutomationProperties::GetAutomationId(item));
+                }
+            }
+        };
+        for (auto const &entries : menus(as<xaml::UIElement>(handle))) each(entries);
+        auto bytes = winrt::to_string(text);
+        if (utf8 && capacity > 0) {
+            auto size = std::min<size_t>(bytes.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, bytes.data(), size);
+            utf8[size] = 0;
+        }
+        return static_cast<int32_t>(bytes.size());
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a view's menus' identifiers");
+        return 0;
     }
 }
