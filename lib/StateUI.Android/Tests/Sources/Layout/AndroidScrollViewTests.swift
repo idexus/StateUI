@@ -149,14 +149,14 @@ final class AndroidScrollViewTests: XCTestCase {
                 .padding(10)
             }
             host.layOut()
-            host.laidOut()
+            host.runtime.frames.laidOut()
             clock.now = 16
             host.frame()
 
             XCTAssertEqual(reports.values.map { Array($0.prefix(4)) }, [[10, 40, 520, 20]])
             XCTAssertEqual(room.wrappedValue, Rect(10, 40, 520, 20))
 
-            host.laidOut()
+            host.runtime.frames.laidOut()
             clock.now = 32
             host.frame()
             XCTAssertEqual(reports.values.count, 1, "a frame that did not move says nothing")

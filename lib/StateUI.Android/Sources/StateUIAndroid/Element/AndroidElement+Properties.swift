@@ -157,7 +157,7 @@ extension AndroidElement {
         scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
         scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
         scroll.onFramesWanted = { [weak self, weak scroll] in
-            if let scroll { self?.host?.requestFrames(for: scroll) }
+            if let scroll { self?.host?.runtime.frames.serve(scroll, order: scroll.number) }
         }
     }
 

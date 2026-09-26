@@ -211,7 +211,7 @@ enum JavaNatives {
         }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated {
-                AndroidRenderer.shared?.laidOut()
+                AndroidRenderer.shared?.runtime.frames.laidOut()
             }
         }
         let measure: @convention(c) (Environment, jclass?, jlong, jint, jint) -> jlong = {

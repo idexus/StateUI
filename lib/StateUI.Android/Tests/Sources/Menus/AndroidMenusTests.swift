@@ -40,7 +40,7 @@ final class AndroidMenusTests: XCTestCase {
             XCTAssertEqual(TestMenus.describe(menu), "Duplicate, Move [To the top (off)] | Remove (red), Erase (off)")
 
             for words in ["Duplicate", "To the top", "Remove", "Erase"] { TestMenus.choose(menu, words) }
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["duplicate", "remove"])
         }
     }
@@ -56,7 +56,7 @@ final class AndroidMenusTests: XCTestCase {
             let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
 
             offers.wrappedValue = false
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertTrue(host.views(AndroidLabelView.self).first === label, "the same view")
             XCTAssertFalse(Java.callBool(label.reference, JavaAPI.isLongClickable))
             let menu = TestMenus.empty()

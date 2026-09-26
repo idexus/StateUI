@@ -83,11 +83,11 @@ extension AndroidInputTests {
             XCTAssertEqual(fields.count, 2)
 
             XCTAssertTrue(Java.callBool(try XCTUnwrap(fields.first).reference, TestJava.requestFocus))
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertTrue(focused.wrappedValue)
 
             XCTAssertTrue(Java.callBool(try XCTUnwrap(fields.last).reference, TestJava.requestFocus))
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertFalse(focused.wrappedValue)
         }
     }

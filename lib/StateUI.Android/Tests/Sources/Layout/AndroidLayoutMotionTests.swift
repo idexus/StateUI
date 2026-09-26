@@ -55,7 +55,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(moved.frame.y, 0, "and it lands exactly")
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 
@@ -93,7 +93,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
             layout.layOut(width: 600, height: 400)
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("b"))).frame.y, 0)
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 

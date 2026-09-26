@@ -226,3 +226,5 @@ final class AndroidScrollView: AndroidLayoutView {
         laidOut = false
     }
 }
+
+extension AndroidScrollView: FramedScroller {}

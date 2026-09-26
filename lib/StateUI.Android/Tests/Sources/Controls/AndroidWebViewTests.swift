@@ -27,12 +27,12 @@ final class AndroidWebViewTests: XCTestCase {
             TestWeb.start(web, at: "https://a.example/")
             TestWeb.finish(web, at: "https://a.example/")
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
-            host.pump()
+            host.runtime.pump.turn()
             TestWeb.start(web, at: "https://a.example/")
             Java.call(web.reference, TestWeb.failed, .int(-8))
             TestWeb.finish(web, at: "https://a.example/")
             Java.call(web.reference, TestWeb.processGone)
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(heard.values, [
                 "navigating newPage https://a.example/", "navigated success newPage https://a.example/",
@@ -52,7 +52,7 @@ final class AndroidWebViewTests: XCTestCase {
             web.history(back: true, forward: false)
             web.history(back: true, forward: false)
             web.history(back: false, forward: true)
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(heard.values, ["back true", "back false", "forward true"])
         }
@@ -70,7 +70,7 @@ final class AndroidWebViewTests: XCTestCase {
             let heard = Received<String>()
             let host = AndroidRenderer.running { BrowsingPage(heard: heard) }
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
-            host.pump()
+            host.runtime.pump.turn()
             host.answered(ticket: AndroidActPerformer.nextScriptTicket + 1, accepted: true, words: "Example Domain")
             host.settle { heard.values.contains { $0.hasPrefix("title") } }
 

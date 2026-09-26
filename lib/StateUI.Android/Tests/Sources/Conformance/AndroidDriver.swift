@@ -42,7 +42,7 @@ final class AndroidDriver: HostDriver {
         layOut()
         // The activity comes to the front: onResume.
         renderer.setPhase(.active)
-        return renderer.tree
+        return renderer.runtime.tree
     }
 
     /// Lays the root out in the room its window gives it, and tells the host so, as the window's traversal does - at
@@ -57,7 +57,7 @@ final class AndroidDriver: HostDriver {
         let height = Java.callInt(room, TestJava.getHeight)
         Java.release(local: frame)
         if width > 0, height > 0 { renderer.layOut(width: width, height: height) }
-        renderer.laidOut()
+        renderer.runtime.frames.laidOut()
     }
 
     /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
@@ -68,20 +68,20 @@ final class AndroidDriver: HostDriver {
             _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
             Java.call(root, Self.clearFocus)
         }
-        renderer?.tree.root?.leave()
+        renderer?.runtime.tree.root?.leave()
         renderer = nil
     }
 
     func step() {
         guard let renderer else { return }
         Self.runLooper(10)
-        renderer.pump()
+        renderer.runtime.pump.turn()
         layOut()
         if renderer.frameClock.held { renderer.frame() }
     }
 
     func turn() {
-        renderer?.pump()
+        renderer?.runtime.pump.turn()
     }
 
     func frame() {

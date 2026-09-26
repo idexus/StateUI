@@ -106,7 +106,7 @@ extension AndroidElement {
     /// Hands a page's phase to its handler, rendered before the next phase is heard.
     private func announce(_ event: Event) {
         guard let handler = element.handler(event) else { return }
-        host?.enqueuePhase(handler)
+        host?.runtime.pump.handlers.enqueuePhase(handler)
     }
 
     /// Keeps an arrangement's own parts with the tree: a stack's bar, a tabbed view's row, a split view's sidebar.
@@ -191,7 +191,7 @@ extension AndroidElement {
     /// The stack's top page goes: the path is told it is one shorter.
     func popNavigation() {
         guard type == .navigationStack, children.count > 1, let handler = element.handler(.popped) else { return }
-        host?.dispatch(handler, payload: [.number(Double(children.count - 2))])
+        host?.runtime.dispatch(handler, payload: [.number(Double(children.count - 2))])
     }
 
     /// The user showed or hid a split view's sidebar: its pages hear it, and the state the binding carries.

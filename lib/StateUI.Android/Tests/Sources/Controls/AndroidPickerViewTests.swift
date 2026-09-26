@@ -27,7 +27,7 @@ final class AndroidPickerViewTests: XCTestCase {
             XCTAssertEqual(Self.shown(by: picker), "Size")
 
             chosen.wrappedValue = 2
-            host.pump()
+            host.runtime.pump.turn()
             host.layOut()
             XCTAssertEqual(Self.shown(by: picker), "L")
         }

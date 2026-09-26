@@ -12,7 +12,7 @@ extension AndroidElement {
     func configureLayoutMotion() {
         guard let layout = view as? AndroidTravellingLayout else { return }
 
-        layout.layoutMotion = host?.layoutMotion
+        layout.layoutMotion = host?.runtime.layoutMotion
         layout.motion = element.motion
         layout.framesRead = element.framesRead
         layout.patchArrived()

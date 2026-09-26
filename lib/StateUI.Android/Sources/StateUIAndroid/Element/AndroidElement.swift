@@ -16,9 +16,6 @@ final class AndroidElement: NativeElement {
 
     weak var host: AndroidRenderer?
 
-    /// Where the element last said it stood; nil before it said.
-    var lastFrameReport: [Double]?
-
     /// Whether a label shows its spans' runs rather than its own words.
     var hasRuns = false
 
@@ -75,7 +72,7 @@ final class AndroidElement: NativeElement {
         configureContextMenu()
         reconcilePresentation(from: previouslyShown.map(\.android))
         previouslyShown = []
-        host?.follow(self, readsFrame: readsFrame)
+        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -90,7 +87,7 @@ final class AndroidElement: NativeElement {
 
     func leave() {
         view?.detach()
-        host?.follow(self, readsFrame: false)
+        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
     }
 }
 

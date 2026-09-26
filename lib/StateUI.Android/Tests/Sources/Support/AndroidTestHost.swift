@@ -145,24 +145,24 @@ extension AndroidRenderer {
 
     /// Applies `patch` as one whole message, as a render does.
     func apply(_ patch: HostPatch) {
-        intake.take(patch, generation: intake.baseline &+ 1) { tree.apply($0, complete: true) }
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
     }
 
     /// The view of the element keyed `id`.
     func view(id: ElementId) -> AndroidView? {
-        (tree.root?.first(id: id)?.native as? AndroidElement)?.view
+        (runtime.tree.root?.first(id: id)?.native as? AndroidElement)?.view
     }
 
     /// One display frame at the clock's time, as the choreographer gives one.
     func frame() {
-        displayCycle.frame(now: frameClock.now())
+        runtime.displayCycle.frame(now: frameClock.now())
     }
 
     /// Pumps until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 where !done() {
             usleep(10_000)
-            pump()
+            runtime.pump.turn()
         }
     }
 
@@ -177,7 +177,7 @@ extension AndroidRenderer {
 
     /// Every view of `type` in the mounted tree, depth first.
     func views<Native: AndroidView>(_ type: Native.Type) -> [Native] {
-        guard let root = tree.root else { return [] }
+        guard let root = runtime.tree.root else { return [] }
         return Self.views(type, in: root)
     }
 

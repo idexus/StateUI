@@ -360,19 +360,14 @@ class AndroidView {
         laidOut = nil
     }
 
-    /// Where the view stands, in points: its frame in its parent, its place in the window, and that place
-    /// from `safeArea`, the safe area's top left in the window.
-    func frameReport(safeArea: Point) -> [Double] {
-        let place = placedFrame
+    /// Where the view's top left corner stands in its window, in points.
+    var cornerInWindow: Point {
         let window = Java.ints([0, 0])
         Java.call(reference, JavaAPI.getLocationInWindow, .object(window))
         var pixels: [Int32] = [0, 0]
         pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
         Java.release(local: window)
-
-        let x = Double(pixels[0]) / density
-        let y = Double(pixels[1]) / density
-        return [place.x, place.y, place.width, place.height, x, y, x - safeArea.x, y - safeArea.y]
+        return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
     /// `points` in whole pixels.

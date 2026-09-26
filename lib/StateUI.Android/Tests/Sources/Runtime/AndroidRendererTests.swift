@@ -90,7 +90,7 @@ final class AndroidRendererTests: XCTestCase {
 
             let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
 
-            XCTAssertEqual(second.tree.root?.children.filter { $0.type == .scene }.count, 1)
+            XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
@@ -154,7 +154,7 @@ extension AndroidRendererTests {
             host.setPhase(.background)
             host.setPhase(.active)
             host.destroying()
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(log.values, ["stopped", "resumed", "activated", "destroying"])
         }

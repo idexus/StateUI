@@ -44,7 +44,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertFalse(host.goBack(), "no way back from the root")
 
             path.wrappedValue.append(7)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.title, "Detail 7")
             XCTAssertEqual(navigation.bar.content.navigation, .back)
             XCTAssertEqual(navigation.heldViews().count, 2, "the bar and the top page")
@@ -72,7 +72,7 @@ final class AndroidPagesTests: XCTestCase {
 
             log.values = []
             path.wrappedValue.append(1)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(log.values, [
                 "Root navigatingFrom", "Root disappearing", "Root navigatedFrom",
                 "Pushed appearing", "Pushed navigatedTo",
@@ -140,7 +140,7 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertLessThan(closed, 0, "a closed drawer stands off the leading edge")
 
             try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
-            host.pump()
+            host.runtime.pump.turn()
             Java.call(split.reference, JavaAPI.requestLayout)
             host.layOut()
 
@@ -195,7 +195,7 @@ final class AndroidPagesTests: XCTestCase {
             let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
             XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture), Delete (red)")
             for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
         }
     }
@@ -222,13 +222,13 @@ extension AndroidPagesTests {
             XCTAssertEqual(Self.title(of: bar), "")
 
             path.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertNil(bar.titleView)
             XCTAssertEqual(Java.callInt(bar.reference, TestJava.indexOfChild, .object(field.reference)), -1)
             XCTAssertEqual(Self.title(of: bar), "Result")
 
             XCTAssertTrue(host.goBack())
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertTrue(bar.titleView === field)
             XCTAssertEqual(Self.title(of: bar), "")
         }
@@ -258,10 +258,10 @@ extension AndroidPagesTests {
             XCTAssertEqual(Java.callInt(words.reference, TestJava.getLeft), 16, "8 points in, at two pixels a point")
 
             path.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.navigation, .none, "a page without a back button")
             path.wrappedValue = [1, 2]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.navigation, .back)
             XCTAssertFalse(navigation.showsBar, "a page without a navigation bar")
         }
@@ -325,7 +325,7 @@ extension AndroidPagesTests {
 
             log.values = []
             sheets.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the page, and the sheet over it")
             XCTAssertEqual(
                 log.values.filter { $0.hasSuffix("appearing") }, ["Page disappearing", "Sheet 1 appearing"])
@@ -346,18 +346,18 @@ extension AndroidPagesTests {
             let log = Received<String>()
             let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, log: log) }
             sheets.wrappedValue = [1, 2]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 3)
 
             log.values = []
             sheets.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2)
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Sheet 1 appearing"])
 
             log.values = []
             sheets.wrappedValue = []
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Page appearing"])
         }
@@ -380,7 +380,7 @@ extension AndroidPagesTests {
 
             log.values = []
             stacked.wrappedValue = true
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["Root"])
             XCTAssertEqual(log.values.filter { $0.hasSuffix("appearing") }, ["Root appearing"])
         }
@@ -398,9 +398,9 @@ extension AndroidPagesTests {
             host.layOut()
 
             Inspector.open(in: scene)
-            host.pump()
+            host.runtime.pump.turn()
             host.layOut()
-            let overlay = try XCTUnwrap((host.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
+            let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
             let root = host.root.reference
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page, and the overlay over it")
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 1)
@@ -409,12 +409,12 @@ extension AndroidPagesTests {
             XCTAssertFalse(overlay.touched(x: 540, y: 100), "the overlay took a touch beside its panel")
 
             sheets.wrappedValue = [1]
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
 
             Inspector.close(in: scene)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page and the sheet")
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), -1)
         }

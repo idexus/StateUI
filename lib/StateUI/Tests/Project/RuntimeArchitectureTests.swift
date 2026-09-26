@@ -40,14 +40,11 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "a frame is the DisplayCycle's, in its one order")
     }
 
-    /// A turn is the `Pump`'s: only it renders the core and takes the acts, in its one order. The runtimes
-    /// named here still turn on their own; each is built on the `Pump` on the machine that runs it.
+    /// A turn is the `Pump`'s: only it renders the core and takes the acts, in its one order.
     func testOnlyThePumpRendersAndTakesTheActs() throws {
-        let awaiting = ["/AndroidRenderer.swift"]
         var found: [String] = []
 
-        for (path, text) in try SourceTree.runtimeSources()
-        where !path.hasSuffix("/Pump.swift") && !awaiting.contains(where: path.hasSuffix) {
+        for (path, text) in try SourceTree.runtimeSources() where !path.hasSuffix("/Pump.swift") {
             for (number, line) in code(text) {
                 for step in ["core.render(", "core.takeActCalls("] where line.contains(step) {
                     found.append("\(path):\(number): \(step)")

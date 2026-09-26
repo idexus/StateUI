@@ -26,18 +26,18 @@ final class AndroidGestureTests: XCTestCase {
 
             box.touch(0, x: 50, y: 50, at: 0)
             box.touch(1, x: 50, y: 50, at: 50)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, [])
             box.touch(0, x: 52, y: 50, at: 150)
             box.touch(1, x: 52, y: 50, at: 200)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["double"])
 
             box.touch(0, x: 50, y: 50, at: 1000)
             box.touch(1, x: 50, y: 50, at: 1050)
             box.touch(0, x: 50, y: 50, at: 2000)
             box.touch(1, x: 50, y: 50, at: 2050)
-            host.pump()
+            host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["double"])
         }
     }
@@ -77,7 +77,7 @@ final class AndroidGestureTests: XCTestCase {
                 box.touch(2, x: Float(toX), y: Float(toY), at: 20)
                 box.touch(1, x: Float(toX), y: Float(toY), at: 40)
             }
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(heard.values, [2, 4])
         }
@@ -97,7 +97,7 @@ final class AndroidGestureTests: XCTestCase {
             }
 
             TestTouches.pinch(box, x: 100, y: 100, from: 600, to: 900)
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(phases.values.first, "started 0.5 0.5")
             XCTAssertEqual(phases.values.last, "completed 0.5 0.5")
@@ -121,7 +121,7 @@ final class AndroidGestureTests: XCTestCase {
             box.touch(2, x: 30, y: 40, at: 10)
             box.touch(1, x: 30, y: 40, at: 20)
             TestTouches.hover(box, x: 20, y: 40)
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(heard.values, [
                 "pressed 10 20", "moved 15 20", "released 15 20", "entered", "moved 15 20", "exited",

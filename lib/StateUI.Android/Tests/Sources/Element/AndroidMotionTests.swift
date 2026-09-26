@@ -59,7 +59,7 @@ final class AndroidMotionTests: XCTestCase {
             clock.now = 200
             host.frame()
             XCTAssertEqual(label.opacity, 0.75, accuracy: 1e-6)
-            XCTAssertFalse(host.describedMotion.isActive)
+            XCTAssertFalse(host.runtime.describedMotion.isActive)
         }
     }
 
@@ -76,7 +76,7 @@ final class AndroidMotionTests: XCTestCase {
             host.apply(changed)
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).opacity, 0.75, accuracy: 1e-6)
-            XCTAssertFalse(host.animator.isMoving)
+            XCTAssertFalse(host.runtime.animator.isMoving)
         }
     }
 

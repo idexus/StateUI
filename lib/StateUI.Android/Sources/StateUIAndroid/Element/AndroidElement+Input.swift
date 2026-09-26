@@ -10,7 +10,7 @@ extension AndroidElement {
     func send(_ event: Event, _ values: [HostValue]) {
         guard let handler = element.handler(event) else { return }
 
-        host?.dispatch(handler, payload: values)
+        host?.runtime.dispatch(handler, payload: values)
     }
 
     /// A value the user changed in the view: onto its state first, then the event with it. A radio button
@@ -22,7 +22,7 @@ extension AndroidElement {
         guard element.type == .radioButton, property == .isOn, value == .bool(true) else {
             return carry(property, event, value)
         }
-        host.performUserTransaction {
+        host.runtime.performUserTransaction {
             for peer in element.radioPeers.compactMap({ $0.native as? AndroidElement })
             where peer.element.value(.isOn)?.bool == true {
                 ProgramWrite.perform { (peer.view as? AndroidToggleView)?.setOn(false) }
@@ -49,16 +49,16 @@ extension AndroidElement {
         var reported = false
         if let carried, let binding = element.driven[property] {
             if case .lanes(let lanes) = carried, binding.kind == .property {
-                reported = host.take(lanes, through: binding)
+                reported = host.runtime.take(lanes, through: binding)
             } else {
-                reported = host.report(carried, through: binding)
+                reported = host.runtime.report(carried, through: binding)
             }
         }
 
         if let handler = element.handler(event) {
-            host.dispatch(handler, payload: [value])
+            host.runtime.dispatch(handler, payload: [value])
         } else if reported {
-            host.pump()
+            host.runtime.pump.turn()
         }
     }
 
@@ -67,40 +67,34 @@ extension AndroidElement {
     func scrolled(from old: Point, to new: Point) {
         guard let host else { return }
 
-        host.performUserTransaction {
+        host.runtime.performUserTransaction {
             if old != new, let binding = element.driven[.scrollOffset] {
-                host.take([new.x, new.y], through: binding)
+                host.runtime.take([new.x, new.y], through: binding)
             }
             if old.x != new.x, let handler = element.handler(.scrollXChanged) {
-                host.dispatch(handler, payload: [.number(new.x)])
+                host.runtime.dispatch(handler, payload: [.number(new.x)])
             }
             if old.y != new.y, let handler = element.handler(.scrollYChanged) {
-                host.dispatch(handler, payload: [.number(new.y)])
+                host.runtime.dispatch(handler, payload: [.number(new.y)])
             }
         }
     }
 
-    /// Whether the tree reads where this element stands: a state its frame drives, or a handler for its changes.
+    /// Whether the tree reads where this element stands (`MountedElement.readsOwnFrame`), where it shows a view.
     var readsFrame: Bool {
-        view != nil && (element.driven[.frame] != nil || element.handler(.frameChanged) != nil)
+        view != nil && element.readsOwnFrame
     }
 
-    /// Says where the element stands, where that changed: onto the state its frame drives, and to its handler.
+}
+
+extension AndroidElement: FrameReporter {
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`): its place in its parent,
+    /// its corner in the window, and that corner from the page's.
     /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
     func reportFrame() {
         guard let host, let view, readsFrame else { return }
-
-        let report = view.frameReport(safeArea: host.safeAreaOrigin)
-        guard report != lastFrameReport else { return }
-        lastFrameReport = report
-
-        host.performUserTransaction {
-            if let binding = element.driven[.frame] {
-                host.report(.lanes(Array(report.prefix(4))), through: binding)
-            }
-            if let handler = element.handler(.frameChanged) {
-                host.dispatch(handler, payload: [.numbers(report)])
-            }
-        }
+        element.reportFrame(
+            MountedElement.frameNumbers(place: view.placedFrame, corner: view.cornerInWindow, content: host.safeAreaOrigin),
+            in: host.runtime)
     }
 }

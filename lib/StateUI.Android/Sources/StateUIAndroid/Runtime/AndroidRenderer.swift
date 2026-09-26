@@ -18,48 +18,23 @@ final class AndroidRenderer {
     /// Pixels per point, the display's density.
     static var density: Double { shared?.density ?? 1 }
 
-    let core = CoreLink()
-    let intake = PatchIntake()
-    let animator = Animator()
-    let stateChannels: StateChannels
-    let describedMotion: DescribedMotion
-    let layoutMotion: LayoutMotion
     let frameClock: AndroidFrameClock
 
     /// Whether the user asked for less motion: every animation arrives at once.
     let reducesMotion: () -> Bool
-    let displayCycle: DisplayCycle
 
-    /// The mounted tree; each element's Android half is an `AndroidElement`.
-    private(set) lazy var tree = MountedTree(
-        core: core,
-        intake: intake,
-        stateChannels: stateChannels,
-        describedMotion: describedMotion,
-        layoutMotion: layoutMotion,
-        now: frameClock.now,
-        reducesMotion: reducesMotion,
-        makeNative: { [unowned self] element in AndroidElement(element, host: self) })
+    /// The parts every host holds alike - the core's link, the motions, the display cycle, the mounted tree and
+    /// the turn - each element's Android half an `AndroidElement`.
+    private(set) lazy var runtime = HostRuntime(
+        clock: frameClock, reducesMotion: reducesMotion,
+        makeNative: { [unowned self] element in AndroidElement(element, host: self) },
+        log: { AndroidLog.error($0) })
 
     private let context: JavaObject
 
     /// The view the page is shown in: the activity's root.
     let root: JavaObject
     private let density: Double
-
-    /// Whether a turn is running; a turn asked for inside it runs once it ends.
-    private var pumping = false
-    private var pumpAgain = false
-
-    /// Events raised while a patch applied, inside a user's transaction, or a page's phase, in order.
-    private var queuedEvents: [QueuedEvent] = []
-
-    /// An event waiting for its turn; a page's phase is rendered before the event after it runs.
-    private struct QueuedEvent {
-        let handler: Int32
-        let payload: [HostValue]
-        var isPhase = false
-    }
 
     /// The arrangement of pages the root shows, held by its mounted element, which owns its Android half; and
     /// whether the activity was last told there is a way back.
@@ -77,25 +52,6 @@ final class AndroidRenderer {
     /// The title the activity was last given, as the first window says it; none before any window says.
     private(set) var windowTitle: String??
 
-    /// How deep the user's transactions stand; their events wait for the outermost to end.
-    private var transactionDepth = 0
-
-    /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
-    private var scrollers: [Int64: WeakScroller] = [:]
-
-    /// The elements whose frame the tree reads, and whether views may have moved since they last said.
-    private var frameReaders: [ObjectIdentifier: WeakElement] = [:]
-    private var framesMoved = false
-
-    /// A scroller the renderer gives frames to, and an element it follows, neither kept.
-    private struct WeakScroller {
-        weak var view: AndroidScrollView?
-    }
-
-    private struct WeakElement {
-        weak var element: AndroidElement?
-    }
-
     /// A runtime showing its page in `root`, on the display's clock or on `clock`,
     /// with the motion the user's settings allow or as `reducesMotion` says.
     init(
@@ -105,24 +61,10 @@ final class AndroidRenderer {
         self.context = context
         self.root = root
         self.density = density
-        let frameClock = clock.map { AndroidFrameClock(now: $0, ticksWithTheDisplay: false) } ?? AndroidFrameClock()
-        self.frameClock = frameClock
+        frameClock = clock.map { AndroidFrameClock(now: $0, ticksWithTheDisplay: false) } ?? AndroidFrameClock()
         self.reducesMotion = reducesMotion
-        stateChannels = StateChannels(animator: animator)
-        describedMotion = DescribedMotion(animator: animator)
-        layoutMotion = LayoutMotion(animator: animator, now: frameClock.now, reducesMotion: reducesMotion)
-        displayCycle = DisplayCycle(
-            core: core,
-            clock: frameClock,
-            animator: animator,
-            stateChannels: stateChannels,
-            describedMotion: describedMotion,
-            layoutMotion: layoutMotion,
-            reducesMotion: reducesMotion)
-        frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
-        layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
-        tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
-        displayCycle.presenter = self
+        runtime.displayCycle.presenter = self
+        runtime.pump.presenter = self
     }
 
     /// Whether the user turned the system's animations off, which StateUI reads as asking for less motion.
@@ -137,16 +79,17 @@ final class AndroidRenderer {
     @discardableResult
     static func start(context: JavaObject, root: JavaObject, density: Double) -> AndroidRenderer {
         let previous = shared
-        previous?.tree.root?.leave()
+        previous?.runtime.tree.root?.leave()
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
         renderer.watchLayout()
-        renderer.core.setRealization(AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unrealized)
-        AndroidEnvironment.report(to: renderer.core, activity: context.reference)
-        if previous == nil { AndroidPersistence.restore(into: renderer.core, context: context.reference) }
+        let core = renderer.runtime.core
+        core.setRealization(AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unrealized)
+        AndroidEnvironment.report(to: core, activity: context.reference)
+        if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
         renderer.show(connectingScene: previous == nil)
-        AndroidDoorbell.install { AndroidRenderer.shared?.pump() }
+        AndroidDoorbell.install { AndroidRenderer.shared?.runtime.pump.turn() }
         return renderer
     }
 
@@ -166,31 +109,32 @@ final class AndroidRenderer {
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
 
     /// The acts the application calls, performed and answered.
-    private lazy var acts = AndroidActPerformer(core: core, context: context, root: root)
+    private lazy var acts = AndroidActPerformer(core: runtime.core, context: context, root: root)
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
     /// writes runs.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         acts.answered(ticket: ticket, accepted: accepted, words: words)
-        pump()
+        runtime.pump.turn()
     }
 
     /// Renders the application whole, connecting its scene first where no activity has shown it.
     func show(connectingScene: Bool = true) {
-        if connectingScene { core.connectScene() }
-        pump()
+        if connectingScene { runtime.core.connectScene() }
+        runtime.pump.turn()
     }
 
     /// Reports the application's phase as the activity's lifecycle moves it, then the scene's and its window's,
     /// each rendered before the next.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
     func setPhase(_ phase: ApplicationPhase) {
-        core.setApplicationPhase(phase)
-        pump()
+        runtime.core.setApplicationPhase(phase)
+        runtime.pump.turn()
 
+        let tree = runtime.tree
         let resumes = stopped && phase != .background
         stopped = phase == .background
-        if resumes, let handler = tree.root?.first(type: .window)?.handler(.resumed) { dispatch(handler) }
+        if resumes, let handler = tree.root?.first(type: .window)?.handler(.resumed) { runtime.dispatch(handler) }
 
         let event: Event = switch phase {
         case .active: .activated
@@ -198,14 +142,14 @@ final class AndroidRenderer {
         default: .stopped
         }
         for element in [tree.root?.first(type: .scene), tree.root?.first(type: .window)] {
-            if let handler = element?.handler(event) { dispatch(handler) }
+            if let handler = element?.handler(event) { runtime.dispatch(handler) }
         }
     }
 
     /// The activity is finishing: its window hears it is going, then its scene.
     func destroying() {
         for type in [NodeType.window, .scene] {
-            if let handler = tree.root?.first(type: type)?.handler(.destroying) { dispatch(handler) }
+            if let handler = runtime.tree.root?.first(type: type)?.handler(.destroying) { runtime.dispatch(handler) }
         }
     }
 
@@ -213,95 +157,14 @@ final class AndroidRenderer {
     /// and the window laid out again.
     /// The zone, the clock, the battery or the network changed.
     func environmentChanged() {
-        AndroidEnvironment.reportChanging(to: core, context: context.reference)
-        tree.followTheLanguagesDirection()
-        pump()
+        runtime.environmentChanged { AndroidEnvironment.reportChanging(to: runtime.core, context: context.reference) }
     }
 
     func configured() {
-        AndroidEnvironment.report(to: core, activity: context.reference)
-        tree.followTheLanguagesDirection()
-        Java.call(root.reference, JavaAPI.requestLayout)
-        pump()
-    }
-
-    /// Reports a native event and runs its handler, then a turn; one raised while a patch applies, or inside a
-    /// user's transaction, waits for it.
-    func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        guard !intake.isApplying, transactionDepth == 0 else {
-            queuedEvents.append(QueuedEvent(handler: handler, payload: payload))
-            return
+        runtime.environmentChanged {
+            AndroidEnvironment.report(to: runtime.core, activity: context.reference)
+            Java.call(root.reference, JavaAPI.requestLayout)
         }
-
-        _ = core.dispatch(handler, payload: payload)
-        pump()
-    }
-
-    /// Runs `body` as one of the user's transactions: the events it raises run in order once it ends,
-    /// and one turn then renders everything it changed.
-    func performUserTransaction(_ body: () -> Void) {
-        transactionDepth += 1
-        body()
-        transactionDepth -= 1
-        guard transactionDepth == 0, !intake.isApplying else { return }
-
-        deliverQueued()
-        pump()
-    }
-
-    /// The number a gesture channel's state stands at; nil for no such state.
-    func standingGestureValue(state: Int32) -> Double? {
-        core.gestureValue(state: state)
-    }
-
-    /// Moves a gesture channel's state to `value`, and draws what that moves; whether it moved.
-    @discardableResult
-    func takeGestureValue(_ value: Double, state: Int32) -> Bool {
-        guard core.moveGestureValue(value, state: state) else { return false }
-        displayCycle.drain(now: frameClock.now())
-        return true
-    }
-
-    /// Queues a page's phase: it runs in its turn, and is rendered before anything after it.
-    /// Design: docs/design/platforms/android/pages.md#a-pages-phases
-    func enqueuePhase(_ handler: Int32) {
-        queuedEvents.append(QueuedEvent(handler: handler, payload: [], isPhase: true))
-    }
-
-    /// Runs the queued events in order, stopping after a phase so it is rendered first; whether any ran.
-    @discardableResult
-    private func deliverQueued() -> Bool {
-        guard !queuedEvents.isEmpty, !intake.isApplying, transactionDepth == 0 else { return false }
-
-        while !queuedEvents.isEmpty {
-            let event = queuedEvents.removeFirst()
-            _ = core.dispatch(event.handler, payload: event.payload)
-            if event.isPhase { break }
-        }
-        return true
-    }
-
-    /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
-    func requestFrames(for scroller: AndroidScrollView) {
-        scrollers[scroller.number] = WeakScroller(view: scroller)
-        displayCycle.hold()
-    }
-
-    /// Follows where `element` stands while the tree reads it, and lets it go once nothing does.
-    func follow(_ element: AndroidElement, readsFrame: Bool) {
-        let key = ObjectIdentifier(element)
-        guard readsFrame != (frameReaders[key] != nil) else { return }
-
-        frameReaders[key] = readsFrame ? WeakElement(element: element) : nil
-        if readsFrame { laidOut() }
-    }
-
-    /// Android laid the window's views out, or scrolled them: whoever reads a frame says it on the next frame.
-    func laidOut() {
-        guard !frameReaders.isEmpty else { return }
-
-        framesMoved = true
-        displayCycle.hold()
     }
 
     /// The safe area's top left in the window, in points: where the page's root stands.
@@ -314,94 +177,9 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// Reports a value the user set through a bound state.
-    @discardableResult
-    func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
-        guard core.report(value, through: binding) else { return false }
-
-        displayCycle.drain(now: frameClock.now(), reported: [binding.state: value])
-        return true
-    }
-
-    /// Takes a journey the host carries at the position the user set.
-    @discardableResult
-    func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
-        guard stateChannels.take(value, through: binding) else { return false }
-
-        displayCycle.drain(now: frameClock.now())
-        return true
-    }
-
-    /// One turn: the jobs a resumed handler left, a pending cycle, a render when the core needs one, then the acts.
-    /// Design: docs/design/host/runtime.md#one-turn
-    func pump() {
-        guard !pumping else {
-            pumpAgain = true
-            return
-        }
-
-        pumping = true
-        repeat {
-            pumpAgain = false
-            turn()
-        } while pumpAgain
-        pumping = false
-    }
-
-    private func turn() {
-        _ = core.runJobs()
-
-        if tree.root != nil, core.cyclesPending {
-            displayCycle.drain(now: frameClock.now())
-        }
-
-        if tree.root == nil || core.needsRender {
-            render()
-
-            let created = tree.root?.takeCreatedHandlers() ?? []
-            for handler in created {
-                _ = core.dispatch(handler)
-            }
-            if !created.isEmpty {
-                pumpAgain = true
-                return
-            }
-        }
-
-        // The acts land on the interface their handler changed, so a turn that ran handlers renders again first.
-        if deliverQueued() {
-            pumpAgain = true
-            return
-        }
-
-        for call in core.takeActCalls() {
-            acts.perform(call, in: tree)
-        }
-        refreshBack()
-    }
-
-    /// Applies the core's render; a drifted one is asked for whole, once.
-    private func render() {
-        let rendered = core.render(baseline: intake.baseline)
-
-        if !intake.take(rendered.root, generation: rendered.generation, apply: {
-            tree.apply($0, complete: rendered.complete)
-        }) {
-            AndroidLog.error("the interface drifted and is asked for whole: \(intake.lastDrift ?? "")")
-            let complete = core.render(baseline: 0)
-            intake.take(complete.root, generation: complete.generation, apply: {
-                tree.apply($0, complete: complete.complete)
-            })
-        }
-
-        displayCycle.presentStateChannels()
-        showWindow()
-        showPage()
-    }
-
     /// Names the activity after the first window, and tells a window it was made, once, in its turn.
     private func showWindow() {
-        guard let window = tree.root?.first(type: .window) else { return }
+        guard let window = runtime.tree.root?.first(type: .window) else { return }
 
         let title = window.value(.title)?.string
         if windowTitle != .some(title) {
@@ -414,7 +192,7 @@ final class AndroidRenderer {
         }
         if window !== createdWindow {
             createdWindow = window
-            if let handler = window.handler(.created) { enqueuePhase(handler) }
+            if let handler = window.handler(.created) { runtime.pump.handlers.enqueuePhase(handler) }
         }
     }
 
@@ -422,7 +200,7 @@ final class AndroidRenderer {
     /// the pages its modal stack presents over it, and its overlay over them all.
     /// Design: docs/design/platforms/android/pages.md#the-windows-overlay
     private func showPage() {
-        let window = tree.root?.first(type: .window)
+        let window = runtime.tree.root?.first(type: .window)
         let arrangement = window?.children.first { AndroidElement.pageTypes.contains($0.type) }
         if arrangement !== shownArrangementElement {
             shownArrangement?.setPagePresented(false, reason: .window)
@@ -467,9 +245,9 @@ final class AndroidRenderer {
                 wayBack()
             } else {
                 modals.dismissTop(over: shownArrangement)
-                let window = tree.root?.first(type: .window)
+                let window = runtime.tree.root?.first(type: .window)
                 if let handler = window?.handler(.modalPopped) {
-                    dispatch(handler, payload: [.number(Double(modals.count))])
+                    runtime.dispatch(handler, payload: [.number(Double(modals.count))])
                 }
             }
             return true
@@ -491,38 +269,34 @@ final class AndroidRenderer {
     }
 }
 
-extension AndroidRenderer: FramePresenter {
-    var wantsFrames: Bool {
-        framesMoved || scrollers.values.contains { $0.view?.wantsFrames == true }
+extension AndroidRenderer: TurnPresenter {
+    /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlay, and
+    /// whether there is a way back.
+    func presentRendered() {
+        showWindow()
+        showPage()
+        refreshBack()
     }
 
-    /// Lets every moving scroller say what the frame saw it do, then whoever reads a frame say where it
-    /// stands, as one user's transaction.
+    func perform(_ call: HostActCall) {
+        acts.perform(call, in: runtime.tree)
+    }
+}
+
+extension AndroidRenderer: FramePresenter {
+    var wantsFrames: Bool {
+        runtime.frames.wantsFrames
+    }
+
     func commitUserReports(now: Double) {
-        guard !scrollers.isEmpty || framesMoved else { return }
-
-        performUserTransaction {
-            for (number, scroller) in scrollers {
-                guard let view = scroller.view else {
-                    scrollers[number] = nil
-                    continue
-                }
-                view.frame(now: now)
-                if !view.wantsFrames { scrollers[number] = nil }
-            }
-
-            if framesMoved {
-                framesMoved = false
-                for reader in frameReaders.values { reader.element?.reportFrame() }
-            }
-        }
+        runtime.frames.commit(now: now)
     }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        tree.present(states: states, properties: properties)
+        runtime.tree.present(states: states, properties: properties)
     }
 
     func renderIfNeeded() {
-        if core.needsRender { pump() }
+        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }

@@ -54,7 +54,7 @@ final class AndroidAccessibilityTests: XCTestCase {
             }
 
             said.wrappedValue = false
-            host.pump()
+            host.runtime.pump.turn()
 
             XCTAssertEqual(host.views(AndroidLabelView.self).map(TestAccessibility.describe), ["met"])
         }
