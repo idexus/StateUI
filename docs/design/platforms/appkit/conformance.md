@@ -29,7 +29,8 @@ own `close`.
 
 A case's next launch is a launch: the windows the last host left open, each
 as its delegate encoded it, go through the restoration class as the system
-hands them back, before the new host finishes launching. The driver's hosts
+hands them back, before the new host finishes launching, and stand where
+they stood, as the system puts them. The driver's hosts
 keep their values in preferences of their own, which a case's first launch
 finds empty.
 

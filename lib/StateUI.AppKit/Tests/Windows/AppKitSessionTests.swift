@@ -28,6 +28,22 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertTrue(renderer.windowsForTesting.compactMap(\.window).allSatisfy(NSApp.windows.contains))
     }
 
+    /// A window keeps nothing in the application's preferences: the system's restoration keeps a restored window's
+    /// frame, and every window opened and moved would otherwise leave a key there for good.
+    @MainActor
+    func testAWindowLeavesNothingInThePreferences() {
+        let kept = { UserDefaults.standard.dictionaryRepresentation().keys.filter { $0.hasPrefix("NSWindow Frame") } }
+        let before = Set(kept())
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        renderer.applyForTesting(tree(scene("1", windows: [window("main"), window("fonts 1", kind: "fonts")])))
+        for controller in renderer.windowsForTesting {
+            controller.window?.setFrame(NSRect(x: 40, y: 40, width: 320, height: 240), display: false)
+        }
+        renderer.closeForTesting()
+
+        XCTAssertEqual(Set(kept()).subtracting(before), [])
+    }
+
     @MainActor
     func testRemovingOneWindowClosesOnlyThatNativeWindow() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)

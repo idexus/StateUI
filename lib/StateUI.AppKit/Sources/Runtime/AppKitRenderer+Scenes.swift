@@ -104,7 +104,6 @@ extension AppKitRenderer {
         window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
         window.isRestorable = true
         window.restorationClass = AppKitWindowRestorer.self
-        window.setFrameAutosaveName("StateUI.\(record.windowIdentifier)")
 
         restorationQueue.append(record)
         restoredWindows[record.windowIdentifier] = window

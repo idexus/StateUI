@@ -66,7 +66,10 @@ scene with the values it kept (`AppKitSceneSession`); a restored window of a
 kind of its own is offered to the scene that owns it, and taken by the window
 the scene opens for its kind and value. One no scene claims by the
 presentation after its offer is declined, and one whose scene never comes is
-let go after three seconds.
+let go after three seconds. The system keeps a restored window's frame too, so
+a window keeps nothing in the application's preferences: a frame autosave
+name, one a window, would leave a key there for every window ever opened,
+and every move would write the growing file again.
 
 ## Acts
 

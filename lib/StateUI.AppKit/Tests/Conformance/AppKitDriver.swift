@@ -35,7 +35,7 @@ final class AppKitDriver: HostDriver {
 
     /// What the system restores at the next launch: the windows open when the last host ended, each as its delegate
     /// encoded it.
-    private var restorable: [(identifier: String, state: Data)] = []
+    private var restorable: [KeptWindow] = []
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         forgetWhatIsKept()
@@ -76,22 +76,32 @@ final class AppKitDriver: HostDriver {
         return renderer.runtime.tree
     }
 
-    /// Each window's restorable state, as its delegate encodes it for the system.
-    private static func encoded(_ controllers: [AppKitWindowController]) -> [(identifier: String, state: Data)] {
+    /// Each window's restorable state as the system keeps it: what its delegate encodes, and its frame.
+    private static func encoded(_ controllers: [AppKitWindowController]) -> [KeptWindow] {
         controllers.compactMap { controller in
             guard let window = controller.window, let identifier = window.identifier?.rawValue else { return nil }
             let archiver = NSKeyedArchiver(requiringSecureCoding: true)
             controller.window(window, willEncodeRestorableState: archiver)
             archiver.finishEncoding()
-            return (identifier, archiver.encodedData)
+            return KeptWindow(identifier: identifier, state: archiver.encodedData, frame: window.frame)
         }
     }
 
-    /// Restores a window as the system does at launch: its restoration class hears its identifier and its state.
-    private static func restore(_ window: (identifier: String, state: Data)) {
+    /// Restores a window as the system does at launch: its restoration class hears its identifier and its state,
+    /// and the window it gives back stands where it stood.
+    private static func restore(_ window: KeptWindow) {
         guard let state = try? NSKeyedUnarchiver(forReadingFrom: window.state) else { return }
         AppKitWindowRestorer.restoreWindow(
-            withIdentifier: NSUserInterfaceItemIdentifier(window.identifier), state: state) { _, _ in }
+            withIdentifier: NSUserInterfaceItemIdentifier(window.identifier), state: state) { restored, _ in
+                restored?.setFrame(window.frame, display: false)
+            }
+    }
+
+    /// What the system keeps of a window between launches.
+    struct KeptWindow {
+        let identifier: String
+        let state: Data
+        let frame: NSRect
     }
 
     func step() {

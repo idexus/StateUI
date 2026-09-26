@@ -115,7 +115,6 @@ final class AppKitWindowController: NSWindowController {
             window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
             window.isRestorable = true
             window.restorationClass = AppKitWindowRestorer.self
-            window.setFrameAutosaveName("StateUI.\(record.windowIdentifier)")
         }
     }
 
