@@ -430,7 +430,9 @@ final class MountedTreeTests: XCTestCase {
         }
         var spans = HostPatch(id: .manual("spans"), type: .spans)
         spans.children = .arranged([
-            span("one", [.text: .string("Big "), .fontSize: .number(20)]),
+            span("one", [
+                .text: .string("Big "), .fontSize: .number(20), .fontFamily: .name("Menlo"), .lineHeight: .number(1.5),
+            ]),
             span("two", [.text: .string("Small"), .textCase: .enumeration(TextCase.lowercase.rawValue)]),
         ])
         var label = HostPatch(id: .manual("label"), type: .label)
@@ -443,7 +445,30 @@ final class MountedTreeTests: XCTestCase {
         let runs = tree.root?.first(id: .manual("label"))?.textRuns
         XCTAssertEqual(runs?.map(\.text), ["BIG ", "small"], "each in its own case, else the label's")
         XCTAssertEqual(runs?.first?.look.size, 20)
+        XCTAssertEqual(runs?.first?.look.family, "Menlo", "a span's own family")
+        XCTAssertEqual(runs?.first?.look.lineHeight, 1.5, "a span's own line height")
         XCTAssertNil(tree.root?.first(id: .manual("plain"))?.textRuns)
+    }
+
+    /// An element's own look is read from its own values: its font, its colour, its letters' spacing, its lines'
+    /// height and its decorations.
+    @MainActor
+    func testAnElementsLookIsItsOwnValues() {
+        let (tree, _) = Self.tree()
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [
+            .fontSize: .number(15), .fontFamily: .name("Menlo"), .characterSpacing: .number(2),
+            .lineHeight: .number(1.2), .textDecorations: .enumeration(TextDecorations.underline.rawValue),
+        ]
+        tree.apply(label, complete: true)
+
+        let look = tree.root?.textLook
+        XCTAssertEqual(look?.size, 15)
+        XCTAssertEqual(look?.family, "Menlo")
+        XCTAssertEqual(look?.letterSpacing, 2)
+        XCTAssertEqual(look?.lineHeight, 1.2)
+        XCTAssertEqual(look?.decorations, .underline)
+        XCTAssertEqual(tree.root?.textRuns, nil)
     }
 
     /// A run's look stands over its label's: where the run says nothing, the label's says it.

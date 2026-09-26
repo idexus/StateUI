@@ -71,18 +71,28 @@
 }
 
 extension MountedElement {
+    /// The look this element's own values give its words: its font, its colour, what stands behind them, the space
+    /// between its letters, its lines' height and its decorations - each nil or empty where it says nothing.
+    public var textLook: TextLook {
+        var look = TextLook()
+        look.size = number(.fontSize)
+        look.attributes = value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? .none
+        look.family = value(.fontFamily)?.name
+        look.color = value(.textColor)
+        look.letterSpacing = number(.characterSpacing) ?? 0
+        look.lineHeight = number(.lineHeight)
+        look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? .none
+        return look
+    }
+
     /// A label's spans as runs of its words, each in its case - its own, else the label's - and its look; nil
     /// where the label holds no spans.
     public var textRuns: [TextRun]? {
         guard let spans = children.first(where: { $0.type == .spans }) else { return nil }
         let labelCase = value(.textCase)
         return spans.children.filter { $0.type == .span }.map { span in
-            var look = TextLook()
-            look.size = span.number(.fontSize)
-            look.attributes = span.value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? .none
-            look.color = span.value(.textColor)
+            var look = span.textLook
             look.background = span.value(.background)
-            look.decorations = span.value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? .none
             let textCase = (span.value(.textCase) ?? labelCase)?.enumeration.flatMap(TextCase.init(rawValue:))
             return TextRun(text: (textCase ?? .none).applied(to: span.string(.text) ?? ""), look: look)
         }
