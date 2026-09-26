@@ -33,12 +33,29 @@ final class KeptValuesTextTests: XCTestCase {
         XCTAssertEqual(KeptValuesText(kept.text).restored(for: keys)["kept.name"], .string("a\tb\nc\\d\re"))
     }
 
-    /// A key the application does not list, or a value of another kind than its key's, is not kept; a line
-    /// that is no key and words is passed over.
+    /// A key the application does not list still saves, as its value's own kind, and reads back as the kind its key
+    /// says once it is listed: its value comes one launch late.
+    func testAKeyLeftOffTheListStillSaves() {
+        var kept = KeptValuesText("")
+        XCTAssertTrue(kept.keep([.name("late.count"), .number(2)], keys: keys))
+        XCTAssertTrue(kept.keep([.name("late.name"), .string("Ann")], keys: keys))
+        XCTAssertTrue(kept.keep([.name("late.loud"), .bool(false)], keys: keys))
+
+        let listed = [
+            PersistentKey("late.count", of: Int.self), PersistentKey("late.name", of: String.self),
+            PersistentKey("late.loud", of: Bool.self),
+        ]
+        XCTAssertEqual(KeptValuesText(kept.text).restored(for: listed), [
+            "late.count": .number(2), "late.name": .string("Ann"), "late.loud": .bool(false),
+        ])
+    }
+
+    /// A value of another kind than its key's, or of a kind no key keeps, is not kept; a line that is no key and
+    /// words is passed over.
     func testWhatIsNoKeptValueIsLeftOut() {
         var kept = KeptValuesText("stray line\nkept.count\t4\n")
-        XCTAssertFalse(kept.keep([.name("other.key"), .number(1)], keys: keys))
         XCTAssertFalse(kept.keep([.name("kept.count"), .string("four")], keys: keys))
+        XCTAssertFalse(kept.keep([.name("other.key"), .numbers([1, 2])], keys: keys))
 
         XCTAssertEqual(kept.words, ["kept.count": "4"])
     }

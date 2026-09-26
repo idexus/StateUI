@@ -38,17 +38,25 @@ public struct KeptValuesText: Equatable, Sendable {
         return restored
     }
 
-    /// Keeps a key's new value as the act `persistValue` carries it - the key's name, then its value - where
-    /// `keys` lists that key and the value is of its kind; whether it was kept.
+    /// Keeps a key's new value as the act `persistValue` carries it - the key's name, then its value - as its key's
+    /// kind where `keys` lists the key, and as the value's own kind where it does not; whether it was kept.
     @discardableResult
     public mutating func keep(_ arguments: [HostValue], keys: [PersistentKey]) -> Bool {
-        guard arguments.count >= 2, let name = arguments[0].name,
-              let key = keys.first(where: { $0.name == name }),
-              let word = Self.word(of: arguments[1], kind: key.kind)
+        guard arguments.count >= 2, let name = arguments[0].name else { return false }
+
+        let listed = keys.first { $0.name == name }
+        guard let word = listed.map({ Self.word(of: arguments[1], kind: $0.kind) }) ?? Self.word(of: arguments[1])
         else { return false }
 
         words[name] = word
         return true
+    }
+
+    /// A value of a key the application does not list, as the words of its own kind; nil for a value no key keeps.
+    static func word(of value: HostValue) -> String? {
+        if let bool = value.bool { return bool ? "true" : "false" }
+        if let number = value.number { return String(number) }
+        return value.string
     }
 
     /// A value as the words its kind reads back; nil for a value of another kind.
