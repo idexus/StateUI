@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A native AppKit choice field with StateUI's strict program/user boundary.
 ///

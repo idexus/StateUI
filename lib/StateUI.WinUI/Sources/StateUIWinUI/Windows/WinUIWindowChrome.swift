@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What a window's chrome shows, composed from the visible arrangement and an authored `TitleBar`: the title, the
 /// way back and the sidebar's toggle, the page's actions and those in overflow, three slots, the bar's colours, and

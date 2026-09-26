@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 

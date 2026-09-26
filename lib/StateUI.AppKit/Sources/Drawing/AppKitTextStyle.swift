@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The native font a caption is drawn in: the family where one is named, at
 /// the size given or the fallback's, bold and italic where the attributes say

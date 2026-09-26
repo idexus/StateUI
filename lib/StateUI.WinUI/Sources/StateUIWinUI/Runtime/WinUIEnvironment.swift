@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// What the device, the application, the user's locale, the battery, the network, the system's theme and the screen

@@ -3,8 +3,9 @@
 
 import CStateUIGTK
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIGTK
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 final class GTKSplitViewTests: XCTestCase {

@@ -3,8 +3,9 @@
 
 import CStateUIWinUI
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// The test thread as WinUI's: WinUI embedded in it once, since no loop of WinUI's runs a test.

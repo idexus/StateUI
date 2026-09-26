@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// One question for the user - an alert, a confirmation, a choice of actions, a prompt - as libadwaita's

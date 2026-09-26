@@ -3,8 +3,9 @@
 
 import CStateUIWinUI
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIConformance
 
 /// The facts the WinUI driver reads besides a member: a menu as WinUI holds it, the keyboard, where a press lands,
 /// the dialog showing, what the screen reader was told, what is drawn, the log, and what is kept.

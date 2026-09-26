@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A StateUI layout over a `StateUIViewGroup`: Android asks it to measure and place, and the core's arithmetic answers.

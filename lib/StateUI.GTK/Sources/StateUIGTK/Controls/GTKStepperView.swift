@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A Stepper: a `GtkSpinButton` - its number, which the user can type, and the buttons and the arrow keys moving

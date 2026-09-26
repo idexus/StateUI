@@ -132,10 +132,13 @@ From a terminal, the same builds are:
 
 ## Continuous integration
 
-Every workflow runs on pushes and pull requests to `main` and `dev`.
+Every workflow runs on pushes and pull requests to `main` and `dev`; a pull
+request targets `dev`.
 
-`Tests` runs the StateUI, StateUI.AppKit, and Gallery suites on macOS, and
-the Windows and Linux workflows run the StateUI suite on those machines.
+`Tests` runs the StateUI, StateUI.Host, StateUI.AppKit, and Gallery suites on
+macOS. The Windows and Linux workflows run the StateUI and StateUI.Host suites
+on those machines, Linux the conformance runner too, and Windows the WinUI
+host with every verdict held.
 
 ## License
 

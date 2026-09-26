@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// An `android.widget.TextView` or a subclass: the words, their size, weight and colour.

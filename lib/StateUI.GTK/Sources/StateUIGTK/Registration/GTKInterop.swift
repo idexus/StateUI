@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// What an APPLICATION registers with this host, beside the elements the host realizes itself: the controls of its

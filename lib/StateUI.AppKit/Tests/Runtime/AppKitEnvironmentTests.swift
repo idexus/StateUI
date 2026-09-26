@@ -5,6 +5,7 @@
 import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 
 /// The locale and the battery the host reports are the Mac's own, each told to the core in one report.
@@ -17,7 +18,7 @@ final class AppKitEnvironmentTests: XCTestCase {
             language: locale.language, region: locale.region, name: locale.name, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
             isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
-        defer { StateUIHost.setLocaleInfo(before) }
+        defer { HostBoundary.setLocaleInfo(before) }
         locale.name = ""
         locale.layoutDirection = .rightToLeft
 
@@ -38,7 +39,7 @@ final class AppKitEnvironmentTests: XCTestCase {
         let before = HostBatteryInfo(
             chargeLevel: battery.chargeLevel, state: battery.state, powerSource: battery.powerSource,
             energySaverStatus: battery.energySaverStatus)
-        defer { StateUIHost.setBatteryInfo(before) }
+        defer { HostBoundary.setBatteryInfo(before) }
         battery.state = .unknown
 
         AppKitEnvironment(core: CoreLink()).reportBattery()

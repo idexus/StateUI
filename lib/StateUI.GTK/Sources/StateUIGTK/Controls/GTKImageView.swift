@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// An Image: a panel drawing a picture from the application's folder, its own size, filling the room it is given

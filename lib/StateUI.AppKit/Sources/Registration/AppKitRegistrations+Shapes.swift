@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
     /// The shapes and the box they are drawn beside. Six elements share one

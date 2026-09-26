@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
     /// The stacks, the grid and the ZStack: the room a layout leaves around and between its children, and the box

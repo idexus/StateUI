@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A NavigationStack: libadwaita's `AdwNavigationView`, each page in a frame with its own header bar, pushed and

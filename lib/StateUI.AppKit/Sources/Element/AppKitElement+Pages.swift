@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Pages, tabs, split views, the window chrome they give, and menus.
 extension AppKitElement {

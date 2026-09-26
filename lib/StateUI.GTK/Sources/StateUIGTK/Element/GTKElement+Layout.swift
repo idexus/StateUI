@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Children placed: the layout item each child gives its parent.
 extension GTKElement {

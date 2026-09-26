@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// One pane of a split view. Its page keeps out of the part the window's title
 /// bar and toolbar cover, and a colour written for the bars paints that part.

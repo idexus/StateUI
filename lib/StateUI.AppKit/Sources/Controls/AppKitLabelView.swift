@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 enum AppKitVerticalTextAlignment: Int32, Equatable {
     case start = 0

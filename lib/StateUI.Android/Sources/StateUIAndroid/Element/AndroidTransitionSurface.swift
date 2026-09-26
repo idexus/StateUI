@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The closed set of properties the Android Views host moves; any other arrives at once.
 /// Design: docs/design/platforms/android/motion.md#what-moves

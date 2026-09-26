@@ -1,7 +1,7 @@
 # Host contract
 
 Every host is Swift in the application's process and consumes a typed sparse
-render through `StateUIHost`, behind `@_spi(Host)`. Code in a platform's own
+render through `HostBoundary`, behind `@_spi(Host)`. Code in a platform's own
 language - Java through JNI, C++ behind a C ABI - is a relay beneath the host.
 
 ## One process, one host
@@ -122,7 +122,7 @@ owned by another identity.
 
 ## Generations and recovery
 
-The host calls `StateUIHost.render(baseline:)` with the last generation it
+The host calls `HostBoundary.render(baseline:)` with the last generation it
 applied successfully. The renderer returns a sparse patch only when that
 baseline is its current generation. On the first render, for baseline zero, or
 for any mismatched baseline, `complete` is true and the root patch describes

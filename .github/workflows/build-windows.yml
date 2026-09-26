@@ -107,6 +107,9 @@ jobs:
       - name: Swift tests
         run: swift test
 
+      - name: Host layer tests
+        run: swift test --package-path lib/StateUI.Host
+
   # The WinUI host's own tests, then the contract's families on WinUI, each test
   # in a process of its own, every verdict held to exports/marks/winui: CI never
   # writes the dictionary's marks, so a family whose verdicts changed fails here

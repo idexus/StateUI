@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A StateUI-owned AppKit surface: StateUI's input transparency, and a press
 /// assistive technology reaches as a click does.

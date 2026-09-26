@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// One of the six shapes: a WinUI Path, its geometry drawn for the room it is given, filled and outlined.

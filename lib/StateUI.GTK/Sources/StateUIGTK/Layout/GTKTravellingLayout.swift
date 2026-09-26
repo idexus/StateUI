@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A layout whose children animate to the places a patch gives them.
 /// It begins each arrangement with `beginArrangement(width:)` and hands every child's place to `place(_:at:)`.

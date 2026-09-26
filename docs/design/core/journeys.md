@@ -11,7 +11,7 @@ stutters, and a truth value has two places and no distance, so none of them is
 ## The journey lanes
 
 A value the host animates lies on its image as `JourneyLanes`, the shape a
-host's animation is fed from, read through `StateUIHost.journey(from:)`:
+host's animation is fed from, read through `HostBoundary.journey(from:)`:
 
 ```text
   value        w lanes   where it IS; the host writes it every frame it moves,

@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIHost
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// The conformance suite on GTK: a family a contract, each one test, its verdicts GTK's column of the

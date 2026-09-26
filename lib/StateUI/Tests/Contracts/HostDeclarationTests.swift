@@ -1,0 +1,173 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// What a host declares about itself, read off its runtime and written to
+// exports/, and what that declaration MEANS against the contracts.
+//
+// The division is the point: a runtime knows which members it realizes and a
+// contract knows who declares them, so neither states the other's half. The
+// join is here, and an owner it works out is an owner nobody typed.
+
+import XCTest
+@_spi(Host) @testable import StateUI
+
+final class HostDeclarationTests: XCTestCase {
+
+    /// A declaration written as text reads back whole, shared machinery and
+    /// acts included.
+    func testADeclarationReadsBackAsItWasWritten() {
+        var sample = Self.sample
+        sample.shared = HostDeclaration.Element(members: ["opacity"], events: ["tapped"])
+        sample.acts = ["focus"]
+
+        XCTAssertEqual(HostDeclaration(text: sample.text), sample)
+    }
+
+    /// The text is the same whatever order it was gathered in: the sets are
+    /// written sorted.
+    func testTheSameDeclarationIsTheSameText() {
+        let same = HostDeclaration(elements: [
+            "Slider": HostDeclaration.Element(
+                members: ["value", "minimum", "maximum"], events: ["valueChanged"]),
+            "Label": HostDeclaration.Element(members: ["maximumLines", "fontSize"]),
+        ])
+
+        XCTAssertEqual(same.text, Self.sample.text)
+    }
+
+    /// A text that is not a declaration is refused whole rather than half read.
+    func testATextThatIsNotADeclarationIsRefused() {
+        let whole = Self.sample.text
+
+        XCTAssertNotNil(HostDeclaration(text: whole))
+        XCTAssertNil(HostDeclaration(text: ""), "no shared machinery and no acts")
+        XCTAssertNil(
+            HostDeclaration(text: whole.replacingOccurrences(of: "(acts)\n", with: "")),
+            "the acts left out")
+        XCTAssertNil(HostDeclaration(text: "  opacity\n" + whole), "a member under nothing")
+        XCTAssertNil(HostDeclaration(text: "Label\n" + whole), "an element said twice")
+        XCTAssertNil(HostDeclaration(text: whole + "Label\n"), "an element after the shared machinery")
+        XCTAssertNil(HostDeclaration(text: whole + "  opacity\n"), "a member among the acts")
+    }
+
+    /// THE JOIN: a member is named under the contract DECLARING it - the
+    /// element's own where the element declares it, and the tier's where a
+    /// tier does. This is what a host cannot say and what nobody now types.
+    func testAMembersOwnerComesFromTheContractAndNotFromTheHost() {
+        let realization = Self.sample.realization
+
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "Label", owner: "Label", member: "maximumLines")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "Label", owner: "FontElement", member: "fontSize")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+    }
+
+    /// The elements it declares are the elements it realizes, and the core
+    /// answers from them.
+    func testTheJoinedRealizationIsWhatTheCoreAnswersFrom() {
+        HostBoundary.setRealization(Self.sample.realization)
+        defer { HostBoundary.setRealization(HostRealization()) }
+
+        XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
+        XCTAssertTrue(HostBoundary.realizes(LabelContract.maximumLines))
+        XCTAssertTrue(HostBoundary.realizes(FontElementContract.fontSize))
+        XCTAssertFalse(HostBoundary.realizes(ButtonContract.self))
+    }
+
+    /// A member no contract declares is NOT quietly given the element as its
+    /// owner: it is a host and the contracts disagreeing, and it is named.
+    func testAMemberNoContractDeclaresIsNamedRatherThanGuessedAt() {
+        let wrong = HostDeclaration(elements: [
+            "Label": HostDeclaration.Element(members: ["maximumLines", "nosuchmember"]),
+        ])
+
+        XCTAssertFalse(wrong.realization.members.contains { $0.member == "nosuchmember" })
+        XCTAssertEqual(wrong.undeclared.map(\.member), ["nosuchmember"])
+    }
+
+    /// THE EXPORTS THEMSELVES: what each host's runtime wrote is read here,
+    /// joined with the contracts, and every name in it is one the contracts
+    /// know.
+    ///
+    /// This is the guard that replaces reading a hand-written declaration: the
+    /// runtime says what it realizes, and a name it invents fails HERE rather
+    /// than becoming a row nobody can explain.
+    func testEveryHostsExportJoinsWithTheContracts() throws {
+        for (host, path) in Self.exports.sorted(by: { $0.key < $1.key }) {
+            let declaration = try XCTUnwrap(
+                HostDeclaration(text: try String(
+                    contentsOf: SourceTree.repository.appendingPathComponent(path), encoding: .utf8)),
+                "\(path) did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 through \(host)'s suite.")
+
+            XCTAssertTrue(
+                declaration.undeclared.isEmpty,
+                "The \(host) export names what no contract declares: "
+                + declaration.undeclared.map { "\($0.element).\($0.member)" }.joined(separator: ", "))
+
+            let realization = declaration.realization
+
+            XCTAssertTrue(realization.elements.contains("Slider"), "\(host) realizes no Slider")
+            XCTAssertTrue(realization.members.contains(
+                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+
+            // The drift this road exists to end: `aspect` reaches an Image
+            // through the tier declaring it, whatever the host called the member.
+            XCTAssertTrue(realization.members.contains(
+                HostRealizedMember(element: "Image", owner: "ImageElement", member: "aspect")))
+        }
+    }
+
+    /// Where each host's suite writes what its runtime realizes, by the host's name.
+    private static let exports = [
+        "AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt", "WinUI 3": "exports/winui.txt",
+        "GTK 4": "exports/gtk.txt",
+    ]
+
+    /// A registry's realization says each member on every element; its declaration says an element's
+    /// own there, the shared machinery once, and leaves an application's own element to the application.
+    func testARegistryDeclaresTheSharedMachineryOnce() {
+        let realization = HostRealization(
+            elements: ["Label", "Slider", "Doodle"],
+            members: [
+                HostRealizedMember(element: "Label", owner: "Label", member: "maximumLines"),
+                HostRealizedMember(element: "Label", owner: "VisualElement", member: "opacity"),
+                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
+                HostRealizedMember(element: "Slider", owner: "VisualElement", member: "opacity"),
+                HostRealizedMember(element: "Slider", owner: "View", member: "tapped"),
+                HostRealizedMember(element: "Doodle", owner: "Doodle", member: "ink"),
+            ])
+
+        let declaration = HostDeclaration(realization: realization, shared: ["opacity", "tapped"], acts: ["focus"])
+
+        XCTAssertEqual(declaration.elements, [
+            "Label": HostDeclaration.Element(members: ["maximumLines"]),
+            "Slider": HostDeclaration.Element(events: ["valueChanged"]),
+        ])
+        XCTAssertEqual(declaration.shared, HostDeclaration.Element(members: ["opacity"], events: ["tapped"]))
+        XCTAssertEqual(declaration.acts, ["focus"])
+        XCTAssertEqual(declaration.text, """
+            Label
+              maximumLines
+            Slider
+              valueChanged()
+            (every element)
+              opacity
+              tapped()
+            (acts)
+              focus()
+
+            """)
+    }
+
+    // MARK: - Support
+
+    /// A host declaring a label with a member of its own and one of a tier it
+    /// wears, and a slider with the value a user moves.
+    private static let sample = HostDeclaration(elements: [
+        "Label": HostDeclaration.Element(members: ["fontSize", "maximumLines"]),
+        "Slider": HostDeclaration.Element(
+            members: ["maximum", "minimum", "value"], events: ["valueChanged"]),
+    ])
+}

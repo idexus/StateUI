@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 @MainActor

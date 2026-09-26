@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A ScrollView: a StateUI layout holding Android's own scroller - a `ScrollView`, a `HorizontalScrollView`,

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
     /// A Label: a `GtkLabel` - its words, how they break and stand across it, and the space between the letters and

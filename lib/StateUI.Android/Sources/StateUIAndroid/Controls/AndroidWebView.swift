@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A WebView: Android's own web view, in the host's `StateUIWebView`, which makes it again should its web
 /// process die. What the page does comes back as the element's events; a history flag only when it changes.

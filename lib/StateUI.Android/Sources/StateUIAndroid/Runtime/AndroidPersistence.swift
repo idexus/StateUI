@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// The application's kept values in the platform's preferences: read before the first scene, written as each

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// One of the six shapes: a panel drawing its geometry with GSK's own paths for the room its layout gives it, filled

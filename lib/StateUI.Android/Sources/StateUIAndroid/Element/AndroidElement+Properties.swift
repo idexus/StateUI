@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The native view: made, and given the element's properties.
 extension AndroidElement {
@@ -133,7 +134,7 @@ extension AndroidElement {
     /// The places an engine gives this layout's children, one each; nil while no state drives them.
     var placement: HostPlacementRun? {
         guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.area) else { return nil }
-        return StateUIHost.placements(from: carried)
+        return HostBoundary.placements(from: carried)
     }
 
     /// How the view is moved, turned and scaled; `scale` multiplies both axes on top of `scaleX` and `scaleY`.

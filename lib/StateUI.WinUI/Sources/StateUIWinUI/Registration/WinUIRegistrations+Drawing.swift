@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
     /// A Canvas: its drawing, and a press on it - down, dragged, lifted - in its own coordinates.

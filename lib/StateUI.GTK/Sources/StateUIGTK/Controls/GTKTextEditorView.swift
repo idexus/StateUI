@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A TextEditor: a `GtkTextView` of wrapped lines, whose Enter starts a new one, in a `GtkScrolledWindow` -

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// The application's kept values, in a store of the host's own - Windows keeps none for an application that is no

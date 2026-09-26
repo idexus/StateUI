@@ -31,10 +31,11 @@ requirement.
 
 ## Keep the core platform-neutral
 
-Code under `lib/StateUI/Sources` does not import Foundation or a platform UI
-framework. AppKit belongs under `lib/StateUI.AppKit` and Android Views under
-`lib/StateUI.Android`, with its build in `.scripts/Android`; each later host
-receives a sibling package of its own. Swift written for one host alone stands
+Code under `lib/StateUI/Sources` and `lib/StateUI.Host/Sources` does not
+import Foundation or a platform UI framework. Each host is a sibling package of
+its own - `lib/StateUI.AppKit`, `lib/StateUI.Android`, `lib/StateUI.WinUI`,
+`lib/StateUI.GTK` - standing on the host layer, with its build in
+`.scripts/<Platform>`. Swift written for one host alone stands
 under that host's condition - `#if APPKIT`, `#if ANDROID` - which its builds
 define.
 
@@ -87,8 +88,9 @@ terminal:
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
-A pull request to `main` or `dev` runs the `Tests` workflow on macOS and the
-core's suite on `Windows` and `Linux`.
+Open every pull request against `dev`, never `main`: `main` takes only the
+releases merged from `dev`. A pull request runs the `Tests` workflow on macOS
+and the suites on `Windows` and `Linux`.
 
 ## Keep changes reviewable
 

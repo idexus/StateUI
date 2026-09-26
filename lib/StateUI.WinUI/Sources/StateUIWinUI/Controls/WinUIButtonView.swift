@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// A WinUI `Button`: its caption, its look, whether it takes a press, and the click it raises.

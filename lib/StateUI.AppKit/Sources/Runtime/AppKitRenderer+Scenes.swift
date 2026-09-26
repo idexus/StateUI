@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Scenes and windows: kept in step with the tree, restored, activated and closed.
 extension AppKitRenderer {

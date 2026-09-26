@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The gestures an element listens for, on its view, and what each says.
 /// Design: docs/design/platforms/android/controls.md#gestures

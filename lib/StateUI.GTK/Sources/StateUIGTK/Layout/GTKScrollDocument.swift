@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What a ScrollView's scroller moves: its content where the core's scroll arithmetic puts it, in a document the
 /// viewport makes at least as large as itself.

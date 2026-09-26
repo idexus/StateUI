@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A Slider: a horizontal `GtkScale` over the range, drawing no number and rounding nothing the hand sets.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
     /// What shows work: a ProgressBar, how far along, and an ActivityIndicator, whether it turns - each in its tint.

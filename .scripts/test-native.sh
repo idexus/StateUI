@@ -8,6 +8,8 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repository_dir="$(cd "$script_dir/.." && pwd)"
 
 swift test --package-path "$repository_dir"
+swift test --package-path "$repository_dir/lib/StateUI.Host"
+swift test --package-path "$repository_dir/lib/StateUI.Conformance"
 swift test --package-path "$repository_dir/lib/StateUI.AppKit"
 swift test --package-path "$repository_dir/apps/Gallery"
 

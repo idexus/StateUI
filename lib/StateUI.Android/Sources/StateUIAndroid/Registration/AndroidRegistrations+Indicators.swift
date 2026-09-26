@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
     /// Progress and activity: one value each, a colour, and no event.

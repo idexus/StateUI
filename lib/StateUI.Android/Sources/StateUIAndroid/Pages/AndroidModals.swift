@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// The pages a window presents over its page, in order, the top one in front - each in a holder on the theme's

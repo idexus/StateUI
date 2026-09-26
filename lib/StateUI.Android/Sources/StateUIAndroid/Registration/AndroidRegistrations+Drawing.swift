@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
     /// A Canvas: its drawing, and a finger's press, drag and release on it.

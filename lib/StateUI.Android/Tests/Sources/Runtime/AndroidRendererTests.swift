@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIAndroid
 import XCTest
 
@@ -99,13 +100,13 @@ final class AndroidRendererTests: XCTestCase {
     func testAStartedHostSaysWhatItRealizes() {
         onMainActor {
             _ = AndroidRenderer.running { CounterPage() }
-            StateUIHost.setRealization(HostRealization())
+            HostBoundary.setRealization(HostRealization())
 
             _ = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
 
-            XCTAssertTrue(StateUIHost.realizes(LabelContract.self))
-            XCTAssertTrue(StateUIHost.realizes(ButtonContract.self))
-            XCTAssertFalse(StateUIHost.realizes(MapContract.self))
+            XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
+            XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
+            XCTAssertFalse(HostBoundary.realizes(MapContract.self))
         }
     }
 

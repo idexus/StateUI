@@ -6,6 +6,7 @@ import AppKit
 import IOKit.ps
 import Network
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The user's locale, the battery and the network, told to the core as the host starts and whenever one changes,
 /// for as long as the application runs.

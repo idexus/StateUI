@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
     /// A picture from the application's folder, and the box of colour beside it.

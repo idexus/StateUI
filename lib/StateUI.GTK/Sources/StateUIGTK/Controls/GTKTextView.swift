@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A `GtkLabel`: its words, wrapped at the width it is given, from its leading edge, in the look the tree gives them.

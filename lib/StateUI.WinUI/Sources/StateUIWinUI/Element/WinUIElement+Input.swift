@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What the user does to the element's view, carried into the runtime by the host layer's rule.
 /// Design: docs/design/host/runtime.md#a-users-change

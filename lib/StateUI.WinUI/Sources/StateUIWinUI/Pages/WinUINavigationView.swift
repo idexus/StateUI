@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A NavigationStack: its top page across its whole frame. The pages below are kept by their elements and held by
 /// no view, so each keeps what it showed for when the user comes back to it. The stack's furniture - the top page's

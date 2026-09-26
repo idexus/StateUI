@@ -14,14 +14,16 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
-        .package(name: "StateUIHostConformance", path: "../StateUI/Tests/HostConformance"),
+        .package(name: "StateUIHost", path: "../StateUI.Host"),
+        .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
     ],
     targets: [
         // GTK's and libadwaita's headers and libraries, and nothing else.
         .systemLibrary(name: "CStateUIGTK", path: "Sources/CStateUIGTK", pkgConfig: "libadwaita-1"),
         .target(
             name: "StateUIGTK",
-            dependencies: ["CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: ["CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources/StateUIGTK",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
@@ -29,7 +31,8 @@ let package = Package(
             name: "StateUIGTKTests",
             dependencies: [
                 "StateUIGTK", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHostConformance", package: "StateUIHostConformance"),
+                .product(name: "StateUIHost", package: "StateUIHost"),
+                .product(name: "StateUIConformance", package: "StateUIConformance"),
             ],
             path: "Tests",
             exclude: ["Resources"],

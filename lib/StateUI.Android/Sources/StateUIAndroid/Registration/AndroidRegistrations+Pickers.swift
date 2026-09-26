@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
     /// A Picker: its options, the choice and the title shown without one, its list opened and closed, and

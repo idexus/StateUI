@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// Words the user types - a WinUI `TextBox` on one line or several, or an `AutoSuggestBox` - whose typing reaches

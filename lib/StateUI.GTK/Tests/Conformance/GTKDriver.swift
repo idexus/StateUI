@@ -3,8 +3,9 @@
 
 import CStateUIGTK
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIGTK
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIConformance
 
 /// The GTK host as the conformance suite drives it: each user's act through the signal or the call GTK's own input
 /// takes, and each read from the widget itself.

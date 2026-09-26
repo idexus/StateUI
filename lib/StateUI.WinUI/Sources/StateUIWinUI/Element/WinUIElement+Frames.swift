@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Where the element stands, said to the tree that reads it by the host layer's rule.
 /// Design: docs/design/platforms/winui/layout.md#where-a-view-stands

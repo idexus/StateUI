@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A TextField: a `GtkEntry` on one line, whose words reach Swift as they change and whose Enter submits. The

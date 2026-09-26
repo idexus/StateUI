@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A DatePicker or a TimePicker: the host's `StateUIDateField`, a field in the user's locale that opens the

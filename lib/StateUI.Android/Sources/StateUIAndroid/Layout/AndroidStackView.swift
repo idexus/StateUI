@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A VStack or an HStack: the core's stack arithmetic over a `StateUIViewGroup`.
 @MainActor

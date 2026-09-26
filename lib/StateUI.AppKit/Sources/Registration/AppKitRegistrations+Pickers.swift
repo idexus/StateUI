@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
     /// A choice, a date and a time: what the user picks, reported by member.

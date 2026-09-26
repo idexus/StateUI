@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// A Picker: WinUI's `ComboBox`, its choices, the one chosen and its list, which the user opens and closes.

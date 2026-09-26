@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
     /// An Image: its picture and how it fills its room. A ColorBox: its colour and its corners.

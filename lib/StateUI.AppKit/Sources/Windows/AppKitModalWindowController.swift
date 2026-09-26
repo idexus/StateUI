@@ -5,6 +5,7 @@
 import AppKit
 import Foundation
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// One native sheet in the modal arrangement owned by a StateUI window.
 @MainActor

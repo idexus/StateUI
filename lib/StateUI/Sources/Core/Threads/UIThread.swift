@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The UI thread's executor: `MainActor`'s on every platform but Apple's, drained
-// by the host through `StateUIHost.runJobs`, and the doorbell that tells the host
+// by the host through `HostBoundary.runJobs`, and the doorbell that tells the host
 // to ask.
 // Design: docs/design/core/concurrency.md#mainactor-on-every-platform
 
@@ -118,7 +118,7 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     }
 
     /// Parks the calling thread until work lands and answers how many jobs wait -
-    /// what `StateUIHost.waitForWork` runs.
+    /// what `HostBoundary.waitForWork` runs.
     func waitForWork() -> Int {
         wake.wait()
 
@@ -198,7 +198,7 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     }
 
     /// Runs the UI thread's loop here until `stop()` - what an `async main` asks of
-    /// `MainActor`'s executor; a host drains through `StateUIHost.runJobs` instead.
+    /// `MainActor`'s executor; a host drains through `HostBoundary.runJobs` instead.
     func runTheLoop() {
         while !guarded.withLock({ stopped }) {
             _ = waitForWork()

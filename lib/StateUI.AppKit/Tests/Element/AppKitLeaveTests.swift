@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
@@ -26,7 +27,7 @@ final class AppKitLeaveTests: XCTestCase {
     }
 
     private func journey(from value: Double, to destination: Double) -> HostStateValue {
-        StateUIHost.value(of: HostJourney(
+        HostBoundary.value(of: HostJourney(
             value: [value],
             destination: [destination],
             velocity: [0],

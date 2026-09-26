@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
@@ -196,7 +197,7 @@ final class AppKitContainerTests: XCTestCase {
             motion: .none,
             completion: nil,
             stopped: 0)
-        renderer.applyStateForTesting(71, value: StateUIHost.value(of: arrived))
+        renderer.applyStateForTesting(71, value: HostBoundary.value(of: arrived))
         nativeStack.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeFrame.frame.height, 160, accuracy: 0.001)
@@ -449,7 +450,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(try drawn(), ["red", "bound", "blue"])
 
         let raised = HostJourney(value: [5], destination: [5], velocity: [0], motion: .none, completion: nil, stopped: 0)
-        renderer.applyStateForTesting(72, value: StateUIHost.value(of: raised))
+        renderer.applyStateForTesting(72, value: HostBoundary.value(of: raised))
         XCTAssertEqual(try drawn(), ["red", "blue", "bound"])
     }
 

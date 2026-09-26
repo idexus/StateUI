@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// WinUI's `NavigationView`: the sidebar page in its pane - beside the detail page where the window is wide, over it

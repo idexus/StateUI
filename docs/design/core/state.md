@@ -180,9 +180,9 @@ is built, and the host hydrates the whole store before the first render. It
 reads a store key by key, each with its kind, so the application lists its keys:
 
 ```text
-  1  the host asks for the keys and the store     StateUIHost.persistentKeys
+  1  the host asks for the keys and the store     HostBoundary.persistentKeys
   2  it reads exactly those from the store
-  3  it hands back what it found                  StateUIHost.restorePersistent
+  3  it hands back what it found                  HostBoundary.restorePersistent
 ```
 
 A key the store has nothing under is absent, and the state keeps the value

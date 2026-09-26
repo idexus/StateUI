@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 /// Design: docs/design/platforms/gtk/drawing.md#a-placed-child

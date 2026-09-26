@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
     /// A ProgressBar and an ActivityIndicator: how far the work went, whether it runs, and the tint it shows in.

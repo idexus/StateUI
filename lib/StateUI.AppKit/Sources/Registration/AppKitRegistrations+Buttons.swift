@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
     /// The control a user presses: a caption, an icon beside it, and the

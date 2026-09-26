@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor

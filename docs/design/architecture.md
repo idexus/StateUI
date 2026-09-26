@@ -18,7 +18,11 @@ the packages, what crosses between them, and where each part of the work runs.
   StateUI  (lib/StateUI, a dynamic library; no Foundation; every platform)
     Sources/Views, Types, Contracts       what an application writes with
     Sources/Core                          state, keys, diffing, cycles, the typed boundary
-    Sources/Host                          the host layer, @_spi(Host)
+        |
+        |  @_spi(Host)
+        v
+  StateUIHost  (lib/StateUI.Host, a dynamic library)
+    Sources                               the host layer every host stands on
         |
         |  typed HostRender / HostPatch
         v

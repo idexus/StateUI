@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// The one chrome of a StateUI window: WinUI's `TitleBar`. WinUI owns placement, overflow, the caption buttons and

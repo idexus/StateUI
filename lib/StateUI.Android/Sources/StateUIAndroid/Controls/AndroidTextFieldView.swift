@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A TextField, a SearchField or a TextEditor: an `android.widget.EditText` on one line or several, whose typing

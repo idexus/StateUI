@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What an APPLICATION registers with this host, beside the elements the host
 /// realizes itself: the acts it performs and the events it raises.

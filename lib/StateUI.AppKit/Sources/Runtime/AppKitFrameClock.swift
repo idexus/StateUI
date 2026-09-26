@@ -5,6 +5,7 @@
 import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The frame clock: the display link of the window shown first, moved on when that window closes.
 /// Design: docs/design/host/runtime.md#one-frame

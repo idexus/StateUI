@@ -4,9 +4,9 @@
 /// One act the application called, for a native host to perform.
 ///
 /// The application calls through `stateUICall` or `stateUISend`. The host
-/// takes the call with `StateUIHost.takeActCalls()` and answers one that
-/// carries a completion with `StateUIHost.reply(_:with:)` or
-/// `StateUIHost.fail(_:reason:)`.
+/// takes the call with `HostBoundary.takeActCalls()` and answers one that
+/// carries a completion with `HostBoundary.reply(_:with:)` or
+/// `HostBoundary.fail(_:reason:)`.
 @_spi(Host) public struct HostActCall: Sendable {
     /// The act's token.
     public let act: Act

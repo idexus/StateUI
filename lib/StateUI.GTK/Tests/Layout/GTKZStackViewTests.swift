@@ -3,8 +3,9 @@
 
 import CStateUIGTK
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIGTK
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// Three layers, one inside another: red 10 wide, blue 20, green 30. A button raises blue by a described `zIndex`,

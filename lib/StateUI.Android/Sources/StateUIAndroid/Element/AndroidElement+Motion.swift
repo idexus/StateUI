@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The element's part in its layout's motion: fading in as it joins, and a change of visibility crossed.
 /// Design: docs/design/platforms/android/motion.md#joining-and-leaving

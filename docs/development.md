@@ -6,6 +6,8 @@
 Package.swift                      StateUI core package and core tests
 lib/StateUI/Sources/               platform-neutral StateUI
 lib/StateUI/Tests/                 core tests and shared test support
+lib/StateUI.Host/                  the host layer every host stands on, and its tests
+lib/StateUI.Conformance/           the conformance suite every host's tests run
 lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
 lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
@@ -18,6 +20,7 @@ lib/StateUI.VSCode/                the editor extension
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/Android/    Gallery Android head
+apps/Gallery/Platforms/WinUI/      Gallery WinUI head
 apps/Gallery/Platforms/GTK/        Gallery GTK head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
@@ -27,8 +30,8 @@ apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
 apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
 ```
 
-The core never imports Foundation or a platform UI framework. Application code
-may import Foundation. Platform frameworks remain inside host packages and
+The core and the host layer never import Foundation or a platform UI
+framework. Application code may import Foundation. Platform frameworks remain inside host packages and
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
@@ -96,8 +99,11 @@ Treat one control, property, event, or host action as one vertical change:
 2. Add or change the public Swift declaration and its `///` documentation.
 3. Declare the member in its element's contract - its name, its value's type
    and its layer; its host-SPI token follows from the member.
-4. Implement every host claimed by the change, keeping native adapters thin.
-5. Add focused core tests and direct native-host tests.
+4. Decide what of it every host shares and write that part in the host layer
+   first, with its pure tests ([host layer](host-layer.md)); then implement
+   every host claimed by the change, keeping native adapters thin.
+5. Add focused core tests and direct native-host tests, and a conformance case
+   where executing the contract shows the effect.
 6. Add or update the smallest Gallery demonstration and handbook section.
 7. Let the host say what it realizes, only after its tests pass. A member a
    registration takes or raises records itself: with `STATEUI_UPDATE_EXPORTS=1`,
@@ -173,19 +179,24 @@ Each suite lives beside the package whose behavior it verifies:
 
 ```bash
 swift test
+swift test --package-path lib/StateUI.Host
+swift test --package-path lib/StateUI.Conformance
 swift test --package-path lib/StateUI.AppKit
 swift test --package-path apps/Gallery
 ```
 
-`.scripts/test-native.sh` runs the three Swift suites, then the Gallery again as
-an AppKit build (`STATEUI_APPKIT=1`), on a build directory of its own:
+`.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
+AppKit build (`STATEUI_APPKIT=1`), on a build directory of its own:
 
 ```bash
 .scripts/test-native.sh
 ```
 
-The first suite covers core semantics and the typed boundary. The second
-drives native AppKit objects. The third treats Gallery as application behavior
+The first suite covers core semantics and the typed boundary. The host
+layer's suite proves the rules every host shares, pure, with no toolkit. The
+conformance package's own tests prove its runner and that every member has
+its case; each host's suite runs the cases themselves. The AppKit suite drives
+native AppKit objects. The Gallery's treats Gallery as application behavior
 and compiles the documentation examples. In VS Code, **StateUI: Run Tests**
 runs them as the chosen host.
 

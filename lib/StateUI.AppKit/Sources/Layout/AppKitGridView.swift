@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// One parsed row or column definition in a StateUI grid.
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.

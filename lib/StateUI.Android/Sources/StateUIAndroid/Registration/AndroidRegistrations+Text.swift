@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
     /// A Label: a `TextView` - its words, how they break and stand, and the space between the letters.

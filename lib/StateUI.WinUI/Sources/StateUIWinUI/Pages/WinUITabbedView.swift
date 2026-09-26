@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A TabbedView: the chosen tab's page, under a row of tabs - WinUI's `SelectorBar` - of its own, or under the
 /// window's where its tabs are the window's.

@@ -3,10 +3,10 @@
 A runtime is the part of a host that turns the core's patches and cycles into
 native views, and turns what the user does back into state. Every runtime has
 the same elements, one job each, named alike in every language. The
-toolkit-neutral elements are the core's host layer, `lib/StateUI/Sources/Host`,
-behind `@_spi(Host)`, and every host - Swift in the application's process -
-uses them as they are.
-Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
+toolkit-neutral elements are the host layer, `lib/StateUI.Host` - the module
+`StateUIHost`, which reaches the core through `@_spi(Host)` - and every host,
+Swift in the application's process, uses them as they are. Its folders are
+its parts; [the host layer](../../host-layer.md) maps them.
 
 ## The layers
 
@@ -18,8 +18,8 @@ Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
        |                   HostRender / HostPatch (typed)
        v
   host layer               CoreLink        PatchIntake
-  @_spi(Host)              MountedTree     MountedElement
-  Sources/Host             Animator        StateChannels
+  StateUIHost             MountedTree     MountedElement
+  lib/StateUI.Host         Animator        StateChannels
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
                            Pump            HandlerDispatch
@@ -376,7 +376,7 @@ the lines there.
 A runtime calls the running core through `CoreLink` alone: a render, a cycle,
 an event, an act call and its answer, a user's report, the application's and
 the scene's reports, the kept values and the doorbell's wait. The line is the
-typed `StateUIHost` SPI. The lane codecs - a journey read from its
+typed `HostBoundary` SPI. The lane codecs - a journey read from its
 image and written back, a placement run - are arithmetic on values the runtime
 already holds, and stay the SPI's.
 

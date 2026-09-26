@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIHost
+@_spi(Host) import StateUIConformance
 import WinSDK
 import XCTest
 

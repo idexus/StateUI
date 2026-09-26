@@ -14,6 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
+        .package(name: "StateUIHost", path: "../StateUI.Host"),
     ],
     targets: [
         // The NDK's C surface: JNI, the main thread's looper, the display's
@@ -25,7 +26,8 @@ let package = Package(
         ),
         .target(
             name: "StateUIAndroid",
-            dependencies: ["CStateUIAndroid", .product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: ["CStateUIAndroid", .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources/StateUIAndroid",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

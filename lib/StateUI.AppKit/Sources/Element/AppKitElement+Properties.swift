@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
@@ -417,7 +418,7 @@ extension AppKitElement {
     func placement(_ property: Prop) -> HostPlacementRun? {
         guard driven[property]?.kind == .placement, let carried = element.carriedValue(property) else { return nil }
 
-        return StateUIHost.placements(from: carried)
+        return HostBoundary.placements(from: carried)
     }
 
     func textAlignment(_ value: Int32?) -> NSTextAlignment {

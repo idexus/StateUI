@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
     /// A WebView: the page it shows and what it calls itself, and what the page does.

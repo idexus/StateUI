@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// A DatePicker: WinUI's `CalendarDatePicker`, its day written in the user's own way, and its calendar, which the

@@ -3,6 +3,7 @@
 
 import CStateUIWinUI
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A WinUI window: its title, its one chrome across the top, its menu bar and the row of tabs beneath it, and the
 /// page shown in it, activated the first time it has one.

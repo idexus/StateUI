@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The contracts this host realizes through the core's registry: how each
 /// element's view is made, which of its members the view takes, and what it

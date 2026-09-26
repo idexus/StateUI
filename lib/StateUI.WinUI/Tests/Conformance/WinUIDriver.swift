@@ -4,8 +4,9 @@
 import CStateUIWinUI
 import Foundation
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIConformance
 
 /// The WinUI host as the conformance suite drives it: each user's act through UI Automation's pattern or the path
 /// WinUI's own input takes into the host, and each read from the control itself.

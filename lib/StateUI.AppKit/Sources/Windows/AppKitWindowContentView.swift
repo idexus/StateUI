@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The stable native root of one StateUI window. Pages and overlays occupy
 /// AppKit's safe content rectangle, leaving native title and toolbar areas to

@@ -3,6 +3,7 @@
 
 #if os(macOS)
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
@@ -305,7 +306,7 @@ final class AppKitMotionTests: XCTestCase {
             renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
         let arrangementsBeforeFrame = nativeStack.arrangementCountForTesting
         func landed(_ value: Double) -> HostStateValue {
-            StateUIHost.value(of: HostJourney(
+            HostBoundary.value(of: HostJourney(
                 value: [value],
                 destination: [value],
                 velocity: [0],

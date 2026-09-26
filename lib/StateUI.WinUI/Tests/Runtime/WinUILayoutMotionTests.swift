@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIWinUI
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.

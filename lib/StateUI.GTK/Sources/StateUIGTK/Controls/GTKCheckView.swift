@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A CheckBox - a `GtkCheckButton` with no caption, the box alone - or a RadioButton, one with its caption, drawn as

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
     /// A Picker: its choices and the one chosen, which the user chooses too.

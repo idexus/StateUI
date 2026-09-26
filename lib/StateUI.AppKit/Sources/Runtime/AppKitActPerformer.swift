@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Performs the acts the application calls on the host, and answers each: a
 /// reply with its values, or a failure with the reason, so a caller never

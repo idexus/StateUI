@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Pages and their arrangements on GTK: the chrome each page's header bar shows - its title or title view, its
 /// actions, whether it offers the way back - and the user's choices handed to the host layer, which tells the pages

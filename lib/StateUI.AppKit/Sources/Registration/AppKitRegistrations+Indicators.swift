@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
     /// Progress and activity: one value each, and no event.

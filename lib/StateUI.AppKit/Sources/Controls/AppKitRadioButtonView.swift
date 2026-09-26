@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A native AppKit radio control. StateUI's mounted tree owns group scope.
 @MainActor

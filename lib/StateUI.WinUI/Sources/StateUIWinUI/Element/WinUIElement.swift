@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The WinUI half of a mounted element: its native element and everything hung on it.
 /// Design: docs/design/host/tree.md#the-native-half

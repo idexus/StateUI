@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// One child as its AppKit layout places it: its view, and what the layout reads of it.
 @MainActor

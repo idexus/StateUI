@@ -137,7 +137,7 @@ writes them into one provider object each, and a view reads a provider with
 ```text
   the platform reports a change
        |
-       |  StateUIHost.setDeviceInfo(...) and its kin, one per provider
+       |  HostBoundary.setDeviceInfo(...) and its kin, one per provider
        v
   Battery  Connectivity  DeviceDisplay  LocaleInfo  DeviceInfo  AppInfo  ApplicationSession
        |   each property a @State

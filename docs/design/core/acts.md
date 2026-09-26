@@ -13,10 +13,10 @@ describes the act and the host performs it.
      |                   (completion ids count down from -1)
      |  the handler suspends; the host is woken
      v
-  host turn: StateUIHost.takeActCalls
+  host turn: HostBoundary.takeActCalls
      |  the host performs each act on its native objects
      v
-  StateUIHost.reply(-7, with:)   or   StateUIHost.fail(-7, reason:)
+  HostBoundary.reply(-7, with:)   or   HostBoundary.fail(-7, reason:)
      |
      v  Renderer.dispatch(-7): the continuation resumes on MainActor
   handler: the next line runs with the alert gone
@@ -88,8 +88,8 @@ awaits the first queues the second only once the answer is in.
 
 ## Every act is answered
 
-A host takes typed calls and answers each by its id: `StateUIHost.reply` with
-the values the act came to, or `StateUIHost.fail` with the reason it could not
+A host takes typed calls and answers each by its id: `HostBoundary.reply` with
+the values the act came to, or `HostBoundary.fail` with the reason it could not
 perform it, which the awaiting `stateUICall` throws. There is no timeout: an
 act may wait without bound - a dialog waits for the user - so a failure is
 causal, told by the side that failed. An id answered twice resumes nobody

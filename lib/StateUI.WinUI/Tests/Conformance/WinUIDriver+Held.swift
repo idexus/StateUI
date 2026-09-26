@@ -3,8 +3,9 @@
 
 import CStateUIWinUI
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
-@_spi(Host) import StateUIHostConformance
+@_spi(Host) import StateUIConformance
 
 /// What the WinUI driver reads of a member: from the control WinUI holds, by the relay's reader, never from what the
 /// host last wrote.

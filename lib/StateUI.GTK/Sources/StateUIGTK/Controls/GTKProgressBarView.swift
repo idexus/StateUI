@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A ProgressBar: a `GtkProgressBar` over the range 0 to 1, a fraction past either end standing at that end.

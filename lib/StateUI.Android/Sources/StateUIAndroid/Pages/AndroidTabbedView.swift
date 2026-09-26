@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A TabbedView: the chosen tab's page over a row of tabs along the bottom, the host's `StateUITabs`.

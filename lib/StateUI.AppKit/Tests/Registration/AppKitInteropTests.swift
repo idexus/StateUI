@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
@@ -156,9 +157,9 @@ final class AppKitInteropTests: XCTestCase {
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
 
-        XCTAssertTrue(StateUIHost.realizes(LabelContract.self))
-        XCTAssertTrue(StateUIHost.realizes(ButtonContract.self))
-        XCTAssertFalse(StateUIHost.realizes(MapContract.self))
+        XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
+        XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
+        XCTAssertFalse(HostBoundary.realizes(MapContract.self))
         XCTAssertNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.spoke.name))
         XCTAssertNotNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.unheard.name))
     }

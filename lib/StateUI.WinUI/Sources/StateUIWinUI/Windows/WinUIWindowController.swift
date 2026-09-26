@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// One window element shown in a WinUI window: what the host layer says it shows - its arrangement of pages, its
 /// sheets, its overlay, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.

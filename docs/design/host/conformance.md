@@ -24,7 +24,7 @@ beside the native API they prove.
 
 ## A case
 
-A case is written once, in `lib/StateUI/Tests/HostConformance`, as a page,
+A case is written once, in `lib/StateUI.Conformance`, as a page,
 what the user and the program do to it, and what must follow. It says which
 members of the contract it covers; it runs on a host only where the host
 realizes all of them, by the host's register (`HostRegister`), so a case can

@@ -136,7 +136,7 @@ extension Renderer {
         else { return false }
 
         let current = StateImage.carried(of: bytes, lanes: StateValueLanes.own)
-        guard let standing = StateUIHost.journey(from: current),
+        guard let standing = HostBoundary.journey(from: current),
               journey.value.count == standing.value.count,
               journey.destination.count == standing.destination.count,
               journey.velocity.count == standing.velocity.count,

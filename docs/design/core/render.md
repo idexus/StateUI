@@ -9,7 +9,7 @@ host per process.
 ## One renderer
 
 The renderer is entered only from the host's UI thread, synchronously, through
-a `@_cdecl` export or the typed `StateUIHost` SPI. It is `@unchecked Sendable`
+a `@_cdecl` export or the typed `HostBoundary` SPI. It is `@unchecked Sendable`
 rather than `@MainActor`: isolating it would add an `assumeIsolated` to every
 entry point for a promise the compiler cannot check across the C boundary
 anyway. The part that can suspend - a handler - is what `@MainActor` names.

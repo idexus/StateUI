@@ -3,6 +3,7 @@
 
 #if os(macOS)
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The closed set of property presentations the AppKit host can move.
 ///

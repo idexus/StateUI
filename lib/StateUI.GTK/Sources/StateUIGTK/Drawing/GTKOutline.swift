@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// An outline over a size as GSK's rounded rectangle: a rectangle, one with rounded corners, or an ellipse.

@@ -5,6 +5,7 @@
 import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The AppKit runtime: the mounted tree over AppKit views, the scenes and windows around it, and the turn.
 /// Unchecked Sendable: every mutation is on MainActor; the doorbell only posts `pump()` to the main queue.

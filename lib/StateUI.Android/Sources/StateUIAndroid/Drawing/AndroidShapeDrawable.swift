@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A shape filled with a brush and outlined: the host's `StateUIShapeDrawable`, told every part by Swift.

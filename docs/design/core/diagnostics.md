@@ -21,9 +21,9 @@ is the other half, what counting live readers spared beside what got through.
 page that was left and still stands in memory shows as a number that does not
 come back down. It tells a leaked page from memory the allocator has not handed
 back yet, which a process's resident size cannot. A host reads the tally
-through `StateUIHost.tally` - a Swift runtime writes it with its own totals
+through `HostBoundary.tally` - a Swift runtime writes it with its own totals
 under `STATEUI_TALLY=1` (host/patches.md) - and the per-cycle trace through
-`StateUIHost.cycleTrace`, built only when the host's trace switch is on: this
+`HostBoundary.cycleTrace`, built only when the host's trace switch is on: this
 side has no environment to read.
 
 ## The inspector

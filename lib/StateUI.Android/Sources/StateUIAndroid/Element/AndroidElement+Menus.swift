@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Menus: an item's entry, and the context menu a view offers - written from its menu slot as the user asks.
 /// Design: docs/design/platforms/android/menus.md

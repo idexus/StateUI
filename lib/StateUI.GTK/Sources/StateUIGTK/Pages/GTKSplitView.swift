@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A SplitView: libadwaita's `AdwOverlaySplitView` - the sidebar beside the detail where the window is wide, over

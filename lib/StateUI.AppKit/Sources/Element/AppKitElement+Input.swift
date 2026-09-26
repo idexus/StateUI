@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What the user does: clicks, reported values, gestures, scrolling and frame reports.
 extension AppKitElement {

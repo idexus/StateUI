@@ -5,6 +5,7 @@
 import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What a layout draws of its own box: its background and its outline on its shape, and - where it clips - the cut
 /// of what it holds to that shape. A plain colour on a plain box is the layer's own, with nothing drawn.

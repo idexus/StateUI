@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Kept values: read from the preferences before the first render, and saved.
 extension AppKitRenderer {

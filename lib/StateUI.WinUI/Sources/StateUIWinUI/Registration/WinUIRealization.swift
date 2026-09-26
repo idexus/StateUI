@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// What this host realizes beyond its registry, whose export says the rest - the WinUI 3 column of the control
 /// dictionary; a member is recorded once a test of this package covers it.

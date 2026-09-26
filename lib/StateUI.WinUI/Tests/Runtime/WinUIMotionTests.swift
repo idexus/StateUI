@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIWinUI
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// A red box cut to its outline, which a click moves.

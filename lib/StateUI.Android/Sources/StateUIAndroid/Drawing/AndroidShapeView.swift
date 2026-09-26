@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A Rectangle, an Ellipse, a Line, a Path, a Polygon or a Polyline: the host's `StateUIShapeView`, told its

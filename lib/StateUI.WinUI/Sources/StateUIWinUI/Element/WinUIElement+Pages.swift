@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Pages and their arrangements on WinUI: a tabbed view's row and a split view's pane kept with the tree, and the
 /// user's choices on them handed to the host layer, which tells the pages and the states.

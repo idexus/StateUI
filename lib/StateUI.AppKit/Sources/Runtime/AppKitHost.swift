@@ -6,6 +6,7 @@ import AppKit
 import Foundation
 import QuartzCore
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Runs a StateUI application as native AppKit controls in the current process.
 ///

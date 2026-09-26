@@ -12,11 +12,13 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
+        .package(name: "StateUIHost", path: "../StateUI.Host"),
     ],
     targets: [
         .target(
             name: "StateUIAppKit",
-            dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: [.product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],
             linkerSettings: [.linkedFramework("AppKit")]
@@ -26,6 +28,7 @@ let package = Package(
             dependencies: [
                 "StateUIAppKit",
                 .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHost", package: "StateUIHost"),
             ],
             path: "Tests",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")],

@@ -5,6 +5,7 @@
 import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 
 /// The renderer every test here drives.

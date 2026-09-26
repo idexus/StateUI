@@ -3,8 +3,9 @@
 
 import CStateUIGTK
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIGTK
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// The test thread as GTK's: libadwaita started once, and an application registered for the windows, with no

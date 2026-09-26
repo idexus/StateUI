@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// An outline - a rectangle, one with rounded corners, or an ellipse (`BoxArithmetic.outline`) - as the relay takes

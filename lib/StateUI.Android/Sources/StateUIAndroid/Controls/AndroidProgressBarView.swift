@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A ProgressBar: Android's horizontal `ProgressBar`, the share of the work done across 10 000 steps.

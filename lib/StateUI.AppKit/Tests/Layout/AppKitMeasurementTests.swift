@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
@@ -78,7 +79,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let outerArrangements = nativeOuter.arrangementCountForTesting
         let captionMeasurements = nativeCaption.nativeMeasurementCountForTesting
 
-        renderer.applyStateForTesting(91, value: StateUIHost.value(of: HostJourney(
+        renderer.applyStateForTesting(91, value: HostBoundary.value(of: HostJourney(
             value: [40],
             destination: [60],
             velocity: [0],

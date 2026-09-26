@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A StateUI layout over a panel: GTK asks it to measure and allocate, and the core's arithmetic answers; it draws

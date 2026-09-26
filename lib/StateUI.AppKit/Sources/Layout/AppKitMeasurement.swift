@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Native StateUI containers measure their descendants against the width the
 /// parent actually offers. AppKit's unconstrained `fittingSize` cannot carry

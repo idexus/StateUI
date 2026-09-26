@@ -162,7 +162,7 @@
     }
 
     /// An event of the application's - one no element raises - the host
-    /// raises through `StateUIHost.raise`: recorded on the
+    /// raises through `HostBoundary.raise`: recorded on the
     /// application element, so the core knows the host reports it.
     ///
     ///     registry.raises(GalleryContract.batteryChanged)

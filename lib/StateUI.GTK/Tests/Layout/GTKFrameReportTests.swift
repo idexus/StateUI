@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIGTK
-import StateUIHostConformance
+import StateUIConformance
 import XCTest
 
 /// A box that says where it stands, into a state and to a handler, and a reader built from its own frame.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A ScrollView: a StateUI layout holding GTK's own scroller around the document it moves.
 /// Design: docs/design/platforms/gtk/layout.md#scrolling

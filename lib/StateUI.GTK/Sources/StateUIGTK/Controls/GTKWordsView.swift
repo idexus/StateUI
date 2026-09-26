@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A view showing words: a label, a button's caption - its words and how they look.
 /// Design: docs/design/platforms/gtk/controls.md#words

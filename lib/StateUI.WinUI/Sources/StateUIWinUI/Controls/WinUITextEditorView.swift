@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIWinUI
 
 /// A TextEditor: a WinUI `TextBox` of several lines, whose Enter starts a new one; growing with its words, or

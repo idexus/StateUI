@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A layout whose children travel to their places by the host layer's rule (`TravellingPlaces`).
 /// Design: docs/design/host/motion.md#layout-motion

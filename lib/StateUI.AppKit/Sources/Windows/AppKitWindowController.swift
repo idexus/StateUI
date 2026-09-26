@@ -5,6 +5,7 @@
 import AppKit
 import Foundation
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 @MainActor
 final class AppKitWindowController: NSWindowController {

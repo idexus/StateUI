@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A layout whose children animate to the places a patch gives them.
 /// It begins each arrangement with `beginArrangement()` and hands every child's place to `place(_:at:)`.

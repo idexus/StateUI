@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The gestures a view's element listens for, told apart by the view's one listener, `StateUIGestures`, and
 /// reported back through one native.

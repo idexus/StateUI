@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// A tabbed view's row of tabs: the host's `StateUITabs`, a tap on a tab handed on by its place.

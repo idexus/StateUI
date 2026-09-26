@@ -26,7 +26,7 @@ costs nothing.
 
 The host seeds every provider before the first render, so the first tree
 already knows its form factor and its locale, and writes again whenever the
-platform reports a change. A host writes through `StateUIHost`, one setter
+platform reports a change. A host writes through `HostBoundary`, one setter
 per provider - `setBatteryInfo`, `setConnectivityInfo`, `setDisplayInfo`,
 `setLocaleInfo`, `setDeviceInfo`, `setApplicationInfo` with `setTheme`, and
 `setApplicationPhase` - each with the whole report, typed.

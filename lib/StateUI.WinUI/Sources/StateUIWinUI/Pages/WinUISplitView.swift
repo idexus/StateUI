@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A SplitView: the sidebar page in WinUI's own navigation pane - beside the detail page where the window is wide,
 /// over it and closed by a click beside it where it is narrow - which WinUI places, as it places any Windows app's.

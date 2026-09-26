@@ -50,7 +50,7 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                                                                        |
   |   act queue, completions        UIThreadExecutor (MainActor), doorbell |
   +------------------------------------------------------------------------+
-        |  typed: HostRender, HostCycle, HostActCall (StateUIHost)
+        |  typed: HostRender, HostCycle, HostActCall (HostBoundary)
         v
   a Swift host in this process
 ```
@@ -63,7 +63,7 @@ rewrite; it moves on the display cycle with no rebuild at all (reactive path 2).
 ## The typed boundary
 
 Every host is Swift in the application's process. It links the core's dynamic
-library and calls `StateUIHost`, behind `@_spi(Host)`: `render(baseline:)`
+library and calls `HostBoundary`, behind `@_spi(Host)`: `render(baseline:)`
 answers a typed `HostRender` holding the sparse `HostPatch`, `cycle` a
 `HostCycle`, `takeActCalls` typed `HostActCall`s, and the reports come back
 the same way - `dispatch`, `report`, `reply`, `raise`, one setter per standard
@@ -116,7 +116,7 @@ host and never calls the core.
      |
      |  the host animates carried values with HostMotionLaw and reports
      |  the user's changes and its frames, lane by lane
-     v                                    StateUIHost.report
+     v                                    HostBoundary.report
   CycleBoard.cycle(now)
      1  latch     pending writes -> image; reported lanes are never echoed
      2  engines   by ascending priority - a conversion's back (-2) and
@@ -139,13 +139,13 @@ host and never calls the core.
 ```text
   UI thread (the host's)                       any other thread
   -----------------------------------------    ----------------------------------
-  event   StateUIHost.dispatch(id, payload)    a Task.detached or async let child
+  event   HostBoundary.dispatch(id, payload)    a Task.detached or async let child
           Renderer.dispatch                      writes @State, sends an act,
           Task.immediate on MainActor            writes a board between cycles
           -> the handler runs to its first           |  poke(), outside every lock
              await, inside the event                 v
                                                doorbell thread (the host made it)
-  turn    StateUIHost.runJobs: MainActor's jobs  parked in waitForWork
+  turn    HostBoundary.runJobs: MainActor's jobs  parked in waitForWork
           (Apple: the main queue's instead)      wakes, counts the work, posts
           a pending cycle, a render, the acts    ONE turn onto the UI thread
                                                  and parks again
@@ -178,7 +178,7 @@ holds its reasons. A type's extensions stand in its folder, named
   Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
                     reader, host events
   Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency
-  Core/Boundary     the typed SPI: StateUIHost, HostRender, HostPatch     (this note)
+  Core/Boundary     the typed SPI: HostBoundary, HostRender, HostPatch     (this note)
                     and the values it carries, SVG path data
   Core/Contract     contracts and tiers, members, their facts and         contracts
                     values, the tokens

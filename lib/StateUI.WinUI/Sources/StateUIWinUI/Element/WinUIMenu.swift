@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A menu as the relay takes it: its entries flat - an item, a separator, a submenu opening and closing - each with
 /// its caption and whether it can be chosen, and what each item does, in the items' order. A menu bar's are its

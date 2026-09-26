@@ -5,6 +5,7 @@
 import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A native scroll surface: its document geometry, its offset reported on the
 /// display's frames, and the moment it comes to rest. Where it rests is the

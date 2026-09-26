@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// AppKit's presentation of a split view: the sidebar page in a native
 /// sidebar, the detail page beside it.

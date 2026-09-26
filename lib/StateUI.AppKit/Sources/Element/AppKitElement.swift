@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Why a page became visible or stopped: a navigation carries three phases, an appearance two.
 enum AppKitPagePresentationReason {

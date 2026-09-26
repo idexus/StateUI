@@ -240,7 +240,7 @@ private func settle(
     rendering renders: Renders? = nil,
     _ tree: (() -> Node)? = nil
 ) async {
-    _ = StateUIHost.takeActCalls()
+    _ = HostBoundary.takeActCalls()
     Renderer.shared.start(handler)
 
     // Bounded rather than "until nothing is asked": a handler that asks for
@@ -268,13 +268,13 @@ private func settle(
             }
         }
 
-        let taken = StateUIHost.takeActCalls()
+        let taken = HostBoundary.takeActCalls()
 
         guard !taken.isEmpty || carried else { break }
 
         for act in taken {
             guard let id = act.completion else { continue }
-            _ = StateUIHost.complete(id, succeeded: true)
+            _ = HostBoundary.complete(id, succeeded: true)
         }
 
         // The job a resume produces DOES NOT EXIST YET when the completion is
@@ -284,7 +284,7 @@ private func settle(
         let deadline = Date().addingTimeInterval(0.5)
 
         while Date() < deadline {
-            if StateUIHost.runJobs() > 0 { break }
+            if HostBoundary.runJobs() > 0 { break }
 
             try? await Task.sleep(nanoseconds: 100_000)
         }
@@ -581,7 +581,7 @@ final class CatalogTests: XCTestCase {
         Renderer.shared.clearInvalidation()
         Renderer.shared.setApplication(OneWindow(window: window))
 
-        return StateUIHost.render(baseline: 0).root
+        return HostBoundary.render(baseline: 0).root
             .children[0].children[0]
     }
 

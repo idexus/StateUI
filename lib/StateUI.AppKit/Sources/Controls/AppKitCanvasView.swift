@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Native canvas that replays StateUI's closed drawing vocabulary in authored
 /// order. The command list is decoded before drawing, so malformed records are

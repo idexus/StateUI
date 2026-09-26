@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// An ActivityIndicator: Android's turning `ProgressBar`, drawn while it runs and keeping its room while it

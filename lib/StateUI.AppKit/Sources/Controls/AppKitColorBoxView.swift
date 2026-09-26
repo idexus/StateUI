@@ -4,6 +4,7 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Four independent corner radii in StateUI's top-left, top-right,
 /// bottom-left, bottom-right order.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A TabbedView: a `GtkStack` of its tabs, chosen by a `GtkStackSwitcher` - its tabs' captions joined in one

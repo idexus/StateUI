@@ -10,7 +10,7 @@ frame.
 ```text
   host frame (now, ms)
     |
-    |  StateUIHost.report                          the user's changes, by lane
+    |  HostBoundary.report                          the user's changes, by lane
     v
   CycleBoard.cycle(now:)
     1 READ      every write waiting since the last cycle is latched into the image

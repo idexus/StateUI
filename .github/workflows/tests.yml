@@ -27,6 +27,8 @@ jobs:
         run: swift --version
       - name: Test StateUI
         run: swift test
+      - name: Test StateUI.Host
+        run: swift test --package-path lib/StateUI.Host
 
   appkit:
     name: StateUI.AppKit

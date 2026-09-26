@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
     /// A Switch, a CheckBox and a RadioButton: whether it is on, whether it can be turned, and the turn the user makes;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// Why a page tree is shown or hidden: a change of what an arrangement shows, a move on a stack, or its window's.
 enum AndroidPagePresentationReason {

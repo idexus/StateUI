@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The user's input to the view, heard by the host layer's rule (`MountedElement.hearing`, `hear`).
 /// Design: docs/design/platforms/winui/input.md

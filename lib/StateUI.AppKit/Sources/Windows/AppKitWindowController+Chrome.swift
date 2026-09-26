@@ -5,6 +5,7 @@
 import AppKit
 import Foundation
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 extension AppKitWindowController {
     /// Composes the window's chrome again from what it shows now.
