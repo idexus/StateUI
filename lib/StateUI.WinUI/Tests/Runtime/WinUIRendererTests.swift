@@ -84,12 +84,12 @@ final class WinUIRendererTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
             let window = try XCTUnwrap(host.window).number
-            defer { WinUICallbacks.table.phaseChanged(window, 0) }
+            defer { WinUICallbacks.table.windowStateChanged(window, false, true) }
 
-            WinUICallbacks.table.phaseChanged(window, 2)
+            WinUICallbacks.table.windowStateChanged(window, true, false)
             XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["background stopped"])
 
-            WinUICallbacks.table.phaseChanged(window, 0)
+            WinUICallbacks.table.windowStateChanged(window, false, true)
             XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["active activated"])
         }
     }

@@ -274,8 +274,12 @@ after it stopped hears first that it resumed. They are heard in their turn,
 as a window's being made is, so a toolkit telling a phase in the middle of
 one - a window activated as the host shows it - waits for it to end. The
 phase the application stands in already tells nothing: a lifecycle is a
-state, not a count of the toolkit's callbacks. As the application ends, the
-window hears that it is going, then the scene.
+state, not a count of the toolkit's callbacks. A toolkit that tells a
+window's state rather than a phase has it turned into one alike
+(`ApplicationLifecycle.phase`): minimized, the application is seen nowhere,
+whatever its activation; else activated, it is in use; else it shows behind
+another. As the application ends, the window hears that it is going, then
+the scene.
 
 ## A window the user closes
 

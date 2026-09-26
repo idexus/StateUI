@@ -33,7 +33,7 @@ final class WinUIWindowController {
         let previousVisible = sheets.last?.element ?? presentation.arrangement
         let hadSheets = !sheets.isEmpty
         let changes = presentation.show(element)
-        stand(element, as: changes)
+        stand(changes)
         if let created = changes.created { runtime.pump.handlers.enqueuePhase(created) }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(of: element)
@@ -46,16 +46,12 @@ final class WinUIWindowController {
         }
     }
 
-    /// Stands the window as the element asks: the place, the size and the bounds the tree changed, its buttons and
-    /// its backdrop.
+    /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
-    private func stand(_ element: MountedElement, as changes: WindowPresentation.Changes) {
+    private func stand(_ changes: WindowPresentation.Changes) {
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
-        window.setButtons(
-            maximizable: element.value(.isMaximizable)?.bool ?? true,
-            minimizable: element.value(.isMinimizable)?.bool ?? true)
-        window.setTranslucent(element.value(.isTranslucent)?.bool == true)
+        if let traits = changes.traits { window.apply(traits) }
     }
 
     /// Keeps a sheet for each page the window's modal stack presents, in its order, each under its page's title.

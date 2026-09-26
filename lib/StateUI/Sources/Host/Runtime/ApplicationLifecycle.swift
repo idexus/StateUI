@@ -23,6 +23,12 @@
     /// An application no toolkit told a phase yet.
     public init() {}
 
+    /// The phase a window's state puts the application in: seen nowhere where it is minimized, else in use where it
+    /// is activated, else behind another.
+    public static func phase(minimized: Bool, activated: Bool) -> ApplicationPhase {
+        minimized ? .background : activated ? .active : .inactive
+    }
+
     /// What the application's scene and window hear as it enters `phase`, in order; nil where it stands in that
     /// phase already. A window shown again after it stopped hears first that it resumed; then the scene and the
     /// window hear that they were activated, deactivated or stopped.

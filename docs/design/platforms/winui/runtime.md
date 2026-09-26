@@ -108,20 +108,24 @@ is set as the whole window's, the content's asked for plus the frame around
 it as it stands: `ResizeClient` would add the title bar's height again, which
 the content already covers.
 
-The bounds are the presenter's preferred least and greatest size; the
-presenter also lets the user maximize and minimize the window or not. A
-translucent window's backdrop is acrylic, and any other window's is Mica.
+The bounds are the presenter's preferred least and greatest size. The
+traits ([a window's traits](../../host/tree.md#a-windows-traits)) are the
+presenter's too - its maximize and minimize buttons, a button left unsaid
+being WinUI's own, which lets the user press it, and its standing on top of
+other windows for one that floats - and the backdrop: a translucent window's
+is acrylic, and any other window's Mica, made again only where it turns.
 
 ## The application's phase
 
 The window's activation and its minimizing are the application's phase, told
 on by the host layer's rule ([the application's
-phase](../../host/runtime.md#the-applications-phase)): activated, it is in
-use; deactivated, it shows behind another window; minimized, it is seen
-nowhere. The window's state is read at each of WinUI's events, because a
-window being minimized is also told it lost its activation, in either order.
-A window is told it was made before it is first shown: WinUI tells it that it
-was activated inside `Activate`, before the call returns.
+phase](../../host/runtime.md#the-applications-phase)): the relay tells the
+window's state at each of WinUI's events - whether it stands minimized, and
+whether it is activated - because a window being minimized is also told it
+lost its activation, in either order; a change of its size or presenter tells
+it only where it is minimized. A window is told it was made before it is
+first shown: WinUI tells it that it was activated inside `Activate`, before
+the call returns.
 
 ## The environment
 

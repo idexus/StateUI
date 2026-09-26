@@ -109,9 +109,9 @@ enum WinUICallbacks {
             focused: { view, focused in
                 MainActor.assumeIsolated { WinUIView.find(view)?.focusChanged(focused) }
             },
-            phaseChanged: { window, phase in
+            windowStateChanged: { window, minimized, activated in
                 MainActor.assumeIsolated {
-                    WinUIRenderer.shared?.phaseChanged(ApplicationPhase(rawValue: phase) ?? .active, window: window)
+                    WinUIRenderer.shared?.windowStateChanged(number: window, minimized: minimized, activated: activated)
                 }
             },
             windowClosed: { window in

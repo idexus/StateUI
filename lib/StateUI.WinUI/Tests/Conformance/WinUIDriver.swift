@@ -124,10 +124,10 @@ final class WinUIDriver: HostDriver {
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
-        case (.minimize, _) where element.type == .window: try phase(2)
-        case (.restore, _) where element.type == .window: try phase(0)
-        case (.switchAway, _) where element.type == .window: try phase(1)
-        case (.switchBack, _) where element.type == .window: try phase(0)
+        case (.minimize, _) where element.type == .window: try state(minimized: true, activated: false)
+        case (.restore, _) where element.type == .window: try state(minimized: false, activated: true)
+        case (.switchAway, _) where element.type == .window: try state(minimized: false, activated: false)
+        case (.switchBack, _) where element.type == .window: try state(minimized: false, activated: true)
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
         default: throw DriverCannot(act, on: element)
         }
@@ -145,9 +145,9 @@ final class WinUIDriver: HostDriver {
         return window
     }
 
-    /// Moves the application's phase as the window's own events do: 0 in use, 1 behind another window, 2 minimized.
-    private func phase(_ phase: Int32) throws {
-        WinUICallbacks.table.phaseChanged(try window().number, phase)
+    /// Tells the window's state as its own events do.
+    private func state(minimized: Bool, activated: Bool) throws {
+        WinUICallbacks.table.windowStateChanged(try window().number, minimized, activated)
     }
 
     /// A click on a button, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as

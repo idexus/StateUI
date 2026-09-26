@@ -35,10 +35,6 @@ final class WinUIWindow {
 
     private var activated = false
 
-    /// Whether the user may maximize and minimize the window, as last given, and whether it was translucent.
-    private var buttons = (maximizable: true, minimizable: true)
-    private var translucent = false
-
     /// The number the window's own events name it by: its chrome's.
     var number: Int64 { titleBar.number }
 
@@ -75,18 +71,11 @@ final class WinUIWindow {
         stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
     }
 
-    /// Lets the user maximize and minimize the window or not.
-    func setButtons(maximizable: Bool, minimizable: Bool) {
-        guard buttons != (maximizable, minimizable) else { return }
-        buttons = (maximizable, minimizable)
-        stateui_winui_window_set_buttons(handle, maximizable, minimizable)
-    }
-
-    /// Paints the window's backdrop translucent, or of the desktop's tint.
-    func setTranslucent(_ translucent: Bool) {
-        guard self.translucent != translucent else { return }
-        self.translucent = translucent
-        stateui_winui_window_set_translucent(handle, translucent)
+    /// Makes the window what `traits` says: a button it leaves unsaid is WinUI's own, which lets the user press it.
+    func apply(_ traits: WindowTraits) {
+        stateui_winui_window_set_traits(
+            handle, traits.isMaximizable ?? true, traits.isMinimizable ?? true, traits.isTranslucent,
+            traits.floatsOnTop)
     }
 
     /// Shows `view` as the window's content - the first one activates the window.

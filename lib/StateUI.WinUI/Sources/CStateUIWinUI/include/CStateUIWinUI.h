@@ -139,9 +139,9 @@ typedef struct {
     /// The keyboard came into a view - to it or to what stands in it - or left it.
     void (*focused)(int64_t view, bool focused);
 
-    /// The window `window` names moved the application's phase: 0 in use, 1 showing behind another window, 2
-    /// minimized.
-    void (*phaseChanged)(int64_t window, int32_t phase);
+    /// The window `window` names was activated or deactivated, or minimized: whether it stands minimized, and
+    /// whether it is activated.
+    void (*windowStateChanged)(int64_t window, bool minimized, bool activated);
 
     /// The window `window` names closed - the user's click, or the program's.
     void (*windowClosed)(int64_t window);
@@ -197,14 +197,13 @@ void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, do
 /// greatest height, 0 for none.
 void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
 
-/// Whether the user may maximize and minimize the window.
-void stateui_winui_window_set_buttons(StateUIObjectRef window, bool maximizable, bool minimizable);
+/// What the window is: whether the user may maximize and minimize it, whether its backdrop is translucent (acrylic)
+/// or of the desktop's tint (Mica), and whether it floats over the application's other windows.
+void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool translucent,
+                                     bool floats);
 
-/// Paints the window's backdrop translucent (acrylic) or of the desktop's tint (Mica).
-void stateui_winui_window_set_translucent(StateUIObjectRef window, bool translucent);
-
-/// What a test reads of a window, into 11 values: x, y, width, height, the four limits in the order they are set,
-/// maximizable, minimizable and translucent as 1 or 0.
+/// What a test reads of a window, into 12 values: x, y, width, height, the four limits in the order they are set,
+/// maximizable, minimizable, translucent and floating as 1 or 0.
 void stateui_winui_window_frame(StateUIObjectRef window, double *values);
 
 /// The window's name the system shows - the taskbar's, Alt+Tab's - in UTF-8, as far as `capacity` goes; answers its

@@ -68,12 +68,10 @@ namespace {
         grid.KeyboardAccelerators().Append(escape);
     }
 
-    /// The application's phase as `window` stands: minimized, else in use where it is `activated`, else behind
-    /// another.
-    int32_t phase(windowing::AppWindow const &window, bool activated) {
+    /// Whether `window` stands minimized.
+    bool minimized(windowing::AppWindow const &window) {
         auto presenter = window.Presenter().try_as<windowing::OverlappedPresenter>();
-        if (presenter && presenter.State() == windowing::OverlappedPresenterState::Minimized) return 2;
-        return activated ? 0 : 1;
+        return presenter && presenter.State() == windowing::OverlappedPresenterState::Minimized;
     }
 }
 
@@ -85,12 +83,12 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
         // The window's state is read at each of them: a minimized window is also told it lost its activation.
         window.Activated([number](IInspectable const &sender, xaml::WindowActivatedEventArgs const &args) {
             auto activated = args.WindowActivationState() != xaml::WindowActivationState::Deactivated;
-            callbacks.phaseChanged(number, phase(sender.as<xaml::Window>().AppWindow(), activated));
+            callbacks.windowStateChanged(number, minimized(sender.as<xaml::Window>().AppWindow()), activated);
         });
         window.AppWindow().Changed(
             [number](windowing::AppWindow const &sender, windowing::AppWindowChangedEventArgs const &args) {
                 if (!args.DidPresenterChange() && !args.DidSizeChange()) return;
-                if (phase(sender, false) == 2) callbacks.phaseChanged(number, 2);
+                if (minimized(sender)) callbacks.windowStateChanged(number, true, false);
             });
         window.Closed([number](IInspectable const &, xaml::WindowEventArgs const &) { callbacks.windowClosed(number); });
         return detach(window);
@@ -236,26 +234,23 @@ extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double 
     }
 }
 
-extern "C" void stateui_winui_window_set_buttons(StateUIObjectRef handle, bool maximizable, bool minimizable) {
-    try {
-        auto presenter = borrow<xaml::Window>(handle).AppWindow().Presenter().try_as<windowing::OverlappedPresenter>();
-        if (!presenter) return;
-        presenter.IsMaximizable(maximizable);
-        presenter.IsMinimizable(minimizable);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a window's buttons");
-    }
-}
-
-extern "C" void stateui_winui_window_set_translucent(StateUIObjectRef handle, bool translucent) {
+extern "C" void stateui_winui_window_set_traits(
+    StateUIObjectRef handle, bool maximizable, bool minimizable, bool translucent, bool floats
+) {
     try {
         auto window = borrow<xaml::Window>(handle);
+        if (auto presenter = window.AppWindow().Presenter().try_as<windowing::OverlappedPresenter>()) {
+            presenter.IsMaximizable(maximizable);
+            presenter.IsMinimizable(minimizable);
+            presenter.IsAlwaysOnTop(floats);
+        }
+        // The backdrop is made again only where it turns.
         auto acrylic = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>();
         if (translucent == static_cast<bool>(acrylic)) return;
         if (translucent) window.SystemBackdrop(xaml::Media::DesktopAcrylicBackdrop());
         else window.SystemBackdrop(xaml::Media::MicaBackdrop());
     } catch (winrt::hresult_error const &error) {
-        report(error, "making a window translucent");
+        report(error, "setting what a window is");
     }
 }
 
@@ -282,6 +277,7 @@ extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *valu
         values[8] = presenter && presenter.IsMaximizable() ? 1 : 0;
         values[9] = presenter && presenter.IsMinimizable() ? 1 : 0;
         values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
+        values[11] = presenter && presenter.IsAlwaysOnTop() ? 1 : 0;
     } catch (winrt::hresult_error const &error) {
         report(error, "reading a window's frame");
     }

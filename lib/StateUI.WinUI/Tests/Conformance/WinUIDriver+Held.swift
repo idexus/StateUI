@@ -51,7 +51,7 @@ extension WinUIDriver {
         }
         let names = [
             "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-            "isMaximizable", "isMinimizable", "isTranslucent",
+            "isMaximizable", "isMinimizable", "isTranslucent", "floatsOnTop",
         ]
         guard let place = names.firstIndex(of: name) else { return nil }
         var values = [Double](repeating: 0, count: names.count)

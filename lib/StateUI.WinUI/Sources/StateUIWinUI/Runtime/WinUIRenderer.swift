@@ -28,8 +28,13 @@ final class WinUIRenderer {
     /// What performs the acts the application calls, and answers them.
     private(set) lazy var acts = WinUIActPerformer(core: runtime.core)
 
+    /// The windows the tree holds, each with its controller, in the tree's order.
+    private let roster = WindowRoster<WinUIWindowController>()
+
     /// A controller for each window element the tree holds, in the tree's order.
-    private(set) var windows: [WinUIWindowController] = []
+    var windows: [WinUIWindowController] {
+        roster.controllers
+    }
 
     /// The first window - the scene's main one, where the application's questions stand; nil before there is one.
     var window: WinUIWindow? {
@@ -83,11 +88,12 @@ final class WinUIRenderer {
         runtime.environmentChanged { WinUIEnvironment.reportChanging(to: runtime.core) }
     }
 
-    /// The window numbered `window` moved the application into `phase`: heard where it is this runtime's window.
+    /// The window numbered `number` was activated, deactivated or minimized: the application enters the phase that
+    /// puts it in, heard where it is this runtime's window.
     /// Design: docs/design/platforms/winui/runtime.md#the-applications-phase
-    func phaseChanged(_ phase: ApplicationPhase, window number: Int64) {
+    func windowStateChanged(number: Int64, minimized: Bool, activated: Bool) {
         guard let window = windows.first(where: { $0.window.number == number })?.window, !window.isClosed else { return }
-        runtime.enterPhase(phase)
+        runtime.enterPhase(ApplicationLifecycle.phase(minimized: minimized, activated: activated))
     }
 
     /// The window numbered `number` closed: one the tree closed tells nothing; one the user closed is heard by it
@@ -112,32 +118,14 @@ final class WinUIRenderer {
     /// holds closes - and tells each, once, in its turn, that it was made.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
     private func showWindows() {
-        var elements: [MountedElement] = []
-        Self.collectWindows(in: runtime.tree.root, into: &elements)
-        for controller in windows where !elements.contains(where: { $0 === controller.element }) {
-            controller.window.close()
-        }
-
-        let first = windows.isEmpty && !elements.isEmpty
-        windows = elements.map { element in
-            windows.first { $0.element === element } ?? WinUIWindowController(element)
-        }
+        let first = roster.update(
+            root: runtime.tree.root, make: { WinUIWindowController($0) }, close: { $0.window.close() })
         if first, let window {
             // The screen is known once there is a window; what reads it renders in the turn after this one.
             WinUIEnvironment.reportDisplay(to: runtime.core, window: window)
             runtime.pump.turn()
         }
-        for controller in windows {
-            guard let element = controller.element else { continue }
-            controller.present(element, in: runtime)
-        }
-    }
-
-    /// The window elements under `element`, in order; a window holds none.
-    private static func collectWindows(in element: MountedElement?, into windows: inout [MountedElement]) {
-        guard let element else { return }
-        if element.type == .window { return windows.append(element) }
-        for child in element.children { collectWindows(in: child, into: &windows) }
+        for (element, controller) in roster.windows { controller.present(element, in: runtime) }
     }
 
     /// Composes every window's chrome again from what it shows now.
@@ -147,9 +135,7 @@ final class WinUIRenderer {
 
     /// The controller of the window `element` stands in; nil for none.
     func controller(of element: MountedElement) -> WinUIWindowController? {
-        var window: MountedElement? = element
-        while let each = window, each.type != .window { window = each.parent }
-        return windows.first { $0.element === window }
+        roster.controller(of: element)
     }
 
     /// The page's corner in the window `element` stands in, in DIPs: where content stands clear of its chrome.

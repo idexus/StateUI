@@ -118,6 +118,24 @@ Its bounds (`WindowBounds`) are said the first time and where they change:
 nil leaves the toolkit's own, and a greatest size below the least is the
 least. The host turns each into its toolkit's units and calls.
 
+## A window's traits
+
+What a window is - whether the user may maximize and minimize it, whether the
+desktop shows through it, whether it floats over the application's other
+windows and whether it hides while another application is in use - is said
+the first time and where it changes (`WindowTraits`). A button the element
+says nothing of is the toolkit's own; the rest are false until said.
+
+## The windows a tree holds
+
+Every host keeps the windows alike (`WindowRoster`): each window element
+under the root, in the tree's order - a window holds none - with the host's
+controller of it. A window the tree keeps keeps its controller, one it no
+longer holds has its controller closed, and one new has one made; the first
+window's coming is said, since the screen is known only once there is one.
+A window is told apart by the element itself, since two scenes each name
+their main window alike.
+
 ## Runs of words
 
 A label's spans are runs of its words, put together once

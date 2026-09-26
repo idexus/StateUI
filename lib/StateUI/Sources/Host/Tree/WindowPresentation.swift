@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What a window element asks its host to show, as it changes, the same on every host: the arrangement of pages
-/// among its children, what it lays over them, its frame and its bounds, and that it was made - said once.
+/// among its children, what it lays over them, its frame, its bounds and its traits, and that it was made - said
+/// once.
 /// Design: docs/design/host/tree.md#a-window-shown
 @_spi(Host) @MainActor public final class WindowPresentation {
     /// What changed of a window since it was last shown.
@@ -19,6 +20,10 @@
         /// The least and greatest size, where they changed - the first time whatever they are.
         public var bounds: WindowBounds?
 
+        /// What the window is - its buttons, its backdrop, where it floats, when it hides - where that changed, the
+        /// first time whatever it is.
+        public var traits: WindowTraits?
+
         /// The window's handler of being made, where it is to be told now: before the window is first shown, and so
         /// before it hears it came to the front.
         public var created: Int32?
@@ -32,6 +37,7 @@
     private weak var created: MountedElement?
     private var requested = WindowFrame()
     private var bounds: WindowBounds?
+    private var traits: WindowTraits?
 
     /// Nothing shown yet.
     public init() {}
@@ -57,6 +63,11 @@
         if bounds != self.bounds {
             changes.bounds = bounds
             self.bounds = bounds
+        }
+        let traits = WindowTraits(of: window)
+        if traits != self.traits {
+            changes.traits = traits
+            self.traits = traits
         }
         if window !== created {
             created = window
