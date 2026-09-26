@@ -177,8 +177,8 @@ final class AppKitPickerViewTests: XCTestCase {
         defer { renderer.closeForTesting() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
 
-        let deadline = Date(timeIntervalSinceNow: 1)
-        while opened.isEmpty, Date() < deadline {
+        // The menu opens on a later turn of the main queue: turns of the run loop, not the time a busy machine takes.
+        for _ in 0..<300 where opened.isEmpty {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
         }
 
