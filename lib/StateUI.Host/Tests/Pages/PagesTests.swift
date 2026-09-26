@@ -232,7 +232,6 @@ private final class TabsReading: NativeElement {
         read(id, element.tabsStandInWindow)
     }
 
-    func willApply() {}
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact { .none }

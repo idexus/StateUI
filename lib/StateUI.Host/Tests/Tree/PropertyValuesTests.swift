@@ -79,7 +79,6 @@ final class PropertyValuesTests: XCTestCase {
 @MainActor
 private final class AnimatingView: NativeElement {
     let presentsView = true
-    func willApply() {}
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { true }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}

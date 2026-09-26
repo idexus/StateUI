@@ -606,7 +606,6 @@ private final class RecordingNative: NativeElement {
         return "\(id)"
     }
 
-    func willApply() {}
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }

@@ -39,8 +39,6 @@ final class AndroidElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {}
-
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
         case (_, .opacity): view.map { .number($0.opacity) }

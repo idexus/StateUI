@@ -80,8 +80,6 @@ final class AppKitElement: NSObject, NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {}
-
     func standingValue(_ property: Prop) -> HostValue? {
         if type == .window, let value = host?.standingWindowValue(for: self, property: property) {
             return value

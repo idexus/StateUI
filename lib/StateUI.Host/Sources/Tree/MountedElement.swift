@@ -83,7 +83,6 @@
             if let sceneBegan { tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan }
         }
 
-        native.willApply()
         let previouslyShown = isPagePresented ? shownChildren : []
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)

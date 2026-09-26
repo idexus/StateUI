@@ -39,9 +39,6 @@
     /// Whether the element shows a view of its own; one without is drawn by its parent's.
     var presentsView: Bool { get }
 
-    /// A patch is about to apply to the element.
-    func willApply()
-
     /// The value `property` stands at natively before a change animates it; nil where the tree's stands.
     func standingValue(_ property: Prop) -> HostValue?
 
