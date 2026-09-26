@@ -20,6 +20,20 @@ final class ScrollOffsetTests: XCTestCase {
     }
 
     /// An offset stands within what the scroller reaches.
+    func testAnOffsetWrittenBeforeTheFirstLayoutWaitsForIt() {
+        var written = WrittenScrollOffset()
+        XCTAssertNil(written.written(Point(x: 0, y: 40), standing: .zero, orientation: .vertical), "no layout yet")
+        XCTAssertNil(written.written(Point(x: 0, y: 90), standing: .zero, orientation: .vertical))
+        XCTAssertEqual(written.laidOutNow(), Point(x: 0, y: 90), "the last one written waited")
+        XCTAssertNil(written.laidOutNow(), "moved to once")
+        XCTAssertEqual(written.written(Point(x: 0, y: 20), standing: .zero, orientation: .vertical), Point(x: 0, y: 20))
+
+        var still = WrittenScrollOffset()
+        XCTAssertEqual(still.written(Point(x: 5, y: 5), standing: .zero, orientation: .neither), Point(x: 0, y: 0),
+                       "a scroller that scrolls neither way stands at its origin at once")
+    }
+
+    /// An offset is kept between the scroller's origin and what it reaches.
     func testAnOffsetIsKeptWithinReach() {
         XCTAssertEqual(ScrollArithmetic.kept(Point(x: -5, y: 900), reach: Point(x: 100, y: 300)), Point(x: 0, y: 300))
     }

@@ -222,6 +222,8 @@ An offset the tree writes moves a scroller the same way on every host: one
 that scrolls neither way stands at its origin; no offset, one that is no
 number, or one it stands at already - within half a point, as the user's own
 scrolling comes back as the state it wrote - moves nothing; any other moves
-it, kept between its origin and what it reaches. A host moves its toolkit's
-scroller there as the program's write, or holds the offset until its first
-layout.
+it, kept between its origin and what it reaches. An offset written before
+the scroller's first layout waits for it, the last one written winning, and
+one that scrolls neither way stands at its origin at once
+(`WrittenScrollOffset`). A host moves its toolkit's scroller there as the
+program's write.

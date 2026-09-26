@@ -347,7 +347,8 @@ measures only its native views.
   ([A row beside a page](design/host/layout.md#a-row-beside-a-page))
 - **`ScrollArithmetic`** gives a scroller's content size and the document the
   content stands in; `offsetWritten`, `kept` and `differs` say where an offset
-  the tree writes moves it.
+  the tree writes moves it, and `WrittenScrollOffset` keeps one written before
+  the scroller's first layout for it.
   ([Scrolling](design/host/layout.md#scrolling),
   [an offset the tree writes](design/host/layout.md#an-offset-the-tree-writes))
 - **`ShapeArithmetic`** stands a line's, a path's, a polygon's or a polyline's

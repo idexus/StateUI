@@ -35,9 +35,8 @@ final class WinUIScrollView: WinUILayoutView {
     /// Design: docs/design/platforms/winui/layout.md#the-programs-move
     private var programTarget: Point?
 
-    /// An offset the tree wrote before the scroller was laid out, and whether it has been.
-    private var pendingOffset: Point?
-    private var laidOut = false
+    /// The offset the tree writes, kept for the first layout where it comes before it.
+    private var writtenOffset = WrittenScrollOffset()
 
     private var bars = (vertical: ScrollBarVisibility.default, horizontal: ScrollBarVisibility.default)
 
@@ -86,9 +85,9 @@ final class WinUIScrollView: WinUILayoutView {
         document.padding = padding
         document.orientation = orientation
 
-        guard let target = ScrollArithmetic.offsetWritten(offset, standing: self.offset, orientation: orientation)
-        else { return }
-        if laidOut || orientation == .neither { move(to: target) } else { pendingOffset = target }
+        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+            move(to: target)
+        }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -110,12 +109,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one.
     override func arrange(in bounds: Rect) {
         scroller.layout(bounds)
-        laidOut = true
-
-        if let pendingOffset {
-            self.pendingOffset = nil
-            move(to: pendingOffset)
-        }
+        if let target = writtenOffset.laidOutNow() { move(to: target) }
     }
 
     // MARK: - The user's movement
