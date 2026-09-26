@@ -89,24 +89,6 @@ final class AndroidDriver: HostDriver {
         layOut()
     }
 
-    func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        let view = (element.native as? AndroidElement)?.view
-        switch (property, view) {
-        case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
-        case (.value, let slider as AndroidSliderView): return slider.value.propValue
-        case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
-        case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
-        case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
-        case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
-        case (.isRunning, let spinner as AndroidActivityIndicatorView): return spinner.isRunning.propValue
-        case (.text, let text as AndroidTextView): return text.text.propValue
-        case (.isVisible, let view?): return (Java.callInt(view.reference, JavaAPI.getVisibility) == 0).propValue
-        case (.opacity, let view?): return Double(Java.callFloat(view.reference, Self.getAlpha)).propValue
-        case (.isEnabled, let view?): return Java.callBool(view.reference, Self.isEnabled).propValue
-        default: throw DriverCannot(reading: property, of: element)
-        }
-    }
-
     /// Runs the UI thread's own messages for `millis` milliseconds: a web page's client, a choreographer's frame, a
     /// posted callback arrive as they do in an application.
     /// Design: docs/design/platforms/android/conformance.md#the-ui-threads-messages

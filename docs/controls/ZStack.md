@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of ZStack - Android's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityIdentifier of ZStack - AppKit's driver has no path for it yet |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -39,16 +39,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityHeadingLevel of ZStack - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityHint of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityHint of ZStack - Android's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of ZStack - Android's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of ZStack - Android's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of ZStack - AppKit's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of ZStack - AppKit's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of ZStack - AppKit's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read background of ZStack - Android's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read what reaches ZStack - Android's driver has no path for it yet |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of ZStack - Android's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read isAccessibilityHidden of ZStack - AppKit's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -58,17 +58,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotX of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read pivotX of ZStack - Android's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotY of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read pivotY of ZStack - Android's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read rotation of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read rotation of ZStack - Android's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationX of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read rotationX of ZStack - Android's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationY of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read rotationY of ZStack - Android's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scale of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read scale of ZStack - Android's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleX of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read scaleX of ZStack - Android's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleY of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read scaleY of ZStack - Android's driver has no path for it yet |
+| `pivotX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotX of ZStack - AppKit's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotY of ZStack - AppKit's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read rotation of ZStack - AppKit's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationX of ZStack - AppKit's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationY of ZStack - AppKit's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scale of ZStack - AppKit's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleX of ZStack - AppKit's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleY of ZStack - AppKit's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read translationX of ZStack - Android's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of ZStack - AppKit's driver has no path for it yet; Android Views: cannot read translationY of ZStack - Android's driver has no path for it yet |
+| `translationX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationX of ZStack - AppKit's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationY of ZStack - AppKit's driver has no path for it yet |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |

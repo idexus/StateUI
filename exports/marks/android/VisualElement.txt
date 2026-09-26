@@ -1,14 +1,14 @@
-ActivityIndicator.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.accessibilityHint: cannot read accessibilityHint of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.accessibilityLabel: cannot read accessibilityLabel of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+ActivityIndicator.accessibilityHint: ✅
+ActivityIndicator.accessibilityLabel: ✅
+ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: cannot read background of ActivityIndicator - Android's driver has no path for it yet
 ActivityIndicator.focus: ✅
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.isAccessibilityHidden: cannot read isAccessibilityHidden of ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: not realized
 ActivityIndicator.isFocusedChanged: ✅
 ActivityIndicator.isVisible: ✅
@@ -18,24 +18,24 @@ ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
 ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: cannot read pivotX of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pivotY: cannot read pivotY of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.rotation: cannot read rotation of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.rotationX: cannot read rotationX of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.rotationY: cannot read rotationY of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.scale: cannot read scale of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.scaleX: cannot read scaleX of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.scaleY: cannot read scaleY of ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.pivotX: ✅
+ActivityIndicator.pivotY: ✅
+ActivityIndicator.rotation: ✅
+ActivityIndicator.rotationX: ✅
+ActivityIndicator.rotationY: ✅
+ActivityIndicator.scale: ✅
+ActivityIndicator.scaleX: ✅
+ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: not realized
-ActivityIndicator.translationX: cannot read translationX of ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.translationY: cannot read translationY of ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.translationX: ✅
+ActivityIndicator.translationY: ✅
 ActivityIndicator.unfocus: ✅
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: not realized
-Button.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Button - Android's driver has no path for it yet
-Button.accessibilityHint: cannot read accessibilityHint of Button - Android's driver has no path for it yet
-Button.accessibilityLabel: cannot read accessibilityLabel of Button - Android's driver has no path for it yet
-Button.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Button - Android's driver has no path for it yet
+Button.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Button.accessibilityHint: ✅
+Button.accessibilityLabel: ✅
+Button.automationExcludedWithChildren: ✅
 Button.background: cannot read background of Button - Android's driver has no path for it yet
 Button.clicked: ✅
 Button.focus: ✅
@@ -43,7 +43,7 @@ Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
-Button.isAccessibilityHidden: cannot read isAccessibilityHidden of Button - Android's driver has no path for it yet
+Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
 Button.isFocusedChanged: ✅
 Button.isVisible: ✅
@@ -53,31 +53,31 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.opacity: ✅
-Button.pivotX: cannot read pivotX of Button - Android's driver has no path for it yet
-Button.pivotY: cannot read pivotY of Button - Android's driver has no path for it yet
-Button.rotation: cannot read rotation of Button - Android's driver has no path for it yet
-Button.rotationX: cannot read rotationX of Button - Android's driver has no path for it yet
-Button.rotationY: cannot read rotationY of Button - Android's driver has no path for it yet
-Button.scale: cannot read scale of Button - Android's driver has no path for it yet
-Button.scaleX: cannot read scaleX of Button - Android's driver has no path for it yet
-Button.scaleY: cannot read scaleY of Button - Android's driver has no path for it yet
+Button.pivotX: ✅
+Button.pivotY: ✅
+Button.rotation: ✅
+Button.rotationX: ✅
+Button.rotationY: ✅
+Button.scale: ✅
+Button.scaleX: ✅
+Button.scaleY: ✅
 Button.style: not realized
-Button.translationX: cannot read translationX of Button - Android's driver has no path for it yet
-Button.translationY: cannot read translationY of Button - Android's driver has no path for it yet
+Button.translationX: ✅
+Button.translationY: ✅
 Button.unfocus: ✅
 Button.width: ✅
 Button.zIndex: not realized
-Canvas.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Canvas - Android's driver has no path for it yet
-Canvas.accessibilityHint: cannot read accessibilityHint of Canvas - Android's driver has no path for it yet
-Canvas.accessibilityLabel: cannot read accessibilityLabel of Canvas - Android's driver has no path for it yet
-Canvas.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Canvas - Android's driver has no path for it yet
+Canvas.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Canvas.accessibilityHint: ✅
+Canvas.accessibilityLabel: ✅
+Canvas.automationExcludedWithChildren: ✅
 Canvas.background: cannot read background of Canvas - Android's driver has no path for it yet
 Canvas.focus: ✅
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
-Canvas.isAccessibilityHidden: cannot read isAccessibilityHidden of Canvas - Android's driver has no path for it yet
+Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: not realized
 Canvas.isFocusedChanged: ✅
 Canvas.isVisible: ✅
@@ -87,31 +87,31 @@ Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
 Canvas.minimumWidth: ✅
 Canvas.opacity: ✅
-Canvas.pivotX: cannot read pivotX of Canvas - Android's driver has no path for it yet
-Canvas.pivotY: cannot read pivotY of Canvas - Android's driver has no path for it yet
-Canvas.rotation: cannot read rotation of Canvas - Android's driver has no path for it yet
-Canvas.rotationX: cannot read rotationX of Canvas - Android's driver has no path for it yet
-Canvas.rotationY: cannot read rotationY of Canvas - Android's driver has no path for it yet
-Canvas.scale: cannot read scale of Canvas - Android's driver has no path for it yet
-Canvas.scaleX: cannot read scaleX of Canvas - Android's driver has no path for it yet
-Canvas.scaleY: cannot read scaleY of Canvas - Android's driver has no path for it yet
+Canvas.pivotX: ✅
+Canvas.pivotY: ✅
+Canvas.rotation: ✅
+Canvas.rotationX: ✅
+Canvas.rotationY: ✅
+Canvas.scale: ✅
+Canvas.scaleX: ✅
+Canvas.scaleY: ✅
 Canvas.style: not realized
-Canvas.translationX: cannot read translationX of Canvas - Android's driver has no path for it yet
-Canvas.translationY: cannot read translationY of Canvas - Android's driver has no path for it yet
+Canvas.translationX: ✅
+Canvas.translationY: ✅
 Canvas.unfocus: ✅
 Canvas.width: ✅
 Canvas.zIndex: not realized
-CheckBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of CheckBox - Android's driver has no path for it yet
-CheckBox.accessibilityHint: cannot read accessibilityHint of CheckBox - Android's driver has no path for it yet
-CheckBox.accessibilityLabel: cannot read accessibilityLabel of CheckBox - Android's driver has no path for it yet
-CheckBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of CheckBox - Android's driver has no path for it yet
+CheckBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+CheckBox.accessibilityHint: ✅
+CheckBox.accessibilityLabel: ✅
+CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: cannot read background of CheckBox - Android's driver has no path for it yet
 CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
-CheckBox.isAccessibilityHidden: cannot read isAccessibilityHidden of CheckBox - Android's driver has no path for it yet
+CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: ✅
 CheckBox.isVisible: ✅
@@ -121,31 +121,31 @@ CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
 CheckBox.minimumWidth: ✅
 CheckBox.opacity: ✅
-CheckBox.pivotX: cannot read pivotX of CheckBox - Android's driver has no path for it yet
-CheckBox.pivotY: cannot read pivotY of CheckBox - Android's driver has no path for it yet
-CheckBox.rotation: cannot read rotation of CheckBox - Android's driver has no path for it yet
-CheckBox.rotationX: cannot read rotationX of CheckBox - Android's driver has no path for it yet
-CheckBox.rotationY: cannot read rotationY of CheckBox - Android's driver has no path for it yet
-CheckBox.scale: cannot read scale of CheckBox - Android's driver has no path for it yet
-CheckBox.scaleX: cannot read scaleX of CheckBox - Android's driver has no path for it yet
-CheckBox.scaleY: cannot read scaleY of CheckBox - Android's driver has no path for it yet
+CheckBox.pivotX: ✅
+CheckBox.pivotY: ✅
+CheckBox.rotation: ✅
+CheckBox.rotationX: ✅
+CheckBox.rotationY: ✅
+CheckBox.scale: ✅
+CheckBox.scaleX: ✅
+CheckBox.scaleY: ✅
 CheckBox.style: not realized
-CheckBox.translationX: cannot read translationX of CheckBox - Android's driver has no path for it yet
-CheckBox.translationY: cannot read translationY of CheckBox - Android's driver has no path for it yet
+CheckBox.translationX: ✅
+CheckBox.translationY: ✅
 CheckBox.unfocus: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: not realized
-ColorBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ColorBox - Android's driver has no path for it yet
-ColorBox.accessibilityHint: cannot read accessibilityHint of ColorBox - Android's driver has no path for it yet
-ColorBox.accessibilityLabel: cannot read accessibilityLabel of ColorBox - Android's driver has no path for it yet
-ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - Android's driver has no path for it yet
+ColorBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+ColorBox.accessibilityHint: ✅
+ColorBox.accessibilityLabel: ✅
+ColorBox.automationExcludedWithChildren: ✅
 ColorBox.background: cannot read background of ColorBox - Android's driver has no path for it yet
 ColorBox.focus: ✅
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
-ColorBox.isAccessibilityHidden: cannot read isAccessibilityHidden of ColorBox - Android's driver has no path for it yet
+ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: not realized
 ColorBox.isFocusedChanged: ✅
 ColorBox.isVisible: ✅
@@ -155,31 +155,31 @@ ColorBox.maximumWidth: ✅
 ColorBox.minimumHeight: ✅
 ColorBox.minimumWidth: ✅
 ColorBox.opacity: ✅
-ColorBox.pivotX: cannot read pivotX of ColorBox - Android's driver has no path for it yet
-ColorBox.pivotY: cannot read pivotY of ColorBox - Android's driver has no path for it yet
-ColorBox.rotation: cannot read rotation of ColorBox - Android's driver has no path for it yet
-ColorBox.rotationX: cannot read rotationX of ColorBox - Android's driver has no path for it yet
-ColorBox.rotationY: cannot read rotationY of ColorBox - Android's driver has no path for it yet
-ColorBox.scale: cannot read scale of ColorBox - Android's driver has no path for it yet
-ColorBox.scaleX: cannot read scaleX of ColorBox - Android's driver has no path for it yet
-ColorBox.scaleY: cannot read scaleY of ColorBox - Android's driver has no path for it yet
+ColorBox.pivotX: ✅
+ColorBox.pivotY: ✅
+ColorBox.rotation: ✅
+ColorBox.rotationX: ✅
+ColorBox.rotationY: ✅
+ColorBox.scale: ✅
+ColorBox.scaleX: ✅
+ColorBox.scaleY: ✅
 ColorBox.style: not realized
-ColorBox.translationX: cannot read translationX of ColorBox - Android's driver has no path for it yet
-ColorBox.translationY: cannot read translationY of ColorBox - Android's driver has no path for it yet
+ColorBox.translationX: ✅
+ColorBox.translationY: ✅
 ColorBox.unfocus: ✅
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
-DatePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of DatePicker - Android's driver has no path for it yet
-DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - Android's driver has no path for it yet
-DatePicker.accessibilityLabel: cannot read accessibilityLabel of DatePicker - Android's driver has no path for it yet
-DatePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of DatePicker - Android's driver has no path for it yet
+DatePicker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+DatePicker.accessibilityHint: ✅
+DatePicker.accessibilityLabel: ✅
+DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: cannot read background of DatePicker - Android's driver has no path for it yet
 DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
-DatePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of DatePicker - Android's driver has no path for it yet
+DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: ✅
 DatePicker.isVisible: ✅
@@ -189,31 +189,31 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.opacity: ✅
-DatePicker.pivotX: cannot read pivotX of DatePicker - Android's driver has no path for it yet
-DatePicker.pivotY: cannot read pivotY of DatePicker - Android's driver has no path for it yet
-DatePicker.rotation: cannot read rotation of DatePicker - Android's driver has no path for it yet
-DatePicker.rotationX: cannot read rotationX of DatePicker - Android's driver has no path for it yet
-DatePicker.rotationY: cannot read rotationY of DatePicker - Android's driver has no path for it yet
-DatePicker.scale: cannot read scale of DatePicker - Android's driver has no path for it yet
-DatePicker.scaleX: cannot read scaleX of DatePicker - Android's driver has no path for it yet
-DatePicker.scaleY: cannot read scaleY of DatePicker - Android's driver has no path for it yet
+DatePicker.pivotX: ✅
+DatePicker.pivotY: ✅
+DatePicker.rotation: ✅
+DatePicker.rotationX: ✅
+DatePicker.rotationY: ✅
+DatePicker.scale: ✅
+DatePicker.scaleX: ✅
+DatePicker.scaleY: ✅
 DatePicker.style: not realized
-DatePicker.translationX: cannot read translationX of DatePicker - Android's driver has no path for it yet
-DatePicker.translationY: cannot read translationY of DatePicker - Android's driver has no path for it yet
+DatePicker.translationX: ✅
+DatePicker.translationY: ✅
 DatePicker.unfocus: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: not realized
-Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - Android's driver has no path for it yet
-Ellipse.accessibilityHint: cannot read accessibilityHint of Ellipse - Android's driver has no path for it yet
-Ellipse.accessibilityLabel: cannot read accessibilityLabel of Ellipse - Android's driver has no path for it yet
-Ellipse.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Ellipse - Android's driver has no path for it yet
+Ellipse.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Ellipse.accessibilityHint: ✅
+Ellipse.accessibilityLabel: ✅
+Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: cannot read background of Ellipse - Android's driver has no path for it yet
 Ellipse.focus: ✅
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.isAccessibilityHidden: cannot read isAccessibilityHidden of Ellipse - Android's driver has no path for it yet
+Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: not realized
 Ellipse.isFocusedChanged: ✅
 Ellipse.isVisible: ✅
@@ -223,31 +223,31 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.opacity: ✅
-Ellipse.pivotX: cannot read pivotX of Ellipse - Android's driver has no path for it yet
-Ellipse.pivotY: cannot read pivotY of Ellipse - Android's driver has no path for it yet
-Ellipse.rotation: cannot read rotation of Ellipse - Android's driver has no path for it yet
-Ellipse.rotationX: cannot read rotationX of Ellipse - Android's driver has no path for it yet
-Ellipse.rotationY: cannot read rotationY of Ellipse - Android's driver has no path for it yet
-Ellipse.scale: cannot read scale of Ellipse - Android's driver has no path for it yet
-Ellipse.scaleX: cannot read scaleX of Ellipse - Android's driver has no path for it yet
-Ellipse.scaleY: cannot read scaleY of Ellipse - Android's driver has no path for it yet
+Ellipse.pivotX: ✅
+Ellipse.pivotY: ✅
+Ellipse.rotation: ✅
+Ellipse.rotationX: ✅
+Ellipse.rotationY: ✅
+Ellipse.scale: ✅
+Ellipse.scaleX: ✅
+Ellipse.scaleY: ✅
 Ellipse.style: not realized
-Ellipse.translationX: cannot read translationX of Ellipse - Android's driver has no path for it yet
-Ellipse.translationY: cannot read translationY of Ellipse - Android's driver has no path for it yet
+Ellipse.translationX: ✅
+Ellipse.translationY: ✅
 Ellipse.unfocus: ✅
 Ellipse.width: ✅
 Ellipse.zIndex: not realized
-Grid.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Grid - Android's driver has no path for it yet
-Grid.accessibilityHint: cannot read accessibilityHint of Grid - Android's driver has no path for it yet
-Grid.accessibilityLabel: cannot read accessibilityLabel of Grid - Android's driver has no path for it yet
-Grid.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Grid - Android's driver has no path for it yet
+Grid.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Grid.accessibilityHint: ✅
+Grid.accessibilityLabel: ✅
+Grid.automationExcludedWithChildren: ✅
 Grid.background: cannot read background of Grid - Android's driver has no path for it yet
 Grid.focus: ✅
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
-Grid.isAccessibilityHidden: cannot read isAccessibilityHidden of Grid - Android's driver has no path for it yet
+Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: not realized
 Grid.isFocusedChanged: ✅
 Grid.isVisible: ✅
@@ -257,31 +257,31 @@ Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
 Grid.minimumWidth: ✅
 Grid.opacity: ✅
-Grid.pivotX: cannot read pivotX of Grid - Android's driver has no path for it yet
-Grid.pivotY: cannot read pivotY of Grid - Android's driver has no path for it yet
-Grid.rotation: cannot read rotation of Grid - Android's driver has no path for it yet
-Grid.rotationX: cannot read rotationX of Grid - Android's driver has no path for it yet
-Grid.rotationY: cannot read rotationY of Grid - Android's driver has no path for it yet
-Grid.scale: cannot read scale of Grid - Android's driver has no path for it yet
-Grid.scaleX: cannot read scaleX of Grid - Android's driver has no path for it yet
-Grid.scaleY: cannot read scaleY of Grid - Android's driver has no path for it yet
+Grid.pivotX: ✅
+Grid.pivotY: ✅
+Grid.rotation: ✅
+Grid.rotationX: ✅
+Grid.rotationY: ✅
+Grid.scale: ✅
+Grid.scaleX: ✅
+Grid.scaleY: ✅
 Grid.style: not realized
-Grid.translationX: cannot read translationX of Grid - Android's driver has no path for it yet
-Grid.translationY: cannot read translationY of Grid - Android's driver has no path for it yet
+Grid.translationX: ✅
+Grid.translationY: ✅
 Grid.unfocus: ✅
 Grid.width: ✅
 Grid.zIndex: not realized
-HStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of HStack - Android's driver has no path for it yet
-HStack.accessibilityHint: cannot read accessibilityHint of HStack - Android's driver has no path for it yet
-HStack.accessibilityLabel: cannot read accessibilityLabel of HStack - Android's driver has no path for it yet
-HStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of HStack - Android's driver has no path for it yet
+HStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+HStack.accessibilityHint: ✅
+HStack.accessibilityLabel: ✅
+HStack.automationExcludedWithChildren: ✅
 HStack.background: cannot read background of HStack - Android's driver has no path for it yet
 HStack.focus: ✅
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
-HStack.isAccessibilityHidden: cannot read isAccessibilityHidden of HStack - Android's driver has no path for it yet
+HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: not realized
 HStack.isFocusedChanged: ✅
 HStack.isVisible: ✅
@@ -291,31 +291,31 @@ HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 HStack.opacity: ✅
-HStack.pivotX: cannot read pivotX of HStack - Android's driver has no path for it yet
-HStack.pivotY: cannot read pivotY of HStack - Android's driver has no path for it yet
-HStack.rotation: cannot read rotation of HStack - Android's driver has no path for it yet
-HStack.rotationX: cannot read rotationX of HStack - Android's driver has no path for it yet
-HStack.rotationY: cannot read rotationY of HStack - Android's driver has no path for it yet
-HStack.scale: cannot read scale of HStack - Android's driver has no path for it yet
-HStack.scaleX: cannot read scaleX of HStack - Android's driver has no path for it yet
-HStack.scaleY: cannot read scaleY of HStack - Android's driver has no path for it yet
+HStack.pivotX: ✅
+HStack.pivotY: ✅
+HStack.rotation: ✅
+HStack.rotationX: ✅
+HStack.rotationY: ✅
+HStack.scale: ✅
+HStack.scaleX: ✅
+HStack.scaleY: ✅
 HStack.style: not realized
-HStack.translationX: cannot read translationX of HStack - Android's driver has no path for it yet
-HStack.translationY: cannot read translationY of HStack - Android's driver has no path for it yet
+HStack.translationX: ✅
+HStack.translationY: ✅
 HStack.unfocus: ✅
 HStack.width: ✅
 HStack.zIndex: not realized
-Image.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Image - Android's driver has no path for it yet
-Image.accessibilityHint: cannot read accessibilityHint of Image - Android's driver has no path for it yet
-Image.accessibilityLabel: cannot read accessibilityLabel of Image - Android's driver has no path for it yet
-Image.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Image - Android's driver has no path for it yet
+Image.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Image.accessibilityHint: ✅
+Image.accessibilityLabel: ✅
+Image.automationExcludedWithChildren: ✅
 Image.background: cannot read background of Image - Android's driver has no path for it yet
 Image.focus: ✅
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
-Image.isAccessibilityHidden: cannot read isAccessibilityHidden of Image - Android's driver has no path for it yet
+Image.isAccessibilityHidden: ✅
 Image.isEnabled: not realized
 Image.isFocusedChanged: ✅
 Image.isVisible: ✅
@@ -325,31 +325,31 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.opacity: ✅
-Image.pivotX: cannot read pivotX of Image - Android's driver has no path for it yet
-Image.pivotY: cannot read pivotY of Image - Android's driver has no path for it yet
-Image.rotation: cannot read rotation of Image - Android's driver has no path for it yet
-Image.rotationX: cannot read rotationX of Image - Android's driver has no path for it yet
-Image.rotationY: cannot read rotationY of Image - Android's driver has no path for it yet
-Image.scale: cannot read scale of Image - Android's driver has no path for it yet
-Image.scaleX: cannot read scaleX of Image - Android's driver has no path for it yet
-Image.scaleY: cannot read scaleY of Image - Android's driver has no path for it yet
+Image.pivotX: ✅
+Image.pivotY: ✅
+Image.rotation: ✅
+Image.rotationX: ✅
+Image.rotationY: ✅
+Image.scale: ✅
+Image.scaleX: ✅
+Image.scaleY: ✅
 Image.style: not realized
-Image.translationX: cannot read translationX of Image - Android's driver has no path for it yet
-Image.translationY: cannot read translationY of Image - Android's driver has no path for it yet
+Image.translationX: ✅
+Image.translationY: ✅
 Image.unfocus: ✅
 Image.width: ✅
 Image.zIndex: not realized
-Label.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Label - Android's driver has no path for it yet
-Label.accessibilityHint: cannot read accessibilityHint of Label - Android's driver has no path for it yet
-Label.accessibilityLabel: cannot read accessibilityLabel of Label - Android's driver has no path for it yet
-Label.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Label - Android's driver has no path for it yet
+Label.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Label.accessibilityHint: ✅
+Label.accessibilityLabel: ✅
+Label.automationExcludedWithChildren: ✅
 Label.background: cannot read background of Label - Android's driver has no path for it yet
 Label.focus: ✅
 Label.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.ignoresInput: not realized
-Label.isAccessibilityHidden: cannot read isAccessibilityHidden of Label - Android's driver has no path for it yet
+Label.isAccessibilityHidden: ✅
 Label.isEnabled: not realized
 Label.isFocusedChanged: ✅
 Label.isVisible: ✅
@@ -359,31 +359,31 @@ Label.maximumWidth: ✅
 Label.minimumHeight: ✅
 Label.minimumWidth: ✅
 Label.opacity: ✅
-Label.pivotX: cannot read pivotX of Label - Android's driver has no path for it yet
-Label.pivotY: cannot read pivotY of Label - Android's driver has no path for it yet
-Label.rotation: cannot read rotation of Label - Android's driver has no path for it yet
-Label.rotationX: cannot read rotationX of Label - Android's driver has no path for it yet
-Label.rotationY: cannot read rotationY of Label - Android's driver has no path for it yet
-Label.scale: cannot read scale of Label - Android's driver has no path for it yet
-Label.scaleX: cannot read scaleX of Label - Android's driver has no path for it yet
-Label.scaleY: cannot read scaleY of Label - Android's driver has no path for it yet
+Label.pivotX: ✅
+Label.pivotY: ✅
+Label.rotation: ✅
+Label.rotationX: ✅
+Label.rotationY: ✅
+Label.scale: ✅
+Label.scaleX: ✅
+Label.scaleY: ✅
 Label.style: not realized
-Label.translationX: cannot read translationX of Label - Android's driver has no path for it yet
-Label.translationY: cannot read translationY of Label - Android's driver has no path for it yet
+Label.translationX: ✅
+Label.translationY: ✅
 Label.unfocus: ✅
 Label.width: ✅
 Label.zIndex: not realized
-Line.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Line - Android's driver has no path for it yet
-Line.accessibilityHint: cannot read accessibilityHint of Line - Android's driver has no path for it yet
-Line.accessibilityLabel: cannot read accessibilityLabel of Line - Android's driver has no path for it yet
-Line.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Line - Android's driver has no path for it yet
+Line.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Line.accessibilityHint: ✅
+Line.accessibilityLabel: ✅
+Line.automationExcludedWithChildren: ✅
 Line.background: cannot read background of Line - Android's driver has no path for it yet
 Line.focus: ✅
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
-Line.isAccessibilityHidden: cannot read isAccessibilityHidden of Line - Android's driver has no path for it yet
+Line.isAccessibilityHidden: ✅
 Line.isEnabled: not realized
 Line.isFocusedChanged: ✅
 Line.isVisible: ✅
@@ -393,17 +393,17 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.opacity: ✅
-Line.pivotX: cannot read pivotX of Line - Android's driver has no path for it yet
-Line.pivotY: cannot read pivotY of Line - Android's driver has no path for it yet
-Line.rotation: cannot read rotation of Line - Android's driver has no path for it yet
-Line.rotationX: cannot read rotationX of Line - Android's driver has no path for it yet
-Line.rotationY: cannot read rotationY of Line - Android's driver has no path for it yet
-Line.scale: cannot read scale of Line - Android's driver has no path for it yet
-Line.scaleX: cannot read scaleX of Line - Android's driver has no path for it yet
-Line.scaleY: cannot read scaleY of Line - Android's driver has no path for it yet
+Line.pivotX: ✅
+Line.pivotY: ✅
+Line.rotation: ✅
+Line.rotationX: ✅
+Line.rotationY: ✅
+Line.scale: ✅
+Line.scaleX: ✅
+Line.scaleY: ✅
 Line.style: not realized
-Line.translationX: cannot read translationX of Line - Android's driver has no path for it yet
-Line.translationY: cannot read translationY of Line - Android's driver has no path for it yet
+Line.translationX: ✅
+Line.translationY: ✅
 Line.unfocus: ✅
 Line.width: ✅
 Line.zIndex: not realized
@@ -441,17 +441,17 @@ Map.translationY: not realized
 Map.unfocus: not realized
 Map.width: not realized
 Map.zIndex: not realized
-Path.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Path - Android's driver has no path for it yet
-Path.accessibilityHint: cannot read accessibilityHint of Path - Android's driver has no path for it yet
-Path.accessibilityLabel: cannot read accessibilityLabel of Path - Android's driver has no path for it yet
-Path.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Path - Android's driver has no path for it yet
+Path.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Path.accessibilityHint: ✅
+Path.accessibilityLabel: ✅
+Path.automationExcludedWithChildren: ✅
 Path.background: cannot read background of Path - Android's driver has no path for it yet
 Path.focus: ✅
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
-Path.isAccessibilityHidden: cannot read isAccessibilityHidden of Path - Android's driver has no path for it yet
+Path.isAccessibilityHidden: ✅
 Path.isEnabled: not realized
 Path.isFocusedChanged: ✅
 Path.isVisible: ✅
@@ -461,31 +461,31 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.opacity: ✅
-Path.pivotX: cannot read pivotX of Path - Android's driver has no path for it yet
-Path.pivotY: cannot read pivotY of Path - Android's driver has no path for it yet
-Path.rotation: cannot read rotation of Path - Android's driver has no path for it yet
-Path.rotationX: cannot read rotationX of Path - Android's driver has no path for it yet
-Path.rotationY: cannot read rotationY of Path - Android's driver has no path for it yet
-Path.scale: cannot read scale of Path - Android's driver has no path for it yet
-Path.scaleX: cannot read scaleX of Path - Android's driver has no path for it yet
-Path.scaleY: cannot read scaleY of Path - Android's driver has no path for it yet
+Path.pivotX: ✅
+Path.pivotY: ✅
+Path.rotation: ✅
+Path.rotationX: ✅
+Path.rotationY: ✅
+Path.scale: ✅
+Path.scaleX: ✅
+Path.scaleY: ✅
 Path.style: not realized
-Path.translationX: cannot read translationX of Path - Android's driver has no path for it yet
-Path.translationY: cannot read translationY of Path - Android's driver has no path for it yet
+Path.translationX: ✅
+Path.translationY: ✅
 Path.unfocus: ✅
 Path.width: ✅
 Path.zIndex: not realized
-Picker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Picker - Android's driver has no path for it yet
-Picker.accessibilityHint: cannot read accessibilityHint of Picker - Android's driver has no path for it yet
-Picker.accessibilityLabel: cannot read accessibilityLabel of Picker - Android's driver has no path for it yet
-Picker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Picker - Android's driver has no path for it yet
+Picker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Picker.accessibilityHint: ✅
+Picker.accessibilityLabel: ✅
+Picker.automationExcludedWithChildren: ✅
 Picker.background: cannot read background of Picker - Android's driver has no path for it yet
 Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
-Picker.isAccessibilityHidden: cannot read isAccessibilityHidden of Picker - Android's driver has no path for it yet
+Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: ✅
 Picker.isVisible: ✅
@@ -495,31 +495,31 @@ Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
 Picker.minimumWidth: ✅
 Picker.opacity: ✅
-Picker.pivotX: cannot read pivotX of Picker - Android's driver has no path for it yet
-Picker.pivotY: cannot read pivotY of Picker - Android's driver has no path for it yet
-Picker.rotation: cannot read rotation of Picker - Android's driver has no path for it yet
-Picker.rotationX: cannot read rotationX of Picker - Android's driver has no path for it yet
-Picker.rotationY: cannot read rotationY of Picker - Android's driver has no path for it yet
-Picker.scale: cannot read scale of Picker - Android's driver has no path for it yet
-Picker.scaleX: cannot read scaleX of Picker - Android's driver has no path for it yet
-Picker.scaleY: cannot read scaleY of Picker - Android's driver has no path for it yet
+Picker.pivotX: ✅
+Picker.pivotY: ✅
+Picker.rotation: ✅
+Picker.rotationX: ✅
+Picker.rotationY: ✅
+Picker.scale: ✅
+Picker.scaleX: ✅
+Picker.scaleY: ✅
 Picker.style: not realized
-Picker.translationX: cannot read translationX of Picker - Android's driver has no path for it yet
-Picker.translationY: cannot read translationY of Picker - Android's driver has no path for it yet
+Picker.translationX: ✅
+Picker.translationY: ✅
 Picker.unfocus: ✅
 Picker.width: ✅
 Picker.zIndex: not realized
-Polygon.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polygon - Android's driver has no path for it yet
-Polygon.accessibilityHint: cannot read accessibilityHint of Polygon - Android's driver has no path for it yet
-Polygon.accessibilityLabel: cannot read accessibilityLabel of Polygon - Android's driver has no path for it yet
-Polygon.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polygon - Android's driver has no path for it yet
+Polygon.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Polygon.accessibilityHint: ✅
+Polygon.accessibilityLabel: ✅
+Polygon.automationExcludedWithChildren: ✅
 Polygon.background: cannot read background of Polygon - Android's driver has no path for it yet
 Polygon.focus: ✅
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
-Polygon.isAccessibilityHidden: cannot read isAccessibilityHidden of Polygon - Android's driver has no path for it yet
+Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: not realized
 Polygon.isFocusedChanged: ✅
 Polygon.isVisible: ✅
@@ -529,31 +529,31 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polygon.opacity: ✅
-Polygon.pivotX: cannot read pivotX of Polygon - Android's driver has no path for it yet
-Polygon.pivotY: cannot read pivotY of Polygon - Android's driver has no path for it yet
-Polygon.rotation: cannot read rotation of Polygon - Android's driver has no path for it yet
-Polygon.rotationX: cannot read rotationX of Polygon - Android's driver has no path for it yet
-Polygon.rotationY: cannot read rotationY of Polygon - Android's driver has no path for it yet
-Polygon.scale: cannot read scale of Polygon - Android's driver has no path for it yet
-Polygon.scaleX: cannot read scaleX of Polygon - Android's driver has no path for it yet
-Polygon.scaleY: cannot read scaleY of Polygon - Android's driver has no path for it yet
+Polygon.pivotX: ✅
+Polygon.pivotY: ✅
+Polygon.rotation: ✅
+Polygon.rotationX: ✅
+Polygon.rotationY: ✅
+Polygon.scale: ✅
+Polygon.scaleX: ✅
+Polygon.scaleY: ✅
 Polygon.style: not realized
-Polygon.translationX: cannot read translationX of Polygon - Android's driver has no path for it yet
-Polygon.translationY: cannot read translationY of Polygon - Android's driver has no path for it yet
+Polygon.translationX: ✅
+Polygon.translationY: ✅
 Polygon.unfocus: ✅
 Polygon.width: ✅
 Polygon.zIndex: not realized
-Polyline.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polyline - Android's driver has no path for it yet
-Polyline.accessibilityHint: cannot read accessibilityHint of Polyline - Android's driver has no path for it yet
-Polyline.accessibilityLabel: cannot read accessibilityLabel of Polyline - Android's driver has no path for it yet
-Polyline.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polyline - Android's driver has no path for it yet
+Polyline.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Polyline.accessibilityHint: ✅
+Polyline.accessibilityLabel: ✅
+Polyline.automationExcludedWithChildren: ✅
 Polyline.background: cannot read background of Polyline - Android's driver has no path for it yet
 Polyline.focus: ✅
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
-Polyline.isAccessibilityHidden: cannot read isAccessibilityHidden of Polyline - Android's driver has no path for it yet
+Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: not realized
 Polyline.isFocusedChanged: ✅
 Polyline.isVisible: ✅
@@ -563,17 +563,17 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.opacity: ✅
-Polyline.pivotX: cannot read pivotX of Polyline - Android's driver has no path for it yet
-Polyline.pivotY: cannot read pivotY of Polyline - Android's driver has no path for it yet
-Polyline.rotation: cannot read rotation of Polyline - Android's driver has no path for it yet
-Polyline.rotationX: cannot read rotationX of Polyline - Android's driver has no path for it yet
-Polyline.rotationY: cannot read rotationY of Polyline - Android's driver has no path for it yet
-Polyline.scale: cannot read scale of Polyline - Android's driver has no path for it yet
-Polyline.scaleX: cannot read scaleX of Polyline - Android's driver has no path for it yet
-Polyline.scaleY: cannot read scaleY of Polyline - Android's driver has no path for it yet
+Polyline.pivotX: ✅
+Polyline.pivotY: ✅
+Polyline.rotation: ✅
+Polyline.rotationX: ✅
+Polyline.rotationY: ✅
+Polyline.scale: ✅
+Polyline.scaleX: ✅
+Polyline.scaleY: ✅
 Polyline.style: not realized
-Polyline.translationX: cannot read translationX of Polyline - Android's driver has no path for it yet
-Polyline.translationY: cannot read translationY of Polyline - Android's driver has no path for it yet
+Polyline.translationX: ✅
+Polyline.translationY: ✅
 Polyline.unfocus: ✅
 Polyline.width: ✅
 Polyline.zIndex: not realized
@@ -611,17 +611,17 @@ PositionIndicator.translationY: not realized
 PositionIndicator.unfocus: not realized
 PositionIndicator.width: not realized
 PositionIndicator.zIndex: not realized
-ProgressBar.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ProgressBar - Android's driver has no path for it yet
-ProgressBar.accessibilityHint: cannot read accessibilityHint of ProgressBar - Android's driver has no path for it yet
-ProgressBar.accessibilityLabel: cannot read accessibilityLabel of ProgressBar - Android's driver has no path for it yet
-ProgressBar.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ProgressBar - Android's driver has no path for it yet
+ProgressBar.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+ProgressBar.accessibilityHint: ✅
+ProgressBar.accessibilityLabel: ✅
+ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: cannot read background of ProgressBar - Android's driver has no path for it yet
 ProgressBar.focus: ✅
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
-ProgressBar.isAccessibilityHidden: cannot read isAccessibilityHidden of ProgressBar - Android's driver has no path for it yet
+ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: not realized
 ProgressBar.isFocusedChanged: ✅
 ProgressBar.isVisible: ✅
@@ -631,31 +631,31 @@ ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
 ProgressBar.opacity: ✅
-ProgressBar.pivotX: cannot read pivotX of ProgressBar - Android's driver has no path for it yet
-ProgressBar.pivotY: cannot read pivotY of ProgressBar - Android's driver has no path for it yet
-ProgressBar.rotation: cannot read rotation of ProgressBar - Android's driver has no path for it yet
-ProgressBar.rotationX: cannot read rotationX of ProgressBar - Android's driver has no path for it yet
-ProgressBar.rotationY: cannot read rotationY of ProgressBar - Android's driver has no path for it yet
-ProgressBar.scale: cannot read scale of ProgressBar - Android's driver has no path for it yet
-ProgressBar.scaleX: cannot read scaleX of ProgressBar - Android's driver has no path for it yet
-ProgressBar.scaleY: cannot read scaleY of ProgressBar - Android's driver has no path for it yet
+ProgressBar.pivotX: ✅
+ProgressBar.pivotY: ✅
+ProgressBar.rotation: ✅
+ProgressBar.rotationX: ✅
+ProgressBar.rotationY: ✅
+ProgressBar.scale: ✅
+ProgressBar.scaleX: ✅
+ProgressBar.scaleY: ✅
 ProgressBar.style: not realized
-ProgressBar.translationX: cannot read translationX of ProgressBar - Android's driver has no path for it yet
-ProgressBar.translationY: cannot read translationY of ProgressBar - Android's driver has no path for it yet
+ProgressBar.translationX: ✅
+ProgressBar.translationY: ✅
 ProgressBar.unfocus: ✅
 ProgressBar.width: ✅
 ProgressBar.zIndex: not realized
-RadioButton.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of RadioButton - Android's driver has no path for it yet
-RadioButton.accessibilityHint: cannot read accessibilityHint of RadioButton - Android's driver has no path for it yet
-RadioButton.accessibilityLabel: cannot read accessibilityLabel of RadioButton - Android's driver has no path for it yet
-RadioButton.automationExcludedWithChildren: cannot read automationExcludedWithChildren of RadioButton - Android's driver has no path for it yet
+RadioButton.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+RadioButton.accessibilityHint: ✅
+RadioButton.accessibilityLabel: ✅
+RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: cannot read background of RadioButton - Android's driver has no path for it yet
 RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
-RadioButton.isAccessibilityHidden: cannot read isAccessibilityHidden of RadioButton - Android's driver has no path for it yet
+RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: ✅
 RadioButton.isVisible: ✅
@@ -665,31 +665,31 @@ RadioButton.maximumWidth: ✅
 RadioButton.minimumHeight: ✅
 RadioButton.minimumWidth: ✅
 RadioButton.opacity: ✅
-RadioButton.pivotX: cannot read pivotX of RadioButton - Android's driver has no path for it yet
-RadioButton.pivotY: cannot read pivotY of RadioButton - Android's driver has no path for it yet
-RadioButton.rotation: cannot read rotation of RadioButton - Android's driver has no path for it yet
-RadioButton.rotationX: cannot read rotationX of RadioButton - Android's driver has no path for it yet
-RadioButton.rotationY: cannot read rotationY of RadioButton - Android's driver has no path for it yet
-RadioButton.scale: cannot read scale of RadioButton - Android's driver has no path for it yet
-RadioButton.scaleX: cannot read scaleX of RadioButton - Android's driver has no path for it yet
-RadioButton.scaleY: cannot read scaleY of RadioButton - Android's driver has no path for it yet
+RadioButton.pivotX: ✅
+RadioButton.pivotY: ✅
+RadioButton.rotation: ✅
+RadioButton.rotationX: ✅
+RadioButton.rotationY: ✅
+RadioButton.scale: ✅
+RadioButton.scaleX: ✅
+RadioButton.scaleY: ✅
 RadioButton.style: not realized
-RadioButton.translationX: cannot read translationX of RadioButton - Android's driver has no path for it yet
-RadioButton.translationY: cannot read translationY of RadioButton - Android's driver has no path for it yet
+RadioButton.translationX: ✅
+RadioButton.translationY: ✅
 RadioButton.unfocus: ✅
 RadioButton.width: ✅
 RadioButton.zIndex: not realized
-Rectangle.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Rectangle - Android's driver has no path for it yet
-Rectangle.accessibilityHint: cannot read accessibilityHint of Rectangle - Android's driver has no path for it yet
-Rectangle.accessibilityLabel: cannot read accessibilityLabel of Rectangle - Android's driver has no path for it yet
-Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - Android's driver has no path for it yet
+Rectangle.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Rectangle.accessibilityHint: ✅
+Rectangle.accessibilityLabel: ✅
+Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: cannot read background of Rectangle - Android's driver has no path for it yet
 Rectangle.focus: ✅
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.isAccessibilityHidden: cannot read isAccessibilityHidden of Rectangle - Android's driver has no path for it yet
+Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: not realized
 Rectangle.isFocusedChanged: ✅
 Rectangle.isVisible: ✅
@@ -699,31 +699,31 @@ Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
 Rectangle.minimumWidth: ✅
 Rectangle.opacity: ✅
-Rectangle.pivotX: cannot read pivotX of Rectangle - Android's driver has no path for it yet
-Rectangle.pivotY: cannot read pivotY of Rectangle - Android's driver has no path for it yet
-Rectangle.rotation: cannot read rotation of Rectangle - Android's driver has no path for it yet
-Rectangle.rotationX: cannot read rotationX of Rectangle - Android's driver has no path for it yet
-Rectangle.rotationY: cannot read rotationY of Rectangle - Android's driver has no path for it yet
-Rectangle.scale: cannot read scale of Rectangle - Android's driver has no path for it yet
-Rectangle.scaleX: cannot read scaleX of Rectangle - Android's driver has no path for it yet
-Rectangle.scaleY: cannot read scaleY of Rectangle - Android's driver has no path for it yet
+Rectangle.pivotX: ✅
+Rectangle.pivotY: ✅
+Rectangle.rotation: ✅
+Rectangle.rotationX: ✅
+Rectangle.rotationY: ✅
+Rectangle.scale: ✅
+Rectangle.scaleX: ✅
+Rectangle.scaleY: ✅
 Rectangle.style: not realized
-Rectangle.translationX: cannot read translationX of Rectangle - Android's driver has no path for it yet
-Rectangle.translationY: cannot read translationY of Rectangle - Android's driver has no path for it yet
+Rectangle.translationX: ✅
+Rectangle.translationY: ✅
 Rectangle.unfocus: ✅
 Rectangle.width: ✅
 Rectangle.zIndex: not realized
-ScrollView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ScrollView - Android's driver has no path for it yet
-ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - Android's driver has no path for it yet
-ScrollView.accessibilityLabel: cannot read accessibilityLabel of ScrollView - Android's driver has no path for it yet
-ScrollView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ScrollView - Android's driver has no path for it yet
+ScrollView.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+ScrollView.accessibilityHint: ✅
+ScrollView.accessibilityLabel: ✅
+ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: cannot read background of ScrollView - Android's driver has no path for it yet
 ScrollView.focus: ✅
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
-ScrollView.isAccessibilityHidden: cannot read isAccessibilityHidden of ScrollView - Android's driver has no path for it yet
+ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: not realized
 ScrollView.isFocusedChanged: ✅
 ScrollView.isVisible: ✅
@@ -733,31 +733,31 @@ ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
 ScrollView.minimumWidth: ✅
 ScrollView.opacity: ✅
-ScrollView.pivotX: cannot read pivotX of ScrollView - Android's driver has no path for it yet
-ScrollView.pivotY: cannot read pivotY of ScrollView - Android's driver has no path for it yet
-ScrollView.rotation: cannot read rotation of ScrollView - Android's driver has no path for it yet
-ScrollView.rotationX: cannot read rotationX of ScrollView - Android's driver has no path for it yet
-ScrollView.rotationY: cannot read rotationY of ScrollView - Android's driver has no path for it yet
-ScrollView.scale: cannot read scale of ScrollView - Android's driver has no path for it yet
-ScrollView.scaleX: cannot read scaleX of ScrollView - Android's driver has no path for it yet
-ScrollView.scaleY: cannot read scaleY of ScrollView - Android's driver has no path for it yet
+ScrollView.pivotX: ✅
+ScrollView.pivotY: ✅
+ScrollView.rotation: ✅
+ScrollView.rotationX: ✅
+ScrollView.rotationY: ✅
+ScrollView.scale: ✅
+ScrollView.scaleX: ✅
+ScrollView.scaleY: ✅
 ScrollView.style: not realized
-ScrollView.translationX: cannot read translationX of ScrollView - Android's driver has no path for it yet
-ScrollView.translationY: cannot read translationY of ScrollView - Android's driver has no path for it yet
+ScrollView.translationX: ✅
+ScrollView.translationY: ✅
 ScrollView.unfocus: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: not realized
-SearchField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of SearchField - Android's driver has no path for it yet
-SearchField.accessibilityHint: cannot read accessibilityHint of SearchField - Android's driver has no path for it yet
-SearchField.accessibilityLabel: cannot read accessibilityLabel of SearchField - Android's driver has no path for it yet
-SearchField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of SearchField - Android's driver has no path for it yet
+SearchField.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+SearchField.accessibilityHint: ✅
+SearchField.accessibilityLabel: ✅
+SearchField.automationExcludedWithChildren: ✅
 SearchField.background: cannot read background of SearchField - Android's driver has no path for it yet
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
-SearchField.isAccessibilityHidden: cannot read isAccessibilityHidden of SearchField - Android's driver has no path for it yet
+SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: ✅
 SearchField.isVisible: ✅
@@ -767,31 +767,31 @@ SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.opacity: ✅
-SearchField.pivotX: cannot read pivotX of SearchField - Android's driver has no path for it yet
-SearchField.pivotY: cannot read pivotY of SearchField - Android's driver has no path for it yet
-SearchField.rotation: cannot read rotation of SearchField - Android's driver has no path for it yet
-SearchField.rotationX: cannot read rotationX of SearchField - Android's driver has no path for it yet
-SearchField.rotationY: cannot read rotationY of SearchField - Android's driver has no path for it yet
-SearchField.scale: cannot read scale of SearchField - Android's driver has no path for it yet
-SearchField.scaleX: cannot read scaleX of SearchField - Android's driver has no path for it yet
-SearchField.scaleY: cannot read scaleY of SearchField - Android's driver has no path for it yet
+SearchField.pivotX: ✅
+SearchField.pivotY: ✅
+SearchField.rotation: ✅
+SearchField.rotationX: ✅
+SearchField.rotationY: ✅
+SearchField.scale: ✅
+SearchField.scaleX: ✅
+SearchField.scaleY: ✅
 SearchField.style: not realized
-SearchField.translationX: cannot read translationX of SearchField - Android's driver has no path for it yet
-SearchField.translationY: cannot read translationY of SearchField - Android's driver has no path for it yet
+SearchField.translationX: ✅
+SearchField.translationY: ✅
 SearchField.unfocus: ✅
 SearchField.width: ✅
 SearchField.zIndex: not realized
-Slider.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Slider - Android's driver has no path for it yet
-Slider.accessibilityHint: cannot read accessibilityHint of Slider - Android's driver has no path for it yet
-Slider.accessibilityLabel: cannot read accessibilityLabel of Slider - Android's driver has no path for it yet
-Slider.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Slider - Android's driver has no path for it yet
+Slider.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Slider.accessibilityHint: ✅
+Slider.accessibilityLabel: ✅
+Slider.automationExcludedWithChildren: ✅
 Slider.background: cannot read background of Slider - Android's driver has no path for it yet
 Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
-Slider.isAccessibilityHidden: cannot read isAccessibilityHidden of Slider - Android's driver has no path for it yet
+Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: ✅
 Slider.isVisible: ✅
@@ -801,31 +801,31 @@ Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Slider.opacity: ✅
-Slider.pivotX: cannot read pivotX of Slider - Android's driver has no path for it yet
-Slider.pivotY: cannot read pivotY of Slider - Android's driver has no path for it yet
-Slider.rotation: cannot read rotation of Slider - Android's driver has no path for it yet
-Slider.rotationX: cannot read rotationX of Slider - Android's driver has no path for it yet
-Slider.rotationY: cannot read rotationY of Slider - Android's driver has no path for it yet
-Slider.scale: cannot read scale of Slider - Android's driver has no path for it yet
-Slider.scaleX: cannot read scaleX of Slider - Android's driver has no path for it yet
-Slider.scaleY: cannot read scaleY of Slider - Android's driver has no path for it yet
+Slider.pivotX: ✅
+Slider.pivotY: ✅
+Slider.rotation: ✅
+Slider.rotationX: ✅
+Slider.rotationY: ✅
+Slider.scale: ✅
+Slider.scaleX: ✅
+Slider.scaleY: ✅
 Slider.style: not realized
-Slider.translationX: cannot read translationX of Slider - Android's driver has no path for it yet
-Slider.translationY: cannot read translationY of Slider - Android's driver has no path for it yet
+Slider.translationX: ✅
+Slider.translationY: ✅
 Slider.unfocus: ✅
 Slider.width: ✅
 Slider.zIndex: not realized
-Stepper.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Stepper - Android's driver has no path for it yet
-Stepper.accessibilityHint: cannot read accessibilityHint of Stepper - Android's driver has no path for it yet
-Stepper.accessibilityLabel: cannot read accessibilityLabel of Stepper - Android's driver has no path for it yet
-Stepper.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Stepper - Android's driver has no path for it yet
+Stepper.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Stepper.accessibilityHint: ✅
+Stepper.accessibilityLabel: ✅
+Stepper.automationExcludedWithChildren: ✅
 Stepper.background: cannot read background of Stepper - Android's driver has no path for it yet
 Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
-Stepper.isAccessibilityHidden: cannot read isAccessibilityHidden of Stepper - Android's driver has no path for it yet
+Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: ✅
 Stepper.isVisible: ✅
@@ -835,31 +835,31 @@ Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Stepper.opacity: ✅
-Stepper.pivotX: cannot read pivotX of Stepper - Android's driver has no path for it yet
-Stepper.pivotY: cannot read pivotY of Stepper - Android's driver has no path for it yet
-Stepper.rotation: cannot read rotation of Stepper - Android's driver has no path for it yet
-Stepper.rotationX: cannot read rotationX of Stepper - Android's driver has no path for it yet
-Stepper.rotationY: cannot read rotationY of Stepper - Android's driver has no path for it yet
-Stepper.scale: cannot read scale of Stepper - Android's driver has no path for it yet
-Stepper.scaleX: cannot read scaleX of Stepper - Android's driver has no path for it yet
-Stepper.scaleY: cannot read scaleY of Stepper - Android's driver has no path for it yet
+Stepper.pivotX: ✅
+Stepper.pivotY: ✅
+Stepper.rotation: ✅
+Stepper.rotationX: ✅
+Stepper.rotationY: ✅
+Stepper.scale: ✅
+Stepper.scaleX: ✅
+Stepper.scaleY: ✅
 Stepper.style: not realized
-Stepper.translationX: cannot read translationX of Stepper - Android's driver has no path for it yet
-Stepper.translationY: cannot read translationY of Stepper - Android's driver has no path for it yet
+Stepper.translationX: ✅
+Stepper.translationY: ✅
 Stepper.unfocus: ✅
 Stepper.width: ✅
 Stepper.zIndex: not realized
-Switch.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Switch - Android's driver has no path for it yet
-Switch.accessibilityHint: cannot read accessibilityHint of Switch - Android's driver has no path for it yet
-Switch.accessibilityLabel: cannot read accessibilityLabel of Switch - Android's driver has no path for it yet
-Switch.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Switch - Android's driver has no path for it yet
+Switch.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+Switch.accessibilityHint: ✅
+Switch.accessibilityLabel: ✅
+Switch.automationExcludedWithChildren: ✅
 Switch.background: cannot read background of Switch - Android's driver has no path for it yet
 Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
-Switch.isAccessibilityHidden: cannot read isAccessibilityHidden of Switch - Android's driver has no path for it yet
+Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: ✅
 Switch.isVisible: ✅
@@ -869,31 +869,31 @@ Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 Switch.opacity: ✅
-Switch.pivotX: cannot read pivotX of Switch - Android's driver has no path for it yet
-Switch.pivotY: cannot read pivotY of Switch - Android's driver has no path for it yet
-Switch.rotation: cannot read rotation of Switch - Android's driver has no path for it yet
-Switch.rotationX: cannot read rotationX of Switch - Android's driver has no path for it yet
-Switch.rotationY: cannot read rotationY of Switch - Android's driver has no path for it yet
-Switch.scale: cannot read scale of Switch - Android's driver has no path for it yet
-Switch.scaleX: cannot read scaleX of Switch - Android's driver has no path for it yet
-Switch.scaleY: cannot read scaleY of Switch - Android's driver has no path for it yet
+Switch.pivotX: ✅
+Switch.pivotY: ✅
+Switch.rotation: ✅
+Switch.rotationX: ✅
+Switch.rotationY: ✅
+Switch.scale: ✅
+Switch.scaleX: ✅
+Switch.scaleY: ✅
 Switch.style: not realized
-Switch.translationX: cannot read translationX of Switch - Android's driver has no path for it yet
-Switch.translationY: cannot read translationY of Switch - Android's driver has no path for it yet
+Switch.translationX: ✅
+Switch.translationY: ✅
 Switch.unfocus: ✅
 Switch.width: ✅
 Switch.zIndex: not realized
-TextEditor.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextEditor - Android's driver has no path for it yet
-TextEditor.accessibilityHint: cannot read accessibilityHint of TextEditor - Android's driver has no path for it yet
-TextEditor.accessibilityLabel: cannot read accessibilityLabel of TextEditor - Android's driver has no path for it yet
-TextEditor.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextEditor - Android's driver has no path for it yet
+TextEditor.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+TextEditor.accessibilityHint: ✅
+TextEditor.accessibilityLabel: ✅
+TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: cannot read background of TextEditor - Android's driver has no path for it yet
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
-TextEditor.isAccessibilityHidden: cannot read isAccessibilityHidden of TextEditor - Android's driver has no path for it yet
+TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: ✅
 TextEditor.isVisible: ✅
@@ -903,31 +903,31 @@ TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
 TextEditor.minimumWidth: ✅
 TextEditor.opacity: ✅
-TextEditor.pivotX: cannot read pivotX of TextEditor - Android's driver has no path for it yet
-TextEditor.pivotY: cannot read pivotY of TextEditor - Android's driver has no path for it yet
-TextEditor.rotation: cannot read rotation of TextEditor - Android's driver has no path for it yet
-TextEditor.rotationX: cannot read rotationX of TextEditor - Android's driver has no path for it yet
-TextEditor.rotationY: cannot read rotationY of TextEditor - Android's driver has no path for it yet
-TextEditor.scale: cannot read scale of TextEditor - Android's driver has no path for it yet
-TextEditor.scaleX: cannot read scaleX of TextEditor - Android's driver has no path for it yet
-TextEditor.scaleY: cannot read scaleY of TextEditor - Android's driver has no path for it yet
+TextEditor.pivotX: ✅
+TextEditor.pivotY: ✅
+TextEditor.rotation: ✅
+TextEditor.rotationX: ✅
+TextEditor.rotationY: ✅
+TextEditor.scale: ✅
+TextEditor.scaleX: ✅
+TextEditor.scaleY: ✅
 TextEditor.style: not realized
-TextEditor.translationX: cannot read translationX of TextEditor - Android's driver has no path for it yet
-TextEditor.translationY: cannot read translationY of TextEditor - Android's driver has no path for it yet
+TextEditor.translationX: ✅
+TextEditor.translationY: ✅
 TextEditor.unfocus: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: not realized
-TextField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextField - Android's driver has no path for it yet
-TextField.accessibilityHint: cannot read accessibilityHint of TextField - Android's driver has no path for it yet
-TextField.accessibilityLabel: cannot read accessibilityLabel of TextField - Android's driver has no path for it yet
-TextField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextField - Android's driver has no path for it yet
+TextField.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+TextField.accessibilityHint: ✅
+TextField.accessibilityLabel: ✅
+TextField.automationExcludedWithChildren: ✅
 TextField.background: cannot read background of TextField - Android's driver has no path for it yet
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
-TextField.isAccessibilityHidden: cannot read isAccessibilityHidden of TextField - Android's driver has no path for it yet
+TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: ✅
 TextField.isVisible: ✅
@@ -937,31 +937,31 @@ TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
 TextField.minimumWidth: ✅
 TextField.opacity: ✅
-TextField.pivotX: cannot read pivotX of TextField - Android's driver has no path for it yet
-TextField.pivotY: cannot read pivotY of TextField - Android's driver has no path for it yet
-TextField.rotation: cannot read rotation of TextField - Android's driver has no path for it yet
-TextField.rotationX: cannot read rotationX of TextField - Android's driver has no path for it yet
-TextField.rotationY: cannot read rotationY of TextField - Android's driver has no path for it yet
-TextField.scale: cannot read scale of TextField - Android's driver has no path for it yet
-TextField.scaleX: cannot read scaleX of TextField - Android's driver has no path for it yet
-TextField.scaleY: cannot read scaleY of TextField - Android's driver has no path for it yet
+TextField.pivotX: ✅
+TextField.pivotY: ✅
+TextField.rotation: ✅
+TextField.rotationX: ✅
+TextField.rotationY: ✅
+TextField.scale: ✅
+TextField.scaleX: ✅
+TextField.scaleY: ✅
 TextField.style: not realized
-TextField.translationX: cannot read translationX of TextField - Android's driver has no path for it yet
-TextField.translationY: cannot read translationY of TextField - Android's driver has no path for it yet
+TextField.translationX: ✅
+TextField.translationY: ✅
 TextField.unfocus: ✅
 TextField.width: ✅
 TextField.zIndex: not realized
-TimePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TimePicker - Android's driver has no path for it yet
-TimePicker.accessibilityHint: cannot read accessibilityHint of TimePicker - Android's driver has no path for it yet
-TimePicker.accessibilityLabel: cannot read accessibilityLabel of TimePicker - Android's driver has no path for it yet
-TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - Android's driver has no path for it yet
+TimePicker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+TimePicker.accessibilityHint: ✅
+TimePicker.accessibilityLabel: ✅
+TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: cannot read background of TimePicker - Android's driver has no path for it yet
 TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
-TimePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of TimePicker - Android's driver has no path for it yet
+TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.isVisible: ✅
@@ -971,17 +971,17 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.opacity: ✅
-TimePicker.pivotX: cannot read pivotX of TimePicker - Android's driver has no path for it yet
-TimePicker.pivotY: cannot read pivotY of TimePicker - Android's driver has no path for it yet
-TimePicker.rotation: cannot read rotation of TimePicker - Android's driver has no path for it yet
-TimePicker.rotationX: cannot read rotationX of TimePicker - Android's driver has no path for it yet
-TimePicker.rotationY: cannot read rotationY of TimePicker - Android's driver has no path for it yet
-TimePicker.scale: cannot read scale of TimePicker - Android's driver has no path for it yet
-TimePicker.scaleX: cannot read scaleX of TimePicker - Android's driver has no path for it yet
-TimePicker.scaleY: cannot read scaleY of TimePicker - Android's driver has no path for it yet
+TimePicker.pivotX: ✅
+TimePicker.pivotY: ✅
+TimePicker.rotation: ✅
+TimePicker.rotationX: ✅
+TimePicker.rotationY: ✅
+TimePicker.scale: ✅
+TimePicker.scaleX: ✅
+TimePicker.scaleY: ✅
 TimePicker.style: not realized
-TimePicker.translationX: cannot read translationX of TimePicker - Android's driver has no path for it yet
-TimePicker.translationY: cannot read translationY of TimePicker - Android's driver has no path for it yet
+TimePicker.translationX: ✅
+TimePicker.translationY: ✅
 TimePicker.unfocus: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
@@ -1019,17 +1019,17 @@ TitleBar.translationY: not realized
 TitleBar.unfocus: not realized
 TitleBar.width: not realized
 TitleBar.zIndex: not realized
-VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - Android's driver has no path for it yet
-VStack.accessibilityHint: cannot read accessibilityHint of VStack - Android's driver has no path for it yet
-VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - Android's driver has no path for it yet
-VStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of VStack - Android's driver has no path for it yet
+VStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+VStack.accessibilityHint: ✅
+VStack.accessibilityLabel: ✅
+VStack.automationExcludedWithChildren: ✅
 VStack.background: cannot read background of VStack - Android's driver has no path for it yet
 VStack.focus: ✅
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
-VStack.isAccessibilityHidden: cannot read isAccessibilityHidden of VStack - Android's driver has no path for it yet
+VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: not realized
 VStack.isFocusedChanged: ✅
 VStack.isVisible: ✅
@@ -1039,31 +1039,31 @@ VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
 VStack.opacity: ✅
-VStack.pivotX: cannot read pivotX of VStack - Android's driver has no path for it yet
-VStack.pivotY: cannot read pivotY of VStack - Android's driver has no path for it yet
-VStack.rotation: cannot read rotation of VStack - Android's driver has no path for it yet
-VStack.rotationX: cannot read rotationX of VStack - Android's driver has no path for it yet
-VStack.rotationY: cannot read rotationY of VStack - Android's driver has no path for it yet
-VStack.scale: cannot read scale of VStack - Android's driver has no path for it yet
-VStack.scaleX: cannot read scaleX of VStack - Android's driver has no path for it yet
-VStack.scaleY: cannot read scaleY of VStack - Android's driver has no path for it yet
+VStack.pivotX: ✅
+VStack.pivotY: ✅
+VStack.rotation: ✅
+VStack.rotationX: ✅
+VStack.rotationY: ✅
+VStack.scale: ✅
+VStack.scaleX: ✅
+VStack.scaleY: ✅
 VStack.style: not realized
-VStack.translationX: cannot read translationX of VStack - Android's driver has no path for it yet
-VStack.translationY: cannot read translationY of VStack - Android's driver has no path for it yet
+VStack.translationX: ✅
+VStack.translationY: ✅
 VStack.unfocus: ✅
 VStack.width: ✅
 VStack.zIndex: not realized
-WebView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of WebView - Android's driver has no path for it yet
-WebView.accessibilityHint: cannot read accessibilityHint of WebView - Android's driver has no path for it yet
-WebView.accessibilityLabel: cannot read accessibilityLabel of WebView - Android's driver has no path for it yet
-WebView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of WebView - Android's driver has no path for it yet
+WebView.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+WebView.accessibilityHint: ✅
+WebView.accessibilityLabel: ✅
+WebView.automationExcludedWithChildren: ✅
 WebView.background: cannot read background of WebView - Android's driver has no path for it yet
 WebView.focus: ✅
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
-WebView.isAccessibilityHidden: cannot read isAccessibilityHidden of WebView - Android's driver has no path for it yet
+WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: not realized
 WebView.isFocusedChanged: ✅
 WebView.isVisible: ✅
@@ -1073,31 +1073,31 @@ WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅
 WebView.minimumWidth: ✅
 WebView.opacity: ✅
-WebView.pivotX: cannot read pivotX of WebView - Android's driver has no path for it yet
-WebView.pivotY: cannot read pivotY of WebView - Android's driver has no path for it yet
-WebView.rotation: cannot read rotation of WebView - Android's driver has no path for it yet
-WebView.rotationX: cannot read rotationX of WebView - Android's driver has no path for it yet
-WebView.rotationY: cannot read rotationY of WebView - Android's driver has no path for it yet
-WebView.scale: cannot read scale of WebView - Android's driver has no path for it yet
-WebView.scaleX: cannot read scaleX of WebView - Android's driver has no path for it yet
-WebView.scaleY: cannot read scaleY of WebView - Android's driver has no path for it yet
+WebView.pivotX: ✅
+WebView.pivotY: ✅
+WebView.rotation: ✅
+WebView.rotationX: ✅
+WebView.rotationY: ✅
+WebView.scale: ✅
+WebView.scaleX: ✅
+WebView.scaleY: ✅
 WebView.style: not realized
-WebView.translationX: cannot read translationX of WebView - Android's driver has no path for it yet
-WebView.translationY: cannot read translationY of WebView - Android's driver has no path for it yet
+WebView.translationX: ✅
+WebView.translationY: ✅
 WebView.unfocus: ✅
 WebView.width: ✅
 WebView.zIndex: not realized
-ZStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ZStack - Android's driver has no path for it yet
-ZStack.accessibilityHint: cannot read accessibilityHint of ZStack - Android's driver has no path for it yet
-ZStack.accessibilityLabel: cannot read accessibilityLabel of ZStack - Android's driver has no path for it yet
-ZStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ZStack - Android's driver has no path for it yet
+ZStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
+ZStack.accessibilityHint: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.automationExcludedWithChildren: ✅
 ZStack.background: cannot read background of ZStack - Android's driver has no path for it yet
 ZStack.focus: ✅
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
-ZStack.isAccessibilityHidden: cannot read isAccessibilityHidden of ZStack - Android's driver has no path for it yet
+ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: not realized
 ZStack.isFocusedChanged: ✅
 ZStack.isVisible: ✅
@@ -1107,17 +1107,17 @@ ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
 ZStack.minimumWidth: ✅
 ZStack.opacity: ✅
-ZStack.pivotX: cannot read pivotX of ZStack - Android's driver has no path for it yet
-ZStack.pivotY: cannot read pivotY of ZStack - Android's driver has no path for it yet
-ZStack.rotation: cannot read rotation of ZStack - Android's driver has no path for it yet
-ZStack.rotationX: cannot read rotationX of ZStack - Android's driver has no path for it yet
-ZStack.rotationY: cannot read rotationY of ZStack - Android's driver has no path for it yet
-ZStack.scale: cannot read scale of ZStack - Android's driver has no path for it yet
-ZStack.scaleX: cannot read scaleX of ZStack - Android's driver has no path for it yet
-ZStack.scaleY: cannot read scaleY of ZStack - Android's driver has no path for it yet
+ZStack.pivotX: ✅
+ZStack.pivotY: ✅
+ZStack.rotation: ✅
+ZStack.rotationX: ✅
+ZStack.rotationY: ✅
+ZStack.scale: ✅
+ZStack.scaleX: ✅
+ZStack.scaleY: ✅
 ZStack.style: not realized
-ZStack.translationX: cannot read translationX of ZStack - Android's driver has no path for it yet
-ZStack.translationY: cannot read translationY of ZStack - Android's driver has no path for it yet
+ZStack.translationX: ✅
+ZStack.translationY: ✅
 ZStack.unfocus: ✅
 ZStack.width: ✅
 ZStack.zIndex: not realized

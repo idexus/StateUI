@@ -187,6 +187,16 @@ enum Java {
         return result
     }
 
+    /// Calls a static method returning a float.
+    static func callStaticFloat(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+        crossings += 1
+        let result = arguments.withUnsafeBufferPointer {
+            jni.CallStaticFloatMethodA(env, owner, method, $0.baseAddress)
+        }
+        check("a static call")
+        return result
+    }
+
     /// Calls a method returning a float.
     static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1

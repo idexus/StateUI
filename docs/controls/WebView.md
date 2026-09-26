@@ -43,7 +43,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  | Android Views: cannot read accessibilityIdentifier of WebView - Android's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -51,16 +51,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  | Android Views: cannot read accessibilityHeadingLevel of WebView - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  |  |  |  | Android Views: cannot read accessibilityHint of WebView - Android's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  |  |  | Android Views: cannot read accessibilityLabel of WebView - Android's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  | Android Views: cannot read automationExcludedWithChildren of WebView - Android's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  | Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
 | `background` | property | `Background` | native |  |  |  |  |  |  | Android Views: cannot read background of WebView - Android's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  |  |  |  | ✅ |  |  |  |
 | `frame` | property | `Rect` | structure |  |  |  | ✅ |  |  |  |
 | `height` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  | Android Views: cannot read isAccessibilityHidden of WebView - Android's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
 | `isEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ |  |  |  |
 | `isVisible` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
@@ -70,17 +70,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `opacity` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read pivotX of WebView - Android's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read pivotY of WebView - Android's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read rotation of WebView - Android's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read rotationX of WebView - Android's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read rotationY of WebView - Android's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read scale of WebView - Android's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read scaleX of WebView - Android's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read scaleY of WebView - Android's driver has no path for it yet |
+| `pivotX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `pivotY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `rotation` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `rotationX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `scaleX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `scaleY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read translationX of WebView - Android's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  |  |  |  | Android Views: cannot read translationY of WebView - Android's driver has no path for it yet |
+| `translationX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `translationY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `unfocus` | act | `() -> Void` |  |  |  |  | ✅ |  |  |  |
 | `width` | property | `Double` | native |  |  |  | ✅ |  |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |

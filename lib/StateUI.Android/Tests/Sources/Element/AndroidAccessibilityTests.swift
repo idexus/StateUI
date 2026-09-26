@@ -70,4 +70,14 @@ enum TestAccessibility {
     static func describe(_ view: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, describing, .object(view.reference)).map { Java.text($0) } ?? "" }
     }
+
+    /// One of the words assistive technology meets of `view` - "label", "hint", "id" - or nothing.
+    static func word(_ name: String, of view: AndroidView) -> String? {
+        Java.frame {
+            Java.callStaticObject(owner, wording, .object(view.reference), .object(Java.string(name))).map { Java.text($0) }
+        }
+    }
+
+    private static let wording = Java.staticMethod(
+        owner, "word", "(Landroid/view/View;Ljava/lang/String;)Ljava/lang/String;")
 }

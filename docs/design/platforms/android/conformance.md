@@ -53,4 +53,9 @@ until its last part writes them, one file a family.
 
 A member's value is read from the view Android holds - a toggle's check, a
 seek bar's progress, a text view's words, a view's visibility, alpha and
-enabled state - never from what the host last wrote.
+enabled state, its translation back in points, its rotation, scale and pivot,
+the words its accessibility node carries as TalkBack reads them, a text
+view's size in the scaled points the host sets it in, its bold and italic and
+its colour - never from what the host last wrote. What Android does not hold
+stays unread, with why: a heading's level, where Android marks a heading, and
+a typeface's family, which keeps no name.

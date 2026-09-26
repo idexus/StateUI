@@ -1,40 +1,40 @@
-ActivityIndicator.accessibilityIdentifier: cannot read accessibilityIdentifier of ActivityIndicator - Android's driver has no path for it yet
-Button.accessibilityIdentifier: cannot read accessibilityIdentifier of Button - Android's driver has no path for it yet
-Button.clicked: cannot read accessibilityIdentifier of ActivityIndicator - Android's driver has no path for it yet
-Canvas.accessibilityIdentifier: cannot read accessibilityIdentifier of Canvas - Android's driver has no path for it yet
-CheckBox.accessibilityIdentifier: cannot read accessibilityIdentifier of CheckBox - Android's driver has no path for it yet
-ColorBox.accessibilityIdentifier: cannot read accessibilityIdentifier of ColorBox - Android's driver has no path for it yet
-DatePicker.accessibilityIdentifier: cannot read accessibilityIdentifier of DatePicker - Android's driver has no path for it yet
-Ellipse.accessibilityIdentifier: cannot read accessibilityIdentifier of Ellipse - Android's driver has no path for it yet
-Grid.accessibilityIdentifier: cannot read accessibilityIdentifier of Grid - Android's driver has no path for it yet
-HStack.accessibilityIdentifier: cannot read accessibilityIdentifier of HStack - Android's driver has no path for it yet
-Image.accessibilityIdentifier: cannot read accessibilityIdentifier of Image - Android's driver has no path for it yet
-Label.accessibilityIdentifier: cannot read accessibilityIdentifier of Label - Android's driver has no path for it yet
-Line.accessibilityIdentifier: cannot read accessibilityIdentifier of Line - Android's driver has no path for it yet
+ActivityIndicator.accessibilityIdentifier: ✅
+Button.accessibilityIdentifier: ✅
+Button.clicked: ✅
+Canvas.accessibilityIdentifier: ✅
+CheckBox.accessibilityIdentifier: ✅
+ColorBox.accessibilityIdentifier: ✅
+DatePicker.accessibilityIdentifier: ✅
+Ellipse.accessibilityIdentifier: ✅
+Grid.accessibilityIdentifier: ✅
+HStack.accessibilityIdentifier: ✅
+Image.accessibilityIdentifier: ✅
+Label.accessibilityIdentifier: ✅
+Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: cannot read accessibilityIdentifier of MenuItem - Android's driver has no path for it yet
-NavigationStack.accessibilityIdentifier: cannot read accessibilityIdentifier of NavigationStack - Android's driver has no path for it yet
-Path.accessibilityIdentifier: cannot read accessibilityIdentifier of Path - Android's driver has no path for it yet
-Picker.accessibilityIdentifier: cannot read accessibilityIdentifier of Picker - Android's driver has no path for it yet
-Polygon.accessibilityIdentifier: cannot read accessibilityIdentifier of Polygon - Android's driver has no path for it yet
-Polyline.accessibilityIdentifier: cannot read accessibilityIdentifier of Polyline - Android's driver has no path for it yet
+NavigationStack.accessibilityIdentifier: ✅
+Path.accessibilityIdentifier: ✅
+Picker.accessibilityIdentifier: ✅
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
 PositionIndicator.accessibilityIdentifier: not realized
-ProgressBar.accessibilityIdentifier: cannot read accessibilityIdentifier of ProgressBar - Android's driver has no path for it yet
-RadioButton.accessibilityIdentifier: cannot read accessibilityIdentifier of RadioButton - Android's driver has no path for it yet
-Rectangle.accessibilityIdentifier: cannot read accessibilityIdentifier of Rectangle - Android's driver has no path for it yet
-ScrollView.accessibilityIdentifier: cannot read accessibilityIdentifier of ScrollView - Android's driver has no path for it yet
-SearchField.accessibilityIdentifier: cannot read accessibilityIdentifier of SearchField - Android's driver has no path for it yet
-Slider.accessibilityIdentifier: cannot read accessibilityIdentifier of Slider - Android's driver has no path for it yet
+ProgressBar.accessibilityIdentifier: ✅
+RadioButton.accessibilityIdentifier: ✅
+Rectangle.accessibilityIdentifier: ✅
+ScrollView.accessibilityIdentifier: ✅
+SearchField.accessibilityIdentifier: ✅
+Slider.accessibilityIdentifier: ✅
 Span.accessibilityIdentifier: not realized
-SplitView.accessibilityIdentifier: cannot read accessibilityIdentifier of SplitView - Android's driver has no path for it yet
-Stepper.accessibilityIdentifier: cannot read accessibilityIdentifier of Stepper - Android's driver has no path for it yet
-Switch.accessibilityIdentifier: cannot read accessibilityIdentifier of Switch - Android's driver has no path for it yet
-TabbedView.accessibilityIdentifier: cannot read accessibilityIdentifier of TabbedView - Android's driver has no path for it yet
-TextEditor.accessibilityIdentifier: cannot read accessibilityIdentifier of TextEditor - Android's driver has no path for it yet
-TextField.accessibilityIdentifier: cannot read accessibilityIdentifier of TextField - Android's driver has no path for it yet
-TimePicker.accessibilityIdentifier: cannot read accessibilityIdentifier of TimePicker - Android's driver has no path for it yet
+SplitView.accessibilityIdentifier: ✅
+Stepper.accessibilityIdentifier: ✅
+Switch.accessibilityIdentifier: ✅
+TabbedView.accessibilityIdentifier: ✅
+TextEditor.accessibilityIdentifier: ✅
+TextField.accessibilityIdentifier: ✅
+TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - Android's driver has no path for it yet
-VStack.accessibilityIdentifier: cannot read accessibilityIdentifier of VStack - Android's driver has no path for it yet
-WebView.accessibilityIdentifier: cannot read accessibilityIdentifier of WebView - Android's driver has no path for it yet
-ZStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ZStack - Android's driver has no path for it yet
+VStack.accessibilityIdentifier: ✅
+WebView.accessibilityIdentifier: ✅
+ZStack.accessibilityIdentifier: ✅

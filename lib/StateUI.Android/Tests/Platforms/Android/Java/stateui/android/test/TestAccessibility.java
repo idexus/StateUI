@@ -18,6 +18,19 @@ public final class TestAccessibility {
      * "hidden" or "hidden with children" - separated by ", ", none said as nothing. A view in no window makes
      * a node without its own words, so the label and the heading are read from the view, the rest from its node.
      */
+    /** One of the words assistive technology meets of the view - "label", "hint" or "id" - or none. */
+    public static String word(View view, String name) {
+        AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
+        CharSequence word;
+        switch (name) {
+            case "label": word = view.getContentDescription(); break;
+            case "hint": word = info.getHintText(); break;
+            case "id": word = info.getViewIdResourceName(); break;
+            default: word = null; break;
+        }
+        return word == null ? null : word.toString();
+    }
+
     public static String describe(View view) {
         AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
         List<String> words = new ArrayList<>();
