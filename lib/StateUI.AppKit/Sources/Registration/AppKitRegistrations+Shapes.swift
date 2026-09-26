@@ -15,8 +15,7 @@ extension AppKitRegistrations {
     static func shapes(_ registry: Registry<NSView>) {
         registry.add(RectangleContract.self, create: { _ in AppKitShapeView(kind: .rectangle) }) { shape in
             shape.applies(Self.shapeMembers + [RectangleContract.cornerRadius]) { view, values in
-                Self.draw(view, values, .rectangle(
-                    AppKitCornerRadii(values[RectangleContract.cornerRadius]?.propValue)))
+                Self.draw(view, values, .rectangle(BoxArithmetic.clockwise(values[RectangleContract.cornerRadius])))
             }
         }
 
@@ -67,7 +66,7 @@ extension AppKitRegistrations {
                 view.apply(
                     background: values[VisualElementContract.background].flatMap { nsColor($0.propValue) },
                     fill: values[ColorBoxContract.color].flatMap { nsColor($0.propValue) },
-                    cornerRadius: values[ColorBoxContract.cornerRadius]?.propValue)
+                    corners: values[ColorBoxContract.cornerRadius])
             }
         }
     }
@@ -96,7 +95,7 @@ extension AppKitRegistrations {
             lineCap: values[ShapeContract.strokeLineCap]?.rawValue ?? 0,
             lineJoin: values[ShapeContract.strokeLineJoin]?.rawValue ?? 0,
             miterLimit: values[ShapeContract.strokeMiterLimit] ?? 10,
-            aspect: values[ShapeContract.aspect]?.rawValue ?? 0,
+            aspect: values[ShapeContract.aspect] ?? .fit,
             renderTransform: Self.transform(values),
             geometry: geometry)
     }

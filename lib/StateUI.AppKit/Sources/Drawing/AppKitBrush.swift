@@ -6,104 +6,78 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
+/// A fill drawn by AppKit: the host layer's reading of it (`HostBrush`), its colours in sRGB, painted on a path.
+/// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 struct AppKitBrush {
-    enum Kind {
-        case none
-        case solid(NSColor)
-        case linear([NSColor], [CGFloat], [Double])
-        case radial([NSColor], [CGFloat], [Double])
+    /// What the tree's value describes.
+    let brush: HostBrush
+
+    /// The brush the tree's `value` describes: a colour, a gradient, or nothing.
+    init(_ value: HostValue? = nil) {
+        brush = HostBrush(value)
     }
 
-    var kind = Kind.none
-
-    init() {}
-
-    init(color: NSColor?) {
-        kind = color.map(Kind.solid) ?? .none
+    /// Its one colour, where it is one.
+    var color: NSColor? {
+        if case .solid(let color) = brush { nsColor(color) } else { nil }
     }
 
-    init?(_ value: HostValue?) {
-        guard let parts = value?.values, let rawKind = parts.first?.enumeration else { return nil }
-
-        if rawKind == 1, let color = parts.value(1).flatMap(nsColor) {
-            kind = .solid(color)
-            return
+    /// Whether it is a gradient, which a layer's colour cannot paint.
+    var isGradient: Bool {
+        switch brush {
+        case .linear, .radial: true
+        case .none, .solid: false
         }
-
-        guard rawKind == 2 || rawKind == 3,
-              let geometry = parts.value(1)?.numbers
-        else { return nil }
-
-        var colors: [NSColor] = []
-        var locations: [CGFloat] = []
-        var index = 2
-
-        while index + 1 < parts.count,
-              let location = parts[index].number,
-              let color = nsColor(parts[index + 1]) {
-            locations.append(min(max(location, 0), 1))
-            colors.append(color)
-            index += 2
-        }
-
-        guard !colors.isEmpty else { return nil }
-        kind = rawKind == 2
-            ? .linear(colors, locations, geometry)
-            : .radial(colors, locations, geometry)
     }
 
+    /// The colour a line draws with: its colour, or its first stop's.
+    var lineColor: NSColor? {
+        brush.firstColor.flatMap(nsColor)
+    }
+
+    /// Fills `path` within `bounds`: a gradient's points and radius are fractions of `bounds`, the radius of its
+    /// larger side.
     func draw(in path: NSBezierPath, bounds: NSRect) {
-        switch kind {
+        switch brush {
         case .none:
             return
-        case .solid(let color):
-            color.setFill()
+        case .solid(let value):
+            nsColor(value)?.setFill()
             path.fill()
-        case .linear(let colors, let locations, let geometry):
-            guard geometry.count >= 4,
-                  let gradient = NSGradient(
-                    colors: colors,
-                    atLocations: locations,
-                    colorSpace: .deviceRGB)
-            else { return }
+        case .linear(let from, let to, let stops):
+            guard let gradient = Self.gradient(stops) else { return }
             NSGraphicsContext.saveGraphicsState()
             path.addClip()
-            gradient.draw(
-                from: NSPoint(
-                    x: bounds.minX + bounds.width * geometry[0],
-                    y: bounds.minY + bounds.height * geometry[1]),
-                to: NSPoint(
-                    x: bounds.minX + bounds.width * geometry[2],
-                    y: bounds.minY + bounds.height * geometry[3]),
-                options: [])
+            gradient.draw(from: Self.point(from, in: bounds), to: Self.point(to, in: bounds), options: [])
             NSGraphicsContext.restoreGraphicsState()
-        case .radial(let colors, let locations, let geometry):
-            guard geometry.count >= 3,
-                  let gradient = NSGradient(
-                    colors: colors,
-                    atLocations: locations,
-                    colorSpace: .deviceRGB)
-            else { return }
+        case .radial(let center, let radius, let stops):
+            guard let gradient = Self.gradient(stops) else { return }
             NSGraphicsContext.saveGraphicsState()
             path.addClip()
-            let center = NSPoint(
-                x: bounds.minX + bounds.width * geometry[0],
-                y: bounds.minY + bounds.height * geometry[1])
+            let middle = Self.point(center, in: bounds)
             gradient.draw(
-                fromCenter: center,
-                radius: 0,
-                toCenter: center,
-                radius: max(bounds.width, bounds.height) * geometry[2],
+                fromCenter: middle, radius: 0, toCenter: middle, radius: max(bounds.width, bounds.height) * radius,
                 options: [])
             NSGraphicsContext.restoreGraphicsState()
         }
     }
 
+    /// Strokes `path` `width` wide in the brush's line colour.
     func stroke(_ path: NSBezierPath, width: CGFloat) {
-        guard case .solid(let color) = kind else { return }
+        guard let color = lineColor, width > 0 else { return }
         color.setStroke()
         path.lineWidth = width
         path.stroke()
+    }
+
+    private static func gradient(_ stops: [HostBrush.Stop]) -> NSGradient? {
+        let colors = stops.compactMap { nsColor($0.color) }
+        guard !colors.isEmpty, colors.count == stops.count else { return nil }
+        return NSGradient(colors: colors, atLocations: stops.map { CGFloat($0.offset) }, colorSpace: .deviceRGB)
+    }
+
+    private static func point(_ fraction: Point, in bounds: NSRect) -> NSPoint {
+        NSPoint(x: bounds.minX + bounds.width * fraction.x, y: bounds.minY + bounds.height * fraction.y)
     }
 }
 

@@ -3,6 +3,8 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// The native AppKit button behind StateUI's `Button` - a caption, an icon or both.
 @MainActor
@@ -41,7 +43,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         backgroundColor: NSColor?,
         strokeColor: NSColor?,
         strokeWidth: Double,
-        shape: AppKitDecoration.Shape,
+        shape: ContainerShape,
         lineBreakMode: NSLineBreakMode,
         enabled: Bool
     ) {
@@ -57,40 +59,69 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         self.imageScaling = imageScaling
 
         outlineShape = shape
-        let shaped: Bool = if case .rectangle = shape { false } else { true }
-        wantsLayer = backgroundColor != nil || strokeColor != nil || shaped
-        layer?.backgroundColor = backgroundColor?.cgColor
+        fill = backgroundColor
+        wantsLayer = backgroundColor != nil || strokeColor != nil || shape != .rectangle
+        paintFill()
         layer?.borderColor = strokeColor?.cgColor
-        layer?.borderWidth = strokeColor == nil ? 0 : max(0, strokeWidth)
-        roundCorners()
+        layer?.borderWidth = strokeColor == nil ? 0 : strokeWidth
+        if let layer { shape.round(layer) }
         isBordered = backgroundColor == nil && strokeColor == nil
     }
 
     /// The shape the corners follow - an oval rounded into a capsule, which is what a layer's corners can draw.
-    private var outlineShape = AppKitDecoration.Shape.rectangle
+    private var outlineShape = ContainerShape.rectangle
 
-    private func roundCorners() {
-        switch outlineShape {
-        case .rectangle: layer?.cornerRadius = 0
-        case .rounded(let radius): layer?.cornerRadius = radius
-        case .ellipse: layer?.cornerRadius = min(bounds.width, bounds.height) / 2
-        }
+    /// The button's own fill, where it is given one, which the user's reach makes fainter.
+    private var fill: NSColor?
+
+    /// The share of its opacity the fill keeps: all of it, less under the pointer, less still pressed.
+    /// Design: docs/design/host/layout.md#a-box
+    private var reach = 1.0 {
+        didSet { if reach != oldValue { paintFill() } }
+    }
+
+    private func paintFill() {
+        layer?.backgroundColor = fill.map { $0.withAlphaComponent($0.alphaComponent * reach).cgColor }
     }
 
     override func layout() {
         super.layout()
-        roundCorners()
+        if let layer { outlineShape.round(layer) }
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        for area in trackingAreas where area.owner === self { removeTrackingArea(area) }
+        addTrackingArea(NSTrackingArea(
+            rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self))
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        super.mouseEntered(with: event)
+        reach = PressedFill.underPointer
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        super.mouseExited(with: event)
+        reach = 1
     }
 
     override func mouseDown(with event: NSEvent) {
         onPressed?()
+        reach = PressedFill.pressed
+        // AppKit tracks the press inside this call, until the button is let go.
         super.mouseDown(with: event)
+        let inside = window.map { bounds.contains(convert($0.mouseLocationOutsideOfEventStream, from: nil)) } ?? false
+        reach = inside ? PressedFill.underPointer : 1
         onReleased?()
     }
 
     @objc private func clicked(_ sender: NSButton) {
         onClicked?()
     }
+
+    /// The share of its opacity the fill keeps now.
+    var reachForTesting: Double { reach }
 
     func clickForTesting() {
         onPressed?()

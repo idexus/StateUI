@@ -154,12 +154,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     /// outline on a rectangle or a rounded one; an oval cuts and draws none.
     /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
     func setBox(stroke: HostValue?, strokeWidth: Double?, shape: HostValue?) {
-        boxShape = AppKitDecoration.Shape(shape)
-        if case .solid(let colour)? = AppKitBrush(stroke)?.kind {
-            boxOutline = (colour.cgColor, CGFloat(max(0, strokeWidth ?? 1)))
-        } else {
-            boxOutline = nil
-        }
+        boxShape = BoxArithmetic.outline(shape)
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth)
+        boxOutline = AppKitBrush(stroke).lineColor.flatMap { width > 0 ? ($0.cgColor, CGFloat(width)) : nil }
         paintBox()
     }
 
@@ -168,7 +165,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         didSet { paintBox() }
     }
 
-    private var boxShape = AppKitDecoration.Shape.rectangle
+    private var boxShape = ContainerShape.rectangle
     private var boxOutline: (colour: CGColor, width: CGFloat)?
 
     // AppKit repaints a scroller's layer as it displays it, its colour and outline cleared: the box is put back
@@ -190,20 +187,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private func cutToShape() {
         guard let layer else { return }
         layer.masksToBounds = true
-        switch boxShape {
-        case .rectangle:
-            layer.cornerRadius = 0
-            layer.mask = nil
-        case .rounded(let radius):
-            layer.cornerRadius = min(radius, min(bounds.width, bounds.height) / 2)
-            layer.mask = nil
-        case .ellipse:
-            layer.cornerRadius = 0
-            let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
-            mask.frame = layer.bounds
-            mask.path = CGPath(ellipseIn: layer.bounds, transform: nil)
-            layer.mask = mask
-        }
+        boxShape.cut(layer)
     }
 
     override func layout() {

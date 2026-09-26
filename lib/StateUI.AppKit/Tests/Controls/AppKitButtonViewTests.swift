@@ -11,7 +11,7 @@ import XCTest
 final class AppKitButtonViewTests: XCTestCase {
     @MainActor
     func testTextAndImageUseOneNativeButtonSurface() {
-        let button = AppKitButtonView()
+        let button = AppKitButtonView(frame: NSRect(x: 0, y: 0, width: 120, height: 32))
         let image = NSImage(size: NSSize(width: 12, height: 12))
 
         button.apply(
@@ -24,7 +24,7 @@ final class AppKitButtonViewTests: XCTestCase {
             backgroundColor: .systemYellow,
             strokeColor: .systemBlue,
             strokeWidth: 2,
-            shape: .rounded(6),
+            shape: .roundedRectangle(6),
             lineBreakMode: .byTruncatingTail,
             enabled: false)
 
@@ -71,6 +71,28 @@ final class AppKitButtonViewTests: XCTestCase {
         button.clickForTesting()
 
         XCTAssertEqual(events, ["pressed", "clicked", "released"])
+    }
+
+    /// A button's own fill keeps nine tenths of its opacity under the pointer, and all of it once the pointer leaves.
+    @MainActor
+    func testAButtonsOwnFillFadesUnderThePointer() throws {
+        let button = AppKitButtonView()
+        button.apply(
+            text: "Save", image: nil, imagePosition: .noImage, imageScaling: .scaleNone,
+            font: .systemFont(ofSize: 13), textColor: .labelColor, backgroundColor: .systemBlue, strokeColor: nil,
+            strokeWidth: 0, shape: .rectangle, lineBreakMode: .byTruncatingTail, enabled: true)
+        let alpha = { Double(button.layer?.backgroundColor?.alpha ?? 0) }
+        let crossing = { (type: NSEvent.EventType) in
+            try XCTUnwrap(NSEvent.enterExitEvent(
+                with: type, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                eventNumber: 0, trackingNumber: 0, userData: nil))
+        }
+
+        button.mouseEntered(with: try crossing(.mouseEntered))
+        XCTAssertEqual(alpha(), PressedFill.underPointer, accuracy: 0.001)
+
+        button.mouseExited(with: try crossing(.mouseExited))
+        XCTAssertEqual(alpha(), 1, accuracy: 0.001)
     }
 
     /// The side of its caption an icon stands on reaches the native button.
@@ -148,6 +170,9 @@ final class AppKitButtonViewTests: XCTestCase {
         renderer.applyForTesting(tree(stack))
 
         let padded = try XCTUnwrap(renderer.viewForTesting(id: .manual("padded")) as? NSButton)
+        // A corner rounds no more than half the side it rounds: the button's sides are known once it is laid out.
+        padded.frame.size = padded.fittingSize
+        padded.layoutSubtreeIfNeeded()
         let intrinsic = padded.intrinsicContentSize
         XCTAssertEqual(padded.fittingSize.width, intrinsic.width + 40, accuracy: 0.5)
         XCTAssertEqual(padded.fittingSize.height, intrinsic.height + 20, accuracy: 0.5)

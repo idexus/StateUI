@@ -22,7 +22,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: LineCap.round.rawValue,
             lineJoin: LineJoin.miter.rawValue,
             miterLimit: 10,
-            aspect: Aspect.center.rawValue,
+            aspect: .center,
             renderTransform: nil,
             geometry: .line(x1: 2, y1: 3, x2: 70, y2: 30))
 
@@ -47,7 +47,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Aspect.center.rawValue,
+            aspect: .center,
             renderTransform: nil,
             geometry: .points([0, 0, 40, 0, 20, 30], fillRule: FillRule.evenOdd.rawValue))
 
@@ -71,7 +71,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Aspect.fit.rawValue,
+            aspect: .fit,
             renderTransform: nil,
             geometry: .points([0, 0, 100, 50], fillRule: FillRule.nonzero.rawValue))
 
@@ -93,7 +93,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Aspect.center.rawValue,
+            aspect: .center,
             renderTransform: nil,
             geometry: .path("M 0 40 L 20 0 C 25 5 35 5 40 40 Z"))
 
@@ -117,7 +117,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Aspect.center.rawValue,
+            aspect: .center,
             renderTransform: nil,
             geometry: .path("M 0 20 A 20 20 0 0 1 40 20"))
 

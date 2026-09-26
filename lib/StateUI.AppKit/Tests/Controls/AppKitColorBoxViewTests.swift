@@ -9,55 +9,26 @@ import AppKit
 import XCTest
 
 final class AppKitColorBoxViewTests: XCTestCase {
+    /// The box's colours reach the view, and its corners stand clockwise from the top left, as the host layer reads
+    /// them.
     @MainActor
-    func testAUniformRadiusReachesEveryCorner() {
+    func testTheCornersStandClockwise() {
         let view = AppKitColorBoxView()
 
-        view.apply(background: .systemYellow, fill: .systemRed, cornerRadius: .number(6))
+        view.apply(background: .systemYellow, fill: .systemRed, corners: .corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4))
 
         XCTAssertTrue(view.backgroundColor.isEqual(NSColor.systemYellow))
         XCTAssertTrue(view.fillColor.isEqual(NSColor.systemRed))
-        XCTAssertEqual(
-            view.cornerRadii,
-            AppKitCornerRadii(topLeft: 6, topRight: 6, bottomLeft: 6, bottomRight: 6))
+        XCTAssertEqual(view.radii, [1, 2, 4, 3])
     }
 
-    @MainActor
-    func testFourRadiiKeepStateUIsCornerOrder() {
-        let view = AppKitColorBoxView()
-
-        view.apply(background: nil, fill: nil, cornerRadius: .numbers([1, 2, 3, 4]))
-
-        XCTAssertTrue(view.backgroundColor.isEqual(NSColor.clear))
-        XCTAssertTrue(view.fillColor.isEqual(NSColor.clear))
-        XCTAssertEqual(
-            view.cornerRadii,
-            AppKitCornerRadii(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4))
-    }
-
-    @MainActor
-    func testInvalidRadiiBecomeSquareCorners() {
-        let view = AppKitColorBoxView()
-
-        view.apply(
-            background: nil,
-            fill: .systemBlue,
-            cornerRadius: .numbers([-1, .infinity, .nan, 8]))
-
-        XCTAssertEqual(
-            view.cornerRadii,
-            AppKitCornerRadii(topLeft: 0, topRight: 0, bottomLeft: 0, bottomRight: 8))
-    }
-
+    /// Corners larger than the box round no more than half the side each rounds, so the outline stays the box's.
     func testOversizedRadiiStillDescribeTheViewsBounds() {
         let bounds = CGRect(x: 5, y: 7, width: 20, height: 10)
-        let radii = AppKitCornerRadii(
-            topLeft: 80,
-            topRight: 70,
-            bottomLeft: 60,
-            bottomRight: 50)
 
-        XCTAssertEqual(radii.path(in: bounds).boundingBoxOfPath, bounds)
+        let path = AppKitCorners.path(in: bounds, clockwise: [80, 70, 50, 60])
+
+        XCTAssertEqual(path.boundingBoxOfPath, bounds)
     }
 }
 

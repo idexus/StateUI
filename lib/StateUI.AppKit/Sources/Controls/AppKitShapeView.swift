@@ -16,7 +16,8 @@ enum AppKitShapeKind {
 }
 
 enum AppKitShapeGeometry {
-    case rectangle(AppKitCornerRadii)
+    /// Its corners' radii, clockwise from the top left.
+    case rectangle([Double])
     case ellipse
     case line(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat)
     case path(String)
@@ -25,7 +26,9 @@ enum AppKitShapeGeometry {
 
 /// Native drawing surface for StateUI's shape family. Geometry is kept as a
 /// value and rebuilt from the current bounds, so a resize and a host-driven
-/// transition always produce the same path from the same inputs.
+/// transition always produce the same path from the same inputs; a geometry of
+/// its own numbers stands in the room by the host layer's rule (`ShapeArithmetic`).
+/// Design: docs/design/host/layout.md#a-shapes-own-geometry
 @MainActor
 final class AppKitShapeView: AppKitHitTestView {
     let kind: AppKitShapeKind
@@ -33,19 +36,19 @@ final class AppKitShapeView: AppKitHitTestView {
     private var fill = AppKitBrush()
     private var stroke = AppKitBrush()
     private var strokeWidth: CGFloat = 1
-    private var dash: [CGFloat] = []
+    private var dash: [Double] = []
     private var dashOffset: CGFloat = 0
     private var lineCap: Int32 = 0
     private var lineJoin: Int32 = 0
     private var miterLimit: CGFloat = 10
-    private var aspect: Int32 = 0
-    private var renderTransform = CGAffineTransform.identity
+    private var aspect = Aspect.fit
+    private var renderTransform: [Double]?
     private var geometry: AppKitShapeGeometry
 
     init(kind: AppKitShapeKind) {
         self.kind = kind
         switch kind {
-        case .rectangle: geometry = .rectangle(AppKitCornerRadii())
+        case .rectangle: geometry = .rectangle([0, 0, 0, 0])
         case .ellipse: geometry = .ellipse
         case .line: geometry = .line(x1: 0, y1: 0, x2: 0, y2: 0)
         case .path: geometry = .path("")
@@ -71,20 +74,20 @@ final class AppKitShapeView: AppKitHitTestView {
         lineCap: Int32,
         lineJoin: Int32,
         miterLimit: Double,
-        aspect: Int32,
+        aspect: Aspect,
         renderTransform: [Double]?,
         geometry: AppKitShapeGeometry
     ) {
-        self.fill = AppKitBrush(fill) ?? AppKitBrush()
-        self.stroke = AppKitBrush(stroke) ?? AppKitBrush()
-        self.strokeWidth = finiteNonnegative(strokeWidth)
-        self.dash = dash.map(finiteNonnegative)
+        self.fill = AppKitBrush(fill)
+        self.stroke = AppKitBrush(stroke)
+        self.strokeWidth = CGFloat(ShapeArithmetic.strokeWidth(strokeWidth))
+        self.dash = dash
         self.dashOffset = dashOffset.isFinite ? CGFloat(dashOffset) : 0
         self.lineCap = lineCap
         self.lineJoin = lineJoin
         self.miterLimit = max(0, miterLimit.isFinite ? CGFloat(miterLimit) : 0)
         self.aspect = aspect
-        self.renderTransform = affine(renderTransform)
+        self.renderTransform = renderTransform
         self.geometry = geometry
         needsDisplay = true
     }
@@ -93,7 +96,6 @@ final class AppKitShapeView: AppKitHitTestView {
         super.draw(dirtyRect)
         let path = pathForTesting(in: bounds)
         fill.draw(in: path, bounds: bounds)
-        guard strokeWidth > 0 else { return }
         stroke.stroke(path, width: strokeWidth)
     }
 
@@ -104,7 +106,7 @@ final class AppKitShapeView: AppKitHitTestView {
         switch geometry {
         case .rectangle(let radii):
             let rect = bounds.insetBy(dx: strokeWidth / 2, dy: strokeWidth / 2)
-            path = NSBezierPath(cgPath: radii.path(in: rect))
+            path = NSBezierPath(cgPath: AppKitCorners.path(in: rect, clockwise: radii))
             stretchesAuthoredGeometry = false
 
         case .ellipse:
@@ -118,8 +120,7 @@ final class AppKitShapeView: AppKitHitTestView {
             stretchesAuthoredGeometry = true
 
         case .points(let values, let fillRule):
-            path = pointsPath(values)
-            if kind == .polygon { path.close() }
+            path = Self.pointsPath(values, closed: kind == .polygon)
             path.windingRule = fillRule == 0 ? .evenOdd : .nonZero
             stretchesAuthoredGeometry = true
 
@@ -129,16 +130,25 @@ final class AppKitShapeView: AppKitHitTestView {
         }
 
         configureStroke(on: path)
-        guard stretchesAuthoredGeometry else { return path }
+        guard stretchesAuthoredGeometry, path.elementCount > 0 else { return path }
 
-        // The aspect places the authored drawing in the room, and the render
-        // transform then moves what was drawn - as a transform moves a view
-        // after its layout - so a translation shows under every aspect.
-        let placed = applyingAspect(to: path, in: bounds)
-        return applying(renderTransform, to: placed)
+        let drawn = path.bounds
+        let placed = ShapeArithmetic.placement(
+            of: Rect(Double(drawn.minX), Double(drawn.minY), Double(drawn.width), Double(drawn.height)),
+            in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: aspect,
+            transform: renderTransform)
+        var transform = CGAffineTransform(
+            a: placed[0], b: placed[1], c: placed[2], d: placed[3], tx: placed[4], ty: placed[5])
+        guard let moved = path.cgPath.copy(using: &transform) else { return path }
+        let result = NSBezierPath(cgPath: moved)
+        result.windingRule = path.windingRule
+        configureStroke(on: result)
+        return result
     }
 
-    var dashPatternForTesting: [CGFloat] { dash.map { $0 * strokeWidth } }
+    var dashPatternForTesting: [CGFloat] {
+        ShapeArithmetic.dashLengths(dash, strokeWidth: Double(strokeWidth)).map { CGFloat($0) }
+    }
     var dashPhaseForTesting: CGFloat { dashOffset * strokeWidth }
 
     private func configureStroke(on path: NSBezierPath) {
@@ -158,17 +168,19 @@ final class AppKitShapeView: AppKitHitTestView {
         path.setLineDash(pattern, count: pattern.count, phase: dashPhaseForTesting)
     }
 
-    private func pointsPath(_ values: [Double]) -> NSBezierPath {
+    /// Points - x and y in turn - joined by lines as the host layer joins them, closed where the shape is.
+    private static func pointsPath(_ values: [Double], closed: Bool) -> NSBezierPath {
+        let points = stride(from: 0, to: values.count - 1, by: 2).map { Point(values[$0], values[$0 + 1]) }
+        let commands = ShapeArithmetic.commands(through: points, closed: closed)
         let path = NSBezierPath()
-        guard values.count >= 2 else { return path }
-
-        let points = stride(from: 0, to: values.count - 1, by: 2).compactMap { index -> NSPoint? in
-            guard values[index].isFinite, values[index + 1].isFinite else { return nil }
-            return NSPoint(x: values[index], y: values[index + 1])
+        var index = 0
+        while index < commands.count {
+            switch commands[index] {
+            case 0: path.move(to: NSPoint(x: commands[index + 1], y: commands[index + 2])); index += 3
+            case 1: path.line(to: NSPoint(x: commands[index + 1], y: commands[index + 2])); index += 3
+            default: path.close(); index += 1
+            }
         }
-        guard let first = points.first else { return path }
-        path.move(to: first)
-        for point in points.dropFirst() { path.line(to: point) }
         return path
     }
 
@@ -240,80 +252,6 @@ final class AppKitShapeView: AppKitHitTestView {
 
     private static func cgPoint(_ point: Point) -> CGPoint {
         CGPoint(x: point.x, y: point.y)
-    }
-
-    private func applying(_ transform: CGAffineTransform, to path: NSBezierPath) -> NSBezierPath {
-        guard !transform.isIdentity else { return path }
-        var transform = transform
-        guard let changed = path.cgPath.copy(using: &transform) else { return path }
-        let result = NSBezierPath(cgPath: changed)
-        result.windingRule = path.windingRule
-        configureStroke(on: result)
-        return result
-    }
-
-    /// Places the authored geometry in the room by the shape's `Aspect`, always
-    /// centred: `fit` (0) scales it to fit keeping its proportions, `fill` (1)
-    /// to cover, `stretch` (2) each axis on its own, and `center` (3) keeps the
-    /// size its own numbers say.
-    private func applyingAspect(to path: NSBezierPath, in target: NSRect) -> NSBezierPath {
-        guard path.elementCount > 0 else { return path }
-        let source = path.bounds
-        guard source.width > 0 || source.height > 0 else { return path }
-
-        let widthRatio = source.width > 0 ? target.width / source.width : .greatestFiniteMagnitude
-        let heightRatio = source.height > 0 ? target.height / source.height : .greatestFiniteMagnitude
-        let scaleX: CGFloat
-        let scaleY: CGFloat
-        switch aspect {
-        case 2:
-            scaleX = source.width > 0 ? widthRatio : 1
-            scaleY = source.height > 0 ? heightRatio : 1
-        case 3:
-            scaleX = 1
-            scaleY = 1
-        case 1:
-            let scale = max(
-                source.width > 0 ? widthRatio : 0,
-                source.height > 0 ? heightRatio : 0)
-            scaleX = scale
-            scaleY = scale
-        default:
-            let finite = [widthRatio, heightRatio].filter { $0.isFinite }
-            let scale = finite.min() ?? 1
-            scaleX = scale
-            scaleY = scale
-        }
-
-        let drawnWidth = source.width * scaleX
-        let drawnHeight = source.height * scaleY
-        let originX = target.midX - drawnWidth / 2
-        let originY = target.midY - drawnHeight / 2
-        var transform = CGAffineTransform(
-            a: scaleX,
-            b: 0,
-            c: 0,
-            d: scaleY,
-            tx: originX - source.minX * scaleX,
-            ty: originY - source.minY * scaleY)
-        guard let changed = path.cgPath.copy(using: &transform) else { return path }
-        let result = NSBezierPath(cgPath: changed)
-        result.windingRule = path.windingRule
-        configureStroke(on: result)
-        return result
-    }
-
-    private func affine(_ values: [Double]?) -> CGAffineTransform {
-        guard let values, values.count >= 6, values.prefix(6).allSatisfy(\.isFinite) else {
-            return .identity
-        }
-        return CGAffineTransform(
-            a: values[0], b: values[1], c: values[2], d: values[3],
-            tx: values[4], ty: values[5])
-    }
-
-    private func finiteNonnegative(_ value: Double) -> CGFloat {
-        value.isFinite ? max(0, CGFloat(value)) : 0
     }
 }
 

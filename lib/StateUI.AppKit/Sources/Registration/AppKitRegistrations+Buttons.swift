@@ -47,8 +47,10 @@ extension AppKitRegistrations {
                     .flatMap { nsColor($0.propValue) } ?? .controlTextColor
                 let background: NSColor? = values[VisualElementContract.background]
                     .flatMap { nsColor($0.propValue) }
-                let strokeColor: NSColor? = if case .solid(let colour)? = AppKitBrush(
-                    values[BorderElementContract.stroke]?.propValue)?.kind { colour } else { nil }
+                let stroke = values[BorderElementContract.stroke]?.propValue
+                let strokeWidth = BoxArithmetic.outlineWidth(
+                    stroke: stroke, width: values[BorderElementContract.strokeWidth])
+                let strokeColor = strokeWidth > 0 ? AppKitBrush(stroke).lineColor : nil
                 let breaking: NSLineBreakMode = Self.lineBreakMode(
                     values[ButtonContract.lineBreak] ?? .wordWrap)
 
@@ -61,8 +63,8 @@ extension AppKitRegistrations {
                     textColor: textColor,
                     backgroundColor: background,
                     strokeColor: strokeColor,
-                    strokeWidth: values[BorderElementContract.strokeWidth] ?? 1,
-                    shape: AppKitDecoration.Shape(values[BorderElementContract.shape]?.propValue),
+                    strokeWidth: strokeWidth,
+                    shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }

@@ -14,35 +14,30 @@ import QuartzCore
 final class AppKitDecoration {
     private var fill = AppKitBrush()
     private var stroke = AppKitBrush()
-    private var strokeWidth: CGFloat = 1
-    private var shape = Shape.rectangle
+    private var strokeWidth: CGFloat = 0
+    private var shape = ContainerShape.rectangle
     private var clips = false
 
     /// Whether the box is drawn: an outline, a shape or a gradient; otherwise the layer paints its colour.
     var draws: Bool {
-        if case .solid = stroke.kind { return true }
-        if case .rectangle = shape {} else { return true }
-        switch fill.kind {
-        case .none, .solid: return false
-        case .linear, .radial: return true
-        }
+        strokeWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient
     }
 
     /// The colour the layer paints where nothing is drawn.
     var layerColor: CGColor? {
-        guard !draws, case .solid(let color) = fill.kind else { return nil }
-        return color.cgColor
+        draws ? nil : fill.color?.cgColor
     }
 
-    /// Takes the element's values; the view draws again.
+    /// Takes the element's values - its background a colour or a brush, its outline by the host layer's rule
+    /// (`BoxArithmetic`); the view draws again.
     func apply(
-        backgroundColor: NSColor?, background: HostValue?, stroke: HostValue?, strokeWidth: Double?,
-        shape: HostValue?, clips: Bool, to view: NSView
+        background: HostValue?, stroke: HostValue?, strokeWidth: Double?, shape: HostValue?, clips: Bool,
+        to view: NSView
     ) {
-        fill = AppKitBrush(background) ?? AppKitBrush(color: backgroundColor)
-        self.stroke = AppKitBrush(stroke) ?? AppKitBrush()
-        self.strokeWidth = max(0, strokeWidth ?? 1)
-        self.shape = Shape(shape)
+        fill = AppKitBrush(background)
+        self.stroke = AppKitBrush(stroke)
+        self.strokeWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth))
+        self.shape = BoxArithmetic.outline(shape)
         self.clips = clips
         clip(view)
         view.layer?.backgroundColor = layerColor
@@ -55,21 +50,7 @@ final class AppKitDecoration {
         view.wantsLayer = true
         view.clipsToBounds = clips
         guard let layer = view.layer else { return }
-
-        switch (clips, shape) {
-        case (true, .rounded(let radius)):
-            layer.cornerRadius = min(radius, min(view.bounds.width, view.bounds.height) / 2)
-            layer.mask = nil
-        case (true, .ellipse):
-            layer.cornerRadius = 0
-            let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
-            mask.frame = layer.bounds
-            mask.path = CGPath(ellipseIn: layer.bounds, transform: nil)
-            layer.mask = mask
-        default:
-            layer.cornerRadius = 0
-            layer.mask = nil
-        }
+        (clips ? shape : .rectangle).cut(layer)
     }
 
     /// Paints the background and strokes the outline on the shape within `bounds`.
@@ -77,37 +58,7 @@ final class AppKitDecoration {
         let inset = strokeWidth / 2
         let path = shape.path(in: bounds.insetBy(dx: inset, dy: inset))
         fill.draw(in: path, bounds: bounds)
-
-        guard strokeWidth > 0 else { return }
         stroke.stroke(path, width: strokeWidth)
-    }
-
-    /// The shape a value names: a rectangle, a rounded one, or an oval.
-    enum Shape {
-        case rectangle
-        case rounded(CGFloat)
-        case ellipse
-
-        init(_ value: HostValue?) {
-            guard let parts = value?.values, let kind = parts.first?.enumeration else {
-                self = .rectangle
-                return
-            }
-
-            switch kind {
-            case 1: self = .rounded(max(0, parts.value(1)?.number ?? 0))
-            case 2: self = .ellipse
-            default: self = .rectangle
-            }
-        }
-
-        func path(in rect: NSRect) -> NSBezierPath {
-            switch self {
-            case .rectangle: return NSBezierPath(rect: rect)
-            case .rounded(let radius): return NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
-            case .ellipse: return NSBezierPath(ovalIn: rect)
-            }
-        }
     }
 }
 

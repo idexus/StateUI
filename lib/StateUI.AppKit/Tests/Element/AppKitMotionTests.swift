@@ -700,9 +700,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.advanceAnimationsForTesting()
         let box = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
-        XCTAssertEqual(
-            box.cornerRadii,
-            AppKitCornerRadii(topLeft: 10, topRight: 20, bottomLeft: 30, bottomRight: 40))
+        XCTAssertEqual(box.radii, [10, 20, 40, 30], "clockwise from the top left")
     }
 
     @MainActor
@@ -724,13 +722,11 @@ final class AppKitMotionTests: XCTestCase {
 
         let box = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
-        XCTAssertEqual(box.cornerRadii, AppKitCornerRadii())
+        XCTAssertEqual(box.radii, [0, 0, 0, 0])
 
         now = 100
         renderer.advanceAnimationsForTesting()
-        XCTAssertEqual(
-            box.cornerRadii,
-            AppKitCornerRadii(topLeft: 5, topRight: 10, bottomLeft: 15, bottomRight: 20))
+        XCTAssertEqual(box.radii, [5, 10, 20, 15], "clockwise from the top left")
     }
 
     @MainActor
@@ -928,7 +924,7 @@ final class AppKitMotionTests: XCTestCase {
         let line = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("line")) as? AppKitShapeView)
         var path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 10, height: 5))
-        XCTAssertEqual(path.bounds, .zero)
+        XCTAssertEqual(path.bounds, NSRect(x: 5, y: 2.5, width: 0, height: 0), "a point, in the room's middle")
         XCTAssertEqual(path.lineWidth, 1, accuracy: 0.000_001)
         XCTAssertEqual(path.miterLimit, 10, accuracy: 0.000_001)
         XCTAssertEqual(line.dashPhaseForTesting, 0, accuracy: 0.000_001)
