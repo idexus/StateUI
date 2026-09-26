@@ -130,15 +130,23 @@ final class AppKitShapeView: AppKitHitTestView {
         }
 
         configureStroke(on: path)
-        guard stretchesAuthoredGeometry, path.elementCount > 0 else { return path }
+        guard stretchesAuthoredGeometry else { return moved(path, by: renderTransform) }
+        guard path.elementCount > 0 else { return path }
 
         let drawn = path.bounds
         let placed = ShapeArithmetic.placement(
             of: Rect(Double(drawn.minX), Double(drawn.minY), Double(drawn.width), Double(drawn.height)),
             in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: aspect,
             transform: renderTransform)
+        return moved(path, by: placed)
+    }
+
+    /// `path` moved by a transform's six numbers - `a, b, c, d, tx, ty` - from its room's top left; as it stands
+    /// where there are none.
+    private func moved(_ path: NSBezierPath, by numbers: [Double]?) -> NSBezierPath {
+        guard let numbers, numbers.count == 6, numbers.allSatisfy(\.isFinite) else { return path }
         var transform = CGAffineTransform(
-            a: placed[0], b: placed[1], c: placed[2], d: placed[3], tx: placed[4], ty: placed[5])
+            a: numbers[0], b: numbers[1], c: numbers[2], d: numbers[3], tx: numbers[4], ty: numbers[5])
         guard let moved = path.cgPath.copy(using: &transform) else { return path }
         let result = NSBezierPath(cgPath: moved)
         result.windingRule = path.windingRule

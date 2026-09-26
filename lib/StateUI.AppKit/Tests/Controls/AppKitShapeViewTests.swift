@@ -35,6 +35,25 @@ final class AppKitShapeViewTests: XCTestCase {
         XCTAssertEqual(path.lineCapStyle, .round)
     }
 
+    /// A rectangle and an ellipse fill their room, then move by the shape's own transform, as a geometry of the
+    /// shape's own does: a lean leans them.
+    @MainActor
+    func testARectangleAndAnEllipseMoveByTheShapesTransform() {
+        let skew = [1, 0, 0.5, 1, 0, 0.0]
+        // A square 40 wide leans to 60; a circle 40 across to twice 20 times the root of 1.25.
+        for (kind, width) in [(AppKitShapeKind.rectangle, 60.0), (.ellipse, 40 * (1.25).squareRoot())] {
+            let view = AppKitShapeView(kind: kind)
+            view.apply(
+                fill: brush(.red), stroke: nil, strokeWidth: 0, dash: [], dashOffset: 0, lineCap: 0, lineJoin: 0,
+                miterLimit: 10, aspect: .fit, renderTransform: skew,
+                geometry: kind == .rectangle ? .rectangle([0, 0, 0, 0]) : .ellipse)
+
+            let bounds = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 40)).cgPath.boundingBoxOfPath
+
+            XCTAssertEqual(bounds.width, width, accuracy: 0.5, "\(kind): leaning by half its height")
+        }
+    }
+
     @MainActor
     func testPolygonClosesItsNativePathAndUsesTheRequestedWindingRule() {
         let view = AppKitShapeView(kind: .polygon)
