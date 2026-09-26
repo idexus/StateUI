@@ -16,9 +16,6 @@ final class WinUIElement: NativeElement {
 
     weak var host: WinUIRenderer?
 
-    /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
-    var leaving = false
-
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
@@ -83,7 +80,6 @@ final class WinUIElement: NativeElement {
     }
 
     func leave() {
-        leaving = false
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: false) }
         view?.detach()
     }

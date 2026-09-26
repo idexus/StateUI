@@ -43,6 +43,9 @@
     /// Whether this page tree is shown, as its phases last told.
     public internal(set) var isPagePresented = false
 
+    /// Whether the element fades out on its way to being hidden, which it still stands shown for.
+    public internal(set) var isLeaving = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
@@ -52,7 +55,7 @@
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 
-    private weak var tree: MountedTree?
+    private(set) weak var tree: MountedTree?
     private var wornStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
     private var created = false
@@ -258,6 +261,7 @@
             tree.removeMotions(mount: mount)
         }
         wornStates = []
+        isLeaving = false
         native.leave()
         for child in children { child.leave() }
     }

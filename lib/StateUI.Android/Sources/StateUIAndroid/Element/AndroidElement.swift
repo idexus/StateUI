@@ -16,9 +16,6 @@ final class AndroidElement: NativeElement {
 
     weak var host: AndroidRenderer?
 
-    /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
-    var leaving = false
-
     /// Where the element last said it stood; nil before it said.
     var lastFrameReport: [Double]?
 
@@ -92,7 +89,6 @@ final class AndroidElement: NativeElement {
     }
 
     func leave() {
-        leaving = false
         view?.detach()
         host?.follow(self, readsFrame: false)
     }

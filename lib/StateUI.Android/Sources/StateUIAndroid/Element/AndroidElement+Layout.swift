@@ -57,7 +57,7 @@ extension AndroidElement {
 
     /// Whether the view is shown: as the tree says, or while it fades out.
     var isShown: Bool {
-        leaving || value(.isVisible)?.bool != false
+        element.standsShown
     }
 
     /// The element whose layout places this one: the nearest above it with a view.

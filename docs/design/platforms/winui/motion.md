@@ -46,7 +46,9 @@ passes, and the place lands in the arrangement it asks for
 ([a place between passes](layout.md#a-place-between-passes)); that
 arrangement asks for the same places and keeps the running animation.
 
-A child that joins a standing stack fades in while the others make room. A
+By the host layer's rule ([showing and
+hiding](../../host/motion.md#showing-and-hiding)), a child that joins a
+standing stack fades in while the others make room. A
 child the tree hides fades out first, still holding its room, and only then
 goes: the stack closes over it as over a row a patch removed. A child shown
 again comes up from nothing, or, shown again on its way out, from where the

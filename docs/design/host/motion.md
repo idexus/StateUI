@@ -68,3 +68,18 @@ hand the reader of that frame a room nobody chose. The same place asked for
 again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. A layout's children hold no strong
 reference: a view the tree dropped is not kept alive for its place.
+
+## Showing and hiding
+
+An element's showing moves by one rule on every host (`MountedElement`'s
+`fadeIn`, `crossVisibility`); the host hands it the view (`FadingView`) and
+what closes the layout over it. A child that joins a standing layout fades
+in from nothing under the layout's motion, where its view presents opacity
+and no state owns it; an opacity already on its way keeps its motion. A
+change of visibility on an element already shown crosses under the
+element's own motion or the application's: hidden, it fades out - standing
+shown the while (`standsShown`) - and only as the fade ends, landed or cut
+short, does it hide and its layout close over it; shown again mid-fade, it
+comes back from the opacity it stands at; shown from nothing, it fades in.
+Where nothing moves - no motion, or the user asked for less - nothing
+crosses, and the view simply shows or hides.

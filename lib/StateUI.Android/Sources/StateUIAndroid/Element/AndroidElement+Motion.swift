@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The element's part in its layout's motion: fading in as it joins, and a change of visibility crossed.
+/// The element's part in its layout's motion: fading in as it joins, and a change of visibility crossed,
+/// both by the host layer's rule.
 /// Design: docs/design/platforms/android/motion.md#joining-and-leaving
 extension AndroidElement {
     /// Hands a travelling layout what its children travel under, and tells it a patch reached it.
@@ -17,58 +18,25 @@ extension AndroidElement {
         layout.patchArrived()
     }
 
-    /// Whether the element can fade in as it joins a standing layout: its view presents opacity, and no state owns it.
+    /// Whether the element fades in as it joins a standing layout, by the host layer's rule.
     var fadesIn: Bool {
-        view != nil && element.driven[.opacity] == nil && AndroidTransitionSurface.presents(.opacity, on: type)
+        view != nil && element.fadesIn(presentsOpacity: AndroidTransitionSurface.presents(.opacity, on: type))
     }
 
-    /// Fades the element in as it joins a layout already standing; an opacity already on its way keeps its motion.
+    /// Fades the element in as it joins a layout already standing, by the host layer's rule.
     func fadeIn(under motion: Motion) {
-        guard fadesIn, let host, let view,
-              host.tree.presentedPropertyValue(mount: element.mount, property: .opacity) == nil
-        else { return }
-
-        host.tree.receiveProperty(
-            mount: element.mount, property: .opacity,
-            standing: .number(0), target: element.resolvedValue(.opacity) ?? .number(1), motion: motion)
-        view.setOpacity(value(.opacity)?.number ?? 1)
+        guard fadesIn, let view else { return }
+        element.fadeIn(view, under: motion)
     }
 
-    /// Crosses a change of visibility on an element already shown: out, fading and then hidden, or in from nothing,
-    /// under the element's own motion or the application's; at once where nothing moves.
+    /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.
     func crossVisibility() {
-        guard let host, let view else { return }
-
-        let law = host.layoutMotion.law(of: element.motion)
-        let opacity = element.resolvedValue(.opacity) ?? .number(1)
-
-        if value(.isVisible)?.bool == false {
-            guard view.isShown, !leaving, let law else { return }
-            leaving = true
-            let started = host.tree.receiveProperty(
-                mount: element.mount, property: .opacity, standing: .number(view.opacity), target: .number(0),
-                motion: law, landed: { [weak self] in self?.crossed() })
-            if !started { leaving = false }
-        } else if leaving {
-            leaving = false
-            host.tree.receiveProperty(
-                mount: element.mount, property: .opacity, standing: .number(view.opacity), target: opacity,
-                motion: law)
-        } else if !view.isShown, let law {
-            host.tree.receiveProperty(
-                mount: element.mount, property: .opacity, standing: .number(0), target: opacity, motion: law)
-            view.setOpacity(value(.opacity)?.number ?? 1)
+        guard let view else { return }
+        element.crossVisibility(view) { [weak self] in
+            (self?.layoutParent?.view as? AndroidTravellingLayout)?.patchArrived()
+            self?.layoutParent?.arrangeChildren()
         }
     }
-
-    /// The fade out ended, landed or cut short: the element goes, and its layout closes over it as a patch moves it.
-    func crossed() {
-        guard leaving, let view else { return }
-
-        leaving = false
-        view.setShown(isShown)
-        view.setOpacity(value(.opacity)?.number ?? 1)
-        (layoutParent?.view as? AndroidTravellingLayout)?.patchArrived()
-        layoutParent?.arrangeChildren()
-    }
 }
+
+extension AndroidView: FadingView {}
