@@ -76,6 +76,35 @@ extension AppKitDriver {
         written.lines
     }
 
+    /// The colour the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
+    /// nothing there.
+    func color(of element: MountedElement, at point: Point) throws -> Color? {
+        guard let view = (element.native as? AppKitElement)?.view else {
+            throw DriverCannot("read the colour of \(element.type.name)")
+        }
+        view.window?.contentView?.layoutSubtreeIfNeeded()
+        let size = view.bounds.size
+        let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
+        // The view displayed into a context of its points in sRGB, which StateUI's colours are: AppKit converts
+        // what it draws into it.
+        guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,
+              let space = CGColorSpace(name: CGColorSpace.sRGB),
+              let context = CGContext(
+                data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: space,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else { return nil }
+        view.displayIgnoringOpacity(view.bounds, in: NSGraphicsContext(cgContext: context, flipped: false))
+        guard let data = context.data else { return nil }
+        // A bitmap context's rows stand in memory from its top.
+        let row = min(height - 1, Int(point.y))
+        let pixel = data.advanced(by: row * width * 4 + min(width - 1, Int(point.x)) * 4)
+            .assumingMemoryBound(to: UInt8.self)
+        let alpha = Int(pixel[3])
+        guard alpha > 127 else { return nil }
+        func channel(_ index: Int) -> Int { min(255, Int(pixel[index]) * 255 / alpha) }
+        return Color(red: channel(0), green: channel(1), blue: channel(2))
+    }
+
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? AppKitElement)?.view else {
             throw DriverCannot("read the focus of \(element.type.name)")

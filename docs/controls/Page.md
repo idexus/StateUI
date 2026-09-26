@@ -18,7 +18,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `appearing` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `backButtonTitle` | property | `String` | adaptive |  |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet |
-| `background` | property | `Color` | native |  |  |  | ✅ | ✅ |  | cannot read background of Page - AppKit's driver has no path for it yet |
+| `background` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `disappearing` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `hasBackButton` | property | `Bool` | adaptive |  |  |  |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet |
 | `hasNavigationBar` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet |

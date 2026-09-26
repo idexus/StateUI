@@ -1,40 +1,40 @@
-ActivityIndicator.accessibilityIdentifier: cannot read accessibilityIdentifier of ActivityIndicator - AppKit's driver has no path for it yet
-Button.accessibilityIdentifier: cannot read accessibilityIdentifier of Button - AppKit's driver has no path for it yet
-Button.clicked: cannot read accessibilityIdentifier of ActivityIndicator - AppKit's driver has no path for it yet
-Canvas.accessibilityIdentifier: cannot read accessibilityIdentifier of Canvas - AppKit's driver has no path for it yet
-CheckBox.accessibilityIdentifier: cannot read accessibilityIdentifier of CheckBox - AppKit's driver has no path for it yet
-ColorBox.accessibilityIdentifier: cannot read accessibilityIdentifier of ColorBox - AppKit's driver has no path for it yet
-DatePicker.accessibilityIdentifier: cannot read accessibilityIdentifier of DatePicker - AppKit's driver has no path for it yet
-Ellipse.accessibilityIdentifier: cannot read accessibilityIdentifier of Ellipse - AppKit's driver has no path for it yet
-Grid.accessibilityIdentifier: cannot read accessibilityIdentifier of Grid - AppKit's driver has no path for it yet
-HStack.accessibilityIdentifier: cannot read accessibilityIdentifier of HStack - AppKit's driver has no path for it yet
-Image.accessibilityIdentifier: cannot read accessibilityIdentifier of Image - AppKit's driver has no path for it yet
-Label.accessibilityIdentifier: cannot read accessibilityIdentifier of Label - AppKit's driver has no path for it yet
-Line.accessibilityIdentifier: cannot read accessibilityIdentifier of Line - AppKit's driver has no path for it yet
+ActivityIndicator.accessibilityIdentifier: ✅
+Button.accessibilityIdentifier: ✅
+Button.clicked: ✅
+Canvas.accessibilityIdentifier: ✅
+CheckBox.accessibilityIdentifier: ✅
+ColorBox.accessibilityIdentifier: ✅
+DatePicker.accessibilityIdentifier: ✅
+Ellipse.accessibilityIdentifier: ✅
+Grid.accessibilityIdentifier: ✅
+HStack.accessibilityIdentifier: ✅
+Image.accessibilityIdentifier: ✅
+Label.accessibilityIdentifier: ✅
+Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: cannot read accessibilityIdentifier of MenuItem - AppKit's driver has no path for it yet
-NavigationStack.accessibilityIdentifier: cannot read accessibilityIdentifier of NavigationStack - AppKit's driver has no path for it yet
-Path.accessibilityIdentifier: cannot read accessibilityIdentifier of Path - AppKit's driver has no path for it yet
-Picker.accessibilityIdentifier: cannot read accessibilityIdentifier of Picker - AppKit's driver has no path for it yet
-Polygon.accessibilityIdentifier: cannot read accessibilityIdentifier of Polygon - AppKit's driver has no path for it yet
-Polyline.accessibilityIdentifier: cannot read accessibilityIdentifier of Polyline - AppKit's driver has no path for it yet
+NavigationStack.accessibilityIdentifier: ✅
+Path.accessibilityIdentifier: ✅
+Picker.accessibilityIdentifier: ✅
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
 PositionIndicator.accessibilityIdentifier: not realized
-ProgressBar.accessibilityIdentifier: cannot read accessibilityIdentifier of ProgressBar - AppKit's driver has no path for it yet
-RadioButton.accessibilityIdentifier: cannot read accessibilityIdentifier of RadioButton - AppKit's driver has no path for it yet
-Rectangle.accessibilityIdentifier: cannot read accessibilityIdentifier of Rectangle - AppKit's driver has no path for it yet
-ScrollView.accessibilityIdentifier: cannot read accessibilityIdentifier of ScrollView - AppKit's driver has no path for it yet
-SearchField.accessibilityIdentifier: cannot read accessibilityIdentifier of SearchField - AppKit's driver has no path for it yet
-Slider.accessibilityIdentifier: cannot read accessibilityIdentifier of Slider - AppKit's driver has no path for it yet
+ProgressBar.accessibilityIdentifier: ✅
+RadioButton.accessibilityIdentifier: ✅
+Rectangle.accessibilityIdentifier: ✅
+ScrollView.accessibilityIdentifier: ✅
+SearchField.accessibilityIdentifier: ✅
+Slider.accessibilityIdentifier: ✅
 Span.accessibilityIdentifier: not realized
-SplitView.accessibilityIdentifier: cannot read accessibilityIdentifier of SplitView - AppKit's driver has no path for it yet
-Stepper.accessibilityIdentifier: cannot read accessibilityIdentifier of Stepper - AppKit's driver has no path for it yet
-Switch.accessibilityIdentifier: cannot read accessibilityIdentifier of Switch - AppKit's driver has no path for it yet
-TabbedView.accessibilityIdentifier: cannot read accessibilityIdentifier of TabbedView - AppKit's driver has no path for it yet
-TextEditor.accessibilityIdentifier: cannot read accessibilityIdentifier of TextEditor - AppKit's driver has no path for it yet
-TextField.accessibilityIdentifier: cannot read accessibilityIdentifier of TextField - AppKit's driver has no path for it yet
-TimePicker.accessibilityIdentifier: cannot read accessibilityIdentifier of TimePicker - AppKit's driver has no path for it yet
+SplitView.accessibilityIdentifier: ✅
+Stepper.accessibilityIdentifier: ✅
+Switch.accessibilityIdentifier: ✅
+TabbedView.accessibilityIdentifier: ✅
+TextEditor.accessibilityIdentifier: ✅
+TextField.accessibilityIdentifier: ✅
+TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - AppKit's driver has no path for it yet
-VStack.accessibilityIdentifier: cannot read accessibilityIdentifier of VStack - AppKit's driver has no path for it yet
+VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: not realized
-ZStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ZStack - AppKit's driver has no path for it yet
+ZStack.accessibilityIdentifier: ✅

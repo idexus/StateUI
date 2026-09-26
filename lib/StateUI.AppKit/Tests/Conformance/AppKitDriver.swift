@@ -151,6 +151,9 @@ final class AppKitDriver: HostDriver {
         case (.opacity, let view?): return Double(view.alphaValue).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
+        case (_, let view?):
+            if let held = try Self.viewHolds(property, view, element.native as? AppKitElement) { return held }
+            throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
     }

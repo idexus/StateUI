@@ -2,37 +2,37 @@ ActivityIndicator.ignoresInput: ✅
 Button.clicked: ✅
 Button.isEnabled: ✅
 Button.zIndex: not realized
-Canvas.scaleY: cannot read scaleY of Canvas - AppKit's driver has no path for it yet
-CheckBox.rotationY: cannot read rotationY of CheckBox - AppKit's driver has no path for it yet
-ColorBox.pivotY: cannot read pivotY of ColorBox - AppKit's driver has no path for it yet
-DatePicker.background: cannot read background of DatePicker - AppKit's driver has no path for it yet
-Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - AppKit's driver has no path for it yet
+Canvas.scaleY: ✅
+CheckBox.rotationY: ✅
+ColorBox.pivotY: ✅
+DatePicker.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Ellipse.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 Grid.style: not realized
 HStack.ignoresInput: ✅
 Image.isEnabled: not realized
 Image.zIndex: not realized
-Label.scaleY: cannot read scaleY of Label - AppKit's driver has no path for it yet
-Line.rotationY: cannot read rotationY of Line - AppKit's driver has no path for it yet
+Label.scaleY: ✅
+Line.rotationY: ✅
 Map.pivotY: not realized
-Path.background: cannot read background of Path - AppKit's driver has no path for it yet
-Picker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Picker - AppKit's driver has no path for it yet
+Path.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Picker.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 Polygon.style: not realized
 Polyline.ignoresInput: ✅
 PositionIndicator.isEnabled: not realized
 PositionIndicator.zIndex: not realized
-ProgressBar.scaleY: cannot read scaleY of ProgressBar - AppKit's driver has no path for it yet
-RadioButton.rotationY: cannot read rotationY of RadioButton - AppKit's driver has no path for it yet
-Rectangle.pivotY: cannot read pivotY of Rectangle - AppKit's driver has no path for it yet
-ScrollView.background: cannot read background of ScrollView - AppKit's driver has no path for it yet
-SearchField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of SearchField - AppKit's driver has no path for it yet
+ProgressBar.scaleY: ✅
+RadioButton.rotationY: ✅
+Rectangle.pivotY: ✅
+ScrollView.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+SearchField.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 Slider.style: not realized
 Stepper.ignoresInput: ✅
 Switch.isEnabled: ✅
 Switch.zIndex: not realized
-TextEditor.scaleY: cannot read scaleY of TextEditor - AppKit's driver has no path for it yet
-TextField.rotationY: cannot read rotationY of TextField - AppKit's driver has no path for it yet
-TimePicker.pivotY: cannot read pivotY of TimePicker - AppKit's driver has no path for it yet
+TextEditor.scaleY: ✅
+TextField.rotationY: ✅
+TimePicker.pivotY: ✅
 TitleBar.background: cannot read background of TitleBar - AppKit's driver has no path for it yet
-VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - AppKit's driver has no path for it yet
+VStack.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 WebView.style: not realized
 ZStack.ignoresInput: ✅

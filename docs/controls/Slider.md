@@ -38,7 +38,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityIdentifier of Slider - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -46,16 +46,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Slider - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Slider - AppKit's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Slider - AppKit's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Slider - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Slider - AppKit's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read isAccessibilityHidden of Slider - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -65,17 +65,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotX of Slider - AppKit's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotY of Slider - AppKit's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read rotation of Slider - AppKit's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationX of Slider - AppKit's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationY of Slider - AppKit's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scale of Slider - AppKit's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleX of Slider - AppKit's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleY of Slider - AppKit's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationX of Slider - AppKit's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationY of Slider - AppKit's driver has no path for it yet |
+| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |

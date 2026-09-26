@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityIdentifier of TabbedView - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 

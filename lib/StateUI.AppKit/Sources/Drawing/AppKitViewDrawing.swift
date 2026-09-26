@@ -107,7 +107,18 @@ final class AppKitViewDrawing {
     }
 
     private func compose() {
-        guard let layer, let view else { return }
+        guard let layer, let (transform, opacity) = composed() else { return }
+        write {
+            if !CATransform3DEqualToTransform(layer.transform, transform) {
+                layer.transform = transform
+            }
+            if layer.opacity != opacity { layer.opacity = opacity }
+        }
+    }
+
+    /// The layer's transform and opacity for what the view is drawn with now.
+    private func composed() -> (CATransform3D, Float)? {
+        guard let layer, let view else { return nil }
 
         let width = Double(layer.bounds.width)
         let height = Double(layer.bounds.height)
@@ -126,14 +137,14 @@ final class AppKitViewDrawing {
             matrix = flip * matrix * flip
         }
 
-        let transform = CATransform3DConcat(CATransform3D(matrix), geometry)
-        let opacity = alpha * Float(placedOpacity)
-        write {
-            if !CATransform3DEqualToTransform(layer.transform, transform) {
-                layer.transform = transform
-            }
-            if layer.opacity != opacity { layer.opacity = opacity }
-        }
+        return (CATransform3DConcat(CATransform3D(matrix), geometry), alpha * Float(placedOpacity))
+    }
+
+    /// The transform the view is drawn with, where its layer holds it now; nil where AppKit holds another.
+    var heldTransformForTesting: HostDrawingTransform? {
+        guard let layer else { return own }
+        guard let (transform, _) = composed() else { return nil }
+        return CATransform3DEqualToTransform(layer.transform, transform) ? own : nil
     }
 
     private func write(_ change: () -> Void) {

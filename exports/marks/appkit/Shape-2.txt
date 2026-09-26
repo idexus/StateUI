@@ -1,31 +1,31 @@
-Button.clicked: cannot read aspect of Path - AppKit's driver has no path for it yet
+Button.clicked: ✅
 Ellipse.fill: cannot read fill of Ellipse - AppKit's driver has no path for it yet
 Ellipse.renderTransform: cannot read renderTransform of Ellipse - AppKit's driver has no path for it yet
-Ellipse.stroke: cannot read the colour of Ellipse - AppKit's driver has no path for it yet
+Ellipse.stroke: ✅
 Ellipse.strokeDashPattern: cannot read strokeDashPattern of Ellipse - AppKit's driver has no path for it yet
 Ellipse.strokeLineJoin: cannot read strokeLineJoin of Ellipse - AppKit's driver has no path for it yet
-Ellipse.strokeWidth: cannot read the colour of Ellipse - AppKit's driver has no path for it yet
-Line.aspect: cannot read the colour of Line - AppKit's driver has no path for it yet
+Ellipse.strokeWidth: ✅
+Line.aspect: ✅
 Line.stroke: cannot read stroke of Line - AppKit's driver has no path for it yet
 Line.strokeDashOffset: cannot read strokeDashOffset of Line - AppKit's driver has no path for it yet
 Line.strokeMiterLimit: cannot read strokeMiterLimit of Line - AppKit's driver has no path for it yet
 Path.aspect: cannot read aspect of Path - AppKit's driver has no path for it yet
-Path.fill: cannot read the colour of Path - AppKit's driver has no path for it yet
-Path.renderTransform: cannot read the colour of Path - AppKit's driver has no path for it yet
+Path.fill: ✅
+Path.renderTransform: ✅
 Path.strokeLineCap: cannot read strokeLineCap of Path - AppKit's driver has no path for it yet
 Path.strokeWidth: cannot read strokeWidth of Path - AppKit's driver has no path for it yet
 Polygon.fill: cannot read fill of Polygon - AppKit's driver has no path for it yet
 Polygon.renderTransform: cannot read renderTransform of Polygon - AppKit's driver has no path for it yet
-Polygon.stroke: cannot read the colour of Polygon - AppKit's driver has no path for it yet
+Polygon.stroke: ✅
 Polygon.strokeDashPattern: cannot read strokeDashPattern of Polygon - AppKit's driver has no path for it yet
 Polygon.strokeLineJoin: cannot read strokeLineJoin of Polygon - AppKit's driver has no path for it yet
-Polygon.strokeWidth: cannot read the colour of Polygon - AppKit's driver has no path for it yet
-Polyline.aspect: cannot read the colour of Polyline - AppKit's driver has no path for it yet
+Polygon.strokeWidth: ✅
+Polyline.aspect: ✅
 Polyline.stroke: cannot read stroke of Polyline - AppKit's driver has no path for it yet
 Polyline.strokeDashOffset: cannot read strokeDashOffset of Polyline - AppKit's driver has no path for it yet
 Polyline.strokeMiterLimit: cannot read strokeMiterLimit of Polyline - AppKit's driver has no path for it yet
 Rectangle.aspect: cannot read aspect of Rectangle - AppKit's driver has no path for it yet
-Rectangle.fill: cannot read the colour of Rectangle - AppKit's driver has no path for it yet
-Rectangle.renderTransform: cannot read the colour of Rectangle - AppKit's driver has no path for it yet
+Rectangle.fill: ✅
+Rectangle.renderTransform: ✅
 Rectangle.strokeLineCap: cannot read strokeLineCap of Rectangle - AppKit's driver has no path for it yet
 Rectangle.strokeWidth: cannot read strokeWidth of Rectangle - AppKit's driver has no path for it yet

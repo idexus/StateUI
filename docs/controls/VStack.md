@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityIdentifier of VStack - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -39,16 +39,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of VStack - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of VStack - AppKit's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of VStack - AppKit's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of VStack - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  | ✅ | ✅ |  | cannot read background of VStack - AppKit's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `background` | property | `Background` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read what reaches VStack - Android's driver has no path for it yet |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read isAccessibilityHidden of VStack - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -58,17 +58,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotX of VStack - AppKit's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotY of VStack - AppKit's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read rotation of VStack - AppKit's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationX of VStack - AppKit's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationY of VStack - AppKit's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scale of VStack - AppKit's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleX of VStack - AppKit's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleY of VStack - AppKit's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationX of VStack - AppKit's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationY of VStack - AppKit's driver has no path for it yet |
+| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -119,7 +119,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read clipsContent of VStack - AppKit's driver has no path for it yet |
+| `clipsContent` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `letsInputThrough` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 
 ## From [StackBase](tiers/StackBase.md)
@@ -145,5 +145,5 @@ What an element draws of its own box: the shape its background, its outline and 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of VStack - AppKit's driver has no path for it yet; Android Views: cannot read shape of VStack - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of VStack - AppKit's driver has no path for it yet; Android Views: cannot read stroke of VStack - Android's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | Android Views: cannot read stroke of VStack - Android's driver has no path for it yet |
 | `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of VStack - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of VStack - Android's driver has no path for it yet |

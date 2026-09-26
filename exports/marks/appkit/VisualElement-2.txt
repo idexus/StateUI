@@ -1,11 +1,11 @@
 ActivityIndicator.opacity: ✅
-ActivityIndicator.translationY: cannot read translationY of ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.translationY: ✅
 Button.clicked: ✅
-Button.scaleX: cannot read scaleX of Button - AppKit's driver has no path for it yet
-Canvas.rotationX: cannot read rotationX of Canvas - AppKit's driver has no path for it yet
-CheckBox.pivotX: cannot read pivotX of CheckBox - AppKit's driver has no path for it yet
-ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - AppKit's driver has no path for it yet
-DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - AppKit's driver has no path for it yet
+Button.scaleX: ✅
+Canvas.rotationX: ✅
+CheckBox.pivotX: ✅
+ColorBox.automationExcludedWithChildren: ✅
+DatePicker.accessibilityHint: ✅
 Ellipse.focus: ✅
 Ellipse.isFocusedChanged: ✅
 Ellipse.unfocus: ✅
@@ -15,12 +15,12 @@ Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
 Grid.minimumWidth: ✅
 HStack.opacity: ✅
-HStack.translationY: cannot read translationY of HStack - AppKit's driver has no path for it yet
-Image.scaleX: cannot read scaleX of Image - AppKit's driver has no path for it yet
-Label.rotationX: cannot read rotationX of Label - AppKit's driver has no path for it yet
-Line.pivotX: cannot read pivotX of Line - AppKit's driver has no path for it yet
+HStack.translationY: ✅
+Image.scaleX: ✅
+Label.rotationX: ✅
+Line.pivotX: ✅
 Map.automationExcludedWithChildren: not realized
-Path.accessibilityHint: cannot read accessibilityHint of Path - AppKit's driver has no path for it yet
+Path.accessibilityHint: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
 Picker.unfocus: ✅
@@ -30,12 +30,12 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polyline.opacity: ✅
-Polyline.translationY: cannot read translationY of Polyline - AppKit's driver has no path for it yet
+Polyline.translationY: ✅
 PositionIndicator.scaleX: not realized
-ProgressBar.rotationX: cannot read rotationX of ProgressBar - AppKit's driver has no path for it yet
-RadioButton.pivotX: cannot read pivotX of RadioButton - AppKit's driver has no path for it yet
-Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - AppKit's driver has no path for it yet
-ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - AppKit's driver has no path for it yet
+ProgressBar.rotationX: ✅
+RadioButton.pivotX: ✅
+Rectangle.automationExcludedWithChildren: ✅
+ScrollView.accessibilityHint: ✅
 SearchField.focus: ✅
 SearchField.isFocusedChanged: ✅
 SearchField.unfocus: ✅
@@ -45,11 +45,11 @@ Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Stepper.opacity: ✅
-Stepper.translationY: cannot read translationY of Stepper - AppKit's driver has no path for it yet
-Switch.scaleX: cannot read scaleX of Switch - AppKit's driver has no path for it yet
-TextEditor.rotationX: cannot read rotationX of TextEditor - AppKit's driver has no path for it yet
-TextField.pivotX: cannot read pivotX of TextField - AppKit's driver has no path for it yet
-TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - AppKit's driver has no path for it yet
+Stepper.translationY: ✅
+Switch.scaleX: ✅
+TextEditor.rotationX: ✅
+TextField.pivotX: ✅
+TimePicker.automationExcludedWithChildren: ✅
 TitleBar.accessibilityHint: not realized
 VStack.focus: ✅
 VStack.isFocusedChanged: ✅
@@ -60,4 +60,4 @@ WebView.maximumWidth: not realized
 WebView.minimumHeight: not realized
 WebView.minimumWidth: not realized
 ZStack.opacity: ✅
-ZStack.translationY: cannot read translationY of ZStack - AppKit's driver has no path for it yet
+ZStack.translationY: ✅

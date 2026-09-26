@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityIdentifier of Label - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -42,16 +42,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Label - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Label - AppKit's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Label - AppKit's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Label - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Label - AppKit's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read isAccessibilityHidden of Label - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -61,17 +61,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotX of Label - AppKit's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read pivotY of Label - AppKit's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read rotation of Label - AppKit's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationX of Label - AppKit's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  | ✅ |  |  | cannot read rotationY of Label - AppKit's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scale of Label - AppKit's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleX of Label - AppKit's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read scaleY of Label - AppKit's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationX of Label - AppKit's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read translationY of Label - AppKit's driver has no path for it yet |
+| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -131,7 +131,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read characterSpacing of Label - AppKit's driver has no path for it yet; Android Views: cannot read characterSpacing of Label - Android's driver has no path for it yet |
-| `textColor` | property | `Color` | native |  |  |  | ✅ | ✅ |  | cannot read textColor of Label - AppKit's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -139,10 +139,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ | ✅ |  | cannot read fontAttributes of Label - AppKit's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native |  |  |  |  | ✅ |  | cannot read fontFamily of Label - AppKit's driver has no path for it yet; Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
-| `fontSize` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read fontSize of Label - AppKit's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
