@@ -111,15 +111,17 @@ final class UIKitRenderer {
     }
 
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
-    /// each at the pixels a point it holds.
-    func image(named name: String) -> UIImage? {
+    /// each at the pixels a point it holds - read from exactly that file, as UIKit's own reading of a path would take
+    /// a `@3x` file beside it for it.
+    static func image(named name: String) -> UIImage? {
         for drawn in PictureArithmetic.drawnFiles(for: name) {
-            guard let path = Self.resourceDirectory?.appendingPathComponent(drawn.file).path,
-                  let image = UIImage(contentsOfFile: path), let cgImage = image.cgImage
+            guard let path = resourceDirectory?.appendingPathComponent(drawn.file).path,
+                  let data = FileManager.default.contents(atPath: path),
+                  let image = UIImage(data: data, scale: CGFloat(drawn.scale))
             else { continue }
-            return UIImage(cgImage: cgImage, scale: CGFloat(drawn.scale), orientation: image.imageOrientation)
+            return image
         }
-        Self.log.error("no picture named \(name) in the application's images")
+        log.error("no picture named \(name) in the application's images")
         return nil
     }
 }

@@ -41,7 +41,7 @@ final class UIKitImageView: UIImageView {
             return
         }
         let dark = traitCollection.userInterfaceStyle == .dark
-        image = UIKitRenderer.shared.image(named: dark ? source.dark ?? source.file : source.file)
+        image = UIKitRenderer.image(named: dark ? source.dark ?? source.file : source.file)
         invalidateIntrinsicContentSize()
     }
 }
