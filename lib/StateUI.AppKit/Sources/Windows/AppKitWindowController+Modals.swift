@@ -32,19 +32,12 @@ extension AppKitWindowController {
         }
     }
 
+    /// The user took `modal` away - its close button, Escape: the window is told how many sheets remain, and the
+    /// sheet goes as the tree follows.
+    /// Design: docs/design/host/pages.md#the-way-back
     func userDismissed(_ modal: AppKitModalWindowController) {
-        guard let window, modals.last === modal else { return }
-        let previous = modal.node.element
-        let parent = modals.count == 1
-            ? window
-            : (modals[modals.count - 2].window ?? window)
-        modals.removeLast().dismiss(from: parent)
-        let next = modals.last?.node ?? presentedPage
-
-        previous.appKit.setPagePresented(false, reason: .navigation)
-        next?.setPagePresented(true, reason: .navigation)
-        refreshVisiblePageChrome()
-        host?.tellPhase(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
+        guard let node, modals.last === modal else { return }
+        host?.runtime.goBack(.dismissSheet(remaining: modals.count - 1), in: node.element)
     }
 
     func dismissTopModalForTesting() {

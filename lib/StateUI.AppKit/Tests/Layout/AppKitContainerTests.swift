@@ -52,7 +52,7 @@ final class AppKitContainerTests: XCTestCase {
         let tabs = AppKitTabbedView(frame: room)
         let tab = NSView()
         containers.append(("tabbed view", tabs, {
-            _ = tabs.setItems(
+            tabs.setItems(
                 [AppKitTabItem(layout: item(tab), title: "One", image: nil)],
                 requestedIndex: 0)
         }))

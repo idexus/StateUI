@@ -40,7 +40,12 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
 
     private let tabView = NSTabView()
     private var items: [AppKitTabItem] = []
-    private(set) var selectedIndex = -1
+
+    /// Which tab the view shows, by the host layer's rule.
+    private(set) var choice = TabChoice()
+
+    /// The tab shown, as an index into the tabs; -1 for none.
+    var selectedIndex: Int { items.isEmpty ? -1 : min(max(choice.shown, 0), items.count - 1) }
 
     /// Set while this side selects, so the tab view's report of it is not
     /// taken for the user's.
@@ -60,36 +65,17 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
 
     override var isFlipped: Bool { true }
 
-    /// Reconciles the native tabs and returns a platform fallback only when
-    /// the selected page itself disappeared from the arrangement.
-    func setItems(_ items: [AppKitTabItem], requestedIndex: Int?) -> Int? {
+    /// Shows `items`, and the tab the tree asks for where the user has not chosen another since.
+    /// Design: docs/design/host/pages.md#tabs
+    func setItems(_ items: [AppKitTabItem], requestedIndex: Int?) {
+        let requested = choice.request(requestedIndex)
         // THE TABS IT HAS, CHOSEN AS THEY ARE: a patch on its way to a page
         // applies this view again, and that asks nothing of it.
-        if Self.sameTabs(self.items, items), requestedIndex.map({ $0 == selectedIndex }) ?? true {
-            return nil
-        }
+        guard requested || !Self.sameTabs(self.items, items) else { return }
 
-        let formerView = item(at: selectedIndex)?.layout.view
-        let formerIndex = selectedIndex
         self.items = items
         reconcileTabs()
-
-        let next: Int
-        var fallback: Int?
-        if let requestedIndex, items.indices.contains(requestedIndex) {
-            next = requestedIndex
-        } else if let formerView,
-                  let preserved = items.firstIndex(where: { $0.layout.view === formerView }) {
-            next = preserved
-        } else if items.isEmpty {
-            next = -1
-        } else {
-            next = 0
-            if formerIndex >= 0 { fallback = next }
-        }
-
-        show(next)
-        return fallback
+        show(selectedIndex)
     }
 
     /// Whether two runs of tabs show the same pages the same way.
@@ -102,8 +88,7 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
     /// Selects a tab as the user does from the window's row of tabs. A tab the
     /// user clicks on the tab view itself arrives through its delegate.
     func selectByUser(_ next: Int) {
-        guard items.indices.contains(next), next != selectedIndex else { return }
-        let previous = selectedIndex
+        guard let previous = choice.choose(next, of: items.count) else { return }
         show(next)
         onSelection?(previous, next)
     }
@@ -114,14 +99,12 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
     }
 
     func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
-        guard !selecting, let tabViewItem else { return }
-        let next = tabView.indexOfTabViewItem(tabViewItem)
-        guard items.indices.contains(next), next != selectedIndex else { return }
-        let previous = selectedIndex
-        selectedIndex = next
+        guard !selecting, let tabViewItem,
+              let previous = choice.choose(tabView.indexOfTabViewItem(tabViewItem), of: items.count)
+        else { return }
         invalidateIntrinsicContentSize()
         needsLayout = true
-        onSelection?(previous, next)
+        onSelection?(previous, choice.shown)
     }
 
     override var intrinsicContentSize: NSSize {
@@ -182,7 +165,6 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
     }
 
     private func show(_ index: Int) {
-        selectedIndex = index
         if tabView.tabViewItems.indices.contains(index) {
             let wasSelecting = selecting
             selecting = true

@@ -49,7 +49,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             content.autoresizingMask = [.width, .height]
             window.contentView = content
         }
-        window.title = node.visiblePage?.string(.title) ?? "StateUI"
+        window.title = node.element.visiblePage?.value(.title)?.string ?? "StateUI"
     }
 
     func present(over parent: NSWindow, actuallyPresent: Bool) {

@@ -20,7 +20,9 @@ A tabbed view's tabs stand in its window's row where it is the first tabbed
 view down the window's stacks and split view details (`tabsStandInWindow`):
 one in a sidebar, in a tab of another, in a sheet or inside content keeps a
 row of its own. It is read from where the tabbed view stands, each time, so a
-view moved elsewhere keeps no word it once had.
+view moved elsewhere keeps no word it once had. A split view's sidebar is its
+first child as the patch writes it, so the answer is already right while the
+tree that holds the tabbed view is still being made.
 
 ## A page's phases
 
@@ -96,6 +98,7 @@ and its bar's colours.
 
 A menu is walked the same way on every host (`MenuEntry`): its items, its
 separators and its submenus in order, each submenu holding entries of its
-own, each entry with its caption, whether the user can choose it and its
-identifier; a menu bar holds only its menus. A host builds its toolkit's menu
+own, each entry with its caption, its picture, whether the user can choose
+it, whether choosing it destroys something and its identifier; a menu bar
+holds only its menus. A host builds its toolkit's menu
 from the walk, and an item's element hears it chosen.

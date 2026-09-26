@@ -41,19 +41,7 @@ extension AppKitElement {
         }
 
         if let tabs = view as? AppKitTabbedView {
-            let tabItems = children.compactMap { child -> AppKitTabItem? in
-                guard let layout = child.layoutItem else { return nil }
-                return AppKitTabItem(
-                    layout: layout,
-                    title: child.string(.title),
-                    image: child.string(.icon).flatMap { image(named: $0) })
-            }
-            tabs.onSelection = { [weak self] previous, selected in
-                self?.selectTab(from: previous, to: selected)
-            }
-            pendingTabFallback = tabs.setItems(
-                tabItems,
-                requestedIndex: whole(.currentPage))
+            arrangeTabs(tabs)
             return
         }
 

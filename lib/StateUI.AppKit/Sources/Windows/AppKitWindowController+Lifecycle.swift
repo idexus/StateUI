@@ -12,7 +12,7 @@ extension AppKitWindowController: NSWindowDelegate {
         guard !closingFromTree else { return }
         closingFromTree = true
         let visible = (modals.last?.node ?? presentedPage)?.element
-        visible?.appKit.setPagePresented(false, reason: .window)
+        visible?.setPagePresented(false, reason: .window)
 
         if let window {
             while !modals.isEmpty {

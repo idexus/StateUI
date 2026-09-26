@@ -374,7 +374,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let page = AppKitSingleChildView()
         page.setItem(AppKitLayoutItem(view: label))
         let tabs = AppKitTabbedView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
-        _ = tabs.setItems(
+        tabs.setItems(
             [AppKitTabItem(layout: AppKitLayoutItem(view: page), title: "One", image: nil)],
             requestedIndex: 0)
         tabs.layoutSubtreeIfNeeded()

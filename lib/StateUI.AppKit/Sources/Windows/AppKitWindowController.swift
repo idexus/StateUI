@@ -73,9 +73,6 @@ final class AppKitWindowController: NSWindowController {
     /// `AppKitWindowContentView.isTranslucent`.
     var isTranslucent = false
 
-    var pageMenuItems: [NSMenuItem] {
-        modals.last?.node.pageMenuItems ?? node?.pageMenuItems ?? []
-    }
     var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
     var modalCountForTesting: Int { modals.count }
     var hiddenBySceneForTesting: Bool { stopCauses.contains(.sceneHidden) }
@@ -258,11 +255,9 @@ final class AppKitWindowController: NSWindowController {
 
         let nextVisible = (modals.last?.node ?? presentedPage)?.element
         if previousVisible !== nextVisible {
-            let reason: AppKitPagePresentationReason = previousWasModal || !modals.isEmpty
-                ? .navigation
-                : .window
-            previousVisible?.appKit.setPagePresented(false, reason: reason)
-            nextVisible?.appKit.setPagePresented(true, reason: reason)
+            let reason: PagePresentationReason = previousWasModal || !modals.isEmpty ? .navigation : .window
+            previousVisible?.setPagePresented(false, reason: reason)
+            nextVisible?.setPagePresented(true, reason: reason)
         }
 
         // A requested bound is on the content area too; AppKit bounds the

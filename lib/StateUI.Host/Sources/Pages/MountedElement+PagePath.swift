@@ -73,7 +73,8 @@ extension MountedElement {
     }
 
     /// Whether a tabbed view's tabs stand in its window's row: the first tabbed view down the window's stacks and
-    /// split view details - never one in a sidebar, in a tab of another, in a sheet or in content.
+    /// split view details - never one in a sidebar, in a tab of another, in a sheet or in content. A split view's
+    /// sidebar is its first child as written, which holds while the children are still being made.
     public var tabsStandInWindow: Bool {
         guard type == .tabbedView else { return false }
 
@@ -82,7 +83,7 @@ extension MountedElement {
             switch parent.type {
             case .window: return true
             case .navigationStack: break
-            case .splitView where parent.children.first !== child: break
+            case .splitView where parent.writingOrder[child.id] != 0: break
             default: return false
             }
             child = parent

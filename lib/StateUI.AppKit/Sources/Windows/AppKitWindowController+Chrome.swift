@@ -13,19 +13,19 @@ extension AppKitWindowController {
         refreshVisiblePageChrome()
     }
 
-    /// Composes the window's one native chrome from the visible arrangement:
-    /// the top page names the window, the stack's way back and the page's
-    /// actions are toolbar items, a split page adds the sidebar toggle, the
-    /// tabs of a tabbed view on the page path stand beneath the toolbar, and
-    /// an authored title bar adds its slots and its own title.
+    /// Lays the chrome the host layer composes from what the window shows in AppKit's: the title, the toolbar's way
+    /// back, the page's actions and the slots, the sidebar's toggle, the bars' colours, the tabs beneath the toolbar
+    /// and the page's menus.
+    /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
         guard let node, let window else { return }
-        node.pageNode?.markTabsShownByWindow()
-        let titleBar = node.children.first { $0.type == .titleBar }
-        let page = node.visiblePage
-        let titleView = node.visibleTitleView
-        let barColor = node.visibleBarBackground ?? titleBar?.color(.background)
-        window.title = page?.string(.title) ?? node.string(.title) ?? "StateUI"
+        let arrangement = node.pageNode?.element
+        let chrome = WindowChrome(window: node.element, arrangement: arrangement)
+        let titleBar = node.slot(.titleBar)
+        let titleView = arrangement?.visiblePage?.slotContent(.titleView)?.appKit.view
+        let barColor = chrome.background.flatMap(nsColor)
+        let foreground = chrome.foreground.flatMap(nsColor)
+        window.title = chrome.title ?? "StateUI"
         window.subtitle = ""
         // A page's title view stands in for its title, and over a painted band
         // the title stands in the bar's foreground: either way the window
@@ -34,34 +34,70 @@ extension AppKitWindowController {
         let paintedTitle: NSView? = barColor.flatMap { band in
             guard titleView == nil else { return nil }
             bandTitle.stringValue = window.title
-            bandTitle.textColor = Self.foreground(
-                on: band,
-                written: node.visibleBarForeground ?? titleBar?.color(.barForegroundColor))
+            bandTitle.textColor = Self.foreground(on: band, written: foreground)
             bandTitle.sizeToFit()
             return bandTitle
         }
 
-        let actions = node.visibleToolbarActions
+        let split = chrome.sidebarToggle?.appKit.view as? AppKitSplitView
         toolbar.apply(AppKitWindowChrome(
-            sidebar: node.pageNode?.sidebarController,
-            back: node.visibleBackAction,
+            sidebar: split?.splitController,
+            back: chrome.back.map { back in
+                AppKitToolbarAction(
+                    identifier: AppKitWindowToolbar.back, title: back.title, image: AppKitWindowToolbar.backImage,
+                    isEnabled: true,
+                    perform: { [weak host, weak shown = node.element, weak stack = back.stack] in
+                        if let host, let shown, let stack { host.runtime.goBack(.pop(stack), in: shown) }
+                    })
+            },
             title: paintedTitle,
-            leading: titleBar?.firstView(in: .leadingContent),
-            center: titleBar?.firstView(in: .content) ?? titleView,
-            actions: actions.primary,
-            overflow: actions.overflow,
-            trailing: titleBar?.firstView(in: .trailingContent)))
-        synchronizeBar(window, color: barColor, split: node.pageNode?.view as? AppKitSplitView)
+            leading: chrome.leading?.appKit.view,
+            center: chrome.center?.appKit.view,
+            actions: chrome.primaryActions.map(Self.action),
+            overflow: chrome.overflowActions.map(Self.action),
+            trailing: chrome.trailing?.appKit.view))
+        synchronizeBar(window, color: barColor, split: split)
         synchronizeTitleAccessory(
             window,
             titleBar: titleBar,
             foreground: barColor.map { band in
-                Self.foreground(
-                    on: band,
-                    written: titleBar?.color(.barForegroundColor) ?? node.visibleBarForeground)
+                Self.foreground(on: band, written: titleBar?.color(.barForegroundColor) ?? foreground)
             })
-        synchronizeTabRow(window, node.visibleWindowTabs)
+        synchronizeTabRow(window, windowTabs(arrangement))
         host?.pageMenusChanged(in: self)
+    }
+
+    /// A page's action as a toolbar item.
+    private static func action(_ item: MountedElement) -> AppKitToolbarAction {
+        AppKitToolbarAction(
+            identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
+            title: item.value(.text)?.string ?? "",
+            image: item.appKit.image(.icon),
+            isEnabled: item.value(.isEnabled)?.bool ?? true,
+            perform: { [weak item] in item?.appKit.clicked(nil) })
+    }
+
+    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
+    /// whose detail they stand across, if any.
+    private func windowTabs(_ arrangement: MountedElement?) -> AppKitTabsPlacement? {
+        guard let tabbed = arrangement?.visibleTabbedView, tabbed.tabsStandInWindow,
+              let tabs = tabbed.appKit.view as? AppKitTabbedView
+        else { return nil }
+
+        let segments = tabs.segments
+        return AppKitTabsPlacement(
+            tabs: AppKitWindowTabs(
+                titles: segments.map(\.title),
+                images: segments.map(\.image),
+                selected: tabs.selectedIndex,
+                select: { [weak tabs] index in tabs?.selectByUser(index) }),
+            split: tabbed.parent?.enclosing(type: .splitView)?.appKit.view as? AppKitSplitView)
+    }
+
+    /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer walks them.
+    var pageMenuItems: [NSMenuItem] {
+        let page = (modals.last?.node ?? node?.pageNode)?.element.visiblePage
+        return AppKitMenus.items(page?.children.first { $0.type == .menuBar }.map(MenuEntry.menus(of:)) ?? [])
     }
 
     /// A window's tabs stand beneath its toolbar: on macOS 26 and later across

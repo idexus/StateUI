@@ -82,6 +82,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(stands("sheet"), false, "a sheet keeps its own row")
     }
 
+    /// Where a tabbed view's tabs stand is already right as it is applied, while the tree that holds it is made.
+    func testTabsStandRightWhileTheirTreeIsMade() {
+        var read: [String: Bool] = [:]
+        let runtime = HostRuntime(
+            clock: StillClock(), reducesMotion: { false },
+            makeNative: { TabsReading($0) { read[$0] = $1 } }, log: { _ in })
+        let tabs = { (id: String) in self.node(id, .tabbedView, children: [self.node("\(id).page", .page)]) }
+
+        runtime.tree.apply(
+            node("window", .window, children: [node("split", .splitView, children: [tabs("sidebar"), tabs("detail")])]),
+            complete: true)
+
+        XCTAssertEqual(read, ["sidebar": false, "detail": true])
+    }
+
     /// A tab the tree asks for anew is chosen; the user's choice stands where it is another tab there is.
     func testATabChoiceFollowsTheTreeAndTheUser() {
         var choice = TabChoice()
@@ -146,8 +161,9 @@ final class PagesTests: XCTestCase {
     func testAMenuIsWalkedInOrder() throws {
         let runtime = runtime(node("bar", .menuBar, children: [
             node("file", .menu, [.text: .string("File")], children: [
-                node("open", .menuItem, [.text: .string("Open")]),
+                node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
                 node("line", .menuSeparator),
+                node("erase", .menuItem, [.text: .string("Erase"), .isDestructive: .bool(true), .icon: .string("")]),
                 node("recent", .menu, [.text: .string("Recent")], children: [
                     node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),
                 ]),
@@ -158,8 +174,10 @@ final class PagesTests: XCTestCase {
         let menus = MenuEntry.menus(of: try XCTUnwrap(runtime.tree.root))
         XCTAssertEqual(menus.map(\.title), ["File"], "the bar holds only its menus")
         let file = try XCTUnwrap(menus.first).entries
-        XCTAssertEqual(file.map(\.kind), [.item, .separator, .submenu])
-        XCTAssertEqual(file.map(\.title), ["Open", "", "Recent"])
+        XCTAssertEqual(file.map(\.kind), [.item, .separator, .item, .submenu])
+        XCTAssertEqual(file.map(\.title), ["Open", "", "Erase", "Recent"])
+        XCTAssertEqual(file.map(\.icon), ["folder", nil, nil, nil], "an empty picture is none")
+        XCTAssertEqual(file.map(\.isDestructive), [false, false, true, false])
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
     }
 
@@ -195,4 +213,29 @@ final class PagesTests: XCTestCase {
         guard case .pop(let main) = try wayBack([]) else { return XCTFail("the arrangement's stack") }
         XCTAssertEqual(main.id, .manual("main"))
     }
+}
+
+/// A native half that says, as each tabbed view is applied, whether its tabs stand in the window.
+@MainActor
+private final class TabsReading: NativeElement {
+    unowned let element: MountedElement
+    let read: (String, Bool) -> Void
+    let presentsView = true
+
+    init(_ element: MountedElement, read: @escaping (String, Bool) -> Void) {
+        self.element = element
+        self.read = read
+    }
+
+    func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        guard element.type == .tabbedView, case .manual(let id) = element.id else { return }
+        read(id, element.tabsStandInWindow)
+    }
+
+    func willApply() {}
+    func standingValue(_ property: Prop) -> HostValue? { nil }
+    func animates(_ property: Prop) -> Bool { false }
+    func presentFrame(_ changed: Set<Prop>) -> FrameImpact { .none }
+    func arrangeChildren() {}
+    func leave() {}
 }

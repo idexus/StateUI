@@ -946,24 +946,6 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 0)
     }
 
-    @MainActor
-    func testUserDismissalReportsTheSurvivingModalDepth() throws {
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false)
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(
-            page("root", events: 100),
-            modals: [page("sheet", events: 200), page("about", events: 300)],
-            modalPopped: 9))
-
-        let window = try XCTUnwrap(renderer.windowsForTesting.first)
-        window.dismissTopModalForTesting()
-
-        XCTAssertEqual(window.modalCountForTesting, 1)
-    }
-
     /// A page that takes its way back away offers none in the window's
     /// toolbar, where the page beneath it offered one.
     @MainActor

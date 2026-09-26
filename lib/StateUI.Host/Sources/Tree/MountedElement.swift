@@ -22,8 +22,8 @@
     /// `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
-    /// Each child's place in the order the last arrangement wrote them.
-    private var writingOrder: [ElementId: Int] = [:]
+    /// Each child's place in the order the last arrangement wrote them - known before the children are made.
+    private(set) var writingOrder: [ElementId: Int] = [:]
 
     /// The properties the patches described.
     public private(set) var properties: [Prop: HostValue] = [:]

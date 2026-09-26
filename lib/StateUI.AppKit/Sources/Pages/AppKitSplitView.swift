@@ -24,7 +24,7 @@ final class AppKitSplitView: AppKitHitTestView {
     let splitController = NSSplitViewController()
 
     /// The width at which a window opens with both panes shown.
-    private static let sidebarRoom: CGFloat = 720
+    private static let sidebarRoom: Double = 720
 
     private let sidebarController = NSViewController()
     private let detailController = NSViewController()
@@ -34,9 +34,8 @@ final class AppKitSplitView: AppKitHitTestView {
         sidebarWithViewController: sidebarController)
     private lazy var detailItem = NSSplitViewItem(
         viewController: detailController)
-    private var requestedPresentation = false
     private var lastEffectivePresentation = false
-    private var adapted = false
+    private var adaptation = SidebarAdaptation()
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -134,7 +133,6 @@ final class AppKitSplitView: AppKitHitTestView {
 
     /// Applies Swift's value without echoing it back as a user's change.
     func apply(presented: Bool) {
-        requestedPresentation = presented
         setSidebarPresented(presented, reporting: false)
     }
 
@@ -165,11 +163,9 @@ final class AppKitSplitView: AppKitHitTestView {
     /// The host's one adaptation: a window wide enough for both panes opens
     /// with its sidebar shown, and reports it to the binding.
     private func adaptToFirstRoom() {
-        guard !adapted, bounds.width > 0 else { return }
-        adapted = true
-        guard !requestedPresentation, bounds.width >= Self.sidebarRoom else { return }
+        guard adaptation.room(Double(bounds.width), breakpoint: Self.sidebarRoom, shown: isEffectivelyPresented)
+        else { return }
 
-        requestedPresentation = true
         setSidebarPresented(true, reporting: true)
     }
 
@@ -195,7 +191,6 @@ final class AppKitSplitView: AppKitHitTestView {
         let presented = !sidebarItem.isCollapsed
         guard presented != lastEffectivePresentation else { return }
 
-        requestedPresentation = presented
         lastEffectivePresentation = presented
         onPresentationChanged?(presented)
     }

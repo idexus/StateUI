@@ -6,13 +6,6 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// Why a page became visible or stopped: a navigation carries three phases, an appearance two.
-enum AppKitPagePresentationReason {
-    case appearance
-    case navigation
-    case window
-}
-
 /// The AppKit half of a mounted element: its native view and everything hung on it.
 /// Design: docs/design/host/tree.md#the-native-half
 @MainActor
@@ -53,13 +46,7 @@ final class AppKitElement: NSObject, NativeElement {
     )?
     var accessibilityThroughCell: Bool?
     var accessibilityChildrenSuppressed = false
-    var pagePresented = false
-    var pendingTabFallback: Int?
     var platformMenuItem: NSMenuItem?
-
-    /// What the element showed before the patch being applied, held by its owners so a child
-    /// the patch removes can still be told it stopped showing.
-    var previouslyShown: [MountedElement] = []
 
     init(_ element: MountedElement, host: AppKitRenderer) {
         self.element = element
@@ -93,9 +80,7 @@ final class AppKitElement: NSObject, NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {
-        previouslyShown = shownChildren.map(\.element)
-    }
+    func willApply() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
         if type == .window, let value = host?.standingWindowValue(for: self, property: property) {
@@ -126,9 +111,6 @@ final class AppKitElement: NSObject, NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         configureFrameObservation()
-        reconcilePresentation(from: previouslyShown.map(\.appKit))
-        previouslyShown = []
-        reportTabFallback()
     }
 
     func leave() {

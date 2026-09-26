@@ -176,9 +176,7 @@ extension AppKitElement {
             // THE VALUE IS THE REGISTRY'S; THIS REPORT IS THE HOST'S. A change
             // the user makes walks into the first child's page lifetime,
             // which no contract describes, so the closure stays here.
-            split.onPresentationChanged = { [weak self] presented in
-                self?.changeSidebarVisibility(to: presented)
-            }
+            split.onPresentationChanged = { [weak self] presented in self?.sidebarShown(presented) }
         }
 
         if let layers = view as? AppKitZStackView {
