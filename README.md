@@ -73,6 +73,8 @@ that is usable now.
   event inventory with verified host coverage.
 - [Control dictionary](docs/controls/README.md) — every control and part of an
   application's structure, member by member, with a mark per platform.
+- [Host layer](docs/host-layer.md) — the Swift every host runs on, module by
+  module, and what each host provides.
 - [AppKit host](docs/appkit-host.md), [Android Views host](docs/android-host.md), [WinUI host](docs/winui-host.md) and [GTK host](docs/gtk-host.md)
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,

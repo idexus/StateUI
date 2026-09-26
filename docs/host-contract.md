@@ -185,9 +185,8 @@ of its members - an `ElementLayer`:
 
 `NodeType`, `Prop`, `Event`, and `Act` remain open at the value level. An
 extension or provider that introduces one must also supply the host adapter,
-tests, Gallery coverage, and documentation that give it meaning. The base
-AppKit host has no process-wide application control registry: an unknown node
-is made visible as unsupported and an unknown property has no effect. A token
+tests, Gallery coverage, and documentation that give it meaning. A host shows
+an unknown node as unsupported, and an unknown property has no effect. A token
 alone is not an implementation.
 
 The human-readable inventory and implementation matrix for AppKit, UIKit,
@@ -214,14 +213,16 @@ A host is an adapter. It owns:
 The host does not own a second description tree, diffing model, router, or
 state system. Anything an element attaches outside its native subtree is
 detached when that element leaves. No host object may strongly retain a control
-after its element is dropped.
+after its element is dropped. What every host shares - the mounted tree, the
+turn and the frame, the animations, the layout arithmetic and the rules of the
+user's input - is the [host layer](host-layer.md), which every host runs on.
 
 Platform-native classes are implementation choices behind semantic StateUI
 tokens. They never enter application source, `HostPatch`, event payloads, or
 state values.
 
-The active host package is `lib/StateUI.AppKit`. Later hosts are sibling
-packages, so platform dependencies never enter the core. `PlacedLayout` and
+Each host is a sibling package linked to the `StateUI` library, so platform
+dependencies never enter the core. `PlacedLayout` and
 `GalleryView` remain StateUI-owned composition mechanisms and do not justify a
 larger renderer surface.
 

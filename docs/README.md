@@ -49,11 +49,15 @@ usable platform promise.
 
 - [Host contract](host-contract.md) specifies typed sparse patches, update
   order, host-carried state, native ownership, and the values a host is handed.
+- [Host layer](host-layer.md) maps the Swift every host runs on, module by
+  module: what it decides for every host, and what a host provides and calls.
 - [Platform contract](platform-contract.md) is the checked control, property,
   event, environment, and host-capability matrix. A check mark means native
   implementation plus host tests.
 - [Control dictionary](controls/README.md) lists every control and part of an
   application's structure member by member, each with a mark per platform.
+- [AppKit host](appkit-host.md) builds, runs, and tests the Swift host that
+  renders an application with AppKit on macOS, in the application's process.
 - [Android Views host](android-host.md) builds, runs, and tests the Swift host
   that renders an application with Android views, in the application's process.
 - [WinUI host](winui-host.md) builds, runs, and tests the Swift host that

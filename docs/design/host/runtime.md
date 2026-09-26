@@ -175,7 +175,10 @@ The toolkit-neutral elements live once, in the core, because every Swift host
 would otherwise carry its own copy of the same arithmetic and rules: the
 mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
-write, a scroller's movement, the patch intake and the line to the core. A toolkit gives the layer
+write, a scroller's movement, the patch intake and the line to the core - and
+the windows, the pages, the layout, drawing, text and input rules, the acts
+and the environment's words, which [the host layer](../../host-layer.md) maps
+part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter` and a turn through
 `TurnPresenter`, and hands

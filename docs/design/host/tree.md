@@ -88,8 +88,8 @@ What the host layer's own rules realize on every element - a view's place in
 its layout, its drawing over that place, where it stands as the tree reads it
 and what the user does to it - is declared once, as groups a host's registry
 names (`everyElementTakesItsPlace`, `everyElementIsDrawnOverItsPlace`,
-`everyElementHearsTheUser`): a host realizing them through those rules says
-so in one line each, and the control dictionary reads the members as every
+`everyElementMeetsAssistiveTechnology`, `everyElementHearsTheUser`): a host
+realizing them through those rules says so in one line each, and the control dictionary reads the members as every
 host alike.
 
 ## Views by number
