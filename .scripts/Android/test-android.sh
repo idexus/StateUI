@@ -55,14 +55,19 @@ package="$("$AAPT2" dump packagename "$apk")"
 declared=""
 follower=""
 stay_on="$("$ADB" -s "$serial" shell settings get global stay_on_while_plugged_in | tr -d '\r')"
+# Put back through the power service, as it was set: a phone's shell may not write the setting itself.
+case "$stay_on" in
+  0) awake="false" ;; 1) awake="ac" ;; 2) awake="usb" ;; 4) awake="wireless" ;; *) awake="true" ;;
+esac
 cleanup() {
   [[ -z "$follower" ]] || kill "$follower" 2>/dev/null || true
-  "$ADB" -s "$serial" shell settings put global stay_on_while_plugged_in "${stay_on:-0}" >/dev/null 2>&1 || true
+  "$ADB" -s "$serial" shell svc power stayon "$awake" >/dev/null 2>&1 || true
   [[ -z "$declared" ]] || rm -rf "$declared"
 }
 trap cleanup EXIT
-"$ADB" -s "$serial" shell svc power stayon usb
-"$ADB" -s "$serial" shell input keyevent KEYCODE_WAKEUP
+# A phone may refuse the power service to the shell (the CPH2363 kills the command): its own "Stay awake" then holds.
+"$ADB" -s "$serial" shell svc power stayon usb >/dev/null 2>&1 || true
+"$ADB" -s "$serial" shell input keyevent KEYCODE_WAKEUP || true
 "$ADB" -s "$serial" shell wm dismiss-keyguard >/dev/null 2>&1 || true
 
 # The follower is the log's own reader, so ending it ends the filter after it: a filter left holding the output
