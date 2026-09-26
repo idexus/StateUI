@@ -47,7 +47,10 @@
                 try s.settle { try s.color(of: shape, at: Point(50, 20)) == .red }
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.color(of: shape, at: Point(30, 11)) == .red }
+                // The ends travel to their new places: the line has arrived once both points it passes are drawn.
+                try s.settle {
+                    try s.color(of: shape, at: Point(30, 11)) == .red && s.color(of: shape, at: Point(70, 29)) == .red
+                }
                 s.expect(try s.color(of: shape, at: Point(30, 20)), nil, "the old line gone")
                 s.expect(try s.color(of: shape, at: Point(70, 29)), .red, "the new one drawn")
             },
