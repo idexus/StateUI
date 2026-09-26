@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 final class AndroidWebViewTests: XCTestCase {
@@ -70,7 +71,7 @@ final class AndroidWebViewTests: XCTestCase {
             let host = AndroidRenderer.running { BrowsingPage(heard: heard) }
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
             host.pump()
-            host.answered(ticket: AndroidActPerformer.nextTicket - 1, accepted: true, words: "Example Domain")
+            host.answered(ticket: AndroidActPerformer.nextScriptTicket + 1, accepted: true, words: "Example Domain")
             host.settle { heard.values.contains { $0.hasPrefix("title") } }
 
             XCTAssertEqual(heard.values, ["title Example Domain"])

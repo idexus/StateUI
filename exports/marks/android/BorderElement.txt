@@ -1,0 +1,22 @@
+Button.clicked: cannot read shape of Button - Android's driver has no path for it yet
+Button.shape: cannot read shape of Button - Android's driver has no path for it yet
+Button.stroke: cannot read stroke of Button - Android's driver has no path for it yet
+Button.strokeWidth: cannot read strokeWidth of Button - Android's driver has no path for it yet
+Grid.shape: cannot read shape of Grid - Android's driver has no path for it yet
+Grid.stroke: cannot read stroke of Grid - Android's driver has no path for it yet
+Grid.strokeWidth: cannot read strokeWidth of Grid - Android's driver has no path for it yet
+HStack.shape: cannot read shape of HStack - Android's driver has no path for it yet
+HStack.stroke: cannot read stroke of HStack - Android's driver has no path for it yet
+HStack.strokeWidth: cannot read strokeWidth of HStack - Android's driver has no path for it yet
+RadioButton.shape: not realized
+RadioButton.stroke: not realized
+RadioButton.strokeWidth: not realized
+ScrollView.shape: cannot read shape of ScrollView - Android's driver has no path for it yet
+ScrollView.stroke: cannot read stroke of ScrollView - Android's driver has no path for it yet
+ScrollView.strokeWidth: cannot read strokeWidth of ScrollView - Android's driver has no path for it yet
+VStack.shape: cannot read shape of VStack - Android's driver has no path for it yet
+VStack.stroke: cannot read stroke of VStack - Android's driver has no path for it yet
+VStack.strokeWidth: cannot read strokeWidth of VStack - Android's driver has no path for it yet
+ZStack.shape: cannot read shape of ZStack - Android's driver has no path for it yet
+ZStack.stroke: cannot read stroke of ZStack - Android's driver has no path for it yet
+ZStack.strokeWidth: cannot read strokeWidth of ZStack - Android's driver has no path for it yet

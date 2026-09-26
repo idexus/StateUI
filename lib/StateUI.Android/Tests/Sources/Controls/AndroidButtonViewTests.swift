@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import CStateUIAndroid
 import XCTest
 

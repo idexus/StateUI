@@ -1,0 +1,7 @@
+Pin: not realized
+Pin.address: not realized
+Pin.label: not realized
+Pin.location: not realized
+Pin.pinClicked: not realized
+Pin.pinDetailsClicked: not realized
+Pin.type: not realized

@@ -6,6 +6,7 @@ import CStateUIAndroid
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// Every test case the runner runs. A case missing here never runs, so
@@ -45,6 +46,7 @@ nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidMenusTests.allTests),
     testCase(AndroidLayoutMotionTests.allTests),
     testCase(AndroidRegistrationTests.allTests),
+    testCase(AndroidConformanceTests.allTests),
 ]
 
 /// Registers the host's natives and the runner's own as the test APK loads this library.
@@ -56,7 +58,9 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
     return AndroidTestRunner.register(env) ? version : -1
 }
 
-/// Runs every test case on the UI thread, inside the instrumentation's process, and answers the report.
+/// Runs the test cases on the UI thread, inside the instrumentation's process, one item in each of the thread's
+/// messages, and answers the report: `begin` plans the items, `run` runs one, `end` reports them all.
+/// Design: docs/design/platforms/android/conformance.md#a-message-an-item
 enum AndroidTestRunner {
     static func environment(_ machine: UnsafeMutablePointer<JavaVM?>) -> UnsafeMutablePointer<JNIEnv?>? {
         var raw: UnsafeMutableRawPointer?
@@ -65,26 +69,50 @@ enum AndroidTestRunner {
     }
 
     static func register(_ env: UnsafeMutablePointer<JNIEnv?>) -> Bool {
-        let run: @convention(c) (UnsafeMutablePointer<JNIEnv?>?, jclass?, jobject?) -> jstring? = { env, _, context in
-            AndroidTestRunner.run(env: env!, context: context!)
+        typealias Env = UnsafeMutablePointer<JNIEnv?>?
+        let begin: @convention(c) (Env, jclass?, jobject?, jobject?, jstring?) -> jobjectArray? = {
+            env, _, context, window, filter in
+            AndroidTestRunner.begin(env: env!, context: context!, window: window!, filter: filter)
+        }
+        let run: @convention(c) (Env, jclass?, jstring?) -> Void = { _, _, item in
+            AndroidTestRunner.run(item: item)
+        }
+        let end: @convention(c) (Env, jclass?) -> jstring? = { env, _ in
+            AndroidTestRunner.end(env: env!)
         }
 
         let functions = env.pointee!.pointee
         guard let runner = functions.FindClass(env, "stateui/android/test/StateUITestRunner") else { return false }
 
-        let name = strdup("run")!
-        let signature = strdup("(Landroid/content/Context;)Ljava/lang/String;")!
-        defer {
-            free(name)
-            free(signature)
+        let natives: [(String, String, UnsafeMutableRawPointer)] = [
+            ("begin", "(Landroid/content/Context;Landroid/app/Activity;Ljava/lang/String;)[Ljava/lang/String;",
+             unsafeBitCast(begin, to: UnsafeMutableRawPointer.self)),
+            ("run", "(Ljava/lang/String;)V", unsafeBitCast(run, to: UnsafeMutableRawPointer.self)),
+            ("end", "()Ljava/lang/String;", unsafeBitCast(end, to: UnsafeMutableRawPointer.self)),
+        ]
+        let names = natives.map { (strdup($0.0)!, strdup($0.1)!) }
+        defer { names.forEach { free($0.0); free($0.1) } }
+        var methods = zip(natives, names).map { native, name in
+            JNINativeMethod(name: UnsafePointer(name.0), signature: UnsafePointer(name.1), fnPtr: native.2)
         }
-        var method = JNINativeMethod(
-            name: UnsafePointer(name), signature: UnsafePointer(signature),
-            fnPtr: unsafeBitCast(run, to: UnsafeMutableRawPointer.self))
-        return functions.RegisterNatives(env, runner, &method, 1) == JNI_OK
+        return functions.RegisterNatives(env, runner, &methods, jint(methods.count)) == JNI_OK
     }
 
-    private static func run(env: UnsafeMutablePointer<JNIEnv?>, context: jobject) -> jstring? {
+    /// The items planned, by name, each with what it runs.
+    nonisolated(unsafe) private static var planned: [String: XCTestCase] = [:]
+
+    /// What the runs said, and how many ran and failed.
+    nonisolated(unsafe) private static let observer = ReportingObserver()
+    nonisolated(unsafe) private static var executed = 0
+    nonisolated(unsafe) private static var failed = 0
+
+    /// The most cases of a conformance family one item runs: a family longer than that runs in parts, each in a
+    /// message of its own, so no message of the UI thread runs long.
+    static let casesAnItem = 15
+
+    private static func begin(
+        env: UnsafeMutablePointer<JNIEnv?>, context: jobject, window: jobject, filter: jstring?
+    ) -> jobjectArray? {
         // The first drain makes this thread MainActor's, as the activity's start does.
         let core = CoreLink()
         _ = core.needsRender
@@ -92,37 +120,74 @@ enum AndroidTestRunner {
 
         nonisolated(unsafe) let env = env
         nonisolated(unsafe) let context = context
+        nonisolated(unsafe) let window = window
+        nonisolated(unsafe) let filter = filter
 
-        let report = MainActor.assumeIsolated {
+        let items = MainActor.assumeIsolated { () -> [String] in
             AndroidStandardStreams.redirect()
             Java.env = env
             TestContext.context = JavaObject(Java.jni.NewLocalRef(env, context)!)
-            return runSuite()
+            TestContext.window = JavaObject(Java.jni.NewLocalRef(env, window)!)
+            XCTestObservationCenter.shared.addTestObserver(observer)
+            return plan(filter: Java.text(filter))
         }
 
+        let stringClass = env.pointee!.pointee.FindClass(env, "java/lang/String")
+        let array = env.pointee!.pointee.NewObjectArray(env, jsize(items.count), stringClass, nil)
+        for (index, item) in items.enumerated() {
+            var units = Array(item.utf16)
+            let string = env.pointee!.pointee.NewString(env, &units, jsize(units.count))
+            env.pointee!.pointee.SetObjectArrayElement(env, array, jsize(index), string)
+            env.pointee!.pointee.DeleteLocalRef(env, string)
+        }
+        return array
+    }
+
+    /// Every test whose "Case.test" name holds `filter` - every test where it is empty - a long conformance family
+    /// in parts, each named "Case.test@part/parts", which a filter may name alone.
+    @MainActor
+    private static func plan(filter: String) -> [String] {
+        var items: [String] = []
+        for entry in testCases {
+            for (name, test) in entry.allTests {
+                let title = "\(entry.testCaseClass).\(name)"
+                if entry.testCaseClass == AndroidConformanceTests.self,
+                   let family = Families.all.first(where: { "test\($0.name)" == name }),
+                   family.cases.count > casesAnItem {
+                    let count = (family.cases.count + casesAnItem - 1) / casesAnItem
+                    for number in 1...count where filter.isEmpty || "\(title)@\(number)/\(count)".contains(filter) {
+                        let item = "\(title)@\(number)/\(count)"
+                        planned[item] = AndroidConformanceTests(name: "\(name)@\(number)/\(count)") { testCase in
+                            try (testCase as! AndroidConformanceTests).conform(
+                                family, part: Conformance.Part(number, of: count))
+                        }
+                        items.append(item)
+                    }
+                } else if filter.isEmpty || title.contains(filter) {
+                    planned[title] = entry.testCaseClass.init(name: name, testClosure: test)
+                    items.append(title)
+                }
+            }
+        }
+        return items
+    }
+
+    private static func run(item: jstring?) {
+        nonisolated(unsafe) let item = item
+        MainActor.assumeIsolated {
+            guard let test = planned.removeValue(forKey: Java.text(item)) else { return }
+            test.run()
+            executed += test.testRun?.executionCount ?? 0
+            failed += test.testRun?.totalFailureCount ?? 0
+        }
+    }
+
+    private static func end(env: UnsafeMutablePointer<JNIEnv?>) -> jstring? {
+        observer.lines.append("Executed \(executed) tests, with \(failed) failures")
+        let report = observer.lines.joined(separator: "\n")
         print(report)
         var units = Array(report.utf16)
         return env.pointee!.pointee.NewString(env, &units, jsize(units.count))
-    }
-
-    private static func runSuite() -> String {
-        let suite = XCTestSuite(name: "StateUIAndroidTests")
-        for entry in testCases {
-            let cases = XCTestSuite(name: "\(entry.testCaseClass)")
-            for (name, test) in entry.allTests {
-                cases.addTest(entry.testCaseClass.init(name: name, testClosure: test))
-            }
-            suite.addTest(cases)
-        }
-
-        let observer = ReportingObserver()
-        XCTestObservationCenter.shared.addTestObserver(observer)
-        suite.run()
-
-        let run = suite.testRun!
-        observer.lines.append(
-            "Executed \(run.executionCount) tests, with \(run.totalFailureCount) failures")
-        return observer.lines.joined(separator: "\n")
     }
 }
 

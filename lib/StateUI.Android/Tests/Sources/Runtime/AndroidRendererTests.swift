@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 /// A page and its counter: a click raises the count, and the caption reads it.

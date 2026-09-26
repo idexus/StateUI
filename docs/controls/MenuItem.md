@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of MenuItem - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of MenuItem - Android's driver has no path for it yet |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native |  |  |  |  | ✅ |  | cannot activate on MenuItem - AppKit's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native |  |  |  |  | ✅ |  | cannot activate on MenuItem - AppKit's driver has no path for it yet; Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet |
-| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot activate on MenuItem - AppKit's driver has no path for it yet |
-| `text` | property | `String` | native |  |  |  |  | ✅ |  | cannot read text of MenuItem - AppKit's driver has no path for it yet |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read isDestructive of MenuItem - Android's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot activate on MenuItem - AppKit's driver has no path for it yet; Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
+| `text` | property | `String` | native |  |  |  |  | ✅ |  | cannot read text of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read text of MenuItem - Android's driver has no path for it yet |

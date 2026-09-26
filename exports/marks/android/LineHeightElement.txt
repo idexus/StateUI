@@ -1,0 +1,3 @@
+Button.clicked: cannot read lineHeight of Label - Android's driver has no path for it yet
+Label.lineHeight: cannot read lineHeight of Label - Android's driver has no path for it yet
+Span.lineHeight: not realized

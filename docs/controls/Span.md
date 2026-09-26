@@ -41,7 +41,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ |  |  |  | ✅ |  |  |
+| `text` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native |  |  |  |  |  |  | cannot read text of Span - AppKit's driver has no path for it yet |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -62,7 +62,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | `fontAttributes` | property | `FontAttributes` | native |  |  |  |  | ✅ |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `fontFamily` | property | `Name` | native |  |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `fontSize` | property | `Double` | native |  |  |  |  | ✅ |  | Android Views: cannot read fontSize of Span - Android's driver has no path for it yet |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 

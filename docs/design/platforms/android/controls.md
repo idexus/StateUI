@@ -55,6 +55,17 @@ one. One that does not grow with its words is one line tall where nothing
 gives it room, and scrolls within the room it is given; one that grows is as
 tall as its lines.
 
+## An editor a line tall
+
+An editor that does not grow stands a line tall where the tree states no
+height, whatever its words hold, and scrolls within that line. Android's text
+layout gives the last of its lines the font's padding below it, so the first
+of several lines stands lower than a line laid out alone: an editor limited to
+one line would shrink as a second line arrives. The host measures such an
+editor at a line alone - the font's full height, its padding included where
+the view includes it, and the view's own padding - and a height the tree
+states still wins.
+
 ## Return, once
 
 A keyboard's action reaches the listener with no key event; a hardware Return
@@ -187,6 +198,12 @@ answers later, by ticket, with its value as text: a string as itself, none
 for null, anything else as JSON writes it. The web view runs scripts and
 keeps the page's storage, as a browser does, and lets go of its page and its
 web process when its element leaves.
+
+## The keyboard's focus
+
+`focus` answers whether the view took the keyboard; a view laid out with no
+room refuses it, as Android refuses it. A web view's page takes the keyboard,
+not the frame holding it, so what hears the frame's focus hears the page's.
 
 ## What assistive technology meets
 

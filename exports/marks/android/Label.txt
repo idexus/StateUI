@@ -1,0 +1,5 @@
+Button.clicked: ✅
+Label: ✅
+Label.lineBreak: ✅
+Label.maximumLines: ✅
+Label.text: ✅

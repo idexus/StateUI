@@ -1,0 +1,26 @@
+Button.clicked: cannot read title of Window - Android's driver has no path for it yet
+ModalStack: cannot goBack on Window - Android's driver has no path for it yet
+Window: ✅
+Window.activated: ✅
+Window.created: ✅
+Window.deactivated: ✅
+Window.destroying: ✅
+Window.floatsOnTop: not realized
+Window.height: not realized
+Window.hidesWhenInactive: not realized
+Window.isMaximizable: not realized
+Window.isMinimizable: not realized
+Window.isTranslucent: not realized
+Window.maximumHeight: not realized
+Window.maximumWidth: not realized
+Window.minimumHeight: not realized
+Window.minimumWidth: not realized
+Window.modalPopped: cannot goBack on Window - Android's driver has no path for it yet
+Window.resumed: ✅
+Window.stopped: ✅
+Window.title: cannot read title of Window - Android's driver has no path for it yet
+Window.width: not realized
+Window.windowType: not realized
+Window.windowValue: not realized
+Window.x: not realized
+Window.y: not realized

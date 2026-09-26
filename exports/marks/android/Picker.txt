@@ -1,0 +1,10 @@
+Button.clicked: cannot choose on Picker - Android's driver has no path for it yet
+Label.text: cannot choose on Picker - Android's driver has no path for it yet
+Picker: cannot read options of Picker - Android's driver has no path for it yet
+Picker.closed: cannot open on Picker - Android's driver has no path for it yet
+Picker.isOpen: cannot open on Picker - Android's driver has no path for it yet
+Picker.opened: cannot open on Picker - Android's driver has no path for it yet
+Picker.options: cannot read options of Picker - Android's driver has no path for it yet
+Picker.selectedIndex: cannot choose on Picker - Android's driver has no path for it yet
+Picker.selectedIndexChanged: cannot choose on Picker - Android's driver has no path for it yet
+Picker.title: cannot read title of Picker - Android's driver has no path for it yet

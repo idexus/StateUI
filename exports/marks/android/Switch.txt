@@ -1,0 +1,5 @@
+Button.clicked: ✅
+Label.text: ✅
+Switch: ✅
+Switch.isOn: ✅
+Switch.toggled: ✅

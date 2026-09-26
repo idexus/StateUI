@@ -209,9 +209,13 @@ final class StateUIEnvironment {
         return TimeZone.getDefault().getID();
     }
 
-    /** How far `zone` - the local one for null - is from UTC at noon of a day - today where year is 0 - in minutes. */
+    /**
+     * How far `zone` - the local one for null - is from UTC at noon of a day - today where year is 0 - in minutes;
+     * Integer.MIN_VALUE for a zone the platform does not know, which TimeZone would read as GMT.
+     */
     static int utcOffset(String zone, int year, int month, int day) {
         TimeZone timeZone = zone == null ? TimeZone.getDefault() : TimeZone.getTimeZone(zone);
+        if (zone != null && !timeZone.getID().equals(zone)) return Integer.MIN_VALUE;
         Calendar noon = Calendar.getInstance(timeZone);
         if (year != 0) noon.set(year, month - 1, day, 12, 0, 0);
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;

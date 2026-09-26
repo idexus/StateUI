@@ -29,7 +29,7 @@ final class AndroidProgressBarView: AndroidView {
     /// How much of the work is done, from 0 to 1.
     func setProgress(_ progress: Double) {
         let share = progress.isFinite ? min(max(progress, 0), 1) : 0
-        Java.call(reference, JavaAPI.setProgress, .int(Int32((share * Double(Self.steps)).rounded())))
+        Java.call(reference, JavaAPI.setProgress, .int(Int32((share * Double(Self.steps)).rounded())), .bool(false))
     }
 
     /// How much of the work the bar shows done.

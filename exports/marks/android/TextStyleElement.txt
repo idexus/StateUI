@@ -1,0 +1,21 @@
+Button.characterSpacing: not realized
+Button.clicked: cannot read characterSpacing of Label - Android's driver has no path for it yet
+Button.textColor: cannot read textColor of Button - Android's driver has no path for it yet
+DatePicker.characterSpacing: not realized
+DatePicker.textColor: cannot read textColor of DatePicker - Android's driver has no path for it yet
+Label.characterSpacing: cannot read characterSpacing of Label - Android's driver has no path for it yet
+Label.textColor: cannot read textColor of Label - Android's driver has no path for it yet
+Picker.characterSpacing: not realized
+Picker.textColor: cannot read textColor of Picker - Android's driver has no path for it yet
+RadioButton.characterSpacing: not realized
+RadioButton.textColor: cannot read textColor of RadioButton - Android's driver has no path for it yet
+SearchField.characterSpacing: not realized
+SearchField.textColor: cannot read textColor of SearchField - Android's driver has no path for it yet
+Span.characterSpacing: not realized
+Span.textColor: not realized
+TextEditor.characterSpacing: not realized
+TextEditor.textColor: cannot read textColor of TextEditor - Android's driver has no path for it yet
+TextField.characterSpacing: not realized
+TextField.textColor: cannot read textColor of TextField - Android's driver has no path for it yet
+TimePicker.characterSpacing: not realized
+TimePicker.textColor: cannot read textColor of TimePicker - Android's driver has no path for it yet

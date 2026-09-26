@@ -8,6 +8,9 @@
 # USAGE:
 #   test-android.sh [serial]
 #
+# STATEUI_FILTER=<text> runs only the tests whose "Case.test" name holds the text, and then holds nothing to
+# exports/: a part of the suite proves only part of what the host declares.
+#
 # The suite also writes what the host declares - its registry, as exports/
 # holds it for the control dictionary. The run is held to exports/android.txt;
 # STATEUI_UPDATE_EXPORTS=1 writes it instead.
@@ -41,13 +44,18 @@ echo "device:     $serial ($abi)"
 apk="$(build_head "$tests_dir" StateUIAndroidTests debug "$abi")"
 package="$("$AAPT2" dump packagename "$apk")"
 "$ADB" -s "$serial" install -r "$apk" >/dev/null
+# The verdicts of a run before this one stay in the APK's files: none may stand for this run's.
+"$ADB" -s "$serial" shell run-as "$package" rm -rf files/marks
 
-output="$("$ADB" -s "$serial" shell am instrument -w "$package/stateui.android.test.StateUITestRunner" | tr -d '\r')"
+filter=()
+[[ -n "${STATEUI_FILTER:-}" ]] && filter=(-e filter "$STATEUI_FILTER")
+output="$("$ADB" -s "$serial" shell am instrument -w ${filter[@]+"${filter[@]}"} "$package/stateui.android.test.StateUITestRunner" | tr -d '\r')"
 echo "$output"
 
 summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing - read: $ADB -s $serial logcat -s StateUI"; exit 1; }
 [[ "$summary" == *" with 0 failures" ]] || exit 1
+[[ -z "${STATEUI_FILTER:-}" ]] || exit 0
 
 declared="$(mktemp -d)"
 trap 'rm -rf "$declared"' EXIT
@@ -61,3 +69,21 @@ for name in android.txt; do
     exit 1
   fi
 done
+
+# The conformance families' verdicts, one file a family: Android's column of the control dictionary.
+held="$declared/marks"
+marks="$repository_dir/exports/marks/android"
+mkdir -p "$held"
+for name in $("$ADB" -s "$serial" exec-out run-as "$package" ls files/marks/android | tr -d '\r'); do
+  "$ADB" -s "$serial" exec-out run-as "$package" cat "files/marks/android/$name" > "$held/$name"
+done
+if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
+  rm -rf "$marks"
+  mkdir -p "$marks"
+  cp "$held"/*.txt "$marks/"
+elif ! diff -r "$held" "$marks" >/dev/null 2>&1; then
+  diff -r "$held" "$marks" | head -n 40
+  echo "ERROR: exports/marks/android is not what this run proved - a verdict changed, or something stopped"
+  echo "working. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."
+  exit 1
+fi

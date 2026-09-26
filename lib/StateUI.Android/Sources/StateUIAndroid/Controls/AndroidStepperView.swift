@@ -36,14 +36,14 @@ final class AndroidStepperView: AndroidView {
         up.onClicked = { [weak self] in self?.stepped(by: 1) }
     }
 
-    /// The range, the step and whether it can be stepped; the value where the tree wrote it, held in the range.
-    func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double, step: Double, enabled: Bool) {
-        lowest = min(minimum, maximum)
-        highest = max(minimum, maximum)
-        self.step = step.isFinite && step > 0 ? step : 1
+    /// The range, the step and whether it can be stepped - the stepper itself on or off, as its buttons are - then
+    /// the value, held in the range.
+    func apply(value: Double, minimum: Double, maximum: Double, step: Double, enabled: Bool) {
+        (lowest, highest) = ValueArithmetic.range(minimum, maximum)
+        self.step = ValueArithmetic.step(step)
         self.enabled = enabled
-        if writeValue, let value { self.value = value }
-        self.value = min(max(self.value, lowest), highest)
+        self.value = min(max(value, lowest), highest)
+        setEnabled(enabled)
         showEnds()
     }
 

@@ -93,6 +93,17 @@ enum JavaAPI {
     static let setAllCaps = Java.method(textView, "setAllCaps", "(Z)V")
 
     static let setMaxLines = Java.method(textView, "setMaxLines", "(I)V")
+    static let getPaint = Java.method(textView, "getPaint", "()Landroid/text/TextPaint;")
+    static let getCompoundPaddingTop = Java.method(textView, "getCompoundPaddingTop", "()I")
+    static let getCompoundPaddingBottom = Java.method(textView, "getCompoundPaddingBottom", "()I")
+    static let getIncludeFontPadding = Java.method(textView, "getIncludeFontPadding", "()Z")
+    static let paint = Java.findClass("android/graphics/Paint")
+    static let getFontMetricsInt = Java.method(paint, "getFontMetricsInt", "()Landroid/graphics/Paint$FontMetricsInt;")
+    static let fontMetricsInt = Java.findClass("android/graphics/Paint$FontMetricsInt")
+    static let metricsTop = Java.field(fontMetricsInt, "top", "I")
+    static let metricsBottom = Java.field(fontMetricsInt, "bottom", "I")
+    static let metricsAscent = Java.field(fontMetricsInt, "ascent", "I")
+    static let metricsDescent = Java.field(fontMetricsInt, "descent", "I")
     static let setEllipsize = Java.method(textView, "setEllipsize", "(Landroid/text/TextUtils$TruncateAt;)V")
     static let setHorizontallyScrolling = Java.method(textView, "setHorizontallyScrolling", "(Z)V")
     static let setGravity = Java.method(textView, "setGravity", "(I)V")
@@ -217,7 +228,7 @@ enum JavaAPI {
     static let getIndeterminateTintList = Java.method(
         progressBar, "getIndeterminateTintList", "()Landroid/content/res/ColorStateList;")
     static let setMax = Java.method(progressBar, "setMax", "(I)V")
-    static let setProgress = Java.method(progressBar, "setProgress", "(I)V")
+    static let setProgress = Java.method(progressBar, "setProgress", "(IZ)V")
     static let getProgress = Java.method(progressBar, "getProgress", "()I")
     static let setProgressTintList = Java.method(
         progressBar, "setProgressTintList", "(Landroid/content/res/ColorStateList;)V")

@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 /// A greeting over a field, as HelloWorld's page has it.

@@ -74,10 +74,35 @@ final class AndroidTextFieldView: AndroidTextView {
         Java.call(reference, JavaAPI.setImeOptions, .int(action))
     }
 
-    /// Whether an editor grows as its words do: one that does not is one line tall where nothing gives it
-    /// room, and scrolls within the room it is given.
+    /// Whether an editor grows as its words do: one that does not is exactly a line tall where nothing gives it
+    /// room, whatever its words, and scrolls within the room it is given.
     func setGrows(_ grows: Bool) {
+        self.grows = grows
         Java.call(reference, JavaAPI.setMaxLines, .int(grows ? Int32.max : 1))
+    }
+
+    /// Whether the editor grows as its words do.
+    private var grows = true
+
+    /// An editor that does not grow stands a line tall - a line laid out alone, whatever its words hold - where
+    /// the tree states no height: Android's layout gives the first of several lines less than a line alone.
+    /// Design: docs/design/platforms/android/controls.md#an-editor-a-line-tall
+    override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
+        let measured = super.measure(width: width, height: height)
+        guard kind == .editor, !grows, ViewConstants.mode(height) != ViewConstants.exactly else { return measured }
+
+        let line = Java.frame { () -> Int32 in
+            guard let paint = Java.callObject(reference, JavaAPI.getPaint),
+                  let metrics = Java.callObject(paint, JavaAPI.getFontMetricsInt)
+            else { return 0 }
+            return Java.callBool(reference, JavaAPI.getIncludeFontPadding)
+                ? Java.int(metrics, JavaAPI.metricsBottom) - Java.int(metrics, JavaAPI.metricsTop)
+                : Java.int(metrics, JavaAPI.metricsDescent) - Java.int(metrics, JavaAPI.metricsAscent)
+        }
+        let tall = line + Java.callInt(reference, JavaAPI.getCompoundPaddingTop)
+            + Java.callInt(reference, JavaAPI.getCompoundPaddingBottom)
+        let bounded = ViewConstants.mode(height) == ViewConstants.atMost ? min(tall, ViewConstants.size(height)) : tall
+        return (measured.width, bounded)
     }
 
     /// Writes the words where they differ from the field's, with the caret after them.

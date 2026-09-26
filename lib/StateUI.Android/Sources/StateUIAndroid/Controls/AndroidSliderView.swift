@@ -39,17 +39,15 @@ final class AndroidSliderView: AndroidView {
         minimum + Double(progress) / Double(Self.steps) * (maximum - minimum)
     }
 
-    /// The range, then the value: `value` where `writeValue`, else the one the thumb stands at, kept inside the range.
-    func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double) {
-        let kept = writeValue ? value ?? self.value : self.value
-        self.minimum = Swift.min(minimum, maximum)
-        self.maximum = Swift.max(minimum, maximum)
+    /// The range, then the value, kept inside the range.
+    func apply(value: Double, minimum: Double, maximum: Double) {
+        (self.minimum, self.maximum) = ValueArithmetic.range(minimum, maximum)
 
         let span = self.maximum - self.minimum
-        let clamped = Swift.min(Swift.max(kept, self.minimum), self.maximum)
+        let clamped = Swift.min(Swift.max(value, self.minimum), self.maximum)
         let progress = span > 0 ? Int32(((clamped - self.minimum) / span * Double(Self.steps)).rounded()) : 0
         if progress != Java.callInt(reference, JavaAPI.getProgress) {
-            Java.call(reference, JavaAPI.setProgress, .int(progress))
+            Java.call(reference, JavaAPI.setProgress, .int(progress), .bool(false))
         }
     }
 

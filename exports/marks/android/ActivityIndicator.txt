@@ -1,0 +1,3 @@
+ActivityIndicator: ✅
+ActivityIndicator.isRunning: ✅
+Button.clicked: ✅

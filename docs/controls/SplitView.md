@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of SplitView - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of SplitView - Android's driver has no path for it yet |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet |
-| `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of SplitView - AppKit's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet |
+| `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read title of SplitView - Android's driver has no path for it yet |

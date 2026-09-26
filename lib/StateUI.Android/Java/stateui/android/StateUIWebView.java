@@ -32,10 +32,14 @@ final class StateUIWebView extends FrameLayout {
 
     private final long view;
     private WebView web;
+    /** What hears the page take the keyboard and lose it; none before anything listens. */
+    private OnFocusChangeListener focusListener;
     private String userAgent;
 
     /** Why the next navigation happens, and how the one under way failed - none yet. */
     private int cause = NEW_PAGE;
+    /** Why the navigation under way began. */
+    private int navigating = NEW_PAGE;
     private int failure;
 
     StateUIWebView(Context context, long view) {
@@ -51,6 +55,7 @@ final class StateUIWebView extends FrameLayout {
         settings.setDomStorageEnabled(true);
         if (userAgent != null) settings.setUserAgentString(userAgent);
         web.setWebViewClient(new Client());
+        web.setOnFocusChangeListener(focusListener);
         addView(web, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
@@ -69,6 +74,16 @@ final class StateUIWebView extends FrameLayout {
         setUserAgent(agent);
         cause = NEW_PAGE;
         web.loadDataWithBaseURL(base, document, "text/html", "UTF-8", null);
+    }
+
+    /**
+     * The page takes the keyboard, not the frame holding it: what hears the frame's focus hears the page's, and the
+     * page made again after its process died.
+     */
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener listener) {
+        focusListener = listener;
+        web.setOnFocusChangeListener(listener);
     }
 
     /** What the view calls itself to a server from the next page on; none for the platform's own. */
@@ -119,9 +134,15 @@ final class StateUIWebView extends FrameLayout {
 
     // What the client hears, said to the Swift view.
 
+    /**
+     * A navigation starts: it takes the cause asked for - a navigation the page makes itself is a new page - and keeps
+     * it to its end, whatever is asked for meanwhile.
+     */
     void started(String address) {
         failure = 0;
-        StateUIHost.webNavigating(view, cause, address);
+        navigating = cause;
+        cause = NEW_PAGE;
+        StateUIHost.webNavigating(view, navigating, address);
     }
 
     void failed(int error) {
@@ -129,8 +150,7 @@ final class StateUIWebView extends FrameLayout {
     }
 
     void finished(String address) {
-        StateUIHost.webNavigated(view, failure == 0 ? SUCCESS : failure, cause, address);
-        cause = NEW_PAGE;
+        StateUIHost.webNavigated(view, failure == 0 ? SUCCESS : failure, navigating, address);
         historyChanged();
     }
 

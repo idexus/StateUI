@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 /// Three layers told apart by their widths: red 10, blue 20, green 30. A button raises blue by a described

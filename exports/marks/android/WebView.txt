@@ -1,0 +1,13 @@
+Button.clicked: ✅
+WebView: cannot read source of WebView - Android's driver has no path for it yet
+WebView.canGoBackChanged: ✅
+WebView.canGoForwardChanged: ✅
+WebView.evaluateJavaScript: ✅
+WebView.goBack: ✅
+WebView.goForward: ✅
+WebView.navigated: ✅
+WebView.navigating: ✅
+WebView.processTerminated: cannot endContent on WebView - Android's driver has no path for it yet
+WebView.reload: ✅
+WebView.source: cannot read source of WebView - Android's driver has no path for it yet
+WebView.userAgent: cannot read userAgent of WebView - Android's driver has no path for it yet

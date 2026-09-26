@@ -44,7 +44,8 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
 
     @Override
     public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
-        StateUIHost.moved(view, progress);
+        // Only the user's move: a progress the program sets - which some devices animate, telling it later - is not.
+        if (fromUser) StateUIHost.moved(view, progress);
     }
 
     @Override

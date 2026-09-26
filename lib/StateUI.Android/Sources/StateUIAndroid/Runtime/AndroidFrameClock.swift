@@ -32,14 +32,19 @@ final class AndroidFrameClock: FrameClock {
         Java.callStaticObject(JavaAPI.choreographer, JavaAPI.choreographerInstance)!)
     private static let callback = Java.new(JavaAPI.frameCallback, JavaAPI.newFrameCallback)
 
-    /// A clock telling `now`'s time: the monotonic clock's, or a test's hand-wound one.
-    init(now: @escaping () -> Double = AndroidFrameClock.monotonic) {
+    /// Whether the display's frames come by the choreographer; a test's hand-wound clock gives its own.
+    private let ticksWithTheDisplay: Bool
+
+    /// A clock telling `now`'s time - the monotonic clock's, or a test's hand-wound one - its frames the display's
+    /// where `ticksWithTheDisplay`.
+    init(now: @escaping () -> Double = AndroidFrameClock.monotonic, ticksWithTheDisplay: Bool = true) {
         self.now = now
+        self.ticksWithTheDisplay = ticksWithTheDisplay
         Self.current = self
     }
 
     private func post() {
-        guard !posted else { return }
+        guard ticksWithTheDisplay, !posted else { return }
 
         posted = true
         Java.call(Self.choreographer.reference, JavaAPI.postFrameCallback, .object(Self.callback.reference))

@@ -79,17 +79,22 @@
                 let web = Aim(WebView.self)
                 let second = State(wrappedValue: false)
                 let heard = Received<String>()
+                let arrived = Received<Bool>()
                 s.start {
                     VStack {
                         WebView().source(html: Self.page(second.wrappedValue ? "Second" : "First")).aim(web)
                             .onEvent(WebViewContract.canGoBackChanged) { heard.values.append("back \($0)") }
                             .onEvent(WebViewContract.canGoForwardChanged) { heard.values.append("forward \($0)") }
+                            .onNavigated { _ in arrived.values.append(true) }
                             .height(200).id("web")
                         Button("Second").onClicked { second.wrappedValue = true }.id("second")
                         Button("Back").onClicked { try await web.goBack() }.id("back")
                         Button("Forward").onClicked { try await web.goForward() }.id("forward")
                     }
                 }
+                // A page arrives before the next is asked for: one asked for while the first still loads takes its
+                // place, as in any browser, and leaves no way back to it.
+                s.settle { !arrived.values.isEmpty }
 
                 try s.perform(.activate, on: s.element("second"))
                 s.settle { heard.values.contains("back true") }

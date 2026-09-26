@@ -7,7 +7,12 @@
     <application
         android:label="StateUI Android host tests"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <!-- The window the conformance families show their pages in, as an application's activity does. -->
+        <activity
+            android:name="stateui.android.test.TestActivity"
+            android:exported="false" />
+    </application>
 
     <instrumentation
         android:name="stateui.android.test.StateUITestRunner"

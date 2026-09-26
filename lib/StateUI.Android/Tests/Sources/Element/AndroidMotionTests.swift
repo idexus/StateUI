@@ -4,6 +4,7 @@
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 final class AndroidMotionTests: XCTestCase {

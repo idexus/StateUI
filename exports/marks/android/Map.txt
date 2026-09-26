@@ -1,0 +1,9 @@
+Map: not realized
+Map.isScrollEnabled: not realized
+Map.isTrafficEnabled: not realized
+Map.isZoomEnabled: not realized
+Map.mapClicked: not realized
+Map.mapType: not realized
+Map.moveToRegion: not realized
+Map.region: not realized
+Map.showsUserLocation: not realized

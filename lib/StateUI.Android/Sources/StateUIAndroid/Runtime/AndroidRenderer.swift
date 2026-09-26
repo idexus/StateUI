@@ -105,7 +105,7 @@ final class AndroidRenderer {
         self.context = context
         self.root = root
         self.density = density
-        let frameClock = clock.map { AndroidFrameClock(now: $0) } ?? AndroidFrameClock()
+        let frameClock = clock.map { AndroidFrameClock(now: $0, ticksWithTheDisplay: false) } ?? AndroidFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
         stateChannels = StateChannels(animator: animator)

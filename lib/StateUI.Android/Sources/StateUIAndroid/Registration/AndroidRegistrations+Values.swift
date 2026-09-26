@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// A Slider: one number the user moves inside its range. The value is written only where
-    /// the tree changed it, so a hand on the thumb is never argued with.
+    /// A slider and a stepper: one number the user moves inside its range, written as the host layer decides
+    /// (`ElementValues.written`).
     static func values(_ registry: Registry<AndroidView>) {
         registry.add(SliderContract.self, create: { reports in
             let slider = AndroidSliderView()
@@ -18,10 +18,10 @@ extension AndroidRegistrations {
             return slider
         }, members: { slider in
             slider.applies([SliderContract.value, SliderContract.minimum, SliderContract.maximum]) { view, values in
-                let moved = values[SliderContract.value]
                 view.apply(
-                    value: moved,
-                    writeValue: values.changed(SliderContract.value) && moved != nil,
+                    value: values.written(
+                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        standing: view.value),
                     minimum: values[SliderContract.minimum] ?? 0,
                     maximum: values[SliderContract.maximum] ?? 1)
             }
@@ -44,8 +44,9 @@ extension AndroidRegistrations {
                 StepperContract.step, VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
-                    value: values[StepperContract.value],
-                    writeValue: values.changed(StepperContract.value),
+                    value: values.written(
+                        StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum],
+                        standing: view.value),
                     minimum: values[StepperContract.minimum] ?? 0,
                     maximum: values[StepperContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,

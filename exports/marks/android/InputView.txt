@@ -1,0 +1,34 @@
+Button.clicked: ✅
+SearchField.cursorPosition: cannot read cursorPosition of SearchField - Android's driver has no path for it yet
+SearchField.inputPurpose: not realized
+SearchField.isReadOnly: not realized
+SearchField.isSpellCheckEnabled: not realized
+SearchField.isTextPredictionEnabled: not realized
+SearchField.maximumLength: ✅
+SearchField.placeholder: cannot read placeholder of SearchField - Android's driver has no path for it yet
+SearchField.placeholderColor: cannot read placeholderColor of SearchField - Android's driver has no path for it yet
+SearchField.selectionLength: cannot read selectionLength of SearchField - Android's driver has no path for it yet
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: cannot read cursorPosition of TextEditor - Android's driver has no path for it yet
+TextEditor.inputPurpose: not realized
+TextEditor.isReadOnly: not realized
+TextEditor.isSpellCheckEnabled: not realized
+TextEditor.isTextPredictionEnabled: not realized
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: cannot read placeholder of TextEditor - Android's driver has no path for it yet
+TextEditor.placeholderColor: cannot read placeholderColor of TextEditor - Android's driver has no path for it yet
+TextEditor.selectionLength: cannot read selectionLength of TextEditor - Android's driver has no path for it yet
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: cannot read cursorPosition of TextField - Android's driver has no path for it yet
+TextField.inputPurpose: not realized
+TextField.isReadOnly: not realized
+TextField.isSpellCheckEnabled: not realized
+TextField.isTextPredictionEnabled: not realized
+TextField.maximumLength: ✅
+TextField.placeholder: cannot read placeholder of TextField - Android's driver has no path for it yet
+TextField.placeholderColor: cannot read placeholderColor of TextField - Android's driver has no path for it yet
+TextField.selectionLength: cannot read selectionLength of TextField - Android's driver has no path for it yet
+TextField.text: ✅
+TextField.textChanged: ✅

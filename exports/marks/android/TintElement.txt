@@ -1,0 +1,8 @@
+ActivityIndicator.tint: cannot read tint of ActivityIndicator - Android's driver has no path for it yet
+Button.clicked: cannot read tint of ActivityIndicator - Android's driver has no path for it yet
+CheckBox.tint: cannot read tint of CheckBox - Android's driver has no path for it yet
+Picker.tint: cannot read tint of Picker - Android's driver has no path for it yet
+ProgressBar.tint: cannot read tint of ProgressBar - Android's driver has no path for it yet
+SearchField.tint: not realized
+Slider.tint: cannot read tint of Slider - Android's driver has no path for it yet
+Switch.tint: not realized

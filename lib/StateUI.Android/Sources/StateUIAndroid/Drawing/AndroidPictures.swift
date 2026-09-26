@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// The application's pictures, read from its APK's `images` assets at the pixels the views showing
@@ -56,8 +57,8 @@ enum AndroidPictures {
 
     /// `name`'s size in pixels at the display's density; nil where the application has no such picture.
     ///
-    /// An SVG, asked for by its `.png` name, is drawn three times over when the application is built,
-    /// as `<name>@3x.png`; a file of the name itself is kept at one pixel a point.
+    /// An SVG - asked for by its own name, or by its `.png` name where no such file stands - is drawn three times over
+    /// when the application is built, as `<name>@3x.png`; a file of the name itself is kept at one pixel a point.
     static func size(named name: String) -> (width: Int32, height: Int32)? {
         asset(named: name)?.size
     }
@@ -102,11 +103,14 @@ enum AndroidPictures {
     private static func asset(named name: String) -> Asset? {
         if let asset = assets[name] { return asset }
 
-        let base = name.hasSuffix(".png") ? String(name.dropLast(4)) : name
-        let found: (path: String, density: Int32)? =
-            if files.contains("\(base)@3x.png") { ("images/\(base)@3x.png", threeTimes) }
-            else if files.contains(name) { ("images/\(name)", once) }
-            else { nil }
+        // The name's own file, else its drawing - an SVG, drawn three times over when the application is built.
+        let found: (path: String, density: Int32)? = PictureArithmetic.files(for: name).lazy.compactMap { file in
+            if file.lowercased().hasSuffix(".svg") {
+                let drawn = "\(file.dropLast(4))@3x.png"
+                return files.contains(drawn) ? ("images/\(drawn)", threeTimes) : nil
+            }
+            return files.contains(file) ? ("images/\(file)", once) : nil
+        }.first
         let asset = found.flatMap { found in
             bounds(found.path).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }
         }

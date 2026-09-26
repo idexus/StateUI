@@ -1,0 +1,3 @@
+Button.clicked: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet
+NavigationStack.barBackgroundColor: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet
+TabbedView.barBackgroundColor: not realized

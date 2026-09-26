@@ -6,36 +6,16 @@ import CStateUIAndroid
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIAndroid
+import StateUIConformance
 import XCTest
 
 /// The context every test's views are made in: the test APK's application.
 @MainActor
 enum TestContext {
     static var context: JavaObject!
-}
 
-/// The smallest complete application around one page: one scene, one window.
-struct OneWindowApplication: Application {
-    let page: @Sendable () -> any Page
-
-    var scene: any Scene { OneWindow(content: page) }
-}
-
-/// The window of a `OneWindowApplication`, its page built again each time the window is.
-struct OneWindow: Window {
-    let content: @Sendable () -> any Page
-
-    var page: any Page { content() }
-}
-
-/// What a handler heard, in order.
-final class Received<Value>: Sendable {
-    private let received = State(wrappedValue: [Value]())
-
-    var values: [Value] {
-        get { received.wrappedValue }
-        set { received.wrappedValue = newValue }
-    }
+    /// The activity whose window the conformance families show their pages in.
+    static var window: JavaObject!
 }
 
 extension XCTestCase {
@@ -140,12 +120,6 @@ enum TestJava {
     static func root() -> JavaObject {
         Java.new(frameLayout, newFrameLayout, .object(TestContext.context.reference))
     }
-}
-
-/// A clock a test winds by hand, in milliseconds.
-@MainActor
-final class TestClock {
-    var now = 0.0
 }
 
 extension AndroidRenderer {
@@ -383,5 +357,36 @@ enum TestPictures {
     /// `points` density-independent pixels, in this device's pixels.
     static func pixels(_ points: Float) -> Int {
         Int(Java.callStaticInt(owner, inPixels, .object(TestContext.context.reference), .float(points)))
+    }
+}
+
+/// The files the suite writes into the test APK's own files directory, which `test-android.sh` reads by `run-as`.
+@MainActor
+enum TestFiles {
+    /// The test APK's files directory.
+    static var directory: String? {
+        Java.frame {
+            guard let files = Java.callObject(TestContext.context.reference, TestJava.getFilesDir) else { return nil }
+            return Java.text(Java.callObject(files, TestJava.getAbsolutePath))
+        }
+    }
+
+    /// Writes `text` whole to `path` under the files directory, making its folders.
+    static func write(_ text: String, to path: String) throws {
+        guard let directory else { throw Unwritable(path: path) }
+        var folder = directory
+        for part in path.split(separator: "/").dropLast() {
+            folder += "/\(part)"
+            mkdir(folder, 0o755)
+        }
+        let target = "\(directory)/\(path)"
+        guard let file = fopen(target, "wb") else { throw Unwritable(path: target) }
+        defer { fclose(file) }
+        let bytes = Array(text.utf8)
+        guard fwrite(bytes, 1, bytes.count, file) == bytes.count else { throw Unwritable(path: target) }
+    }
+
+    private struct Unwritable: Error {
+        let path: String
     }
 }

@@ -16,12 +16,27 @@ final class AndroidActPerformer {
     private let context: JavaObject
     private let root: JavaObject
 
-    /// The acts not answered yet - a question, a script - by ticket.
-    private var waiting: [Int64: HostActCall] = [:]
+    /// What the dialogs ask, one showing at a time; each answers under its ticket.
+    private let questions = QuestionQueue<Asked>()
 
-    /// The next ticket: one number across every renderer of the process, so an answer that comes after its
-    /// renderer is gone answers nothing of another's.
-    private(set) static var nextTicket: Int64 = 1
+    /// A question the application asked, and the ticket its answer comes back under.
+    private final class Asked {
+        let call: HostActCall
+        let question: HostQuestion
+        var ticket: Int64 = 0
+
+        init(call: HostActCall, question: HostQuestion) {
+            self.call = call
+            self.question = question
+        }
+    }
+
+    /// The scripts not answered yet, by ticket.
+    private var scripts: [Int64: HostActCall] = [:]
+
+    /// The next script's ticket: one number across every renderer of the process, below zero so it is never a
+    /// question's, whose tickets count up from one.
+    private(set) static var nextScriptTicket: Int64 = -1
 
     init(core: CoreLink, context: JavaObject, root: JavaObject) {
         self.core = core
@@ -39,9 +54,13 @@ final class AndroidActPerformer {
             let zone = Java.frame { Java.text(Java.callStaticObject(JavaAPI.environment, JavaAPI.zone)) }
             reply(call, [.string(zone)])
         case .utcOffset:
-            reply(call, [.number(Double(utcOffset(call)))])
+            utcOffset(call)
         case .alert, .confirm, .chooseAction, .prompt:
-            ask(call)
+            guard let question = HostQuestion(call) else { return }
+            let asked = Asked(call: call, question: question)
+            let (ticket, showsNow) = questions.ask(asked)
+            asked.ticket = ticket
+            if showsNow { show(asked) }
         case .announce:
             Java.frame {
                 Java.call(root.reference, JavaAPI.announceForAccessibility, .object(Java.string(call.arguments.first?.string ?? "")))
@@ -64,54 +83,48 @@ final class AndroidActPerformer {
         }
     }
 
-    /// The act under `ticket` was answered: a dialog accepted or not, and the words chosen or typed; a script's
-    /// value as text.
+    /// The act under `ticket` was answered: a dialog accepted or not, and the words chosen or typed - the next
+    /// question showing then - or a script's value as text.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        guard let call = waiting.removeValue(forKey: ticket) else { return }
+        if let call = scripts.removeValue(forKey: ticket) { return reply(call, [words.propValue]) }
+        guard let (asked, next) = questions.answered(ticket) else { return }
 
-        switch call.act {
-        case .confirm: reply(call, [.bool(accepted)])
-        case .chooseAction, .prompt: reply(call, [(accepted ? words : nil).propValue])
-        case .evaluateJavaScript: reply(call, [words.propValue])
-        default: reply(call, [])
-        }
+        reply(asked.call, asked.question.answer(accepted: accepted, words: words))
+        if let next { show(next) }
     }
 
-    /// Puts a question to the user in the platform's own dialog; its answer comes back by ticket.
-    private func ask(_ call: HostActCall) {
-        let ticket = wait(call)
-        let arguments = call.arguments
-
-        func text(_ index: Int) -> String? { arguments.value(index)?.string }
+    /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
+    /// Design: docs/design/platforms/android/runtime.md#acts
+    private func show(_ asked: Asked) {
+        let question = asked.question
+        let ticket = asked.ticket
         Java.frame {
             let context = context.reference
-            switch call.act {
+            switch question.kind {
             case .alert:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.alert, .object(context), .long(ticket),
-                    .object(Java.string(text(0) ?? "")), .object(Java.string(text(1) ?? "")),
-                    .object(Java.string(text(2) ?? "OK")))
+                    .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
+                    .object(Java.string(question.accept)))
             case .confirm:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.confirm, .object(context), .long(ticket),
-                    .object(Java.string(text(0) ?? "")), .object(Java.string(text(1) ?? "")),
-                    .object(Java.string(text(2) ?? "OK")), .object(Java.string(text(3) ?? "Cancel")))
+                    .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")))
             case .chooseAction:
-                let choices = arguments.value(3).flatMap { [String](propValue: $0) } ?? []
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
-                    .object(Java.string(text(0) ?? "")), .object(text(1).flatMap(Java.string)),
-                    .object(text(2).flatMap(Java.string)),
-                    .object(Java.array(of: JavaAPI.string, choices.map(Java.string))))
-            default:
-                let purpose = arguments.value(6).flatMap { InputPurpose(propValue: $0) } ?? .default
+                    .object(Java.string(question.title ?? "")), .object(question.cancel.flatMap(Java.string)),
+                    .object(question.destruction.flatMap(Java.string)),
+                    .object(Java.array(of: JavaAPI.string, question.choices.map(Java.string))))
+            case .prompt:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
-                    .object(Java.string(text(0) ?? "")), .object(Java.string(text(1) ?? "")),
-                    .object(Java.string(text(2) ?? "OK")), .object(Java.string(text(3) ?? "Cancel")),
-                    .object(text(4).flatMap(Java.string)),
-                    .int(Int32(arguments.value(5)?.number ?? -1)), .int(Self.inputType(purpose)),
-                    .object(Java.string(text(7) ?? "")))
+                    .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
+                    .object(Java.string(question.accept)), .object(Java.string(question.cancel ?? "Cancel")),
+                    .object(question.placeholder.flatMap(Java.string)),
+                    .int(Int32(question.maximumLength ?? -1)), .int(Self.inputType(question.purpose)),
+                    .object(Java.string(question.words)))
             }
         }
     }
@@ -130,15 +143,17 @@ final class AndroidActPerformer {
         }
     }
 
-    /// How far a zone is from UTC on a day, in minutes, as the platform says.
-    private func utcOffset(_ call: HostActCall) -> Int32 {
-        let zone = call.arguments.value(0)?.string
-        let day = call.arguments.value(1).flatMap { CalendarDate(propValue: $0) }
-        return Java.frame {
+    /// How far a zone is from UTC on a day, in minutes, as the platform says; a zone it does not know fails the act.
+    private func utcOffset(_ call: HostActCall) {
+        let (zone, day) = HostActs.utcOffsetQuestion(call)
+        let minutes = Java.frame {
             Java.callStaticInt(
                 JavaAPI.environment, JavaAPI.utcOffset, .object(zone.flatMap(Java.string)),
                 .int(Int32(day?.year ?? 0)), .int(Int32(day?.month ?? 0)), .int(Int32(day?.day ?? 0)))
         }
+        guard minutes != Int32.min else { return fail(call, HostActs.unknownZone(zone).reason) }
+
+        reply(call, HostActs.utcOffset(minutes: Int(minutes)))
     }
 
     /// Puts the focus on the view the act names, or takes it off; `focus` answers whether the view took it.
@@ -158,7 +173,7 @@ final class AndroidActPerformer {
         case .goBack: web.goBack()
         case .goForward: web.goForward()
         case .reload: web.reload()
-        default: return web.evaluate(call.arguments.value(1)?.string ?? "", ticket: wait(call))
+        default: return web.evaluate(call.arguments.value(1)?.string ?? "", ticket: waitForScript(call))
         }
         reply(call, [])
     }
@@ -181,11 +196,11 @@ final class AndroidActPerformer {
         return view
     }
 
-    /// Keeps `call` waiting for its answer, under the ticket this answers.
-    private func wait(_ call: HostActCall) -> Int64 {
-        let ticket = Self.nextTicket
-        Self.nextTicket += 1
-        waiting[ticket] = call
+    /// Keeps a script's `call` waiting for its answer, under the ticket this answers.
+    private func waitForScript(_ call: HostActCall) -> Int64 {
+        let ticket = Self.nextScriptTicket
+        Self.nextScriptTicket -= 1
+        scripts[ticket] = call
         return ticket
     }
 

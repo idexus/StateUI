@@ -1,0 +1,2 @@
+Ellipse: cannot read the colour of Ellipse - Android's driver has no path for it yet
+Ellipse.fill: cannot read the colour of Ellipse - Android's driver has no path for it yet

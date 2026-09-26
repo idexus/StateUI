@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/PolygonContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fillRule` | property | `FillRule` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet |
-| `points` | property | `[Point]` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet |
+| `fillRule` | property | `FillRule` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Polygon - Android's driver has no path for it yet |
+| `points` | property | `[Point]` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Polygon - Android's driver has no path for it yet |
 
 Realization:
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of Polygon - AppKit's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of Polygon - Android's driver has no path for it yet |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -42,38 +42,38 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Polygon - AppKit's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityHint of Polygon - AppKit's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Polygon - AppKit's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Polygon - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Polygon - AppKit's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
-| `frame` | property | `Rect` | structure | ✅ |  |  |  | ✅ |  |  |
-| `height` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityHeadingLevel of Polygon - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityHint of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityHint of Polygon - Android's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of Polygon - Android's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of Polygon - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read background of Polygon - Android's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
+| `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches Polygon - AppKit's driver has no path for it yet |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Polygon - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of Polygon - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
+| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotX of Polygon - AppKit's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotY of Polygon - AppKit's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read rotation of Polygon - AppKit's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationX of Polygon - AppKit's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationY of Polygon - AppKit's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scale of Polygon - AppKit's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleX of Polygon - AppKit's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleY of Polygon - AppKit's driver has no path for it yet |
+| `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotX of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read pivotX of Polygon - Android's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotY of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read pivotY of Polygon - Android's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read rotation of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read rotation of Polygon - Android's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationX of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read rotationX of Polygon - Android's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationY of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read rotationY of Polygon - Android's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scale of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read scale of Polygon - Android's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleX of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read scaleX of Polygon - Android's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleY of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read scaleY of Polygon - Android's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Polygon - AppKit's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Polygon - AppKit's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
-| `width` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read translationX of Polygon - Android's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read translationY of Polygon - Android's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Polygon - AppKit's driver has no path for it yet |
+| `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
@@ -83,7 +83,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure | ✅ |  |  |  | ✅ |  |  |
+| `area` | property | `Area` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -91,29 +91,29 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `margin` | property | `Insets` | native | ✅ |  | ✅ |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on Polygon - AppKit's driver has no path for it yet |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on Polygon - AppKit's driver has no path for it yet |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on Polygon - AppKit's driver has no path for it yet |
-| `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pinch on Polygon - Android's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet; Android Views: cannot hover on Polygon - Android's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet; Android Views: cannot hover on Polygon - Android's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet; Android Views: cannot hover on Polygon - Android's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet; Android Views: cannot hover on Polygon - Android's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Polygon - AppKit's driver has no path for it yet; Android Views: cannot hover on Polygon - Android's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on Polygon - AppKit's driver has no path for it yet; Android Views: cannot pan on Polygon - Android's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on Polygon - AppKit's driver has no path for it yet; Android Views: cannot tap on Polygon - Android's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on Polygon - AppKit's driver has no path for it yet; Android Views: cannot tap on Polygon - Android's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [Shape](tiers/Shape.md)
 
@@ -121,13 +121,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Polygon - AppKit's driver has no path for it yet |
-| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Polygon - AppKit's driver has no path for it yet |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Polygon - AppKit's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Polygon - AppKit's driver has no path for it yet |
-| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Polygon - AppKit's driver has no path for it yet |
-| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Polygon - AppKit's driver has no path for it yet |
-| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Polygon - AppKit's driver has no path for it yet |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Polygon - AppKit's driver has no path for it yet |
-| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Polygon - AppKit's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Polygon - AppKit's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read aspect of Polygon - Android's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read fill of Polygon - Android's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read renderTransform of Polygon - Android's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read stroke of Polygon - Android's driver has no path for it yet |
+| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Polygon - Android's driver has no path for it yet |
+| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Polygon - Android's driver has no path for it yet |
+| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Polygon - Android's driver has no path for it yet |
+| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Polygon - Android's driver has no path for it yet |
+| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Polygon - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Polygon - Android's driver has no path for it yet |

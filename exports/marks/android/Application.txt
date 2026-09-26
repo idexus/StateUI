@@ -1,0 +1,14 @@
+Application: ✅
+Application.alert: ✅
+Application.announce: cannot read what the screen reader said - Android's driver has no path for it yet
+Application.chooseAction: ✅
+Application.confirm: ✅
+Application.currentTime: ✅
+Application.currentTimeZone: ✅
+Application.handlerFailed: cannot read the log - Android's driver has no path for it yet
+Application.hideOnScreenKeyboard: cannot focus on TextField - Android's driver has no path for it yet
+Application.persistSceneValue: not realized
+Application.persistValue: cannot read what is kept - Android's driver has no path for it yet
+Application.prompt: ✅
+Application.utcOffset: ✅
+Button.clicked: ✅

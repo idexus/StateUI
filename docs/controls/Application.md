@@ -16,18 +16,18 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  |  |  |  |  | ✅ |  |  |
-| `announce` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  |  |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  |  | ✅ |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  |  | ✅ |  |  |
-| `currentTime` | act | `() -> [Double]` |  |  |  |  |  | ✅ |  |  |
-| `currentTimeZone` | act | `() -> String` |  |  |  |  |  | ✅ |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  | ✅ |  | cannot focus on TextField - AppKit's driver has no path for it yet |
+| `alert` | act | `(String, String, String) -> Void` |  |  |  |  | ✅ | ✅ |  |  |
+| `announce` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  | Android Views: cannot read what the screen reader said - Android's driver has no path for it yet |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  | ✅ | ✅ |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  | ✅ | ✅ |  |  |
+| `currentTime` | act | `() -> [Double]` |  |  |  |  | ✅ | ✅ |  |  |
+| `currentTimeZone` | act | `() -> String` |  |  |  |  | ✅ | ✅ |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  | Android Views: cannot read the log - Android's driver has no path for it yet |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  | ✅ |  | cannot focus on TextField - AppKit's driver has no path for it yet; Android Views: cannot focus on TextField - Android's driver has no path for it yet |
 | `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  | cannot read what is kept - AppKit's driver has no path for it yet |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  | cannot read what is kept - AppKit's driver has no path for it yet |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  | ✅ |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  |  | ✅ |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  | cannot read what is kept - AppKit's driver has no path for it yet; Android Views: cannot read what is kept - Android's driver has no path for it yet |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  | ✅ | ✅ |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  | ✅ | ✅ |  |  |
 
 Realization:
 
