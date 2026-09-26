@@ -1,4 +1,4 @@
-# The core's suite on Windows.
+# The core's suite on Windows, and the WinUI host's with the contract's families.
 #
 # Windows is the second machine this library is built on, which is what makes
 # the suite worth running here: it is the other machine whose file separators,
@@ -106,3 +106,61 @@ jobs:
       # about the code and not about the checkout.
       - name: Swift tests
         run: swift test
+
+  # The WinUI host's own tests, then the contract's families on WinUI, each test
+  # in a process of its own, every verdict held to exports/marks/winui: CI never
+  # writes the dictionary's marks, so a family whose verdicts changed fails here
+  # and its marks are written again on a Windows machine, on purpose.
+  winui:
+    name: WinUI
+    runs-on: windows-2025
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Visual Studio developer environment
+        uses: compnerd/gha-setup-vsdevenv@v7
+
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.4.0-release
+          swift-build: 6.4.0-RELEASE
+
+      # As in the tests job above: the toolchain found where the installer put it.
+      - name: Find and report the toolchain
+        run: |
+          $roots = @(
+            "$env:USERPROFILE\AppData\Local\Programs\Swift",
+            "$env:LOCALAPPDATA\Programs\Swift",
+            "$env:ProgramFiles\Swift",
+            "C:\Library"
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+          Write-Host "PATH says: $((Get-Command swift -ErrorAction SilentlyContinue).Source)"
+          Write-Host "Looking under: $($roots -join ', ')"
+
+          $swift = if ($roots) {
+            Get-ChildItem -Path $roots -Filter swift.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object { $_.FullName -notlike "*Toolchains*" } |
+              Select-Object -First 1
+          }
+
+          if (-not $swift) {
+            Write-Host "No swift.exe anywhere. What the install left behind:"
+            Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Programs", "$env:ProgramFiles" `
+                          -Depth 2 -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "  $($_.FullName)" }
+            throw "the install step left no toolchain"
+          }
+
+          Write-Host "swift.exe: $($swift.FullName)"
+          Add-Content -Path $env:GITHUB_PATH -Value $swift.Directory.FullName
+
+          & $swift.FullName --version
+
+      - name: WinUI host tests
+        run: .scripts/WinUI/test-winui.ps1
+
+      - name: WinUI conformance, every verdict held
+        run: .scripts/WinUI/test-winui.ps1 -Conformance

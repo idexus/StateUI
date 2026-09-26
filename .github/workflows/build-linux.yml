@@ -40,3 +40,8 @@ jobs:
 
       - name: Swift tests
         run: swift test
+
+      # The conformance runner's own rules and every contract's family complete,
+      # pure Swift: no host runs here, so no verdict is read or written.
+      - name: Conformance runner tests
+        run: swift test --package-path lib/StateUI/Tests/HostConformance
