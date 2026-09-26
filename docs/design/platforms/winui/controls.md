@@ -146,6 +146,19 @@ no children at all, its panel's automation peer holding them back. A control
 needs nothing more: what its template draws - a button's words - WinUI
 already keeps out of what is read.
 
+Assistive technology meets an element only through its automation peer, and
+WinUI gives a shape, a colour box and a canvas none: the words written on
+them reach nobody. A menu's item and a toolbar's are WinUI's own, and carry
+no identifier yet. The registry says so
+(`WinUIRegistrations.unmetByAssistiveTechnology`), so the dictionary shows
+those cells empty rather than promise what no screen reader hears; a peer of
+the host's own on each is what fills them. A control whose template holds
+parts with peers of their own - an activity indicator, a date picker, a
+search box, a slider, a stepper, a switch, a time picker, a field and an
+editor - left out with its children still offers its parts
+(`partsMetWhenLeftOut`); a peer that holds them back, as a layout's panel
+holds its children back, is what fills those cells.
+
 ## A slider in steps
 
 A `Slider` snaps its value to `StepFrequency`. The host sets the step to a

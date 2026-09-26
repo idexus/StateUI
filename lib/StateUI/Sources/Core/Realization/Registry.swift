@@ -34,7 +34,7 @@
 
     /// What the host's shared element machinery realizes on every element
     /// wearing the member's contract, rather than one registration.
-    private var everyElement: [(owner: any Contract.Type, member: String)] = []
+    private var everyElement: [(owner: any Contract.Type, member: String, except: Set<NodeType>)] = []
 
     /// An empty registry.
     public init() {}
@@ -142,9 +142,14 @@
     /// element wearing its contract - a view's opacity, its margins, its
     /// visibility - rather than one registration.
     ///
-    /// - Parameter member: the property, written with its contract.
-    public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
-        everyElement.append((owner: Owner.self, member: member.name))
+    /// - Parameters:
+    ///   - member: the property, written with its contract.
+    ///   - types: the elements the machinery does not reach, though they wear
+    ///     the contract.
+    public func everyElementRealizes<Owner: Contract, Value>(
+        _ member: ElementProperty<Owner, Value>, except types: Set<NodeType> = []
+    ) {
+        everyElement.append((owner: Owner.self, member: member.name, except: types))
     }
 
     /// An event the host's shared element machinery raises on every element
@@ -153,12 +158,13 @@
     ///
     /// - Parameter event: the event, written with its contract.
     public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        everyElement.append((owner: Owner.self, member: event.name))
+        everyElement.append((owner: Owner.self, member: event.name, except: []))
     }
 
-    /// The names of the members the shared machinery realizes and raises, as they were registered.
+    /// The names of the members the shared machinery realizes and raises on every wearer, as they were registered;
+    /// one it does not reach on some wearers is each reached element's own.
     public var sharedNames: [String] {
-        everyElement.map(\.member)
+        everyElement.filter(\.except.isEmpty).map(\.member)
     }
 
     /// An event of the application's - one no element raises - the host
@@ -226,7 +232,8 @@
         for (type, entry) in entries {
             members.formUnion(entry.members)
 
-            for shared in everyElement where entry.worn.contains(ObjectIdentifier(shared.owner)) {
+            for shared in everyElement
+            where entry.worn.contains(ObjectIdentifier(shared.owner)) && !shared.except.contains(type) {
                 members.insert(HostRealizedMember(element: type.name, owner: shared.owner.name, member: shared.member))
             }
         }

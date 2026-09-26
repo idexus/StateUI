@@ -32,7 +32,8 @@ enum WinUIRegistrations {
     /// on every element WinUI shows. A view is drawn moved, turned and scaled flat: WinUI turns it about no other
     /// axis.
     static func shared(_ registry: Registry<WinUIView>) {
-        registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementMeetsAssistiveTechnology(
+            except: unmetByAssistiveTechnology, partsMetOn: partsMetWhenLeftOut)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementTakesItsPlace()
@@ -47,4 +48,19 @@ enum WinUIRegistrations {
         registry.everyElementHearsTheUser()
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
+
+    /// The elements assistive technology meets nothing of: WinUI gives a shape, a colour box and a canvas no
+    /// automation peer, and a menu's or a toolbar's item carries no identifier.
+    /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
+    static let unmetByAssistiveTechnology: Set<NodeType> = [
+        .rectangle, .ellipse, .line, .path, .polygon, .polyline, .colorBox, .canvas, .menuItem, .toolbarItem,
+    ]
+
+    /// The controls whose parts WinUI's automation still offers when the control is left out with its children:
+    /// the parts of their templates with peers of their own - a thumb, a field, a button, a ring's animation.
+    /// Design: docs/design/platforms/winui/controls.md#what-assistive-technology-meets
+    static let partsMetWhenLeftOut: Set<NodeType> = [
+        .activityIndicator, .datePicker, .searchField, .slider, .stepper, .`switch`, .textEditor, .textField,
+        .timePicker,
+    ]
 }
