@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Window
 
@@ -16,9 +16,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  |  |  |  |  |
+| `activated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `created` | event |  | adaptive |  |  |  |  |  |  |  |
-| `deactivated` | event |  | adaptive |  |  |  |  |  |  |  |
+| `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `destroying` | event |  | adaptive |  |  |  |  |  |  |  |
 | `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `height` | property | `Double` | native |  |  |  |  |  |  |  |
@@ -30,9 +30,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `maximumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
 | `minimumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
 | `minimumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
-| `modalPopped` | event | `Int` | adaptive |  |  |  |  |  |  |  |
-| `resumed` | event |  | adaptive |  |  |  |  |  |  |  |
-| `stopped` | event |  | adaptive |  |  |  |  |  |  |  |
+| `modalPopped` | event | `Int` | adaptive |  |  |  |  | ✅ |  |  |
+| `resumed` | event |  | adaptive |  |  |  |  | ✅ |  |  |
+| `stopped` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `title` | property | `String` | native |  |  |  |  |  |  |  |
 | `width` | property | `Double` | native |  |  |  |  |  |  |  |
 | `windowType` | property | `WindowType` | structure |  |  |  |  |  |  |  |

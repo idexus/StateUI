@@ -13,9 +13,16 @@ import CStateUIGTK
 final class GTKDriver: HostDriver {
     let host = "GTK 4"
     let cannot: [String: String] = [:]
+
+    /// What the families ask of a driver that GTK's has no path for yet says so, and stays empty in GTK's column
+    /// with why, rather than failing: GTK's reads and acts are written on Linux (work-plan.md, ON LINUX).
+    func reason(cannot ability: String) -> String? {
+        cannot[ability] ?? "GTK's driver has no path for it yet"
+    }
+
     private var renderer: GTKRenderer?
 
-    var marks: HostMarks { GTKRealization.marks }
+    var register: HostRegister { GTKRealization.register }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         let renderer = GTKRenderer.running(clock: clock, reducesMotion: reducesMotion, page)

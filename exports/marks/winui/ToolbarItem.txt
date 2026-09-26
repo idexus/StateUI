@@ -1,0 +1,5 @@
+Button.clicked: ✅
+ToolbarItem: ✅
+ToolbarItem.clicked: ✅
+ToolbarItem.placement: ✅
+ToolbarItem.priority: ✅

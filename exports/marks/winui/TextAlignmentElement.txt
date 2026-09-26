@@ -1,0 +1,11 @@
+Button.clicked: ✅
+Label.horizontalTextAlignment: ✅
+Label.verticalTextAlignment: not realized
+Picker.horizontalTextAlignment: ✅
+Picker.verticalTextAlignment: not realized
+SearchField.horizontalTextAlignment: not realized
+SearchField.verticalTextAlignment: not realized
+TextEditor.horizontalTextAlignment: ✅
+TextEditor.verticalTextAlignment: not realized
+TextField.horizontalTextAlignment: ✅
+TextField.verticalTextAlignment: not realized

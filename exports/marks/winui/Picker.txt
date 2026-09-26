@@ -1,0 +1,10 @@
+Button.clicked: ✅
+Label.text: ✅
+Picker: ✅
+Picker.closed: ✅
+Picker.isOpen: ✅
+Picker.opened: ✅
+Picker.options: ✅
+Picker.selectedIndex: ✅
+Picker.selectedIndexChanged: ✅
+Picker.title: ✅

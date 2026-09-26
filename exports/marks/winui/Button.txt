@@ -1,0 +1,9 @@
+Button: ✅
+Button.clicked: ✅
+Button.icon: not realized
+Button.iconPosition: not realized
+Button.iconSpacing: not realized
+Button.lineBreak: not realized
+Button.pressed: ✅
+Button.released: ✅
+Label.text: ✅

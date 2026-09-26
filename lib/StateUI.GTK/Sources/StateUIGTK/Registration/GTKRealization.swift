@@ -18,7 +18,7 @@ enum GTKRealization {
     static let viewless: Set<String> = ["Span"]
 
     /// The entries GTK will not have; none.
-    static let notPlanned: Set<String> = []
+    static let notPlanned: [String: String] = [:]
 
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
@@ -59,7 +59,7 @@ enum GTKRealization {
     }
 
     /// What GTK realizes, member by member: these records before what its registry says.
-    @MainActor static var marks: HostMarks {
-        HostMarks(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
+    @MainActor static var register: HostRegister {
+        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
     }
 }

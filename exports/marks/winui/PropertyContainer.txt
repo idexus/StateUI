@@ -1,0 +1,40 @@
+ActivityIndicator.accessibilityIdentifier: ✅
+Button.accessibilityIdentifier: ✅
+Button.clicked: ✅
+Canvas.accessibilityIdentifier: not realized
+CheckBox.accessibilityIdentifier: ✅
+ColorBox.accessibilityIdentifier: not realized
+DatePicker.accessibilityIdentifier: ✅
+Ellipse.accessibilityIdentifier: not realized
+Grid.accessibilityIdentifier: ✅
+HStack.accessibilityIdentifier: ✅
+Image.accessibilityIdentifier: ✅
+Label.accessibilityIdentifier: ✅
+Line.accessibilityIdentifier: not realized
+Map.accessibilityIdentifier: not realized
+MenuItem.accessibilityIdentifier: not realized
+NavigationStack.accessibilityIdentifier: not realized
+Path.accessibilityIdentifier: not realized
+Picker.accessibilityIdentifier: ✅
+Polygon.accessibilityIdentifier: not realized
+Polyline.accessibilityIdentifier: not realized
+PositionIndicator.accessibilityIdentifier: not realized
+ProgressBar.accessibilityIdentifier: ✅
+RadioButton.accessibilityIdentifier: ✅
+Rectangle.accessibilityIdentifier: not realized
+ScrollView.accessibilityIdentifier: ✅
+SearchField.accessibilityIdentifier: ✅
+Slider.accessibilityIdentifier: ✅
+Span.accessibilityIdentifier: not realized
+SplitView.accessibilityIdentifier: not realized
+Stepper.accessibilityIdentifier: ✅
+Switch.accessibilityIdentifier: ✅
+TabbedView.accessibilityIdentifier: not realized
+TextEditor.accessibilityIdentifier: ✅
+TextField.accessibilityIdentifier: ✅
+TimePicker.accessibilityIdentifier: ✅
+TitleBar.accessibilityIdentifier: not realized
+ToolbarItem.accessibilityIdentifier: not realized
+VStack.accessibilityIdentifier: ✅
+WebView.accessibilityIdentifier: not realized
+ZStack.accessibilityIdentifier: ✅

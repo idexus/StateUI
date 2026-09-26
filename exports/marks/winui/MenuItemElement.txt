@@ -1,0 +1,11 @@
+Button.clicked: ✅
+MenuItem.clicked: ✅
+MenuItem.icon: not realized
+MenuItem.isDestructive: not realized
+MenuItem.isEnabled: ✅
+MenuItem.text: ✅
+ToolbarItem.clicked: ✅
+ToolbarItem.icon: not realized
+ToolbarItem.isDestructive: not realized
+ToolbarItem.isEnabled: ✅
+ToolbarItem.text: ✅

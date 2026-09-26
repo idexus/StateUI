@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Menu
 
@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `text` | property | `String` | native |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
+| `text` | property | `String` | native |  |  |  |  | ✅ |  |  |
 
 Realization:
 

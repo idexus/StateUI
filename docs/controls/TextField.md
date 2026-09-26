@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # TextField
 
@@ -19,7 +19,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 | `isPassword` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  |  |  |  |  |
 | `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `onSubmitted` (`submitted`) | event |  | native |  |  | ✅ |  |  |  |  |
+| `onSubmitted` (`submitted`) | event |  | native |  |  | ✅ |  |  |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
 
 Realization:
 
@@ -36,7 +36,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -44,18 +44,18 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  |  |  |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `background` | property | `Background` | native |  |  |  |  |  |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
-| `frame` | property | `Rect` | structure |  |  |  |  |  |  |  |
+| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
+| `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |
 | `height` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  |  |
 | `isVisible` | property | `Bool` | native |  |  | ✅ |  | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
@@ -63,18 +63,18 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `opacity` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `pivotY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `rotation` | property | `Double` | native |  |  |  |  |  |  |  |
+| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `rotationX` | property | `Double` | native |  |  |  |  |  |  |  |
 | `rotationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scale` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scaleX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scaleY` | property | `Double` | native |  |  |  |  |  |  |  |
+| `scale` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `translationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  |  |  |  |
+| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  |  |
 | `width` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
@@ -85,7 +85,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure |  |  |  |  |  |  |  |
+| `area` | property | `Area` | structure |  |  |  |  | ✅ |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -94,27 +94,27 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | ✅ |  | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
+| `gridColumn` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
 | `horizontalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
 | `margin` | property | `Insets` | native |  |  | ✅ |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  |  |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  |  |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  |  |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  |  |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  |  |
+| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  |  |
+| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  |  |
+| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  |  |
 | `verticalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
 
 ## From [InputView](tiers/InputView.md)
@@ -123,15 +123,15 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native |  |  |  |  |  |  |  |
-| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  |  |  |  |
-| `isReadOnly` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `cursorPosition` | property | `Int` | native |  |  |  |  | ✅ |  |  |
+| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  |  |
+| `isReadOnly` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
+| `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
 | `maximumLength` | property | `Int` | native |  |  | ✅ |  | ✅ |  |  |
-| `placeholder` | property | `String` | native |  |  |  |  |  |  |  |
-| `placeholderColor` | property | `Color` | native |  |  |  |  |  |  |  |
-| `selectionLength` | property | `Int` | native |  |  |  |  |  |  |  |
+| `placeholder` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `placeholderColor` | property | `Color` | native |  |  |  |  | ✅ |  |  |
+| `selectionLength` | property | `Int` | native |  |  |  |  | ✅ |  |  |
 | `onTextChanged` (`textChanged`) | event | `String` | native |  |  | ✅ |  | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
@@ -150,7 +150,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native |  |  |  |  |  |  |  |
+| `textColor` | property | `Color` | native |  |  |  |  | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -158,10 +158,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  |  |  |  |  |
+| `fontAttributes` | property | `FontAttributes` | native |  |  |  |  | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native |  |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native |  |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native |  |  |  |  | ✅ |  |  |
+| `fontSize` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -169,5 +169,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |
+| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  | ✅ |  |  |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |

@@ -5,23 +5,21 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The control dictionary - docs/controls - is the contracts and the hosts'
-/// declarations rendered, and the declarations are held to the contracts.
+/// The control dictionary - docs/controls - is the contracts and the verdicts of
+/// the hosts' test runs rendered, and the verdicts are held to the contracts.
 ///
 /// A page that differs from what `ControlDictionary` renders fails here, and so
 /// does a page no contract has, and an index or a platform contract whose
 /// tables are not the rendered ones. `STATEUI_UPDATE_DOCS=1` writes them all
 /// and removes a page whose contract is gone - then read the diff.
 ///
-/// The declarations are read where they are rendered, so they are held here:
-/// a record naming what no contract declares, a record written twice, a
-/// partial one that does not say what is missing, a not planned one that does
-/// not say why, and an unrealized, viewless or not planned name that is no
-/// element all fail.
+/// The verdicts are read where they are rendered, so they are held here: a
+/// line that is no verdict, and a verdict on what no contract of its element
+/// declares, fail.
 final class ControlDictionaryTests: XCTestCase {
     private static let folder = SourceTree.repository.appendingPathComponent("docs/controls")
 
-    private static let hint = "Record the realization in its host's declaration or change the contract, then run "
+    private static let hint = "Run the host's suite with STATEUI_UPDATE_EXPORTS=1, or change the contract, then run "
         + "STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests and read the diff."
 
     private static var updating: Bool {
@@ -117,123 +115,50 @@ final class ControlDictionaryTests: XCTestCase {
                        "the mapping names these, and no element is one")
     }
 
-    // MARK: - The declarations
+    // MARK: - The verdicts
 
-    /// Every record names a contract and a member that contract declares or
-    /// wears, and every unrealized, viewless or not planned name is an element.
-    func testEveryRecordNamesAMemberOfWhatItNames() throws {
-        let contracts = Dictionary(LibraryContracts.all.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
-        let elements = Set(LibraryContracts.elements.map { $0.name })
-        var wrong: [String] = []
-
-        for declaration in try ControlDictionary.declarations() {
-            XCTAssertGreaterThan(declaration.records.count, 100, "\(declaration.source): the scan read almost nothing")
-
-            for record in declaration.records {
-                guard let owner = contracts[record.owner] else {
-                    wrong.append("\(declaration.host): \(record.owner) is no contract")
-                    continue
-                }
-
-                if !owner.worn.contains(where: { tier in tier.members.contains { $0.name == record.member } }) {
-                    wrong.append("\(declaration.host): \(record.owner) declares and wears no \(record.member)")
-                }
-            }
-
-            let listed = declaration.unrealized.union(declaration.viewless).union(declaration.notPlanned)
-            for name in listed.sorted() where !elements.contains(name) {
-                wrong.append("\(declaration.host): \(name), unrealized, viewless or not planned, is no element")
-            }
-        }
-
-        XCTAssertEqual(wrong, [], "a declaration names what the contracts do not")
-    }
-
-    /// An element a host's export realizes is never one its records call unrealized: the list would hide it
-    /// from the dictionary.
-    func testNoHostCallsUnrealizedWhatItsExportRealizes() throws {
-        var wrong: [String] = []
-
-        for declaration in try ControlDictionary.declarations() {
-            let path = try XCTUnwrap(ControlDictionary.exports[declaration.host], declaration.host)
-            let realized = Set(try ControlDictionary.export(path).realization.elements)
-            for name in realized.intersection(declaration.unrealized).sorted() {
-                wrong.append("\(declaration.host): \(name), realized, is listed unrealized")
-            }
-            for name in realized.intersection(declaration.notPlanned).sorted() {
-                wrong.append("\(declaration.host): \(name), realized, is listed not planned")
-            }
-        }
-
-        XCTAssertEqual(wrong, [])
-    }
-
-    /// No host records one member of one contract twice.
-    /// A tier's mark promises every wearer: a member a host realizes on only some of its elements wearing the
-    /// tier declaring it is marked on those alone, and one it realizes on all of them on the tier.
-    func testAMemberRealizedOnSomeWearersIsMarkedOnThoseAlone() {
-        let declaration = HostDeclaration(elements: [
-            "Label": HostDeclaration.Element(members: ["text", "textCase"]),
-            "TextField": HostDeclaration.Element(members: ["text"]),
-        ])
-        let records = Set(HostMarks.records(of: declaration).map { "\($0.owner).\($0.member)" })
-
-        XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
-        XCTAssertTrue(records.contains("Label.textCase"), "\(records.sorted())")
-        XCTAssertFalse(records.contains("TextElement.textCase"), "\(records.sorted())")
-    }
-
-    /// Every member a host's run says its tests proved is one a contract declares on that element, itself or
-    /// through a tier it wears: a proof of nothing marks nothing.
-    func testEveryProofNamesAMemberOfItsElement() throws {
+    /// Every verdict a host's run wrote is about an element, or a member a contract declares on that element,
+    /// itself or through a tier it wears: a verdict on nothing marks nothing.
+    func testEveryVerdictNamesAMemberOfItsElement() throws {
         var read = 0
-        for host in ["appkit", "android", "winui", "gtk"] {
-            for proof in try ControlDictionary.proven(host).sorted() {
+        for (host, folder) in ControlDictionary.folders.sorted(by: { $0.key < $1.key }) {
+            for verdict in try ControlDictionary.verdicts(folder) {
                 read += 1
-                let parts = proof.split(separator: ".").map(String.init)
-                let element = LibraryContracts.elements.first { $0.nodeType.name == parts.first }
+                let element = LibraryContracts.elements.first { $0.nodeType.name == verdict.element }
                 let declared = element.map { element in
-                    ([element] + element.worn).contains { contract in contract.members.contains { $0.name == parts.last } }
+                    verdict.member.map { member in
+                        element.worn.contains { contract in contract.members.contains { $0.name == member } }
+                    } ?? true
                 } ?? false
-                if parts.count != 2 || !declared {
-                    XCTFail("exports/covered/\(host) proves \(proof), which no contract of that element declares")
+                if !declared {
+                    XCTFail("exports/marks/\(folder) says \(verdict), which no contract of that element declares (\(host))")
                 }
             }
         }
-        XCTAssertGreaterThan(read, 10, "the proofs read almost nothing")
+        XCTAssertGreaterThan(read, 10, "the verdicts read almost nothing")
     }
 
-    func testEveryRecordIsWrittenOnce() throws {
-        for declaration in try ControlDictionary.declarations() {
-            var seen: Set<String> = []
+    /// A mark is the run's alone: a cell a run gave no verdict, or one it said is not realized, is empty; one the
+    /// driver could not reach is empty and says why.
+    func testAMarkIsTheRunsVerdictAlone() {
+        let column = ControlDictionary.Column(host: "WinUI 3", verdicts: [
+            "Button": HostVerdict(element: "Button", member: nil, mark: .proven),
+            "Button.clicked": HostVerdict(element: "Button", member: "clicked", mark: .proven),
+            "Button.icon": HostVerdict(element: "Button", member: "icon", mark: .notRealized),
+            "TextField.submitted": HostVerdict(element: "TextField", member: "submitted", mark: .cannot("submit - Keys.")),
+            "Map": HostVerdict(element: "Map", member: nil, mark: .notPlanned(reason: "No maps.")),
+        ])
 
-            for record in declaration.records {
-                if !seen.insert("\(record.owner).\(record.member)").inserted {
-                    XCTFail("\(declaration.source) records \(record.member) on \(record.owner) twice")
-                }
-            }
-        }
-    }
-
-    /// A member realized in part says what is missing: a ☑️ nobody can check
-    /// is no mark at all.
-    func testAPartialRecordSaysWhatIsMissing() throws {
-        for declaration in try ControlDictionary.declarations() {
-            for record in declaration.records where record.judgement == .partial(missing: "") {
-                XCTFail("\(declaration.source) records \(record.member) on \(record.owner) in part, "
-                    + "and does not say what is missing")
-            }
-        }
-    }
-
-    /// A member not planned for a host's family says why: a – nobody can question is a gap hidden.
-    func testANotPlannedRecordSaysWhy() throws {
-        for declaration in try ControlDictionary.declarations() {
-            for record in declaration.records where record.judgement == .notPlanned(reason: "") {
-                XCTFail("\(declaration.source) records \(record.member) on \(record.owner) as not planned, "
-                    + "and does not say why")
-            }
-        }
+        XCTAssertEqual(column.mark(of: nil, on: "Button").mark, "✅")
+        XCTAssertEqual(column.mark(of: "clicked", on: "Button").mark, "✅")
+        XCTAssertEqual(column.mark(of: "icon", on: "Button").mark, "")
+        XCTAssertEqual(column.mark(of: "pressed", on: "Button").mark, "", "no verdict, no mark")
+        XCTAssertEqual(column.mark(of: "submitted", on: "TextField").mark, "")
+        XCTAssertEqual(column.mark(of: "submitted", on: "TextField").note, "cannot submit - Keys.")
+        XCTAssertEqual(column.mark(of: nil, on: "Map").mark, "–")
+        XCTAssertTrue(column.judges("Button"))
+        XCTAssertTrue(column.judges("Map"))
+        XCTAssertFalse(column.judges("TextField"), "a run that made no verdict of the element itself judged it not")
     }
 
     /// A row whose members are all realized or not planned is met, one of which none is planned is –, and the

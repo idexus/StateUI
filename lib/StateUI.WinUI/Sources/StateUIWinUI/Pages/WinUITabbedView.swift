@@ -26,7 +26,8 @@ final class WinUITabbedView: WinUILayoutView {
     /// The tabs' titles, as the tree says them.
     private(set) var titles: [String] = []
 
-    private let row = WinUITabsView()
+    /// The row of tabs of its own, shown where the window shows none.
+    let row = WinUITabsView()
 
     override init() {
         super.init()

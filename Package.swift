@@ -66,6 +66,8 @@ let package = Package(
             name: "StateUITests",
             dependencies: ["StateUI"],
             path: "lib/StateUI/Tests",
+            // HostConformance beside it is a package of its own, which the hosts' suites link.
+            exclude: ["HostConformance"],
             sources: ["StateUITests"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

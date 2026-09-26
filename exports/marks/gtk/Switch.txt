@@ -1,0 +1,3 @@
+Switch: ✅
+Switch.isOn: ✅
+Switch.toggled: ✅

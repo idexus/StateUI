@@ -1,0 +1,5 @@
+Button.clicked: ✅
+ModalStack: ✅
+Page.appearing: ✅
+Page.disappearing: ✅
+Window.modalPopped: ✅

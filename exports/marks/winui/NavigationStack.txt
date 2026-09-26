@@ -1,0 +1,4 @@
+NavigationStack: ✅
+NavigationStack.barForegroundColor: not realized
+NavigationStack.popped: ✅
+Page.title: ✅

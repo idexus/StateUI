@@ -165,6 +165,16 @@ extern "C" StateUIObjectRef stateui_winui_tabs_make(int64_t view) {
     }
 }
 
+extern "C" void stateui_winui_tabs_choose_as_user(StateUIObjectRef handle, int32_t index) {
+    try {
+        // The row's own selection, which the user's click makes and SelectionChanged tells.
+        auto tabs = borrow<controls::SelectorBar>(handle);
+        if (index >= 0 && index < static_cast<int32_t>(tabs.Items().Size())) tabs.SelectedItem(tabs.Items().GetAt(index));
+    } catch (winrt::hresult_error const &error) {
+        report(error, "choosing a tab as the user");
+    }
+}
+
 extern "C" void stateui_winui_tabs_set(StateUIObjectRef handle, char const *const *titles, int32_t count, int32_t selected) {
     try {
         auto tabs = borrow<controls::SelectorBar>(handle);

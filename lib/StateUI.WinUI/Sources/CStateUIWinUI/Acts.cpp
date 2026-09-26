@@ -129,6 +129,7 @@ extern "C" void stateui_winui_announce(StateUIObjectRef handle, char const *utf8
             peer.RaiseNotificationEvent(peers::AutomationNotificationKind::Other,
                                         peers::AutomationNotificationProcessing::ImportantMostRecent,
                                         text(utf8), L"StateUI");
+            announced(utf8 ? utf8 : "");
         }
     } catch (winrt::hresult_error const &error) {
         report(error, "announcing");

@@ -1,0 +1,21 @@
+Button.characterSpacing: not realized
+Button.clicked: ✅
+Button.textColor: ✅
+DatePicker.characterSpacing: not realized
+DatePicker.textColor: ✅
+Label.characterSpacing: ✅
+Label.textColor: ✅
+Picker.characterSpacing: not realized
+Picker.textColor: ✅
+RadioButton.characterSpacing: not realized
+RadioButton.textColor: ✅
+SearchField.characterSpacing: not realized
+SearchField.textColor: ✅
+Span.characterSpacing: not realized
+Span.textColor: ✅
+TextEditor.characterSpacing: not realized
+TextEditor.textColor: ✅
+TextField.characterSpacing: not realized
+TextField.textColor: ✅
+TimePicker.characterSpacing: not realized
+TimePicker.textColor: ✅

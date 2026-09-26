@@ -11,8 +11,8 @@ final class WinUIRenderer {
     /// The one runtime of the process, made when WinUI stands.
     static var shared: WinUIRenderer?
 
-    /// What the host says for whoever reads its log.
-    static let log = HostLog(host: "WinUI")
+    /// What the host says for whoever reads its log: standard error, or wherever a test listens.
+    static var log = HostLog(host: "WinUI")
 
     let frameClock: WinUIFrameClock
 

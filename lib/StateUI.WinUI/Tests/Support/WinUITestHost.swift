@@ -46,7 +46,14 @@ extension WinUIRenderer {
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
     ) -> WinUIRenderer {
-        stateUIUseApp(OneWindowApplication(page: page))
+        running(clock: clock, reducesMotion: reducesMotion, application: { OneWindowApplication(page: page) })
+    }
+
+    /// A host running `application`, its window laid out, on `clock` where one is given.
+    static func running(
+        clock: TestClock? = nil, reducesMotion: Bool = false, application: @escaping @Sendable () -> any Application
+    ) -> WinUIRenderer {
+        stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
         WinUITestHost.pump()

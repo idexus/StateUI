@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Application
 
@@ -16,18 +16,18 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  |  |  |  |  |  |  |  |
-| `announce` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  |  |  |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  |  |  |  |  |
-| `currentTime` | act | `() -> [Double]` |  |  |  |  |  |  |  |  |
-| `currentTimeZone` | act | `() -> String` |  |  |  |  |  |  |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  |  |  |  |  | ✅ |  |  |
+| `announce` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  |  |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  |  | ✅ |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  |  | ✅ |  |  |
+| `currentTime` | act | `() -> [Double]` |  |  |  |  |  | ✅ |  |  |
+| `currentTimeZone` | act | `() -> String` |  |  |  |  |  | ✅ |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
 | `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  |  |  |  |  |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  |  |  |  |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  |  |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  |  |  |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  |  |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  | ✅ |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  |  | ✅ |  |  |
 
 Realization:
 

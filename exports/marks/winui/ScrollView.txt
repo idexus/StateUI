@@ -1,0 +1,9 @@
+Button.clicked: ✅
+ScrollView: ✅
+ScrollView.horizontalScrollBarVisibility: ✅
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: ✅
+ScrollView.scrollXChanged: ✅
+ScrollView.scrollYChanged: ✅
+ScrollView.verticalScrollBarVisibility: ✅

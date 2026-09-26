@@ -35,3 +35,13 @@ empty one is a jump to nothing.
 The relay knows a view by the number the host gave it when it made the
 element, and calls back with that number; the host finds the live view by it,
 and a view that has left answers nothing.
+
+## What a test reads
+
+The relay keeps one reader for tests: `stateui_winui_read(element, name)`
+answers what WinUI holds of the element's property of that name, as words - a
+colour as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
+-1 for a property the element has none of. Beside it, `stateui_winui_question`
+reads the dialog showing over a window and `stateui_winui_announced` what the
+relay told the screen reader, which WinUI keeps nowhere a test can ask. A test
+reads the control; it never asks the host what it wrote.

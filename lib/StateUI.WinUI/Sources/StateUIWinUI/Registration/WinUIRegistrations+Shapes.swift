@@ -10,13 +10,14 @@ extension WinUIRegistrations {
         registry.add(RectangleContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(shapeMembers + [RectangleContract.cornerRadius]) { view, values in
                 paint(view, values)
-                view.draw(.rectangle(BoxArithmetic.clockwise(values[RectangleContract.cornerRadius])))
+                view.draw(.rectangle(
+                    BoxArithmetic.clockwise(values[RectangleContract.cornerRadius]), transform: moved(values)))
             }
         }
         registry.add(EllipseContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(shapeMembers) { view, values in
                 paint(view, values)
-                view.draw(.ellipse)
+                view.draw(.ellipse(transform: moved(values)))
             }
         }
         registry.add(LineContract.self, create: { _ in WinUIPathView() }) { shape in
@@ -77,9 +78,11 @@ extension WinUIRegistrations {
     private static func authored<Realized: ElementContract>(
         _ commands: [Double], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> WinUIPathView.Geometry {
-        let transform = values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
-        return .authored(
-            commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit,
-            transform: transform)
+        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.aspect] ?? .fit, transform: moved(values))
+    }
+
+    /// The shape's transform, as the six numbers of its matrix; nil for none.
+    private static func moved<Realized: ElementContract>(_ values: ElementValues<Realized>) -> [Double]? {
+        values[ShapeContract.renderTransform]?.propValue.values?.compactMap(\.number)
     }
 }

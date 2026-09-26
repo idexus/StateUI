@@ -1,0 +1,14 @@
+Application: ✅
+Application.alert: ✅
+Application.announce: ✅
+Application.chooseAction: ✅
+Application.confirm: ✅
+Application.currentTime: ✅
+Application.currentTimeZone: ✅
+Application.handlerFailed: ✅
+Application.hideOnScreenKeyboard: ✅
+Application.persistSceneValue: not realized
+Application.persistValue: ✅
+Application.prompt: ✅
+Application.utcOffset: ✅
+Button.clicked: ✅

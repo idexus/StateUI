@@ -493,8 +493,9 @@ void stateui_winui_path_bounds(double const *commands, int32_t count, double *bo
 
 /// Draws a shape in a room `width` by `height` DIPs: `kind` 0 a rectangle, its corners' `radii` clockwise from the
 /// top left, or 1 an ellipse, both drawn `inset` from the room's edges; 2 the geometry `commands` draw - flat, 0 move
-/// x y, 1 line x y, 2 cubic x1 y1 x2 y2 x y, 3 quadratic x1 y1 x y, 4 close - filled by `evenOdd`'s rule and moved by
-/// `placement` (a b c d tx ty), which places it in the room.
+/// x y, 1 line x y, 2 cubic x1 y1 x2 y2 x y, 3 quadratic x1 y1 x y, 4 close - filled by `evenOdd`'s rule. Each is
+/// moved by `placement` (a b c d tx ty) where one is given: a figure's places it in the room, a rectangle's and an
+/// ellipse's is their transform.
 void stateui_winui_path_draw(StateUIObjectRef path, int32_t kind, double const *radii, double const *commands,
                              int32_t count, bool evenOdd, double const *placement, double width, double height,
                              double inset);
@@ -551,6 +552,8 @@ void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, Stat
 /// A tabbed view's row of tabs: a SelectorBar, `selected` chosen.
 StateUIObjectRef stateui_winui_tabs_make(int64_t view);
 void stateui_winui_tabs_set(StateUIObjectRef tabs, char const *const *titles, int32_t count, int32_t selected);
+/// Chooses the tab at `index` as the user's click does - what a test does.
+void stateui_winui_tabs_choose_as_user(StateUIObjectRef tabs, int32_t index);
 
 /// A group of the environment's facts, in UTF-8, each ended by the unit separator (0x1F); the display's are the
 /// screen `window` stands on. Answers the length the facts need, their end not counted.
@@ -658,6 +661,20 @@ void stateui_winui_image_size(StateUIObjectRef image, double *size);
 
 /// Draws an SVG `image` shows at `width` by `height` DIPs, at the display's scale; nothing for a bitmap.
 void stateui_winui_image_draw(StateUIObjectRef image, double width, double height);
+
+/// What WinUI holds of `element`'s property named `what`, in UTF-8, as far as `capacity` goes - a colour as #AARRGGBB,
+/// a number, 0 or 1, words, sides and corners as four numbers - answering its whole length; -1 for a property the
+/// element has none of. What a test reads.
+int32_t stateui_winui_read(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
+
+/// The question showing over `element`'s window, in UTF-8, as far as `capacity` goes: its title, message, accepting
+/// and cancelling captions, its field's words (0x01 for none) and its choices, each ended by the unit separator
+/// (0x1F) but the last; -1 for none showing. What a test reads.
+int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t capacity);
+
+/// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
+/// the last, as far as `capacity` goes; its whole length. What a test reads.
+int32_t stateui_winui_announced(char *utf8, int32_t capacity);
 
 #ifdef __cplusplus
 }

@@ -2,23 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The control dictionary - docs/controls - as the library's contracts and the
-// hosts' declarations say it is. A page per element contract and per tier,
+// hosts' test runs say it is. A page per element contract and per tier,
 // rendered whole: the contract's doc, what it wears, and a row per member with
 // its kind, its value, its layer and a mark for every host. The index and the
 // platform contract are written by hand around the tables rendered here, which
 // stand between `<!-- name:begin -->` and `<!-- name:end -->`.
 //
-// A host's column comes from its RUNTIME wherever it can: each host's suite
-// writes what its registrations realize to `exports/<host>.txt`, read here and
-// joined with the contracts, so each member is named under the contract
-// declaring it and no owner is typed by hand. What a registry cannot know stays
-// written - every judgement: what a realization is missing, what a host
-// realizes none of, and what it presents with no view of its own.
+// A host's column is its runs' verdicts alone: each host's suite runs the
+// conformance families and writes what each said to
+// `exports/marks/<host>/<Family>.txt` - ✅, ☑️ and what is missing, – and why,
+// or why a cell stays empty - read here. Nothing a host declares by hand marks
+// a cell.
 //
-// The rest is read as text: `AppKitRealization` and `AndroidRealization`; the
-// doc comments over the contracts and over `ElementLayer`'s cases; the platform
-// contract's "Native control mapping", the one hand-written input; and, from
-// the sources declaring them, the `on…` modifiers events are heard through.
+// The rest is read as text: the doc comments over the contracts and over
+// `ElementLayer`'s cases; the platform contract's "Native control mapping",
+// the one hand-written input; and, from the sources declaring them, the `on…`
+// modifiers events are heard through.
 
 import Foundation
 @_spi(Host) @testable import StateUI
@@ -54,8 +53,8 @@ struct ControlDictionary {
         + "there - its register says why · empty: not proven on that host yet"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
-    static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what "
-        + "its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter "
+    static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's "
+        + "runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter "
         + "ControlDictionaryTests writes it again. -->"
 
     /// The sources outside Views/ that declare an element's `on…` modifiers.
@@ -68,56 +67,31 @@ struct ControlDictionary {
         let description: String
     }
 
-    /// One host's declaration of what it realizes, read out of its source: its marks, by the host layer's rule.
-    struct Declaration {
-        typealias Record = HostRecord
-        typealias Judgement = HostRecord.Judgement
-
+    /// One host's column: what its runs of the conformance families said, subject by subject.
+    struct Column {
         /// The host, as its column is headed.
         let host: String
 
-        /// Where the declaration is written, under the repository.
-        let source: String
+        /// Each verdict its runs wrote, by what it is about: "Button.clicked", "Button".
+        let verdicts: [String: HostVerdict]
 
-        /// What the host realizes, member by member.
-        let marks: HostMarks
-
-        var records: [Record] { marks.records }
-        var unrealized: Set<String> { marks.unrealized }
-        var viewless: Set<String> { marks.viewless }
-        var notPlanned: Set<String> { marks.notPlanned }
-
-        init(
-            host: String, source: String, records: [Record], unrealized: Set<String>, viewless: Set<String>,
-            notPlanned: Set<String> = []
-        ) {
-            self.init(host: host, source: source, marks: HostMarks(
-                records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned))
+        /// The mark and the note `member` of `element` has on this host - or `element` itself, where `member` is
+        /// nil: ✅, ☑️ with what is missing, – with why, or empty - with why, where the run said.
+        func mark(of member: String?, on element: String) -> (mark: String, note: String) {
+            switch verdicts[member.map { "\(element).\($0)" } ?? element]?.mark {
+            case .proven?: ("✅", "")
+            case .partial(let missing)?: ("☑️", missing)
+            case .notPlanned(let reason)?: ("–", reason)
+            case .cannot(let why)?: ("", "cannot \(why)")
+            case .notRealized?, nil: ("", "")
+            }
         }
 
-        init(host: String, source: String, marks: HostMarks) {
-            self.host = host
-            self.source = source
-            self.marks = marks
-        }
-
-        /// The same declaration with a host's own export behind it: what is written wins (`HostMarks.and`).
-        func and(_ runtime: [Record]) -> Declaration {
-            Declaration(host: host, source: source, marks: marks.and(runtime))
-        }
-
-        /// The same declaration with what the host's passing tests proved (`HostMarks.proving`).
-        func proving(_ covered: Set<String>) -> Declaration {
-            Declaration(host: host, source: source, marks: marks.proving(covered))
-        }
-
-        /// The mark and the note one member of `element` has on this host (`HostMarks.mark`).
-        func mark(of member: String, on element: String, from tier: String?) -> (mark: String, note: String) {
-            switch marks.mark(of: member, on: element, from: tier) {
-            case .complete: ("✅", "")
-            case .partial(let missing): ("☑️", missing)
-            case .notPlanned(let reason): ("–", reason)
-            case .absent: ("", "")
+        /// Whether the host's run judged `element` itself: made by the host, or never had by its family.
+        func judges(_ element: String) -> Bool {
+            switch verdicts[element]?.mark {
+            case .proven?, .partial?, .notPlanned?: true
+            case .notRealized?, .cannot?, nil: false
             }
         }
     }
@@ -150,8 +124,8 @@ struct ControlDictionary {
     /// Every tier, in the dictionary's order.
     let tiers: [any Contract.Type]
 
-    /// The hosts that declare what they realize.
-    let declarations: [Declaration]
+    /// The hosts' columns, each what its runs said.
+    let columns: [Column]
 
     /// The `on…` spellings each event is heard through.
     let spellings: [String: Set<String>]
@@ -172,7 +146,7 @@ struct ControlDictionary {
     init() throws {
         elements = LibraryContracts.elements.sorted { $0.name < $1.name }
         tiers = LibraryContracts.tiers
-        declarations = try Self.declarations()
+        columns = try Self.columns()
         spellings = try Self.handlerSpellings()
         mapping = try Self.nativeMapping()
         layers = try Self.layers()
@@ -223,12 +197,12 @@ struct ControlDictionary {
                 var notes: [String: String] = [:]
 
                 for platform in Self.platforms {
-                    guard let declaration = declarations.first(where: { $0.host == platform }) else {
+                    guard let column = column(of: platform) else {
                         cells.append("")
                         continue
                     }
 
-                    let (mark, note) = declaration.mark(of: member.name, on: name, from: tier)
+                    let (mark, note) = column.mark(of: member.name, on: name)
                     cells.append(mark)
                     notes[platform] = note
 
@@ -387,13 +361,7 @@ struct ControlDictionary {
         var lines = [Self.header("Element", "Layer"), Self.rule(leading: 2)]
 
         for element in elements {
-            let marks = Self.platforms.map { platform -> String in
-                guard let declaration = declaration(of: platform) else { return "" }
-
-                if declaration.notPlanned.contains(element.name) { return "–" }
-                let proven = declaration.marks.proven.contains { $0.hasPrefix("\(element.name).") }
-                return proven && !declaration.unrealized.contains(element.name) ? "✅" : ""
-            }
+            let marks = Self.platforms.map { column(of: $0)?.mark(of: nil, on: element.name).mark ?? "" }
 
             lines.append(Self.row(["`\(element.name)`", "\(element.layer)"] + marks))
         }
@@ -487,34 +455,32 @@ struct ControlDictionary {
         tiers + elements.map { $0 as any Contract.Type }
     }
 
-    /// The declaration of one host, where it has one.
-    func declaration(of platform: String) -> Declaration? {
-        declarations.first { $0.host == platform }
+    /// The column of one host, where it has one.
+    func column(of platform: String) -> Column? {
+        columns.first { $0.host == platform }
     }
 
     /// One member's mark on one host: on the element declaring it, or - for a
-    /// tier's member - across the elements wearing the tier that the host
-    /// realizes with a view of their own, and only the views among them
-    /// `amongViews`.
+    /// tier's member - across the elements wearing the tier that the host's run
+    /// judged, made or never had, and only the views among them `amongViews`.
     func mark(
         of member: any ContractMember, declaredIn contract: any Contract.Type, on platform: String,
         amongViews: Bool = false
     ) -> String {
-        guard let declaration = declaration(of: platform) else { return "" }
+        guard let column = column(of: platform) else { return "" }
 
         if let element = contract as? any ElementContract.Type {
-            return declaration.mark(of: member.name, on: element.name, from: nil).mark
+            return column.mark(of: member.name, on: element.name).mark
         }
 
         let view = ObjectIdentifier(ViewContract.self)
         let wearers = elements.filter { element in
             element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) }
                 && (!amongViews || element.worn.contains { ObjectIdentifier($0) == view })
-                && !declaration.unrealized.contains(element.name)
-                && !declaration.viewless.contains(element.name)
+                && column.judges(element.name)
         }
 
-        return Self.grouped(wearers.map { declaration.mark(of: member.name, on: $0.name, from: contract.name).mark })
+        return Self.grouped(wearers.map { column.mark(of: member.name, on: $0.name).mark })
     }
 
     /// The mark of a row naming several members, or of one member across
@@ -643,92 +609,35 @@ struct ControlDictionary {
 
     // MARK: - What the pages are rendered from
 
-    /// What AppKit, Android Views, WinUI 3 and GTK 4 declare they realize.
-    ///
-    /// Each is read twice over: what its RUNTIME wrote to its export - every
-    /// element it registers, with the owner of each member worked out against
-    /// the contracts - and then what is still said by hand, the notes saying
-    /// what a realization is missing. A registry knows presence and nothing
-    /// else, so a judgement stays written.
-    static func declarations() throws -> [Declaration] {
-        let appKit = try Declaration(
-            host: "AppKit", reading: "lib/StateUI.AppKit/Sources/Registration/AppKitRealization.swift",
-            records: #"\.(complete|partial|notPlanned)"#,
-            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
-            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
+    /// The folder each host's runs write their verdicts in under `exports/marks`, by the host's column.
+    static let folders = ["AppKit": "appkit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk"]
 
-        let android = try Declaration(
-            host: "Android Views",
-            reading: "lib/StateUI.Android/Sources/StateUIAndroid/Registration/AndroidRealization.swift",
-            records: #"\.(complete|partial|notPlanned)"#,
-            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
-            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
-
-        let winUI = try Declaration(
-            host: "WinUI 3",
-            reading: "lib/StateUI.WinUI/Sources/StateUIWinUI/Registration/WinUIRealization.swift",
-            records: #"\.(complete|partial|notPlanned)"#,
-            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
-            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
-
-        let gtk = try Declaration(
-            host: "GTK 4",
-            reading: "lib/StateUI.GTK/Sources/StateUIGTK/Registration/GTKRealization.swift",
-            records: #"\.(complete|partial|notPlanned)"#,
-            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#,
-            notPlanned: #"static let notPlanned: Set<String> = \[([^\]]*)\]"#)
-
-        return [
-            try appKit.and(exported(exports["AppKit"]!)).proving(proven("appkit")),
-            try android.and(exported(exports["Android Views"]!)).proving(proven("android")),
-            try winUI.and(exported(exports["WinUI 3"]!)).proving(proven("winui")),
-            try gtk.and(exported(exports["GTK 4"]!)).proving(proven("gtk")),
-        ]
-    }
-
-    /// What a host's passing tests proved, as its runs write it under `exports/covered/<host>/`: every
-    /// "Element.member" a line. A host none of whose tests has written a proof has proved nothing.
-    static func proven(_ host: String) throws -> Set<String> {
-        let folder = SourceTree.repository.appendingPathComponent("exports/covered/\(host)")
-        guard FileManager.default.fileExists(atPath: folder.path) else { return [] }
-        var proven: Set<String> = []
-        for file in try SourceTree.files(under: folder, entering: { _ in false }) where file.hasSuffix(".txt") {
-            let text = try String(contentsOf: folder.appendingPathComponent(file), encoding: .utf8)
-            proven.formUnion(text.split(separator: "\n").map { String($0.hasSuffix("\r") ? $0.dropLast() : $0) })
+    /// Every host's column: what its runs' verdicts said, each subject once. A host none of whose runs wrote a
+    /// verdict has an empty column.
+    static func columns() throws -> [Column] {
+        try folders.sorted { $0.key < $1.key }.map { host, folder in
+            var verdicts: [String: HostVerdict] = [:]
+            for verdict in HostVerdict.merged(try Self.verdicts(folder)) {
+                verdicts[verdict.subject] = verdict
+            }
+            return Column(host: host, verdicts: verdicts)
         }
-        return proven
     }
 
-    /// Where each host's suite writes what its runtime realizes, by the host's name.
-    static let exports = [
-        "AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt", "WinUI 3": "exports/winui.txt",
-        "GTK 4": "exports/gtk.txt",
-    ]
-
-    /// The records a host's own export carries: its declaration joined with
-    /// the contracts, so each member is named under the contract DECLARING it.
-    ///
-    /// A tier's member reaches every element wearing it, and the dictionary
-    /// asks about a tier once - so the join's members are reduced to the pairs
-    /// they are made of, which is also what keeps each record written once.
-    static func exported(_ path: String) throws -> [Declaration.Record] {
-        HostMarks.records(of: try export(path))
-    }
-
-    /// The declaration a host's export holds.
-    static func export(_ path: String) throws -> HostDeclaration {
-        let url = SourceTree.repository.appendingPathComponent(path)
-
-        guard let declaration = HostDeclaration(text: try String(contentsOf: url, encoding: .utf8)) else {
-            throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
-                + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
-                + "`swift test --package-path lib/StateUI.AppKit` or `.scripts/Android/test-android.sh`.")
+    /// The verdicts the runs of the host whose folder is `folder` wrote, file by file.
+    static func verdicts(_ folder: String) throws -> [HostVerdict] {
+        let url = SourceTree.repository.appendingPathComponent("exports/marks/\(folder)")
+        guard FileManager.default.fileExists(atPath: url.path) else { return [] }
+        var verdicts: [HostVerdict] = []
+        for file in try SourceTree.files(under: url, entering: { _ in false }).sorted() where file.hasSuffix(".txt") {
+            let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
+            guard let read = HostVerdict.read(text) else {
+                throw Unreadable(description: "exports/marks/\(folder)/\(file) holds a line that is no verdict. "
+                    + "Write it again with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it.")
+            }
+            verdicts += read
         }
-        return declaration
+        return verdicts
     }
 
     /// The `on…` modifier each event is heard through, read from the sources
@@ -1038,49 +947,5 @@ struct ControlDictionary {
         }
 
         return text + "\n"
-    }
-}
-
-extension ControlDictionary.Declaration {
-    /// A record's owner, member, and what is missing or why it is not planned, written on one line after its
-    /// opening.
-    private static let record = #"\("(\w+)", "(\w+)"(?:, (?:missing|reason): "((?:[^"\\]|\\.)*)")?\)"#
-
-    /// A host's declaration, read from its source: `records` opens each record, which then reads as `record`;
-    /// one opened that does not read throws, so no record is lost to how it is written.
-    init(
-        host: String, reading source: String, records opening: String, unrealized: String, viewless: String?,
-        notPlanned: String? = nil
-    ) throws {
-        let text = ControlDictionary.uncommented(
-            try String(contentsOf: SourceTree.repository.appendingPathComponent(source), encoding: .utf8))
-
-        func names(_ pattern: String?) throws -> Set<String> {
-            guard let pattern, let list = try ControlDictionary.matches(pattern, in: text).first?[1] else { return [] }
-
-            return Set(try ControlDictionary.matches(#""(\w+)""#, in: list).compactMap { $0[1] })
-        }
-
-        let found = try ControlDictionary.matches(opening + Self.record, in: text).map { groups in
-            let said = (groups[4] ?? "").replacingOccurrences(of: #"\""#, with: "\"")
-            let judgement: Judgement = switch groups[1] {
-            case "partial": .partial(missing: said)
-            case "notPlanned": .notPlanned(reason: said)
-            default: .complete
-            }
-            return Record(owner: groups[2] ?? "", member: groups[3] ?? "", judgement: judgement)
-        }
-        let opened = try ControlDictionary.matches(opening + #"\(\s*""#, in: text).count
-        guard opened == found.count else {
-            throw ControlDictionary.Unreadable(description: "\(source): \(opened - found.count) of its \(opened) records do not read. "
-                + "Write each on one line - (\"Owner\", \"member\"), with its missing: or reason: \"...\" where it has one.")
-        }
-        let unrealizedNames = try names(unrealized)
-        let viewlessNames = try names(viewless)
-        let notPlannedNames = try names(notPlanned)
-
-        self.init(
-            host: host, source: source, records: found, unrealized: unrealizedNames, viewless: viewlessNames,
-            notPlanned: notPlannedNames)
     }
 }

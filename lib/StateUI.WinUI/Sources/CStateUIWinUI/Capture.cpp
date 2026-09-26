@@ -61,10 +61,14 @@ extern "C" bool stateui_winui_pixels(StateUIObjectRef handle, double const *poin
         auto buffer = reading.GetResults();
         auto const *bytes = buffer.data();
         auto width = bitmap.PixelWidth(), height = bitmap.PixelHeight();
-        auto scale = element.XamlRoot().RasterizationScale();
+        // A large element's bitmap is rendered smaller than the screen shows it: a point is read by the bitmap's own
+        // scale.
+        auto rasterized = element.XamlRoot().RasterizationScale();
+        auto across = element.ActualWidth() > 0 ? width / element.ActualWidth() : rasterized;
+        auto down = element.ActualHeight() > 0 ? height / element.ActualHeight() : rasterized;
         for (int32_t index = 0; index < count; ++index) {
-            auto x = static_cast<int32_t>(points[2 * index] * scale);
-            auto y = static_cast<int32_t>(points[2 * index + 1] * scale);
+            auto x = static_cast<int32_t>(points[2 * index] * across);
+            auto y = static_cast<int32_t>(points[2 * index + 1] * down);
             if (x < 0 || y < 0 || x >= width || y >= height) {
                 argb[index] = 0;
                 continue;

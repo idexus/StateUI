@@ -18,7 +18,7 @@ enum WinUIRealization {
     static let viewless: Set<String> = ["Span"]
 
     /// The entries Windows will not have; none.
-    static let notPlanned: Set<String> = []
+    static let notPlanned: [String: String] = [:]
 
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
@@ -32,12 +32,15 @@ enum WinUIRealization {
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
+        .complete("Page", "background"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasNavigationBar"),
         .complete("Page", "navigatedFrom"),
         .complete("Page", "navigatedTo"),
         .complete("Page", "navigatingFrom"),
+        .complete("Page", "padding"),
         .complete("RadioButton", "groupName"),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
@@ -49,7 +52,9 @@ enum WinUIRealization {
         .complete("Span", "textColor"),
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
+        .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
+        .complete("TabbedView", "currentPageChanged"),
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
@@ -69,7 +74,7 @@ enum WinUIRealization {
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.
-    @MainActor static var marks: HostMarks {
-        HostMarks(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
+    @MainActor static var register: HostRegister {
+        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
     }
 }

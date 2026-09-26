@@ -212,10 +212,11 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThan(heads, 0, "no WinUI head found")
     }
 
-    /// The conformance suite is a package beside the hosts that links the one StateUI runtime as its product,
-    /// and none of its sources names a toolkit: what it asserts is what executing the contract does, on every host.
+    /// The conformance suite is a package of its own among the core's tests that links the one StateUI runtime as
+    /// its product, and none of its sources names a toolkit: what it asserts is what executing the contract does, on
+    /// every host.
     func testTheConformanceSuiteNamesNoToolkit() throws {
-        let package = SourceTree.repository.appendingPathComponent("lib/StateUI.HostConformance")
+        let package = SourceTree.repository.appendingPathComponent("lib/StateUI/Tests/HostConformance")
         let manifest = try String(contentsOf: package.appendingPathComponent("Package.swift"), encoding: .utf8)
         XCTAssertTrue(manifest.contains(#".product(name: "StateUI", package: "StateUIRoot")"#), "StateUI linked as a product")
         XCTAssertFalse(manifest.contains(#"dependencies: ["StateUI"]"#), "a second StateUI runtime")
@@ -234,11 +235,12 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
-    /// Every host whose suite runs the conformance cases runs every family of them: a family one host leaves out
-    /// is work that host silently does not prove.
+    /// Every host whose suite runs the conformance cases runs every family of them - one a contract, whole or in
+    /// every one of its parts: a family one host leaves out is a column of the dictionary that host silently never
+    /// marks.
     func testEveryHostRunsEveryConformanceFamily() throws {
         let repository = SourceTree.repository
-        let cases = repository.appendingPathComponent("lib/StateUI.HostConformance/Sources/StateUIHostConformance/Cases")
+        let cases = repository.appendingPathComponent("lib/StateUI/Tests/HostConformance/Sources/Contract")
         let family = try NSRegularExpression(pattern: #"public enum (\w+): ConformanceFamily"#)
         var families: Set<String> = []
         for file in try SourceTree.files(under: cases, entering: { _ in true }) {
@@ -247,16 +249,26 @@ final class NativeProjectTests: XCTestCase {
                 families.insert((text as NSString).substring(with: match.range(at: 1)))
             }
         }
-        XCTAssertGreaterThanOrEqual(families.count, 4, "the walk found almost no family")
+        XCTAssertGreaterThanOrEqual(families.count, 70, "the walk found almost no family")
 
         let lib = repository.appendingPathComponent("lib")
         let runners = try SourceTree.files(under: lib, entering: { !$0.contains(".build") && !$0.hasPrefix("StateUI/") })
-            .filter { $0.hasSuffix("ConformanceTests.swift") && !$0.hasPrefix("StateUI.HostConformance/") }
+            .filter { $0.hasSuffix("ConformanceTests.swift") }
         XCTAssertFalse(runners.isEmpty, "no host runs the conformance cases")
         for runner in runners {
             let text = try String(contentsOf: lib.appendingPathComponent(runner), encoding: .utf8)
-            for name in families.sorted() where !text.contains("conform(\(name).self)") {
-                XCTFail("\(runner) does not run the family \(name)")
+            for name in families.sorted() {
+                let part = try NSRegularExpression(
+                    pattern: #"conform\(\#(name)\.self, part: Conformance\.Part\((\d+), of: (\d+)\)\)"#)
+                let parts = part.matches(in: text, range: NSRange(text.startIndex..., in: text)).map { match in
+                    (Int((text as NSString).substring(with: match.range(at: 1))) ?? 0,
+                     Int((text as NSString).substring(with: match.range(at: 2))) ?? 0)
+                }
+                if parts.isEmpty, !text.contains("conform(\(name).self)") {
+                    XCTFail("\(runner) does not run the family \(name)")
+                } else if let count = parts.first?.1, Set(parts.map(\.0)) != Set(1...count) || parts.contains(where: { $0.1 != count }) {
+                    XCTFail("\(runner) runs the family \(name) in parts that are not each of 1 to \(count)")
+                }
             }
         }
     }

@@ -1,0 +1,6 @@
+Button.clicked: ✅
+SearchField: ✅
+SearchField.returnKey: not realized
+SearchField.submitted: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅

@@ -1,0 +1,4 @@
+Picker: ✅
+Picker.options: ✅
+Picker.selectedIndex: ✅
+Picker.selectedIndexChanged: ✅

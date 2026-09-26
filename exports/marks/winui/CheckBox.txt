@@ -1,0 +1,4 @@
+Button.clicked: ✅
+CheckBox: ✅
+CheckBox.isOn: ✅
+CheckBox.toggled: ✅

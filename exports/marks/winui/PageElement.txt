@@ -1,0 +1,9 @@
+Button.clicked: ✅
+NavigationStack.icon: not realized
+NavigationStack.title: ✅
+Page.icon: not realized
+Page.title: ✅
+SplitView.icon: not realized
+SplitView.title: ✅
+TabbedView.icon: not realized
+TabbedView.title: ✅

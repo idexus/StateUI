@@ -18,7 +18,8 @@ final class WinUISplitView: WinUILayoutView {
     /// the window's room changing.
     var onPresentationChanged: ((Bool) -> Void)?
 
-    private let sidebar = WinUISidebarView()
+    /// WinUI's navigation view, whose pane is the sidebar.
+    let sidebar = WinUISidebarView()
 
     /// The sidebar page and the detail page, as the tree gives them, and the row across the detail.
     private var pages: [WinUILayoutItem] = []

@@ -1,0 +1,8 @@
+Button.clicked: ✅
+TimePicker: ✅
+TimePicker.closed: not realized
+TimePicker.format: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock
+TimePicker.isOpen: not realized
+TimePicker.opened: not realized
+TimePicker.time: ✅
+TimePicker.timeChanged: ✅

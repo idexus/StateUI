@@ -8,15 +8,16 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/drawing.md#the-shapes
 @MainActor
 final class WinUIPathView: WinUIView {
-    /// What the shape draws: a rectangle, its corners clockwise from the top left; an ellipse; or a geometry of
-    /// its own, as flat commands, placed by its aspect and moved by its transform (`ShapeArithmetic.placement`).
+    /// What the shape draws: a rectangle, its corners clockwise from the top left, or an ellipse, each filling its
+    /// room and moved by its transform; or a geometry of its own, as flat commands, placed by its aspect and moved
+    /// by its transform (`ShapeArithmetic.placement`).
     enum Geometry: Equatable {
-        case rectangle([Double])
-        case ellipse
+        case rectangle([Double], transform: [Double]?)
+        case ellipse(transform: [Double]?)
         case authored([Double], evenOdd: Bool, aspect: Aspect, transform: [Double]?)
     }
 
-    private var geometry = Geometry.rectangle([0, 0, 0, 0])
+    private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var strokeWidth = 1.0
 
     /// Where a geometry of the shape's own stands before it is placed, as WinUI measures it.
@@ -67,6 +68,13 @@ final class WinUIPathView: WinUIView {
         draw(in: place)
     }
 
+    /// Runs `draw` with a transform's six numbers as WinUI's matrix takes them; with none where there is none, or
+    /// where it is not six finite numbers.
+    private static func moving(by transform: [Double]?, _ draw: (UnsafePointer<Double>?) -> Void) {
+        guard let transform, transform.count == 6, transform.allSatisfy(\.isFinite) else { return draw(nil) }
+        transform.withUnsafeBufferPointer { draw($0.baseAddress) }
+    }
+
     /// Hands WinUI the geometry for `room`, again only where the room or the geometry changed.
     private func draw(in room: Rect) {
         let inset = strokeWidth / 2
@@ -75,10 +83,14 @@ final class WinUIPathView: WinUIView {
 
         drawn = (geometry, room.width, room.height, inset)
         switch geometry {
-        case .rectangle(let radii):
-            stateui_winui_path_draw(handle, 0, radii, nil, 0, false, nil, room.width, room.height, inset)
-        case .ellipse:
-            stateui_winui_path_draw(handle, 1, nil, nil, 0, false, nil, room.width, room.height, inset)
+        case .rectangle(let radii, let transform):
+            Self.moving(by: transform) { moved in
+                stateui_winui_path_draw(handle, 0, radii, nil, 0, false, moved, room.width, room.height, inset)
+            }
+        case .ellipse(let transform):
+            Self.moving(by: transform) { moved in
+                stateui_winui_path_draw(handle, 1, nil, nil, 0, false, moved, room.width, room.height, inset)
+            }
         case .authored(let commands, let evenOdd, let aspect, let transform):
             let placement = ShapeArithmetic.placement(
                 of: bounds, in: LayoutSize(width: room.width, height: room.height), aspect: aspect,

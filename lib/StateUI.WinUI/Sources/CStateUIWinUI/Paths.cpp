@@ -165,29 +165,29 @@ extern "C" void stateui_winui_path_draw(
 ) {
     try {
         auto path = borrow<shapes::Path>(handle);
+        media::Geometry geometry{nullptr};
         if (kind == 0) {
-            path.Data(rounded(inset, inset, width - inset, height - inset, radii));
-            return;
-        }
-        if (kind == 1) {
+            geometry = rounded(inset, inset, width - inset, height - inset, radii);
+        } else if (kind == 1) {
             media::EllipseGeometry ellipse;
             ellipse.Center(at(width / 2, height / 2));
             ellipse.RadiusX(std::max(0.0, width / 2 - inset));
             ellipse.RadiusY(std::max(0.0, height / 2 - inset));
-            path.Data(ellipse);
-            return;
+            geometry = ellipse;
+        } else {
+            geometry = authored(commands, count, evenOdd);
         }
-
-        auto geometry = authored(commands, count, evenOdd);
-        winrt::Microsoft::UI::Xaml::Media::Matrix place{
-            placement[0], placement[1], placement[2], placement[3], placement[4], placement[5]};
-        // WinUI draws nothing of a geometry whose transform is the identity: a geometry left in place takes none.
-        bool identity = place.M11 == 1 && place.M12 == 0 && place.M21 == 0 && place.M22 == 1 && place.OffsetX == 0
-            && place.OffsetY == 0;
-        if (!identity) {
-            media::MatrixTransform moved;
-            moved.Matrix(place);
-            geometry.Transform(moved);
+        if (placement) {
+            winrt::Microsoft::UI::Xaml::Media::Matrix place{
+                placement[0], placement[1], placement[2], placement[3], placement[4], placement[5]};
+            // WinUI draws nothing of a geometry whose transform is the identity: a geometry left in place takes none.
+            bool identity = place.M11 == 1 && place.M12 == 0 && place.M21 == 0 && place.M22 == 1
+                && place.OffsetX == 0 && place.OffsetY == 0;
+            if (!identity) {
+                media::MatrixTransform moved;
+                moved.Matrix(place);
+                geometry.Transform(moved);
+            }
         }
         path.Data(geometry);
     } catch (winrt::hresult_error const &error) {

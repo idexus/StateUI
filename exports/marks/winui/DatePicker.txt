@@ -1,0 +1,10 @@
+Button.clicked: ✅
+DatePicker: ✅
+DatePicker.closed: ✅
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
+DatePicker.format: ☑️ WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".
+DatePicker.isOpen: ✅
+DatePicker.maximumDate: ✅
+DatePicker.minimumDate: ✅
+DatePicker.opened: ✅

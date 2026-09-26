@@ -13,6 +13,7 @@
 #undef GetCurrentTime
 
 #include <cstdio>
+#include <string>
 #include <string_view>
 
 #include <winrt/Windows.Foundation.h>
@@ -61,6 +62,9 @@ namespace stateui {
 
     /// Whether the window whose root is `root` presents sheets over its pages.
     bool showsSheets(controls::Grid const &root);
+
+    /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
+    void announced(std::string const &words);
 
     /// Says what failed on standard error, where the host's log goes.
     inline void report(winrt::hresult_error const &error, char const *where) {

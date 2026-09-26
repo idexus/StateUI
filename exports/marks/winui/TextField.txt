@@ -1,0 +1,7 @@
+Label.text: ✅
+TextField: ✅
+TextField.isPassword: not realized
+TextField.returnKey: not realized
+TextField.showsClearButton: not realized
+TextField.submitted: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field
+TextField.text: ✅

@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
-        .package(name: "StateUIHostConformance", path: "../StateUI.HostConformance"),
+        .package(name: "StateUIHostConformance", path: "../StateUI/Tests/HostConformance"),
     ],
     targets: [
         // GTK's and libadwaita's headers and libraries, and nothing else.

@@ -1,0 +1,6 @@
+Button.clicked: ✅
+Canvas: ✅
+Canvas.dragged: ✅
+Canvas.drawable: ✅
+Canvas.pressed: ✅
+Canvas.released: ✅

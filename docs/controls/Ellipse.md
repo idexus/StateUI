@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Ellipse
 
@@ -44,13 +44,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `background` | property | `Background` | native |  |  |  |  |  |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
-| `frame` | property | `Rect` | structure |  |  |  |  |  |  |  |
+| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
+| `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |
 | `height` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  |  |
 | `isVisible` | property | `Bool` | native |  |  | ✅ |  | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
@@ -58,18 +58,18 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `opacity` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `pivotY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `rotation` | property | `Double` | native |  |  |  |  |  |  |  |
+| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `rotationX` | property | `Double` | native |  |  |  |  |  |  |  |
 | `rotationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scale` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scaleX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scaleY` | property | `Double` | native |  |  |  |  |  |  |  |
+| `scale` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `translationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  |  |  |  |
+| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  |  |
 | `width` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
@@ -80,7 +80,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure |  |  |  |  |  |  |  |
+| `area` | property | `Area` | structure |  |  |  |  | ✅ |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -89,27 +89,27 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | ✅ |  | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  |  |  |  |
+| `gridColumn` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
 | `horizontalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
 | `margin` | property | `Insets` | native |  |  | ✅ |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  |  |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  |  |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  |  |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  |  |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  |  |
+| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  |  |
+| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  |  |
+| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
+| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  |  |
 | `verticalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
 
 ## From [Shape](tiers/Shape.md)
@@ -118,13 +118,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  |  |  |  |
-| `fill` | property | `Brush` | stateUI |  |  |  |  |  |  |  |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  |  |  |  |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  |  |  |  |
-| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  |  |  |  |
-| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  |  |  |  |
-| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  |  |  |  |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  |  |  |  |
-| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  |  |  |  |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  |  |  |  |
+| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  |  |
+| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  |  |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  |  |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |

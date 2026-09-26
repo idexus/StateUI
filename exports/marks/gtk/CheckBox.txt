@@ -1,0 +1,3 @@
+CheckBox: ✅
+CheckBox.isOn: ✅
+CheckBox.toggled: ✅

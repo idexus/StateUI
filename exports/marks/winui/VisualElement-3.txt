@@ -1,0 +1,288 @@
+ActivityIndicator.accessibilityHint: ✅
+ActivityIndicator.background: not realized
+ActivityIndicator.frame: ✅
+ActivityIndicator.isEnabled: not realized
+ActivityIndicator.rotation: ✅
+ActivityIndicator.scaleX: ✅
+ActivityIndicator.zIndex: not realized
+Button.accessibilityHeadingLevel: ✅
+Button.clicked: ✅
+Button.focus: ✅
+Button.frameChanged: ✅
+Button.height: ✅
+Button.isFocusedChanged: ✅
+Button.layoutDirection: not realized
+Button.rotationX: not realized
+Button.scaleY: ✅
+Button.unfocus: ✅
+Button.width: ✅
+Canvas.frameChanged: ✅
+Canvas.isAccessibilityHidden: not realized
+Canvas.isVisible: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
+Canvas.pivotX: ✅
+Canvas.rotationY: not realized
+Canvas.style: not realized
+Canvas.translationX: ✅
+CheckBox.accessibilityLabel: ✅
+CheckBox.automationExcludedWithChildren: ✅
+CheckBox.ignoresInput: not realized
+CheckBox.opacity: ✅
+CheckBox.pivotY: ✅
+CheckBox.scale: ✅
+CheckBox.translationY: ✅
+ColorBox.accessibilityHint: not realized
+ColorBox.background: not realized
+ColorBox.frame: ✅
+ColorBox.isEnabled: not realized
+ColorBox.rotation: ✅
+ColorBox.scaleX: ✅
+ColorBox.zIndex: not realized
+DatePicker.accessibilityHeadingLevel: ✅
+DatePicker.focus: ✅
+DatePicker.frameChanged: ✅
+DatePicker.height: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.layoutDirection: not realized
+DatePicker.rotationX: not realized
+DatePicker.scaleY: ✅
+DatePicker.unfocus: ✅
+DatePicker.width: ✅
+Ellipse.frameChanged: ✅
+Ellipse.isAccessibilityHidden: not realized
+Ellipse.isVisible: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.pivotX: ✅
+Ellipse.rotationY: not realized
+Ellipse.style: not realized
+Ellipse.translationX: ✅
+Grid.accessibilityLabel: ✅
+Grid.automationExcludedWithChildren: ✅
+Grid.ignoresInput: ✅
+Grid.opacity: ✅
+Grid.pivotY: ✅
+Grid.scale: ✅
+Grid.translationY: ✅
+HStack.accessibilityHint: ✅
+HStack.background: ✅
+HStack.frame: ✅
+HStack.isEnabled: not realized
+HStack.rotation: ✅
+HStack.scaleX: ✅
+HStack.zIndex: not realized
+Image.accessibilityHeadingLevel: ✅
+Image.focus: ✅
+Image.frameChanged: ✅
+Image.height: ✅
+Image.isFocusedChanged: ✅
+Image.layoutDirection: not realized
+Image.rotationX: not realized
+Image.scaleY: ✅
+Image.unfocus: ✅
+Image.width: ✅
+Label.frameChanged: ✅
+Label.isAccessibilityHidden: ✅
+Label.isVisible: ✅
+Label.maximumHeight: ✅
+Label.maximumWidth: ✅
+Label.minimumHeight: ✅
+Label.minimumWidth: ✅
+Label.pivotX: ✅
+Label.rotationY: not realized
+Label.style: not realized
+Label.translationX: ✅
+Line.accessibilityLabel: not realized
+Line.automationExcludedWithChildren: not realized
+Line.ignoresInput: not realized
+Line.opacity: ✅
+Line.pivotY: ✅
+Line.scale: ✅
+Line.translationY: ✅
+Map.accessibilityHint: not realized
+Map.background: not realized
+Map.frame: not realized
+Map.isEnabled: not realized
+Map.rotation: not realized
+Map.scaleX: not realized
+Map.zIndex: not realized
+Path.accessibilityHeadingLevel: not realized
+Path.focus: ✅
+Path.frameChanged: ✅
+Path.height: ✅
+Path.isFocusedChanged: ✅
+Path.layoutDirection: not realized
+Path.rotationX: not realized
+Path.scaleY: ✅
+Path.unfocus: ✅
+Path.width: ✅
+Picker.frameChanged: ✅
+Picker.isAccessibilityHidden: ✅
+Picker.isVisible: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
+Picker.pivotX: ✅
+Picker.rotationY: not realized
+Picker.style: not realized
+Picker.translationX: ✅
+Polygon.accessibilityLabel: not realized
+Polygon.automationExcludedWithChildren: not realized
+Polygon.ignoresInput: not realized
+Polygon.opacity: ✅
+Polygon.pivotY: ✅
+Polygon.scale: ✅
+Polygon.translationY: ✅
+Polyline.accessibilityHint: not realized
+Polyline.background: not realized
+Polyline.frame: ✅
+Polyline.isEnabled: not realized
+Polyline.rotation: ✅
+Polyline.scaleX: ✅
+Polyline.zIndex: not realized
+PositionIndicator.accessibilityHeadingLevel: not realized
+PositionIndicator.focus: not realized
+PositionIndicator.frameChanged: not realized
+PositionIndicator.height: not realized
+PositionIndicator.isFocusedChanged: not realized
+PositionIndicator.layoutDirection: not realized
+PositionIndicator.rotationX: not realized
+PositionIndicator.scaleY: not realized
+PositionIndicator.unfocus: not realized
+PositionIndicator.width: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.isVisible: ✅
+ProgressBar.maximumHeight: ✅
+ProgressBar.maximumWidth: ✅
+ProgressBar.minimumHeight: ✅
+ProgressBar.minimumWidth: ✅
+ProgressBar.pivotX: ✅
+ProgressBar.rotationY: not realized
+ProgressBar.style: not realized
+ProgressBar.translationX: ✅
+RadioButton.accessibilityLabel: ✅
+RadioButton.automationExcludedWithChildren: ✅
+RadioButton.ignoresInput: not realized
+RadioButton.opacity: ✅
+RadioButton.pivotY: ✅
+RadioButton.scale: ✅
+RadioButton.translationY: ✅
+Rectangle.accessibilityHint: not realized
+Rectangle.background: not realized
+Rectangle.frame: ✅
+Rectangle.isEnabled: not realized
+Rectangle.rotation: ✅
+Rectangle.scaleX: ✅
+Rectangle.zIndex: not realized
+ScrollView.accessibilityHeadingLevel: ✅
+ScrollView.focus: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.isFocusedChanged: ✅
+ScrollView.layoutDirection: not realized
+ScrollView.rotationX: not realized
+ScrollView.scaleY: ✅
+ScrollView.unfocus: ✅
+ScrollView.width: ✅
+SearchField.frameChanged: ✅
+SearchField.isAccessibilityHidden: ✅
+SearchField.isVisible: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
+SearchField.pivotX: ✅
+SearchField.rotationY: not realized
+SearchField.style: not realized
+SearchField.translationX: ✅
+Slider.accessibilityLabel: ✅
+Slider.automationExcludedWithChildren: not realized
+Slider.ignoresInput: not realized
+Slider.opacity: ✅
+Slider.pivotY: ✅
+Slider.scale: ✅
+Slider.translationY: ✅
+Stepper.accessibilityHint: ✅
+Stepper.background: not realized
+Stepper.frame: ✅
+Stepper.isEnabled: ✅
+Stepper.rotation: ✅
+Stepper.scaleX: ✅
+Stepper.zIndex: not realized
+Switch.accessibilityHeadingLevel: ✅
+Switch.focus: ✅
+Switch.frameChanged: ✅
+Switch.height: ✅
+Switch.isFocusedChanged: ✅
+Switch.layoutDirection: not realized
+Switch.rotationX: not realized
+Switch.scaleY: ✅
+Switch.unfocus: ✅
+Switch.width: ✅
+TextEditor.frameChanged: ✅
+TextEditor.isAccessibilityHidden: ✅
+TextEditor.isVisible: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
+TextEditor.pivotX: ✅
+TextEditor.rotationY: not realized
+TextEditor.style: not realized
+TextEditor.translationX: ✅
+TextField.accessibilityLabel: ✅
+TextField.automationExcludedWithChildren: not realized
+TextField.ignoresInput: not realized
+TextField.opacity: ✅
+TextField.pivotY: ✅
+TextField.scale: ✅
+TextField.translationY: ✅
+TimePicker.accessibilityHint: ✅
+TimePicker.background: not realized
+TimePicker.frame: ✅
+TimePicker.isEnabled: ✅
+TimePicker.rotation: ✅
+TimePicker.scaleX: ✅
+TimePicker.zIndex: not realized
+TitleBar.accessibilityHeadingLevel: not realized
+TitleBar.focus: not realized
+TitleBar.frameChanged: not realized
+TitleBar.height: not realized
+TitleBar.isFocusedChanged: not realized
+TitleBar.layoutDirection: not realized
+TitleBar.rotationX: not realized
+TitleBar.scaleY: not realized
+TitleBar.unfocus: not realized
+TitleBar.width: not realized
+VStack.frameChanged: ✅
+VStack.isAccessibilityHidden: ✅
+VStack.isVisible: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+VStack.pivotX: ✅
+VStack.rotationY: not realized
+VStack.style: not realized
+VStack.translationX: ✅
+WebView.accessibilityLabel: not realized
+WebView.automationExcludedWithChildren: not realized
+WebView.ignoresInput: not realized
+WebView.opacity: not realized
+WebView.pivotY: not realized
+WebView.scale: not realized
+WebView.translationY: not realized
+ZStack.accessibilityHint: ✅
+ZStack.background: ✅
+ZStack.frame: ✅
+ZStack.isEnabled: not realized
+ZStack.rotation: ✅
+ZStack.scaleX: ✅
+ZStack.zIndex: not realized

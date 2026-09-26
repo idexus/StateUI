@@ -678,8 +678,8 @@ enum SourceTree {
             ("StateUIAndroidTests", repository.appendingPathComponent("lib/StateUI.Android/Tests/Sources")),
             ("StateUIWinUITests", repository.appendingPathComponent("lib/StateUI.WinUI/Tests")),
             ("StateUIGTKTests", repository.appendingPathComponent("lib/StateUI.GTK/Tests")),
-            ("StateUIHostConformance", repository.appendingPathComponent("lib/StateUI.HostConformance/Sources")),
-            ("StateUIHostConformanceTests", repository.appendingPathComponent("lib/StateUI.HostConformance/Tests")),
+            ("StateUIHostConformance", repository.appendingPathComponent("lib/StateUI/Tests/HostConformance/Sources")),
+            ("StateUIHostConformanceTests", repository.appendingPathComponent("lib/StateUI/Tests/HostConformance/Tests")),
         ]
 
         for (target, root) in targets {

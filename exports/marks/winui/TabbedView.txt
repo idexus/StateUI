@@ -1,0 +1,4 @@
+Button.clicked: ✅
+TabbedView: ✅
+TabbedView.currentPage: ✅
+TabbedView.currentPageChanged: ✅

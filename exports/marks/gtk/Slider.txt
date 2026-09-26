@@ -1,0 +1,5 @@
+Slider: ✅
+Slider.maximum: ✅
+Slider.minimum: ✅
+Slider.value: ✅
+Slider.valueChanged: ✅

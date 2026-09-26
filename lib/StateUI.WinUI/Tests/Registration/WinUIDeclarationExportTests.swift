@@ -45,4 +45,11 @@ final class WinUIDeclarationExportTests: XCTestCase {
         XCTAssertEqual(unsupported.subtracting(WinUIRealization.unrealized).sorted(), [])
         XCTAssertEqual(made.intersection(WinUIRealization.unrealized).sorted(), [])
     }
+
+    /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does
+    /// not declare, none is written twice, a partial one says what is missing and a never says why.
+    @MainActor
+    func testTheRegisterThisHostWroteIsTrueOfTheContracts() {
+        XCTAssertEqual(WinUIRealization.register.problems, [])
+    }
 }

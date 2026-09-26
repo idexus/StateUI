@@ -1,0 +1,6 @@
+Button.clicked: ✅
+TextEditor: ✅
+TextEditor.growsWithText: ✅
+TextEditor.maximumLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅

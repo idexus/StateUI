@@ -1,0 +1,2 @@
+ActivityIndicator: ✅
+ActivityIndicator.isRunning: ✅

@@ -14,7 +14,9 @@
 # ---------------------------------------------------------------------------
 # Runs the WinUI host's tests: `swift test` in lib\StateUI.WinUI, whose test
 # runner is given the Windows App SDK first, as an application is - WinUI's
-# classes are found through the runner's manifest.
+# classes are found through the runner's manifest. Each test runs in a process
+# of its own: WinUI keeps GDI objects of every window a test closes, and a
+# process holds only so many (docs/design/platforms/winui/conformance.md).
 #
 #   .\test-winui.ps1 [-Filter <test>] [-ScratchPath <dir>]
 #
@@ -42,5 +44,5 @@ Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWi
 # A variable's name is its parameter's whatever the case, so the arguments have one of their own.
 $narrowing = @()
 if ($Filter) { $narrowing = @('--filter', $Filter) }
-swift test --package-path $StateUIWinUIHost @scratch --skip-build @narrowing
+swift test --package-path $StateUIWinUIHost @scratch --skip-build --parallel --num-workers 1 @narrowing
 exit $LASTEXITCODE

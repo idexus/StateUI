@@ -179,6 +179,7 @@ extern "C" bool stateui_winui_image_set(
             if (!each.empty() && exists(pictures() + each)) file = each;
         }
         auto named = count > 0 && names[0] && *names[0];
+        image.Tag(winrt::box_value(winrt::hstring(file)));
         if (file.empty()) {
             image.Source(nullptr);
             return !named;

@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Page
 
@@ -16,16 +16,16 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive |  |  |  |  |  |  |  |
+| `appearing` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `backButtonTitle` | property | `String` | adaptive |  |  |  |  |  |  |  |
-| `background` | property | `Color` | native |  |  |  |  |  |  |  |
-| `disappearing` | event |  | adaptive |  |  |  |  |  |  |  |
+| `background` | property | `Color` | native |  |  |  |  | ✅ |  |  |
+| `disappearing` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `hasBackButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `navigatedFrom` | event |  | adaptive |  |  |  |  |  |  |  |
-| `navigatedTo` | event |  | adaptive |  |  |  |  |  |  |  |
-| `navigatingFrom` | event |  | adaptive |  |  |  |  |  |  |  |
-| `padding` | property | `Insets` | native |  |  |  |  |  |  |  |
+| `hasNavigationBar` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
+| `navigatedFrom` | event |  | adaptive |  |  |  |  | ✅ |  |  |
+| `navigatedTo` | event |  | adaptive |  |  |  |  | ✅ |  |  |
+| `navigatingFrom` | event |  | adaptive |  |  |  |  | ✅ |  |  |
+| `padding` | property | `Insets` | native |  |  |  |  | ✅ |  |  |
 
 Realization:
 
@@ -43,4 +43,4 @@ What a page shows about itself where another container presents it as an item - 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
-| `title` | property | `String` | native |  |  |  |  |  |  |  |
+| `title` | property | `String` | native |  |  |  |  | ✅ |  |  |

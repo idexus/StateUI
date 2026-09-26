@@ -1,0 +1,4 @@
+Button.clicked: ✅
+Menu: ✅
+Menu.isEnabled: ✅
+Menu.text: ✅

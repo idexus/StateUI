@@ -1,12 +1,12 @@
 # Control dictionary
 
-Every element StateUI declares - each control, and each part an application, its windows and its pages are made of - member by member, with how far each target host realizes it.
+Every element StateUI declares - each control, and each part an application, its windows and its pages are made of - member by member, with what each target host's tests proved of it.
 
 A page is its element's contract rendered: the members it declares itself, then one section per tier it wears, each linking that tier's page. Every member shows its kind - a property, an event or an act - its value, the layer that realizes it, and a mark for each platform, because a host realizes the same inherited member differently on different elements: a background is a layer colour on a label and a drawn fill on an outlined layout.
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet.
+Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet - the note says why where its run said.
 
-A host's column comes from its runtime wherever it can: each host's suite writes what its registry realizes to `exports/` - `appkit.txt`, and `android.txt` from the Android suite on a device - read here and joined with the contracts, so each member is named under the contract declaring it and no owner is written by hand. A member a tier declares is marked on the tier only where the host realizes it on every element it registers that wears the tier; otherwise it is marked on those elements alone. What a registry cannot know stays declared in the host's sources (`AppKitRealization`, `AndroidRealization`) - every judgement: what a realization is missing, what a host realizes none of, and what it presents with no view of its own. A written note about a tier's member holds on every element wearing the tier. A row has one Notes cell for every host: AppKit's note as written, then each other host's as `Android Views: …`, joined by `; `. Nothing on a page is written by hand: `ControlDictionaryTests` fails when a page or a table below differs from the contracts and the declarations, or when a declaration names what no contract declares, and `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests` writes them again.
+A host's column is its tests' verdicts: each host's suite runs the conformance families - one for each contract, a case for every cell of every page - and writes what each said under `exports/marks/<host>/`, one line a member of an element, read here. A host's register - its records, what its runtime registers, what it never has - decides whether a case runs and what its verdict says, and nothing it declares marks a cell by itself. A tier's member is marked on every element wearing the tier, each by its own case. A row has one Notes cell for every host: AppKit's note as written, then each other host's as `Android Views: …`, joined by `; `. Nothing on a page is written by hand: `ControlDictionaryTests` fails when a page or a table below differs from the contracts and the verdicts, or when a verdict names what no contract declares, and `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests` writes them again.
 
 ## Controls
 
@@ -15,40 +15,40 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 <!-- controls:begin -->
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  | 14 ✅ |  | 13 ✅ |  |
-| [Button](Button.md) | 86 |  |  | 16 ✅ |  | 16 ✅ |  |
-| [Canvas](Canvas.md) | 70 |  |  |  |  | 12 ✅ |  |
-| [CheckBox](CheckBox.md) | 69 |  |  | 15 ✅ |  | 15 ✅ |  |
-| [ColorBox](ColorBox.md) | 68 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [DatePicker](DatePicker.md) | 80 |  |  |  |  | 13 ✅ |  |
-| [Ellipse](Ellipse.md) | 76 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [Grid](Grid.md) | 77 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [HStack](HStack.md) | 74 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [Image](Image.md) | 69 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [Label](Label.md) | 81 |  |  | 15 ✅ |  | 14 ✅ |  |
-| [Line](Line.md) | 80 |  |  | 13 ✅ |  | 12 ✅ |  |
+| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  | 14 ✅ |  | 51 ✅ |  |
+| [Button](Button.md) | 86 |  |  | 16 ✅ |  | 65 ✅ |  |
+| [Canvas](Canvas.md) | 70 |  |  |  |  | 48 ✅ |  |
+| [CheckBox](CheckBox.md) | 69 |  |  | 15 ✅ |  | 55 ✅ |  |
+| [ColorBox](ColorBox.md) | 68 |  |  | 13 ✅ |  | 46 ✅ |  |
+| [DatePicker](DatePicker.md) | 80 |  |  |  |  | 61 ✅ · 1 ☑️ |  |
+| [Ellipse](Ellipse.md) | 76 |  |  | 13 ✅ |  | 54 ✅ |  |
+| [Grid](Grid.md) | 77 |  |  | 13 ✅ |  | 61 ✅ |  |
+| [HStack](HStack.md) | 74 |  |  | 13 ✅ |  | 58 ✅ |  |
+| [Image](Image.md) | 69 |  |  | 13 ✅ |  | 52 ✅ |  |
+| [Label](Label.md) | 81 |  |  | 15 ✅ |  | 63 ✅ |  |
+| [Line](Line.md) | 80 |  |  | 13 ✅ |  | 58 ✅ |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
-| [Path](Path.md) | 77 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [Picker](Picker.md) | 82 |  |  | 16 ✅ |  | 16 ✅ |  |
-| [Polygon](Polygon.md) | 78 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [Polyline](Polyline.md) | 78 |  |  | 13 ✅ |  | 12 ✅ |  |
+| [Path](Path.md) | 77 |  |  | 13 ✅ |  | 55 ✅ |  |
+| [Picker](Picker.md) | 82 |  |  | 16 ✅ |  | 64 ✅ |  |
+| [Polygon](Polygon.md) | 78 |  |  | 13 ✅ |  | 56 ✅ |  |
+| [Polyline](Polyline.md) | 78 |  |  | 13 ✅ |  | 56 ✅ |  |
 | [PositionIndicator](PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 68 |  |  | 14 ✅ |  | 13 ✅ |  |
-| [RadioButton](RadioButton.md) | 81 |  |  | 18 ✅ |  | 18 ✅ |  |
-| [Rectangle](Rectangle.md) | 77 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [ScrollView](ScrollView.md) | 77 |  |  | 13 ✅ |  | 12 ✅ |  |
-| [SearchField](SearchField.md) | 89 |  |  | 16 ✅ |  | 16 ✅ |  |
-| [Slider](Slider.md) | 73 |  |  | 17 ✅ |  | 17 ✅ |  |
-| [Stepper](Stepper.md) | 71 |  |  | 18 ✅ |  | 18 ✅ |  |
-| [Switch](Switch.md) | 69 |  |  | 15 ✅ |  | 15 ✅ |  |
-| [TextEditor](TextEditor.md) | 87 |  |  | 16 ✅ |  | 16 ✅ |  |
-| [TextField](TextField.md) | 90 |  |  | 17 ✅ |  | 16 ✅ |  |
-| [TimePicker](TimePicker.md) | 78 |  |  |  |  | 13 ✅ |  |
+| [ProgressBar](ProgressBar.md) | 68 |  |  | 14 ✅ |  | 52 ✅ |  |
+| [RadioButton](RadioButton.md) | 81 |  |  | 18 ✅ |  | 62 ✅ |  |
+| [Rectangle](Rectangle.md) | 77 |  |  | 13 ✅ |  | 55 ✅ |  |
+| [ScrollView](ScrollView.md) | 77 |  |  | 13 ✅ |  | 62 ✅ |  |
+| [SearchField](SearchField.md) | 89 |  |  | 16 ✅ |  | 59 ✅ |  |
+| [Slider](Slider.md) | 73 |  |  | 17 ✅ |  | 55 ✅ |  |
+| [Stepper](Stepper.md) | 71 |  |  | 18 ✅ |  | 55 ✅ |  |
+| [Switch](Switch.md) | 69 |  |  | 15 ✅ |  | 54 ✅ |  |
+| [TextEditor](TextEditor.md) | 87 |  |  | 16 ✅ |  | 67 ✅ |  |
+| [TextField](TextField.md) | 90 |  |  | 17 ✅ |  | 66 ✅ |  |
+| [TimePicker](TimePicker.md) | 78 |  |  |  |  | 56 ✅ |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](VStack.md) | 74 |  |  | 13 ✅ |  | 12 ✅ |  |
+| [VStack](VStack.md) | 74 |  |  | 13 ✅ |  | 58 ✅ |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](ZStack.md) | 73 |  |  | 13 ✅ |  | 12 ✅ |  |
-| **Met** - ✅ and – | 2515 |  |  | 376 of 2515 met |  | 397 of 2515 met |  |
+| [ZStack](ZStack.md) | 73 |  |  | 13 ✅ |  | 57 ✅ |  |
+| **Met** - ✅ and – | 2515 |  |  | 376 of 2515 met |  | 1661 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -58,30 +58,30 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 12 |  |  |  |  |  |  |
+| [Application](Application.md) | 12 |  |  |  |  | 11 ✅ |  |
 | [Content](Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](Menu.md) | 2 |  |  |  |  |  |  |
+| [Menu](Menu.md) | 2 |  |  |  |  | 2 ✅ |  |
 | [MenuBar](MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 |  |  |  |  |  |  |
+| [MenuItem](MenuItem.md) | 6 |  |  |  |  | 3 ✅ |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |
-| [NavigationStack](NavigationStack.md) | 6 |  |  |  |  |  |  |
+| [NavigationStack](NavigationStack.md) | 6 |  |  |  |  | 2 ✅ |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](Page.md) | 12 |  |  |  |  |  |  |
+| [Page](Page.md) | 12 |  |  |  |  | 9 ✅ |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](Scene.md) | 6 |  |  |  |  |  |  |
-| [Span](Span.md) | 12 |  |  |  |  |  |  |
+| [Scene](Scene.md) | 6 |  |  |  |  | 3 ✅ |  |
+| [Span](Span.md) | 12 |  |  |  |  | 6 ✅ |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 5 |  |  |  |  |  |  |
-| [TabbedView](TabbedView.md) | 6 |  |  |  |  |  |  |
+| [SplitView](SplitView.md) | 5 |  |  |  |  | 3 ✅ |  |
+| [TabbedView](TabbedView.md) | 6 |  |  |  |  | 3 ✅ |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 |  |  |  |  |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 |  |  |  |  | 5 ✅ |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
+| [Window](Window.md) | 23 |  |  |  |  | 5 ✅ |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 52 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

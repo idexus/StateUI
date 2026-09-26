@@ -1,0 +1,292 @@
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.isAccessibilityHidden: ✅
+ActivityIndicator.isVisible: ✅
+ActivityIndicator.maximumHeight: ✅
+ActivityIndicator.maximumWidth: ✅
+ActivityIndicator.minimumHeight: ✅
+ActivityIndicator.minimumWidth: ✅
+ActivityIndicator.pivotX: ✅
+ActivityIndicator.rotationY: not realized
+ActivityIndicator.style: not realized
+ActivityIndicator.translationX: ✅
+Button.accessibilityLabel: ✅
+Button.automationExcludedWithChildren: ✅
+Button.clicked: ✅
+Button.ignoresInput: not realized
+Button.opacity: ✅
+Button.pivotY: ✅
+Button.scale: ✅
+Button.translationY: ✅
+Canvas.accessibilityHint: not realized
+Canvas.background: not realized
+Canvas.frame: ✅
+Canvas.isEnabled: not realized
+Canvas.rotation: ✅
+Canvas.scaleX: ✅
+Canvas.zIndex: not realized
+CheckBox.accessibilityHeadingLevel: ✅
+CheckBox.focus: ✅
+CheckBox.frameChanged: ✅
+CheckBox.height: ✅
+CheckBox.isFocusedChanged: ✅
+CheckBox.layoutDirection: not realized
+CheckBox.rotationX: not realized
+CheckBox.scaleY: ✅
+CheckBox.unfocus: ✅
+CheckBox.width: ✅
+ColorBox.frameChanged: ✅
+ColorBox.isAccessibilityHidden: not realized
+ColorBox.isVisible: ✅
+ColorBox.maximumHeight: ✅
+ColorBox.maximumWidth: ✅
+ColorBox.minimumHeight: ✅
+ColorBox.minimumWidth: ✅
+ColorBox.pivotX: ✅
+ColorBox.rotationY: not realized
+ColorBox.style: not realized
+ColorBox.translationX: ✅
+DatePicker.accessibilityLabel: ✅
+DatePicker.automationExcludedWithChildren: not realized
+DatePicker.ignoresInput: not realized
+DatePicker.opacity: ✅
+DatePicker.pivotY: ✅
+DatePicker.scale: ✅
+DatePicker.translationY: ✅
+Ellipse.accessibilityHint: not realized
+Ellipse.background: not realized
+Ellipse.frame: ✅
+Ellipse.isEnabled: not realized
+Ellipse.rotation: ✅
+Ellipse.scaleX: ✅
+Ellipse.zIndex: not realized
+Grid.accessibilityHeadingLevel: ✅
+Grid.focus: ✅
+Grid.frameChanged: ✅
+Grid.height: ✅
+Grid.isFocusedChanged: ✅
+Grid.layoutDirection: not realized
+Grid.rotationX: not realized
+Grid.scaleY: ✅
+Grid.unfocus: ✅
+Grid.width: ✅
+HStack.frameChanged: ✅
+HStack.isAccessibilityHidden: ✅
+HStack.isVisible: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
+HStack.pivotX: ✅
+HStack.rotationY: not realized
+HStack.style: not realized
+HStack.translationX: ✅
+Image.accessibilityLabel: ✅
+Image.automationExcludedWithChildren: ✅
+Image.ignoresInput: not realized
+Image.opacity: ✅
+Image.pivotY: ✅
+Image.scale: ✅
+Image.translationY: ✅
+Label.accessibilityHint: ✅
+Label.background: not realized
+Label.frame: ✅
+Label.isEnabled: not realized
+Label.rotation: ✅
+Label.scaleX: ✅
+Label.zIndex: not realized
+Line.accessibilityHeadingLevel: not realized
+Line.focus: ✅
+Line.frameChanged: ✅
+Line.height: ✅
+Line.isFocusedChanged: ✅
+Line.layoutDirection: not realized
+Line.rotationX: not realized
+Line.scaleY: ✅
+Line.unfocus: ✅
+Line.width: ✅
+Map.frameChanged: not realized
+Map.isAccessibilityHidden: not realized
+Map.isVisible: not realized
+Map.maximumHeight: not realized
+Map.maximumWidth: not realized
+Map.minimumHeight: not realized
+Map.minimumWidth: not realized
+Map.pivotX: not realized
+Map.rotationY: not realized
+Map.style: not realized
+Map.translationX: not realized
+Path.accessibilityLabel: not realized
+Path.automationExcludedWithChildren: not realized
+Path.ignoresInput: not realized
+Path.opacity: ✅
+Path.pivotY: ✅
+Path.scale: ✅
+Path.translationY: ✅
+Picker.accessibilityHint: ✅
+Picker.background: not realized
+Picker.frame: ✅
+Picker.isEnabled: ✅
+Picker.rotation: ✅
+Picker.scaleX: ✅
+Picker.zIndex: not realized
+Polygon.accessibilityHeadingLevel: not realized
+Polygon.focus: ✅
+Polygon.frameChanged: ✅
+Polygon.height: ✅
+Polygon.isFocusedChanged: ✅
+Polygon.layoutDirection: not realized
+Polygon.rotationX: not realized
+Polygon.scaleY: ✅
+Polygon.unfocus: ✅
+Polygon.width: ✅
+Polyline.frameChanged: ✅
+Polyline.isAccessibilityHidden: not realized
+Polyline.isVisible: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.pivotX: ✅
+Polyline.rotationY: not realized
+Polyline.style: not realized
+Polyline.translationX: ✅
+PositionIndicator.accessibilityLabel: not realized
+PositionIndicator.automationExcludedWithChildren: not realized
+PositionIndicator.ignoresInput: not realized
+PositionIndicator.opacity: not realized
+PositionIndicator.pivotY: not realized
+PositionIndicator.scale: not realized
+PositionIndicator.translationY: not realized
+ProgressBar.accessibilityHint: ✅
+ProgressBar.background: not realized
+ProgressBar.frame: ✅
+ProgressBar.isEnabled: not realized
+ProgressBar.rotation: ✅
+ProgressBar.scaleX: ✅
+ProgressBar.zIndex: not realized
+RadioButton.accessibilityHeadingLevel: ✅
+RadioButton.focus: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.isFocusedChanged: ✅
+RadioButton.layoutDirection: not realized
+RadioButton.rotationX: not realized
+RadioButton.scaleY: ✅
+RadioButton.unfocus: ✅
+RadioButton.width: ✅
+Rectangle.frameChanged: ✅
+Rectangle.isAccessibilityHidden: not realized
+Rectangle.isVisible: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
+Rectangle.pivotX: ✅
+Rectangle.rotationY: not realized
+Rectangle.style: not realized
+Rectangle.translationX: ✅
+ScrollView.accessibilityLabel: ✅
+ScrollView.automationExcludedWithChildren: ✅
+ScrollView.ignoresInput: not realized
+ScrollView.opacity: ✅
+ScrollView.pivotY: ✅
+ScrollView.scale: ✅
+ScrollView.translationY: ✅
+SearchField.accessibilityHint: ✅
+SearchField.background: not realized
+SearchField.frame: ✅
+SearchField.isEnabled: ✅
+SearchField.rotation: ✅
+SearchField.scaleX: ✅
+SearchField.zIndex: not realized
+Slider.accessibilityHeadingLevel: ✅
+Slider.focus: ✅
+Slider.frameChanged: ✅
+Slider.height: ✅
+Slider.isFocusedChanged: ✅
+Slider.layoutDirection: not realized
+Slider.rotationX: not realized
+Slider.scaleY: ✅
+Slider.unfocus: ✅
+Slider.width: ✅
+Stepper.frameChanged: ✅
+Stepper.isAccessibilityHidden: ✅
+Stepper.isVisible: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.pivotX: ✅
+Stepper.rotationY: not realized
+Stepper.style: not realized
+Stepper.translationX: ✅
+Switch.accessibilityLabel: ✅
+Switch.automationExcludedWithChildren: not realized
+Switch.ignoresInput: not realized
+Switch.opacity: ✅
+Switch.pivotY: ✅
+Switch.scale: ✅
+Switch.translationY: ✅
+TextEditor.accessibilityHint: ✅
+TextEditor.background: not realized
+TextEditor.frame: ✅
+TextEditor.isEnabled: ✅
+TextEditor.rotation: ✅
+TextEditor.scaleX: ✅
+TextEditor.zIndex: not realized
+TextField.accessibilityHeadingLevel: ✅
+TextField.focus: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.isFocusedChanged: ✅
+TextField.layoutDirection: not realized
+TextField.rotationX: not realized
+TextField.scaleY: ✅
+TextField.unfocus: ✅
+TextField.width: ✅
+TimePicker.frameChanged: ✅
+TimePicker.isAccessibilityHidden: ✅
+TimePicker.isVisible: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
+TimePicker.pivotX: ✅
+TimePicker.rotationY: not realized
+TimePicker.style: not realized
+TimePicker.translationX: ✅
+TitleBar.accessibilityLabel: not realized
+TitleBar.automationExcludedWithChildren: not realized
+TitleBar.ignoresInput: not realized
+TitleBar.opacity: not realized
+TitleBar.pivotY: not realized
+TitleBar.scale: not realized
+TitleBar.translationY: not realized
+VStack.accessibilityHint: ✅
+VStack.background: ✅
+VStack.frame: ✅
+VStack.isEnabled: not realized
+VStack.rotation: ✅
+VStack.scaleX: ✅
+VStack.zIndex: not realized
+WebView.accessibilityHeadingLevel: not realized
+WebView.focus: not realized
+WebView.frameChanged: not realized
+WebView.height: not realized
+WebView.isFocusedChanged: not realized
+WebView.layoutDirection: not realized
+WebView.rotationX: not realized
+WebView.scaleY: not realized
+WebView.unfocus: not realized
+WebView.width: not realized
+ZStack.frameChanged: ✅
+ZStack.isAccessibilityHidden: ✅
+ZStack.isVisible: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.pivotX: ✅
+ZStack.rotationY: not realized
+ZStack.style: not realized
+ZStack.translationX: ✅

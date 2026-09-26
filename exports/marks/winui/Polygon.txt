@@ -1,0 +1,4 @@
+Button.clicked: ✅
+Polygon: ✅
+Polygon.fillRule: ✅
+Polygon.points: ✅

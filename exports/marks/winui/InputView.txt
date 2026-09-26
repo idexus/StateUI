@@ -1,0 +1,34 @@
+Button.clicked: ✅
+SearchField.cursorPosition: not realized
+SearchField.inputPurpose: not realized
+SearchField.isReadOnly: not realized
+SearchField.isSpellCheckEnabled: not realized
+SearchField.isTextPredictionEnabled: not realized
+SearchField.maximumLength: ✅
+SearchField.placeholder: ✅
+SearchField.placeholderColor: not realized
+SearchField.selectionLength: not realized
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: ✅
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: ✅
+TextEditor.selectionLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: ✅
+TextField.inputPurpose: ✅
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: ✅
+TextField.isTextPredictionEnabled: ✅
+TextField.maximumLength: ✅
+TextField.placeholder: ✅
+TextField.placeholderColor: ✅
+TextField.selectionLength: ✅
+TextField.text: ✅
+TextField.textChanged: ✅

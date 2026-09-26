@@ -95,7 +95,7 @@ final class HostDeclarationTests: XCTestCase {
     /// runtime says what it realizes, and a name it invents fails HERE rather
     /// than becoming a row nobody can explain.
     func testEveryHostsExportJoinsWithTheContracts() throws {
-        for (host, path) in ControlDictionary.exports.sorted(by: { $0.key < $1.key }) {
+        for (host, path) in Self.exports.sorted(by: { $0.key < $1.key }) {
             let declaration = try XCTUnwrap(
                 HostDeclaration(text: try String(
                     contentsOf: SourceTree.repository.appendingPathComponent(path), encoding: .utf8)),
@@ -118,6 +118,12 @@ final class HostDeclarationTests: XCTestCase {
                 HostRealizedMember(element: "Image", owner: "ImageElement", member: "aspect")))
         }
     }
+
+    /// Where each host's suite writes what its runtime realizes, by the host's name.
+    private static let exports = [
+        "AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt", "WinUI 3": "exports/winui.txt",
+        "GTK 4": "exports/gtk.txt",
+    ]
 
     /// A registry's realization says each member on every element; its declaration says an element's
     /// own there, the shared machinery once, and leaves an application's own element to the application.

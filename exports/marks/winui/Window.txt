@@ -1,0 +1,24 @@
+ModalStack: ✅
+Window.activated: ✅
+Window.created: not realized
+Window.deactivated: ✅
+Window.destroying: not realized
+Window.floatsOnTop: not realized
+Window.height: not realized
+Window.hidesWhenInactive: not realized
+Window.isMaximizable: not realized
+Window.isMinimizable: not realized
+Window.isTranslucent: not realized
+Window.maximumHeight: not realized
+Window.maximumWidth: not realized
+Window.minimumHeight: not realized
+Window.minimumWidth: not realized
+Window.modalPopped: ✅
+Window.resumed: ✅
+Window.stopped: ✅
+Window.title: not realized
+Window.width: not realized
+Window.windowType: not realized
+Window.windowValue: not realized
+Window.x: not realized
+Window.y: not realized

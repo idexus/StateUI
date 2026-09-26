@@ -41,41 +41,46 @@ own documentation.
 
 ## Marks
 
-A mark is earned by a test. A host's column shows ✅ for a member only where a
-test of that host's own suite covered the member on its element and passed
-on that host: each run writes what its passing tests proved under
-`exports/covered/<host>/`, one "Element.member" a line, and the dictionary
-reads those files. A host none of whose tests has written a proof has
-proved nothing, whatever it implements.
+A mark is a test's verdict. A host's column shows only what its own suite's
+run of the conformance families said of each member on each element: the
+run writes one verdict a line under `exports/marks/<host>/<Family>.txt`,
+and the dictionary reads those files and nothing else. A host none of whose
+runs wrote a verdict has an empty column, whatever it implements.
 
-What a host implements decides only whether its tests of a member run. It
-declares that in a source of its own - a record per member, realized in full
-or in part, the part naming what is missing - and its suite exports what its
-runtime registers; the dictionary joins the export with the contracts,
-naming each member under the contract that declares it, what is written
-first. A member proven while its record says what is missing is ☑️. – comes
-from the host's register alone: the members and elements its family will
-never have, each with why.
+A run judges a member by the host's register - `HostRegister`, the records
+a host writes by hand and what its runtime registers - and by the case:
 
-The rule is the host layer's `HostMarks`, a host's records as `HostRecord`s:
-the dictionary reads each host's column through it, and a conformance case
-asks it whether the host it runs on realizes what the case covers - one rule
-for the page and the test.
+```text
+  Button.clicked: ✅               a passing case proved it
+  DatePicker.format: ☑️ <missing>  proved, while the register says what is missing
+  Map: – <why>                     the host's family never has it
+  Line.x1: not realized            empty: the host has no realization yet
+  TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
+```
+
+A case runs only where the host realizes every member it covers; a member
+the register calls never is marked – without the case running. The element
+itself has a verdict of its own, `Button: ✅`, from its creation case: the
+creation table's mark. A tier's row groups the elements wearing the tier
+that the host's run judged - made, or never had.
+
+A host checks its own register in its suite (`HostRegister.problems`): a
+record naming what its owner does not declare, one written twice, a partial
+one saying nothing is missing, a never saying no reason.
 
 ```text
   ✅   proven on that host by its own passing test
   ☑️   proven by its test, but the host records what is missing
   –    never on that host's family; its register says why
-       (empty) not proven on that host yet
+       (empty) not proven on that host yet - the note says why, where its run said
 ```
 
 ## Rendering again
 
 `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests` writes the
 pages and the matrix's blocks again. Without the variable, the suite refuses
-a document that differs from what the contracts render, a record naming a
-member no contract declares, a record written twice, and a ☑️ without its
-note. A change to a contract's first paragraph, a member, a layer or a
-host's record is committed together with the pages it renders. A host's
-export is written again through that host's own suite, with
-`STATEUI_UPDATE_EXPORTS=1`.
+a document that differs from what the contracts render, a line that is no
+verdict, and a verdict on what no contract of its element declares. A change
+to a contract's first paragraph, a member or a layer is committed together
+with the pages it renders; a host's verdicts are written again through that
+host's own suite, with `STATEUI_UPDATE_EXPORTS=1`, and the pages after them.

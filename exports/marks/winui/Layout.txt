@@ -1,0 +1,13 @@
+Button.clicked: ✅
+Grid.avoidsSafeArea: not realized
+Grid.clipsContent: ✅
+Grid.letsInputThrough: not realized
+HStack.avoidsSafeArea: not realized
+HStack.clipsContent: ✅
+HStack.letsInputThrough: not realized
+VStack.avoidsSafeArea: not realized
+VStack.clipsContent: ✅
+VStack.letsInputThrough: not realized
+ZStack.avoidsSafeArea: not realized
+ZStack.clipsContent: ✅
+ZStack.letsInputThrough: not realized

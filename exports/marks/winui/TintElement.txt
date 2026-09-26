@@ -1,0 +1,8 @@
+ActivityIndicator.tint: ✅
+Button.clicked: ✅
+CheckBox.tint: ✅
+Picker.tint: ✅
+ProgressBar.tint: ✅
+SearchField.tint: not realized
+Slider.tint: ✅
+Switch.tint: ✅

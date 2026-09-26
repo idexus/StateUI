@@ -1,0 +1,8 @@
+Scene: ✅
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.destroying: not realized
+Scene.stopped: ✅
+Scene.windowClosed: not realized
+Scene.windowRestored: not realized
+Window.windowType: not realized
