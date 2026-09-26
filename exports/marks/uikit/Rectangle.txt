@@ -1,3 +1,4 @@
-Rectangle: not realized
-Rectangle.cornerRadius: not realized
-Rectangle.fill: not realized
+Button.clicked: ✅
+Rectangle: ✅
+Rectangle.cornerRadius: ✅
+Rectangle.fill: ✅

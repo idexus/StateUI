@@ -1,3 +1,4 @@
-Polygon: not realized
-Polygon.fillRule: not realized
-Polygon.points: not realized
+Button.clicked: ✅
+Polygon: ✅
+Polygon.fillRule: ✅
+Polygon.points: ✅

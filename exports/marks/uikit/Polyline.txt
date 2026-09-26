@@ -1,3 +1,4 @@
-Polyline: not realized
-Polyline.fillRule: not realized
-Polyline.points: not realized
+Button.clicked: ✅
+Polyline: ✅
+Polyline.fillRule: ✅
+Polyline.points: ✅

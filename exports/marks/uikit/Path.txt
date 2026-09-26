@@ -1,2 +1,3 @@
-Path: not realized
-Path.data: not realized
+Button.clicked: ✅
+Path: ✅
+Path.data: ✅

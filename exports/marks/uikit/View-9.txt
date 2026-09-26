@@ -35,15 +35,12 @@ Map.panTouchCount: not realized
 Map.panUpdated: not realized
 Map.panXChannel: not realized
 Path.frameChanged: not realized
-Path.gridColumnSpan: not realized
-Path.gridRowSpan: not realized
 Picker.frameChanged: not realized
 Polygon.canDrag: not realized
 Polygon.dragStarting: not realized
 Polygon.dragText: not realized
 Polygon.dropCompleted: not realized
 Polygon.frameChanged: not realized
-Polygon.margin: not realized
 Polyline.pinchUpdated: not realized
 PositionIndicator.panYChannel: not realized
 ProgressBar.tapCount: not realized
@@ -54,8 +51,6 @@ Rectangle.dragLeave: not realized
 Rectangle.dragOver: not realized
 Rectangle.drop: not realized
 Rectangle.frameChanged: not realized
-Rectangle.horizontalAlignment: not realized
-Rectangle.verticalAlignment: not realized
 ScrollView.pointerEntered: not realized
 ScrollView.pointerExited: not realized
 ScrollView.pointerMoved: not realized

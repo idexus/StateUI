@@ -13,18 +13,18 @@ Grid.isAccessibilityHidden: not realized
 HStack.accessibilityLabel: ✅
 Image.frame: not realized
 Label.frameChanged: not realized
-Line.isVisible: not realized
-Line.translationX: not realized
+Line.isVisible: ✅
+Line.translationX: ✅
 Map.scale: not realized
-Path.rotation: not realized
+Path.rotation: ✅
 Picker.layoutDirection: not realized
 Polygon.isAccessibilityHidden: not realized
-Polyline.accessibilityLabel: not realized
+Polyline.accessibilityLabel: ✅
 PositionIndicator.frame: not realized
 ProgressBar.frameChanged: not realized
 RadioButton.isVisible: ✅
 RadioButton.translationX: ✅
-Rectangle.scale: not realized
+Rectangle.scale: ✅
 ScrollView.rotation: not realized
 SearchField.layoutDirection: not realized
 Slider.isAccessibilityHidden: not realized

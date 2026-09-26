@@ -32,6 +32,18 @@ A colour box is a view of one colour, its corners rounded each by its own
 radius as a quarter of an ellipse; it takes the room its layout gives it and
 asks for none.
 
+## The shapes
+
+A shape draws its geometry for the room its layout gives it: a rectangle -
+its corners rounded, none past half its side - and an ellipse fill the room
+half their outline in from its edges, so the stroke never spills over it; a
+line, a path, a polygon and a polyline draw their own geometry, placed in the
+room by the host layer's rule. Every one is then moved by its own transform.
+The fill and the stroke are each a layer the shape's path cuts out of its
+brush - a colour, or a gradient over the room - the stroke with its dashes,
+ends, joins and miter limit, its dashes and gaps in stroke widths. A shape
+asks for no room of its own.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and

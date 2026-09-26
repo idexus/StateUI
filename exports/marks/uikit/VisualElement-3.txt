@@ -12,12 +12,12 @@ HStack.isEnabled: cannot read isEnabled of HStack - UIKit's driver has no path f
 HStack.zIndex: not realized
 Image.scaleY: ✅
 Label.rotationY: ✅
-Line.pivotY: not realized
+Line.pivotY: ✅
 Map.background: not realized
 Path.accessibilityHeadingLevel: not realized
 Picker.style: not realized
 Polygon.ignoresInput: not realized
-Polyline.isEnabled: not realized
+Polyline.isEnabled: cannot read isEnabled of Polyline - UIKit's driver has no path for it yet
 Polyline.zIndex: not realized
 PositionIndicator.scaleY: not realized
 ProgressBar.rotationY: ✅

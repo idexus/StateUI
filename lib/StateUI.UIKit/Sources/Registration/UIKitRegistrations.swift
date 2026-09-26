@@ -19,6 +19,7 @@ enum UIKitRegistrations {
         values(registry)
         indicators(registry)
         pickers(registry)
+        shapes(registry)
         layouts(registry)
         shared(registry)
         return registry

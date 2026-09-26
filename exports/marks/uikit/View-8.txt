@@ -32,8 +32,6 @@ Line.panYChannel: not realized
 Map.tapCount: not realized
 Map.tapped: not realized
 Path.frameChanged: not realized
-Path.gridColumn: not realized
-Path.gridRow: not realized
 Picker.allowDrop: not realized
 Picker.dragLeave: not realized
 Picker.dragOver: not realized
@@ -57,7 +55,6 @@ Rectangle.dragStarting: not realized
 Rectangle.dragText: not realized
 Rectangle.dropCompleted: not realized
 Rectangle.frameChanged: not realized
-Rectangle.margin: not realized
 ScrollView.pinchUpdated: not realized
 SearchField.panYChannel: not realized
 Slider.tapCount: not realized

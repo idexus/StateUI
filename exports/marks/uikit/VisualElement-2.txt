@@ -14,19 +14,15 @@ HStack.opacity: ✅
 HStack.translationY: ✅
 Image.scaleX: ✅
 Label.rotationX: ✅
-Line.pivotX: not realized
+Line.pivotX: ✅
 Map.automationExcludedWithChildren: not realized
-Path.accessibilityHint: not realized
+Path.accessibilityHint: ✅
 Picker.focus: not realized
 Picker.isFocusedChanged: not realized
 Picker.unfocus: not realized
 Polygon.frameChanged: not realized
-Polygon.maximumHeight: not realized
-Polygon.maximumWidth: not realized
-Polygon.minimumHeight: not realized
-Polygon.minimumWidth: not realized
-Polyline.opacity: not realized
-Polyline.translationY: not realized
+Polyline.opacity: ✅
+Polyline.translationY: ✅
 PositionIndicator.scaleX: not realized
 ProgressBar.rotationX: ✅
 RadioButton.pivotX: ✅

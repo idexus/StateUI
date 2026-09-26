@@ -7,25 +7,21 @@ ColorBox.focus: not realized
 ColorBox.isFocusedChanged: not realized
 ColorBox.unfocus: not realized
 DatePicker.frameChanged: not realized
-Ellipse.opacity: not realized
-Ellipse.translationY: not realized
+Ellipse.opacity: ✅
+Ellipse.translationY: ✅
 Grid.scaleX: ✅
 HStack.rotationX: ✅
 Image.pivotX: ✅
 Label.automationExcludedWithChildren: not realized
-Line.accessibilityHint: not realized
+Line.accessibilityHint: ✅
 Map.focus: not realized
 Map.isFocusedChanged: not realized
 Map.unfocus: not realized
 Path.frameChanged: not realized
-Path.maximumHeight: not realized
-Path.maximumWidth: not realized
-Path.minimumHeight: not realized
-Path.minimumWidth: not realized
 Picker.opacity: ✅
 Picker.translationY: ✅
-Polygon.scaleX: not realized
-Polyline.rotationX: not realized
+Polygon.scaleX: ✅
+Polyline.rotationX: ✅
 PositionIndicator.pivotX: not realized
 ProgressBar.automationExcludedWithChildren: not realized
 RadioButton.accessibilityHint: ✅

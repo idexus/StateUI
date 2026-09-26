@@ -33,7 +33,6 @@ Line.panXChannel: not realized
 Map.frameChanged: not realized
 Map.gridColumnSpan: not realized
 Map.gridRowSpan: not realized
-Path.area: not realized
 Path.frameChanged: not realized
 Picker.canDrag: not realized
 Picker.dragStarting: not realized

@@ -6,8 +6,6 @@ CheckBox.isAccessibilityHidden: not realized
 ColorBox.accessibilityLabel: ✅
 DatePicker.frame: not realized
 Ellipse.frameChanged: not realized
-Ellipse.height: not realized
-Ellipse.width: not realized
 Grid.isVisible: ✅
 Grid.translationX: ✅
 HStack.scale: ✅
@@ -17,13 +15,13 @@ Line.isAccessibilityHidden: not realized
 Map.accessibilityLabel: not realized
 Path.frame: not realized
 Picker.frameChanged: not realized
-Polygon.isVisible: not realized
-Polygon.translationX: not realized
-Polyline.scale: not realized
+Polygon.isVisible: ✅
+Polygon.translationX: ✅
+Polyline.scale: ✅
 PositionIndicator.rotation: not realized
 ProgressBar.layoutDirection: not realized
 RadioButton.isAccessibilityHidden: not realized
-Rectangle.accessibilityLabel: not realized
+Rectangle.accessibilityLabel: ✅
 ScrollView.frame: not realized
 SearchField.frameChanged: not realized
 Slider.isVisible: ✅

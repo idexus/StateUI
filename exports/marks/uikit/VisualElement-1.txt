@@ -14,13 +14,11 @@ Image.scale: ✅
 Label.rotation: ✅
 Line.layoutDirection: not realized
 Map.isAccessibilityHidden: not realized
-Path.accessibilityLabel: not realized
+Path.accessibilityLabel: ✅
 Picker.frame: not realized
 Polygon.frameChanged: not realized
-Polygon.height: not realized
-Polygon.width: not realized
-Polyline.isVisible: not realized
-Polyline.translationX: not realized
+Polyline.isVisible: ✅
+Polyline.translationX: ✅
 PositionIndicator.scale: not realized
 ProgressBar.rotation: ✅
 RadioButton.layoutDirection: not realized

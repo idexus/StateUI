@@ -6,15 +6,15 @@ CheckBox.isEnabled: ✅
 CheckBox.zIndex: not realized
 ColorBox.scaleY: ✅
 DatePicker.rotationY: ✅
-Ellipse.pivotY: not realized
+Ellipse.pivotY: ✅
 Grid.background: cannot read background of Grid - UIKit's driver has no path for it yet
 HStack.accessibilityHeadingLevel: not realized
 Image.style: not realized
 Label.ignoresInput: not realized
-Line.isEnabled: not realized
+Line.isEnabled: cannot read isEnabled of Line - UIKit's driver has no path for it yet
 Line.zIndex: not realized
 Map.scaleY: not realized
-Path.rotationY: not realized
+Path.rotationY: ✅
 Picker.pivotY: ✅
 Polygon.background: not realized
 Polyline.accessibilityHeadingLevel: not realized
@@ -22,7 +22,7 @@ PositionIndicator.style: not realized
 ProgressBar.ignoresInput: not realized
 RadioButton.isEnabled: ✅
 RadioButton.zIndex: not realized
-Rectangle.scaleY: not realized
+Rectangle.scaleY: ✅
 ScrollView.rotationY: not realized
 SearchField.pivotY: ✅
 Slider.background: not realized

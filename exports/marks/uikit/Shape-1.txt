@@ -1,30 +1,31 @@
-Ellipse.aspect: not realized
-Ellipse.fill: not realized
-Ellipse.renderTransform: not realized
-Ellipse.strokeLineCap: not realized
-Ellipse.strokeWidth: not realized
-Line.fill: not realized
-Line.renderTransform: not realized
-Line.stroke: not realized
-Line.strokeDashPattern: not realized
-Line.strokeLineJoin: not realized
-Line.strokeWidth: not realized
-Path.aspect: not realized
-Path.stroke: not realized
-Path.strokeDashOffset: not realized
-Path.strokeMiterLimit: not realized
-Polygon.aspect: not realized
-Polygon.fill: not realized
-Polygon.renderTransform: not realized
-Polygon.strokeLineCap: not realized
-Polygon.strokeWidth: not realized
-Polyline.fill: not realized
-Polyline.renderTransform: not realized
-Polyline.stroke: not realized
-Polyline.strokeDashPattern: not realized
-Polyline.strokeLineJoin: not realized
-Polyline.strokeWidth: not realized
-Rectangle.aspect: not realized
-Rectangle.stroke: not realized
-Rectangle.strokeDashOffset: not realized
-Rectangle.strokeMiterLimit: not realized
+Button.clicked: ✅
+Ellipse.aspect: cannot read aspect of Ellipse - UIKit's driver has no path for it yet
+Ellipse.fill: ✅
+Ellipse.renderTransform: ✅
+Ellipse.strokeLineCap: cannot read strokeLineCap of Ellipse - UIKit's driver has no path for it yet
+Ellipse.strokeWidth: cannot read strokeWidth of Ellipse - UIKit's driver has no path for it yet
+Line.fill: cannot read fill of Line - UIKit's driver has no path for it yet
+Line.renderTransform: cannot read renderTransform of Line - UIKit's driver has no path for it yet
+Line.stroke: ✅
+Line.strokeDashPattern: cannot read strokeDashPattern of Line - UIKit's driver has no path for it yet
+Line.strokeLineJoin: cannot read strokeLineJoin of Line - UIKit's driver has no path for it yet
+Line.strokeWidth: ✅
+Path.aspect: ✅
+Path.stroke: cannot read stroke of Path - UIKit's driver has no path for it yet
+Path.strokeDashOffset: cannot read strokeDashOffset of Path - UIKit's driver has no path for it yet
+Path.strokeMiterLimit: cannot read strokeMiterLimit of Path - UIKit's driver has no path for it yet
+Polygon.aspect: cannot read aspect of Polygon - UIKit's driver has no path for it yet
+Polygon.fill: ✅
+Polygon.renderTransform: ✅
+Polygon.strokeLineCap: cannot read strokeLineCap of Polygon - UIKit's driver has no path for it yet
+Polygon.strokeWidth: cannot read strokeWidth of Polygon - UIKit's driver has no path for it yet
+Polyline.fill: cannot read fill of Polyline - UIKit's driver has no path for it yet
+Polyline.renderTransform: cannot read renderTransform of Polyline - UIKit's driver has no path for it yet
+Polyline.stroke: ✅
+Polyline.strokeDashPattern: cannot read strokeDashPattern of Polyline - UIKit's driver has no path for it yet
+Polyline.strokeLineJoin: cannot read strokeLineJoin of Polyline - UIKit's driver has no path for it yet
+Polyline.strokeWidth: ✅
+Rectangle.aspect: ✅
+Rectangle.stroke: cannot read stroke of Rectangle - UIKit's driver has no path for it yet
+Rectangle.strokeDashOffset: cannot read strokeDashOffset of Rectangle - UIKit's driver has no path for it yet
+Rectangle.strokeMiterLimit: cannot read strokeMiterLimit of Rectangle - UIKit's driver has no path for it yet

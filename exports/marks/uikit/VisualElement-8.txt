@@ -16,11 +16,11 @@ HStack.unfocus: not realized
 Image.frameChanged: not realized
 Label.opacity: ✅
 Label.translationY: ✅
-Line.scaleX: not realized
+Line.scaleX: ✅
 Map.rotationX: not realized
-Path.pivotX: not realized
+Path.pivotX: ✅
 Picker.automationExcludedWithChildren: not realized
-Polygon.accessibilityHint: not realized
+Polygon.accessibilityHint: ✅
 Polyline.focus: not realized
 Polyline.isFocusedChanged: not realized
 Polyline.unfocus: not realized
@@ -32,7 +32,7 @@ PositionIndicator.minimumWidth: not realized
 ProgressBar.opacity: ✅
 ProgressBar.translationY: ✅
 RadioButton.scaleX: ✅
-Rectangle.rotationX: not realized
+Rectangle.rotationX: ✅
 ScrollView.pivotX: not realized
 SearchField.automationExcludedWithChildren: not realized
 Slider.accessibilityHint: ✅

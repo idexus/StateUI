@@ -12,7 +12,7 @@ HStack.ignoresInput: ✅
 Image.isEnabled: cannot read isEnabled of Image - UIKit's driver has no path for it yet
 Image.zIndex: not realized
 Label.scaleY: ✅
-Line.rotationY: not realized
+Line.rotationY: ✅
 Map.pivotY: not realized
 Path.background: not realized
 Picker.accessibilityHeadingLevel: not realized
@@ -22,7 +22,7 @@ PositionIndicator.isEnabled: not realized
 PositionIndicator.zIndex: not realized
 ProgressBar.scaleY: ✅
 RadioButton.rotationY: ✅
-Rectangle.pivotY: not realized
+Rectangle.pivotY: ✅
 ScrollView.background: not realized
 SearchField.accessibilityHeadingLevel: not realized
 Slider.style: not realized

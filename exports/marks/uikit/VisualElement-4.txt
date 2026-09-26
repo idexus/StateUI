@@ -6,20 +6,18 @@ Canvas.scale: not realized
 CheckBox.rotation: ✅
 ColorBox.layoutDirection: not realized
 DatePicker.isAccessibilityHidden: not realized
-Ellipse.accessibilityLabel: not realized
+Ellipse.accessibilityLabel: ✅
 Grid.frame: not realized
 HStack.frameChanged: not realized
 Image.isVisible: ✅
 Image.translationX: ✅
 Label.scale: ✅
-Line.rotation: not realized
+Line.rotation: ✅
 Map.layoutDirection: not realized
 Path.isAccessibilityHidden: not realized
 Picker.accessibilityLabel: ✅
 Polygon.frame: not realized
 Polyline.frameChanged: not realized
-Polyline.height: not realized
-Polyline.width: not realized
 PositionIndicator.isVisible: not realized
 PositionIndicator.translationX: not realized
 ProgressBar.scale: ✅

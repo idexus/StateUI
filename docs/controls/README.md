@@ -21,21 +21,21 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [CheckBox](CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 17 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
 | [ColorBox](ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 16 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
 | [DatePicker](DatePicker.md) | 80 | 59 ✅ · 2 ☑️ | 19 ✅ |  | 56 ✅ | 62 ✅ · 1 ☑️ |  |
-| [Ellipse](Ellipse.md) | 76 | 56 ✅ · 2 ☑️ |  | 13 ✅ | 57 ✅ | 60 ✅ |  |
+| [Ellipse](Ellipse.md) | 76 | 56 ✅ · 2 ☑️ | 19 ✅ | 13 ✅ | 57 ✅ | 60 ✅ |  |
 | [Grid](Grid.md) | 77 | 59 ✅ · 1 ☑️ | 22 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
 | [HStack](HStack.md) | 74 | 56 ✅ · 1 ☑️ | 19 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [Image](Image.md) | 69 | 53 ✅ · 2 ☑️ | 16 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
 | [Label](Label.md) | 81 | 59 ✅ · 2 ☑️ | 22 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
-| [Line](Line.md) | 80 | 60 ✅ · 2 ☑️ |  | 13 ✅ | 61 ✅ | 64 ✅ |  |
+| [Line](Line.md) | 80 | 60 ✅ · 2 ☑️ | 23 ✅ | 13 ✅ | 61 ✅ | 64 ✅ |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
-| [Path](Path.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 58 ✅ | 61 ✅ |  |
+| [Path](Path.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
 | [Picker](Picker.md) | 82 | 56 ✅ · 2 ☑️ | 19 ✅ | 16 ✅ | 57 ✅ | 64 ✅ |  |
-| [Polygon](Polygon.md) | 78 | 58 ✅ · 2 ☑️ |  | 13 ✅ | 59 ✅ | 62 ✅ |  |
-| [Polyline](Polyline.md) | 78 | 58 ✅ · 2 ☑️ |  | 13 ✅ | 59 ✅ | 62 ✅ |  |
+| [Polygon](Polygon.md) | 78 | 58 ✅ · 2 ☑️ | 21 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
+| [Polyline](Polyline.md) | 78 | 58 ✅ · 2 ☑️ | 21 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
 | [PositionIndicator](PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](ProgressBar.md) | 68 | 52 ✅ · 2 ☑️ | 16 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
 | [RadioButton](RadioButton.md) | 81 | 61 ✅ · 2 ☑️ | 24 ✅ | 18 ✅ | 61 ✅ | 62 ✅ |  |
-| [Rectangle](Rectangle.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 58 ✅ | 61 ✅ |  |
+| [Rectangle](Rectangle.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
 | [ScrollView](ScrollView.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 54 ✅ | 62 ✅ |  |
 | [SearchField](SearchField.md) | 89 | 61 ✅ · 2 ☑️ | 29 ✅ | 16 ✅ | 60 ✅ | 60 ✅ |  |
 | [Slider](Slider.md) | 73 | 56 ✅ · 2 ☑️ | 20 ✅ | 17 ✅ | 59 ✅ | 56 ✅ |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 56 ✅ · 1 ☑️ | 19 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 18 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 422 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 546 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure

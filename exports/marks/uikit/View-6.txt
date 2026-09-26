@@ -20,8 +20,6 @@ DatePicker.panTouchCount: not realized
 DatePicker.panUpdated: not realized
 DatePicker.panXChannel: not realized
 Ellipse.frameChanged: not realized
-Ellipse.gridColumnSpan: not realized
-Ellipse.gridRowSpan: not realized
 Grid.frameChanged: not realized
 HStack.canDrag: not realized
 HStack.dragStarting: not realized
@@ -40,8 +38,6 @@ Path.dragLeave: not realized
 Path.dragOver: not realized
 Path.drop: not realized
 Path.frameChanged: not realized
-Path.horizontalAlignment: not realized
-Path.verticalAlignment: not realized
 Picker.pointerEntered: not realized
 Picker.pointerExited: not realized
 Picker.pointerMoved: not realized

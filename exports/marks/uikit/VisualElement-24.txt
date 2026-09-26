@@ -15,9 +15,9 @@ Line.background: not realized
 Map.accessibilityHeadingLevel: not realized
 Path.style: not realized
 Picker.ignoresInput: not realized
-Polygon.isEnabled: not realized
+Polygon.isEnabled: cannot read isEnabled of Polygon - UIKit's driver has no path for it yet
 Polygon.zIndex: not realized
-Polyline.scaleY: not realized
+Polyline.scaleY: ✅
 PositionIndicator.rotationY: not realized
 ProgressBar.pivotY: ✅
 RadioButton.background: not realized

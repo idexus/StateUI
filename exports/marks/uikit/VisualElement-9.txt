@@ -12,9 +12,9 @@ HStack.style: not realized
 Image.ignoresInput: not realized
 Label.isEnabled: cannot read isEnabled of Label - UIKit's driver has no path for it yet
 Label.zIndex: not realized
-Line.scaleY: not realized
+Line.scaleY: ✅
 Map.rotationY: not realized
-Path.pivotY: not realized
+Path.pivotY: ✅
 Picker.background: not realized
 Polygon.accessibilityHeadingLevel: not realized
 Polyline.style: not realized
@@ -22,7 +22,7 @@ PositionIndicator.ignoresInput: not realized
 ProgressBar.isEnabled: cannot read isEnabled of ProgressBar - UIKit's driver has no path for it yet
 ProgressBar.zIndex: not realized
 RadioButton.scaleY: ✅
-Rectangle.rotationY: not realized
+Rectangle.rotationY: ✅
 ScrollView.pivotY: not realized
 SearchField.background: not realized
 Slider.accessibilityHeadingLevel: not realized

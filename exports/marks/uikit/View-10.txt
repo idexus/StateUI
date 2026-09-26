@@ -36,8 +36,6 @@ Polygon.dragLeave: not realized
 Polygon.dragOver: not realized
 Polygon.drop: not realized
 Polygon.frameChanged: not realized
-Polygon.horizontalAlignment: not realized
-Polygon.verticalAlignment: not realized
 Polyline.pointerEntered: not realized
 Polyline.pointerExited: not realized
 Polyline.pointerMoved: not realized
@@ -50,7 +48,6 @@ ProgressBar.panTouchCount: not realized
 ProgressBar.panUpdated: not realized
 ProgressBar.panXChannel: not realized
 RadioButton.frameChanged: not realized
-Rectangle.area: not realized
 Rectangle.frameChanged: not realized
 ScrollView.canDrag: not realized
 ScrollView.dragStarting: not realized

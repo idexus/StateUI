@@ -8,7 +8,7 @@ CheckBox.unfocus: not realized
 ColorBox.frameChanged: not realized
 DatePicker.opacity: ✅
 DatePicker.translationY: ✅
-Ellipse.scaleX: not realized
+Ellipse.scaleX: ✅
 Grid.rotationX: ✅
 HStack.pivotX: ✅
 Image.automationExcludedWithChildren: not realized
@@ -21,21 +21,17 @@ Map.maximumHeight: not realized
 Map.maximumWidth: not realized
 Map.minimumHeight: not realized
 Map.minimumWidth: not realized
-Path.opacity: not realized
-Path.translationY: not realized
+Path.opacity: ✅
+Path.translationY: ✅
 Picker.scaleX: ✅
-Polygon.rotationX: not realized
-Polyline.pivotX: not realized
+Polygon.rotationX: ✅
+Polyline.pivotX: ✅
 PositionIndicator.automationExcludedWithChildren: not realized
 ProgressBar.accessibilityHint: ✅
 RadioButton.focus: not realized
 RadioButton.isFocusedChanged: not realized
 RadioButton.unfocus: not realized
 Rectangle.frameChanged: not realized
-Rectangle.maximumHeight: not realized
-Rectangle.maximumWidth: not realized
-Rectangle.minimumHeight: not realized
-Rectangle.minimumWidth: not realized
 ScrollView.opacity: not realized
 ScrollView.translationY: not realized
 SearchField.scaleX: ✅

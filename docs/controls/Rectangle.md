@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/RectangleContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cornerRadius` | property | `CornerRadius` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `cornerRadius` | property | `CornerRadius` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -42,8 +42,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -51,26 +51,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of Rectangle - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -120,13 +120,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `fill` | property | `Brush` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
-| `renderTransform` | property | `ViewTransform` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `stroke` | property | `Brush` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
-| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Rectangle - Android's driver has no path for it yet |
-| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Rectangle - Android's driver has no path for it yet |
-| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Rectangle - Android's driver has no path for it yet |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Rectangle - Android's driver has no path for it yet |
-| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Rectangle - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `aspect` | property | `Aspect` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `fill` | property | `Brush` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `renderTransform` | property | `ViewTransform` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `stroke` | property | `Brush` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Rectangle - AppKit's driver has no path for it yet; UIKit: cannot read strokeDashOffset of Rectangle - UIKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Rectangle - Android's driver has no path for it yet |
+| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Rectangle - AppKit's driver has no path for it yet; UIKit: cannot read strokeDashPattern of Rectangle - UIKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Rectangle - Android's driver has no path for it yet |
+| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Rectangle - AppKit's driver has no path for it yet; UIKit: cannot read strokeLineCap of Rectangle - UIKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Rectangle - Android's driver has no path for it yet |
+| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Rectangle - AppKit's driver has no path for it yet; UIKit: cannot read strokeLineJoin of Rectangle - UIKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Rectangle - Android's driver has no path for it yet |
+| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Rectangle - AppKit's driver has no path for it yet; UIKit: cannot read strokeMiterLimit of Rectangle - UIKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Rectangle - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |

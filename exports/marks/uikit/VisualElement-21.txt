@@ -5,7 +5,7 @@ Canvas.background: not realized
 CheckBox.accessibilityHeadingLevel: not realized
 ColorBox.style: not realized
 DatePicker.ignoresInput: not realized
-Ellipse.isEnabled: not realized
+Ellipse.isEnabled: cannot read isEnabled of Ellipse - UIKit's driver has no path for it yet
 Ellipse.zIndex: not realized
 Grid.scaleY: ✅
 HStack.rotationY: ✅
@@ -16,8 +16,8 @@ Map.style: not realized
 Path.ignoresInput: not realized
 Picker.isEnabled: ✅
 Picker.zIndex: not realized
-Polygon.scaleY: not realized
-Polyline.rotationY: not realized
+Polygon.scaleY: ✅
+Polyline.rotationY: ✅
 PositionIndicator.pivotY: not realized
 ProgressBar.background: not realized
 RadioButton.accessibilityHeadingLevel: not realized

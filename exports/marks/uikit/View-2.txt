@@ -21,7 +21,6 @@ Ellipse.dragStarting: not realized
 Ellipse.dragText: not realized
 Ellipse.dropCompleted: not realized
 Ellipse.frameChanged: not realized
-Ellipse.margin: not realized
 Grid.pinchUpdated: not realized
 HStack.panYChannel: not realized
 Image.tapCount: not realized
@@ -32,8 +31,6 @@ Line.dragLeave: not realized
 Line.dragOver: not realized
 Line.drop: not realized
 Line.frameChanged: not realized
-Line.horizontalAlignment: not realized
-Line.verticalAlignment: not realized
 Map.pointerEntered: not realized
 Map.pointerExited: not realized
 Map.pointerMoved: not realized
@@ -46,9 +43,6 @@ Picker.panTouchCount: not realized
 Picker.panUpdated: not realized
 Picker.panXChannel: not realized
 Polygon.frameChanged: not realized
-Polygon.gridColumnSpan: not realized
-Polygon.gridRowSpan: not realized
-Polyline.area: not realized
 Polyline.frameChanged: not realized
 PositionIndicator.canDrag: not realized
 PositionIndicator.dragStarting: not realized

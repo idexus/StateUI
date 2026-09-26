@@ -21,6 +21,17 @@ DatePicker
   maximumDate
   minimumDate
   dateChanged()
+Ellipse
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 Grid
   background
   clipsContent
@@ -59,6 +70,33 @@ Label
   textCase
   textColor
   verticalTextAlignment
+Line
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+  x1
+  x2
+  y1
+  y2
+Path
+  aspect
+  data
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 Picker
   options
   selectedIndex
@@ -66,6 +104,32 @@ Picker
   closed()
   opened()
   selectedIndexChanged()
+Polygon
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Polyline
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 ProgressBar
   progress
   tint
@@ -79,6 +143,18 @@ RadioButton
   textCase
   textColor
   toggled()
+Rectangle
+  aspect
+  cornerRadius
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
 SearchField
   cursorPosition
   fontAttributes

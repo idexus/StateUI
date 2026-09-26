@@ -11,8 +11,6 @@ ColorBox.panYChannel: not realized
 DatePicker.tapCount: not realized
 DatePicker.tapped: not realized
 Ellipse.frameChanged: not realized
-Ellipse.gridColumn: not realized
-Ellipse.gridRow: not realized
 Grid.allowDrop: not realized
 Grid.dragLeave: not realized
 Grid.dragOver: not realized
@@ -30,8 +28,6 @@ Label.panTouchCount: not realized
 Label.panUpdated: not realized
 Label.panXChannel: not realized
 Line.frameChanged: not realized
-Line.gridColumnSpan: not realized
-Line.gridRowSpan: not realized
 Map.area: not realized
 Map.frameChanged: not realized
 Path.canDrag: not realized
@@ -39,7 +35,6 @@ Path.dragStarting: not realized
 Path.dragText: not realized
 Path.dropCompleted: not realized
 Path.frameChanged: not realized
-Path.margin: not realized
 Picker.pinchUpdated: not realized
 Polygon.panYChannel: not realized
 Polyline.tapCount: not realized

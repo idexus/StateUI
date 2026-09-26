@@ -6,7 +6,7 @@ CheckBox.frame: not realized
 ColorBox.frameChanged: not realized
 DatePicker.isVisible: ✅
 DatePicker.translationX: ✅
-Ellipse.scale: not realized
+Ellipse.scale: ✅
 Grid.rotation: ✅
 HStack.layoutDirection: not realized
 Image.isAccessibilityHidden: not realized
@@ -15,17 +15,15 @@ Line.frame: not realized
 Map.frameChanged: not realized
 Map.height: not realized
 Map.width: not realized
-Path.isVisible: not realized
-Path.translationX: not realized
+Path.isVisible: ✅
+Path.translationX: ✅
 Picker.scale: ✅
-Polygon.rotation: not realized
+Polygon.rotation: ✅
 Polyline.layoutDirection: not realized
 PositionIndicator.isAccessibilityHidden: not realized
 ProgressBar.accessibilityLabel: ✅
 RadioButton.frame: not realized
 Rectangle.frameChanged: not realized
-Rectangle.height: not realized
-Rectangle.width: not realized
 ScrollView.isVisible: not realized
 ScrollView.translationX: not realized
 SearchField.scale: ✅

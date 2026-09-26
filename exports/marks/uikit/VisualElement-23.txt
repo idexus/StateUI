@@ -8,10 +8,6 @@ DatePicker.focus: not realized
 DatePicker.isFocusedChanged: not realized
 DatePicker.unfocus: not realized
 Ellipse.frameChanged: not realized
-Ellipse.maximumHeight: not realized
-Ellipse.maximumWidth: not realized
-Ellipse.minimumHeight: not realized
-Ellipse.minimumWidth: not realized
 Grid.opacity: ✅
 Grid.translationY: ✅
 HStack.scaleX: ✅
@@ -23,13 +19,13 @@ Path.focus: not realized
 Path.isFocusedChanged: not realized
 Path.unfocus: not realized
 Picker.frameChanged: not realized
-Polygon.opacity: not realized
-Polygon.translationY: not realized
-Polyline.scaleX: not realized
+Polygon.opacity: ✅
+Polygon.translationY: ✅
+Polyline.scaleX: ✅
 PositionIndicator.rotationX: not realized
 ProgressBar.pivotX: ✅
 RadioButton.automationExcludedWithChildren: not realized
-Rectangle.accessibilityHint: not realized
+Rectangle.accessibilityHint: ✅
 ScrollView.focus: not realized
 ScrollView.isFocusedChanged: not realized
 ScrollView.unfocus: not realized

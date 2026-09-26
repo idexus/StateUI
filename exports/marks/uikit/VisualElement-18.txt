@@ -6,18 +6,18 @@ CheckBox.style: not realized
 ColorBox.ignoresInput: not realized
 DatePicker.isEnabled: ✅
 DatePicker.zIndex: not realized
-Ellipse.scaleY: not realized
+Ellipse.scaleY: ✅
 Grid.rotationY: ✅
 HStack.pivotY: ✅
 Image.background: not realized
 Label.accessibilityHeadingLevel: not realized
 Line.style: not realized
 Map.ignoresInput: not realized
-Path.isEnabled: not realized
+Path.isEnabled: cannot read isEnabled of Path - UIKit's driver has no path for it yet
 Path.zIndex: not realized
 Picker.scaleY: ✅
-Polygon.rotationY: not realized
-Polyline.pivotY: not realized
+Polygon.rotationY: ✅
+Polyline.pivotY: ✅
 PositionIndicator.background: not realized
 ProgressBar.accessibilityHeadingLevel: not realized
 RadioButton.style: not realized
