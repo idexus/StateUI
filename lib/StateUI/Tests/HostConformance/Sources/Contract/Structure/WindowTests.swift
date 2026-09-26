@@ -91,7 +91,7 @@
             ]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
-                try s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
                 s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)

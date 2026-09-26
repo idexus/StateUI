@@ -26,7 +26,7 @@
                 s.expect(query.wrappedValue, "tea", "it takes the user's words")
 
                 path.wrappedValue = [1]
-                try s.settle { (try? s.element("query")).map { (try? s.held(VisualElementContract.isVisible, on: $0)) != true } ?? true }
+                s.settle { (try? s.element("query")).map { (try? s.held(VisualElementContract.isVisible, on: $0)) != true } ?? true }
                 path.wrappedValue = []
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("query")) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("query")), true, "back in its bar")

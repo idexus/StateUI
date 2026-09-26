@@ -31,7 +31,7 @@
                 s.settle { heard.values == ["save"] }
 
                 path.wrappedValue = [1]
-                try s.settle { (try? s.element("share")) != nil }
+                s.settle { (try? s.element("share")) != nil }
                 try s.perform(.activate, on: s.element("share"))
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["save", "share"], "each page's own, while it is the visible one")
