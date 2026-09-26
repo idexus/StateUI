@@ -162,6 +162,14 @@ A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
 
+## Words on a painted band
+
+Words on a band the tree paints - a bar, a row of tabs - take the colour the
+tree writes for them; where it writes none, they are light on a dark band and
+dark on a light one (`BandWords`): a band is dark where its relative
+luminance, by Rec. 709's weights, is below a half. Every host decides it alike, whatever
+its toolkit's own idea of a dark colour.
+
 ## A picture
 
 An application's picture is the file its name stands for, looked for in one

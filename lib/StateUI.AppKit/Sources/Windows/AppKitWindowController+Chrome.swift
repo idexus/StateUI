@@ -31,8 +31,8 @@ extension AppKitWindowController {
         // the title stands in the bar's foreground: either way the window
         // keeps its name for the system and hides the one it would draw.
         window.titleVisibility = titleView == nil && barColor == nil ? .visible : .hidden
-        let paintedTitle: NSView? = barColor.flatMap { band in
-            guard titleView == nil else { return nil }
+        let paintedTitle: NSView? = chrome.background.flatMap { band in
+            guard titleView == nil, barColor != nil else { return nil }
             bandTitle.stringValue = window.title
             bandTitle.textColor = Self.foreground(on: band, written: foreground)
             bandTitle.sizeToFit()
@@ -60,8 +60,10 @@ extension AppKitWindowController {
         synchronizeTitleAccessory(
             window,
             titleBar: titleBar,
-            foreground: barColor.map { band in
-                Self.foreground(on: band, written: titleBar?.color(.barForegroundColor) ?? foreground)
+            foreground: chrome.background.flatMap { band in
+                barColor.map { _ in
+                    Self.foreground(on: band, written: titleBar?.color(.barForegroundColor) ?? foreground)
+                }
             })
         synchronizeTabRow(window, windowTabs(arrangement))
         host?.pageMenusChanged(in: self)
@@ -141,13 +143,12 @@ extension AppKitWindowController {
     /// An authored title bar's own title stands at the trailing edge of the
     /// window's title bar, where it is text rather than a toolbar control.
     /// What stands on a painted band: the colour written for it, else white on
-    /// a dark band and black on a light one.
-    private static func foreground(on band: NSColor, written: NSColor?) -> NSColor {
+    /// a dark band and black on a light one (`BandWords`).
+    /// Design: docs/design/host/layout.md#words-on-a-painted-band
+    private static func foreground(on band: HostValue, written: NSColor?) -> NSColor {
         if let written { return written }
-        guard let rgb = band.usingColorSpace(.sRGB) else { return .labelColor }
-        let luminance = 0.2126 * rgb.redComponent + 0.7152 * rgb.greenComponent
-            + 0.0722 * rgb.blueComponent
-        return luminance < 0.5 ? .white : .black
+        guard let light = BandWords.light(on: band) else { return .labelColor }
+        return light ? .white : .black
     }
 
     /// A colour written for the bars paints the band the title bar and

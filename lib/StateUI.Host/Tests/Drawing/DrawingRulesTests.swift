@@ -73,4 +73,13 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(ShapeArithmetic.dashLengths([2, -1], strokeWidth: 3), [6, 0])
         XCTAssertEqual(ShapeArithmetic.strokeWidth(.infinity), 0)
     }
+
+    /// Words on a dark band are light, on a light band dark; a value that is no colour decides nothing.
+    func testWordsOnABandAreLightOnADarkOne() {
+        XCTAssertEqual(BandWords.light(on: .color(red: 0, green: 0, blue: 128, alpha: 255)), true, "navy")
+        XCTAssertEqual(BandWords.light(on: .color(red: 255, green: 0, blue: 0, alpha: 255)), true, "red")
+        XCTAssertEqual(BandWords.light(on: .color(red: 255, green: 255, blue: 0, alpha: 255)), false, "yellow")
+        XCTAssertEqual(BandWords.light(on: .color(red: 240, green: 240, blue: 240, alpha: 255)), false, "light grey")
+        XCTAssertNil(BandWords.light(on: .number(1)))
+    }
 }
