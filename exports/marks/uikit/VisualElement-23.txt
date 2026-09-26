@@ -1,9 +1,9 @@
 ActivityIndicator.scaleX: not realized
-Button.clicked: cannot read pivotX of Label - UIKit's driver has no path for it yet
-Button.rotationX: cannot read rotationX of Button - UIKit's driver has no path for it yet
+Button.clicked: ✅
+Button.rotationX: ✅
 Canvas.pivotX: not realized
 CheckBox.automationExcludedWithChildren: not realized
-ColorBox.accessibilityHint: not realized
+ColorBox.accessibilityHint: ✅
 DatePicker.focus: not realized
 DatePicker.isFocusedChanged: not realized
 DatePicker.unfocus: not realized
@@ -12,11 +12,11 @@ Ellipse.maximumHeight: not realized
 Ellipse.maximumWidth: not realized
 Ellipse.minimumHeight: not realized
 Ellipse.minimumWidth: not realized
-Grid.opacity: not realized
-Grid.translationY: not realized
-HStack.scaleX: cannot read scaleX of HStack - UIKit's driver has no path for it yet
-Image.rotationX: cannot read rotationX of Image - UIKit's driver has no path for it yet
-Label.pivotX: cannot read pivotX of Label - UIKit's driver has no path for it yet
+Grid.opacity: ✅
+Grid.translationY: ✅
+HStack.scaleX: ✅
+Image.rotationX: ✅
+Label.pivotX: ✅
 Line.automationExcludedWithChildren: not realized
 Map.accessibilityHint: not realized
 Path.focus: not realized
@@ -55,4 +55,4 @@ TitleBar.unfocus: not realized
 VStack.frameChanged: not realized
 WebView.opacity: not realized
 WebView.translationY: not realized
-ZStack.scaleX: not realized
+ZStack.scaleX: ✅

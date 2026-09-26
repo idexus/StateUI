@@ -20,8 +20,6 @@ Grid.dragLeave: not realized
 Grid.dragOver: not realized
 Grid.drop: not realized
 Grid.frameChanged: not realized
-Grid.horizontalAlignment: not realized
-Grid.verticalAlignment: not realized
 HStack.pointerEntered: not realized
 HStack.pointerExited: not realized
 HStack.pointerMoved: not realized

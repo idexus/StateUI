@@ -9,8 +9,6 @@ Canvas.panYChannel: not realized
 CheckBox.tapCount: not realized
 CheckBox.tapped: not realized
 ColorBox.frameChanged: not realized
-ColorBox.gridColumn: not realized
-ColorBox.gridRow: not realized
 DatePicker.allowDrop: not realized
 DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
@@ -99,5 +97,4 @@ VStack.panXChannel: not realized
 WebView.frameChanged: not realized
 WebView.gridColumnSpan: not realized
 WebView.gridRowSpan: not realized
-ZStack.area: not realized
 ZStack.frameChanged: not realized

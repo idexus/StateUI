@@ -1,21 +1,22 @@
+Button.clicked: cannot read shape of Grid - UIKit's driver has no path for it yet
 Button.shape: not realized
 Button.stroke: not realized
 Button.strokeWidth: not realized
-Grid.shape: not realized
-Grid.stroke: not realized
-Grid.strokeWidth: not realized
-HStack.shape: not realized
-HStack.stroke: not realized
-HStack.strokeWidth: not realized
+Grid.shape: cannot read shape of Grid - UIKit's driver has no path for it yet
+Grid.stroke: cannot read stroke of Grid - UIKit's driver has no path for it yet
+Grid.strokeWidth: cannot read strokeWidth of Grid - UIKit's driver has no path for it yet
+HStack.shape: cannot read shape of HStack - UIKit's driver has no path for it yet
+HStack.stroke: cannot read stroke of HStack - UIKit's driver has no path for it yet
+HStack.strokeWidth: cannot read strokeWidth of HStack - UIKit's driver has no path for it yet
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
 RadioButton.strokeWidth: not realized
 ScrollView.shape: not realized
 ScrollView.stroke: not realized
 ScrollView.strokeWidth: not realized
-VStack.shape: not realized
-VStack.stroke: not realized
-VStack.strokeWidth: not realized
-ZStack.shape: not realized
-ZStack.stroke: not realized
-ZStack.strokeWidth: not realized
+VStack.shape: cannot read shape of VStack - UIKit's driver has no path for it yet
+VStack.stroke: cannot read stroke of VStack - UIKit's driver has no path for it yet
+VStack.strokeWidth: cannot read strokeWidth of VStack - UIKit's driver has no path for it yet
+ZStack.shape: cannot read shape of ZStack - UIKit's driver has no path for it yet
+ZStack.stroke: cannot read stroke of ZStack - UIKit's driver has no path for it yet
+ZStack.strokeWidth: cannot read strokeWidth of ZStack - UIKit's driver has no path for it yet

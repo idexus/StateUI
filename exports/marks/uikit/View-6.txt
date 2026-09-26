@@ -22,7 +22,6 @@ DatePicker.panXChannel: not realized
 Ellipse.frameChanged: not realized
 Ellipse.gridColumnSpan: not realized
 Ellipse.gridRowSpan: not realized
-Grid.area: not realized
 Grid.frameChanged: not realized
 HStack.canDrag: not realized
 HStack.dragStarting: not realized

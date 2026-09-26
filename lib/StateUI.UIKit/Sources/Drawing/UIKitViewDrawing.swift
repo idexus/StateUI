@@ -9,7 +9,7 @@ import UIKit
 
 /// How a view is drawn over its place: its own transform, then a placing layout's, as one matrix on its layer, and
 /// its own opacity times the one it is placed with.
-/// Design: docs/design/platforms/uikit/runtime.md#drawing
+/// Design: docs/design/platforms/uikit/drawing.md#drawn-over-its-place
 @MainActor
 final class UIKitViewDrawing {
     /// The element's own move, turn and scale.
@@ -44,7 +44,15 @@ final class UIKitViewDrawing {
     /// and a layer turns about its middle, so the matrix is carried there.
     func compose() {
         guard let view else { return }
-        let size = view.bounds.size
+        let transform = composed(for: view.bounds.size)
+        if !CATransform3DEqualToTransform(view.layer.transform, transform) { view.layer.transform = transform }
+
+        let alpha = CGFloat(ownOpacity * placedOpacity)
+        if view.alpha != alpha { view.alpha = alpha }
+    }
+
+    /// The layer's transform for a view of `size`.
+    private func composed(for size: CGSize) -> CATransform3D {
         var matrix = own.matrix(width: size.width, height: size.height)
         if let placement { matrix = matrix * placement.matrix(width: size.width, height: size.height) }
 
@@ -52,11 +60,13 @@ final class UIKitViewDrawing {
         (middleToCorner.m41, middleToCorner.m42) = (size.width / 2, size.height / 2)
         var cornerToMiddle = HostMatrix.identity
         (cornerToMiddle.m41, cornerToMiddle.m42) = (-size.width / 2, -size.height / 2)
-        let transform = CATransform3D(middleToCorner * matrix * cornerToMiddle)
-        if !CATransform3DEqualToTransform(view.layer.transform, transform) { view.layer.transform = transform }
+        return CATransform3D(middleToCorner * matrix * cornerToMiddle)
+    }
 
-        let alpha = CGFloat(ownOpacity * placedOpacity)
-        if view.alpha != alpha { view.alpha = alpha }
+    /// The transform the view is drawn with, where its layer holds it now; nil where the layer holds another.
+    var heldTransformForTesting: HostDrawingTransform? {
+        guard let view else { return own }
+        return CATransform3DEqualToTransform(view.layer.transform, composed(for: view.bounds.size)) ? own : nil
     }
 }
 

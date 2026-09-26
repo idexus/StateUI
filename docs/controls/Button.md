@@ -48,8 +48,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityHint of Button - UIKit's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityLabel of Button - UIKit's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  |  | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -66,17 +66,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotX of Button - UIKit's driver has no path for it yet |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotY of Button - UIKit's driver has no path for it yet |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read rotation of Button - UIKit's driver has no path for it yet |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationX of Button - UIKit's driver has no path for it yet |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationY of Button - UIKit's driver has no path for it yet |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scale of Button - UIKit's driver has no path for it yet |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleX of Button - UIKit's driver has no path for it yet |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleY of Button - UIKit's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationX of Button - UIKit's driver has no path for it yet |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationY of Button - UIKit's driver has no path for it yet |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -136,7 +136,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read textColor of Button - UIKit's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -144,10 +144,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read fontAttributes of Button - UIKit's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ |  |  |  | ✅ |  | UIKit: cannot read fontFamily of Button - UIKit's driver has no path for it yet; Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read fontSize of Button - UIKit's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 

@@ -4,14 +4,14 @@ Button.frameChanged: not realized
 Canvas.isVisible: not realized
 Canvas.translationX: not realized
 CheckBox.scale: not realized
-ColorBox.rotation: not realized
+ColorBox.rotation: ✅
 DatePicker.layoutDirection: not realized
 Ellipse.isAccessibilityHidden: not realized
-Grid.accessibilityLabel: not realized
+Grid.accessibilityLabel: ✅
 HStack.frame: not realized
 Image.frameChanged: not realized
 Label.isVisible: ✅
-Label.translationX: cannot read translationX of Label - UIKit's driver has no path for it yet
+Label.translationX: ✅
 Line.scale: not realized
 Map.rotation: not realized
 Path.layoutDirection: not realized
@@ -34,7 +34,7 @@ Switch.height: not realized
 Switch.width: not realized
 TextEditor.isVisible: not realized
 TextEditor.translationX: not realized
-TextField.scale: cannot read scale of TextField - UIKit's driver has no path for it yet
+TextField.scale: ✅
 TimePicker.rotation: not realized
 TitleBar.layoutDirection: not realized
 VStack.isAccessibilityHidden: not realized

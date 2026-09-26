@@ -1,14 +1,14 @@
 ActivityIndicator.background: not realized
 Button.accessibilityHeadingLevel: not realized
-Button.clicked: cannot read rotationY of VStack - UIKit's driver has no path for it yet
+Button.clicked: ✅
 Canvas.style: not realized
 CheckBox.ignoresInput: not realized
-ColorBox.isEnabled: not realized
+ColorBox.isEnabled: cannot read isEnabled of ColorBox - UIKit's driver has no path for it yet
 ColorBox.zIndex: not realized
 DatePicker.scaleY: not realized
 Ellipse.rotationY: not realized
-Grid.pivotY: not realized
-HStack.background: not realized
+Grid.pivotY: ✅
+HStack.background: cannot read background of HStack - UIKit's driver has no path for it yet
 Image.accessibilityHeadingLevel: not realized
 Label.style: not realized
 Line.ignoresInput: not realized
@@ -33,6 +33,6 @@ TextField.ignoresInput: not realized
 TimePicker.isEnabled: not realized
 TimePicker.zIndex: not realized
 TitleBar.scaleY: not realized
-VStack.rotationY: cannot read rotationY of VStack - UIKit's driver has no path for it yet
+VStack.rotationY: ✅
 WebView.pivotY: not realized
-ZStack.background: not realized
+ZStack.background: cannot read background of ZStack - UIKit's driver has no path for it yet

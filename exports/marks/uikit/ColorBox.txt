@@ -1,3 +1,4 @@
-ColorBox: not realized
-ColorBox.color: not realized
-ColorBox.cornerRadius: not realized
+Button.clicked: ✅
+ColorBox: ✅
+ColorBox.color: ✅
+ColorBox.cornerRadius: ✅

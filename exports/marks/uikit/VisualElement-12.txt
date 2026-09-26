@@ -4,10 +4,10 @@ Button.style: not realized
 Canvas.ignoresInput: not realized
 CheckBox.isEnabled: not realized
 CheckBox.zIndex: not realized
-ColorBox.scaleY: not realized
+ColorBox.scaleY: ✅
 DatePicker.rotationY: not realized
 Ellipse.pivotY: not realized
-Grid.background: not realized
+Grid.background: cannot read background of Grid - UIKit's driver has no path for it yet
 HStack.accessibilityHeadingLevel: not realized
 Image.style: not realized
 Label.ignoresInput: not realized
@@ -33,6 +33,6 @@ TextField.isEnabled: ✅
 TextField.zIndex: not realized
 TimePicker.scaleY: not realized
 TitleBar.rotationY: not realized
-VStack.pivotY: cannot read pivotY of VStack - UIKit's driver has no path for it yet
+VStack.pivotY: ✅
 WebView.background: not realized
 ZStack.accessibilityHeadingLevel: not realized

@@ -15,8 +15,6 @@ DatePicker.panYChannel: not realized
 Ellipse.tapCount: not realized
 Ellipse.tapped: not realized
 Grid.frameChanged: not realized
-Grid.gridColumn: not realized
-Grid.gridRow: not realized
 HStack.allowDrop: not realized
 HStack.dragLeave: not realized
 HStack.dragOver: not realized

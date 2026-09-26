@@ -1,7 +1,7 @@
 ActivityIndicator.opacity: not realized
 ActivityIndicator.translationY: not realized
 Button.clicked: ✅
-Button.scaleX: cannot read scaleX of Button - UIKit's driver has no path for it yet
+Button.scaleX: ✅
 Canvas.rotationX: not realized
 CheckBox.pivotX: not realized
 ColorBox.automationExcludedWithChildren: not realized
@@ -10,14 +10,10 @@ Ellipse.focus: not realized
 Ellipse.isFocusedChanged: not realized
 Ellipse.unfocus: not realized
 Grid.frameChanged: not realized
-Grid.maximumHeight: not realized
-Grid.maximumWidth: not realized
-Grid.minimumHeight: not realized
-Grid.minimumWidth: not realized
 HStack.opacity: ✅
-HStack.translationY: cannot read translationY of HStack - UIKit's driver has no path for it yet
-Image.scaleX: cannot read scaleX of Image - UIKit's driver has no path for it yet
-Label.rotationX: cannot read rotationX of Label - UIKit's driver has no path for it yet
+HStack.translationY: ✅
+Image.scaleX: ✅
+Label.rotationX: ✅
 Line.pivotX: not realized
 Map.automationExcludedWithChildren: not realized
 Path.accessibilityHint: not realized
@@ -48,7 +44,7 @@ Stepper.opacity: not realized
 Stepper.translationY: not realized
 Switch.scaleX: not realized
 TextEditor.rotationX: not realized
-TextField.pivotX: cannot read pivotX of TextField - UIKit's driver has no path for it yet
+TextField.pivotX: ✅
 TimePicker.automationExcludedWithChildren: not realized
 TitleBar.accessibilityHint: not realized
 VStack.focus: not realized
@@ -59,5 +55,5 @@ WebView.maximumHeight: not realized
 WebView.maximumWidth: not realized
 WebView.minimumHeight: not realized
 WebView.minimumWidth: not realized
-ZStack.opacity: not realized
-ZStack.translationY: not realized
+ZStack.opacity: ✅
+ZStack.translationY: ✅

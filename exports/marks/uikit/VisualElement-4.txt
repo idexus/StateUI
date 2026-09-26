@@ -3,7 +3,7 @@ ActivityIndicator.height: not realized
 ActivityIndicator.width: not realized
 Button.clicked: ✅
 Button.isVisible: ✅
-Button.translationX: cannot read translationX of Button - UIKit's driver has no path for it yet
+Button.translationX: ✅
 Canvas.scale: not realized
 CheckBox.rotation: not realized
 ColorBox.layoutDirection: not realized
@@ -12,8 +12,8 @@ Ellipse.accessibilityLabel: not realized
 Grid.frame: not realized
 HStack.frameChanged: not realized
 Image.isVisible: ✅
-Image.translationX: cannot read translationX of Image - UIKit's driver has no path for it yet
-Label.scale: cannot read scale of Label - UIKit's driver has no path for it yet
+Image.translationX: ✅
+Label.scale: ✅
 Line.rotation: not realized
 Map.layoutDirection: not realized
 Path.isAccessibilityHidden: not realized
@@ -36,11 +36,9 @@ Stepper.width: not realized
 Switch.isVisible: not realized
 Switch.translationX: not realized
 TextEditor.scale: not realized
-TextField.rotation: cannot read rotation of TextField - UIKit's driver has no path for it yet
+TextField.rotation: ✅
 TimePicker.layoutDirection: not realized
 TitleBar.isAccessibilityHidden: not realized
-VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - UIKit's driver has no path for it yet
+VStack.accessibilityLabel: ✅
 WebView.frame: not realized
 ZStack.frameChanged: not realized
-ZStack.height: not realized
-ZStack.width: not realized

@@ -9,8 +9,8 @@ DatePicker.height: not realized
 DatePicker.width: not realized
 Ellipse.isVisible: not realized
 Ellipse.translationX: not realized
-Grid.scale: not realized
-HStack.rotation: cannot read rotation of HStack - UIKit's driver has no path for it yet
+Grid.scale: ✅
+HStack.rotation: ✅
 Image.layoutDirection: not realized
 Label.isAccessibilityHidden: not realized
 Line.accessibilityLabel: not realized
@@ -35,12 +35,12 @@ Slider.scale: not realized
 Stepper.rotation: not realized
 Switch.layoutDirection: not realized
 TextEditor.isAccessibilityHidden: not realized
-TextField.accessibilityLabel: cannot read accessibilityLabel of TextField - UIKit's driver has no path for it yet
+TextField.accessibilityLabel: ✅
 TimePicker.frame: not realized
 TitleBar.frameChanged: not realized
 TitleBar.height: not realized
 TitleBar.width: not realized
 VStack.isVisible: ✅
-VStack.translationX: cannot read translationX of VStack - UIKit's driver has no path for it yet
+VStack.translationX: ✅
 WebView.scale: not realized
-ZStack.rotation: not realized
+ZStack.rotation: ✅

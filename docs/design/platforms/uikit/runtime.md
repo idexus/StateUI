@@ -28,12 +28,3 @@ arrangement of pages within the safe area, the title of the page the user
 sees the scene's title. A window the tree lets go of lets its scene go with
 it. The application's `Info.plist` says it supports many scenes, so an iPad
 opens as many as the user asks for.
-
-## Drawing
-
-A view is placed by its bounds and its centre, which hold under any
-transform, never by its frame. How it is drawn over its place is one matrix
-on its layer: the element's own move, turn and scale, then a placing
-layout's (`UIKitViewDrawing`), both as the host layer computes them about the
-view's top left, carried to the layer's middle, about which a layer turns;
-its opacity is its own times the one it is placed with.

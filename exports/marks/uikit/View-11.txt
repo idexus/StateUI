@@ -12,7 +12,6 @@ Canvas.panXChannel: not realized
 CheckBox.frameChanged: not realized
 CheckBox.gridColumnSpan: not realized
 CheckBox.gridRowSpan: not realized
-ColorBox.area: not realized
 ColorBox.frameChanged: not realized
 DatePicker.canDrag: not realized
 DatePicker.dragStarting: not realized
@@ -99,5 +98,3 @@ ZStack.dragLeave: not realized
 ZStack.dragOver: not realized
 ZStack.drop: not realized
 ZStack.frameChanged: not realized
-ZStack.horizontalAlignment: not realized
-ZStack.verticalAlignment: not realized

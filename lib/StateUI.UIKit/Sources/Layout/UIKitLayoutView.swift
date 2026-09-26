@@ -25,6 +25,12 @@ class UIKitLayoutView: UIView {
         didSet { if direction != oldValue { setNeedsLayout() } }
     }
 
+    /// What the layout paints of its own box, and whether it cuts what it shows to the box's outline.
+    private(set) var box = UIKitBox()
+
+    /// Whether a touch beside every child goes on to what stands under the layout.
+    var passesBeside = false
+
     init() {
         super.init(frame: .zero)
     }
@@ -74,9 +80,21 @@ class UIKitLayoutView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        box.paint(on: self)
         places.begin(width: bounds.width)
         arrange(in: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         laidOut?()
+    }
+
+    /// The box's fill, its outline's stroke, its shape, and whether it cuts what the layout shows to that shape.
+    func setBox(fill: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+        box.set(fill: fill, stroke: stroke, width: width, shape: shape, clips: clips)
+        box.paint(on: self)
+    }
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let hit = super.hitTest(point, with: event)
+        return passesBeside && hit === self ? nil : hit
     }
 
     /// Stands `item` at `place`, or on its way there.

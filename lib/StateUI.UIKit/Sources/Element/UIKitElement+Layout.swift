@@ -23,6 +23,7 @@ extension UIKitElement {
         var item = UIKitLayoutItem(view: view, values: element.layoutValues, isShown: element.standsShown)
         item.mount = element.mount
         item.placed = self
+        item.drawing = drawing
         return item
     }
 }

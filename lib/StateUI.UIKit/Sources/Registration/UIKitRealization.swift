@@ -11,12 +11,12 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "ActivityIndicator", "Canvas", "CheckBox", "ColorBox", "Content", "ContextMenu", "DatePicker", "Ellipse",
-        "Grid", "LeadingContent", "Line", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
+        "ActivityIndicator", "Canvas", "CheckBox", "Content", "ContextMenu", "DatePicker", "Ellipse",
+        "LeadingContent", "Line", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
         "NavigationStack", "Overlay", "Path", "Picker", "Pin", "Polygon", "Polyline", "PositionIndicator",
         "ProgressBar", "RadioButton", "Rectangle", "ScrollView", "SearchField", "Slider", "Span", "Spans",
         "SplitView", "Stepper", "Switch", "TabbedView", "TextEditor", "TimePicker", "TitleBar", "TitleView",
-        "ToolbarItem", "ToolbarItems", "TrailingContent", "WebView", "ZStack",
+        "ToolbarItem", "ToolbarItems", "TrailingContent", "WebView",
     ]
 
     /// Every record: none yet, so the registry's export says all this host realizes.

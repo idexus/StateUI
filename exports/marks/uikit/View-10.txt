@@ -10,8 +10,6 @@ ColorBox.dragLeave: not realized
 ColorBox.dragOver: not realized
 ColorBox.drop: not realized
 ColorBox.frameChanged: not realized
-ColorBox.horizontalAlignment: not realized
-ColorBox.verticalAlignment: not realized
 DatePicker.pointerEntered: not realized
 DatePicker.pointerExited: not realized
 DatePicker.pointerMoved: not realized
@@ -99,4 +97,3 @@ ZStack.dragStarting: not realized
 ZStack.dragText: not realized
 ZStack.dropCompleted: not realized
 ZStack.frameChanged: not realized
-ZStack.margin: not realized

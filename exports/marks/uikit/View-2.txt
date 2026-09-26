@@ -17,8 +17,6 @@ CheckBox.panTouchCount: not realized
 CheckBox.panUpdated: not realized
 CheckBox.panXChannel: not realized
 ColorBox.frameChanged: not realized
-ColorBox.gridColumnSpan: not realized
-ColorBox.gridRowSpan: not realized
 DatePicker.area: not realized
 DatePicker.frameChanged: not realized
 Ellipse.canDrag: not realized
@@ -101,5 +99,3 @@ VStack.panYChannel: not realized
 WebView.tapCount: not realized
 WebView.tapped: not realized
 ZStack.frameChanged: not realized
-ZStack.gridColumn: not realized
-ZStack.gridRow: not realized

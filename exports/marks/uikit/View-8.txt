@@ -23,8 +23,6 @@ Ellipse.panTouchCount: not realized
 Ellipse.panUpdated: not realized
 Ellipse.panXChannel: not realized
 Grid.frameChanged: not realized
-Grid.gridColumnSpan: not realized
-Grid.gridRowSpan: not realized
 HStack.frameChanged: not realized
 Image.canDrag: not realized
 Image.dragStarting: not realized

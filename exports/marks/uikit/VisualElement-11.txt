@@ -10,11 +10,11 @@ Canvas.minimumHeight: not realized
 Canvas.minimumWidth: not realized
 CheckBox.opacity: not realized
 CheckBox.translationY: not realized
-ColorBox.scaleX: not realized
+ColorBox.scaleX: ✅
 DatePicker.rotationX: not realized
 Ellipse.pivotX: not realized
 Grid.automationExcludedWithChildren: not realized
-HStack.accessibilityHint: cannot read accessibilityHint of HStack - UIKit's driver has no path for it yet
+HStack.accessibilityHint: ✅
 Image.focus: not realized
 Image.isFocusedChanged: not realized
 Image.unfocus: not realized
@@ -50,9 +50,9 @@ TextEditor.maximumWidth: not realized
 TextEditor.minimumHeight: not realized
 TextEditor.minimumWidth: not realized
 TextField.opacity: ✅
-TextField.translationY: cannot read translationY of TextField - UIKit's driver has no path for it yet
+TextField.translationY: ✅
 TimePicker.scaleX: not realized
 TitleBar.rotationX: not realized
-VStack.pivotX: cannot read pivotX of VStack - UIKit's driver has no path for it yet
+VStack.pivotX: ✅
 WebView.automationExcludedWithChildren: not realized
-ZStack.accessibilityHint: not realized
+ZStack.accessibilityHint: ✅

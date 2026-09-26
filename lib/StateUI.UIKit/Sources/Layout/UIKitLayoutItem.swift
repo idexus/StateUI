@@ -21,6 +21,9 @@ struct UIKitLayoutItem: LayoutChild {
     /// The element that stands the view where it is placed; nil where the layout sets its frame itself.
     weak var placed: (any PlacedView)?
 
+    /// How the view is drawn over its place, which a placing layout adds its own drawing to.
+    weak var drawing: UIKitViewDrawing?
+
     var fadeIn: ((Motion) -> Void)?
 
     init(view: UIView, values: LayoutValues = LayoutValues(), isShown: Bool = true) {

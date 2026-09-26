@@ -14,7 +14,6 @@ ColorBox.dragStarting: not realized
 ColorBox.dragText: not realized
 ColorBox.dropCompleted: not realized
 ColorBox.frameChanged: not realized
-ColorBox.margin: not realized
 DatePicker.pinchUpdated: not realized
 Ellipse.panYChannel: not realized
 Grid.tapCount: not realized

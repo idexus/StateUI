@@ -1,17 +1,17 @@
 ActivityIndicator.isAccessibilityHidden: not realized
-Button.accessibilityLabel: cannot read accessibilityLabel of Button - UIKit's driver has no path for it yet
-Button.clicked: cannot read accessibilityLabel of Button - UIKit's driver has no path for it yet
+Button.accessibilityLabel: ✅
+Button.clicked: ✅
 Canvas.frame: not realized
 CheckBox.frameChanged: not realized
 CheckBox.height: not realized
 CheckBox.width: not realized
-ColorBox.isVisible: not realized
-ColorBox.translationX: not realized
+ColorBox.isVisible: ✅
+ColorBox.translationX: ✅
 DatePicker.scale: not realized
 Ellipse.rotation: not realized
 Grid.layoutDirection: not realized
 HStack.isAccessibilityHidden: not realized
-Image.accessibilityLabel: cannot read accessibilityLabel of Image - UIKit's driver has no path for it yet
+Image.accessibilityLabel: ✅
 Label.frame: not realized
 Line.frameChanged: not realized
 Line.height: not realized
@@ -39,6 +39,6 @@ TextField.frameChanged: not realized
 TimePicker.isVisible: not realized
 TimePicker.translationX: not realized
 TitleBar.scale: not realized
-VStack.rotation: cannot read rotation of VStack - UIKit's driver has no path for it yet
+VStack.rotation: ✅
 WebView.layoutDirection: not realized
 ZStack.isAccessibilityHidden: not realized

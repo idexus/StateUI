@@ -6,16 +6,16 @@ Button.frameChanged: not realized
 Canvas.opacity: not realized
 Canvas.translationY: not realized
 CheckBox.scaleX: not realized
-ColorBox.rotationX: not realized
+ColorBox.rotationX: ✅
 DatePicker.pivotX: not realized
 Ellipse.automationExcludedWithChildren: not realized
-Grid.accessibilityHint: not realized
+Grid.accessibilityHint: ✅
 HStack.focus: not realized
 HStack.isFocusedChanged: not realized
 HStack.unfocus: not realized
 Image.frameChanged: not realized
 Label.opacity: ✅
-Label.translationY: cannot read translationY of Label - UIKit's driver has no path for it yet
+Label.translationY: ✅
 Line.scaleX: not realized
 Map.rotationX: not realized
 Path.pivotX: not realized
@@ -46,7 +46,7 @@ Switch.minimumHeight: not realized
 Switch.minimumWidth: not realized
 TextEditor.opacity: not realized
 TextEditor.translationY: not realized
-TextField.scaleX: cannot read scaleX of TextField - UIKit's driver has no path for it yet
+TextField.scaleX: ✅
 TimePicker.rotationX: not realized
 TitleBar.pivotX: not realized
 VStack.automationExcludedWithChildren: not realized

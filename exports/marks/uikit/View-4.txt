@@ -27,7 +27,6 @@ Grid.dragStarting: not realized
 Grid.dragText: not realized
 Grid.dropCompleted: not realized
 Grid.frameChanged: not realized
-Grid.margin: not realized
 HStack.pinchUpdated: not realized
 Image.panYChannel: not realized
 Label.tapCount: not realized

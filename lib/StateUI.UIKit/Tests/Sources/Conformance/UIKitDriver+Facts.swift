@@ -1,0 +1,56 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import UIKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+@testable import StateUIUIKit
+@_spi(Host) import StateUIConformance
+
+/// What the UIKit driver reads of the screen: the colour at a point of a view, and whether a touch there reaches it.
+/// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
+extension UIKitDriver {
+    /// The colour the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
+    /// nothing opaque is drawn there.
+    func color(of element: MountedElement, at point: Point) throws -> Color? {
+        guard let view = (element.native as? UIKitElement)?.view else {
+            throw DriverCannot("read the colour of \(element.type.name)")
+        }
+        renderer?.layOut()
+        let size = view.bounds.size
+        let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
+        guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,
+              let space = CGColorSpace(name: CGColorSpace.sRGB),
+              let context = CGContext(
+                data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4, space: space,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        else { return nil }
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.preferredRange = .standard
+        let drawn = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+        }
+        guard let image = drawn.cgImage, let data = context.data else { return nil }
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        // A bitmap context's rows stand in memory from its top.
+        let pixel = data.advanced(by: min(height - 1, Int(point.y)) * width * 4 + min(width - 1, Int(point.x)) * 4)
+            .assumingMemoryBound(to: UInt8.self)
+        let alpha = Int(pixel[3])
+        guard alpha > 127 else { return nil }
+        func channel(_ index: Int) -> Int { min(255, Int(pixel[index]) * 255 / alpha) }
+        return Color(red: channel(0), green: channel(1), blue: channel(2))
+    }
+
+    /// Whether a touch at `point` of the element's view lands on it or on something inside it, as the window's
+    /// hit testing finds it.
+    func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
+        guard let view = (element.native as? UIKitElement)?.view, let window = view.window else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
+        renderer?.layOut()
+        let touched = view.convert(CGPoint(x: point.x, y: point.y), to: window)
+        guard let hit = window.hitTest(touched, with: nil) else { return false }
+        return hit === view || hit.isDescendant(of: view)
+    }
+}

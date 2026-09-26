@@ -78,6 +78,9 @@ final class UIKitDriver: HostDriver {
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        case (_, let view?):
+            if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
+            throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
         }
     }

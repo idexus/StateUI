@@ -99,5 +99,3 @@ WebView.panTouchCount: not realized
 WebView.panUpdated: not realized
 WebView.panXChannel: not realized
 ZStack.frameChanged: not realized
-ZStack.gridColumnSpan: not realized
-ZStack.gridRowSpan: not realized

@@ -56,6 +56,7 @@ extension UIKitElement {
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { drawing?.own = element.drawingTransform }
             if !own.isDisjoint(with: MountedElement.accessibilityProperties) { view.accessibility(element.accessibilityWords) }
+            if let layers = view as? UIKitZStackView { layers.placement = element.placement }
         }
 
         if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {

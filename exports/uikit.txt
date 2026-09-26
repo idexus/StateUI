@@ -7,9 +7,32 @@ Button
   textCase
   textColor
   clicked()
-HStack
+ColorBox
+  color
+  cornerRadius
+Grid
+  background
+  clipsContent
+  columnSpacing
+  columns
+  ignoresInput
+  letsInputThrough
   padding
+  rowSpacing
+  rows
+  shape
+  stroke
+  strokeWidth
+HStack
+  background
+  clipsContent
+  ignoresInput
+  letsInputThrough
+  padding
+  shape
   spacing
+  stroke
+  strokeWidth
 Image
   aspect
   source
@@ -36,8 +59,24 @@ TextField
   submitted()
   textChanged()
 VStack
+  background
+  clipsContent
+  ignoresInput
+  letsInputThrough
   padding
+  shape
   spacing
+  stroke
+  strokeWidth
+ZStack
+  background
+  clipsContent
+  ignoresInput
+  letsInputThrough
+  padding
+  shape
+  stroke
+  strokeWidth
 (every element)
   accessibilityHint
   accessibilityLabel

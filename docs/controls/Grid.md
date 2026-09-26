@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `columnSpacing` | property | `Double` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
-| `columns` | property | `[GridLength]` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
-| `rowSpacing` | property | `Double` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
-| `rows` | property | `[GridLength]` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
+| `columnSpacing` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `columns` | property | `[GridLength]` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rowSpacing` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rows` | property | `[GridLength]` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -45,35 +45,35 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `background` | property | `Background` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `background` | property | `Background` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read background of Grid - UIKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read what reaches Grid - Android's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read what reaches Grid - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of Grid - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -124,8 +124,8 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `letsInputThrough` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
+| `clipsContent` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `letsInputThrough` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -133,7 +133,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -141,6 +141,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of Grid - AppKit's driver has no path for it yet; Android Views: cannot read shape of Grid - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | Android Views: cannot read stroke of Grid - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Grid - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Grid - Android's driver has no path for it yet |
+| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of Grid - AppKit's driver has no path for it yet; UIKit: cannot read shape of Grid - UIKit's driver has no path for it yet; Android Views: cannot read shape of Grid - Android's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | UIKit: cannot read stroke of Grid - UIKit's driver has no path for it yet; Android Views: cannot read stroke of Grid - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Grid - AppKit's driver has no path for it yet; UIKit: cannot read strokeWidth of Grid - UIKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Grid - Android's driver has no path for it yet |
