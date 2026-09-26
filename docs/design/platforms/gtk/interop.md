@@ -19,7 +19,8 @@ children only in the layouts it makes itself.
 ## Acts and events
 
 An act the application registers is performed where no act of the library's
-answers the call: an act of its own is handed the values its contract
+answers the call, by the host layer's rule ([an application's own
+acts](../../host/runtime.md#an-applications-own-acts)): an act of its own is handed the values its contract
 declares, and an act aimed at one of its elements is handed that element's
 control, the aim's identity turned back into what is on screen. A performer
 may await - GTK's clipboard answers only asynchronously - so it runs as a task

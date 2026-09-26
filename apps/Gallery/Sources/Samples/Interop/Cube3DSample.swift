@@ -1,7 +1,7 @@
-#if APPKIT || GTK
+#if APPKIT || GTK || WINUI
 import StateUI
 
-/// A cube the host draws on the GPU - Metal on AppKit, OpenGL 3.3 on GTK - with
+/// A cube the host draws on the GPU - Metal on AppKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI - with
 /// everything about it described from this side.
 struct Cube3DSample: SampleContent, ExampleContent {
     @State private var size = 0.6
@@ -12,10 +12,14 @@ struct Cube3DSample: SampleContent, ExampleContent {
     static let id = "appKitMetal"
     static let title = "A Metal view"
     static let summary = "A cube drawn on the GPU by the host, sized and coloured from StateUI."
-    #else
+    #elseif GTK
     static let id = "gtkOpenGL"
     static let title = "An OpenGL view"
     static let summary = "A cube drawn by OpenGL 3.3 in the host, sized and coloured from StateUI."
+    #else
+    static let id = "winUIDirect3D"
+    static let title = "A Direct3D view"
+    static let summary = "A cube drawn by Direct3D 11.1 in the host, sized and coloured from StateUI."
     #endif
 
     static let codeHeading = "In StateUI"
@@ -241,7 +245,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 }
             }
             """)
-    #else
+    #elseif GTK
     static let hostCode = HostCode(
         heading: "In GTK",
         language: .swift,
@@ -317,6 +321,51 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 }
             }
             """)
+    #else
+    static let hostCode = HostCode(
+        heading: "In WinUI",
+        language: .swift,
+        code: """
+            // Platforms/WinUI/Host/Direct3DCube3DControl.swift. The cube is a
+            // SwapChainPanel the gallery's own relay makes - C++/WinRT in
+            // Platforms/WinUI/Relay/Cube3D.cpp - and draws into with a
+            // Direct3D 11.1 device, following WinUI's frames only while it
+            // spins and stands on screen. A WinUIControl holds its element.
+            @MainActor
+            final class Direct3DCube3DControl: WinUIControl {
+                let element: OpaquePointer
+
+                var cubeSize = 0.6 { didSet { tell() } }
+                var color = CubeColor.teal { didSet { tell() } }
+                var isSpinning = true { didSet { tell() } }
+
+                init() {
+                    element = gallery_cube_make()!
+                }
+
+                isolated deinit {
+                    gallery_cube_close(element)
+                    gallery_winui_release(element)
+                }
+
+                private func tell() {
+                    gallery_cube_set(element, cubeSize, color.rawValue, isSpinning)
+                }
+            }
+
+            extension Direct3DCube3DControl {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ in Direct3DCube3DControl() }) { cube in
+                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                        cube.property(Cube3DContract.isSpinning) { control, spinning in
+                            control.isSpinning = spinning ?? true
+                        }
+                    }
+                }
+            }
+            """)
     #endif
 
     var content: any View {
@@ -372,12 +421,19 @@ struct Cube3DSample: SampleContent, ExampleContent {
         + "extra to say."
     private static let stopsWith = "The loop also stops with the window, so nothing is "
         + "left turning behind a page you have left."
-    #else
+    #elseif GTK
     private static let drawnBy = "The cube is a `GtkGLArea` drawing with OpenGL 3.3 core, "
         + "held by a `GTKControl` the gallery registers with `StateUIControls.add` - a "
         + "widget like any other, so the registration has nothing extra to say."
     private static let stopsWith = "GTK ticks only a widget on screen, so nothing is "
         + "left turning behind a page you have left."
+    #else
+    private static let drawnBy = "The cube is a `SwapChainPanel` drawing with Direct3D 11.1, "
+        + "made by the gallery's own C++/WinRT relay and held by a `WinUIControl` the gallery "
+        + "registers with `StateUIControls.add` - an element like any other, so the "
+        + "registration has nothing extra to say."
+    private static let stopsWith = "The cube follows WinUI's frames only while it stands on "
+        + "screen, so nothing is left turning behind a page you have left."
     #endif
 
     var notes: Element? {

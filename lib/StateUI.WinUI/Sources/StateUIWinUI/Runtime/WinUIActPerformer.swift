@@ -77,6 +77,11 @@ final class WinUIActPerformer {
             WinUIRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
         default:
+            // An act the application registered: its own, or one aimed at its own element.
+            guard !WinUIInterop.acts.perform(
+                call, in: tree, core: core, view: { ($0.native as? WinUIElement)?.view },
+                log: { WinUIRenderer.log.error($0) })
+            else { return }
             fail(call, "the WinUI host does not perform the act '\(call.act.name)'")
         }
     }

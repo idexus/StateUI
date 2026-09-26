@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import CStateUIGTK
+import CStateUIWinUI
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
-@testable import StateUIGTK
+@testable import StateUIWinUI
 import XCTest
 
 /// An application's own acts and events - the ones with no control behind
@@ -86,10 +86,15 @@ private enum LampContract: ElementContract {
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
 
-/// The control the application makes for a lamp - a GTK widget that knows nothing of StateUI.
+/// The control the application makes for a lamp - a WinUI element that knows nothing of StateUI, here one the host's
+/// relay makes, where an application's own relay makes its own.
 @MainActor
-final class LampControl: GTKControl {
-    let widget = gtk_label_new("lamp")!
+final class LampControl: WinUIControl {
+    let element: OpaquePointer = stateui_winui_text_make()!
+
+    isolated deinit {
+        stateui_winui_release(element)
+    }
 
     /// Whether it is lit, as the tree last said.
     var lit = false
@@ -159,7 +164,7 @@ private struct Pulling: ContentView {
 }
 
 /// What an APPLICATION registers with this host: its own controls, the acts it performs and the events it raises.
-final class GTKInteropTests: XCTestCase {
+final class WinUIInteropTests: XCTestCase {
     /// Registers the lamp: a registry keeps what it is told, so registering it again only replaces the same entry.
     @MainActor
     private static func registerLamp() {
@@ -177,31 +182,30 @@ final class GTKInteropTests: XCTestCase {
     /// An act the application registered is performed and answers the values its contract declares.
     func testAnActTheApplicationRegisteredIsPerformedAndAnswers() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
-            defer { GTKInterop.acts.forget() }
+            WinUIInterop.acts.forget()
+            defer { WinUIInterop.acts.forget() }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
-            let host = GTKRenderer.running { Calling() }
+            let host = WinUIRenderer.running { Calling() }
 
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { host.said != "-" }
 
             XCTAssertEqual(host.said, "42", "the performer answered, typed both ways")
         }
     }
 
-    /// A performer may await before it answers - GTK reads a clipboard so - and the call is answered once it
-    /// returns.
+    /// A performer may await before it answers, and the call is answered once it returns.
     func testAPerformerThatAwaitsAnswersOnceItReturns() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
-            defer { GTKInterop.acts.forget() }
+            WinUIInterop.acts.forget()
+            defer { WinUIInterop.acts.forget() }
             StateUIActs.add(InteropTestContract.doubled) { number in
                 try await Task.sleep(nanoseconds: 20_000_000)
                 return number * 2
             }
-            let host = GTKRenderer.running { Calling() }
+            let host = WinUIRenderer.running { Calling() }
 
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { host.said != "-" }
 
             XCTAssertEqual(host.said, "42")
@@ -211,10 +215,10 @@ final class GTKInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
-            GTKInterop.acts.forget()
-            let host = GTKRenderer.running { Calling() }
+            WinUIInterop.acts.forget()
+            let host = WinUIRenderer.running { Calling() }
 
-            try XCTUnwrap(host.views(GTKButtonView.self).last).click()
+            try XCTUnwrap(host.views(WinUIButtonView.self).last).invoke()
             host.settle { host.said != "-" }
 
             XCTAssertTrue(host.said.hasPrefix("thrown:"), host.said)
@@ -225,7 +229,7 @@ final class GTKInteropTests: XCTestCase {
     /// An event the host raises reaches every subscription to it, carrying the values the contract declares.
     func testAnEventTheHostRaisesReachesItsSubscriptions() {
         onUIThread {
-            let host = GTKRenderer.running { Calling() }
+            let host = WinUIRenderer.running { Calling() }
             XCTAssertEqual(host.said, "-")
 
             let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
@@ -236,17 +240,18 @@ final class GTKInteropTests: XCTestCase {
         }
     }
 
-    /// The application's own element is made by its registration, stands in the tree as its widget and takes the
+    /// The application's own element is made by its registration, stands in the tree as its element and takes the
     /// property its contract declares.
     func testTheApplicationsOwnElementIsMadeAndTakesItsProperty() throws {
         try onUIThread {
             Self.registerLamp()
-            let host = GTKRenderer.running { Pulling() }
-            let lamp = try XCTUnwrap(host.views(GTKHostedView<LampControl>.self).first)
+            let host = WinUIRenderer.running { Pulling() }
+            let lamp = try XCTUnwrap(host.views(WinUIHostedView<LampControl>.self).first)
 
             XCTAssertTrue(lamp.control.lit, "the registration put the described value on the control")
-            XCTAssertTrue(lamp.widget == lamp.control.widget)
-            XCTAssertNotNil(gtk_widget_get_parent(lamp.widget), "placed in its layout")
+            XCTAssertTrue(lamp.handle == lamp.control.element, "the view shows the control's own element")
+            host.layOut()
+            XCTAssertGreaterThan(lamp.laidOutFrame.width, 0, "placed in its layout")
         }
     }
 
@@ -254,8 +259,8 @@ final class GTKInteropTests: XCTestCase {
     func testAnEventTheApplicationsControlRaisesReachesItsHandler() throws {
         try onUIThread {
             Self.registerLamp()
-            let host = GTKRenderer.running { Pulling() }
-            let lamp = try XCTUnwrap(host.views(GTKHostedView<LampControl>.self).first)
+            let host = WinUIRenderer.running { Pulling() }
+            let lamp = try XCTUnwrap(host.views(WinUIHostedView<LampControl>.self).first)
 
             lamp.control.pull()
             host.settle { host.said != "-" }
@@ -268,11 +273,11 @@ final class GTKInteropTests: XCTestCase {
     func testAnAimedActIsHandedTheApplicationsOwnControl() throws {
         try onUIThread {
             Self.registerLamp()
-            let host = GTKRenderer.running { Pulling() }
-            let lamp = try XCTUnwrap(host.views(GTKHostedView<LampControl>.self).first)
+            let host = WinUIRenderer.running { Pulling() }
+            let lamp = try XCTUnwrap(host.views(WinUIHostedView<LampControl>.self).first)
             XCTAssertEqual(lamp.control.flashes, 0)
 
-            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { host.said != "-" }
 
             XCTAssertEqual(host.said, "flashed")
@@ -281,9 +286,9 @@ final class GTKInteropTests: XCTestCase {
     }
 }
 
-private extension GTKRenderer {
+private extension WinUIRenderer {
     /// The last thing the page said.
     var said: String {
-        views(GTKLabelView.self).last?.text ?? ""
+        views(WinUILabelView.self).last?.text ?? ""
     }
 }

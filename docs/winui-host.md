@@ -73,6 +73,97 @@ alone stands under `#if WINUI`.
 A new application made in `apps/` - `.scripts/new-app.ps1` - has a WinUI
 head, as HelloWorld does.
 
+## Controls, acts, and events registered in Swift
+
+An application extends the host from its WinUI head. Registrations run before
+`StateUIWinUI.run`, on the main thread. Registering a contract or an act again
+replaces the earlier registration. Every registration is written against the
+application's own contracts, so they are `public`: the host lives in a module
+of its own and must see them. The Gallery's WinUI halves are in
+`apps/Gallery/Platforms/WinUI/Host/`.
+
+### A control
+
+A control of the application's own is an object holding the WinUI element it
+shows, a `WinUIControl`. Swift never calls WinRT itself: the element is made
+by a relay of the application's own - C++/WinRT beside its head, behind C
+functions, a C++ target of the head's package that includes the projection
+the host generated - and handed over as the host's own handles are, a
+`UIElement`'s default interface, `AddRef`'d. `StateUIControls.add` says which
+contract it realizes:
+
+```swift quote
+public static func add<Realized: ElementContract, Made: WinUIControl>(
+    _ contract: Realized.Type,
+    create: @escaping (WinUIReports<Realized>) -> Made,
+    members: (WinUIRegistration<Realized, Made>) -> Void = { _ in })
+```
+
+- **`create`** makes the control once per element, and wires what it reports:
+  `reports.raise(Contract.member, values)` for an event of the element's own,
+  and `reports.report(property, value, as: event)` for a value the USER
+  changed.
+- **`members`** registers what the control takes: `property(_:_:)` hands a
+  value over as the type its contract declares, `nil` where it is no longer
+  described, and `raises(_:)` records an event the control raises.
+
+```swift quote
+StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
+    let light = TrafficLightControl()
+    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+    return light
+}) { light in
+    light.property(TrafficLightContract.signal) { control, signal in
+        control.signal = signal ?? .stop
+    }
+    light.raises(TrafficLightContract.lampTapped)
+}
+```
+
+The host takes a reference of its own to the element and places, sizes and
+shows it as it does its own - margins, alignment, opacity, gestures, frame
+reports - measuring it by the element's own measure. A registered control is
+a leaf. The application's relay tells its Swift half what the user did by a
+number the control gave its element, through a table of C callbacks the head
+hands it before it runs. A control that draws with the GPU is an element
+like any other: the Gallery's `Cube3D` is a `SwapChainPanel` its relay draws
+into with Direct3D 11.1, following WinUI's frames only while it spins and
+stands on screen - the same declaration Metal draws on AppKit and OpenGL on
+GTK.
+
+### An act
+
+`StateUIActs.add` registers a function the application calls by its act, and
+`StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
+that element's control:
+
+```swift quote
+StateUIActs.add(GalleryContract.readClipboard) { () -> String in
+    Clipboard.read()
+}
+
+StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
+    bar.flash()
+}
+```
+
+A performer runs on the main thread, and may await, the call answered once it
+returns. Its arguments and answer are the act's own types; a call carrying
+anything else fails with the reason. A thrown error fails the act, and so does
+an aim at nothing; an act nobody registered is refused by name. A performer
+may call Win32 itself through `WinSDK` - the Gallery's clipboard does.
+
+### An event without a control
+
+`StateUIEvents.raise` pushes an event of the application's that belongs to no
+element, from any thread; `StateUIEvents.raises` declares it before the host
+runs, so a handler listening for one no source raises is told so.
+
+```swift quote
+StateUIEvents.raises(GalleryContract.batteryChanged)
+StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```
+
 ## Running
 
 ```powershell

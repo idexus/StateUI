@@ -348,6 +348,26 @@ final class Catalog {
                 ]))
         #endif
 
+        #if WINUI
+        // The same three roads on WinUI, and a cube drawn by Direct3D 11.1 in a SwapChainPanel, declared for the
+        // hosts that draw it. The WinUI halves stand beside the WinUI head: Swift in Platforms/WinUI/Host, and the
+        // gallery's own C++/WinRT relay that makes its elements in Platforms/WinUI/Relay.
+        groups.append(
+            SampleGroup(
+                route: "winUIInterop",
+                title: "WinUI interop",
+                summary: "Calling the host, hearing from it, and controls the app registers - "
+                    + "one of them drawn by Direct3D.",
+                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
+                card: ImageSource("cat_interop.png"),
+                samples: [
+                    Sample(WinUIActsSample()),
+                    Sample(WinUIEventsSample()),
+                    Sample(WinUIControlSample()),
+                    Sample(Cube3DSample()),
+                ]))
+        #endif
+
         self.groups = groups
     }
 

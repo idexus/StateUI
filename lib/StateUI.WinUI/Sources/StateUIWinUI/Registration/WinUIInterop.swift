@@ -3,37 +3,39 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
-import CStateUIGTK
+import CStateUIWinUI
 
 /// What an APPLICATION registers with this host, beside the elements the host realizes itself: the acts it performs,
-/// by the host layer's rule. Said once, before `StateUIGTK.run(applicationID:)`.
-/// Design: docs/design/platforms/gtk/interop.md
+/// by the host layer's rule. Said once, before `StateUIWinUI.run()`.
+/// Design: docs/design/platforms/winui/interop.md
 @MainActor
-enum GTKInterop {
+enum WinUIInterop {
     /// The application's acts, performed where no act of the library's answers the call.
-    static let acts = InteropActs<GTKView>()
+    static let acts = InteropActs<WinUIView>()
 }
 
-/// A control of the application's own on this host: an object that makes and holds the GTK widget it shows.
+/// A control of the application's own on this host: an object that holds the WinUI element it shows.
 ///
-/// The host places, sizes and shows the widget as it does its own, and holds the control for as long as its element
-/// lives; the widget's own measure is what the host measures.
+/// The application makes the element with a relay of its own - C++/WinRT beside its head, behind C functions - and
+/// hands its handle over as it is: the host takes a reference of its own, and places, sizes and shows the element as
+/// it does its own; the element's own measure is what the host measures.
 @MainActor
-public protocol GTKControl: AnyObject {
-    /// The widget the control shows.
-    var widget: UnsafeMutablePointer<GtkWidget> { get }
+public protocol WinUIControl: AnyObject {
+    /// The WinUI element the control shows: a `UIElement`'s default interface, `AddRef`'d, as the host's own handles
+    /// are.
+    var element: OpaquePointer { get }
 }
 
 /// The controls an application adds to this host - its own elements, each realized with a control of its own.
 ///
-/// Said once, from the application's GTK head, before `StateUIGTK.run(applicationID:)`.
+/// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and
     /// which of the element's members it takes and raises.
     ///
-    ///     StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
-    ///         let light = TrafficLightWidget()
+    ///     StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
+    ///         let light = TrafficLightControl()
     ///         light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
     ///         return light
     ///     }) { light in
@@ -43,41 +45,40 @@ public enum StateUIControls {
     ///     }
     ///
     /// What every view shares - margins, alignment, opacity, gestures, the frame reports - this host applies around
-    /// the widget, exactly as it does for the elements it realizes itself. A second registration of a contract
+    /// the element, exactly as it does for the elements it realizes itself. A second registration of a contract
     /// replaces the first.
     ///
     /// - Parameters:
     ///   - contract: the element's contract.
     ///   - create: makes the control, once per element, handed what it reports through.
     ///   - members: registers the members the control takes and raises.
-    public static func add<Realized: ElementContract, Made: GTKControl>(
+    public static func add<Realized: ElementContract, Made: WinUIControl>(
         _ contract: Realized.Type,
-        create: @escaping (GTKReports<Realized>) -> Made,
-        members: (GTKRegistration<Realized, Made>) -> Void = { _ in }
+        create: @escaping (WinUIReports<Realized>) -> Made,
+        members: (WinUIRegistration<Realized, Made>) -> Void = { _ in }
     ) {
-        GTKRegistrations.registry.add(
+        WinUIRegistrations.registry.add(
             contract,
-            create: { reports in GTKHostedView(create(GTKReports(reports))) },
-            members: { registration in members(GTKRegistration(registration)) })
+            create: { reports in WinUIHostedView(create(WinUIReports(reports))) },
+            members: { registration in members(WinUIRegistration(registration)) })
     }
 }
 
 /// The acts an application performs on this host - what its own calls, `stateUICall` and an `Aim`, reach.
 ///
-/// Said once, from the application's GTK head, before `StateUIGTK.run(applicationID:)`.
+/// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
     /// `stateUICall`.
     ///
     ///     StateUIActs.add(GalleryContract.setClipboard) { text in
-    ///         gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()), text)
+    ///         Clipboard.write(text)
     ///     }
     ///
     /// The values are the act's own, as its contract declares them, so a performer of another shape does not
-    /// compile and a call carrying anything else fails with the reason. A performer may await - GTK reads the
-    /// clipboard asynchronously - and the call is answered once it returns. A second registration replaces the
-    /// first.
+    /// compile and a call carrying anything else fails with the reason. A performer may await, and the call is
+    /// answered once it returns. A second registration replaces the first.
     ///
     /// - Parameters:
     ///   - act: the member, written with its contract.
@@ -89,14 +90,14 @@ public enum StateUIActs {
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
     ) {
-        GTKInterop.acts.add(act, perform)
+        WinUIInterop.acts.add(act, perform)
     }
 
     /// Performs an act AIMED at one of the application's own elements, when the application calls it through an
     /// `Aim`: the performer is handed the element's control. An aim at nothing, or at an element no longer on
     /// screen, fails the call with that reason.
     ///
-    ///     StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
+    ///     StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
     ///         bar.flash()
     ///     }
     ///
@@ -106,13 +107,13 @@ public enum StateUIActs {
     ///   - perform: given the element's control and the arguments the contract declares, answering the values it
     ///     declares.
     public static func add<
-        Owner: Contract, Made: GTKControl, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: Contract, Made: WinUIControl, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on control: Made.Type,
         _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
     ) {
-        GTKInterop.acts.add(act, control: { ($0 as? GTKHostedView<Made>)?.control }, perform)
+        WinUIInterop.acts.add(act, control: { ($0 as? WinUIHostedView<Made>)?.control }, perform)
     }
 }
 
@@ -127,7 +128,7 @@ public enum StateUIEvents {
     /// - Parameter event: the member, written with its contract.
     @MainActor
     public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        GTKRegistrations.registry.raises(event)
+        WinUIRegistrations.registry.raises(event)
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares.
@@ -151,7 +152,7 @@ public enum StateUIEvents {
 /// What an element of the APPLICATION'S OWN tells the application: an event of its own, and a value its user
 /// changed. Handed to the control where it is made, so the control names members of its contract and never a
 /// handler.
-public struct GTKReports<Realized: ElementContract> {
+public struct WinUIReports<Realized: ElementContract> {
     private let reports: Reports<Realized>
 
     init(_ reports: Reports<Realized>) {
@@ -189,10 +190,10 @@ public struct GTKReports<Realized: ElementContract> {
 /// How an application's own element is realized on this host, member by member: the properties its control takes,
 /// and the events of its own it raises.
 @MainActor
-public final class GTKRegistration<Realized: ElementContract, Made: GTKControl> {
-    private let registration: Registration<Realized, GTKHostedView<Made>>
+public final class WinUIRegistration<Realized: ElementContract, Made: WinUIControl> {
+    private let registration: Registration<Realized, WinUIHostedView<Made>>
 
-    init(_ registration: Registration<Realized, GTKHostedView<Made>>) {
+    init(_ registration: Registration<Realized, WinUIHostedView<Made>>) {
         self.registration = registration
     }
 

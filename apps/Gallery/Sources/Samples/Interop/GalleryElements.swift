@@ -17,9 +17,9 @@ enum GalleryElements {
             TrafficLightContract.self, RatingBarContract.self,
         ]
 
-        #if APPKIT || GTK
+        #if APPKIT || GTK || WINUI
         // Drawn with the GPU in each platform's own way - Metal on AppKit,
-        // OpenGL 3.3 on GTK. An element only some hosts can honestly realize is
+        // OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI. An element only some hosts can honestly realize is
         // declared only for them, so the others are never held to a promise
         // they cannot keep - which is what the test reading this list against
         // each host's registrations would otherwise demand of them.

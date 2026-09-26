@@ -62,29 +62,13 @@ final class GTKActPerformer {
         }
     }
 
-    /// Performs an act the application registered: its own, or one aimed at its own element, handed that
-    /// element's control; an act nobody registered is refused by name.
+    /// Performs an act the application registered, by the host layer's rule: its own, or one aimed at its own element,
+    /// handed that element's control; an act nobody registered is refused by name.
     private func perform(registered call: HostActCall, in tree: MountedTree) {
-        guard let performer = GTKInterop.performers[call.act] else {
-            return fail(call, "the GTK host does not perform the act '\(call.act.name)'")
-        }
-
-        var view: GTKView?
-        if case .aimed = performer {
-            view = aimed(call, in: tree)
-            guard view != nil else { return }
-        }
-        // A performer may await; the call is answered once it returns.
-        Task { @MainActor in
-            do {
-                switch performer {
-                case .application(let perform): reply(call, try await perform(call.arguments))
-                case .aimed(let perform): reply(call, try await perform(view!, Array(call.arguments.dropFirst())))
-                }
-            } catch {
-                fail(call, "\(error)")
-            }
-        }
+        guard !GTKInterop.acts.perform(
+            call, in: tree, core: core, view: { ($0.native as? GTKElement)?.view }, log: { GTKLog.error($0) })
+        else { return }
+        fail(call, "the GTK host does not perform the act '\(call.act.name)'")
     }
 
     /// The question under `ticket` was answered by the response `id`; the next question shows.

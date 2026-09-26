@@ -51,7 +51,8 @@ it.
   `platforms/winui/`: [the relay](platforms/winui/relay.md),
   [the runtime](platforms/winui/runtime.md), [controls](platforms/winui/controls.md),
   [drawing](platforms/winui/drawing.md), [input](platforms/winui/input.md),
-  [layout](platforms/winui/layout.md), [motion](platforms/winui/motion.md),
+  [interop](platforms/winui/interop.md), [layout](platforms/winui/layout.md),
+  [motion](platforms/winui/motion.md),
   [pages](platforms/winui/pages.md), [conformance](platforms/winui/conformance.md).
   `platforms/gtk/`: [the C API](platforms/gtk/c-api.md), [the runtime](platforms/gtk/runtime.md),
   [controls](platforms/gtk/controls.md), [drawing](platforms/gtk/drawing.md),

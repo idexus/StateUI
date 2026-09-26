@@ -176,6 +176,9 @@ void stateui_winui_hold_frames(bool hold);
 /// Whether WinUI's frames are subscribed to now. What a test reads.
 bool stateui_winui_holds_frames(void);
 
+/// Takes a reference of the host's own to a handle, which the host lets go of as it lets go of its own; the handle.
+StateUIObjectRef stateui_winui_retain(StateUIObjectRef object);
+
 /// Lets go of a handle.
 void stateui_winui_release(StateUIObjectRef object);
 

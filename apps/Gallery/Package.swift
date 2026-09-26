@@ -170,18 +170,34 @@ if hasWinUIHead {
     dependencies.append(
         .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
 
-    targets.append(
+    targets.append(contentsOf: [
         .executableTarget(
             name: "GalleryWinUI",
             dependencies: [
                 "GalleryUI",
+                "CGalleryWinUI",
                 .product(name: "StateUIWinUI", package: "StateUIWinUI"),
             ],
             path: "Platforms/WinUI",
+            exclude: ["Relay"],
             swiftSettings: settings,
             // A windowed application: started by itself it opens no console, and started from one it writes there.
             linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
-        ))
+        ),
+        // The gallery's own WinUI elements, C++/WinRT behind C functions: the traffic light, the rating bar, the
+        // cube Direct3D 11.1 draws, and the battery. It includes the projection the WinUI host generated.
+        .target(
+            name: "CGalleryWinUI",
+            path: "Platforms/WinUI/Relay",
+            cxxSettings: [
+                .unsafeFlags(["-I", Context.packageDirectory + "/../../lib/StateUI.WinUI/.projection"]),
+            ],
+            linkerSettings: [
+                .linkedLibrary("d3d11"), .linkedLibrary("dxgi"), .linkedLibrary("d3dcompiler"),
+                .linkedLibrary("powrprof"),
+            ]
+        ),
+    ])
 }
 
 if hasGTKHead {
@@ -225,5 +241,6 @@ let package = Package(
     ],
     products: products,
     dependencies: dependencies,
-    targets: targets
+    targets: targets,
+    cxxLanguageStandard: .cxx20
 )

@@ -183,6 +183,16 @@ extern "C" bool stateui_winui_holds_frames(void) {
     }
 }
 
+extern "C" StateUIObjectRef stateui_winui_retain(StateUIObjectRef object) {
+    try {
+        if (object) reinterpret_cast<::IUnknown *>(object)->AddRef();
+        return object;
+    } catch (...) {
+        report("holding an object");
+        return nullptr;
+    }
+}
+
 extern "C" void stateui_winui_release(StateUIObjectRef object) {
     try {
         if (object) reinterpret_cast<::IUnknown *>(object)->Release();
