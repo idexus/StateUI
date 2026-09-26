@@ -17,6 +17,9 @@ class UIKitLayoutView: UIView {
 
     private(set) var items: [UIKitLayoutItem] = []
 
+    /// What the layout says once it has placed its children: whoever reads a frame may have moved.
+    var laidOut: (() -> Void)?
+
     /// The direction the children are laid out in.
     var direction = LayoutDirection.leftToRight {
         didSet { if direction != oldValue { setNeedsLayout() } }
@@ -73,6 +76,7 @@ class UIKitLayoutView: UIView {
         super.layoutSubviews()
         places.begin(width: bounds.width)
         arrange(in: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+        laidOut?()
     }
 
     /// Stands `item` at `place`, or on its way there.

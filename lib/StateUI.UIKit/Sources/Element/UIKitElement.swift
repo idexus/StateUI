@@ -51,6 +51,7 @@ final class UIKitElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
         arrangeChildren()
+        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -64,7 +65,9 @@ final class UIKitElement: NativeElement {
         return impact
     }
 
-    func leave() {}
+    func leave() {
+        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
+    }
 
     var chosenTab: Int? { nil }
 

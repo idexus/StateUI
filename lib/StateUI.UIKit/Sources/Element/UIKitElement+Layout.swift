@@ -11,6 +11,7 @@ extension UIKitElement {
     func arrangeChildren() {
         guard let layout = view as? UIKitLayoutView else { return }
         layout.direction = element.layoutDirection
+        layout.laidOut = { [weak host] in host?.runtime.frames.laidOut() }
         layout.setItems(element.arrangedChildren.compactMap { $0.uiKit.layoutItem })
     }
 
