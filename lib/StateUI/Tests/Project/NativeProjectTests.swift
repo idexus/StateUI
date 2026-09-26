@@ -392,8 +392,8 @@ final class NativeProjectTests: XCTestCase {
 
     /// Every ANDROID HEAD is a library Android loads, declared by the
     /// application's manifest exactly when a build says it is an Android one:
-    /// its Gradle build, an Android manifest naming the host's activity and the
-    /// head's library, and a `JNI_OnLoad` that names the application to the host.
+    /// its Gradle build, an Android manifest naming the host's activity - or one
+    /// extending it - and the head's library, and a `JNI_OnLoad` that names the application to the host.
     func testEveryAndroidHeadLoadsTheApplicationsModule() throws {
         var heads = 0
 
@@ -414,8 +414,17 @@ final class NativeProjectTests: XCTestCase {
                 XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
             }
 
+            // The host's activity, or one of the application's own Java that extends it.
             let android = try text("Platforms/Android/AndroidManifest.xml")
-            XCTAssertTrue(android.contains("android:name=\"stateui.android.StateUIActivity\""))
+            let activity = android.components(separatedBy: "<activity").dropFirst().first?
+                .components(separatedBy: "android:name=\"").dropFirst().first?
+                .components(separatedBy: "\"").first ?? ""
+            if activity != "stateui.android.StateUIActivity" {
+                let source = "Platforms/Android/Java/" + activity.replacingOccurrences(of: ".", with: "/") + ".java"
+                XCTAssertTrue(
+                    (try? text(source))?.contains("extends StateUIActivity") == true,
+                    "\(name)'s activity \(activity) is neither the host's nor one extending it")
+            }
             XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
 
             let entry = try text("Platforms/Android/Swift/\(name)Android.swift")

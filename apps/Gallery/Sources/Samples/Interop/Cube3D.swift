@@ -1,8 +1,9 @@
-#if APPKIT || GTK || WINUI
+#if APPKIT || GTK || WINUI || ANDROID
 // A control of the application's OWN that draws with the GPU, declared for the
 // hosts that can realize it: an `MTKView` drawing with Metal on AppKit, a
 // `GtkGLArea` drawing with OpenGL 3.3 on GTK, a `SwapChainPanel` drawing with
-// Direct3D 11.1 on WinUI.
+// Direct3D 11.1 on WinUI, a `TextureView` drawn into with OpenGL ES 3.0 on
+// Android.
 //
 // Every other element here is declared for all of them: a contract and a
 // `View`, shared, with each host saying what it IS on screen. This one is

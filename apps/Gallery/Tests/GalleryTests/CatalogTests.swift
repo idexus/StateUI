@@ -731,17 +731,14 @@ final class CatalogTests: XCTestCase {
     }
 
 
-    #if APPKIT
-    /// Every example of the AppKit interop group shows both halves, and names
-    /// them by what they ARE.
-    ///
-    /// Both halves are Swift on this host, so "In Swift" would tell a user
-    /// nothing: the application's half is "In StateUI" and the host's is "In
-    /// AppKit". Nothing else in the gallery asks that, so a heading lost here
-    /// would show up nowhere else - which is exactly how the C# half went
-    /// missing once.
-    func testEveryAppKitInteropExampleShowsBothHalves() throws {
-        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "appKitInterop" })
+    #if APPKIT || GTK || WINUI || ANDROID
+    /// Every example of this host's interop group shows both halves, named by
+    /// what they ARE: the application's half "In StateUI" and the host's "In"
+    /// the host's name - both Swift here, so "In Swift" would tell a user
+    /// nothing. Nothing else in the gallery asks that, so a heading lost here
+    /// would show up nowhere else.
+    func testEveryInteropExampleShowsBothHalves() throws {
+        let interop = try XCTUnwrap(catalog().groups.first { $0.route == InteropHost.key + "Interop" })
 
         XCTAssertFalse(interop.samples.isEmpty, "the group lists nothing")
 
@@ -751,27 +748,7 @@ final class CatalogTests: XCTestCase {
 
                 XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
                 XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
-                XCTAssertEqual(example.hostCode.heading, "In AppKit", "\(where_) heads the far side")
-            }
-        }
-    }
-    #endif
-
-    #if GTK
-    /// Every example of the GTK interop group shows both halves, named by what they ARE: the application's half "In
-    /// StateUI" and the host's "In GTK".
-    func testEveryGTKInteropExampleShowsBothHalves() throws {
-        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "gtkInterop" })
-
-        XCTAssertFalse(interop.samples.isEmpty, "the group lists nothing")
-
-        for sample in interop.samples {
-            for (index, example) in sample.examples.enumerated() {
-                let where_ = "\(sample.id) example \(index + 1)"
-
-                XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
-                XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
-                XCTAssertEqual(example.hostCode.heading, "In GTK", "\(where_) heads the far side")
+                XCTAssertEqual(example.hostCode.heading, "In " + InteropHost.name, "\(where_) heads the far side")
             }
         }
     }

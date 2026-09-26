@@ -1,7 +1,8 @@
-#if APPKIT || GTK || WINUI
+#if APPKIT || GTK || WINUI || ANDROID
 import StateUI
 
-/// A cube the host draws on the GPU - Metal on AppKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI - with
+/// A cube the host draws on the GPU - Metal on AppKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI, OpenGL ES 3.0 on
+/// Android - with
 /// everything about it described from this side.
 struct Cube3DSample: SampleContent, ExampleContent {
     @State private var size = 0.6
@@ -16,10 +17,14 @@ struct Cube3DSample: SampleContent, ExampleContent {
     static let id = "gtkOpenGL"
     static let title = "An OpenGL view"
     static let summary = "A cube drawn by OpenGL 3.3 in the host, sized and coloured from StateUI."
-    #else
+    #elseif WINUI
     static let id = "winUIDirect3D"
     static let title = "A Direct3D view"
     static let summary = "A cube drawn by Direct3D 11.1 in the host, sized and coloured from StateUI."
+    #else
+    static let id = "androidOpenGLES"
+    static let title = "An OpenGL ES view"
+    static let summary = "A cube drawn by OpenGL ES 3.0 in the host, sized and coloured from StateUI."
     #endif
 
     static let codeHeading = "In StateUI"
@@ -321,7 +326,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 }
             }
             """)
-    #else
+    #elseif WINUI
     static let hostCode = HostCode(
         heading: "In WinUI",
         language: .swift,
@@ -357,6 +362,63 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 @MainActor
                 static func register() {
                     StateUIControls.add(Cube3DContract.self, create: { _ in Direct3DCube3DControl() }) { cube in
+                        cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                        cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                        cube.property(Cube3DContract.isSpinning) { control, spinning in
+                            control.isSpinning = spinning ?? true
+                        }
+                    }
+                }
+            }
+            """)
+    #else
+    static let hostCode = HostCode(
+        heading: "In Android",
+        language: .swift,
+        code: """
+            // Platforms/Android/Swift/Host/GLESCube3DView.swift. The cube is a
+            // TextureView of the gallery's own Java - Cube3DView.java - that
+            // hands its Surface over as it comes and goes, and asks for the
+            // display's frames while it spins and stands in a window. Swift
+            // draws into it with OpenGL ES 3.0, over EGL, in the gallery's C
+            // module CGalleryGLES. An AndroidControl holds its view.
+            @MainActor
+            final class GLESCube3DView: AndroidControl {
+                let view: JavaObject
+
+                var cubeSize = 0.6 { didSet { if cubeSize != oldValue { draw() } } }
+                var color = CubeColor.teal { didSet { if color != oldValue { draw() } } }
+                var isSpinning = true {
+                    didSet {
+                        if isSpinning != oldValue { Java.call(view.reference, Self.setSpinning, .bool(isSpinning)) }
+                    }
+                }
+
+                // The view's surface came: an EGL context over its window, the
+                // cube's program and corners made in it, then a frame.
+                func surfaceReady(
+                    _ surface: jobject?, environment: UnsafeMutablePointer<JNIEnv?>?, width: Int32, height: Int32
+                ) {
+                    if drawing == nil, let surface, let window = ANativeWindow_fromSurface(environment, surface) {
+                        drawing = Drawing(window: window)
+                    }
+                    drawing?.size = (width, height)
+                    draw()
+                }
+
+                // One display frame while spinning: the angle moves by the
+                // time since the last.
+                func frame(at time: Int64) {
+                    if lastFrame != 0 { angle += Double(time - lastFrame) / 1_000_000_000 }
+                    lastFrame = time
+                    draw()
+                }
+            }
+
+            extension GLESCube3DView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ in GLESCube3DView() }) { cube in
                         cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
                         cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
                         cube.property(Cube3DContract.isSpinning) { control, spinning in
@@ -427,13 +489,19 @@ struct Cube3DSample: SampleContent, ExampleContent {
         + "widget like any other, so the registration has nothing extra to say."
     private static let stopsWith = "GTK ticks only a widget on screen, so nothing is "
         + "left turning behind a page you have left."
-    #else
+    #elseif WINUI
     private static let drawnBy = "The cube is a `SwapChainPanel` drawing with Direct3D 11.1, "
         + "made by the gallery's own C++/WinRT relay and held by a `WinUIControl` the gallery "
         + "registers with `StateUIControls.add` - an element like any other, so the "
         + "registration has nothing extra to say."
     private static let stopsWith = "The cube follows WinUI's frames only while it stands on "
         + "screen, so nothing is left turning behind a page you have left."
+    #else
+    private static let drawnBy = "The cube is a `TextureView` of the gallery's own Java, drawn into with OpenGL ES "
+        + "3.0 from Swift and held by an `AndroidControl` the gallery registers with `StateUIControls.add` - a view "
+        + "like any other, so the registration has nothing extra to say."
+    private static let stopsWith = "The cube asks for the display's frames only while it stands in a window, so "
+        + "nothing is left turning behind a page you have left."
     #endif
 
     var notes: Element? {

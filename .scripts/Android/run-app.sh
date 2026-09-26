@@ -62,7 +62,9 @@ switches=()
 while IFS= read -r name; do
   switches+=(-e "$name" "${!name}")
 done < <(compgen -e | grep '^STATEUI_' || true)
-"$ADB" -s "$serial" shell am start -W -n "$package/stateui.android.StateUIActivity" "${switches[@]+"${switches[@]}"}"
+# The activity the launcher opens, as the APK declares it: the host's own, or one an application extends it with.
+activity="$("$AAPT2" dump badging "$apk" | sed -n "s/^launchable-activity: name='\([^']*\)'.*/\1/p" | head -n 1)"
+"$ADB" -s "$serial" shell am start -W -n "$package/${activity:-stateui.android.StateUIActivity}" "${switches[@]+"${switches[@]}"}"
 
 process=""
 for _ in 1 2 3 4 5 6 7 8 9 10; do

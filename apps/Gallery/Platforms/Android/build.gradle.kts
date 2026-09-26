@@ -31,6 +31,7 @@ android {
         getByName("main") {
             manifest.srcFile("AndroidManifest.xml")
             java.srcDir(stated("stateui.java"))
+            java.srcDir("Java")
             jniLibs.srcDir(stated("stateui.libraries"))
             assets.srcDir(stated("stateui.assets"))
             res.srcDir(stated("stateui.res"))

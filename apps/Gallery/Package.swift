@@ -151,11 +151,14 @@ if hasAndroidHead {
             name: "GalleryAndroid",
             dependencies: [
                 "GalleryUI",
+                "CGalleryGLES",
                 .product(name: "StateUIAndroid", package: "StateUIAndroid"),
             ],
             path: "Platforms/Android/Swift",
             swiftSettings: settings
         ))
+    // OpenGL ES 3.0 for the gallery's cube: EGL, GLES3 and the NDK's window of a Java Surface.
+    targets.append(.systemLibrary(name: "CGalleryGLES", path: "Platforms/Android/GLES"))
 }
 
 if hasWinUIHead {

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
         <activity
-            android:name="stateui.android.StateUIActivity"
+            android:name="com.stateui.gallery.GalleryActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|density">
             <!-- The library this head's Swift is built into; its JNI_OnLoad starts the host. -->

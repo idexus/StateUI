@@ -303,67 +303,22 @@ final class Catalog {
         ]
 
 
-        #if APPKIT
-        // Calling the host, hearing from it, and a control the application
-        // registers with it - each described like the library's own: one
-        // contract, one `View`, and the host's half beside the AppKit head,
-        // in Platforms/AppKit/Host.
-        //
-        // The cube is the exception, and deliberately: its view draws on the
-        // GPU, so it is declared only for the hosts that draw it - here with
-        // Metal.
+        #if APPKIT || GTK || WINUI || ANDROID
+        // Calling the host, hearing from it, and a control the application registers with it - each described like
+        // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
+        // The cube draws on the GPU, so it is declared only for the hosts that draw it, each in its own way.
         groups.append(
             SampleGroup(
-                route: "appKitInterop",
-                title: "AppKit interop",
+                route: InteropHost.key + "Interop",
+                title: InteropHost.name + " interop",
                 summary: "Calling the host, hearing from it, and controls the app registers - "
-                    + "one of them drawn on the GPU.",
+                    + "one of them drawn \(InteropHost.cubeDrawn).",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
                 card: ImageSource("cat_interop.png"),
                 samples: [
-                    Sample(AppKitActsSample()),
-                    Sample(AppKitEventsSample()),
-                    Sample(AppKitControlSample()),
-                    Sample(Cube3DSample()),
-                ]))
-        #endif
-
-        #if GTK
-        // The same three roads on GTK - calling the host, hearing from it, a control the application registers - and
-        // a cube drawn by OpenGL 3.3 in a GtkGLArea, declared for this host alone. The GTK halves stand beside the
-        // GTK head, in Platforms/GTK/Host.
-        groups.append(
-            SampleGroup(
-                route: "gtkInterop",
-                title: "GTK interop",
-                summary: "Calling the host, hearing from it, and controls the app registers - "
-                    + "one of them drawn by OpenGL.",
-                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
-                samples: [
-                    Sample(GTKActsSample()),
-                    Sample(GTKEventsSample()),
-                    Sample(GTKControlSample()),
-                    Sample(Cube3DSample()),
-                ]))
-        #endif
-
-        #if WINUI
-        // The same three roads on WinUI, and a cube drawn by Direct3D 11.1 in a SwapChainPanel, declared for the
-        // hosts that draw it. The WinUI halves stand beside the WinUI head: Swift in Platforms/WinUI/Host, and the
-        // gallery's own C++/WinRT relay that makes its elements in Platforms/WinUI/Relay.
-        groups.append(
-            SampleGroup(
-                route: "winUIInterop",
-                title: "WinUI interop",
-                summary: "Calling the host, hearing from it, and controls the app registers - "
-                    + "one of them drawn by Direct3D.",
-                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
-                samples: [
-                    Sample(WinUIActsSample()),
-                    Sample(WinUIEventsSample()),
-                    Sample(WinUIControlSample()),
+                    Sample(InteropActsSample()),
+                    Sample(InteropEventsSample()),
+                    Sample(InteropControlSample()),
                     Sample(Cube3DSample()),
                 ]))
         #endif
