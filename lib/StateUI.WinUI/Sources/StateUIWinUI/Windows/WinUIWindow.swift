@@ -34,6 +34,13 @@ final class WinUIWindow {
 
     private var activated = false
 
+    /// The place and size last asked for - x, y, width, height - each its own request.
+    private var frameRequests: [Double?] = [nil, nil, nil, nil]
+
+    /// The bounds last given and whether the window was translucent; nil before the first.
+    private var bounds: [Double]?
+    private var translucent = false
+
     /// The number the window's own events name it by: its chrome's.
     var number: Int64 { titleBar.number }
 
@@ -54,6 +61,38 @@ final class WinUIWindow {
         guard self.title != .some(title) else { return }
         self.title = .some(title)
         stateui_winui_window_set_title(handle, title ?? "")
+    }
+
+    /// Moves and sizes the window where a request changed, each alone: one kept leaves the window where the user put
+    /// it. Places and sizes are DIPs, a place from the corner of the screen's work area, a size the content's.
+    /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
+    func request(x: Double?, y: Double?, width: Double?, height: Double?) {
+        let requests = [x, y, width, height]
+        let changed = zip(requests, frameRequests).map { request, last in request != nil && request != last }
+        frameRequests = requests
+        guard changed.contains(true) else { return }
+        stateui_winui_window_set_frame(handle, changed, requests.map { $0 ?? 0 })
+    }
+
+    /// Bounds the content's size - 0 for no bound, the least winning - and lets the user maximize and minimize the
+    /// window or not.
+    func bound(
+        minimumWidth: Double, minimumHeight: Double, maximumWidth: Double, maximumHeight: Double,
+        maximizable: Bool, minimizable: Bool
+    ) {
+        let bounds = [
+            minimumWidth, minimumHeight, maximumWidth, maximumHeight, maximizable ? 1 : 0, minimizable ? 1 : 0,
+        ]
+        guard self.bounds != bounds else { return }
+        self.bounds = bounds
+        stateui_winui_window_set_limits(handle, bounds, maximizable, minimizable)
+    }
+
+    /// Paints the window's backdrop translucent, or of the desktop's tint.
+    func setTranslucent(_ translucent: Bool) {
+        guard self.translucent != translucent else { return }
+        self.translucent = translucent
+        stateui_winui_window_set_translucent(handle, translucent)
     }
 
     /// Shows `view` as the window's content - the first one activates the window.

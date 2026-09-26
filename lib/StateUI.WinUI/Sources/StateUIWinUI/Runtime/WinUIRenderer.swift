@@ -28,14 +28,13 @@ final class WinUIRenderer {
     /// What performs the acts the application calls, and answers them.
     private(set) lazy var acts = WinUIActPerformer(core: runtime.core)
 
-    /// The window the first window element shows in; nil before it says it is there.
-    private(set) var window: WinUIWindow?
+    /// A controller for each window element the tree holds, in the tree's order.
+    private(set) var windows: [WinUIWindowController] = []
 
-    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlay, and that it was made.
-    private let presentation = WindowPresentation()
-
-    /// The sheets the window shows, one for each page its modal stack presents, the last on top.
-    private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
+    /// The first window - the scene's main one, where the application's questions stand; nil before there is one.
+    var window: WinUIWindow? {
+        windows.first?.window
+    }
 
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
     /// the motion `reducesMotion` allows.
@@ -87,7 +86,7 @@ final class WinUIRenderer {
     /// The window numbered `window` moved the application into `phase`: heard where it is this runtime's window.
     /// Design: docs/design/platforms/winui/runtime.md#the-applications-phase
     func phaseChanged(_ phase: ApplicationPhase, window number: Int64) {
-        guard let window, window.number == number, !window.isClosed else { return }
+        guard let window = windows.first(where: { $0.window.number == number })?.window, !window.isClosed else { return }
         runtime.enterPhase(phase)
     }
 
@@ -99,119 +98,59 @@ final class WinUIRenderer {
         runtime.pump.turn()
     }
 
-    /// Shows the first window's arrangement of pages, its sheets and its overlay in a WinUI window, its pages hearing
-    /// that they show, and tells the window it was made, once, in its turn.
+    /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
+    /// holds closes - and tells each, once, in its turn, that it was made.
     /// Design: docs/design/platforms/winui/runtime.md#the-window
-    private func showWindow() {
-        guard let element = runtime.tree.root?.first(type: .window) else { return }
+    private func showWindows() {
+        var elements: [MountedElement] = []
+        Self.collectWindows(in: runtime.tree.root, into: &elements)
+        for controller in windows where !elements.contains(where: { $0 === controller.element }) {
+            controller.window.close()
+        }
 
-        if self.window == nil {
-            let window = WinUIWindow()
-            self.window = window
+        let first = windows.isEmpty && !elements.isEmpty
+        windows = elements.map { element in
+            windows.first { $0.element === element } ?? WinUIWindowController(element)
+        }
+        if first, let window {
             // The screen is known once there is a window; what reads it renders in the turn after this one.
             WinUIEnvironment.reportDisplay(to: runtime.core, window: window)
             runtime.pump.turn()
         }
-        guard let window = self.window else { return }
-
-        // What the user sees is the top sheet, else the window's arrangement: the one that stops showing hears it,
-        // then the one that starts - by the window's own coming and going, or by a sheet's, as a move.
-        let previousVisible = sheets.last?.element ?? presentation.arrangement
-        let hadSheets = !sheets.isEmpty
-        let changes = presentation.show(element)
-        if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
-        showSheets(of: element, in: window)
-        if let overlay = changes.overlay { window.showOverlay(overlay?.winUI.view) }
-        let visible = sheets.last?.element ?? presentation.arrangement
-        if visible !== previousVisible {
-            let reason: WinUIPagePresentationReason = hadSheets || !sheets.isEmpty ? .navigation : .window
-            previousVisible?.winUI.setPagePresented(false, reason: reason)
-            visible?.winUI.setPagePresented(true, reason: reason)
+        for controller in windows {
+            guard let element = controller.element else { continue }
+            controller.present(element, in: runtime)
         }
-
-        if let handler = changes.created { runtime.pump.handlers.enqueuePhase(handler) }
-    }
-}
-
-extension WinUIRenderer {
-    /// Keeps a sheet for each page the window's modal stack presents, in its order, each under its page's title.
-    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
-    private func showSheets(of window: MountedElement, in native: WinUIWindow) {
-        let pages = window.children.first { $0.type == .modalStack }?.children
-            .filter { NodeType.pageTypes.contains($0.type) } ?? []
-        guard !pages.isEmpty || !sheets.isEmpty else { return }
-
-        sheets = pages.map { page in
-            let sheet = sheets.first { $0.element === page }?.sheet ?? WinUISheetView()
-            sheet.show(title: page.winUI.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
-            return (page, sheet)
-        }
-        native.showSheets(sheets.map(\.sheet))
     }
 
-    /// The user took the top sheet away - Escape, the way back of a sheet with none of its own: the window is told
-    /// how many remain.
-    func dismissTopSheet() {
-        guard !sheets.isEmpty, let window = runtime.tree.root?.first(type: .window),
-              let handler = window.handler(.modalPopped)
-        else { return }
-
-        runtime.dispatch(handler, payload: [.number(Double(sheets.count - 1))])
+    /// The window elements under `element`, in order; a window holds none.
+    private static func collectWindows(in element: MountedElement?, into windows: inout [MountedElement]) {
+        guard let element else { return }
+        if element.type == .window { return windows.append(element) }
+        for child in element.children { collectWindows(in: child, into: &windows) }
     }
 
-    /// Composes the window's one chrome again from what it shows now: the top page names the window, the stack's
-    /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the page's menus
-    /// and the tabs of a tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
-    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    /// Composes every window's chrome again from what it shows now.
     func refreshWindowChrome() {
-        guard let window, let element = runtime.tree.root?.first(type: .window)?.winUI else { return }
-
-        let arrangement = presentation.arrangement?.winUI
-        arrangement?.markTabsShownByWindow()
-        let titleBar = element.children.first { $0.type == .titleBar }
-        let actions = arrangement?.visibleToolbarActions ?? (primary: [], overflow: [])
-
-        var chrome = WinUIWindowChrome()
-        chrome.title = arrangement?.visiblePage?.value(.title)?.string ?? element.value(.title)?.string ?? ""
-        chrome.back = arrangement?.visibleBackAction
-        chrome.sidebarToggle = arrangement?.visibleSidebarToggle
-        chrome.leading = titleBar?.firstView(in: .leadingContent)
-        chrome.center = titleBar?.firstView(in: .content) ?? arrangement?.visibleTitleView
-        chrome.trailing = titleBar?.firstView(in: .trailingContent)
-        chrome.actions = actions.primary
-        chrome.overflow = actions.overflow
-        chrome.background = arrangement?.visibleBarBackground ?? titleBar?.value(.background)
-        chrome.foreground = arrangement?.visibleBarForeground ?? titleBar?.value(.barForegroundColor)
-        chrome.menuBar = WinUIMenu(bar: arrangement?.visiblePage?.children.first { $0.type == .menuBar })
-        if let top = sheets.last?.element.winUI {
-            chrome.sheet = (
-                back: { [weak self, weak top] in
-                    if let wayBack = top?.wayBack { wayBack() } else { self?.dismissTopSheet() }
-                },
-                dismiss: { [weak self] in self?.dismissTopSheet() })
-        }
-        window.apply(chrome, tabs: arrangement?.visibleWindowTabs)
+        for controller in windows { controller.refreshChrome(in: runtime) }
     }
 
-    /// Goes the way back the arrangement the window shows offers - a stack's top page going; whether there was one.
-    /// Design: docs/design/platforms/winui/pages.md#the-way-back
-    func goBack() -> Bool {
-        guard let wayBack = presentation.arrangement?.winUI.wayBack else { return false }
-
-        wayBack()
-        return true
+    /// The controller of the window `element` stands in; nil for none.
+    func controller(of element: MountedElement) -> WinUIWindowController? {
+        var window: MountedElement? = element
+        while let each = window, each.type != .window { window = each.parent }
+        return windows.first { $0.element === window }
     }
 
-    /// The page's corner in the window, in DIPs: where content stands clear of the window's chrome.
-    var safeAreaOrigin: Point {
-        guard let content = window?.content else { return Point(x: 0, y: 0) }
-        return content.origin
+    /// The page's corner in the window `element` stands in, in DIPs: where content stands clear of its chrome.
+    func safeAreaOrigin(of element: MountedElement) -> Point {
+        (controller(of: element) ?? windows.first)?.safeAreaOrigin ?? Point(x: 0, y: 0)
     }
 }
 
 extension WinUIRenderer: TurnPresenter {
     func presentRendered() {
-        showWindow()
+        showWindows()
         refreshWindowChrome()
     }
 

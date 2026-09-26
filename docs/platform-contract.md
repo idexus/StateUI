@@ -135,7 +135,7 @@ host whose passing test proved one of its members.
 | `TrailingContent` | structure |  |  |  |  |  |  |
 | `VStack` | native |  |  | ✅ |  | ✅ |  |
 | `WebView` | native |  |  |  |  |  |  |
-| `Window` | structure |  |  |  |  |  |  |
+| `Window` | structure |  |  |  |  | ✅ |  |
 | `ZStack` | native |  |  | ✅ |  | ✅ |  |
 <!-- creation:end -->
 
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 |  |  |  |  | 5 ✅ |  |
-| **Met** - ✅ and – | 104 |  |  |  |  | 57 of 104 met |  |
+| [Window](controls/Window.md) | 23 |  |  |  |  | 18 ✅ |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 70 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

@@ -9,6 +9,10 @@
 
 #include "Relay.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Windowing.h>
@@ -170,5 +174,123 @@ extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
         borrow<xaml::Window>(handle).Close();
     } catch (winrt::hresult_error const &error) {
         report(error, "closing a window");
+    }
+}
+
+namespace {
+    /// How many pixels a DIP is in `window`, known before its content is laid out: a window's id is its HWND.
+    double scale(xaml::Window const &window) {
+        auto dpi = GetDpiForWindow(reinterpret_cast<HWND>(window.AppWindow().Id().Value));
+        return dpi ? dpi / 96.0 : 1.0;
+    }
+
+    /// The work area of the display `window` stands on, in pixels.
+    winrt::Windows::Graphics::RectInt32 workArea(xaml::Window const &window) {
+        auto area = windowing::DisplayArea::GetFromWindowId(window.AppWindow().Id(), windowing::DisplayAreaFallback::Nearest);
+        return area.WorkArea();
+    }
+}
+
+extern "C" void stateui_winui_window_set_frame(StateUIObjectRef handle, bool const *has, double const *values) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto app = window.AppWindow();
+        auto pixels = scale(window);
+        if (has[0] || has[1]) {
+            auto area = workArea(window);
+            auto at = app.Position();
+            if (has[0]) at.X = area.X + static_cast<int32_t>(std::lround(values[0] * pixels));
+            if (has[1]) at.Y = area.Y + static_cast<int32_t>(std::lround(values[1] * pixels));
+            app.Move(at);
+        }
+        if (has[2] || has[3]) {
+            // The content covers the title bar, which ResizeClient would add again: the frame is what stands now.
+            auto outer = app.Size();
+            auto client = app.ClientSize();
+            if (has[2]) outer.Width += static_cast<int32_t>(std::lround(values[2] * pixels)) - client.Width;
+            if (has[3]) outer.Height += static_cast<int32_t>(std::lround(values[3] * pixels)) - client.Height;
+            app.Resize(outer);
+        }
+    } catch (winrt::hresult_error const &error) {
+        report(error, "placing a window");
+    }
+}
+
+extern "C" void stateui_winui_window_set_limits(
+    StateUIObjectRef handle, double const *limits, bool maximizable, bool minimizable
+) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto presenter = window.AppWindow().Presenter().try_as<windowing::OverlappedPresenter>();
+        if (!presenter) return;
+        auto pixels = scale(window);
+        auto size = [&](double dips) -> winrt::Windows::Foundation::IReference<int32_t> {
+            if (dips <= 0) return nullptr;
+            return static_cast<int32_t>(std::lround(dips * pixels));
+        };
+        presenter.PreferredMinimumWidth(size(limits[0]));
+        presenter.PreferredMinimumHeight(size(limits[1]));
+        // The least wins over a greatest that is smaller.
+        presenter.PreferredMaximumWidth(size(limits[2] > 0 ? std::max(limits[2], limits[0]) : 0));
+        presenter.PreferredMaximumHeight(size(limits[3] > 0 ? std::max(limits[3], limits[1]) : 0));
+        presenter.IsMaximizable(maximizable);
+        presenter.IsMinimizable(minimizable);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "bounding a window");
+    }
+}
+
+extern "C" void stateui_winui_window_set_translucent(StateUIObjectRef handle, bool translucent) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto acrylic = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>();
+        if (translucent == static_cast<bool>(acrylic)) return;
+        if (translucent) window.SystemBackdrop(xaml::Media::DesktopAcrylicBackdrop());
+        else window.SystemBackdrop(xaml::Media::MicaBackdrop());
+    } catch (winrt::hresult_error const &error) {
+        report(error, "making a window translucent");
+    }
+}
+
+extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *values) {
+    try {
+        auto window = borrow<xaml::Window>(handle);
+        auto app = window.AppWindow();
+        auto pixels = scale(window);
+        auto area = workArea(window);
+        auto at = app.Position();
+        auto size = app.ClientSize();
+        values[0] = (at.X - area.X) / pixels;
+        values[1] = (at.Y - area.Y) / pixels;
+        values[2] = size.Width / pixels;
+        values[3] = size.Height / pixels;
+        auto presenter = app.Presenter().try_as<windowing::OverlappedPresenter>();
+        auto dips = [&](winrt::Windows::Foundation::IReference<int32_t> const &value) {
+            return value ? value.Value() / pixels : 0.0;
+        };
+        values[4] = presenter ? dips(presenter.PreferredMinimumWidth()) : 0;
+        values[5] = presenter ? dips(presenter.PreferredMinimumHeight()) : 0;
+        values[6] = presenter ? dips(presenter.PreferredMaximumWidth()) : 0;
+        values[7] = presenter ? dips(presenter.PreferredMaximumHeight()) : 0;
+        values[8] = presenter && presenter.IsMaximizable() ? 1 : 0;
+        values[9] = presenter && presenter.IsMinimizable() ? 1 : 0;
+        values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a window's frame");
+    }
+}
+
+extern "C" int32_t stateui_winui_window_system_title(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+    try {
+        auto bytes = winrt::to_string(borrow<xaml::Window>(handle).AppWindow().Title());
+        if (utf8 && capacity > 0) {
+            auto size = std::min<size_t>(bytes.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, bytes.data(), size);
+            utf8[size] = 0;
+        }
+        return static_cast<int32_t>(bytes.size());
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a window's name");
+        return 0;
     }
 }

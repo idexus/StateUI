@@ -59,10 +59,23 @@ enum WinUIRealization {
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),
+        .complete("Window", "created"),
         .complete("Window", "deactivated"),
+        .complete("Window", "height"),
+        .complete("Window", "isMaximizable"),
+        .complete("Window", "isMinimizable"),
+        .complete("Window", "isTranslucent"),
+        .complete("Window", "maximumHeight"),
+        .complete("Window", "maximumWidth"),
+        .complete("Window", "minimumHeight"),
+        .complete("Window", "minimumWidth"),
         .complete("Window", "modalPopped"),
         .complete("Window", "resumed"),
         .complete("Window", "stopped"),
+        .complete("Window", "title"),
+        .complete("Window", "width"),
+        .complete("Window", "x"),
+        .complete("Window", "y"),
     ]
 
     /// What WinUI's registry says it realizes: the export's content.

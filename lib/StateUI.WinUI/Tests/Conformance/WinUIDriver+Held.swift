@@ -23,7 +23,9 @@ extension WinUIDriver {
         case .toolbarItem:
             if let held = try actionHolds(property.name, element) { return held }
             throw cannot
-        case .window where property.name == "title": return .string(try read(window().titleBar, "title"))
+        case .window:
+            if let held = try windowHolds(property.name, element) { return held }
+            throw cannot
         case .page, .navigationStack, .splitView, .tabbedView:
             if let held = try pageHolds(property.name, element, view) { return held }
         default: break
@@ -36,6 +38,26 @@ extension WinUIDriver {
         if let held = try fieldHolds(property.name, view) { return held }
         if let held = try controlHolds(property.name, view) { return held }
         throw cannot
+    }
+
+    /// A window's: the name the system shows, its place and size, their bounds, its buttons and its backdrop.
+    private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
+        let window = try window(of: element)
+        if name == "title" {
+            let length = stateui_winui_window_system_title(window.handle, nil, 0)
+            var bytes = [CChar](repeating: 0, count: Int(length) + 1)
+            _ = stateui_winui_window_system_title(window.handle, &bytes, Int32(bytes.count))
+            return .string(String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self))
+        }
+        let names = [
+            "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
+            "isMaximizable", "isMinimizable", "isTranslucent",
+        ]
+        guard let place = names.firstIndex(of: name) else { return nil }
+        var values = [Double](repeating: 0, count: names.count)
+        stateui_winui_window_frame(window.handle, &values)
+        // A size in pixels is a DIP's fraction off; a request is a whole number of DIPs.
+        return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
     }
 
     /// What WinUI holds of `view`'s property named `what`, by the relay's reader.

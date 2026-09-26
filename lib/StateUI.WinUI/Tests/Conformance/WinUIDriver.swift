@@ -138,6 +138,12 @@ final class WinUIDriver: HostDriver {
         return window
     }
 
+    /// The window `element` stands in.
+    func window(of element: MountedElement) throws -> WinUIWindow {
+        guard let window = renderer?.controller(of: element)?.window else { throw DriverCannot("find the window") }
+        return window
+    }
+
     /// Moves the application's phase as the window's own events do: 0 in use, 1 behind another window, 2 minimized.
     private func phase(_ phase: Int32) throws {
         WinUICallbacks.table.phaseChanged(try window().number, phase)

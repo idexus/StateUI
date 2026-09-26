@@ -186,6 +186,26 @@ void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef t
 void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 
+/// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
+/// area and the width and height of its content, in DIPs.
+void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, double const *values);
+
+/// The least and the greatest size of the window's content in DIPs (least width, least height, greatest width,
+/// greatest height; 0 for none; the least wins), and whether the user may maximize and minimize it.
+void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits, bool maximizable,
+                                     bool minimizable);
+
+/// Paints the window's backdrop translucent (acrylic) or of the desktop's tint (Mica).
+void stateui_winui_window_set_translucent(StateUIObjectRef window, bool translucent);
+
+/// What a test reads of a window, into 11 values: x, y, width, height, the four limits in the order they are set,
+/// maximizable, minimizable and translucent as 1 or 0.
+void stateui_winui_window_frame(StateUIObjectRef window, double *values);
+
+/// The window's name the system shows - the taskbar's, Alt+Tab's - in UTF-8, as far as `capacity` goes; answers its
+/// length.
+int32_t stateui_winui_window_system_title(StateUIObjectRef window, char *utf8, int32_t capacity);
+
 /// Makes the element fill whatever place it is arranged in, whatever its style aligns it to: a StateUI layout
 /// decides its place.
 void stateui_winui_fill_place(StateUIObjectRef element);

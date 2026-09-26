@@ -80,8 +80,8 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItem](ToolbarItem.md) | 8 |  |  |  |  | 6 ✅ |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](Window.md) | 23 |  |  |  |  | 5 ✅ |  |
-| **Met** - ✅ and – | 104 |  |  |  |  | 57 of 104 met |  |
+| [Window](Window.md) | 23 |  |  |  |  | 18 ✅ |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 70 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

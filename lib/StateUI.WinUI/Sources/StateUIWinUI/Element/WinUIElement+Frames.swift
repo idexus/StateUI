@@ -14,7 +14,7 @@ extension WinUIElement: FrameReporter {
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`).
     func reportFrame() {
         guard let host, let view else { return }
-        element.reportFrame(view.frameReport(safeArea: host.safeAreaOrigin), in: host.runtime)
+        element.reportFrame(view.frameReport(safeArea: host.safeAreaOrigin(of: element)), in: host.runtime)
     }
 }
 

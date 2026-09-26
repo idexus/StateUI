@@ -85,12 +85,34 @@ performance counter's, in milliseconds.
 
 ## The window
 
-The first window element's arrangement of pages is the content of a WinUI
-`Window`, under the window's chrome, which names it after the visible page
+Each window element the tree holds is shown in a WinUI `Window` of its own,
+kept by a window controller in the tree's order; a window the tree no longer
+holds is closed. The first is the scene's main window, where the application's
+questions stand and whose screen the environment reads. A window element's
+arrangement of pages is its window's content, under the window's chrome, which
+names it after the visible page, else after the element's title
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
 the first time it shows a page, and told it was made once, in its turn
 (`WindowPresentation`); the pages the window's modal stack presents stand on
 sheets over it.
+
+## A window's frame
+
+A window's place, width and height are four requests, each alone: one the
+tree changes moves or sizes the window, and one it keeps leaves the window
+where the user put it. The size is the content's, the chrome's included, as
+WinUI's content reaches under it; the place is counted from the corner of the
+work area of the screen the window stands on. WinUI's `AppWindow` takes
+pixels, so each DIP is the window's DPI over 96 of them - known before
+anything is laid out, where the root's rasterization scale is not. The size is
+set as the whole window's, the content's asked for plus the frame around it
+as it stands: `ResizeClient` would add the title bar's height again, which
+the content already covers.
+
+The bounds are the presenter's preferred least and greatest size, the least
+winning over a greatest that is smaller; the presenter also lets the user
+maximize and minimize the window or not. A translucent window's backdrop is
+acrylic, and any other window's is Mica.
 
 ## The application's phase
 
@@ -100,6 +122,8 @@ phase](../../host/runtime.md#the-applications-phase)): activated, it is in
 use; deactivated, it shows behind another window; minimized, it is seen
 nowhere. The window's state is read at each of WinUI's events, because a
 window being minimized is also told it lost its activation, in either order.
+A window is told it was made before it is first shown: WinUI tells it that it
+was activated inside `Activate`, before the call returns.
 
 ## The environment
 

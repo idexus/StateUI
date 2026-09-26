@@ -17,28 +17,28 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `activated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `created` | event |  | adaptive |  |  |  |  |  |  |  |
+| `created` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `destroying` | event |  | adaptive |  |  |  |  |  |  |  |
 | `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `height` | property | `Double` | native |  |  |  |  |  |  |  |
+| `height` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `isMaximizable` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `isMinimizable` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `isTranslucent` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  |  |  |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  |  |  |  |  |
+| `isMaximizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
+| `isMinimizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
+| `isTranslucent` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
+| `maximumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `modalPopped` | event | `Int` | adaptive |  |  |  |  | ✅ |  |  |
 | `resumed` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `stopped` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `title` | property | `String` | native |  |  |  |  |  |  |  |
-| `width` | property | `Double` | native |  |  |  |  |  |  |  |
+| `title` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `width` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `windowType` | property | `WindowType` | structure |  |  |  |  |  |  |  |
 | `windowValue` | property | `String` | structure |  |  |  |  |  |  |  |
-| `x` | property | `Double` | structure |  |  |  |  |  |  |  |
-| `y` | property | `Double` | structure |  |  |  |  |  |  |  |
+| `x` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
+| `y` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
 
 Realization:
 
