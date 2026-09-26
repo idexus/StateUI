@@ -285,8 +285,7 @@
             ConformanceCase("aScenesValueIsKeptForItsNextLaunch", covers: [
                 Covered(ApplicationContract.persistSceneValue), Covered(ButtonContract.clicked),
             ]) { s in
-                let section = State(wrappedValue: 0, sceneKey: SceneKey("conformance.section", of: Int.self))
-                s.start { VStack { Button("Second").onClicked { section.wrappedValue = 2 }.id("write") } }
+                s.start { SectionPage() }
 
                 try s.perform(.activate, on: s.element("write"))
                 try s.settle { try s.kept("conformance.section", inScene: true) == .number(2) }
@@ -308,6 +307,17 @@
                          "the host's log names the failure")
             },
         ]
+    }
+}
+
+/// A page whose scene keeps the section it shows, with the button that shows the second: the state is the page's,
+/// so its scene claims it.
+struct SectionPage: ContentView {
+    @State(sceneKey: SceneKey("conformance.section", of: Int.self)) private var section = 0
+
+    var content: any View {
+        let section = $section
+        return VStack { Button("Second").onClicked { section.wrappedValue = 2 }.id("write") }
     }
 }
 

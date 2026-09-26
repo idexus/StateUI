@@ -315,7 +315,7 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | `currentTimeZone` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `handlerFailed` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
-| `persistSceneValue` | [Application](controls/Application.md) |  |  |  |  |  |  |
+| `persistSceneValue` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `persistValue` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `prompt` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `utcOffset` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
@@ -461,7 +461,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 |  |  |  |  | 11 ✅ |  |
+| [Application](controls/Application.md) | 12 |  |  |  |  | 12 ✅ |  |
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -474,7 +474,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 |  |  |  |  | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | 6 |  |  |  |  | 4 ✅ |  |
+| [Scene](controls/Scene.md) | 6 |  |  |  |  | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  |  | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 |  |  |  |  | 4 ✅ |  |
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 |  |  |  |  | 19 ✅ |  |
-| **Met** - ✅ and – | 104 |  |  |  |  | 72 of 104 met |  |
+| [Window](controls/Window.md) | 23 |  |  |  |  | 23 ✅ |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -541,7 +541,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [ProgressBar](controls/ProgressBar.md) | `progress` |  |  | ✅ |  | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) |  |  | ✅ |  | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` |  |  |  |  | ✅ |  |
-| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` |  |  |  |  |  |  |
+| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` |  |  |  |  | ✅ |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` |  |  |  |  | ✅ |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) |  |  |  |  |  |  |
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) |  |  |  |  |  |  |
@@ -556,7 +556,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` |  |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` |  |  |  |  | ✅ |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` |  |  |  |  |  |  |
-| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` |  |  |  |  |  |  |
+| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` |  |  |  |  | ✅ |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

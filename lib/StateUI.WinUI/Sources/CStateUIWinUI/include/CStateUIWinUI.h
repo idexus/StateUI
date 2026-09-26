@@ -188,6 +188,8 @@ void stateui_winui_window_set_chrome(StateUIObjectRef window, StateUIObjectRef t
                                      StateUIObjectRef tabs);
 void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
+/// Hides the window, or shows it again without activating it.
+void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
 
 /// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
 /// area and the width and height of its content, in DIPs.
@@ -202,8 +204,8 @@ void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limi
 void stateui_winui_window_set_traits(StateUIObjectRef window, bool maximizable, bool minimizable, bool translucent,
                                      bool floats);
 
-/// What a test reads of a window, into 12 values: x, y, width, height, the four limits in the order they are set,
-/// maximizable, minimizable, translucent and floating as 1 or 0.
+/// What a test reads of a window, into 13 values: x, y, width, height, the four limits in the order they are set,
+/// maximizable, minimizable, translucent, floating and shown as 1 or 0.
 void stateui_winui_window_frame(StateUIObjectRef window, double *values);
 
 /// The window's name the system shows - the taskbar's, Alt+Tab's - in UTF-8, as far as `capacity` goes; answers its
@@ -666,14 +668,14 @@ void stateui_winui_ask(StateUIObjectRef element, int64_t ticket, StateUIQuestion
 /// was showing and had that button. What a test does.
 bool stateui_winui_answer(StateUIObjectRef element, int32_t button, char const *words);
 
-/// The folder the kept values stand in, in UTF-8; empty for the application's own in the user's local data.
+/// The folder the host's stores stand in, in UTF-8; empty for the application's own in the user's local data.
 void stateui_winui_set_store(char const *utf8);
 
-/// The kept values' store as it stands, in UTF-8, as far as `capacity` goes; answers its whole length.
-int32_t stateui_winui_stored(char *utf8, int32_t capacity);
+/// The store in the file `name` as it stands, in UTF-8, as far as `capacity` goes; answers its whole length.
+int32_t stateui_winui_stored(char const *name, char *utf8, int32_t capacity);
 
-/// Writes the whole store, in UTF-8, in place of the old one; whether it was written.
-bool stateui_winui_store(char const *utf8);
+/// Writes the whole store in the file `name`, in UTF-8, in place of the old one; whether it was written.
+bool stateui_winui_store(char const *name, char const *utf8);
 
 /// The folder the application's pictures are read from, in UTF-8; empty for `Images` beside the executable.
 void stateui_winui_set_pictures(char const *folder);

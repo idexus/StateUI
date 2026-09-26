@@ -31,6 +31,9 @@
     /// - Throws: `DriverCannot` where this driver runs one page alone.
     func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree
 
+    /// Forgets what the host's stores keep - the values, the scenes - as an application's first launch finds them.
+    func forgetWhatIsKept()
+
     /// One bounded step of the host: its toolkit's loop a moment, the jobs, a turn of the pump, and a display
     /// frame while one is asked for.
     func step()
@@ -83,6 +86,8 @@ extension HostDriver {
     public func reason(cannot ability: String) -> String? {
         cannot[ability]
     }
+
+    public func forgetWhatIsKept() {}
 
     public func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
         throw DriverCannot("start an application")

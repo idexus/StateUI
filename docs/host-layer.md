@@ -108,7 +108,8 @@ every host:
 | a split view's sidebar showed or hid | `HostRuntime.sidebarShown` |
 | the user went back | `HostRuntime.goBack` with the window's `wayBack` |
 | the theme, locale, power or network changed | `HostRuntime.environmentChanged` |
-| the application's phase moved | `HostRuntime.enterPhase` |
+| a window was activated, deactivated or minimized | `HostRuntime.windowStateChanged` |
+| the whole application was hidden or shown | `HostRuntime.applicationHidden` |
 | the user closed a window | `HostRuntime.userClosed` |
 | the application ends | `HostRuntime.ending` |
 
@@ -184,10 +185,12 @@ these that the text shows, and a type named for an engine or a channel
   host hands it each `FramedScroller` (`serve`) and `FrameReporter`
   (`follow`), and calls `laidOut()` after it lays anything out.
   ([Where a view stands](design/host/runtime.md#where-a-view-stands))
-- **`ApplicationLifecycle`** holds the application's phase and says what its
-  scene and its window hear of each move, each rendered before the next. A
-  toolkit that tells a window's state has it turned into a phase by one rule
-  (`phase(minimized:activated:)`). The host tells `HostRuntime.enterPhase`.
+- **`ApplicationLifecycle`** settles what the toolkit tells of each window -
+  minimized, activated - into the phases of the application, its scenes and
+  its windows, a turn later, so one window deactivated as another is
+  activated is one move. It keeps the scene in front, which hides the windows
+  that hide while another scene is, and says whether a floating window floats
+  now. The host tells `HostRuntime.windowStateChanged`.
   ([The application's phase](design/host/runtime.md#the-applications-phase))
 
 ## The tree and the native half
@@ -262,9 +265,8 @@ toolkit's calls:
 - **`WindowFrame`**, **`WindowBounds`** and **`WindowTraits`** read a window's
   place and size as four requests in DIPs, each alone; its least and greatest
   size; and whether the user may maximize and minimize it, whether the desktop
-  shows through it, whether it floats, and whether it hides while another
-  application is in use. The host turns each into its toolkit's units and
-  calls. ([A window's frame](design/host/tree.md#a-windows-frame),
+  shows through it, and whether it floats now. The host turns each into its
+  toolkit's units and calls. ([A window's frame](design/host/tree.md#a-windows-frame),
   [a window's traits](design/host/tree.md#a-windows-traits))
 - **`HostRuntime.userClosed`** tells what the user closing a window means: the
   window hears that it is going, then its scene hears what that means for it
@@ -507,6 +509,13 @@ and nothing more.
   order, so the same values write the same file. Where the file stands and how
   it is read and written is the host's.
   ([Kept values](design/host/runtime.md#kept-values))
+- **`KeptScenes`** and **`SceneKeeper`** keep the application's scenes for its
+  next start, on a platform that restores no windows: each scene's kept
+  values and the windows of a kind of its own it had open. At the start each
+  scene comes back with its values and is offered its windows; the scenes are
+  kept again as they change, but not once the last one ended. The host reads
+  and writes the text, and performs `persistSceneValue` through `keep`.
+  ([Kept scenes](design/host/runtime.md#kept-scenes))
 
 ## Diagnostics
 

@@ -44,7 +44,7 @@ final class PagesTests: XCTestCase {
             told.append($0)
         }
 
-        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root))
+        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
 
         XCTAssertEqual(told, [4, 5, 1])
     }
@@ -55,7 +55,7 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(stackWindow([node("a", .page, events: first), node("b", .page, events: second)])) {
             told.append($0)
         }
-        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root))
+        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
         told = []
 
         runtime.tree.apply(stackWindow([node("a", .page, events: first)]), complete: false)
@@ -182,7 +182,7 @@ final class PagesTests: XCTestCase {
                 _ in
             }
             let presentation = WindowPresentation()
-            _ = presentation.show(try XCTUnwrap(runtime.tree.root))
+            _ = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
             return presentation.wayBack
         }
 

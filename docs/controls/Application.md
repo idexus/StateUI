@@ -24,7 +24,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 | `currentTimeZone` | act | `() -> String` |  |  |  |  |  | ✅ |  |  |
 | `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  | ✅ |  |  |
 | `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  |  |  |  |  |
+| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  |  |
 | `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  |  | ✅ |  |  |
 | `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  | ✅ |  |  |
 | `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  |  | ✅ |  |  |

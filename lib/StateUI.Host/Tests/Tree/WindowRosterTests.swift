@@ -51,13 +51,6 @@ final class WindowRosterTests: XCTestCase {
         XCTAssertEqual(roster.controllers.map(\.name), ["main"])
     }
 
-    /// A window's state puts the application in its phase: minimized, it is seen nowhere, whatever its activation.
-    func testAWindowsStateIsTheApplicationsPhase() {
-        XCTAssertEqual(ApplicationLifecycle.phase(minimized: true, activated: true), .background)
-        XCTAssertEqual(ApplicationLifecycle.phase(minimized: false, activated: true), .active)
-        XCTAssertEqual(ApplicationLifecycle.phase(minimized: false, activated: false), .inactive)
-    }
-
     /// A window's traits are said the first time and where they change; what it leaves unsaid of its buttons is
     /// the toolkit's.
     func testAWindowsTraitsAreSaidWhereTheyChange() throws {
@@ -68,11 +61,10 @@ final class WindowRosterTests: XCTestCase {
         let presentation = WindowPresentation()
         let root = try XCTUnwrap(runtime.tree.root)
 
-        let traits = try XCTUnwrap(presentation.show(root).traits)
+        let traits = try XCTUnwrap(presentation.show(root, in: runtime.lifecycle).traits)
         XCTAssertNil(traits.isMaximizable, "unsaid: the toolkit's own")
         XCTAssertEqual(traits.isMinimizable, false)
         XCTAssertTrue(traits.floatsOnTop)
-        XCTAssertFalse(traits.hidesWhenInactive)
-        XCTAssertNil(presentation.show(root).traits, "said once until they change")
+        XCTAssertNil(presentation.show(root, in: runtime.lifecycle).traits, "said once until they change")
     }
 }

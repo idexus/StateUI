@@ -47,6 +47,8 @@ enum WinUIRealization {
         .complete("Scene", "deactivated"),
         .complete("Scene", "destroying"),
         .complete("Scene", "stopped"),
+        .complete("Scene", "windowClosed"),
+        .complete("Scene", "windowRestored"),
         .complete("Span", "background"),
         .complete("Span", "fontAttributes"),
         .complete("Span", "fontSize"),
@@ -64,7 +66,9 @@ enum WinUIRealization {
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
+        .complete("Window", "floatsOnTop"),
         .complete("Window", "height"),
+        .complete("Window", "hidesWhenInactive"),
         .complete("Window", "isMaximizable"),
         .complete("Window", "isMinimizable"),
         .complete("Window", "isTranslucent"),
@@ -77,6 +81,8 @@ enum WinUIRealization {
         .complete("Window", "stopped"),
         .complete("Window", "title"),
         .complete("Window", "width"),
+        .complete("Window", "windowType"),
+        .complete("Window", "windowValue"),
         .complete("Window", "x"),
         .complete("Window", "y"),
     ]
@@ -86,7 +92,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: HostActs.performed.map(\.name))
+            acts: (HostActs.performed + [ApplicationContract.persistSceneValue]).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.

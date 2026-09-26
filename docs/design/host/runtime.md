@@ -268,21 +268,39 @@ renders what it all changed.
 
 ## The application's phase
 
-A toolkit tells the application's phase as its lifecycle moves it - in use,
-showing behind another application, or seen nowhere - and every host tells it
-on alike (`ApplicationLifecycle`, `HostRuntime.enterPhase`): the core hears the
-phase, then the scene and its window hear what it means for them - activated,
-deactivated or stopped - each rendered before the next. A window shown again
-after it stopped hears first that it resumed. They are heard in their turn,
-as a window's being made is, so a toolkit telling a phase in the middle of
-one - a window activated as the host shows it - waits for it to end. The
-phase the application stands in already tells nothing: a lifecycle is a
-state, not a count of the toolkit's callbacks. A toolkit that tells a
-window's state rather than a phase has it turned into one alike
-(`ApplicationLifecycle.phase`): minimized, the application is seen nowhere,
-whatever its activation; else activated, it is in use; else it shows behind
-another. As the application ends, the window hears that it is going, then
-the scene.
+A toolkit tells what each window does - whether it is minimized, whether it
+is activated - and whether the whole application is hidden, and every host
+tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
+What it tells settles a turn later, with whatever else it tells in the same
+one: a toolkit tells a window deactivated before it tells another activated,
+and the two are one move, in which the application stays in use.
+
+- The application is in use while one of its windows is activated, seen
+  nowhere while it is hidden or none of its windows stands on the screen,
+  else showing behind another application.
+- The scene in front is the one whose window was activated last. Only
+  another window's activation moves it; the application going behind another
+  moves it nowhere.
+- A scene is activated while one of its windows is, stopped while the
+  application is hidden or its main window is off the screen, else
+  deactivated - so a tool window the user is in keeps its scene activated
+  under a minimized main window.
+- A window is stopped while it is off the screen - minimized, hidden with
+  the application, or hidden by its scene - else activated or deactivated.
+  One that stands again hears first that it resumed.
+- A window that hides while another scene is in front
+  (`hidesWhenInactive`) stands hidden while one is, and none hides before a
+  scene first came to the front. A window that floats (`floatsOnTop`)
+  floats while the application is in front, and sinks with it.
+
+The core hears the phase, then each scene and window what moved for it -
+what leaves first, then what is activated - each rendered before the next,
+and the windows stand again where the scene in front or the floating moved.
+They are heard in their turn, as a window's being made is, so a toolkit
+telling a state in the middle of one - a window activated as the host shows
+it - waits for it to end. What stands already tells nothing: a lifecycle is
+a state, not a count of the toolkit's callbacks. As the application ends,
+each scene's windows hear that they are going, then the scene.
 
 ## A window the user closes
 
@@ -341,6 +359,24 @@ application does not list still saves, as its value's own kind - true or
 false, a number, words - which its key's kind reads back once it is listed,
 as the application's session promises. Where the file stands and how it is
 read and written is the host's.
+
+## Kept scenes
+
+A host whose platform restores no windows keeps the application's scenes for
+its next start itself (`SceneKeeper`), in a file of its own whose text one
+codec writes (`KeptScenes`): a line for each scene, then a line for each of
+its kept values - by key, in order, the value's kind a letter before its
+words - then a line for each window of a kind of its own it has open, its
+kind and the text of the value it was opened for. At the start each scene
+kept connects before its first render, with its values, so a scene's state
+never shows its default first; one new scene connects where none was kept.
+Then each is offered the windows it had open, as the scene's
+`windowRestored`: the scene opens the ones it still declares, and a window
+of a kind it no longer declares is kept no more. The scenes are kept again
+whenever the text they write changes - a scene's value the application
+keeps, a window opened or closed, a scene ended - but not once no scene
+stands: the last scene's end is the application's, and the next start finds
+the scenes as they stood before it.
 
 ## Typed words
 

@@ -33,8 +33,7 @@
     public func update(
         root: MountedElement?, make: (MountedElement) -> Controller, close: (Controller) -> Void
     ) -> Bool {
-        var elements: [MountedElement] = []
-        Self.collect(in: root, into: &elements)
+        let elements = root?.windows ?? []
         for entry in entries where !elements.contains(where: { $0 === entry.element }) { close(entry.controller) }
 
         let first = entries.isEmpty && !elements.isEmpty
@@ -49,12 +48,5 @@
         guard let window = element.enclosing(type: .window) else { return nil }
 
         return entries.first { $0.element === window }?.controller
-    }
-
-    /// The window elements under `element`, in order; a window holds none.
-    private static func collect(in element: MountedElement?, into windows: inout [MountedElement]) {
-        guard let element else { return }
-        if element.type == .window { return windows.append(element) }
-        for child in element.children { collect(in: child, into: &windows) }
     }
 }

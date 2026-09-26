@@ -13,6 +13,9 @@ import CStateUIWinUI
 final class WinUIActPerformer {
     private let core: CoreLink
 
+    /// What is kept of the scenes for the next start.
+    private let scenes: SceneKeeper
+
     /// What the dialogs ask, one showing at a time; each answers under its ticket.
     private let questions = QuestionQueue<Asked>()
 
@@ -30,8 +33,9 @@ final class WinUIActPerformer {
         }
     }
 
-    init(core: CoreLink) {
+    init(core: CoreLink, scenes: SceneKeeper) {
         self.core = core
+        self.scenes = scenes
     }
 
     /// Performs one act, and answers it; `window` is where a word to a screen reader and the keyboard stand.
@@ -63,6 +67,11 @@ final class WinUIActPerformer {
             focus(call, in: tree)
         case .persistValue:
             WinUIPersistence.keep(call, core: core)
+            reply(call, [])
+        case .persistSceneValue:
+            if scenes.keep(call.arguments), let text = scenes.changed(root: tree.root) {
+                WinUIPersistence.writeScenes(text)
+            }
             reply(call, [])
         case .handlerFailed:
             WinUIRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")

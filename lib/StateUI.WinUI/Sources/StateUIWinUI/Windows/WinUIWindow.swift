@@ -36,6 +36,9 @@ final class WinUIWindow {
 
     private var activated = false
 
+    /// Whether the window's scene hides it: while another scene is in front.
+    private(set) var isHidden = false
+
     /// The number the window's own events name it by: its chrome's.
     var number: Int64 { titleBar.number }
 
@@ -79,11 +82,28 @@ final class WinUIWindow {
             traits.floatsOnTop)
     }
 
-    /// Shows `view` as the window's content - the first one activates the window.
+    /// Shows `view` as the window's content - the first one activates the window, unless its scene hides it.
     func show(_ view: WinUIView?) {
         content = view
         stateui_winui_window_set_content(handle, view?.handle)
-        guard view != nil, !activated else { return }
+        activateFirstTime()
+    }
+
+    /// Hides the window as its scene goes behind another, or shows it again without activating it; one never shown
+    /// is activated as it is first shown.
+    func setHidden(_ hidden: Bool) {
+        guard hidden != isHidden else { return }
+        isHidden = hidden
+        if activated {
+            stateui_winui_window_set_shown(handle, !hidden)
+        } else {
+            activateFirstTime()
+        }
+    }
+
+    /// Activates the window the first time it has content and stands shown.
+    private func activateFirstTime() {
+        guard content != nil, !activated, !isHidden else { return }
 
         activated = true
         stateui_winui_window_activate(handle)

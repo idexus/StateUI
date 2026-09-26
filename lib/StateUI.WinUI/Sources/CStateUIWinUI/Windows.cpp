@@ -176,6 +176,16 @@ extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
     }
 }
 
+extern "C" void stateui_winui_window_set_shown(StateUIObjectRef handle, bool shown) {
+    try {
+        auto app = borrow<xaml::Window>(handle).AppWindow();
+        if (shown) app.Show(false);
+        else app.Hide();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "showing or hiding a window");
+    }
+}
+
 namespace {
     /// How many pixels a DIP is in `window`, known before its content is laid out: a window's id is its HWND.
     double scale(xaml::Window const &window) {
@@ -278,6 +288,7 @@ extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *valu
         values[9] = presenter && presenter.IsMinimizable() ? 1 : 0;
         values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
         values[11] = presenter && presenter.IsAlwaysOnTop() ? 1 : 0;
+        values[12] = app.IsVisible() ? 1 : 0;
     } catch (winrt::hresult_error const &error) {
         report(error, "reading a window's frame");
     }

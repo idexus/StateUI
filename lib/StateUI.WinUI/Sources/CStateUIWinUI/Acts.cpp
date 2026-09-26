@@ -3,7 +3,7 @@
 
 // What the application asks of the platform: the time of day, a zone's
 // distance from UTC, a word to a screen reader, the keyboard's focus, and the
-// store the application's kept values stand in.
+// stores the application's kept values and scenes stand in.
 // Design: docs/design/platforms/winui/runtime.md#acts
 
 #include "Relay.h"
@@ -24,10 +24,10 @@ namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
 namespace input = winrt::Microsoft::UI::Xaml::Input;
 
 namespace {
-    /// The folder the kept values stand in; empty for the application's own under the user's local data.
+    /// The folder the stores stand in; empty for the application's own under the user's local data.
     std::wstring storeFolder;
 
-    std::wstring storePath() {
+    std::wstring storePath(char const *file) {
         auto folder = storeFolder;
         if (folder.empty()) {
             PWSTR local = nullptr;
@@ -40,7 +40,7 @@ namespace {
             folder += L"\\" + name.substr(0, name.find_last_of(L'.'));
         }
         CreateDirectoryW(folder.c_str(), nullptr);
-        return folder + L"\\kept values.txt";
+        return folder + L"\\" + winrt::to_hstring(std::string_view(file ? file : "")).c_str();
     }
 
     /// Copies `text` into the caller's buffer as far as it reaches; answers the whole length.
@@ -178,10 +178,10 @@ extern "C" void stateui_winui_set_store(char const *utf8) {
     storeFolder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
 }
 
-extern "C" int32_t stateui_winui_stored(char *utf8, int32_t capacity) {
+extern "C" int32_t stateui_winui_stored(char const *name, char *utf8, int32_t capacity) {
     std::string text;
     FILE *file = nullptr;
-    if (_wfopen_s(&file, storePath().c_str(), L"rb") == 0 && file) {
+    if (_wfopen_s(&file, storePath(name).c_str(), L"rb") == 0 && file) {
         char buffer[4096];
         for (size_t read; (read = std::fread(buffer, 1, sizeof buffer, file)) > 0;) text.append(buffer, read);
         std::fclose(file);
@@ -189,8 +189,8 @@ extern "C" int32_t stateui_winui_stored(char *utf8, int32_t capacity) {
     return hand(text, utf8, capacity);
 }
 
-extern "C" bool stateui_winui_store(char const *utf8) {
-    auto path = storePath();
+extern "C" bool stateui_winui_store(char const *name, char const *utf8) {
+    auto path = storePath(name);
     auto writing = path + L".writing";
     FILE *file = nullptr;
     if (_wfopen_s(&file, writing.c_str(), L"wb") != 0 || !file) return false;

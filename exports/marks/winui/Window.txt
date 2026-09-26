@@ -5,9 +5,9 @@ Window.activated: ✅
 Window.created: ✅
 Window.deactivated: ✅
 Window.destroying: ✅
-Window.floatsOnTop: not realized
+Window.floatsOnTop: ✅
 Window.height: ✅
-Window.hidesWhenInactive: not realized
+Window.hidesWhenInactive: ✅
 Window.isMaximizable: ✅
 Window.isMinimizable: ✅
 Window.isTranslucent: ✅
@@ -20,7 +20,7 @@ Window.resumed: ✅
 Window.stopped: ✅
 Window.title: ✅
 Window.width: ✅
-Window.windowType: not realized
-Window.windowValue: not realized
+Window.windowType: ✅
+Window.windowValue: ✅
 Window.x: ✅
 Window.y: ✅

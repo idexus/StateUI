@@ -23,13 +23,13 @@ final class WindowPresentationTests: XCTestCase {
         runtime.tree.tellPhase = { told.append($0) }
         let presentation = WindowPresentation()
 
-        let first = presentation.show(try XCTUnwrap(runtime.tree.root))
+        let first = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
         XCTAssertEqual(first.arrangement?.shown?.id, .manual("page"))
         XCTAssertNil(first.arrangement?.previous)
         XCTAssertEqual(told, [5])
         XCTAssertTrue(first.overlay == nil, "no overlay, before or now: nothing to say")
 
-        let again = presentation.show(try XCTUnwrap(runtime.tree.root))
+        let again = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
         XCTAssertNil(again.arrangement)
         XCTAssertTrue(again.overlay == nil, "nothing new to lay over")
         XCTAssertEqual(told, [5], "told it was made once")
@@ -49,10 +49,10 @@ final class WindowPresentationTests: XCTestCase {
             patch.properties = properties
             patch.clearedProperties = cleared
             runtime.tree.apply(patch, complete: false)
-            return presentation.show(root).frame
+            return presentation.show(root, in: runtime.lifecycle).frame
         }
 
-        XCTAssertEqual(presentation.show(root).frame, WindowFrame(x: 40, width: 640))
+        XCTAssertEqual(presentation.show(root, in: runtime.lifecycle).frame, WindowFrame(x: 40, width: 640))
         XCTAssertEqual(
             change([.x: .number(40), .width: .number(800), .height: .number(480)]), WindowFrame(width: 800, height: 480))
         XCTAssertNil(change([:]), "nothing changed: the window stays where the user put it")
@@ -70,11 +70,11 @@ final class WindowPresentationTests: XCTestCase {
         let presentation = WindowPresentation()
         let root = try XCTUnwrap(runtime.tree.root)
 
-        let bounds = try XCTUnwrap(presentation.show(root).bounds)
+        let bounds = try XCTUnwrap(presentation.show(root, in: runtime.lifecycle).bounds)
         XCTAssertEqual(bounds.minimumWidth, 400)
         XCTAssertEqual(bounds.maximumWidth, 400, "the least wins")
         XCTAssertNil(bounds.minimumHeight, "unsaid: the toolkit's own")
         XCTAssertEqual(bounds.maximumHeight, 900)
-        XCTAssertNil(presentation.show(root).bounds, "said once until they change")
+        XCTAssertNil(presentation.show(root, in: runtime.lifecycle).bounds, "said once until they change")
     }
 }

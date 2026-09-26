@@ -72,12 +72,12 @@ public struct KeptValuesText: Equatable, Sendable {
     }
 
     /// A key or its words with a tab, a line's end and a backslash escaped.
-    private static func escaped(_ words: String) -> String {
+    static func escaped(_ words: String) -> String {
         words.replacing("\\", with: "\\\\").replacing("\t", with: "\\t").replacing("\n", with: "\\n")
             .replacing("\r", with: "\\r")
     }
 
-    private static func unescaped(_ words: Substring) -> String {
+    static func unescaped(_ words: Substring) -> String {
         var result = ""
         var escaping = false
         for character in words {

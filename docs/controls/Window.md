@@ -20,9 +20,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `created` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `destroying` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
+| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
 | `height` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
+| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
 | `isMaximizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
 | `isMinimizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
 | `isTranslucent` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
@@ -35,8 +35,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `stopped` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `title` | property | `String` | native |  |  |  |  | ✅ |  |  |
 | `width` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `windowType` | property | `WindowType` | structure |  |  |  |  |  |  |  |
-| `windowValue` | property | `String` | structure |  |  |  |  |  |  |  |
+| `windowType` | property | `WindowType` | structure |  |  |  |  | ✅ |  |  |
+| `windowValue` | property | `String` | structure |  |  |  |  | ✅ |  |  |
 | `x` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
 | `y` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
 

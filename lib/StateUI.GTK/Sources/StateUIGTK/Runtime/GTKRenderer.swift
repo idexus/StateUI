@@ -125,7 +125,7 @@ final class GTKRenderer {
         window.setSize(width: element.value(.width)?.number, height: element.value(.height)?.number)
         window.setMinimumSize(width: element.value(.minimumWidth)?.number, height: element.value(.minimumHeight)?.number)
 
-        let changes = presentation.show(element)
+        let changes = presentation.show(element, in: runtime.lifecycle)
         if let (_, arrangement) = changes.arrangement {
             if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
                 window.show(page: arrangement.gtk.view)

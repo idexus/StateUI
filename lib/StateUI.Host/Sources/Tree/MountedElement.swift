@@ -280,6 +280,11 @@
         return element
     }
 
+    /// The window elements in this subtree, in the tree's order; a window holds none.
+    public var windows: [MountedElement] {
+        type == .window ? [self] : children.flatMap(\.windows)
+    }
+
     /// The first element with key `sought` in this subtree, this one first.
     public func first(id sought: ElementId) -> MountedElement? {
         if id == sought { return self }

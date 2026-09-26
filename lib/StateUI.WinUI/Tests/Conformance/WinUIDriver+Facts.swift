@@ -69,7 +69,7 @@ extension WinUIDriver {
     }
 
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        guard !inScene else { throw DriverCannot("read what is kept") }
+        if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key] }
         let kept = WinUIPersistence.read()
         let kinds = [
             PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),

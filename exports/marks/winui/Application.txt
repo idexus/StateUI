@@ -7,7 +7,7 @@ Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
-Application.persistSceneValue: not realized
+Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✅
 Application.utcOffset: ✅

@@ -103,8 +103,9 @@ counts the numbers held to see every view let go.
 
 A window shows the first arrangement of pages among its children - a page, a
 stack of them, tabs, a split view - the pages its modal stack presents as
-sheets, and what it lays over them, and says each to its host only when it
-changed (`WindowPresentation`). The page the user sees hears it is shown
+sheets, what it lays over them, and whether its scene hides it ([the
+application's phase](runtime.md#the-applications-phase)), and says each to
+its host only when it changed (`WindowPresentation`). The page the user sees hears it is shown
 ([a page's phases](pages.md#a-pages-phases)), then the window hears, once,
 that it was made - in their turn, before the host first shows the window,
 and so before it hears it came to the front. The host shows them in its
@@ -124,8 +125,8 @@ least. The host turns each into its toolkit's units and calls.
 ## A window's traits
 
 What a window is - whether the user may maximize and minimize it, whether the
-desktop shows through it, whether it floats over the application's other
-windows and whether it hides while another application is in use - is said
+desktop shows through it, and whether it floats over the application's other
+windows now, which it does only while the application is in front - is said
 the first time and where it changes (`WindowTraits`). A button the element
 says nothing of is the toolkit's own; the rest are false until said.
 

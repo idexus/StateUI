@@ -5,9 +5,9 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// The application's kept values, in a store of the host's own - Windows keeps none for an application that is no
-/// package: read before the first scene, written whole as each changes, as the host layer's text
-/// (`KeptValuesText`).
+/// The application's kept values and its scenes, in stores of the host's own - Windows keeps none for an application
+/// that is no package, and restores no windows: read before the first scene, written whole as each changes, as the
+/// host layer's texts (`KeptValuesText`, `KeptScenes`).
 /// Design: docs/design/platforms/winui/runtime.md#kept-values
 @MainActor
 enum WinUIPersistence {
@@ -25,13 +25,27 @@ enum WinUIPersistence {
         write(kept)
     }
 
+    /// The file the kept values stand in, and the one the scenes do.
+    static let valuesFile = "kept values.txt"
+    static let scenesFile = "kept scenes.txt"
+
     /// What the store holds; nothing where there is none.
     static func read() -> KeptValuesText {
-        KeptValuesText(WinUIStrings.read { stateui_winui_stored($0, $1) })
+        KeptValuesText(WinUIStrings.read { stateui_winui_stored(valuesFile, $0, $1) })
     }
 
     /// Writes `kept` whole in place of the store.
     static func write(_ kept: KeptValuesText) {
-        if !stateui_winui_store(kept.text) { WinUIRenderer.log.error("the kept values could not be written") }
+        if !stateui_winui_store(valuesFile, kept.text) { WinUIRenderer.log.error("the kept values could not be written") }
+    }
+
+    /// The scenes kept for this start; none where none were.
+    static func readScenes() -> KeptScenes {
+        KeptScenes(WinUIStrings.read { stateui_winui_stored(scenesFile, $0, $1) })
+    }
+
+    /// Writes the scenes' text whole in place of their store.
+    static func writeScenes(_ text: String) {
+        if !stateui_winui_store(scenesFile, text) { WinUIRenderer.log.error("the kept scenes could not be written") }
     }
 }

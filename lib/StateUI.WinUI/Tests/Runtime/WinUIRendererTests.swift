@@ -79,18 +79,20 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
-    /// The phase a window tells moves the application's, and its scene's and window's, rendered before it returns:
-    /// minimized, the window stops; shown again, it resumes on its way to being in use.
-    func testTheWindowsPhaseMovesTheApplicationsAndItsOwn() throws {
+    /// The state a window tells moves the application's phase, and its scene's and window's, settled in the turn
+    /// after it: minimized, the window stops; shown again, it resumes on its way to being in use.
+    func testTheWindowsStateMovesTheApplicationsPhaseAndItsOwn() throws {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
             let window = try XCTUnwrap(host.window).number
             defer { WinUICallbacks.table.windowStateChanged(window, false, true) }
 
             WinUICallbacks.table.windowStateChanged(window, true, false)
+            for _ in 0..<10 { host.step() }
             XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["background stopped"])
 
             WinUICallbacks.table.windowStateChanged(window, false, true)
+            for _ in 0..<10 { host.step() }
             XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["active activated"])
         }
     }

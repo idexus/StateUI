@@ -26,8 +26,11 @@ final class WinUIRenderer {
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in WinUIElement(element, host: self) }, log: { WinUIRenderer.log.error($0) })
 
+    /// What is kept of the scenes for the next start: Windows restores no windows.
+    let scenes = SceneKeeper()
+
     /// What performs the acts the application calls, and answers them.
-    private(set) lazy var acts = WinUIActPerformer(core: runtime.core)
+    private(set) lazy var acts = WinUIActPerformer(core: runtime.core, scenes: scenes)
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()
@@ -89,12 +92,14 @@ final class WinUIRenderer {
         runtime.environmentChanged { WinUIEnvironment.reportChanging(to: runtime.core) }
     }
 
-    /// The window numbered `number` was activated, deactivated or minimized: the application enters the phase that
-    /// puts it in, heard where it is this runtime's window.
+    /// The window numbered `number` was activated, deactivated or minimized: the host layer settles what that means
+    /// for the application, its scenes and its windows, where it is one of this runtime's windows.
     /// Design: docs/design/platforms/winui/runtime.md#the-applications-phase
     func windowStateChanged(number: Int64, minimized: Bool, activated: Bool) {
-        guard let window = windows.first(where: { $0.window.number == number })?.window, !window.isClosed else { return }
-        runtime.enterPhase(ApplicationLifecycle.phase(minimized: minimized, activated: activated))
+        guard let controller = windows.first(where: { $0.window.number == number }), !controller.window.isClosed,
+              let element = controller.element
+        else { return }
+        runtime.windowStateChanged(element, minimized: minimized, activated: activated)
     }
 
     /// The window numbered `number` closed: one the tree closed tells nothing; one the user closed is heard by it
@@ -107,12 +112,12 @@ final class WinUIRenderer {
         if let element = controller.element { runtime.userClosed(element) }
     }
 
-    /// Renders the application whole, connecting its scene first.
+    /// Renders the application whole: the scenes kept for this start come back, else one new scene.
+    /// Design: docs/design/host/runtime.md#kept-scenes
     func show() {
         WinUIEnvironment.report(to: runtime.core)
         runtime.tree.followTheLanguagesDirection()
-        runtime.core.connectScene()
-        runtime.pump.turn()
+        scenes.restore(WinUIPersistence.readScenes(), in: runtime)
     }
 
     /// Shows every window element in a WinUI window of its own, in the tree's order - a window the tree no longer
@@ -149,6 +154,7 @@ extension WinUIRenderer: TurnPresenter {
     func presentRendered() {
         showWindows()
         refreshWindowChrome()
+        if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
     }
 
     func perform(_ call: HostActCall) {

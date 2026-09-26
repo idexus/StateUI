@@ -87,7 +87,9 @@ member's value a driver reads a view's menu, whether it holds the keyboard,
 what a press at a point reaches, the question the window shows, what the
 screen reader was told, the colour StateUI draws at a point - never a native
 control's look - the host's log and what it keeps; each read a host does not
-have yet is its driver's "cannot".
+have yet is its driver's "cannot". A case's first start of an application is
+its first launch: the driver forgets what the host's stores keep, and a
+start after it in the same case is the next launch, which finds them.
 
 ## A session
 

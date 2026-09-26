@@ -61,6 +61,10 @@ final class WinUIDriver: HostDriver {
         return renderer.runtime.tree
     }
 
+    func forgetWhatIsKept() {
+        Self.emptyStore()
+    }
+
     func step() {
         renderer?.step()
     }
@@ -125,10 +129,19 @@ final class WinUIDriver: HostDriver {
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
-        case (.minimize, _) where element.type == .window: try state(minimized: true, activated: false)
-        case (.restore, _) where element.type == .window: try state(minimized: false, activated: true)
-        case (.switchAway, _) where element.type == .window: try state(minimized: false, activated: false)
-        case (.switchBack, _) where element.type == .window: try state(minimized: false, activated: true)
+        case (.minimize, _) where element.type == .window: try state(of: element, minimized: true, activated: false)
+        case (.restore, _) where element.type == .window: try state(of: element, minimized: false, activated: true)
+        case (.switchAway, _) where element.type == .window:
+            for window in renderer?.windows ?? [] {
+                WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
+            }
+        case (.switchBack, _) where element.type == .window: try state(of: element, minimized: false, activated: true)
+        case (.bringToFront, _) where element.type == .window:
+            let front = try window(of: element)
+            for window in renderer?.windows ?? [] where window.window !== front {
+                WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
+            }
+            try state(of: element, minimized: false, activated: true)
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
         default: throw DriverCannot(act, on: element)
         }
@@ -146,9 +159,9 @@ final class WinUIDriver: HostDriver {
         return window
     }
 
-    /// Tells the window's state as its own events do.
-    private func state(minimized: Bool, activated: Bool) throws {
-        WinUICallbacks.table.windowStateChanged(try window().number, minimized, activated)
+    /// Tells the state of the window `element` stands in as its own events do.
+    private func state(of element: MountedElement, minimized: Bool, activated: Bool) throws {
+        WinUICallbacks.table.windowStateChanged(try window(of: element).number, minimized, activated)
     }
 
     /// A click on a button, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as
@@ -248,6 +261,8 @@ final class WinUIDriver: HostDriver {
     }()
 
     private static func emptyStore() {
-        try? FileManager.default.removeItem(atPath: store + "\\kept values.txt")
+        for file in [WinUIPersistence.valuesFile, WinUIPersistence.scenesFile] {
+            try? FileManager.default.removeItem(atPath: store + "\\" + file)
+        }
     }
 }

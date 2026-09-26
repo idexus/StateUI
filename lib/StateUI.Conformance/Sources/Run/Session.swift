@@ -40,8 +40,10 @@
         return element
     }
 
-    /// Runs `application` on the host, its display frames at `clock`'s time where one is given.
+    /// Runs `application` on the host, its display frames at `clock`'s time where one is given. The case's first
+    /// start is the application's first launch, and finds nothing kept; a start after it is the next launch.
     public func start(clock: TestClock? = nil, application: @escaping @Sendable () -> any Application) throws {
+        if tree == nil { driver.forgetWhatIsKept() }
         tree = try driver.start(clock: clock, application: application)
     }
 

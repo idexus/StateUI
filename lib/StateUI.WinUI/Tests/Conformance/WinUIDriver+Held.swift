@@ -41,9 +41,14 @@ extension WinUIDriver {
         throw cannot
     }
 
-    /// A window's: the name the system shows, its place and size, their bounds, its buttons and its backdrop.
+    /// A window's: the name the system shows, its place and size, their bounds, its buttons, its backdrop, whether it
+    /// floats and stands shown, and the kind and value the host keeps it by for the next start.
     private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
+        if name == "windowType" || name == "windowValue" {
+            let kept = try keptWindow(element)
+            return name == "windowType" ? .name(kept.kind) : kept.value.map { .string($0) }
+        }
         if name == "title" {
             let length = stateui_winui_window_system_title(window.handle, nil, 0)
             var bytes = [CChar](repeating: 0, count: Int(length) + 1)
@@ -52,13 +57,26 @@ extension WinUIDriver {
         }
         let names = [
             "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-            "isMaximizable", "isMinimizable", "isTranslucent", "floatsOnTop",
+            "isMaximizable", "isMinimizable", "isTranslucent", "floatsOnTop", "isVisible",
         ]
         guard let place = names.firstIndex(of: name) else { return nil }
         var values = [Double](repeating: 0, count: names.count)
         stateui_winui_window_frame(window.handle, &values)
         // A size in pixels is a DIP's fraction off; a request is a whole number of DIPs.
         return place < 8 ? .number(values[place].rounded()) : .bool(values[place] == 1)
+    }
+
+    /// The window of a kind of its own `element` is, as the host keeps it for the next start.
+    private func keptWindow(_ element: MountedElement) throws -> KeptScenes.Window {
+        let scenes = element.enclosing(type: .application)?.children.filter { $0.type == .scene } ?? []
+        guard let scene = element.enclosing(type: .scene), let sceneIndex = scenes.firstIndex(where: { $0 === scene }),
+              let index = scene.windows.filter({ $0.value(.windowType) != nil }).firstIndex(where: { $0 === element })
+        else { throw DriverCannot("find what is kept of a window of no kind of its own") }
+        let kept = WinUIPersistence.readScenes().scenes
+        guard kept.indices.contains(sceneIndex), kept[sceneIndex].windows.indices.contains(index) else {
+            throw DriverCannot("find the window among the scenes kept")
+        }
+        return kept[sceneIndex].windows[index]
     }
 
     /// What WinUI holds of `view`'s property named `what`, by the relay's reader.

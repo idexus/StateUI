@@ -3,6 +3,6 @@ Scene.activated: ✅
 Scene.deactivated: ✅
 Scene.destroying: ✅
 Scene.stopped: ✅
-Scene.windowClosed: not realized
-Scene.windowRestored: not realized
-Window.windowType: not realized
+Scene.windowClosed: ✅
+Scene.windowRestored: ✅
+Window.windowType: ✅

@@ -63,6 +63,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case switchAway
     /// This application brought in front again.
     case switchBack
+    /// A window of the application brought in front of its others, as the user picks it.
+    case bringToFront
     /// The question the window shows answered by its button of that caption, its field first holding the words.
     case answer(String, typing: String? = nil)
     /// A web view's content ended, as the platform ends it when its process goes.
@@ -98,6 +100,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .minimize: "minimize"
         case .restore: "restore"
         case .switchAway: "switchAway"
+        case .bringToFront: "bringToFront"
         case .switchBack: "switchBack"
         case .answer: "answer"
         case .endContent: "endContent"

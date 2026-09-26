@@ -117,13 +117,16 @@ is acrylic, and any other window's Mica, made again only where it turns.
 
 ## The application's phase
 
-The window's activation and its minimizing are the application's phase, told
-on by the host layer's rule ([the application's
-phase](../../host/runtime.md#the-applications-phase)): the relay tells the
-window's state at each of WinUI's events - whether it stands minimized, and
-whether it is activated - because a window being minimized is also told it
-lost its activation, in either order; a change of its size or presenter tells
-it only where it is minimized. A window is told it was made before it is
+Each window's activation and its minimizing settle into the phases of the
+application, its scenes and its windows by the host layer's rule ([the
+application's phase](../../host/runtime.md#the-applications-phase)): the
+relay tells the window's state at each of WinUI's events - whether it stands
+minimized, and whether it is activated - because a window being minimized is
+also told it lost its activation, in either order; a change of its size or
+presenter tells it only where it is minimized. A window its scene hides is
+`AppWindow.Hide`, and shown again without being activated; one hidden before
+it was ever shown is activated as it is first shown. A floating window is
+`IsAlwaysOnTop` while the application is in front. A window is told it was made before it is
 first shown: WinUI tells it that it was activated inside `Activate`, before
 the call returns.
 
@@ -177,7 +180,10 @@ values](../../host/runtime.md#kept-values)). Every key the
 application lists is read before the first scene connects and handed to the
 core ahead of the first view; a key's new value writes the whole file again,
 its keys in order, beside the old one first and then in its place, so a
-failed write leaves the old.
+failed write leaves the old. Windows restores no windows either, so the
+scenes are kept the same way, in a second file beside it, by the host
+layer's rule ([kept scenes](../../host/runtime.md#kept-scenes)): read as the
+host starts, and written whenever the scenes it holds write another text.
 
 ## Self-contained
 

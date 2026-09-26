@@ -29,19 +29,21 @@ final class WinUIWindowController {
     /// the window is first shown, and so before it hears it came to the front.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
-        let changes = presentation.show(element)
+        let changes = presentation.show(element, in: runtime.lifecycle)
         stand(changes)
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets)
         if let overlay = changes.overlay { window.showOverlay(overlay?.winUI.view) }
     }
 
-    /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed.
+    /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed, and
+    /// whether its scene hides it.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
     private func stand(_ changes: WindowPresentation.Changes) {
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
         if let traits = changes.traits { window.apply(traits) }
+        if let hidden = changes.hidden { window.setHidden(hidden) }
     }
 
     /// Keeps a sheet for each page shown as one, in its order, each under its page's title.

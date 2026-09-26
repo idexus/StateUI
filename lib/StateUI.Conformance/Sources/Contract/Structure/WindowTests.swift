@@ -88,17 +88,58 @@
             holds(WindowContract.isTranslucent, true, then: false) { $0.isTranslucent = $1 },
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", covers: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
-                Covered(WindowContract.floatsOnTop), Covered(WindowContract.hidesWhenInactive),
             ]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
+                try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
                 s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
-                s.expect(try s.held(WindowContract.floatsOnTop, on: note), true)
-                s.expect(try s.held(WindowContract.hidesWhenInactive, on: note), true)
+            },
+            ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", covers: [
+                Covered(WindowContract.floatsOnTop), Covered(ButtonContract.clicked),
+            ]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                let windows = s.elements(ofType: WindowContract.nodeType)
+                guard let main = windows.first, let note = windows.last else { return s.fail("no second window") }
+
+                try s.perform(.bringToFront, on: note)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "over the application's windows")
+                try s.perform(.switchAway, on: main)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == false }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), false, "not over another application")
+                try s.perform(.switchBack, on: main)
+                try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
+                s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "with the application in front again")
+            },
+            ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", covers: [
+                Covered(WindowContract.hidesWhenInactive), Covered(ButtonContract.clicked),
+            ]) { s in
+                try s.start(application: { NotesApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
+                let first = try s.element(ofType: WindowContract.nodeType)
+                try s.perform(.bringToFront, on: first)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+
+                try s.perform(.activate, on: s.element("another"))
+                s.settle { s.elements(ofType: SceneContract.nodeType).count == 2 }
+                guard let second = s.elements(ofType: WindowContract.nodeType)
+                    .first(where: { $0.enclosing(type: .scene) !== note.enclosing(type: .scene) })
+                else { return s.fail("no second scene") }
+                try s.perform(.bringToFront, on: second)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == false }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), false, "another scene in front")
+
+                try s.perform(.bringToFront, on: first)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "its scene in front again")
             },
         ]
     }
@@ -142,7 +183,7 @@ struct WindowPhasePage: ContentView {
 }
 
 /// An application whose scene opens a note's window beside its main one: of the note's kind, for the note's number,
-/// floating over the others and hiding while another application is in front.
+/// floating over the others and hiding while another scene is in front - and opens another scene.
 struct NotesApplication: Application {
     /// The kind of a note's window.
     static let note = WindowType("conformance.note")
@@ -161,7 +202,7 @@ struct NotesScene: Scene {
     }
 }
 
-/// The main window of `NotesApplication`, with the button that opens note 7.
+/// The main window of `NotesApplication`, with the buttons that open note 7 and another scene.
 struct MainNotesWindow: Window {
     var page: any Page { NotesPage() }
 }
@@ -169,11 +210,13 @@ struct MainNotesWindow: Window {
 /// The page of the main window.
 struct NotesPage: ContentView {
     @Environment private var scene: SceneSession
+    @Environment private var application: ApplicationSession
 
     var content: any View {
-        let scene = self.scene
+        let (scene, application) = (self.scene, self.application)
         return VStack {
             Button("Open").onClicked { try await scene.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked { try await application.openScene() }.id("another")
         }
     }
 }

@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 
 /// What a window element asks its host to show, as it changes, the same on every host: the arrangement of pages
-/// among its children, its sheets, what it lays over them, its frame, its bounds and its traits - each said where it
-/// changed - while the page the user sees hears it is shown, and the window that it was made.
+/// among its children, its sheets, what it lays over them, its frame, its bounds, its traits and whether its scene
+/// hides it - each said where it changed - while the page the user sees hears it is shown, and the window that it
+/// was made.
 /// Design: docs/design/host/tree.md#a-window-shown
 @_spi(Host) @MainActor public final class WindowPresentation {
     /// What changed of a window since it was last shown.
@@ -25,9 +26,12 @@
         /// The least and greatest size, where they changed - the first time whatever they are.
         public var bounds: WindowBounds?
 
-        /// What the window is - its buttons, its backdrop, where it floats, when it hides - where that changed, the
-        /// first time whatever it is.
+        /// What the window is - its buttons, its backdrop, whether it floats - where that changed, the first time
+        /// whatever it is.
         public var traits: WindowTraits?
+
+        /// Whether its scene hides it, where that changed - the first time whatever it is.
+        public var hidden: Bool?
     }
 
     /// The arrangement of pages shown.
@@ -42,14 +46,16 @@
     private var requested = WindowFrame()
     private var bounds: WindowBounds?
     private var traits: WindowTraits?
+    private var hidden: Bool?
 
     /// Nothing shown yet.
     public init() {}
 
-    /// What `window` asks to show that changed since it was last shown. The page the user sees - the top sheet, else
-    /// the arrangement - hears it is shown, the one before it that it is not, and then a window new here hears it was
-    /// made: all in their turn, told before the host shows the window, and so before it comes to the front.
-    public func show(_ window: MountedElement) -> Changes {
+    /// What `window` asks to show that changed since it was last shown, standing in `lifecycle`. The page the user
+    /// sees - the top sheet, else the arrangement - hears it is shown, the one before it that it is not, and then a
+    /// window new here hears it was made: all in their turn, told before the host shows the window, and so before it
+    /// comes to the front.
+    public func show(_ window: MountedElement, in lifecycle: ApplicationLifecycle) -> Changes {
         var changes = Changes()
         let previousVisible = sheets.last ?? arrangement
         let hadSheets = !sheets.isEmpty
@@ -79,10 +85,15 @@
             changes.bounds = bounds
             self.bounds = bounds
         }
-        let traits = WindowTraits(of: window)
+        let traits = WindowTraits(of: window, in: lifecycle)
         if traits != self.traits {
             changes.traits = traits
             self.traits = traits
+        }
+        let hidden = lifecycle.isHiddenByScene(window)
+        if hidden != self.hidden {
+            changes.hidden = hidden
+            self.hidden = hidden
         }
 
         let visible = sheets.last ?? arrangement

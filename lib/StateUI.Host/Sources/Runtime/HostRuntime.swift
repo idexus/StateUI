@@ -45,8 +45,11 @@
     /// Whether the user asked for less motion: every animation arrives at once.
     public let reducesMotion: () -> Bool
 
-    /// The application's phase, as the toolkit told it.
-    public private(set) var lifecycle = ApplicationLifecycle()
+    /// Where the application, its scenes and its windows stand, as the toolkit told it.
+    public let lifecycle = ApplicationLifecycle()
+
+    /// Whether a settling of what the toolkit told waits for its turn.
+    private var settling = false
 
     /// A runtime on `clock`, its elements' native halves made by `makeNative`, a drift the intake refused told to
     /// `log`.
@@ -123,19 +126,33 @@
         pump.turn()
     }
 
-    /// The toolkit moved the application into `phase`: the core hears it, then the scene and its window hear what
-    /// it means for them (`ApplicationLifecycle.enter`), each rendered before the next - in their turn, so a toolkit
-    /// telling it in the middle of one waits for it.
+    /// The toolkit told what `window` does now. It settles a turn later, with whatever else the toolkit tells in
+    /// this one: a window deactivated as another is activated is one move.
     /// Design: docs/design/host/runtime.md#the-applications-phase
-    public func enterPhase(_ phase: ApplicationPhase) {
-        guard let told = lifecycle.enter(phase) else { return }
-        core.setApplicationPhase(phase)
-        tell(told)
+    public func windowStateChanged(_ window: MountedElement, minimized: Bool, activated: Bool) {
+        lifecycle.report(window, minimized: minimized, activated: activated)
+        settleLater()
     }
 
-    /// The application is ending: its window hears it is going, then its scene.
+    /// The toolkit hid the whole application, or showed it again; it settles a turn later.
+    public func applicationHidden(_ hidden: Bool) {
+        lifecycle.isHidden = hidden
+        settleLater()
+    }
+
+    /// Settles what the toolkit told: the core hears the application's phase, then each scene and window what it
+    /// means for them, each rendered before the next, and the windows stand again where their standing moved.
+    public func settlePhases() {
+        settling = false
+        let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
+        if let phase = moves.phase { core.setApplicationPhase(phase) }
+        tell(moves.told)
+        if moves.standing { pump.presenter?.presentRendered() }
+    }
+
+    /// The application is ending: each scene's windows hear they are going, then the scene.
     public func ending() {
-        tell(ApplicationLifecycle.ending)
+        tell(ApplicationLifecycle.ending(windows: tree.root?.windows ?? []))
     }
 
     /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
@@ -193,10 +210,14 @@
 
     private func tell(_ told: [ApplicationLifecycle.Told]) {
         for each in told {
-            if let handler = tree.root?.first(type: each.element)?.handler(each.event) {
-                pump.handlers.enqueuePhase(handler)
-            }
+            if let handler = each.element.handler(each.event) { pump.handlers.enqueuePhase(handler) }
         }
         pump.turn()
+    }
+
+    private func settleLater() {
+        guard !settling else { return }
+        settling = true
+        Task { @MainActor [weak self] in self?.settlePhases() }
     }
 }
