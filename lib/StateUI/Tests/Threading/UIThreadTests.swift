@@ -601,23 +601,15 @@ final class UIThreadTests: XCTestCase {
 
         for place in places {
             let file = SourceTree.repository.appendingPathComponent(place)
-            let text = try String(contentsOf: file, encoding: .utf8)
+            let manifest = Self.withoutComments(try String(contentsOf: file, encoding: .utf8))
 
-            if !text.contains("NonisolatedNonsendingByDefault") {
-                missing.append(place)
-                continue
-            }
-
-            // ONE PER TARGET, not one per file. A manifest declaring three
-            // targets and marking two reads as covered to a `contains`, and the
-            // unmarked target is the one whose handlers land off the executor.
-            let targets = ["\n        .target(", "\n        .testTarget(", "\n        .macro("]
-                .map { text.components(separatedBy: $0).count - 1 }
-                .reduce(0, +)
-            let marked = text.components(separatedBy: "NonisolatedNonsendingByDefault").count - 1
-
-            if targets > marked {
-                missing.append("\(place) - \(targets) targets, \(marked) marked")
+            // EVERY TARGET COMPILING SWIFT, each read for its own settings: the
+            // one a manifest leaves out is the one whose handlers land off the
+            // executor, however often the manifest names the feature elsewhere.
+            for target in Self.declaredTargets(in: manifest)
+            where Self.holdsSwift(target, besideManifest: file)
+                && !Self.compilesWithTheFeature(target, in: manifest) {
+                missing.append("\(place) - \(target.name)")
             }
         }
 
@@ -637,6 +629,87 @@ final class UIThreadTests: XCTestCase {
     }
 
     // MARK: - Support
+
+    /// A target a manifest declares: its kind, its name, and its call's arguments.
+    private struct DeclaredTarget {
+        let kind: String
+        let name: String
+        let arguments: Substring
+    }
+
+    private static let feature = "NonisolatedNonsendingByDefault"
+    private static var label: Regex<(Substring, Substring)> { try! Regex("(\\w+):") }
+    private static var settingsList: Regex<(Substring, Substring)> {
+        try! Regex("(?:let|var)\\s+(\\w+)\\s*:\\s*\\[SwiftSetting\\]\\s*=")
+    }
+
+    /// The targets `manifest` declares. A `.target(name:)` among a target's
+    /// dependencies names one and declares nothing, so a call giving nothing
+    /// beyond a name and a condition is none.
+    private static func declaredTargets(in manifest: String) -> [DeclaredTarget] {
+        var found: [DeclaredTarget] = []
+        for kind in ["target", "testTarget", "executableTarget", "macro"] {
+            var rest = manifest[...]
+            while let opening = rest.range(of: ".\(kind)(") {
+                let arguments = balanced(rest[opening.upperBound...])
+                let labels = arguments.matches(of: label).map { String($0.1) }
+                if let name = quoted("name", in: arguments),
+                   labels.contains(where: { $0 != "name" && $0 != "condition" }) {
+                    found.append(DeclaredTarget(kind: kind, name: name, arguments: arguments))
+                }
+                rest = rest[opening.upperBound...]
+            }
+        }
+        return found
+    }
+
+    /// The text up to the parenthesis closing the one just opened.
+    private static func balanced(_ text: Substring) -> Substring {
+        var depth = 1
+        var inString = false
+        for index in text.indices {
+            switch text[index] {
+            case "\"": inString.toggle()
+            case "(" where !inString: depth += 1
+            case ")" where !inString:
+                depth -= 1
+                if depth == 0 { return text[..<index] }
+            default: break
+            }
+        }
+        return text
+    }
+
+    /// The string an argument `label` gives, where it gives one.
+    private static func quoted(_ label: String, in arguments: Substring) -> String? {
+        arguments.firstMatch(of: try! Regex("\\b\(label):\\s*\"([^\"]*)\"", as: (Substring, Substring).self))
+            .map { String($0.1) }
+    }
+
+    /// Whether `target`'s directory - its `path`, else where the package
+    /// manager looks - holds Swift; a relay of C or C++ compiles none.
+    private static func holdsSwift(_ target: DeclaredTarget, besideManifest manifest: URL) -> Bool {
+        let standing = target.kind == "testTarget" ? "Tests/\(target.name)" : "Sources/\(target.name)"
+        let directory = manifest.deletingLastPathComponent()
+            .appendingPathComponent(quoted("path", in: target.arguments) ?? standing)
+        guard let files = FileManager.default.enumerator(atPath: directory.path) else { return true }
+        return files.contains { ($0 as? String)?.hasSuffix(".swift") == true }
+    }
+
+    /// Whether `target`'s `swiftSettings` name the feature, or a settings list
+    /// `manifest` declares with it.
+    private static func compilesWithTheFeature(_ target: DeclaredTarget, in manifest: String) -> Bool {
+        guard let settings = target.arguments.range(of: "swiftSettings:") else { return false }
+        let given = target.arguments[settings.upperBound...]
+        if given.contains(feature) { return true }
+
+        return manifest.matches(of: settingsList).contains { list in
+            let initializer = manifest[list.range.upperBound...]
+            let declared = initializer.range(of: "\n\n").map { initializer[..<$0.lowerBound] } ?? initializer
+            return declared.contains(feature)
+                && given.contains(try! Regex("\\b\(list.1)\\b"))
+        }
+    }
 
     /// Every active application manifest in the repository, relative to its
     /// root.
