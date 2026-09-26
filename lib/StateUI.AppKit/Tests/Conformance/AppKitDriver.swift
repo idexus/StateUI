@@ -30,6 +30,9 @@ final class AppKitDriver: HostDriver {
     /// The preferences the driver's hosts keep their values in, apart from the machine's own.
     let store = UserDefaults(suiteName: "StateUI.AppKitConformance")!
 
+    /// What the hosts wrote to their log since the last started.
+    let written = AppKitLogLines()
+
     /// What the system restores at the next launch: the windows open when the last host ended, each as its delegate
     /// encoded it.
     private var restorable: [(identifier: String, state: Data)] = []
@@ -61,6 +64,7 @@ final class AppKitDriver: HostDriver {
         restorable = renderer.map { Self.encoded($0.windowsForTesting) } ?? []
         renderer?.closeForTesting()
         stateUIUseApp(application())
+        written.listen()
         let renderer = testRenderer(
             resourceDirectory: Self.pictures, preferences: store, clock: clock.map { clock in { clock.now } },
             reducesMotion: { reducesMotion })

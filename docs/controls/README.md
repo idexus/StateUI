@@ -58,7 +58,7 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 12 | 3 ✅ |  |  | 7 ✅ | 12 ✅ |  |
+| [Application](Application.md) | 12 | 12 ✅ |  |  | 7 ✅ | 12 ✅ |  |
 | [Content](Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -81,7 +81,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 22 ✅ |  |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 51 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 60 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

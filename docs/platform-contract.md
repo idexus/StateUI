@@ -307,18 +307,18 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `focus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ |  |  | ✅ | ✅ |  |
 | `unfocus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ |  |  | ✅ | ✅ |  |
-| `alert` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `announce` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
-| `chooseAction` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `confirm` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `currentTime` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `currentTimeZone` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `handlerFailed` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
+| `alert` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `announce` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
+| `chooseAction` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `confirm` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `currentTime` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `currentTimeZone` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `handlerFailed` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
 | `persistSceneValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
 | `persistValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `prompt` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
-| `utcOffset` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
+| `prompt` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `utcOffset` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
 | `moveToRegion` | [Map](controls/Map.md) |  |  |  |  |  |  |
 | `evaluateJavaScript` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
 | `goBack` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
@@ -461,7 +461,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 | 3 ✅ |  |  | 7 ✅ | 12 ✅ |  |
+| [Application](controls/Application.md) | 12 | 12 ✅ |  |  | 7 ✅ | 12 ✅ |  |
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -484,7 +484,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 22 ✅ |  |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 51 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 60 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

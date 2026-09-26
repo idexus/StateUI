@@ -32,19 +32,10 @@ enum AppKitRegistrations {
         return registry
     }()
 
-    /// The acts this host performs, whichever element each is aimed at.
-    ///
-    /// A registry takes properties and events, never acts: an act names the
-    /// view it is aimed at and the session performs it against that identity,
-    /// so nothing about the call belongs to one registration. They are said
-    /// here, beside the registry, and read where this host's export is
-    /// written. `AppKitActPerformer` answers exactly these; every other act
-    /// it refuses by name.
-    static let acts: [any ContractMember] = [
-        VisualElementContract.focus, VisualElementContract.unfocus,
-        ApplicationContract.hideOnScreenKeyboard,
-        ApplicationContract.persistValue, ApplicationContract.persistSceneValue,
-    ]
+    /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), and
+    /// the scene's kept values, which a Mac keeps in the window it restores. `AppKitActPerformer` answers exactly
+    /// these and the application's own; every other act it refuses by name.
+    static let acts: [any ContractMember] = HostActs.performed + [ApplicationContract.persistSceneValue]
 
     static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
         guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }

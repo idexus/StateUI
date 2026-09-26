@@ -19,25 +19,8 @@ import AppKit
 /// what turns an aimed act's identity back into a view.
 @MainActor
 enum AppKitInterop {
-    /// What answers one act, and what it needs to answer it.
-    enum Performer {
-        /// An act of the application's, given the values it was called with.
-        case application(([HostValue]) throws -> [HostValue])
-
-        /// An act aimed at one element, given that element's view and the
-        /// values after the identity the aim put in argument 0.
-        case aimed((NSView, [HostValue]) throws -> [HostValue])
-    }
-
-    /// The performers, by the act's name - read where no act of the library's
-    /// own answers the call.
-    static var performers: [Act: Performer] = [:]
-
-    /// Forgets every performer. For a test, which registers its own and must
-    /// not leave them standing for the next one.
-    static func forgetPerformers() {
-        performers = [:]
-    }
+    /// The application's acts, performed where no act of the library's answers the call (`InteropActs`).
+    static let acts = InteropActs<NSView>()
 }
 
 /// The acts an application performs on this host - what its own calls,
@@ -65,23 +48,15 @@ public enum StateUIActs {
     ///   - act: the member, written with its contract.
     ///   - perform: given the arguments the contract declares, answering the
     ///     values it declares. What it throws fails the call, and the caller
-    ///     throws that reason.
+    ///     throws that reason. A performer may await, and the call is answered
+    ///     once it returns.
     public static func add<
         Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
-        _ perform: @escaping @MainActor (repeat each Argument) throws -> (repeat each Answer)
+        _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
     ) {
-        AppKitInterop.performers[act.token] = .application { values in
-            guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
-                throw StateUIError(message: "`\(act.name)` was called with "
-                    + "\(values.count) value(s), and its contract declares "
-                    + MemberValues.describe(repeat (each Argument).self))
-            }
-
-            let answer = try perform(repeat each arguments)
-            return MemberValues.encode(repeat each answer)
-        }
+        AppKitInterop.acts.add(act, perform)
     }
 
     /// Performs an act AIMED at one of the application's own elements, when
@@ -100,30 +75,17 @@ public enum StateUIActs {
     ///   - act: the member, written with its contract.
     ///   - view: the class this host makes for the element.
     ///   - perform: given the element's view and the arguments the contract
-    ///     declares, answering the values it declares.
+    ///     declares, answering the values it declares. A performer may await,
+    ///     and the call is answered once it returns.
     public static func add<
         Owner: Contract, Made: NSView,
         each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on view: Made.Type,
-        _ perform: @escaping @MainActor (Made, repeat each Argument) throws -> (repeat each Answer)
+        _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
     ) {
-        AppKitInterop.performers[act.token] = .aimed { native, values in
-            guard let made = native as? Made else {
-                throw StateUIError(message: "`\(act.name)` is aimed at a \(type(of: native)), "
-                    + "and it performs on \(Made.self)")
-            }
-
-            guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
-                throw StateUIError(message: "`\(act.name)` was called with "
-                    + "\(values.count) value(s), and its contract declares "
-                    + MemberValues.describe(repeat (each Argument).self))
-            }
-
-            let answer = try perform(made, repeat each arguments)
-            return MemberValues.encode(repeat each answer)
-        }
+        AppKitInterop.acts.add(act, control: { $0 as? Made }, perform)
     }
 }
 

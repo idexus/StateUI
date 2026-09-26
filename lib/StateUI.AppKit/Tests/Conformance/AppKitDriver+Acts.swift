@@ -73,6 +73,10 @@ extension AppKitDriver {
                 throw DriverCannot(act, on: element)
             }
             window.makeFirstResponder(focusable)
+        case (.answer(let caption, let words), _):
+            guard renderer?.actPerformer.showing?.pressForTesting(caption, typing: words) == true else {
+                throw DriverCannot("press \(caption): no question shows it")
+            }
         case (.goBack, _) where element.type == .navigationStack: try controller(of: element).toolbarForTesting
             .performForTesting(AppKitWindowToolbar.back)
         case (.goBack, _) where element.type == .window:

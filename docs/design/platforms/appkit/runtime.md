@@ -68,6 +68,25 @@ the scene opens for its kind and value. One no scene claims by the
 presentation after its offer is declined, and one whose scene never comes is
 let go after three seconds.
 
+## Acts
+
+The acts every host performs (`HostActs`) are AppKit's own calls: the time
+of day and the zone from the system's calendar, a zone's distance from UTC
+on the day asked - a zone the system does not know fails the act - a word to
+the screen reader as an announcement over whatever it was saying, and the
+focus through the window's first responder. An act of the application's own
+is its registered performer's (`InteropActs`), handed the view an aimed act
+names; a performer may await.
+
+## Questions for the user
+
+A question is AppKit's own alert, a sheet on the window the user is looking
+at, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
+button first, a choice's actions, its dangerous one marked, then its cancel.
+A choice answers the caption pressed, its cancel's included; a prompt its
+field's words, cut to their bound. A host that shows no window holds the
+alert unshown, answered as a press answers it.
+
 ## The environment
 
 The device, the main display, the application and the system's appearance are

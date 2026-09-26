@@ -60,6 +60,22 @@ extension AppKitDriver {
         return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
     }
 
+    /// The question AppKit's alert shows now, as it shows it.
+    func question(over element: MountedElement) throws -> Question? {
+        guard let shown = renderer?.actPerformer.showing?.shownForTesting else { return nil }
+        return Question(title: shown.title, message: shown.message, buttons: shown.buttons, field: shown.field)
+    }
+
+    /// What the host told the screen reader, in order, as it posted it.
+    func announced() throws -> [String] {
+        renderer?.actPerformer.announcedForTesting ?? []
+    }
+
+    /// What the host wrote to its log since it started.
+    func logged() throws -> [String] {
+        written.lines
+    }
+
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? AppKitElement)?.view else {
             throw DriverCannot("read the focus of \(element.type.name)")
@@ -88,4 +104,18 @@ extension AppKitDriver {
         }.joined(separator: ";")
     }
 }
+/// The host's log, line by line, as the driver hears it.
+final class AppKitLogLines: @unchecked Sendable {
+    private(set) var lines: [String] = []
+
+    /// Listens to the host's log from now on.
+    @MainActor func listen() {
+        lines = []
+        AppKitRenderer.log = HostLog(host: "AppKit") { [self] line in
+            lines.append(line)
+            print(line, terminator: "")
+        }
+    }
+}
+
 #endif
