@@ -35,12 +35,18 @@ let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
 // asked by .scripts/GTK/run-app.sh.
 let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
 
+// WHETHER THIS BUILD HAS A UIKIT HEAD - the same question for the UIKit host
+// on iOS and iPadOS, asked by .scripts/UIKit/build-app.sh.
+let hasUIKitHead = ProcessInfo.processInfo.environment["STATEUI_UIKIT"] == "1"
+
 // What every module of the application is compiled with - in an AppKit build
 // including APPKIT, in an Android Views build ANDROID, in a WinUI build WINUI,
-// in a GTK build GTK, each defined here and nowhere else. See apps/Gallery/Package.swift.
+// in a GTK build GTK, in a UIKit build UIKIT, each defined here and nowhere
+// else. See apps/Gallery/Package.swift.
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasUIKitHead ? [.define("UIKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
     + (hasWinUIHead ? [.define("WINUI")] : [])
     + (hasGTKHead ? [.define("GTK")] : [])
@@ -108,6 +114,31 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasUIKitHead {
+    // The same Swift application, an executable its UIKit host runs on iOS and
+    // iPadOS: its main names the application to the host and hands it the
+    // process; the script makes it an application bundle.
+    products.append(
+        .executable(
+            name: "HelloWorldUIKit",
+            targets: ["HelloWorldUIKit"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIUIKit", path: "../../lib/StateUI.UIKit"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldUIKit",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIUIKit", package: "StateUIUIKit"),
+            ],
+            path: "Platforms/UIKit",
             swiftSettings: settings
         ))
 }
