@@ -1,0 +1,13 @@
+Application: ✅
+Application.alert: not realized
+Application.announce: not realized
+Application.chooseAction: not realized
+Application.confirm: not realized
+Application.currentTime: not realized
+Application.currentTimeZone: not realized
+Application.handlerFailed: not realized
+Application.hideOnScreenKeyboard: not realized
+Application.persistSceneValue: not realized
+Application.persistValue: not realized
+Application.prompt: not realized
+Application.utcOffset: not realized

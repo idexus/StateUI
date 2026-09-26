@@ -1,0 +1,7 @@
+ActivityIndicator.tint: not realized
+CheckBox.tint: not realized
+Picker.tint: not realized
+ProgressBar.tint: not realized
+SearchField.tint: not realized
+Slider.tint: not realized
+Switch.tint: not realized

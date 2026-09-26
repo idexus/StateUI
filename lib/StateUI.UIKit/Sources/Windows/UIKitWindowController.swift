@@ -41,8 +41,16 @@ final class UIKitWindowController {
 
     /// The tree let the window go: its scene goes with it.
     func close() {
-        guard let session = window?.windowScene?.session else { return }
+        let session = window?.windowScene?.session
+        hide()
+        guard let session else { return }
         UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
+    }
+
+    /// Takes the window out of its scene, which stays.
+    func hide() {
+        window?.isHidden = true
+        window?.windowScene = nil
     }
 }
 

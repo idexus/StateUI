@@ -1,0 +1,47 @@
+ActivityIndicator.isVisible: not realized
+ActivityIndicator.translationX: not realized
+Button.clicked: ✅
+Button.scale: cannot read scale of Button - UIKit's driver has no path for it yet
+Canvas.rotation: not realized
+CheckBox.layoutDirection: not realized
+ColorBox.isAccessibilityHidden: not realized
+DatePicker.accessibilityLabel: not realized
+Ellipse.frame: not realized
+Grid.frameChanged: not realized
+Grid.height: not realized
+Grid.width: not realized
+HStack.isVisible: ✅
+HStack.translationX: cannot read translationX of HStack - UIKit's driver has no path for it yet
+Image.scale: cannot read scale of Image - UIKit's driver has no path for it yet
+Label.rotation: cannot read rotation of Label - UIKit's driver has no path for it yet
+Line.layoutDirection: not realized
+Map.isAccessibilityHidden: not realized
+Path.accessibilityLabel: not realized
+Picker.frame: not realized
+Polygon.frameChanged: not realized
+Polygon.height: not realized
+Polygon.width: not realized
+Polyline.isVisible: not realized
+Polyline.translationX: not realized
+PositionIndicator.scale: not realized
+ProgressBar.rotation: not realized
+RadioButton.layoutDirection: not realized
+Rectangle.isAccessibilityHidden: not realized
+ScrollView.accessibilityLabel: not realized
+SearchField.frame: not realized
+Slider.frameChanged: not realized
+Slider.height: not realized
+Slider.width: not realized
+Stepper.isVisible: not realized
+Stepper.translationX: not realized
+Switch.scale: not realized
+TextEditor.rotation: not realized
+TextField.layoutDirection: not realized
+TimePicker.isAccessibilityHidden: not realized
+TitleBar.accessibilityLabel: not realized
+VStack.frame: not realized
+WebView.frameChanged: not realized
+WebView.height: not realized
+WebView.width: not realized
+ZStack.isVisible: not realized
+ZStack.translationX: not realized

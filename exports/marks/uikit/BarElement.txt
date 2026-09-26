@@ -1,0 +1,2 @@
+NavigationStack.barBackgroundColor: not realized
+TabbedView.barBackgroundColor: not realized

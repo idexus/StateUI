@@ -1,0 +1,7 @@
+Label.text: ✅
+TextField: ✅
+TextField.isPassword: not realized
+TextField.returnKey: not realized
+TextField.showsClearButton: not realized
+TextField.submitted: ✅
+TextField.text: ✅

@@ -18,11 +18,14 @@ extension UIKitElement {
             return registered
         }
         guard !NodeType.viewlessTypes.contains(type) else { return nil }
+        return Self.showsUnsupported(type) ? UIKitUnsupportedView(type) : UIKitSingleChildView()
+    }
 
-        switch type {
-        case .page, .overlay: return UIKitSingleChildView()
-        default: return UIKitUnsupportedView(type)
-        }
+    /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page, no overlay and
+    /// nothing presented without a view.
+    static func showsUnsupported(_ type: NodeType) -> Bool {
+        !UIKitRegistrations.registry.realization.elements.contains(type.name) && !NodeType.viewlessTypes.contains(type)
+            && type != .page && type != .overlay
     }
 
     func applyProperties(changed: Set<Prop>) {

@@ -1,0 +1,71 @@
+Button
+  fontAttributes
+  fontFamily
+  fontSize
+  padding
+  text
+  textCase
+  textColor
+  clicked()
+HStack
+  padding
+  spacing
+Image
+  aspect
+  source
+Label
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  lineBreak
+  maximumLines
+  padding
+  text
+  textCase
+  textColor
+  verticalTextAlignment
+TextField
+  fontAttributes
+  fontFamily
+  fontSize
+  maximumLength
+  placeholder
+  text
+  textColor
+  submitted()
+  textChanged()
+VStack
+  padding
+  spacing
+(every element)
+  accessibilityHint
+  accessibilityLabel
+  area
+  gridColumn
+  gridColumnSpan
+  gridRow
+  gridRowSpan
+  height
+  horizontalAlignment
+  isEnabled
+  isVisible
+  margin
+  maximumHeight
+  maximumWidth
+  minimumHeight
+  minimumWidth
+  opacity
+  pivotX
+  pivotY
+  rotation
+  rotationX
+  rotationY
+  scale
+  scaleX
+  scaleY
+  translationX
+  translationY
+  verticalAlignment
+  width
+(acts)

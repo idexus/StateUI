@@ -1,0 +1,8 @@
+ScrollView: not realized
+ScrollView.horizontalScrollBarVisibility: not realized
+ScrollView.orientation: not realized
+ScrollView.scrollOffset: not realized
+ScrollView.scrollStopped: not realized
+ScrollView.scrollXChanged: not realized
+ScrollView.scrollYChanged: not realized
+ScrollView.verticalScrollBarVisibility: not realized

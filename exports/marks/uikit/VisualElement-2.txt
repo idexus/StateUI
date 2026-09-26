@@ -1,0 +1,63 @@
+ActivityIndicator.opacity: not realized
+ActivityIndicator.translationY: not realized
+Button.clicked: ✅
+Button.scaleX: cannot read scaleX of Button - UIKit's driver has no path for it yet
+Canvas.rotationX: not realized
+CheckBox.pivotX: not realized
+ColorBox.automationExcludedWithChildren: not realized
+DatePicker.accessibilityHint: not realized
+Ellipse.focus: not realized
+Ellipse.isFocusedChanged: not realized
+Ellipse.unfocus: not realized
+Grid.frameChanged: not realized
+Grid.maximumHeight: not realized
+Grid.maximumWidth: not realized
+Grid.minimumHeight: not realized
+Grid.minimumWidth: not realized
+HStack.opacity: ✅
+HStack.translationY: cannot read translationY of HStack - UIKit's driver has no path for it yet
+Image.scaleX: cannot read scaleX of Image - UIKit's driver has no path for it yet
+Label.rotationX: cannot read rotationX of Label - UIKit's driver has no path for it yet
+Line.pivotX: not realized
+Map.automationExcludedWithChildren: not realized
+Path.accessibilityHint: not realized
+Picker.focus: not realized
+Picker.isFocusedChanged: not realized
+Picker.unfocus: not realized
+Polygon.frameChanged: not realized
+Polygon.maximumHeight: not realized
+Polygon.maximumWidth: not realized
+Polygon.minimumHeight: not realized
+Polygon.minimumWidth: not realized
+Polyline.opacity: not realized
+Polyline.translationY: not realized
+PositionIndicator.scaleX: not realized
+ProgressBar.rotationX: not realized
+RadioButton.pivotX: not realized
+Rectangle.automationExcludedWithChildren: not realized
+ScrollView.accessibilityHint: not realized
+SearchField.focus: not realized
+SearchField.isFocusedChanged: not realized
+SearchField.unfocus: not realized
+Slider.frameChanged: not realized
+Slider.maximumHeight: not realized
+Slider.maximumWidth: not realized
+Slider.minimumHeight: not realized
+Slider.minimumWidth: not realized
+Stepper.opacity: not realized
+Stepper.translationY: not realized
+Switch.scaleX: not realized
+TextEditor.rotationX: not realized
+TextField.pivotX: cannot read pivotX of TextField - UIKit's driver has no path for it yet
+TimePicker.automationExcludedWithChildren: not realized
+TitleBar.accessibilityHint: not realized
+VStack.focus: not realized
+VStack.isFocusedChanged: not realized
+VStack.unfocus: not realized
+WebView.frameChanged: not realized
+WebView.maximumHeight: not realized
+WebView.maximumWidth: not realized
+WebView.minimumHeight: not realized
+WebView.minimumWidth: not realized
+ZStack.opacity: not realized
+ZStack.translationY: not realized

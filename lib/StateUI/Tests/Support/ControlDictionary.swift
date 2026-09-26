@@ -610,7 +610,9 @@ struct ControlDictionary {
     // MARK: - What the pages are rendered from
 
     /// The folder each host's runs write their verdicts in under `exports/marks`, by the host's column.
-    static let folders = ["AppKit": "appkit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk"]
+    static let folders = [
+        "AppKit": "appkit", "UIKit": "uikit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk",
+    ]
 
     /// Every host's column: what its runs' verdicts said, each subject once. A host none of whose runs wrote a
     /// verdict has an empty column.

@@ -1,0 +1,38 @@
+ActivityIndicator.scaleY: not realized
+Button.clicked: cannot read pivotY of Label - UIKit's driver has no path for it yet
+Button.rotationY: cannot read rotationY of Button - UIKit's driver has no path for it yet
+Canvas.pivotY: not realized
+CheckBox.background: not realized
+ColorBox.accessibilityHeadingLevel: not realized
+DatePicker.style: not realized
+Ellipse.ignoresInput: not realized
+Grid.isEnabled: not realized
+Grid.zIndex: not realized
+HStack.scaleY: cannot read scaleY of HStack - UIKit's driver has no path for it yet
+Image.rotationY: cannot read rotationY of Image - UIKit's driver has no path for it yet
+Label.pivotY: cannot read pivotY of Label - UIKit's driver has no path for it yet
+Line.background: not realized
+Map.accessibilityHeadingLevel: not realized
+Path.style: not realized
+Picker.ignoresInput: not realized
+Polygon.isEnabled: not realized
+Polygon.zIndex: not realized
+Polyline.scaleY: not realized
+PositionIndicator.rotationY: not realized
+ProgressBar.pivotY: not realized
+RadioButton.background: not realized
+Rectangle.accessibilityHeadingLevel: not realized
+ScrollView.style: not realized
+SearchField.ignoresInput: not realized
+Slider.isEnabled: not realized
+Slider.zIndex: not realized
+Stepper.scaleY: not realized
+Switch.rotationY: not realized
+TextEditor.pivotY: not realized
+TextField.background: not realized
+TimePicker.accessibilityHeadingLevel: not realized
+TitleBar.style: not realized
+VStack.ignoresInput: not realized
+WebView.isEnabled: not realized
+WebView.zIndex: not realized
+ZStack.scaleY: not realized

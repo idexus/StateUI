@@ -34,6 +34,12 @@ final class UIKitFrameClock: NSObject, FrameClock {
         self.link = link
     }
 
+    /// Lets the display go - a display link holds its clock until then - so no frame comes after.
+    func stop() {
+        link?.invalidate()
+        link = nil
+    }
+
     @objc private func frame(_ link: CADisplayLink) {
         guard held else { return }
         onFrame?(link.timestamp * 1_000)

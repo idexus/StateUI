@@ -1,0 +1,4 @@
+Button.clicked: cannot read source of Image - UIKit's driver has no path for it yet
+Image: cannot read source of Image - UIKit's driver has no path for it yet
+Image.isAnimating: not realized
+Image.source: ✅

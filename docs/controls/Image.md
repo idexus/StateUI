@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isAnimating` | property | `Bool` | native |  |  |  |  |  |  | cannot read isAnimating of Image - AppKit's driver has no path for it yet |
-| `source` | property | `ImageSource` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `source` | property | `ImageSource` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -43,8 +43,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityHint of Image - UIKit's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityLabel of Image - UIKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -52,26 +52,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of Image - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotX of Image - UIKit's driver has no path for it yet |
+| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotY of Image - UIKit's driver has no path for it yet |
+| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read rotation of Image - UIKit's driver has no path for it yet |
+| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationX of Image - UIKit's driver has no path for it yet |
+| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationY of Image - UIKit's driver has no path for it yet |
+| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scale of Image - UIKit's driver has no path for it yet |
+| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleX of Image - UIKit's driver has no path for it yet |
+| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleY of Image - UIKit's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationX of Image - UIKit's driver has no path for it yet |
+| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationY of Image - UIKit's driver has no path for it yet |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -121,4 +121,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `aspect` | property | `Aspect` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read aspect of Image - UIKit's driver has no path for it yet |

@@ -108,9 +108,10 @@ final class HostDeclarationTests: XCTestCase {
 
             let realization = declaration.realization
 
-            XCTAssertTrue(realization.elements.contains("Slider"), "\(host) realizes no Slider")
+            // A host's first slice already has a button: its own member reaches it through its own contract.
+            XCTAssertTrue(realization.elements.contains("Button"), "\(host) realizes no Button")
             XCTAssertTrue(realization.members.contains(
-                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+                HostRealizedMember(element: "Button", owner: "Button", member: "clicked")))
 
             // The drift this road exists to end: `aspect` reaches an Image
             // through the tier declaring it, whatever the host called the member.
@@ -121,8 +122,8 @@ final class HostDeclarationTests: XCTestCase {
 
     /// Where each host's suite writes what its runtime realizes, by the host's name.
     private static let exports = [
-        "AppKit": "exports/appkit.txt", "Android Views": "exports/android.txt", "WinUI 3": "exports/winui.txt",
-        "GTK 4": "exports/gtk.txt",
+        "AppKit": "exports/appkit.txt", "UIKit": "exports/uikit.txt", "Android Views": "exports/android.txt",
+        "WinUI 3": "exports/winui.txt", "GTK 4": "exports/gtk.txt",
     ]
 
     /// A registry's realization says each member on every element; its declaration says an element's

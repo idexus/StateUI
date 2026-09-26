@@ -1,0 +1,4 @@
+NavigationStack: not realized
+NavigationStack.barForegroundColor: not realized
+NavigationStack.popped: not realized
+Page.title: not realized

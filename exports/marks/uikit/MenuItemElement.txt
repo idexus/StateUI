@@ -1,0 +1,10 @@
+MenuItem.clicked: not realized
+MenuItem.icon: not realized
+MenuItem.isDestructive: not realized
+MenuItem.isEnabled: not realized
+MenuItem.text: not realized
+ToolbarItem.clicked: not realized
+ToolbarItem.icon: not realized
+ToolbarItem.isDestructive: not realized
+ToolbarItem.isEnabled: not realized
+ToolbarItem.text: not realized

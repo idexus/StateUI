@@ -1,0 +1,15 @@
+Button.clicked: ✅
+Button.text: ✅
+Button.textCase: ✅
+Label.text: ✅
+Label.textCase: ✅
+RadioButton.text: not realized
+RadioButton.textCase: not realized
+SearchField.text: not realized
+SearchField.textCase: not realized
+Span.text: not realized
+Span.textCase: not realized
+TextEditor.text: not realized
+TextEditor.textCase: not realized
+TextField.text: ✅
+TextField.textCase: not realized

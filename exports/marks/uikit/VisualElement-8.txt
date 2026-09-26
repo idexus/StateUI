@@ -1,0 +1,56 @@
+ActivityIndicator.focus: not realized
+ActivityIndicator.isFocusedChanged: not realized
+ActivityIndicator.unfocus: not realized
+Button.clicked: ✅
+Button.frameChanged: not realized
+Canvas.opacity: not realized
+Canvas.translationY: not realized
+CheckBox.scaleX: not realized
+ColorBox.rotationX: not realized
+DatePicker.pivotX: not realized
+Ellipse.automationExcludedWithChildren: not realized
+Grid.accessibilityHint: not realized
+HStack.focus: not realized
+HStack.isFocusedChanged: not realized
+HStack.unfocus: not realized
+Image.frameChanged: not realized
+Label.opacity: ✅
+Label.translationY: cannot read translationY of Label - UIKit's driver has no path for it yet
+Line.scaleX: not realized
+Map.rotationX: not realized
+Path.pivotX: not realized
+Picker.automationExcludedWithChildren: not realized
+Polygon.accessibilityHint: not realized
+Polyline.focus: not realized
+Polyline.isFocusedChanged: not realized
+Polyline.unfocus: not realized
+PositionIndicator.frameChanged: not realized
+PositionIndicator.maximumHeight: not realized
+PositionIndicator.maximumWidth: not realized
+PositionIndicator.minimumHeight: not realized
+PositionIndicator.minimumWidth: not realized
+ProgressBar.opacity: not realized
+ProgressBar.translationY: not realized
+RadioButton.scaleX: not realized
+Rectangle.rotationX: not realized
+ScrollView.pivotX: not realized
+SearchField.automationExcludedWithChildren: not realized
+Slider.accessibilityHint: not realized
+Stepper.focus: not realized
+Stepper.isFocusedChanged: not realized
+Stepper.unfocus: not realized
+Switch.frameChanged: not realized
+Switch.maximumHeight: not realized
+Switch.maximumWidth: not realized
+Switch.minimumHeight: not realized
+Switch.minimumWidth: not realized
+TextEditor.opacity: not realized
+TextEditor.translationY: not realized
+TextField.scaleX: cannot read scaleX of TextField - UIKit's driver has no path for it yet
+TimePicker.rotationX: not realized
+TitleBar.pivotX: not realized
+VStack.automationExcludedWithChildren: not realized
+WebView.accessibilityHint: not realized
+ZStack.focus: not realized
+ZStack.isFocusedChanged: not realized
+ZStack.unfocus: not realized

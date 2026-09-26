@@ -671,7 +671,7 @@ enum SourceTree {
     }
 
     /// Every active test source, so a guard can ask whether some test names a
-    /// thing across the core, Gallery, AppKit, Android, WinUI and GTK host suites
+    /// thing across the core, Gallery, AppKit, UIKit, Android, WinUI and GTK host suites
     /// and the conformance suite they share.
     static func testSources() throws -> [(path: String, text: String)] {
         var found: [(path: String, text: String)] = []
@@ -680,6 +680,7 @@ enum SourceTree {
             ("StateUITests", repository.appendingPathComponent("lib/StateUI/Tests")),
             ("GalleryTests", repository.appendingPathComponent("apps/Gallery/Tests/GalleryTests")),
             ("StateUIAppKitTests", repository.appendingPathComponent("lib/StateUI.AppKit/Tests")),
+            ("StateUIUIKitTests", repository.appendingPathComponent("lib/StateUI.UIKit/Tests/Sources")),
             ("StateUIAndroidTests", repository.appendingPathComponent("lib/StateUI.Android/Tests/Sources")),
             ("StateUIWinUITests", repository.appendingPathComponent("lib/StateUI.WinUI/Tests")),
             ("StateUIGTKTests", repository.appendingPathComponent("lib/StateUI.GTK/Tests")),

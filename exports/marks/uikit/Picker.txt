@@ -1,0 +1,8 @@
+Picker: not realized
+Picker.closed: not realized
+Picker.isOpen: not realized
+Picker.opened: not realized
+Picker.options: not realized
+Picker.selectedIndex: not realized
+Picker.selectedIndexChanged: not realized
+Picker.title: not realized

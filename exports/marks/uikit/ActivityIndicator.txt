@@ -1,0 +1,2 @@
+ActivityIndicator: not realized
+ActivityIndicator.isRunning: not realized

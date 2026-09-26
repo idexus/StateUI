@@ -1,0 +1,34 @@
+Button.clicked: ✅
+SearchField.cursorPosition: not realized
+SearchField.inputPurpose: not realized
+SearchField.isReadOnly: not realized
+SearchField.isSpellCheckEnabled: not realized
+SearchField.isTextPredictionEnabled: not realized
+SearchField.maximumLength: not realized
+SearchField.placeholder: not realized
+SearchField.placeholderColor: not realized
+SearchField.selectionLength: not realized
+SearchField.text: not realized
+SearchField.textChanged: not realized
+TextEditor.cursorPosition: not realized
+TextEditor.inputPurpose: not realized
+TextEditor.isReadOnly: not realized
+TextEditor.isSpellCheckEnabled: not realized
+TextEditor.isTextPredictionEnabled: not realized
+TextEditor.maximumLength: not realized
+TextEditor.placeholder: not realized
+TextEditor.placeholderColor: not realized
+TextEditor.selectionLength: not realized
+TextEditor.text: not realized
+TextEditor.textChanged: not realized
+TextField.cursorPosition: not realized
+TextField.inputPurpose: not realized
+TextField.isReadOnly: not realized
+TextField.isSpellCheckEnabled: not realized
+TextField.isTextPredictionEnabled: not realized
+TextField.maximumLength: ✅
+TextField.placeholder: cannot read placeholder of TextField - UIKit's driver has no path for it yet
+TextField.placeholderColor: not realized
+TextField.selectionLength: not realized
+TextField.text: ✅
+TextField.textChanged: ✅

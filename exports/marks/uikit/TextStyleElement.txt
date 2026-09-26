@@ -1,0 +1,21 @@
+Button.characterSpacing: not realized
+Button.clicked: cannot read textColor of Button - UIKit's driver has no path for it yet
+Button.textColor: cannot read textColor of Button - UIKit's driver has no path for it yet
+DatePicker.characterSpacing: not realized
+DatePicker.textColor: not realized
+Label.characterSpacing: not realized
+Label.textColor: cannot read textColor of Label - UIKit's driver has no path for it yet
+Picker.characterSpacing: not realized
+Picker.textColor: not realized
+RadioButton.characterSpacing: not realized
+RadioButton.textColor: not realized
+SearchField.characterSpacing: not realized
+SearchField.textColor: not realized
+Span.characterSpacing: not realized
+Span.textColor: not realized
+TextEditor.characterSpacing: not realized
+TextEditor.textColor: not realized
+TextField.characterSpacing: not realized
+TextField.textColor: cannot read textColor of TextField - UIKit's driver has no path for it yet
+TimePicker.characterSpacing: not realized
+TimePicker.textColor: not realized

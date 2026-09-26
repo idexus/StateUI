@@ -1,0 +1,38 @@
+ActivityIndicator.accessibilityHeadingLevel: not realized
+Button.clicked: ✅
+Button.style: not realized
+Canvas.ignoresInput: not realized
+CheckBox.isEnabled: not realized
+CheckBox.zIndex: not realized
+ColorBox.scaleY: not realized
+DatePicker.rotationY: not realized
+Ellipse.pivotY: not realized
+Grid.background: not realized
+HStack.accessibilityHeadingLevel: not realized
+Image.style: not realized
+Label.ignoresInput: not realized
+Line.isEnabled: not realized
+Line.zIndex: not realized
+Map.scaleY: not realized
+Path.rotationY: not realized
+Picker.pivotY: not realized
+Polygon.background: not realized
+Polyline.accessibilityHeadingLevel: not realized
+PositionIndicator.style: not realized
+ProgressBar.ignoresInput: not realized
+RadioButton.isEnabled: not realized
+RadioButton.zIndex: not realized
+Rectangle.scaleY: not realized
+ScrollView.rotationY: not realized
+SearchField.pivotY: not realized
+Slider.background: not realized
+Stepper.accessibilityHeadingLevel: not realized
+Switch.style: not realized
+TextEditor.ignoresInput: not realized
+TextField.isEnabled: ✅
+TextField.zIndex: not realized
+TimePicker.scaleY: not realized
+TitleBar.rotationY: not realized
+VStack.pivotY: cannot read pivotY of VStack - UIKit's driver has no path for it yet
+WebView.background: not realized
+ZStack.accessibilityHeadingLevel: not realized

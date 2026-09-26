@@ -40,8 +40,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityHint of VStack - UIKit's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read accessibilityLabel of VStack - UIKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -49,26 +49,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read what reaches VStack - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of VStack - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotX of VStack - UIKit's driver has no path for it yet |
+| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read pivotY of VStack - UIKit's driver has no path for it yet |
+| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read rotation of VStack - UIKit's driver has no path for it yet |
+| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationX of VStack - UIKit's driver has no path for it yet |
+| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  | UIKit: cannot read rotationY of VStack - UIKit's driver has no path for it yet |
+| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scale of VStack - UIKit's driver has no path for it yet |
+| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleX of VStack - UIKit's driver has no path for it yet |
+| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read scaleY of VStack - UIKit's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationX of VStack - UIKit's driver has no path for it yet |
+| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: cannot read translationY of VStack - UIKit's driver has no path for it yet |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -128,7 +128,7 @@ What both stacks have: the space between their children.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `spacing` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `spacing` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -136,7 +136,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 

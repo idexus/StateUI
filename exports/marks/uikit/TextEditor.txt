@@ -1,0 +1,5 @@
+TextEditor: not realized
+TextEditor.growsWithText: not realized
+TextEditor.maximumLength: not realized
+TextEditor.text: not realized
+TextEditor.textChanged: not realized
