@@ -129,6 +129,18 @@ application raises (`StateUIEvents`) reaches every listener to it. Both are
 said as the library loads: `JNI_OnLoad` runs on the UI thread, before
 `StateUIAndroid.load(_:)` starts the host.
 
+## The application's own controls
+
+An element of the application's own is realized by a control the
+application registered (`StateUIControls`): an object holding an Android view
+of the application's own Java, made from Swift through the host's JNI - the
+same `Java` calls the host makes, published for this - with the activity.
+The host wraps the view as one of its own (`AndroidHostedView`) and places,
+measures and shows it as it does every view; the control's registration puts
+each member on it. The view tells its Swift half what the user did through
+the application's own native methods, by a number the control gave it, so
+nothing of the host's numbering or listeners reaches the application.
+
 ## Kept values
 
 A kept state's key is in the platform's preferences, as the words its kind

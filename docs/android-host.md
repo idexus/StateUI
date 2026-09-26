@@ -27,7 +27,8 @@ lib/StateUI.Android/
   devices.sh                 the devices attached, the emulators, and booting one
 apps/<App>/Platforms/Android/
   Swift/<App>Android.swift   the application's Android head
-  build.gradle.kts           its APK: the host's Java layer and the Swift libraries
+  Java/                      the application's own views, where it has any
+  build.gradle.kts           its APK: the host's Java layer, the application's, and the Swift libraries
   AndroidManifest.xml        the activity, and the library it loads
 ```
 
@@ -61,8 +62,10 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
 
 The head's `AndroidManifest.xml` declares the host's activity,
 `stateui.android.StateUIActivity`, with the library to load as its
-`stateui.library`. The activity loads it and starts the host; the application
-has no Java of its own.
+`stateui.library`. The activity loads it and starts the host; an application
+needs no Java of its own. One that extends the host with views of its own
+keeps their Java beside the head, in `Java/`, and may extend the activity,
+declaring its own class in the manifest instead.
 
 `STATEUI_ANDROID=1` is what makes a build an Android Views one: the
 application's manifest reads it, declares the `Platforms/Android/Swift` target,
@@ -74,6 +77,98 @@ nothing else: the library itself is built as every host builds it.
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and
 is debugged as soon as it is made.
+
+## Controls, acts, and events registered in Swift
+
+An application extends the host from its Android head. Registrations run in
+`JNI_OnLoad`, on the UI thread - the main actor's - before
+`StateUIAndroid.load`. Registering a contract or an act again replaces the
+earlier registration. Every registration is written against the
+application's own contracts, so they are `public`: the host lives in a module
+of its own and must see them. The Gallery's Android halves are in
+`apps/Gallery/Platforms/Android/`: Swift in `Swift/Host/`, Java in `Java/`.
+
+### A control
+
+A control of the application's own is an object holding the Android view it
+shows, an `AndroidControl`. The view is a class of the application's own
+Java, made from Swift through `Java` - the host's JNI, the same calls it
+makes itself - with the activity, `StateUIAndroid.context`, and held as a
+`JavaObject`. `StateUIControls.add` says which contract it realizes:
+
+```swift quote
+public static func add<Realized: ElementContract, Made: AndroidControl>(
+    _ contract: Realized.Type,
+    create: @escaping (AndroidReports<Realized>) -> Made,
+    members: (AndroidRegistration<Realized, Made>) -> Void = { _ in })
+```
+
+- **`create`** makes the control once per element, and wires what it reports:
+  `reports.raise(Contract.member, values)` for an event of the element's own,
+  and `reports.report(property, value, as: event)` for a value the USER
+  changed.
+- **`members`** registers what the control takes: `property(_:_:)` hands a
+  value over as the type its contract declares, `nil` where it is no longer
+  described, and `raises(_:)` records an event the control raises.
+
+```swift quote
+StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+    let light = TrafficLightView()
+    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+    return light
+}) { light in
+    light.property(TrafficLightContract.signal) { control, signal in
+        control.signal = signal ?? .stop
+    }
+    light.raises(TrafficLightContract.lampTapped)
+}
+```
+
+The host places, sizes and shows the view as it does its own - margins,
+alignment, opacity, gestures, frame reports - measuring it by the view's own
+`onMeasure`. A registered control is a leaf. The view tells its Swift half
+what the user did through a native method of the application's own, found by
+its JNI name (`@_cdecl("Java_..._lampTapped")`), handed the number the
+control made it with. A control that draws with the GPU is a view like any
+other: the Gallery's `Cube3D` is a `TextureView` whose surface Swift draws
+into with OpenGL ES 3.0 over EGL, following the display's frames only while
+it spins and stands in a window - the same declaration Metal draws on AppKit.
+
+### An act
+
+`StateUIActs.add` registers a function the application calls by its act, and
+`StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
+that element's control:
+
+```swift quote
+StateUIActs.add(GalleryContract.setClipboard) { text in
+    Java.frame {
+        Java.callStatic(device, copy, .object(StateUIAndroid.context), .object(Java.string(text)))
+    }
+}
+
+StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+    bar.flash()
+}
+```
+
+A performer runs on the UI thread, and may await, the call answered once it
+returns. Its arguments and answer are the act's own types; a call carrying
+anything else fails with the reason. A thrown error fails the act, and so does
+an aim at nothing; an act nobody registered is refused by name.
+
+### An event without a control
+
+`StateUIEvents.raise` pushes an event of the application's that belongs to no
+element, from any thread; `StateUIEvents.raises` declares it before the host
+starts, so a handler listening for one no source raises is told so. Its
+source is often Android's own - the Gallery's activity registers a receiver
+for the battery while it lives:
+
+```swift quote
+StateUIEvents.raises(GalleryContract.batteryChanged)
+StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```
 
 ## Running
 

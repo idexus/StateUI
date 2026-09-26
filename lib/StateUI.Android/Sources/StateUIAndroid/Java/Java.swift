@@ -7,9 +7,10 @@
 
 import CStateUIAndroid
 
-/// The main thread's JNI environment and the calls the host makes through it.
+/// The main thread's JNI environment and the calls the host makes through it - which an application's own control
+/// calls its Java half with.
 @MainActor
-enum Java {
+public enum Java {
     /// The process's virtual machine, as the library's load received it.
     nonisolated(unsafe) static var machine: UnsafeMutablePointer<JavaVM?>?
 
@@ -18,14 +19,14 @@ enum Java {
     static var crossings = 0
 
     /// The main thread's environment, taken when the activity starts the host.
-    static var env: UnsafeMutablePointer<JNIEnv?>!
+    public internal(set) static var env: UnsafeMutablePointer<JNIEnv?>!
 
     /// The function table every call goes through.
-    static var jni: JNINativeInterface { env.pointee!.pointee }
+    public static var jni: JNINativeInterface { env.pointee!.pointee }
 
     /// Runs `body` inside a frame of local references, let go when it returns.
     /// Design: docs/design/platforms/android/jni.md#local-references
-    static func frame<Result>(_ body: () -> Result) -> Result {
+    public static func frame<Result>(_ body: () -> Result) -> Result {
         _ = jni.PushLocalFrame(env, 64)
         defer { _ = jni.PopLocalFrame(env, nil) }
         return body()
@@ -47,7 +48,7 @@ enum Java {
 
     /// A class, held for the life of the process.
     /// Design: docs/design/platforms/android/jni.md#finding-a-class
-    static func findClass(_ name: String) -> jclass {
+    public static func findClass(_ name: String) -> jclass {
         guard let local = jni.FindClass(env, name) ?? loadClass(name) else {
             check("FindClass \(name)")
             fatalError("StateUI Android: the class \(name) is missing from the application")
@@ -76,7 +77,7 @@ enum Java {
     }
 
     /// An instance method of `owner`.
-    static func method(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID {
+    public static func method(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID {
         guard let method = jni.GetMethodID(env, owner, name, signature) else {
             check("GetMethodID \(name)")
             fatalError("StateUI Android: \(name)\(signature) is missing")
@@ -86,7 +87,7 @@ enum Java {
     }
 
     /// A static method of `owner`.
-    static func staticMethod(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID {
+    public static func staticMethod(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID {
         guard let method = jni.GetStaticMethodID(env, owner, name, signature) else {
             check("GetStaticMethodID \(name)")
             fatalError("StateUI Android: \(name)\(signature) is missing")
@@ -122,7 +123,7 @@ enum Java {
     // MARK: - Calls
 
     /// A new object, held globally.
-    static func new(_ owner: jclass, _ constructor: jmethodID, _ arguments: jvalue...) -> JavaObject {
+    public static func new(_ owner: jclass, _ constructor: jmethodID, _ arguments: jvalue...) -> JavaObject {
         crossings += 1
         let local = arguments.withUnsafeBufferPointer { jni.NewObjectA(env, owner, constructor, $0.baseAddress) }
         check("a constructor")
@@ -130,14 +131,14 @@ enum Java {
     }
 
     /// Calls a method returning nothing.
-    static func call(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) {
+    public static func call(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) {
         crossings += 1
         arguments.withUnsafeBufferPointer { _ = jni.CallVoidMethodA(env, object, method, $0.baseAddress) }
         check("a call")
     }
 
     /// Calls a method returning an int.
-    static func callInt(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+    public static func callInt(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallIntMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -145,7 +146,7 @@ enum Java {
     }
 
     /// Calls a method returning a boolean.
-    static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+    public static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallBooleanMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -153,14 +154,14 @@ enum Java {
     }
 
     /// Calls a static method returning nothing.
-    static func callStatic(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) {
+    public static func callStatic(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) {
         crossings += 1
         arguments.withUnsafeBufferPointer { jni.CallStaticVoidMethodA(env, owner, method, $0.baseAddress) }
         check("a static call")
     }
 
     /// Calls a static method returning a long.
-    static func callStaticLong(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int64 {
+    public static func callStaticLong(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int64 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallStaticLongMethodA(env, owner, method, $0.baseAddress) }
         check("a static call")
@@ -168,7 +169,7 @@ enum Java {
     }
 
     /// Calls a static method returning a boolean.
-    static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+    public static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticBooleanMethodA(env, owner, method, $0.baseAddress)
@@ -178,7 +179,7 @@ enum Java {
     }
 
     /// Calls a static method returning an int.
-    static func callStaticInt(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+    public static func callStaticInt(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticIntMethodA(env, owner, method, $0.baseAddress)
@@ -188,7 +189,7 @@ enum Java {
     }
 
     /// Calls a static method returning a float.
-    static func callStaticFloat(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+    public static func callStaticFloat(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticFloatMethodA(env, owner, method, $0.baseAddress)
@@ -198,7 +199,7 @@ enum Java {
     }
 
     /// Calls a method returning a float.
-    static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+    public static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallFloatMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -206,7 +207,7 @@ enum Java {
     }
 
     /// Calls a method returning an object, as a local reference.
-    static func callObject(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+    public static func callObject(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallObjectMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -214,7 +215,7 @@ enum Java {
     }
 
     /// Calls a static method returning an object, as a local reference.
-    static func callStaticObject(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+    public static func callStaticObject(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticObjectMethodA(env, owner, method, $0.baseAddress)
@@ -247,13 +248,13 @@ enum Java {
 
     /// A Java string of `text`'s UTF-16, as a local reference.
     /// Design: docs/design/platforms/android/jni.md#strings
-    static func string(_ text: String) -> jstring? {
+    public static func string(_ text: String) -> jstring? {
         var units = Array(text.utf16)
         return jni.NewString(env, &units, jsize(units.count))
     }
 
     /// The text of a Java string.
-    static func text(_ string: jstring?) -> String {
+    public static func text(_ string: jstring?) -> String {
         guard let string else { return "" }
 
         let count = Int(jni.GetStringLength(env, string))
@@ -273,7 +274,7 @@ enum Java {
     }
 
     /// A Java float array of `values`, as a local reference.
-    static func floats(_ values: [Float]) -> jfloatArray? {
+    public static func floats(_ values: [Float]) -> jfloatArray? {
         let array = jni.NewFloatArray(env, jsize(values.count))
         values.withUnsafeBufferPointer { jni.SetFloatArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
         return array
@@ -288,7 +289,7 @@ enum Java {
     }
 
     /// A Java int array of `values`, as a local reference.
-    static func ints(_ values: [Int32]) -> jintArray? {
+    public static func ints(_ values: [Int32]) -> jintArray? {
         let array = jni.NewIntArray(env, jsize(values.count))
         values.withUnsafeBufferPointer { jni.SetIntArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
         return array
@@ -303,7 +304,7 @@ enum Java {
     }
 
     /// The strings of a Java string array.
-    static func texts(_ array: jobjectArray?) -> [String] {
+    public static func texts(_ array: jobjectArray?) -> [String] {
         guard let array else { return [] }
 
         return (0..<jni.GetArrayLength(env, array)).map { index in
@@ -314,7 +315,7 @@ enum Java {
     }
 
     /// Lets a local reference go before its frame ends.
-    static func release(local: jobject?) {
+    public static func release(local: jobject?) {
         if let local { jni.DeleteLocalRef(env, local) }
     }
 }
@@ -322,12 +323,12 @@ enum Java {
 /// A Java object Swift holds: a global reference, deleted when this is released.
 /// Design: docs/design/platforms/android/jni.md#global-references
 @MainActor
-final class JavaObject {
+public final class JavaObject {
     /// The global reference.
-    let reference: jobject
+    public let reference: jobject
 
     /// Holds `local` globally, and lets the local reference go.
-    init(_ local: jobject) {
+    public init(_ local: jobject) {
         reference = Java.jni.NewGlobalRef(Java.env, local)!
         Java.jni.DeleteLocalRef(Java.env, local)
     }
@@ -339,17 +340,20 @@ final class JavaObject {
 
 extension jvalue {
     /// An int argument.
-    static func int(_ value: Int32) -> jvalue { jvalue(i: value) }
+    public static func int(_ value: Int32) -> jvalue { jvalue(i: value) }
 
     /// A long argument.
-    static func long(_ value: Int64) -> jvalue { jvalue(j: value) }
+    public static func long(_ value: Int64) -> jvalue { jvalue(j: value) }
 
     /// A float argument.
-    static func float(_ value: Float) -> jvalue { jvalue(f: value) }
+    public static func float(_ value: Float) -> jvalue { jvalue(f: value) }
+
+    /// A double argument.
+    public static func double(_ value: Double) -> jvalue { jvalue(d: value) }
 
     /// A boolean argument.
-    static func bool(_ value: Bool) -> jvalue { jvalue(z: value ? 1 : 0) }
+    public static func bool(_ value: Bool) -> jvalue { jvalue(z: value ? 1 : 0) }
 
     /// An object argument.
-    static func object(_ value: jobject?) -> jvalue { jvalue(l: value) }
+    public static func object(_ value: jobject?) -> jvalue { jvalue(l: value) }
 }

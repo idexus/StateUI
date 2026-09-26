@@ -46,8 +46,9 @@ nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidMenusTests.allTests),
     testCase(AndroidLayoutMotionTests.allTests),
     testCase(AndroidRegistrationTests.allTests),
-    testCase(AndroidInteropTests.allTests),
     testCase(AndroidConformanceTests.allTests),
+    // Last: the application's registrations it makes stay in the host's registry, which nothing after it reads.
+    testCase(AndroidInteropTests.allTests),
 ]
 
 /// Registers the host's natives and the runner's own as the test APK loads this library.

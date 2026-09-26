@@ -24,6 +24,10 @@ import CStateUIAndroid
 /// the host. A control this host does not present yet shows its name in red
 /// where it belongs.
 public enum StateUIAndroid {
+    /// The activity the host runs in, which a view of the application's own control is made with; read while the
+    /// host runs.
+    @MainActor public static var context: jobject { AndroidRenderer.context }
+
     /// Registers the host's native methods with the Java layer and answers the JNI version the host needs.
     ///
     /// - Parameter machine: the `JavaVM` pointer `JNI_OnLoad` received.
