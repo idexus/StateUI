@@ -15,8 +15,8 @@ import android.view.View;
 
 /**
  * A shape: a rectangle or an ellipse filling the view, or drawn geometry - a line, a path, a polygon, a
- * polyline - placed in it by its aspect and then moved by its render transform; filled with a brush and
- * outlined. It asks for no room of its own.
+ * polyline - moved by the six numbers the Swift host places it with; filled with a brush and outlined. It asks
+ * for no room of its own.
  */
 final class StateUIShapeView extends View {
     /** The shape's kinds, as the Swift host numbers them. */
@@ -36,15 +36,14 @@ final class StateUIShapeView extends View {
     private final Paint stroke = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path authored = new Path();
     private final Path shown = new Path();
-    private final Matrix placing = new Matrix();
+    /** Where the shape is moved to, as the Swift host places it; none leaves it where it is drawn. */
+    private Matrix placing;
     private final RectF box = new RectF();
     private final Rect bounds = new Rect();
 
     private int kind = RECTANGLE;
     private final float[] radii = new float[8];
     private float strokeWidth;
-    private int aspect;
-    private Matrix transform;
 
     StateUIShapeView(Context context) {
         super(context);
@@ -105,17 +104,24 @@ final class StateUIShapeView extends View {
         invalidate();
     }
 
-    /** How drawn geometry is placed - fit, fill, stretch or centre - and the six numbers that then move it. */
-    void setPlacement(int placement, float[] affine) {
-        aspect = placement;
+    /**
+     * The six numbers - a, b, c, d, tx, ty in pixels - that move what the shape draws, a point (x, y) going to
+     * (a x + c y + tx, b x + d y + ty); none leaves it where it is drawn.
+     */
+    void setPlacing(float[] affine) {
         if (affine.length >= 6) {
-            transform = new Matrix();
-            transform.setValues(new float[] {
-                    affine[0], affine[2], affine[4], affine[1], affine[3], affine[5], 0, 0, 1});
+            placing = new Matrix();
+            placing.setValues(new float[] {affine[0], affine[2], affine[4], affine[1], affine[3], affine[5], 0, 0, 1});
         } else {
-            transform = null;
+            placing = null;
         }
         invalidate();
+    }
+
+    /** Where the drawn geometry stands before it is moved, in pixels: left, top, width, height. */
+    float[] geometryBounds() {
+        authored.computeBounds(box, true);
+        return new float[] {box.left, box.top, box.width(), box.height()};
     }
 
     @Override
@@ -138,42 +144,11 @@ final class StateUIShapeView extends View {
                 shown.addOval(box, Path.Direction.CW);
                 break;
             default:
-                placed(shown);
+                shown.set(authored);
         }
+        if (placing != null) shown.transform(placing);
 
         if (brush.paint(fill, bounds)) canvas.drawPath(shown, fill);
         if (strokeWidth > 0) canvas.drawPath(shown, stroke);
-    }
-
-    /** The authored geometry, placed in the view by the aspect, centred, then moved by the render transform. */
-    private void placed(Path into) {
-        authored.computeBounds(box, true);
-        float width = box.width();
-        float height = box.height();
-        float across = width > 0 ? getWidth() / width : Float.MAX_VALUE;
-        float down = height > 0 ? getHeight() / height : Float.MAX_VALUE;
-        float scaleX;
-        float scaleY;
-        switch (aspect) {
-            case 2: scaleX = width > 0 ? across : 1; scaleY = height > 0 ? down : 1; break;
-            case 3: scaleX = 1; scaleY = 1; break;
-            case 1:
-                scaleX = Math.max(width > 0 ? across : 0, height > 0 ? down : 0);
-                scaleY = scaleX;
-                break;
-            default:
-                scaleX = Math.min(across, down);
-                if (scaleX == Float.MAX_VALUE) scaleX = 1;
-                scaleY = scaleX;
-        }
-        if (width <= 0 && height <= 0) {
-            scaleX = 1;
-            scaleY = 1;
-        }
-        placing.setScale(scaleX, scaleY);
-        placing.postTranslate(
-                getWidth() / 2f - (box.left + width / 2) * scaleX, getHeight() / 2f - (box.top + height / 2) * scaleY);
-        if (transform != null) placing.postConcat(transform);
-        authored.transform(placing, into);
     }
 }

@@ -6,7 +6,8 @@
 import CStateUIAndroid
 
 /// A Rectangle, an Ellipse, a Line, a Path, a Polygon or a Polyline: the host's `StateUIShapeView`, told its
-/// geometry, brush, outline and placement one call each.
+/// geometry, brush and outline one call each, and moved as the host layer places it (`ShapeArithmetic`) - a
+/// rectangle and an ellipse by the shape's transform, drawn geometry by its aspect, then the transform.
 /// Design: docs/design/platforms/android/drawing.md#shapes
 @MainActor
 final class AndroidShapeView: AndroidView {
@@ -24,6 +25,17 @@ final class AndroidShapeView: AndroidView {
     init() {
         super.init { _ in Java.new(JavaAPI.shapeView, JavaAPI.newShapeView, .object(AndroidRenderer.context)) }
     }
+
+    /// Whether the shape draws geometry of its own, which its aspect places.
+    private var drawsGeometry = false
+    private var aspect = Aspect.fit
+    private var transform: [Double]?
+
+    /// Where the drawn geometry stands before it is placed, in points, as Android measures it.
+    private var geometryBounds = Rect(x: 0, y: 0, width: 0, height: 0)
+
+    /// The six numbers the shape was last moved by, in pixels; none before it was.
+    private var placing: [Float]?
 
     /// Everything the shape draws, from what the tree says.
     func draw(
@@ -49,11 +61,46 @@ final class AndroidShapeView: AndroidView {
                 .object(Java.floats(dashes.map { Float(max(0, $0) * width * density) })),
                 .float(Float(dashOffset * width * density)), .int(cap), .int(join), .float(Float(max(0, miterLimit))))
 
-            let affine = transform.map { values in
-                [values[0], values[1], values[2], values[3], values[4] * density, values[5] * density].map(Float.init)
-            }
-            Java.call(reference, JavaAPI.setShapePlacement, .int(aspect), .object(Java.floats(affine ?? [])))
         }
+        drawsGeometry = kind == 2
+        self.aspect = Aspect(rawValue: aspect) ?? .fit
+        self.transform = transform
+        if drawsGeometry { geometryBounds = readGeometryBounds() }
+        place()
+    }
+
+    override func layout(_ place: Rect) {
+        super.layout(place)
+        self.place()
+    }
+
+    /// Moves what the shape draws for the room it stands in: drawn geometry placed by its aspect, then moved by
+    /// the transform; a rectangle or an ellipse moved by the transform alone.
+    /// Design: docs/design/host/layout.md#a-shapes-own-geometry
+    private func place() {
+        guard let size = placedSize else { return }
+        let room = LayoutSize(width: Double(size.width) / density, height: Double(size.height) / density)
+        let numbers = drawsGeometry
+            ? ShapeArithmetic.placement(of: geometryBounds, in: room, aspect: aspect, transform: transform)
+            : transform
+        let affine = numbers.map { values in
+            [values[0], values[1], values[2], values[3], values[4] * density, values[5] * density].map(Float.init)
+        } ?? []
+        guard affine != placing else { return }
+        placing = affine
+        Java.frame { Java.call(reference, JavaAPI.setShapePlacing, .object(Java.floats(affine))) }
+    }
+
+    /// Where Android measures the drawn geometry, in points.
+    private func readGeometryBounds() -> Rect {
+        var read: [Float] = [0, 0, 0, 0]
+        Java.frame {
+            guard let array = Java.callObject(reference, JavaAPI.shapeGeometryBounds) else { return }
+            read.withUnsafeMutableBufferPointer { Java.jni.GetFloatArrayRegion(Java.env, array, 0, 4, $0.baseAddress) }
+        }
+        return Rect(
+            x: Double(read[0]) / density, y: Double(read[1]) / density, width: Double(read[2]) / density,
+            height: Double(read[3]) / density)
     }
 
     /// The Java side's kind, corners and commands in pixels, and fill rule.

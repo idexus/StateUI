@@ -78,7 +78,18 @@ final class AndroidImageView: AndroidView {
         guard sample == 0 || needed < sample else { return }
 
         let bitmap = AndroidPictures.take(named: file, sample: needed)
-        Java.call(reference, JavaAPI.setImageBitmap, .object(bitmap?.reference))
+        // Drawn at the host's density, as the picture was read and measured, not at the system's.
+        Java.frame {
+            let drawable = bitmap.flatMap { bitmap in
+                Java.callObject(AndroidRenderer.context, JavaAPI.getResources).map { resources in
+                    Java.new(JavaAPI.bitmapDrawable, JavaAPI.newBitmapDrawable, .object(resources), .object(bitmap.reference))
+                }
+            }
+            if let drawable {
+                Java.call(drawable.reference, JavaAPI.setTargetDensity, .int(AndroidPictures.displayDensity))
+            }
+            Java.call(reference, JavaAPI.setImageDrawable, .object(drawable?.reference))
+        }
         letGoOfPicture()
         sample = needed
     }

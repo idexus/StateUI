@@ -53,7 +53,8 @@ enum AndroidPictures {
     }
 
     /// The display's pixels per inch.
-    private static var displayDensity: Int32 { Int32((AndroidRenderer.density * 160).rounded()) }
+    /// The host's density, in pixels per inch: what every picture is read, measured and drawn at.
+    static var displayDensity: Int32 { Int32((AndroidRenderer.density * 160).rounded()) }
 
     /// `name`'s size in pixels at the display's density; nil where the application has no such picture.
     ///

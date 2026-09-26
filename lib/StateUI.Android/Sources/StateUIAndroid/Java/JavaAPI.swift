@@ -199,7 +199,8 @@ enum JavaAPI {
     static let setShapeGeometry = Java.method(shapeView, "setGeometry", "(I[F[FZ)V")
     static let setShapeFill = Java.method(shapeView, "setFill", "(I[I[F[F)V")
     static let setShapeStroke = Java.method(shapeView, "setStroke", "(IF[FFIIF)V")
-    static let setShapePlacement = Java.method(shapeView, "setPlacement", "(I[F)V")
+    static let setShapePlacing = Java.method(shapeView, "setPlacing", "([F)V")
+    static let shapeGeometryBounds = Java.method(shapeView, "geometryBounds", "()[F")
 
     static let picker = Java.findClass("stateui/android/StateUIPicker")
     static let newPicker = Java.method(picker, "<init>", "(Landroid/content/Context;J)V")
@@ -255,6 +256,11 @@ enum JavaAPI {
     static let imageView = Java.findClass("android/widget/ImageView")
     static let newImageView = Java.method(imageView, "<init>", "(Landroid/content/Context;)V")
     static let setImageBitmap = Java.method(imageView, "setImageBitmap", "(Landroid/graphics/Bitmap;)V")
+    static let setImageDrawable = Java.method(imageView, "setImageDrawable", "(Landroid/graphics/drawable/Drawable;)V")
+    static let bitmapDrawable = Java.findClass("android/graphics/drawable/BitmapDrawable")
+    static let newBitmapDrawable = Java.method(
+        bitmapDrawable, "<init>", "(Landroid/content/res/Resources;Landroid/graphics/Bitmap;)V")
+    static let setTargetDensity = Java.method(bitmapDrawable, "setTargetDensity", "(I)V")
     static let setScaleType = Java.method(imageView, "setScaleType", "(Landroid/widget/ImageView$ScaleType;)V")
     static let setCropToPadding = Java.method(imageView, "setCropToPadding", "(Z)V")
     static let scaleType = Java.findClass("android/widget/ImageView$ScaleType")

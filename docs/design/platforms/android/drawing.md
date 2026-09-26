@@ -66,7 +66,9 @@ An image is measured at its picture's own size in points, read from the
 file's header alone: the size is at the display's density, and Android's own
 measure would scale it a second time. The four aspects are Android's four
 scale types, and an image cuts what it draws to its bounds, since a StateUI
-layout does not.
+layout does not. A picture is read, measured and drawn at the host's own
+density: its drawable targets that density, where Android's would take the
+system's.
 
 A picture's pixels are read when its view is placed, at the fewest the view
 needs: one pixel in two, four, up to sixteen across and down, while that
@@ -89,12 +91,14 @@ gives it and asks for none of its own.
 
 A shape is one view of the host's, drawn on its own canvas: a rectangle or an
 ellipse fills the view, inset by half its outline so the outline stays
-inside; a line, a path, a polygon or a polyline is its own geometry, placed
-in the view by the shape's aspect - fitted, covering, stretched or at its own
-size, always centred - and then moved by its render transform, as a view is
-moved after its layout. A path's arcs come as the shared parser's cubic
-curves. The geometry crosses as one array of commands in pixels, and the
-brush, the outline and the placement one call each. The fill is the brush
+inside, and is moved by its render transform; a line, a path, a polygon or a
+polyline is its own geometry, placed in the view by the host layer's rule
+([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)) from
+the bounds Android measures it at, then moved by the transform. Swift works
+the six numbers out each time the room changes, and the view draws by them.
+A path's arcs come as the shared parser's cubic curves. The geometry crosses
+as one array of commands in pixels, and the brush, the outline and the six
+numbers one call each. The fill is the brush
 every shape of the host's paints with; the outline is a colour - a gradient's
 first - and its dashes count in the outline's width, as StateUI's do. A
 shape asks for no room of its own.
