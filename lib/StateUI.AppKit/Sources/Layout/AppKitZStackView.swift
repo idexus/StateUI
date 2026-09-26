@@ -90,9 +90,9 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
                 y: placement.bounds.y,
                 width: max(0, placement.bounds.width),
                 height: max(0, placement.bounds.height))
-            (item.view as? AppKitGridView)?.setShadeOpacity(placement.shade)
+            (item.view as? AppKitGridView)?.setShadeOpacity(placement.drawnShade)
             item.drawing?.placement = placement.drawing
-            item.drawing?.placedOpacity = min(max(placement.opacity, 0), 1)
+            item.drawing?.placedOpacity = placement.drawnOpacity
         }
         for item in items[count...] { drawUnplaced(item) }
     }

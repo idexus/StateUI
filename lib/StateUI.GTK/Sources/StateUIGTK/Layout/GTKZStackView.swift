@@ -61,7 +61,7 @@ final class GTKZStackView: GTKTravellingLayout {
             let view = items[index].view
             view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
             view.layout(placement.place)
-            (view as? GTKGridView)?.setShadeOpacity(placement.shade)
+            (view as? GTKGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }
     }

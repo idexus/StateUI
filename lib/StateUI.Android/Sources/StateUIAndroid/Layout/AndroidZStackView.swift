@@ -74,8 +74,8 @@ final class AndroidZStackView: AndroidTravellingLayout {
             view.layout(Rect(
                 x: placement.bounds.x, y: placement.bounds.y,
                 width: max(0, placement.bounds.width), height: max(0, placement.bounds.height)))
-            view.setPlacedDrawing(placement.drawing, opacity: min(max(placement.opacity, 0), 1))
-            (view as? AndroidGridView)?.setShadeOpacity(placement.shade)
+            view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
+            (view as? AndroidGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }
     }
