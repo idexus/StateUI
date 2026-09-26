@@ -16,6 +16,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/tools.sh"
 app_dir="${1:?the directory of an application}"
 configuration="debug"
 simulator=""
@@ -30,24 +31,7 @@ for argument in "${@:2}"; do
   esac
 done
 
-# A name stands on several runtimes: the newest one's device is taken.
-device="$(xcrun simctl list devices available -j | python3 -c '
-import json, re, sys
-wanted = sys.argv[1]
-version = lambda runtime: [int(part) for part in re.findall(r"\d+", runtime.split(".")[-1])]
-devices = sorted(
-    ((version(runtime), d) for runtime, listed in json.load(sys.stdin)["devices"].items()
-     if "iOS" in runtime for d in listed),
-    key=lambda pair: pair[0])
-devices = [d for _, d in devices]
-pick = [d for d in devices if wanted and wanted in (d["name"], d["udid"])] \
-    or [d for d in devices if not wanted and d["state"] == "Booted"] \
-    or [d for d in devices if not wanted and d["name"].startswith("iPhone")]
-print(pick[-1]["udid"] if pick else "")
-' "$simulator")"
-[[ -n "$device" ]] || { echo "ERROR: no simulator ${simulator:-at all}"; exit 1; }
-xcrun simctl boot "$device" 2>/dev/null || true
-open -a Simulator --args -CurrentDeviceUDID "$device" 2>/dev/null || true
+device="$(uikit_simulator "$simulator")"
 
 bundle="$("$script_dir/build-app.sh" "$app_dir" "$configuration")"
 identifier="$(plutil -extract CFBundleIdentifier raw "$bundle/Info.plist")"
