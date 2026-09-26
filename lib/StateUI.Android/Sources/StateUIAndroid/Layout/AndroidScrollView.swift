@@ -36,9 +36,9 @@ final class AndroidScrollView: AndroidLayoutView {
     /// Android's scrollers, the outermost first; the last holds the document.
     private(set) var scrollers: [JavaObject] = []
 
-    /// An offset the tree wrote before the scrollers were laid out, and whether they have been.
-    private var pendingOffset: Point?
-    private var laidOut = false
+    /// The offset the tree writes, kept for the scrollers' first layout where it comes before it
+    /// (`WrittenScrollOffset`).
+    private var writtenOffset = WrittenScrollOffset()
 
     /// The native scrollers scroll in the element's direction, not the activity's: one right to left starts at its
     /// end, one left to right at its first column.
@@ -102,12 +102,10 @@ final class AndroidScrollView: AndroidLayoutView {
                 .bool(verticalBar != .always && horizontalBar != .always))
         }
 
-        guard orientation != .neither else { return move(to: Point(x: 0, y: 0)) }
-        guard let offset, offset.x.isFinite, offset.y.isFinite else { return }
-
-        // The user's own scrolling comes back as the state it wrote: a scroller already there is left alone.
-        if abs(offset.x - self.offset.x) < 0.5, abs(offset.y - self.offset.y) < 0.5 { return }
-        if laidOut { move(to: offset) } else { pendingOffset = offset }
+        // Design: docs/design/host/layout.md#an-offset-the-tree-writes
+        if let target = writtenOffset.written(offset, standing: self.offset, orientation: orientation) {
+            move(to: target)
+        }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -123,11 +121,8 @@ final class AndroidScrollView: AndroidLayoutView {
             .int(ViewConstants.spec(ViewConstants.exactly, width)),
             .int(ViewConstants.spec(ViewConstants.exactly, height)))
         Java.call(outer.reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
-        laidOut = true
-
-        if let pendingOffset {
-            self.pendingOffset = nil
-            move(to: pendingOffset)
+        if let target = writtenOffset.laidOutNow() {
+            move(to: target)
         }
     }
 
@@ -223,7 +218,7 @@ final class AndroidScrollView: AndroidLayoutView {
         Java.call(reference, JavaAPI.addView, .object(scrollers[0].reference), .int(-1), .int(-1))
         directScrollers()
         offset = Point(x: 0, y: 0)
-        laidOut = false
+        writtenOffset = WrittenScrollOffset()
     }
 }
 

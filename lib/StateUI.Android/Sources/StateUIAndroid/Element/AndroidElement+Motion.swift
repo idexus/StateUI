@@ -12,10 +12,10 @@ extension AndroidElement {
     func configureLayoutMotion() {
         guard let layout = view as? AndroidTravellingLayout else { return }
 
-        layout.layoutMotion = host?.runtime.layoutMotion
-        layout.motion = element.motion
-        layout.framesRead = element.framesRead
-        layout.patchArrived()
+        layout.places.layoutMotion = host?.runtime.layoutMotion
+        layout.places.motion = element.motion
+        layout.places.framesRead = element.framesRead
+        layout.places.patchArrived()
     }
 
     /// Whether the element fades in as it joins a standing layout, by the host layer's rule.
@@ -33,7 +33,7 @@ extension AndroidElement {
     func crossVisibility() {
         guard let view else { return }
         element.crossVisibility(view) { [weak self] in
-            (self?.layoutParent?.view as? AndroidTravellingLayout)?.patchArrived()
+            (self?.layoutParent?.view as? AndroidTravellingLayout)?.places.patchArrived()
             self?.layoutParent?.arrangeChildren()
         }
     }
