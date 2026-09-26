@@ -103,7 +103,7 @@ host whose passing test proved one of its members.
 | `MenuItem` | structure | ✅ |  |  |  | ✅ |  |
 | `MenuSeparator` | structure | ✅ |  |  |  | ✅ |  |
 | `ModalStack` | structure | ✅ |  |  | ✅ | ✅ |  |
-| `NavigationStack` | adaptive |  |  |  |  | ✅ |  |
+| `NavigationStack` | adaptive | ✅ |  |  |  | ✅ |  |
 | `Overlay` | structure | ✅ |  |  |  | ✅ |  |
 | `Page` | adaptive | ✅ |  |  | ✅ | ✅ |  |
 | `Path` | stateUI |  |  | ✅ |  | ✅ |  |
@@ -315,8 +315,8 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | `currentTimeZone` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
 | `handlerFailed` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `persistSceneValue` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
-| `persistValue` | [Application](controls/Application.md) |  |  |  |  | ✅ |  |
+| `persistSceneValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
+| `persistValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
 | `prompt` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
 | `utcOffset` | [Application](controls/Application.md) |  |  |  | ✅ | ✅ |  |
 | `moveToRegion` | [Map](controls/Map.md) |  |  |  |  |  |  |
@@ -461,7 +461,7 @@ Every control, and every part an application, its windows and its pages are made
 
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 | 1 ✅ |  |  | 7 ✅ | 12 ✅ |  |
+| [Application](controls/Application.md) | 12 | 3 ✅ |  |  | 7 ✅ | 12 ✅ |  |
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -472,9 +472,9 @@ Every control, and every part an application, its windows and its pages are made
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 1 ✅ |  |  |  | 3 ✅ |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](controls/Page.md) | 12 | 6 ✅ |  |  | 6 ✅ | 9 ✅ |  |
+| [Page](controls/Page.md) | 12 | 7 ✅ |  |  | 6 ✅ | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | 6 | 5 ✅ |  |  | 4 ✅ | 6 ✅ |  |
+| [Scene](controls/Scene.md) | 6 | 6 ✅ |  |  | 4 ✅ | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 | 1 ✅ |  |  | 1 ✅ | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 | 2 ✅ |  |  |  | 4 ✅ |  |
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ |  |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 | 8 ✅ |  |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 33 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
+| [Window](controls/Window.md) | 23 | 22 ✅ |  |  | 6 ✅ | 23 ✅ |  |
+| **Met** - ✅ and – | 104 | 51 of 104 met |  |  | 24 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -541,7 +541,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ |  | ✅ | ✅ | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ |  | ✅ | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` |  |  |  |  | ✅ |  |
-| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` |  |  |  |  | ✅ |  |
+| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ |  |  |  | ✅ |  |
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` |  |  |  |  | ✅ |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) |  |  |  |  |  |  |
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) |  |  |  |  |  |  |

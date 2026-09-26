@@ -7,12 +7,13 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 /// Scenes and windows: kept in step with the tree, restored, activated and closed.
+/// Design: docs/design/platforms/appkit/runtime.md#the-window
 extension AppKitRenderer {
     /// Composes every window's chrome again from what it shows now - after a
     /// change the user made on a native control, which the application may
     /// not render for.
     func refreshWindowChrome() {
-        for controller in orderedWindowControllers {
+        for controller in windowControllers {
             controller.refreshChrome()
         }
     }
@@ -28,50 +29,16 @@ extension AppKitRenderer {
             return
         }
 
-        if let first = orderedWindowControllers.first?.window {
+        if let first = windowControllers.first?.window {
             first.makeKeyAndOrderFront(nil)
         } else {
             openPlatformScene()
         }
     }
 
-    func applicationBecameActive() {
-        runtime.core.setApplicationPhase(.active)
-        if let activeWindow {
-            activeWindow.scene?.report(.activated)
-            arrangeOwnedWindows(for: activeWindow.scene)
-            installPageMenus(activeWindow.pageMenuItems)
-        }
-        runtime.pump.turn()
-    }
-
-    func applicationResignedActive() {
-        guard !applicationIsHidden else { return }
-        runtime.core.setApplicationPhase(.inactive)
-        activeWindow?.scene?.report(.deactivated)
-        runtime.pump.turn()
-    }
-
-    func applicationWasHidden() {
-        applicationIsHidden = true
-        runtime.core.setApplicationPhase(.background)
-
-        for scene in orderedScenes {
-            scene.applicationWasHidden()
-        }
-
-        runtime.pump.turn()
-    }
-
-    func applicationWasUnhidden() {
-        applicationIsHidden = false
-        runtime.core.setApplicationPhase(.inactive)
-
-        for scene in orderedScenes {
-            scene.applicationWasUnhidden()
-        }
-
-        runtime.pump.turn()
+    /// The system hid the whole application, or showed it again: the host layer settles what that means.
+    func applicationHidden(_ hidden: Bool) {
+        runtime.applicationHidden(hidden)
     }
 
     func connectPlatformScene(restoring values: [String: HostValue]) {
@@ -79,46 +46,54 @@ extension AppKitRenderer {
         connectedInitialScene = true
     }
 
+    /// Shows every window element in an AppKit window of its own, in the tree's order - a window the tree no longer
+    /// holds closes, the last first - each scene keeping what its windows are restored by.
     func synchronizeWindows() {
         guard let root = runtime.tree.root, root.type == .application else { return }
         windowSynchronizationCountForTesting += 1
 
-        let sceneNodes = root.children.filter { $0.type == .scene }
-        let nextIDs = sceneNodes.map(\.id)
-        let nextSet = Set(nextIDs)
-
-        for id in sceneOrder where !nextSet.contains(id) {
-            scenes.removeValue(forKey: id)?.closeFromTree()
+        let scenes = root.children.filter { $0.type == .scene }
+        sessions = sessions.filter { id, _ in scenes.contains { $0.id == id } }
+        for scene in scenes where sessions[scene.id] == nil {
+            sessions[scene.id] = AppKitSceneSession(restoredMain: takeRestoredMainWindow())
         }
 
-        var cascade = 0
-        for sceneNode in sceneNodes {
-            let scene = scenes[sceneNode.id] ?? AppKitSceneController(
-                id: sceneNode.id,
-                host: self,
-                presentsWindows: presentsWindows,
-                restoredMain: takeRestoredMainWindow())
-            scenes[sceneNode.id] = scene
-            scene.synchronize(sceneNode.appKit, cascadeFrom: cascade)
-            cascade += sceneNode.children.filter { $0.type == .window }.count
+        roster.update(root: root, make: makeWindowController, close: { $0.closeFromTree() })
+        for (index, (element, controller)) in roster.windows.enumerated() {
+            controller.present(element, in: runtime, cascade: index)
         }
 
-        sceneOrder = nextIDs
-
-        if let window = orderedWindowControllers.compactMap(\.window).first {
+        if let window = windowControllers.compactMap(\.window).first {
             frameClock.attach(to: window)
         }
         runtime.displayCycle.hold()
     }
 
+    /// The controller of a window element new here: in the window the system restored for it, where there is one.
+    private func makeWindowController(_ element: MountedElement) -> AppKitWindowController {
+        let session = element.enclosing(type: .scene).flatMap { sessions[$0.id] }
+        let arrival = session?.arrival(of: element) { [unowned self] owner in
+            takeRestoredWindow(
+                owner: owner, kind: element.name(.windowType), value: element.value(.windowValue)?.string)
+        }
+        return AppKitWindowController(
+            element,
+            host: self,
+            record: arrival?.record ?? AppKitRestorationRecord(windowIdentifier: UUID().uuidString),
+            nativeWindow: arrival?.window,
+            presentsWindow: presentsWindows)
+    }
+
     func keepSceneValue(_ call: HostActCall) {
         guard call.arguments.count >= 3,
               let sceneID = call.arguments[0].name,
-              let name = call.arguments[1].name
+              let name = call.arguments[1].name,
+              let session = sessions[.manual(sceneID)]
         else { return }
 
-        orderedScenes.first { $0.stateUIID == .manual(sceneID) }?
-            .keep(name: name, value: call.arguments[2])
+        session.keep(name: name, value: call.arguments[2])
+        windowControllers.first { $0.isMain && $0.element?.enclosing(type: .scene)?.id == .manual(sceneID) }?
+            .keepSceneValues(session.kept)
     }
 
     func acceptRestoredWindow(_ record: AppKitRestorationRecord) -> NSWindow {
@@ -169,9 +144,9 @@ extension AppKitRenderer {
     /// Offers each scene the restored windows it owns, each once: the scene's handler hears its kind and value, and
     /// one the next presentation finds no window claiming is declined.
     func offerRestoredWindows() {
-        for scene in orderedScenes {
-            guard let owner = scene.sessionIdentifier,
-                  let handler = scene.restoredWindowHandler
+        for scene in runtime.tree.root?.children.filter({ $0.type == .scene }) ?? [] {
+            guard let owner = sessions[scene.id]?.identifier,
+                  let handler = scene.handler(.windowRestored)
             else { continue }
 
             for record in restorationQueue.owned(by: owner) {
@@ -200,7 +175,7 @@ extension AppKitRenderer {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
             guard let self else { return }
             self.abandonmentScheduled = false
-            let owners = Set(self.orderedScenes.compactMap(\.sessionIdentifier))
+            let owners = Set(self.sessions.values.compactMap(\.identifier))
 
             for record in self.restorationQueue.all
             where record.ownerIdentifier.map({ !owners.contains($0) }) ?? false {
@@ -209,37 +184,23 @@ extension AppKitRenderer {
         }
     }
 
+    /// A window took the keyboard: its page's menus stand in the menu bar, and the host layer settles what it means.
     func windowBecameKey(_ controller: AppKitWindowController) {
-        let previousScene = activeWindow?.scene
         activeWindow = controller
         installPageMenus(controller.pageMenuItems)
-
-        controller.reportWindow(.activated)
-
-        if previousScene !== controller.scene {
-            previousScene?.report(.deactivated)
-            controller.scene?.report(.activated)
-            arrangeOwnedWindows(for: controller.scene)
-        }
-
-        runtime.core.setApplicationPhase(.active)
+        windowStateChanged(controller)
     }
 
-    func windowResignedKey(_ controller: AppKitWindowController) {
-        controller.reportWindow(.deactivated)
-
-        DispatchQueue.main.async { [weak self, weak controller] in
-            guard let self, let controller, self.activeWindow === controller,
-                  NSApplication.shared.keyWindow == nil,
-                  !self.applicationIsHidden
-            else { return }
-
-            controller.scene?.report(.deactivated)
-            runtime.core.setApplicationPhase(.inactive)
-            self.runtime.pump.turn()
-        }
+    /// AppKit told what `controller`'s window does now: the host layer settles what it means for the application,
+    /// its scenes and its windows.
+    /// Design: docs/design/host/runtime.md#the-applications-phase
+    func windowStateChanged(_ controller: AppKitWindowController) {
+        guard !controller.closingFromTree, let element = controller.element else { return }
+        runtime.windowStateChanged(element, minimized: controller.isMinimized, activated: controller.isKey)
     }
 
+    /// A window closes: one the tree closed tells nothing; one the user closed is heard by it and its scene.
+    /// Design: docs/design/host/runtime.md#a-window-the-user-closes
     func windowWillClose(_ controller: AppKitWindowController) {
         if activeWindow === controller {
             activeWindow = nil
@@ -247,31 +208,14 @@ extension AppKitRenderer {
         }
 
         if let closing = controller.window {
-            frameClock.release(closing, next: orderedWindowControllers
+            frameClock.release(closing, next: windowControllers
                 .filter { $0 !== controller }
                 .compactMap(\.window)
                 .first)
         }
 
-        guard !controller.closingFromTree else { return }
-
-        controller.reportWindow(.destroying)
-
-        if controller.isMain {
-            controller.scene?.report(.destroying)
-        } else {
-            controller.scene?.report(.windowClosed, payload: [controller.stateUIID.hostValue])
-        }
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self, self.orderedWindowControllers.isEmpty,
-                  NSApplication.shared.keyWindow == nil,
-                  !self.applicationIsHidden
-            else { return }
-
-            runtime.core.setApplicationPhase(.inactive)
-            self.runtime.pump.turn()
-        }
+        guard !controller.closingFromTree, let element = controller.element else { return }
+        runtime.userClosed(element)
     }
 
     func nativeWindowAvailable(_ window: NSWindow) {
@@ -342,26 +286,13 @@ extension AppKitRenderer {
         return item
     }
 
-    func arrangeOwnedWindows(for front: AppKitSceneController?) {
-        for scene in orderedScenes {
-            scene.setActive(scene === front)
-        }
+    /// The window controllers, in the tree's order of their windows.
+    var windowControllers: [AppKitWindowController] {
+        roster.controllers
     }
 
-    var orderedScenes: [AppKitSceneController] {
-        sceneOrder.compactMap { scenes[$0] }
-    }
-
-    var orderedWindowControllers: [AppKitWindowController] {
-        orderedScenes.flatMap(\.orderedWindows)
-    }
-
-    func standingWindowValue(
-        for node: AppKitElement,
-        property: Prop
-    ) -> HostValue? {
-        orderedWindowControllers.first(where: { $0.presents(node) })?
-            .standingValue(property)
+    func standingWindowValue(for node: AppKitElement, property: Prop) -> HostValue? {
+        roster.controller(of: node.element)?.standingValue(property)
     }
 }
 

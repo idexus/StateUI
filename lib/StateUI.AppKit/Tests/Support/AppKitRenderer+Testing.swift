@@ -11,9 +11,9 @@ import AppKit
 extension AppKitRenderer {
     func startForTesting() { startRuntime() }
 
-    var sceneCountForTesting: Int { scenes.count }
+    var sceneCountForTesting: Int { sessions.count }
 
-    var windowsForTesting: [AppKitWindowController] { orderedWindowControllers }
+    var windowsForTesting: [AppKitWindowController] { windowControllers }
 
     var frameClockWindowForTesting: NSWindow? { frameClock.window }
 
@@ -80,9 +80,8 @@ extension AppKitRenderer {
     }
 
     func closeForTesting() {
-        for scene in orderedScenes.reversed() { scene.closeFromTree() }
-        scenes.removeAll()
-        sceneOrder.removeAll()
+        roster.update(root: nil, make: { _ in fatalError("no window comes while closing") }, close: { $0.closeFromTree() })
+        sessions.removeAll()
         for window in restoredWindows.values { window.close() }
         restoredWindows.removeAll()
         runtime.tree.root?.leave()

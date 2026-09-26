@@ -7,170 +7,54 @@ import Foundation
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
+/// What AppKit keeps of one scene for the system's window restoration: the identifier its windows are restored by -
+/// its main window's - the values it keeps for its next start, and its main window, where the system restored it
+/// before the scene came.
+/// Design: docs/design/platforms/appkit/runtime.md#restored-windows
 @MainActor
-final class AppKitSceneController {
-    private enum BackgroundCause: Hashable {
-        case applicationHidden
-        case mainWindowMiniaturized
-    }
+final class AppKitSceneSession {
+    /// The identifier the scene's windows are restored by: its main window's, once it has one.
+    private(set) var identifier: String?
 
-    let stateUIID: ElementId
-    private weak var host: AppKitRenderer?
-    private let presentsWindows: Bool
-    private var windows: [ElementId: AppKitWindowController] = [:]
-    private var windowOrder: [ElementId] = []
-    private weak var node: AppKitElement?
-    private(set) var sessionIdentifier: String?
-    private var kept: [String: HostValue] = [:]
-    private var lastPhase: Event?
-    private var isActive = false
-    // Native notifications can overlap; the scene leaves the background only
-    // after every cause that put its main lifecycle there has ended.
-    private var backgroundCauses: Set<BackgroundCause> = []
+    /// The values the scene keeps for its next start.
+    private(set) var kept: [String: HostValue]
 
     private var restoredMain: AppKitRestoredWindow?
 
-    init(
-        id: ElementId,
-        host: AppKitRenderer,
-        presentsWindows: Bool,
-        restoredMain: AppKitRestoredWindow? = nil
-    ) {
-        stateUIID = id
-        self.host = host
-        self.presentsWindows = presentsWindows
+    init(restoredMain: AppKitRestoredWindow?) {
         self.restoredMain = restoredMain
-        sessionIdentifier = restoredMain?.record.windowIdentifier
+        identifier = restoredMain?.record.windowIdentifier
         kept = restoredMain?.record.kept ?? [:]
     }
 
-    var orderedWindows: [AppKitWindowController] {
-        windowOrder.compactMap { windows[$0] }
-    }
-
-    func synchronize(_ node: AppKitElement, cascadeFrom: Int = 0) {
-        self.node = node
-
-        let windowNodes = node.children.filter { $0.type == .window }
-        let nextOrder = windowNodes.map(\.id)
-        let nextSet = Set(nextOrder)
-
-        for id in windowOrder where !nextSet.contains(id) {
-            windows.removeValue(forKey: id)?.closeFromTree()
-        }
-
-        for (index, windowNode) in windowNodes.enumerated() {
-            let isMain = windowNode.name(.windowType) == nil
-            let controller: AppKitWindowController
-
-            if let standing = windows[windowNode.id] {
-                controller = standing
-            } else {
-                let restored: AppKitRestoredWindow?
-                if isMain {
-                    restored = restoredMain
-                    restoredMain = nil
-                } else if let owner = sessionIdentifier {
-                    restored = host?.takeRestoredWindow(
-                        owner: owner,
-                        kind: windowNode.name(.windowType),
-                        value: windowNode.string(.windowValue))
-                } else {
-                    restored = nil
-                }
-
-                let identifier = restored?.record.windowIdentifier ?? UUID().uuidString
-                if isMain { sessionIdentifier = identifier }
-
-                let record = restored?.record ?? AppKitRestorationRecord(
-                    windowIdentifier: identifier,
-                    ownerIdentifier: isMain ? nil : sessionIdentifier,
-                    kind: windowNode.name(.windowType),
-                    value: windowNode.string(.windowValue),
-                    kept: isMain ? kept : [:])
-                controller = AppKitWindowController(
-                    stateUIID: windowNode.id,
-                    scene: self,
-                    host: host,
-                    isMain: isMain,
-                    record: record,
-                    nativeWindow: restored?.window,
-                    presentsWindow: presentsWindows)
-                windows[windowNode.id] = controller
-            }
-
-            controller.setSceneActive(isActive)
-            controller.synchronize(windowNode, cascade: cascadeFrom + index)
-        }
-
-        windowOrder = nextOrder
-    }
-
-    func closeFromTree() {
-        for window in orderedWindows.reversed() {
-            window.closeFromTree()
-        }
-
-        windows.removeAll()
-        windowOrder.removeAll()
-    }
-
-    func report(_ reportedEvent: Event, payload: [HostValue] = []) {
-        let event: Event
-        if reportedEvent == .activated, backgroundCauses.contains(.applicationHidden) {
-            event = .stopped
-        } else if reportedEvent == .deactivated, !backgroundCauses.isEmpty {
-            event = .stopped
+    /// The window `element` of this scene comes: the one the system restored for it where there is one, and the
+    /// record it is kept by. The main window names the scene.
+    func arrival(
+        of element: MountedElement, restoredOwned: (_ owner: String) -> AppKitRestoredWindow?
+    ) -> (record: AppKitRestorationRecord, window: NSWindow?) {
+        let isMain = element.value(.windowType) == nil
+        let restored: AppKitRestoredWindow?
+        if isMain {
+            restored = restoredMain
+            restoredMain = nil
         } else {
-            event = reportedEvent
+            restored = identifier.flatMap(restoredOwned)
         }
 
-        guard lastPhase != event || ![.activated, .deactivated, .stopped].contains(event),
-              let handler = node?.handler(event)
-        else { return }
-
-        if [.activated, .deactivated, .stopped].contains(event) {
-            lastPhase = event
-        }
-        host?.tellPhase(handler, payload: payload)
+        let windowIdentifier = restored?.record.windowIdentifier ?? UUID().uuidString
+        if isMain { identifier = windowIdentifier }
+        let record = restored?.record ?? AppKitRestorationRecord(
+            windowIdentifier: windowIdentifier,
+            ownerIdentifier: isMain ? nil : identifier,
+            kind: element.name(.windowType),
+            value: element.string(.windowValue),
+            kept: isMain ? kept : [:])
+        return (record, restored?.window)
     }
 
+    /// The scene keeps `value` under `name` for its next start.
     func keep(name: String, value: HostValue) {
         kept[name] = value
-        windows.values.first(where: \.isMain)?.keepSceneValues(kept)
-    }
-
-    var restoredWindowHandler: Int32? { node?.handler(.windowRestored) }
-
-    func setActive(_ active: Bool) {
-        isActive = active
-        for window in orderedWindows where !window.isMain {
-            window.setSceneActive(active)
-        }
-    }
-
-    func applicationWasHidden() {
-        setBackgroundCause(.applicationHidden, present: true)
-        for window in orderedWindows { window.applicationWasHidden() }
-    }
-
-    func applicationWasUnhidden() {
-        setBackgroundCause(.applicationHidden, present: false)
-        for window in orderedWindows { window.applicationWasUnhidden() }
-    }
-
-    func setMainWindowMiniaturized(_ miniaturized: Bool) {
-        setBackgroundCause(.mainWindowMiniaturized, present: miniaturized)
-    }
-
-    private func setBackgroundCause(_ cause: BackgroundCause, present: Bool) {
-        if present {
-            backgroundCauses.insert(cause)
-        } else {
-            backgroundCauses.remove(cause)
-        }
-
-        report(backgroundCauses.isEmpty ? .deactivated : .stopped)
     }
 }
 

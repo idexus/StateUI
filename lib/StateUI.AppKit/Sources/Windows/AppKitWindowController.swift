@@ -7,39 +7,39 @@ import Foundation
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
+/// One window element shown in an AppKit window: what the host layer says it shows - its arrangement of pages, its
+/// sheets, its overlay, its frame, its bounds and its traits - turned into AppKit's, in step with the element as the
+/// tree changes, and what AppKit tells of the window handed to the host layer.
+/// Design: docs/design/platforms/appkit/runtime.md#the-window
 @MainActor
 final class AppKitWindowController: NSWindowController {
-    enum StopCause: Hashable {
-        case applicationHidden
-        case miniaturized
-        case sceneHidden
-    }
-
-    let stateUIID: ElementId
-    weak var scene: AppKitSceneController?
-    var sceneID: ElementId? { scene?.stateUIID }
-    let isMain: Bool
+    /// The window element shown.
+    private(set) weak var element: MountedElement?
     weak var host: AppKitRenderer?
-    weak var node: AppKitElement?
+    let isMain: Bool
     let presentsWindow: Bool
     var record: AppKitRestorationRecord
     var restorationRecordForTesting: AppKitRestorationRecord { record }
-    private var lastWidthRequest: CGFloat?
-    private var lastHeightRequest: CGFloat?
-    private var lastXRequest: CGFloat?
-    private var lastYRequest: CGFloat?
+
+    /// What the window shows, by the host layer's rule.
+    let presentation = WindowPresentation()
+
+    /// The bounds the element asks, applied again on every presentation: they count the chrome, which can grow.
+    private var bounds: WindowBounds?
+
+    /// What the element says the window is.
+    private(set) var traits: WindowTraits?
+
+    /// Whether the window is on the screen yet.
     var presented = false
-    private var sentCreated = false
-    // One effective stopped transition spans every simultaneous native cause.
-    var stopCauses: Set<StopCause> = []
-    var lastWindowEvent: Event?
+
+    /// Whether its scene hides it: another scene is in front.
+    private(set) var hiddenByScene = false
+
+    /// What AppKit last told of the window: whether it is minimized, and whether it holds the keyboard.
+    var isMinimized = false
+    var isKey = false
     var closingFromTree = false
-    /// The page the window shows, held by its mounted element, which owns its AppKit half.
-    private var presentedPageElement: MountedElement?
-    var presentedPage: AppKitElement? {
-        get { presentedPageElement?.appKit }
-        set { presentedPageElement = newValue?.element }
-    }
     var modals: [AppKitModalWindowController] = []
 
     /// The window's first responder, watched so every element that follows its
@@ -67,7 +67,6 @@ final class AppKitWindowController: NSWindowController {
     private let nativeContentMaxSize: NSSize
     let nativeAllowsZoom: Bool
     private let nativeAllowsMinimizing: Bool
-    var sceneIsActive = false
 
     /// Whether the window lets the desktop show through it - see
     /// `AppKitWindowContentView.isTranslucent`.
@@ -75,7 +74,7 @@ final class AppKitWindowController: NSWindowController {
 
     var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
     var modalCountForTesting: Int { modals.count }
-    var hiddenBySceneForTesting: Bool { stopCauses.contains(.sceneHidden) }
+    var hiddenBySceneForTesting: Bool { hiddenByScene }
     var toolbarForTesting: AppKitWindowToolbar { toolbar }
     var tabRowForTesting: AppKitTabRow { tabRow }
     var tabRowStandsInTitleBarForTesting: Bool { tabRowAccessory != nil }
@@ -85,18 +84,15 @@ final class AppKitWindowController: NSWindowController {
     var titleClusterForTesting: AppKitTitleBarTitleView { titleCluster }
 
     init(
-        stateUIID: ElementId,
-        scene: AppKitSceneController,
+        _ element: MountedElement,
         host: AppKitRenderer?,
-        isMain: Bool,
         record: AppKitRestorationRecord,
         nativeWindow: NSWindow? = nil,
         presentsWindow: Bool
     ) {
-        self.stateUIID = stateUIID
-        self.scene = scene
+        self.element = element
         self.host = host
-        self.isMain = isMain
+        isMain = element.value(.windowType) == nil
         self.record = record
         self.presentsWindow = presentsWindow
         presented = nativeWindow != nil
@@ -110,6 +106,7 @@ final class AppKitWindowController: NSWindowController {
         super.init(window: window)
 
         window.delegate = self
+        window.isExcludedFromWindowsMenu = !isMain
         configureChrome(window)
         focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in
             MainActor.assumeIsolated { self?.focusMoved() }
@@ -155,10 +152,6 @@ final class AppKitWindowController: NSWindowController {
         nil
     }
 
-    func presents(_ candidate: AppKitElement) -> Bool {
-        node === candidate
-    }
-
     func standingValue(_ property: Prop) -> HostValue? {
         guard let window else { return nil }
 
@@ -177,61 +170,23 @@ final class AppKitWindowController: NSWindowController {
         }
     }
 
-    func synchronize(_ node: AppKitElement, cascade: Int) {
-        self.node = node
+    /// Shows what `element` asks for now, the `cascade`th window of the tree. The host layer tells the page the user
+    /// sees and the window made before the window is first shown, and so before it comes to the front.
+    func present(_ element: MountedElement, in runtime: HostRuntime, cascade: Int) {
+        self.element = element
         guard let window else { return }
-        // Held by their owners: a page the patch removed is still told it stopped showing.
-        let previousVisible = (modals.last?.node ?? presentedPage)?.element
-        let previousWasModal = !modals.isEmpty
 
+        let changes = presentation.show(element, in: runtime.lifecycle)
         record = AppKitRestorationRecord(
             windowIdentifier: record.windowIdentifier,
-            ownerIdentifier: isMain ? nil : scene?.sessionIdentifier,
-            kind: node.name(.windowType),
-            value: node.string(.windowValue),
+            ownerIdentifier: record.ownerIdentifier,
+            kind: element.name(.windowType),
+            value: element.value(.windowValue)?.string,
             kept: isMain ? record.kept : [:])
 
-        let width = extent(node.number(.width))
-        let height = extent(node.number(.height))
-        let widthChanged = lastWidthRequest != width
-        let heightChanged = lastHeightRequest != height
-        lastWidthRequest = width
-        lastHeightRequest = height
-
-        // A requested size is the content area the title bar and toolbar do
-        // not cover; the window keeps its top edge where it stands.
-        if (widthChanged && width != nil) || (heightChanged && height != nil) {
-            var frame = window.frame
-            let top = frame.maxY
-            if widthChanged, let width { frame.size.width = width }
-            if heightChanged, let height { frame.size.height = height + chromeHeight(of: window) }
-            frame.origin.y = top - frame.size.height
-            window.setFrame(frame, display: presented)
-        }
-
-        let x = coordinate(node.number(.x))
-        let y = coordinate(node.number(.y))
-        let xChanged = lastXRequest != x
-        let yChanged = lastYRequest != y
-        lastXRequest = x
-
-        var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
-        var movesPosition = false
-        if xChanged, let x {
-            topLeft.x = x
-            movesPosition = true
-        }
-        if yChanged, let y, let screen = window.screen ?? NSScreen.main {
-            topLeft.y = screen.visibleFrame.maxY - y
-            lastYRequest = y
-            movesPosition = true
-        } else if y == nil {
-            lastYRequest = nil
-        }
-
-        if movesPosition {
-            window.setFrameTopLeftPoint(topLeft)
-        } else if !presented, x == nil, y == nil {
+        if let frame = changes.frame { request(frame, of: window) }
+        let asked = WindowFrame(of: element)
+        if !presented, asked.x == nil, asked.y == nil {
             window.center()
             if cascade > 0 {
                 window.setFrameOrigin(NSPoint(
@@ -240,67 +195,23 @@ final class AppKitWindowController: NSWindowController {
             }
         }
 
+        let arrangement = presentation.arrangement
         content.set(
-            page: node.pageView,
-            overlay: node.overlayItem,
-            spansTitleBar: node.pageNode?.type == .splitView)
+            page: arrangement?.appKit.presentableViews.first,
+            overlay: presentation.overlay?.children.first?.appKit.layoutItem,
+            spansTitleBar: arrangement?.type == .splitView)
         if window.contentView !== content {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
             window.contentView = content
         }
+        synchronizeModals(presentation.sheets.map(\.appKit))
 
-        presentedPage = node.pageNode
-        synchronizeModals(node.modalStackNode?.children ?? [])
-
-        let nextVisible = (modals.last?.node ?? presentedPage)?.element
-        if previousVisible !== nextVisible {
-            let reason: PagePresentationReason = previousWasModal || !modals.isEmpty ? .navigation : .window
-            previousVisible?.setPagePresented(false, reason: reason)
-            nextVisible?.setPagePresented(true, reason: reason)
-        }
-
-        // A requested bound is on the content area too; AppKit bounds the
-        // whole content view, which reaches under the title bar and toolbar.
-        let chrome = chromeHeight(of: window)
-        let minimumWidth = extent(node.number(.minimumWidth)) ?? nativeContentMinSize.width
-        let minimumHeight = extent(node.number(.minimumHeight)).map { $0 + chrome }
-            ?? nativeContentMinSize.height
-        let maximumWidth = max(
-            minimumWidth,
-            extent(node.number(.maximumWidth)) ?? nativeContentMaxSize.width)
-        let maximumHeight = max(
-            minimumHeight,
-            extent(node.number(.maximumHeight)).map { $0 + chrome }
-                ?? nativeContentMaxSize.height)
-        window.contentMinSize = NSSize(width: minimumWidth, height: minimumHeight)
-        window.contentMaxSize = NSSize(width: maximumWidth, height: maximumHeight)
-
-        let allowsZoom = node.bool(.isMaximizable) ?? nativeAllowsZoom
-        window.standardWindowButton(.zoomButton)?.isEnabled = allowsZoom
-
-        let allowsMinimizing = node.bool(.isMinimizable) ?? nativeAllowsMinimizing
-        if allowsMinimizing {
-            window.styleMask.insert(.miniaturizable)
-        } else {
-            window.styleMask.remove(.miniaturizable)
-        }
-        window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
-        isTranslucent = node.bool(.isTranslucent) == true
-        window.isOpaque = !isTranslucent
-        content.isTranslucent = isTranslucent
-        window.isExcludedFromWindowsMenu = !isMain
-        window.level = node.bool(.floatsOnTop) == true ? .floating : .normal
-        window.hidesOnDeactivate = node.bool(.floatsOnTop) == true
-        synchronizeSceneVisibility()
-
+        if let bounds = changes.bounds { self.bounds = bounds }
+        if let bounds { bound(bounds, window) }
+        if let traits = changes.traits { apply(traits, window) }
+        if let hidden = changes.hidden { setHidden(hidden, window) }
         refreshVisiblePageChrome()
-
-        if !sentCreated {
-            sentCreated = true
-            reportWindow(.created)
-        }
-
         host?.nativeWindowAvailable(window)
 
         guard !presented else {
@@ -309,19 +220,70 @@ final class AppKitWindowController: NSWindowController {
         }
 
         presented = true
-        if presentsWindow, !stopCauses.contains(.sceneHidden) {
-            window.makeKeyAndOrderFront(nil)
+        if presentsWindow, !hiddenByScene { window.makeKeyAndOrderFront(nil) }
+    }
+
+    /// Stands the window where the tree asks, each request alone: a size is the content area the title bar and
+    /// toolbar do not cover, the window keeping its top edge; a place is counted from the top left of the screen's
+    /// work area.
+    private func request(_ frame: WindowFrame, of window: NSWindow) {
+        if frame.width != nil || frame.height != nil {
+            var standing = window.frame
+            let top = standing.maxY
+            if let width = frame.width { standing.size.width = CGFloat(width) }
+            if let height = frame.height { standing.size.height = CGFloat(height) + chromeHeight(of: window) }
+            standing.origin.y = top - standing.size.height
+            window.setFrame(standing, display: presented)
         }
+        guard frame.x != nil || frame.y != nil else { return }
+
+        var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
+        if let x = frame.x { topLeft.x = CGFloat(x) }
+        if let y = frame.y, let screen = window.screen ?? NSScreen.main { topLeft.y = screen.visibleFrame.maxY - y }
+        window.setFrameTopLeftPoint(topLeft)
     }
 
-    private func extent(_ value: Double?) -> CGFloat? {
-        guard let value, value.isFinite, value >= 0 else { return nil }
-        return CGFloat(value)
+    /// Bounds the content area as the tree asks; AppKit bounds the whole content view, which reaches under the title
+    /// bar and toolbar. What the tree leaves unsaid is the window's own.
+    private func bound(_ bounds: WindowBounds, _ window: NSWindow) {
+        let chrome = chromeHeight(of: window)
+        let minimum = NSSize(
+            width: bounds.minimumWidth.map { CGFloat($0) } ?? nativeContentMinSize.width,
+            height: bounds.minimumHeight.map { CGFloat($0) + chrome } ?? nativeContentMinSize.height)
+        window.contentMinSize = minimum
+        window.contentMaxSize = NSSize(
+            width: max(minimum.width, bounds.maximumWidth.map { CGFloat($0) } ?? nativeContentMaxSize.width),
+            height: max(minimum.height, bounds.maximumHeight.map { CGFloat($0) + chrome } ?? nativeContentMaxSize.height))
     }
 
-    private func coordinate(_ value: Double?) -> CGFloat? {
-        guard let value, value.isFinite else { return nil }
-        return CGFloat(value)
+    /// Makes the window what the tree says: its zoom and minimize buttons, the desktop through it, and whether it
+    /// floats over the application's other windows.
+    private func apply(_ traits: WindowTraits, _ window: NSWindow) {
+        self.traits = traits
+        window.standardWindowButton(.zoomButton)?.isEnabled = traits.isMaximizable ?? nativeAllowsZoom
+        let allowsMinimizing = traits.isMinimizable ?? nativeAllowsMinimizing
+        if allowsMinimizing {
+            window.styleMask.insert(.miniaturizable)
+        } else {
+            window.styleMask.remove(.miniaturizable)
+        }
+        window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
+        isTranslucent = traits.isTranslucent
+        window.isOpaque = !isTranslucent
+        content.isTranslucent = isTranslucent
+        window.level = traits.floatsOnTop ? .floating : .normal
+    }
+
+    /// Takes the window off the screen while its scene hides it, and back once it does not.
+    private func setHidden(_ hidden: Bool, _ window: NSWindow) {
+        hiddenByScene = hidden
+        guard presented else { return }
+
+        if hidden {
+            if window.isVisible { window.orderOut(nil) }
+        } else if presentsWindow {
+            window.orderFront(nil)
+        }
     }
 }
 

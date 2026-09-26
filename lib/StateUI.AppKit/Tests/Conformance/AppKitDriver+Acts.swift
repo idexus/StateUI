@@ -84,10 +84,9 @@ extension AppKitDriver {
                 controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
             }
         case (.switchAway, _) where element.type == .window:
+            // Another application in front takes the keyboard from every window, which is all AppKit tells.
             for window in windows { tell(NSWindow.didResignKeyNotification, window) }
-            renderer?.applicationResignedActive()
         case (.switchBack, _) where element.type == .window:
-            renderer?.applicationBecameActive()
             comeToTheFront(try window(of: element))
         case (.bringToFront, _) where element.type == .window:
             let front = try window(of: element)
@@ -166,7 +165,7 @@ extension AppKitDriver {
     /// The controller of the window `element` stands in.
     func controller(of element: MountedElement) throws -> AppKitWindowController {
         guard let window = element.type == .window ? element : element.enclosing(type: .window),
-              let controller = renderer?.windowsForTesting.first(where: { $0.node?.element === window })
+              let controller = renderer?.windowsForTesting.first(where: { $0.element === window })
         else { throw DriverCannot("find the window") }
         return controller
     }
@@ -178,7 +177,7 @@ extension AppKitDriver {
 
     /// The native window `element` stands in.
     func window(of element: MountedElement) throws -> NSWindow {
-        guard let window = renderer?.windowsForTesting.first(where: { $0.node?.element === element })?.window else {
+        guard let window = renderer?.windowsForTesting.first(where: { $0.element === element })?.window else {
             throw DriverCannot("find the window")
         }
         return window

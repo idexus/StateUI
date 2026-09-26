@@ -8,8 +8,8 @@ import AppKit
 @testable import StateUIAppKit
 @_spi(Host) import StateUIConformance
 
-/// What the AppKit driver reads besides a member's value: a view's menu and the page's menus, the keyboard's
-/// holder, and what a press reaches - each from AppKit itself.
+/// What the AppKit driver reads besides a control's value: a window's, a view's menu and the page's menus, the
+/// keyboard's holder, and what a press reaches - each from AppKit itself.
 /// Design: docs/design/platforms/appkit/conformance.md#what-the-driver-reads
 extension AppKitDriver {
     func menu(of element: MountedElement) throws -> String {
@@ -18,6 +18,46 @@ extension AppKitDriver {
             throw DriverCannot("read the menu of \(element.type.name)")
         }
         return Self.said(view.menu?.items ?? [])
+    }
+
+    /// A window's: its title, the place and size of its content area, their bounds, its buttons, the desktop through
+    /// it, whether it floats, and the kind and value its restoration record keeps. The driver orders no window in, so
+    /// none stands shown or hidden to read.
+    func windowHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard let window = controller.window else { throw DriverCannot(reading: property, of: element) }
+        let chrome = window.frame.height - window.contentLayoutRect.height
+        let screen = window.screen ?? NSScreen.main
+        switch property {
+        case .title: return window.title.propValue
+        case .x: return Double(window.frame.minX).rounded().propValue
+        case .y: return screen.map { Double($0.visibleFrame.maxY - window.frame.maxY).rounded().propValue }
+        case .width: return Double(window.contentLayoutRect.width).rounded().propValue
+        case .height: return Double(window.contentLayoutRect.height).rounded().propValue
+        case .minimumWidth: return Double(window.contentMinSize.width).propValue
+        case .minimumHeight: return Double(window.contentMinSize.height - chrome).rounded().propValue
+        case .maximumWidth: return Double(window.contentMaxSize.width).propValue
+        case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
+        case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
+        case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
+        case .isTranslucent: return (!window.isOpaque).propValue
+        case .floatsOnTop: return (window.level == .floating).propValue
+        case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
+        case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
+        default: throw DriverCannot(reading: property, of: element)
+        }
+    }
+
+    /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
+    /// preferences, as its words read back; one of the first scene from its main window's restoration record.
+    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+        guard let renderer else { throw DriverCannot("read what is kept before a host runs") }
+        if inScene { return renderer.windowsForTesting.first(where: \.isMain)?.restorationRecordForTesting.kept[key] }
+        guard let word = store.string(forKey: key) else { return nil }
+        let kinds = [
+            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
+        ]
+        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
     }
 
     func focused(_ element: MountedElement) throws -> Bool {

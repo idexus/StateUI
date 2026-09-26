@@ -32,13 +32,16 @@ final class AppKitRenderer: @unchecked Sendable {
     private(set) lazy var environment = AppKitEnvironment(core: runtime.core)
     lazy var actPerformer = AppKitActPerformer(renderer: self)
     var focusReportQueued = false
-    var scenes: [ElementId: AppKitSceneController] = [:]
-    var sceneOrder: [ElementId] = []
+
+    /// The windows the tree holds, each with its controller, in the tree's order.
+    let roster = WindowRoster<AppKitWindowController>()
+
+    /// What each scene keeps for the system's window restoration, by the scene's identity.
+    var sessions: [ElementId: AppKitSceneSession] = [:]
     var doorbellStarted = false
     var connectedInitialScene = false
     var started = false
     weak var activeWindow: AppKitWindowController?
-    var applicationIsHidden = false
     let restorationQueue = AppKitRestorationQueue()
     var restoredWindows: [String: NSWindow] = [:]
     var offeredRestorations = Set<String>()
@@ -155,7 +158,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     /// The window the user is looking at: the key window, else the main one.
     var userWindow: NSWindow? {
-        NSApp.keyWindow ?? orderedWindowControllers.first?.window
+        NSApp.keyWindow ?? windowControllers.first?.window
     }
 
     /// A window's first responder moved. Every element that follows its focus

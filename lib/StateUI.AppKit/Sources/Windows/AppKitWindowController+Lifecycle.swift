@@ -7,12 +7,15 @@ import Foundation
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
+/// What AppKit tells of the window - the keyboard coming and going, minimizing, closing, restoration - handed to the
+/// host layer, which settles what each scene and window hears.
+/// Design: docs/design/platforms/appkit/runtime.md#the-applications-phase
 extension AppKitWindowController: NSWindowDelegate {
+    /// The tree no longer holds the window: its page hears it goes, its sheets go, and it closes, telling nothing.
     func closeFromTree() {
         guard !closingFromTree else { return }
         closingFromTree = true
-        let visible = (modals.last?.node ?? presentedPage)?.element
-        visible?.setPagePresented(false, reason: .window)
+        (presentation.sheets.last ?? presentation.arrangement)?.setPagePresented(false, reason: .window)
 
         if let window {
             while !modals.isEmpty {
@@ -22,71 +25,7 @@ extension AppKitWindowController: NSWindowDelegate {
                 modals.removeLast().dismiss(from: parent)
             }
         }
-        presentedPage = nil
         close()
-    }
-
-    func reportWindow(_ event: Event) {
-        guard lastWindowEvent != event, let handler = node?.handler(event) else { return }
-        lastWindowEvent = event
-        host?.tellPhase(handler)
-    }
-
-    func setSceneActive(_ active: Bool) {
-        sceneIsActive = active
-        synchronizeSceneVisibility()
-    }
-
-    func synchronizeSceneVisibility() {
-        guard let node, let window else { return }
-        let shouldHide = node.bool(.hidesWhenInactive) == true && !sceneIsActive
-
-        guard presented else {
-            if shouldHide {
-                stopCauses.insert(.sceneHidden)
-            } else {
-                stopCauses.remove(.sceneHidden)
-            }
-            return
-        }
-
-        setStoppedCause(.sceneHidden, present: shouldHide) {
-            if shouldHide {
-                if window.isVisible { window.orderOut(nil) }
-            } else if presentsWindow {
-                window.orderFront(nil)
-            }
-        }
-    }
-
-    func applicationWasHidden() {
-        setStoppedCause(.applicationHidden, present: true)
-    }
-
-    func applicationWasUnhidden() {
-        setStoppedCause(.applicationHidden, present: false)
-    }
-
-    private func setStoppedCause(
-        _ cause: StopCause,
-        present: Bool,
-        updateNativeWindow: () -> Void = {}
-    ) {
-        let wasStopped = !stopCauses.isEmpty
-        let changed: Bool
-        if present {
-            changed = stopCauses.insert(cause).inserted
-        } else {
-            changed = stopCauses.remove(cause) != nil
-        }
-        updateNativeWindow()
-        guard changed else { return }
-
-        if !wasStopped, !stopCauses.isEmpty {
-            reportWindow(.stopped)
-        } else if wasStopped, stopCauses.isEmpty {
-            reportWindow(.resumed)
-        }
     }
 
     func keepSceneValues(_ values: [String: HostValue]) {
@@ -102,15 +41,17 @@ extension AppKitWindowController: NSWindowDelegate {
     }
 
     func windowDidBecomeKey(_ notification: Notification) {
+        isKey = true
         host?.windowBecameKey(self)
     }
 
     func windowDidResignKey(_ notification: Notification) {
-        host?.windowResignedKey(self)
+        isKey = false
+        host?.windowStateChanged(self)
     }
 
     func windowShouldZoom(_ window: NSWindow, toFrame newFrame: NSRect) -> Bool {
-        node?.bool(.isMaximizable) ?? nativeAllowsZoom
+        traits?.isMaximizable ?? nativeAllowsZoom
     }
 
     func windowWillClose(_ notification: Notification) {
@@ -125,13 +66,13 @@ extension AppKitWindowController: NSWindowDelegate {
     }
 
     func windowDidMiniaturize(_ notification: Notification) {
-        setStoppedCause(.miniaturized, present: true)
-        if isMain { scene?.setMainWindowMiniaturized(true) }
+        isMinimized = true
+        host?.windowStateChanged(self)
     }
 
     func windowDidDeminiaturize(_ notification: Notification) {
-        setStoppedCause(.miniaturized, present: false)
-        if isMain { scene?.setMainWindowMiniaturized(false) }
+        isMinimized = false
+        host?.windowStateChanged(self)
     }
 }
 

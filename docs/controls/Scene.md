@@ -21,7 +21,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | `destroying` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  | ✅ |  | cannot read windowValue of Window - AppKit's driver has no path for it yet |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  |  | ✅ |  |  |
 
 Realization:
 

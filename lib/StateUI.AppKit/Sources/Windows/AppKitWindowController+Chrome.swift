@@ -18,10 +18,10 @@ extension AppKitWindowController {
     /// and the page's menus.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
-        guard let node, let window else { return }
-        let arrangement = node.pageNode?.element
-        let chrome = WindowChrome(window: node.element, arrangement: arrangement)
-        let titleBar = node.slot(.titleBar)
+        guard let element, let window else { return }
+        let arrangement = presentation.arrangement
+        let chrome = WindowChrome(window: element, arrangement: arrangement)
+        let titleBar = element.appKit.slot(.titleBar)
         let titleView = arrangement?.visiblePage?.slotContent(.titleView)?.appKit.view
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
@@ -46,8 +46,8 @@ extension AppKitWindowController {
                 AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.back, title: back.title, image: AppKitWindowToolbar.backImage,
                     isEnabled: true,
-                    perform: { [weak host, weak shown = node.element, weak stack = back.stack] in
-                        if let host, let shown, let stack { host.runtime.goBack(.pop(stack), in: shown) }
+                    perform: { [weak host, weak element, weak stack = back.stack] in
+                        if let host, let element, let stack { host.runtime.goBack(.pop(stack), in: element) }
                     })
             },
             title: paintedTitle,
@@ -96,7 +96,7 @@ extension AppKitWindowController {
 
     /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer walks them.
     var pageMenuItems: [NSMenuItem] {
-        let page = (modals.last?.node ?? node?.pageNode)?.element.visiblePage
+        let page = (presentation.sheets.last ?? presentation.arrangement)?.visiblePage
         return AppKitMenus.items(page?.children.first { $0.type == .menuBar }.map(MenuEntry.menus(of:)) ?? [])
     }
 

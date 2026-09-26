@@ -36,8 +36,8 @@ extension AppKitWindowController {
     /// sheet goes as the tree follows.
     /// Design: docs/design/host/pages.md#the-way-back
     func userDismissed(_ modal: AppKitModalWindowController) {
-        guard let node, modals.last === modal else { return }
-        host?.runtime.goBack(.dismissSheet(remaining: modals.count - 1), in: node.element)
+        guard let element, modals.last === modal else { return }
+        host?.runtime.goBack(.dismissSheet(remaining: modals.count - 1), in: element)
     }
 
     func dismissTopModalForTesting() {

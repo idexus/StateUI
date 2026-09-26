@@ -7,8 +7,8 @@ Application.currentTime: not realized
 Application.currentTimeZone: not realized
 Application.handlerFailed: not realized
 Application.hideOnScreenKeyboard: ✅
-Application.persistSceneValue: cannot read what is kept - AppKit's driver has no path for it yet
-Application.persistValue: cannot read what is kept - AppKit's driver has no path for it yet
+Application.persistSceneValue: ✅
+Application.persistValue: ✅
 Application.prompt: not realized
 Application.utcOffset: not realized
 Button.clicked: ✅

@@ -1,26 +1,26 @@
-Button.clicked: cannot read floatsOnTop of Window - AppKit's driver has no path for it yet
+Button.clicked: ✅
 ModalStack: ✅
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
 Window.deactivated: ✅
 Window.destroying: ✅
-Window.floatsOnTop: cannot read floatsOnTop of Window - AppKit's driver has no path for it yet
-Window.height: cannot read height of Window - AppKit's driver has no path for it yet
+Window.floatsOnTop: ✅
+Window.height: ✅
 Window.hidesWhenInactive: cannot read isVisible of Window - AppKit's driver has no path for it yet
-Window.isMaximizable: cannot read isMaximizable of Window - AppKit's driver has no path for it yet
-Window.isMinimizable: cannot read isMinimizable of Window - AppKit's driver has no path for it yet
-Window.isTranslucent: cannot read isTranslucent of Window - AppKit's driver has no path for it yet
-Window.maximumHeight: cannot read maximumHeight of Window - AppKit's driver has no path for it yet
-Window.maximumWidth: cannot read maximumWidth of Window - AppKit's driver has no path for it yet
-Window.minimumHeight: cannot read minimumHeight of Window - AppKit's driver has no path for it yet
-Window.minimumWidth: cannot read minimumWidth of Window - AppKit's driver has no path for it yet
+Window.isMaximizable: ✅
+Window.isMinimizable: ✅
+Window.isTranslucent: ✅
+Window.maximumHeight: ✅
+Window.maximumWidth: ✅
+Window.minimumHeight: ✅
+Window.minimumWidth: ✅
 Window.modalPopped: ✅
 Window.resumed: ✅
 Window.stopped: ✅
-Window.title: cannot read title of Window - AppKit's driver has no path for it yet
-Window.width: cannot read width of Window - AppKit's driver has no path for it yet
-Window.windowType: cannot read windowValue of Window - AppKit's driver has no path for it yet
-Window.windowValue: cannot read windowValue of Window - AppKit's driver has no path for it yet
-Window.x: cannot read x of Window - AppKit's driver has no path for it yet
-Window.y: cannot read y of Window - AppKit's driver has no path for it yet
+Window.title: ✅
+Window.width: ✅
+Window.windowType: ✅
+Window.windowValue: ✅
+Window.x: ✅
+Window.y: ✅

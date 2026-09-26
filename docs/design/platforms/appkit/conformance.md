@@ -18,13 +18,20 @@ does.
 ## Windows
 
 The driver shows no window on the machine's screen, so a run never takes the
-user's: the host makes its windows and never orders them in. What AppKit tells
-a window's delegate as the window comes to the front, goes behind another
-application, is minimized and comes back - `didBecomeKey`, `didResignKey`,
+user's: the host makes its windows and never orders them in, and so no window
+stands shown or hidden for the driver to read. What AppKit tells a window's
+delegate as the window comes to the front, goes behind another application,
+is minimized and comes back - `didBecomeKey`, `didResignKey`,
 `didMiniaturize`, `didDeminiaturize` - the driver posts on the window itself,
-where the delegate hears it as it hears AppKit, and the application's being
-put behind another is told as AppKit's application delegate tells it. A
-window closed by the user is the window's own `close`.
+where the delegate hears it as it hears AppKit; another application in front
+is every window's `didResignKey`. A window closed by the user is the window's
+own `close`.
+
+A case's next launch is a launch: the windows the last host left open, each
+as its delegate encoded it, go through the restoration class as the system
+hands them back, before the new host finishes launching. The driver's hosts
+keep their values in preferences of their own, which a case's first launch
+finds empty.
 
 ## Parts
 

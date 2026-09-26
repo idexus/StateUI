@@ -108,20 +108,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    func applicationDidBecomeActive(_ notification: Notification) {
-        host.applicationBecameActive()
-    }
-
-    func applicationDidResignActive(_ notification: Notification) {
-        host.applicationResignedActive()
-    }
-
     func applicationDidHide(_ notification: Notification) {
-        host.applicationWasHidden()
+        host.applicationHidden(true)
     }
 
     func applicationDidUnhide(_ notification: Notification) {
-        host.applicationWasUnhidden()
+        host.applicationHidden(false)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        host.runtime.ending()
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {

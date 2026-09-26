@@ -21,7 +21,7 @@ final class AppKitSessionTests: XCTestCase {
 
         XCTAssertEqual(renderer.sceneCountForTesting, 2)
         XCTAssertEqual(renderer.windowsForTesting.count, 3)
-        XCTAssertEqual(renderer.windowsForTesting.compactMap(\.sceneID), [
+        XCTAssertEqual(renderer.windowsForTesting.compactMap { $0.element?.enclosing(type: .scene)?.id }, [
             .manual("1"), .manual("1"), .manual("2"),
         ])
         XCTAssertEqual(renderer.windowsForTesting.map(\.isMain), [true, false, true])
@@ -273,13 +273,6 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(controller.restorationRecordForTesting.value, "selection-7")
         XCTAssertTrue(native.isExcludedFromWindowsMenu)
         XCTAssertEqual(native.level, .floating)
-        XCTAssertTrue(native.hidesOnDeactivate)
-
-        controller.setSceneActive(true)
-        native.orderFront(nil)
-        controller.setSceneActive(false)
-        XCTAssertTrue(controller.hiddenBySceneForTesting)
-        XCTAssertFalse(native.isVisible)
 
         var cleared = HostPatch(id: .manual("tool"), type: .window)
         cleared.clearedProperties = [.windowValue, .hidesWhenInactive, .floatsOnTop]
@@ -290,29 +283,7 @@ final class AppKitSessionTests: XCTestCase {
 
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "notes.inspector")
         XCTAssertNil(controller.restorationRecordForTesting.value)
-        XCTAssertFalse(controller.hiddenBySceneForTesting)
         XCTAssertEqual(native.level, .normal)
-        XCTAssertFalse(native.hidesOnDeactivate)
-
-        native.orderFront(nil)
-        var hiddenAgain = HostPatch(id: .manual("tool"), type: .window)
-        hiddenAgain.properties[.hidesWhenInactive] = .bool(true)
-        renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), hiddenAgain]),
-            scene("2", windows: [window("main")])
-        ))
-
-        XCTAssertTrue(controller.hiddenBySceneForTesting)
-        XCTAssertFalse(native.isVisible)
-
-        controller.applicationWasHidden()
-        renderer.applyForTesting(tree(
-            scene("1", windows: [window("main"), cleared]),
-            scene("2", windows: [window("main")])
-        ))
-        XCTAssertFalse(controller.hiddenBySceneForTesting)
-
-        controller.applicationWasUnhidden()
     }
 
     @MainActor
@@ -443,39 +414,6 @@ final class AppKitSessionTests: XCTestCase {
             arguments: [.name(key.name), .string("graphite")],
             completion: nil))
         XCTAssertEqual(preferences.string(forKey: key.name), "graphite")
-    }
-
-    @MainActor
-    func testAMiniaturizedSceneStaysStoppedWhileTheApplicationHideCauseComesAndGoes()
-        async throws
-    {
-        stateUIUseApp(AppKitSessionApp())
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-        renderer.startForTesting()
-
-        let scene = try XCTUnwrap(StandardEnvironment.application.scenes.first)
-        let window = try XCTUnwrap(scene.windows.first)
-        let main = try XCTUnwrap(renderer.windowsForTesting.first)
-        try await scene.openWindow(.appKitTestTool)
-        renderer.runtime.pump.turn()
-        let tool = try XCTUnwrap(renderer.windowsForTesting.last)
-
-        main.windowDidMiniaturize(Notification(name: NSWindow.didMiniaturizeNotification))
-        XCTAssertEqual(scene.phase, .background)
-        XCTAssertEqual(window.phase, .stopped)
-
-        tool.windowDidBecomeKey(Notification(name: NSWindow.didBecomeKeyNotification))
-        XCTAssertEqual(scene.phase, .active)
-
-        renderer.applicationWasHidden()
-        renderer.applicationWasUnhidden()
-        XCTAssertEqual(scene.phase, .background)
-        XCTAssertEqual(window.phase, .stopped)
-
-        main.windowDidDeminiaturize(Notification(name: NSWindow.didDeminiaturizeNotification))
-        XCTAssertEqual(scene.phase, .inactive)
-        XCTAssertEqual(window.phase, .resumed)
     }
 
     @MainActor
