@@ -43,10 +43,12 @@ read by the bitmap's own scale.
 A window whose content extends into its title bar - every window the host
 shows - leaves some forty of the process's GDI objects behind when it closes,
 and a process holds ten thousand: a few hundred windows end it. A family of
-cases shows a window a case, so the host's tests run each in a process of its
-own (`test-winui.ps1`), the largest families - a view's, a visual element's -
-in parts, one test each. Each test holds its process below six thousand GDI
-objects, and a family past that is run in more parts.
+cases shows a window a case, so the families run each in a process of its
+own (`test-winui.ps1 -Conformance`), the largest - a view's, a visual
+element's - in parts, one test each. Each test holds its process below six
+thousand GDI objects, and a family past that is run in more parts. The run
+takes some fifteen minutes, so it is asked for; the host's own tests, few
+windows in all, run in one process by default.
 
 ## What the driver reads
 
