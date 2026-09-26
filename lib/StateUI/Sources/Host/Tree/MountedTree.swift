@@ -57,6 +57,20 @@
 
     /// The element leaves the tree: everything it attached outside the tree lets go of it.
     func leave()
+
+    /// The tab the user chose on a tabbed view, which the tree may not say yet; nil where none.
+    var chosenTab: Int? { get }
+
+    /// Whether a split view shows its sidebar on screen; nil where the tree's word stands.
+    var showsSidebar: Bool? { get }
+}
+
+@_spi(Host) extension NativeElement {
+    /// No tab chosen apart from the tree.
+    public var chosenTab: Int? { nil }
+
+    /// The sidebar as the tree says.
+    public var showsSidebar: Bool? { nil }
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.
@@ -64,6 +78,9 @@
 @_spi(Host) @MainActor public final class MountedTree {
     /// The mounted root; nil before the first message.
     public private(set) var root: MountedElement?
+
+    /// Where a page's or a window's phase goes: the runtime's handlers, each rendered in its turn.
+    var tellPhase: (Int32) -> Void = { _ in }
 
     /// The runtime's line to the core.
     public let core: CoreLink

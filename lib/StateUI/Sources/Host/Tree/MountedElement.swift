@@ -38,6 +38,9 @@
     /// Whether this element's frame, or any frame under it, is read.
     public private(set) var framesRead = false
 
+    /// Whether this page tree is shown, as its phases last told.
+    public internal(set) var isPagePresented = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
@@ -76,6 +79,7 @@
         }
 
         native.willApply()
+        let previouslyShown = isPagePresented ? shownChildren : []
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)
         if case .replace(let replacement) = patch.driven {
@@ -162,6 +166,13 @@
             || children.contains { $0.framesRead }
         native.applied(changed: changed, wasDescribed: described)
         described = true
+        reconcilePresentation(from: previouslyShown)
+    }
+
+    /// Tells the element's handler of `event` as a phase, rendered in its turn before what comes after it.
+    func tellPhase(_ event: Event) {
+        guard let handler = handler(event) else { return }
+        tree?.tellPhase(handler)
     }
 
     /// Reconciles a complete child arrangement by key.

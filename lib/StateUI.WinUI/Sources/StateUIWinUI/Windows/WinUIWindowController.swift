@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// One window element shown in a WinUI window: its arrangement of pages, its sheets, its overlay and its chrome,
-/// kept in step with the element as the tree changes, and the element told once that its window was made.
+/// One window element shown in a WinUI window: what the host layer says it shows - its arrangement of pages, its
+/// sheets, its overlay, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.
 /// Design: docs/design/platforms/winui/runtime.md#the-window
 @MainActor
 final class WinUIWindowController {
@@ -14,7 +14,7 @@ final class WinUIWindowController {
     /// The WinUI window it is shown in.
     let window = WinUIWindow()
 
-    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlay, and that it was made.
+    /// What the window shows, by the host layer's rule.
     private let presentation = WindowPresentation()
 
     /// The sheets the window shows, one for each page its modal stack presents, the last on top.
@@ -24,26 +24,15 @@ final class WinUIWindowController {
         self.element = element
     }
 
-    /// Shows what the element asks for now; a window shown the first time is told it was made before it is shown,
-    /// and so before it hears it came to the front.
+    /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before
+    /// the window is first shown, and so before it hears it came to the front.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
-        // What the user sees is the top sheet, else the window's arrangement: the one that stops showing hears it,
-        // then the one that starts - by the window's own coming and going, or by a sheet's, as a move.
-        let previousVisible = sheets.last?.element ?? presentation.arrangement
-        let hadSheets = !sheets.isEmpty
         let changes = presentation.show(element)
         stand(changes)
-        if let created = changes.created { runtime.pump.handlers.enqueuePhase(created) }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
-        showSheets(of: element)
+        showSheets(presentation.sheets)
         if let overlay = changes.overlay { window.showOverlay(overlay?.winUI.view) }
-        let visible = sheets.last?.element ?? presentation.arrangement
-        if visible !== previousVisible {
-            let reason: WinUIPagePresentationReason = hadSheets || !sheets.isEmpty ? .navigation : .window
-            previousVisible?.winUI.setPagePresented(false, reason: reason)
-            visible?.winUI.setPagePresented(true, reason: reason)
-        }
     }
 
     /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed.
@@ -54,69 +43,88 @@ final class WinUIWindowController {
         if let traits = changes.traits { window.apply(traits) }
     }
 
-    /// Keeps a sheet for each page the window's modal stack presents, in its order, each under its page's title.
+    /// Keeps a sheet for each page shown as one, in its order, each under its page's title.
     /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
-    private func showSheets(of element: MountedElement) {
-        let pages = element.children.first { $0.type == .modalStack }?.children
-            .filter { NodeType.pageTypes.contains($0.type) } ?? []
+    private func showSheets(_ pages: [MountedElement]) {
         guard !pages.isEmpty || !sheets.isEmpty else { return }
 
         sheets = pages.map { page in
             let sheet = sheets.first { $0.element === page }?.sheet ?? WinUISheetView()
-            sheet.show(title: page.winUI.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
+            sheet.show(title: page.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
             return (page, sheet)
         }
         window.showSheets(sheets.map(\.sheet))
     }
 
-    /// The user took the top sheet away - Escape, the way back of a sheet with none of its own: the window is told
-    /// how many remain.
+    /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.
     func dismissTopSheet(in runtime: HostRuntime) {
-        guard !sheets.isEmpty, let element, let handler = element.handler(.modalPopped) else { return }
-        runtime.dispatch(handler, payload: [.number(Double(sheets.count - 1))])
+        guard let element, !presentation.sheets.isEmpty else { return }
+
+        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
     }
 
-    /// Composes the window's one chrome again from what it shows now: the top page names the window, the stack's
-    /// way back and the page's actions stand on the chrome, a split view adds the sidebar's toggle, the page's menus
-    /// and the tabs of a tabbed view on the page path stand beneath it, and an authored title bar adds its slots.
+    /// Goes the way back the window offers: the top sheet's, else the arrangement's.
+    /// Design: docs/design/host/pages.md#the-way-back
+    private func goBack(in runtime: HostRuntime) {
+        guard let element, let way = presentation.wayBack else { return }
+
+        runtime.goBack(way, in: element)
+    }
+
+    /// Lays the chrome the host layer composes from what the window shows in WinUI's: the title, the way back, the
+    /// page's actions, the slots, the colours, the menus, the sidebar's toggle, a sheet's buttons and the tabs.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     func refreshChrome(in runtime: HostRuntime) {
-        guard let element = element?.winUI else { return }
+        guard let element else { return }
 
-        let arrangement = presentation.arrangement?.winUI
-        arrangement?.markTabsShownByWindow()
-        let titleBar = element.children.first { $0.type == .titleBar }
-        let actions = arrangement?.visibleToolbarActions ?? (primary: [], overflow: [])
-
+        let composed = WindowChrome(window: element, arrangement: presentation.arrangement)
         var chrome = WinUIWindowChrome()
-        chrome.title = arrangement?.visiblePage?.value(.title)?.string ?? element.value(.title)?.string ?? ""
-        chrome.back = arrangement?.visibleBackAction
-        chrome.sidebarToggle = arrangement?.visibleSidebarToggle
-        chrome.leading = titleBar?.firstView(in: .leadingContent)
-        chrome.center = titleBar?.firstView(in: .content) ?? arrangement?.visibleTitleView
-        chrome.trailing = titleBar?.firstView(in: .trailingContent)
-        chrome.actions = actions.primary
-        chrome.overflow = actions.overflow
-        chrome.background = arrangement?.visibleBarBackground ?? titleBar?.value(.background)
-        chrome.foreground = arrangement?.visibleBarForeground ?? titleBar?.value(.barForegroundColor)
-        chrome.menuBar = WinUIMenu(bar: arrangement?.visiblePage?.children.first { $0.type == .menuBar })
-        if let top = sheets.last?.element.winUI {
+        chrome.title = composed.title ?? ""
+        chrome.back = composed.back.map { back in
+            WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
+                if let element, let stack { runtime.goBack(.pop(stack), in: element) }
+            })
+        }
+        chrome.sidebarToggle = composed.sidebarToggle.map { split in
+            { [weak split] in
+                guard let split else { return }
+                split.winUI.changeSidebarVisibility(to: !split.sidebarIsVisible)
+            }
+        }
+        chrome.leading = composed.leading?.winUI.view
+        chrome.center = composed.center?.winUI.view
+        chrome.trailing = composed.trailing?.winUI.view
+        chrome.actions = composed.primaryActions.map(Self.action)
+        chrome.overflow = composed.overflowActions.map(Self.action)
+        chrome.background = composed.background
+        chrome.foreground = composed.foreground
+        chrome.menuBar = WinUIMenu(bar: composed.menuBar?.winUI)
+        if !presentation.sheets.isEmpty {
             chrome.sheet = (
-                back: { [weak self, weak top] in
-                    if let wayBack = top?.wayBack { wayBack() } else { self?.dismissTopSheet(in: runtime) }
-                },
+                back: { [weak self] in self?.goBack(in: runtime) },
                 dismiss: { [weak self] in self?.dismissTopSheet(in: runtime) })
         }
-        window.apply(chrome, tabs: arrangement?.visibleWindowTabs)
+        window.apply(chrome, tabs: windowTabs)
     }
 
-    /// Goes the way back the arrangement the window shows offers - a stack's top page going; whether there was one.
-    /// Design: docs/design/platforms/winui/pages.md#the-way-back
-    func goBack() -> Bool {
-        guard let wayBack = presentation.arrangement?.winUI.wayBack else { return false }
+    /// A page's action as a button of the chrome.
+    private static func action(_ item: MountedElement) -> WinUIToolbarAction {
+        WinUIToolbarAction(
+            title: item.value(.text)?.string ?? "", isEnabled: item.value(.isEnabled)?.bool ?? true,
+            identifier: item.value(.accessibilityIdentifier)?.string,
+            perform: { [weak item] in item?.winUI.send(.clicked, []) })
+    }
 
-        wayBack()
-        return true
+    /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view
+    /// whose detail they stand across, if any.
+    private var windowTabs: WinUIWindowTabs? {
+        guard let tabbed = presentation.arrangement?.visibleTabbedView, tabbed.tabsStandInWindow,
+              let tabs = tabbed.winUI.view as? WinUITabbedView
+        else { return nil }
+
+        return WinUIWindowTabs(
+            titles: tabs.titles, selected: tabs.shownIndex, select: { [weak tabs] index in tabs?.selectByUser(index) },
+            split: tabbed.parent?.enclosing(type: .splitView)?.winUI.view as? WinUISplitView)
     }
 
     /// The page's corner in the window, in DIPs: where content stands clear of the window's chrome.

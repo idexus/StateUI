@@ -9,8 +9,8 @@ import CStateUIGTK
 /// Design: docs/design/platforms/gtk/pages.md#tabs
 @MainActor
 final class GTKTabbedView: GTKLayoutView {
-    /// The tab the user sees; nil until the tree or the user chooses one.
-    private(set) var selectedIndex: Int?
+    /// Which tab the view shows, by the host layer's rule.
+    private(set) var choice = TabChoice()
 
     /// What the view does when the user chooses a tab, handed the one it showed and the one it shows.
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
@@ -33,7 +33,7 @@ final class GTKTabbedView: GTKLayoutView {
     }
 
     /// The tab the view shows, as an index into its tabs.
-    var shownIndex: Int { selectedIndex ?? 0 }
+    var shownIndex: Int { choice.shown }
 
     /// The tabs: each a view of the stack, named as its title.
     @discardableResult
@@ -63,8 +63,7 @@ final class GTKTabbedView: GTKLayoutView {
             guard let page = gtk_stack_get_page(stack.widget.opaque, view.widget) else { continue }
             gtk_stack_page_set_title(page, title(at: index))
         }
-        if let requested, requested != selectedIndex {
-            selectedIndex = requested
+        if choice.request(requested) {
             ProgramWrite.perform { showSelected() }
         }
     }
@@ -81,11 +80,10 @@ final class GTKTabbedView: GTKLayoutView {
     /// The switcher showed another tab: the user chose it.
     private func visibleChildMoved() {
         guard !ProgramWrite.isWriting, let shown = gtk_stack_get_visible_child(stack.widget.opaque),
-              let index = tabs.firstIndex(where: { $0.widget == shown }), index != shownIndex
+              let index = tabs.firstIndex(where: { $0.widget == shown }),
+              let previous = choice.choose(index, of: tabs.count)
         else { return }
 
-        let previous = shownIndex
-        selectedIndex = index
         onSelection?(previous, index)
     }
 

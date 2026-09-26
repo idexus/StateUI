@@ -125,19 +125,15 @@ final class GTKRenderer {
         window.setMinimumSize(width: element.value(.minimumWidth)?.number, height: element.value(.minimumHeight)?.number)
 
         let changes = presentation.show(element)
-        if let (previous, arrangement) = changes.arrangement {
+        if let (_, arrangement) = changes.arrangement {
             if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
                 window.show(page: arrangement.gtk.view)
             } else {
                 window.show(arrangement?.gtk.view)
             }
-            previous?.gtk.setPagePresented(false, reason: .window)
-            arrangement?.gtk.setPagePresented(true, reason: .window)
         }
         if let overlay = changes.overlay { window.showOverlay(overlay?.gtk.view) }
         refreshChrome()
-
-        if let handler = changes.created { runtime.pump.handlers.enqueuePhase(handler) }
     }
 
     /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
@@ -151,7 +147,7 @@ final class GTKRenderer {
         }
         arrangement?.composeChrome()
         adaptSplitViews(in: window)
-        let pageTitle = arrangement?.visiblePage?.value(.title)?.string
+        let pageTitle = presentation.arrangement?.visiblePage?.value(.title)?.string
         window.setTitle(pageTitle.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
     }
 

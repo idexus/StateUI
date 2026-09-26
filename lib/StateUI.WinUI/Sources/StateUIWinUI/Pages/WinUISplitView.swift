@@ -28,7 +28,7 @@ final class WinUISplitView: WinUILayoutView {
     /// The size WinUI's navigation view was last arranged at, which it is measured at too; and what it last asked.
     private var arranged: LayoutSize?
     private var asked = LayoutSize.zero
-    private var adapted = false
+    private var adaptation = SidebarAdaptation()
 
     override init() {
         super.init()
@@ -97,9 +97,7 @@ final class WinUISplitView: WinUILayoutView {
 
     /// The host's one adaptation: a window wide enough for both panes opens with its sidebar shown, and says so.
     private func adaptToFirstRoom(width: Double) {
-        guard !adapted, width > 0 else { return }
-        adapted = true
-        guard !isPresented, width >= WinUISidebarView.expandsAt else { return }
+        guard adaptation.room(width, breakpoint: WinUISidebarView.expandsAt, shown: isPresented) else { return }
 
         present(true)
         onPresentationChanged?(true)

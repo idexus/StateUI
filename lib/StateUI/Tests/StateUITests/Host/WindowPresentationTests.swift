@@ -18,18 +18,20 @@ final class WindowPresentationTests: XCTestCase {
             return window
         }
         runtime.tree.apply(window([HostPatch(id: .manual("page"), type: .page)]), complete: true)
+        var told: [Int32] = []
+        runtime.tree.tellPhase = { told.append($0) }
         let presentation = WindowPresentation()
 
         let first = presentation.show(try XCTUnwrap(runtime.tree.root))
         XCTAssertEqual(first.arrangement?.shown?.id, .manual("page"))
         XCTAssertNil(first.arrangement?.previous)
-        XCTAssertEqual(first.created, 5)
+        XCTAssertEqual(told, [5])
         XCTAssertTrue(first.overlay == nil, "no overlay, before or now: nothing to say")
 
         let again = presentation.show(try XCTUnwrap(runtime.tree.root))
         XCTAssertNil(again.arrangement)
         XCTAssertTrue(again.overlay == nil, "nothing new to lay over")
-        XCTAssertNil(again.created, "told it was made once")
+        XCTAssertEqual(told, [5], "told it was made once")
     }
 
     /// A window's place and size are four requests, each said alone where the tree changed it; one it keeps, or

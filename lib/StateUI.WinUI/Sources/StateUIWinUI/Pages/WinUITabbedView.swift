@@ -8,8 +8,8 @@
 /// Design: docs/design/platforms/winui/pages.md#tabs
 @MainActor
 final class WinUITabbedView: WinUILayoutView {
-    /// The tab the user sees; nil until the tree or the user chooses one.
-    private(set) var selectedIndex: Int?
+    /// Which tab the view shows, by the host layer's rule.
+    private(set) var choice = TabChoice()
 
     /// What the view does when the user chooses a tab, handed the one it showed and the one it shows.
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
@@ -39,12 +39,11 @@ final class WinUITabbedView: WinUILayoutView {
     }
 
     /// The tab the view shows, as an index into its titles.
-    var shownIndex: Int { selectedIndex ?? 0 }
+    var shownIndex: Int { choice.shown }
 
     /// Shows the tabs' titles and the tab the tree asks for, where the user has not chosen another since.
     func show(_ titles: [String], requested: Int?) {
-        if let requested, requested != selectedIndex {
-            selectedIndex = requested
+        if choice.request(requested) {
             holdChildren()
             invalidateMeasurements()
         }
@@ -54,10 +53,8 @@ final class WinUITabbedView: WinUILayoutView {
 
     /// The user chose a tab: it shows, and the view says so.
     func selectByUser(_ index: Int) {
-        let previous = shownIndex
-        guard index != previous, items.indices.contains(index) else { return }
+        guard let previous = choice.choose(index, of: items.count) else { return }
 
-        selectedIndex = index
         row.show(titles, chosen: index)
         holdChildren()
         invalidateMeasurements()

@@ -93,10 +93,10 @@ pages hear it, then the selection's state, and the chrome follows at once.
 
 ## A page's phases
 
-A page hears that it appears and disappears, and on a stack that it is
-navigated to and from, only once the arrangement shows what the tree says,
-each phase rendered before the next is heard. What an arrangement stopped
-showing leaves before what it started showing arrives.
+A page hears its phases as the host layer tells them ([a page's
+phases](../../host/pages.md#a-pages-phases)); WinUI supplies the tab the user
+chose and whether the navigation view's pane shows, which the layer reads to
+know what an arrangement shows.
 
 ## The modal stack
 

@@ -65,6 +65,7 @@
             layoutMotion: layoutMotion, now: clock.now, reducesMotion: reducesMotion, makeNative: makeNative)
         pump = Pump(core: core, intake: intake, tree: tree, displayCycle: displayCycle, now: clock.now, log: log)
 
+        tree.tellPhase = { [weak pump] handler in pump?.handlers.enqueuePhase(handler) }
         clock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
@@ -133,6 +134,40 @@
     /// The application is ending: its window hears it is going, then its scene.
     public func ending() {
         tell(ApplicationLifecycle.ending)
+    }
+
+    /// The user chose tab `selected` of `tabbed`, which showed `previous`: the pages hear it, then the state the
+    /// choice carries.
+    /// Design: docs/design/host/pages.md#a-pages-phases
+    public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
+        let tabs = tabbed.children
+        guard tabs.indices.contains(selected) else { return }
+
+        if tabbed.isPagePresented {
+            if tabs.indices.contains(previous) { tabs[previous].setPagePresented(false, reason: .appearance) }
+            tabs[selected].setPagePresented(true, reason: .appearance)
+        }
+        tabbed.reportUserChange(.currentPage, .currentPageChanged, .number(Double(selected)), in: self) { _ in }
+    }
+
+    /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
+    public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
+        if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
+        split.reportUserChange(.isSidebarVisible, .isSidebarVisibleChanged, .bool(shown), in: self) { _ in }
+    }
+
+    /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
+    /// the window told how many remain.
+    /// Design: docs/design/host/pages.md#the-way-back
+    public func goBack(_ way: WayBack, in window: MountedElement) {
+        switch way {
+        case .pop(let stack):
+            guard stack.children.count > 1, let handler = stack.handler(.popped) else { return }
+            dispatch(handler, payload: [.number(Double(stack.children.count - 2))])
+        case .dismissSheet(let remaining):
+            guard let handler = window.handler(.modalPopped) else { return }
+            dispatch(handler, payload: [.number(Double(remaining))])
+        }
     }
 
     /// The user closed `window`: what that tells (`toldOnClosing`) runs in order, each rendered before the next.

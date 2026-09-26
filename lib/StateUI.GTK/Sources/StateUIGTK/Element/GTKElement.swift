@@ -18,12 +18,6 @@ final class GTKElement: NativeElement {
     /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
     var leaving = false
 
-    /// Whether this page tree is shown, as its pages last heard.
-    var pagePresented = false
-
-    /// What an arrangement showed before the patch now applied.
-    private var previouslyShown: [MountedElement] = []
-
     /// Whether a label shows its spans' runs in place of its own words.
     var hasRuns = false
 
@@ -46,9 +40,7 @@ final class GTKElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {
-        previouslyShown = shownChildren.map(\.element)
-    }
+    func willApply() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
@@ -69,8 +61,6 @@ final class GTKElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
-        reconcilePresentation(from: previouslyShown.map(\.gtk))
-        previouslyShown = []
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 
