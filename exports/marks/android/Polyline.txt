@@ -1,4 +1,4 @@
-Button.clicked: cannot read the colour of Polyline - Android's driver has no path for it yet
-Polyline: cannot read the colour of Polyline - Android's driver has no path for it yet
-Polyline.fillRule: cannot read the colour of Polyline - Android's driver has no path for it yet
-Polyline.points: cannot read the colour of Polyline - Android's driver has no path for it yet
+Button.clicked: ✅
+Polyline: ✅
+Polyline.fillRule: ✅
+Polyline.points: ✅

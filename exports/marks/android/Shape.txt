@@ -1,61 +1,61 @@
-Button.clicked: cannot read aspect of Ellipse - Android's driver has no path for it yet
-Ellipse.aspect: cannot read aspect of Ellipse - Android's driver has no path for it yet
-Ellipse.fill: cannot read fill of Ellipse - Android's driver has no path for it yet
-Ellipse.renderTransform: cannot read renderTransform of Ellipse - Android's driver has no path for it yet
-Ellipse.stroke: cannot read stroke of Ellipse - Android's driver has no path for it yet
+Button.clicked: ✅
+Ellipse.aspect: ✅
+Ellipse.fill: ✅
+Ellipse.renderTransform: ✅
+Ellipse.stroke: ✅
 Ellipse.strokeDashOffset: cannot read strokeDashOffset of Ellipse - Android's driver has no path for it yet
 Ellipse.strokeDashPattern: cannot read strokeDashPattern of Ellipse - Android's driver has no path for it yet
 Ellipse.strokeLineCap: cannot read strokeLineCap of Ellipse - Android's driver has no path for it yet
 Ellipse.strokeLineJoin: cannot read strokeLineJoin of Ellipse - Android's driver has no path for it yet
 Ellipse.strokeMiterLimit: cannot read strokeMiterLimit of Ellipse - Android's driver has no path for it yet
-Ellipse.strokeWidth: cannot read strokeWidth of Ellipse - Android's driver has no path for it yet
-Line.aspect: cannot read aspect of Line - Android's driver has no path for it yet
-Line.fill: cannot read fill of Line - Android's driver has no path for it yet
-Line.renderTransform: cannot read renderTransform of Line - Android's driver has no path for it yet
-Line.stroke: cannot read stroke of Line - Android's driver has no path for it yet
+Ellipse.strokeWidth: ✅
+Line.aspect: ✅
+Line.fill: ✅
+Line.renderTransform: ✅
+Line.stroke: ✅
 Line.strokeDashOffset: cannot read strokeDashOffset of Line - Android's driver has no path for it yet
 Line.strokeDashPattern: cannot read strokeDashPattern of Line - Android's driver has no path for it yet
 Line.strokeLineCap: cannot read strokeLineCap of Line - Android's driver has no path for it yet
 Line.strokeLineJoin: cannot read strokeLineJoin of Line - Android's driver has no path for it yet
 Line.strokeMiterLimit: cannot read strokeMiterLimit of Line - Android's driver has no path for it yet
-Line.strokeWidth: cannot read strokeWidth of Line - Android's driver has no path for it yet
-Path.aspect: cannot read aspect of Path - Android's driver has no path for it yet
-Path.fill: cannot read fill of Path - Android's driver has no path for it yet
-Path.renderTransform: cannot read renderTransform of Path - Android's driver has no path for it yet
-Path.stroke: cannot read stroke of Path - Android's driver has no path for it yet
+Line.strokeWidth: ✅
+Path.aspect: ✅
+Path.fill: ✅
+Path.renderTransform: ✅
+Path.stroke: ✅
 Path.strokeDashOffset: cannot read strokeDashOffset of Path - Android's driver has no path for it yet
 Path.strokeDashPattern: cannot read strokeDashPattern of Path - Android's driver has no path for it yet
 Path.strokeLineCap: cannot read strokeLineCap of Path - Android's driver has no path for it yet
 Path.strokeLineJoin: cannot read strokeLineJoin of Path - Android's driver has no path for it yet
 Path.strokeMiterLimit: cannot read strokeMiterLimit of Path - Android's driver has no path for it yet
-Path.strokeWidth: cannot read strokeWidth of Path - Android's driver has no path for it yet
-Polygon.aspect: cannot read aspect of Polygon - Android's driver has no path for it yet
-Polygon.fill: cannot read fill of Polygon - Android's driver has no path for it yet
-Polygon.renderTransform: cannot read renderTransform of Polygon - Android's driver has no path for it yet
-Polygon.stroke: cannot read stroke of Polygon - Android's driver has no path for it yet
+Path.strokeWidth: ✅
+Polygon.aspect: ✅
+Polygon.fill: ✅
+Polygon.renderTransform: ✅
+Polygon.stroke: ✅
 Polygon.strokeDashOffset: cannot read strokeDashOffset of Polygon - Android's driver has no path for it yet
 Polygon.strokeDashPattern: cannot read strokeDashPattern of Polygon - Android's driver has no path for it yet
 Polygon.strokeLineCap: cannot read strokeLineCap of Polygon - Android's driver has no path for it yet
 Polygon.strokeLineJoin: cannot read strokeLineJoin of Polygon - Android's driver has no path for it yet
 Polygon.strokeMiterLimit: cannot read strokeMiterLimit of Polygon - Android's driver has no path for it yet
-Polygon.strokeWidth: cannot read strokeWidth of Polygon - Android's driver has no path for it yet
-Polyline.aspect: cannot read aspect of Polyline - Android's driver has no path for it yet
-Polyline.fill: cannot read fill of Polyline - Android's driver has no path for it yet
-Polyline.renderTransform: cannot read renderTransform of Polyline - Android's driver has no path for it yet
-Polyline.stroke: cannot read stroke of Polyline - Android's driver has no path for it yet
+Polygon.strokeWidth: ✅
+Polyline.aspect: ✅
+Polyline.fill: ✅
+Polyline.renderTransform: ✅
+Polyline.stroke: ✅
 Polyline.strokeDashOffset: cannot read strokeDashOffset of Polyline - Android's driver has no path for it yet
 Polyline.strokeDashPattern: cannot read strokeDashPattern of Polyline - Android's driver has no path for it yet
 Polyline.strokeLineCap: cannot read strokeLineCap of Polyline - Android's driver has no path for it yet
 Polyline.strokeLineJoin: cannot read strokeLineJoin of Polyline - Android's driver has no path for it yet
 Polyline.strokeMiterLimit: cannot read strokeMiterLimit of Polyline - Android's driver has no path for it yet
-Polyline.strokeWidth: cannot read strokeWidth of Polyline - Android's driver has no path for it yet
-Rectangle.aspect: cannot read aspect of Rectangle - Android's driver has no path for it yet
-Rectangle.fill: cannot read fill of Rectangle - Android's driver has no path for it yet
-Rectangle.renderTransform: cannot read renderTransform of Rectangle - Android's driver has no path for it yet
-Rectangle.stroke: cannot read stroke of Rectangle - Android's driver has no path for it yet
+Polyline.strokeWidth: ✅
+Rectangle.aspect: ✅
+Rectangle.fill: ✅
+Rectangle.renderTransform: ✅
+Rectangle.stroke: ✅
 Rectangle.strokeDashOffset: cannot read strokeDashOffset of Rectangle - Android's driver has no path for it yet
 Rectangle.strokeDashPattern: cannot read strokeDashPattern of Rectangle - Android's driver has no path for it yet
 Rectangle.strokeLineCap: cannot read strokeLineCap of Rectangle - Android's driver has no path for it yet
 Rectangle.strokeLineJoin: cannot read strokeLineJoin of Rectangle - Android's driver has no path for it yet
 Rectangle.strokeMiterLimit: cannot read strokeMiterLimit of Rectangle - Android's driver has no path for it yet
-Rectangle.strokeWidth: cannot read strokeWidth of Rectangle - Android's driver has no path for it yet
+Rectangle.strokeWidth: ✅

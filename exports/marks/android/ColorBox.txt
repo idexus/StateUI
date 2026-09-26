@@ -1,4 +1,4 @@
-Button.clicked: cannot read the colour of ColorBox - Android's driver has no path for it yet
-ColorBox: cannot read the colour of ColorBox - Android's driver has no path for it yet
-ColorBox.color: cannot read the colour of ColorBox - Android's driver has no path for it yet
-ColorBox.cornerRadius: cannot read the colour of ColorBox - Android's driver has no path for it yet
+Button.clicked: ✅
+ColorBox: ✅
+ColorBox.color: ✅
+ColorBox.cornerRadius: ✅

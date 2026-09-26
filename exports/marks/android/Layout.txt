@@ -1,13 +1,13 @@
-Button.clicked: cannot read clipsContent of Grid - Android's driver has no path for it yet
+Button.clicked: ✅
 Grid.avoidsSafeArea: not realized
-Grid.clipsContent: cannot read clipsContent of Grid - Android's driver has no path for it yet
+Grid.clipsContent: ✅
 Grid.letsInputThrough: not realized
 HStack.avoidsSafeArea: not realized
-HStack.clipsContent: cannot read clipsContent of HStack - Android's driver has no path for it yet
+HStack.clipsContent: ✅
 HStack.letsInputThrough: not realized
 VStack.avoidsSafeArea: not realized
-VStack.clipsContent: cannot read clipsContent of VStack - Android's driver has no path for it yet
+VStack.clipsContent: ✅
 VStack.letsInputThrough: not realized
 ZStack.avoidsSafeArea: not realized
-ZStack.clipsContent: cannot read clipsContent of ZStack - Android's driver has no path for it yet
+ZStack.clipsContent: ✅
 ZStack.letsInputThrough: not realized

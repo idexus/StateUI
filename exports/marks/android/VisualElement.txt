@@ -2,7 +2,7 @@ ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level: Andr
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: cannot read background of ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.background: ✅
 ActivityIndicator.focus: ✅
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
@@ -36,7 +36,7 @@ Button.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
-Button.background: cannot read background of Button - Android's driver has no path for it yet
+Button.background: cannot read a background of no one colour - Android's driver has no path for it yet
 Button.clicked: ✅
 Button.focus: ✅
 Button.frame: ✅
@@ -71,7 +71,7 @@ Canvas.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
-Canvas.background: cannot read background of Canvas - Android's driver has no path for it yet
+Canvas.background: ✅
 Canvas.focus: ✅
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
@@ -105,7 +105,7 @@ CheckBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: cannot read background of CheckBox - Android's driver has no path for it yet
+CheckBox.background: ✅
 CheckBox.focus: ✅
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
@@ -139,7 +139,7 @@ ColorBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks
 ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
-ColorBox.background: cannot read background of ColorBox - Android's driver has no path for it yet
+ColorBox.background: ✅
 ColorBox.focus: ✅
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
@@ -173,7 +173,7 @@ DatePicker.accessibilityHeadingLevel: cannot read a heading's level: Android mar
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: cannot read background of DatePicker - Android's driver has no path for it yet
+DatePicker.background: ✅
 DatePicker.focus: ✅
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
@@ -207,7 +207,7 @@ Ellipse.accessibilityHeadingLevel: cannot read a heading's level: Android marks 
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: cannot read background of Ellipse - Android's driver has no path for it yet
+Ellipse.background: ✅
 Ellipse.focus: ✅
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
@@ -241,7 +241,7 @@ Grid.accessibilityHeadingLevel: cannot read a heading's level: Android marks a h
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
-Grid.background: cannot read background of Grid - Android's driver has no path for it yet
+Grid.background: ✅
 Grid.focus: ✅
 Grid.frame: ✅
 Grid.frameChanged: ✅
@@ -275,7 +275,7 @@ HStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
-HStack.background: cannot read background of HStack - Android's driver has no path for it yet
+HStack.background: ✅
 HStack.focus: ✅
 HStack.frame: ✅
 HStack.frameChanged: ✅
@@ -309,7 +309,7 @@ Image.accessibilityHeadingLevel: cannot read a heading's level: Android marks a 
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
-Image.background: cannot read background of Image - Android's driver has no path for it yet
+Image.background: ✅
 Image.focus: ✅
 Image.frame: ✅
 Image.frameChanged: ✅
@@ -343,7 +343,7 @@ Label.accessibilityHeadingLevel: cannot read a heading's level: Android marks a 
 Label.accessibilityHint: ✅
 Label.accessibilityLabel: ✅
 Label.automationExcludedWithChildren: ✅
-Label.background: cannot read background of Label - Android's driver has no path for it yet
+Label.background: ✅
 Label.focus: ✅
 Label.frame: ✅
 Label.frameChanged: ✅
@@ -377,7 +377,7 @@ Line.accessibilityHeadingLevel: cannot read a heading's level: Android marks a h
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
-Line.background: cannot read background of Line - Android's driver has no path for it yet
+Line.background: ✅
 Line.focus: ✅
 Line.frame: ✅
 Line.frameChanged: ✅
@@ -445,7 +445,7 @@ Path.accessibilityHeadingLevel: cannot read a heading's level: Android marks a h
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
-Path.background: cannot read background of Path - Android's driver has no path for it yet
+Path.background: ✅
 Path.focus: ✅
 Path.frame: ✅
 Path.frameChanged: ✅
@@ -479,7 +479,7 @@ Picker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
-Picker.background: cannot read background of Picker - Android's driver has no path for it yet
+Picker.background: ✅
 Picker.focus: ✅
 Picker.frame: ✅
 Picker.frameChanged: ✅
@@ -513,7 +513,7 @@ Polygon.accessibilityHeadingLevel: cannot read a heading's level: Android marks 
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
-Polygon.background: cannot read background of Polygon - Android's driver has no path for it yet
+Polygon.background: ✅
 Polygon.focus: ✅
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
@@ -547,7 +547,7 @@ Polyline.accessibilityHeadingLevel: cannot read a heading's level: Android marks
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
-Polyline.background: cannot read background of Polyline - Android's driver has no path for it yet
+Polyline.background: ✅
 Polyline.focus: ✅
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
@@ -615,7 +615,7 @@ ProgressBar.accessibilityHeadingLevel: cannot read a heading's level: Android ma
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: cannot read background of ProgressBar - Android's driver has no path for it yet
+ProgressBar.background: ✅
 ProgressBar.focus: ✅
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
@@ -649,7 +649,7 @@ RadioButton.accessibilityHeadingLevel: cannot read a heading's level: Android ma
 RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: cannot read background of RadioButton - Android's driver has no path for it yet
+RadioButton.background: ✅
 RadioButton.focus: ✅
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
@@ -683,7 +683,7 @@ Rectangle.accessibilityHeadingLevel: cannot read a heading's level: Android mark
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: cannot read background of Rectangle - Android's driver has no path for it yet
+Rectangle.background: ✅
 Rectangle.focus: ✅
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
@@ -717,7 +717,7 @@ ScrollView.accessibilityHeadingLevel: cannot read a heading's level: Android mar
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: cannot read background of ScrollView - Android's driver has no path for it yet
+ScrollView.background: ✅
 ScrollView.focus: ✅
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
@@ -751,7 +751,7 @@ SearchField.accessibilityHeadingLevel: cannot read a heading's level: Android ma
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
 SearchField.automationExcludedWithChildren: ✅
-SearchField.background: cannot read background of SearchField - Android's driver has no path for it yet
+SearchField.background: ✅
 SearchField.focus: ✅
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
@@ -785,7 +785,7 @@ Slider.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
-Slider.background: cannot read background of Slider - Android's driver has no path for it yet
+Slider.background: ✅
 Slider.focus: ✅
 Slider.frame: ✅
 Slider.frameChanged: ✅
@@ -819,7 +819,7 @@ Stepper.accessibilityHeadingLevel: cannot read a heading's level: Android marks 
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
-Stepper.background: cannot read background of Stepper - Android's driver has no path for it yet
+Stepper.background: ✅
 Stepper.focus: ✅
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
@@ -853,7 +853,7 @@ Switch.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
-Switch.background: cannot read background of Switch - Android's driver has no path for it yet
+Switch.background: ✅
 Switch.focus: ✅
 Switch.frame: ✅
 Switch.frameChanged: ✅
@@ -887,7 +887,7 @@ TextEditor.accessibilityHeadingLevel: cannot read a heading's level: Android mar
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
 TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: cannot read background of TextEditor - Android's driver has no path for it yet
+TextEditor.background: ✅
 TextEditor.focus: ✅
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
@@ -921,7 +921,7 @@ TextField.accessibilityHeadingLevel: cannot read a heading's level: Android mark
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
 TextField.automationExcludedWithChildren: ✅
-TextField.background: cannot read background of TextField - Android's driver has no path for it yet
+TextField.background: ✅
 TextField.focus: ✅
 TextField.frame: ✅
 TextField.frameChanged: ✅
@@ -955,7 +955,7 @@ TimePicker.accessibilityHeadingLevel: cannot read a heading's level: Android mar
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: cannot read background of TimePicker - Android's driver has no path for it yet
+TimePicker.background: ✅
 TimePicker.focus: ✅
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
@@ -1023,7 +1023,7 @@ VStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
-VStack.background: cannot read background of VStack - Android's driver has no path for it yet
+VStack.background: ✅
 VStack.focus: ✅
 VStack.frame: ✅
 VStack.frameChanged: ✅
@@ -1057,7 +1057,7 @@ WebView.accessibilityHeadingLevel: cannot read a heading's level: Android marks 
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
-WebView.background: cannot read background of WebView - Android's driver has no path for it yet
+WebView.background: ✅
 WebView.focus: ✅
 WebView.frame: ✅
 WebView.frameChanged: ✅
@@ -1091,7 +1091,7 @@ ZStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
-ZStack.background: cannot read background of ZStack - Android's driver has no path for it yet
+ZStack.background: ✅
 ZStack.focus: ✅
 ZStack.frame: ✅
 ZStack.frameChanged: ✅

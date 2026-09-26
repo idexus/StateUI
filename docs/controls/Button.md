@@ -51,7 +51,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Button - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Button - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Button - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of Button - AppKit's driver has no path for it yet; Android Views: cannot read background of Button - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of Button - AppKit's driver has no path for it yet; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |

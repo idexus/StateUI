@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/LineContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `x1` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Line - Android's driver has no path for it yet |
-| `x2` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Line - Android's driver has no path for it yet |
-| `y1` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Line - Android's driver has no path for it yet |
-| `y2` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Line - Android's driver has no path for it yet |
+| `x1` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `x2` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `y1` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `y2` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -48,7 +48,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Line - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Line - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Line - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Line - AppKit's driver has no path for it yet; Android Views: cannot read background of Line - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Line - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -123,13 +123,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Line - AppKit's driver has no path for it yet; Android Views: cannot read aspect of Line - Android's driver has no path for it yet |
-| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Line - AppKit's driver has no path for it yet; Android Views: cannot read fill of Line - Android's driver has no path for it yet |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Line - AppKit's driver has no path for it yet; Android Views: cannot read renderTransform of Line - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Line - AppKit's driver has no path for it yet; Android Views: cannot read stroke of Line - Android's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native |  |  |  | ✅ | ✅ |  | cannot read aspect of Line - AppKit's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read fill of Line - AppKit's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  | ✅ | ✅ |  | cannot read renderTransform of Line - AppKit's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read stroke of Line - AppKit's driver has no path for it yet |
 | `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Line - Android's driver has no path for it yet |
 | `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Line - Android's driver has no path for it yet |
 | `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Line - Android's driver has no path for it yet |
 | `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Line - Android's driver has no path for it yet |
 | `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Line - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Line - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Line - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read strokeWidth of Line - AppKit's driver has no path for it yet |

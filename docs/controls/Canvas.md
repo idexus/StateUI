@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onDragged` (`dragged`) | event | `Point` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `drawable` | property | `[DrawCommand]` | structure |  |  |  |  | ✅ |  | cannot read the colour of Canvas - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Canvas - Android's driver has no path for it yet |
+| `drawable` | property | `[DrawCommand]` | structure |  |  |  | ✅ | ✅ |  | cannot read the colour of Canvas - AppKit's driver has no path for it yet |
 | `onPressed` (`pressed`) | event | `Point` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `onReleased` (`released`) | event | `Point` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
@@ -48,7 +48,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Canvas - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Canvas - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Canvas - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Canvas - AppKit's driver has no path for it yet; Android Views: cannot read background of Canvas - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Canvas - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |

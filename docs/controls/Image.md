@@ -46,7 +46,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Image - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Image - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Image - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Image - AppKit's driver has no path for it yet; Android Views: cannot read background of Image - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Image - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -121,4 +121,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Image - AppKit's driver has no path for it yet; Android Views: cannot read aspect of Image - Android's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native |  |  |  | ✅ | ✅ |  | cannot read aspect of Image - AppKit's driver has no path for it yet |

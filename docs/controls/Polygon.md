@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/PolygonContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fillRule` | property | `FillRule` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Polygon - Android's driver has no path for it yet |
-| `points` | property | `[Point]` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read the colour of Polygon - Android's driver has no path for it yet |
+| `fillRule` | property | `FillRule` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet |
+| `points` | property | `[Point]` | stateUI |  |  |  | ✅ | ✅ |  | cannot read the colour of Polygon - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -46,7 +46,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Polygon - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Polygon - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Polygon - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read background of Polygon - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Polygon - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -121,13 +121,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read aspect of Polygon - Android's driver has no path for it yet |
-| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read fill of Polygon - Android's driver has no path for it yet |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read renderTransform of Polygon - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read stroke of Polygon - Android's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native |  |  |  | ✅ | ✅ |  | cannot read aspect of Polygon - AppKit's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read fill of Polygon - AppKit's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  | ✅ | ✅ |  | cannot read renderTransform of Polygon - AppKit's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read stroke of Polygon - AppKit's driver has no path for it yet |
 | `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Polygon - Android's driver has no path for it yet |
 | `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Polygon - Android's driver has no path for it yet |
 | `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Polygon - Android's driver has no path for it yet |
 | `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Polygon - Android's driver has no path for it yet |
 | `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Polygon - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Polygon - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Polygon - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read strokeWidth of Polygon - AppKit's driver has no path for it yet |

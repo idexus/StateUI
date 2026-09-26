@@ -43,7 +43,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of Ellipse - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of Ellipse - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of Ellipse - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read background of Ellipse - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of Ellipse - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -118,13 +118,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read aspect of Ellipse - Android's driver has no path for it yet |
-| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read fill of Ellipse - Android's driver has no path for it yet |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read renderTransform of Ellipse - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read stroke of Ellipse - Android's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native |  |  |  | ✅ | ✅ |  | cannot read aspect of Ellipse - AppKit's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read fill of Ellipse - AppKit's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  | ✅ | ✅ |  | cannot read renderTransform of Ellipse - AppKit's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ | ✅ |  | cannot read stroke of Ellipse - AppKit's driver has no path for it yet |
 | `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashOffset of Ellipse - Android's driver has no path for it yet |
 | `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeDashPattern of Ellipse - Android's driver has no path for it yet |
 | `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineCap of Ellipse - Android's driver has no path for it yet |
 | `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeLineJoin of Ellipse - Android's driver has no path for it yet |
 | `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeMiterLimit of Ellipse - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Ellipse - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Ellipse - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ | ✅ |  | cannot read strokeWidth of Ellipse - AppKit's driver has no path for it yet |

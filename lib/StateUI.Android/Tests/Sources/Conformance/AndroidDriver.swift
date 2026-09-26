@@ -38,6 +38,7 @@ final class AndroidDriver: HostDriver {
         AndroidRenderer.shared = renderer
         self.renderer = renderer
         Java.call(window.reference, Self.setContentView, .object(root.reference))
+        Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         renderer.show()
         layOut()
         // The activity comes to the front: onResume.
@@ -108,6 +109,18 @@ final class AndroidDriver: HostDriver {
         return Question(
             title: words[0] ?? "", message: words[1] ?? "", buttons: words.dropFirst(3).compactMap { $0 },
             field: words[2])
+    }
+
+    /// The colour the view draws at `point` of its own, as Android draws it into a bitmap; nil where it draws
+    /// nothing there.
+    func color(of element: MountedElement, at point: Point) throws -> Color? {
+        guard let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read the colour of \(element.type.name)")
+        }
+        let argb = UInt32(bitPattern: Java.callStaticInt(
+            Self.testPixels, Self.pixel, .object(view.reference), .int(Int32(point.x * 2)), .int(Int32(point.y * 2))))
+        guard argb >> 24 > 0x80 else { return nil }
+        return Self.color(argb | 0xFF00_0000)
     }
 
     func focused(_ element: MountedElement) throws -> Bool {

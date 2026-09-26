@@ -29,10 +29,11 @@ extension AndroidDriver {
             return FontAttributes(rawValue: Java.callStaticInt(Self.testText, Self.style, .object(text.reference)) & 3)
                 .propValue
         case (.textColor, let text as AndroidTextView):
-            let argb = UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))
-            return Color(
-                red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF),
-                alpha: Int(argb >> 24)).propValue
+            return Self.color(UInt32(bitPattern: Java.callInt(text.reference, Self.getCurrentTextColor))).propValue
+        case (.background, let view?):
+            let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
+            guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
+            return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
         case (.fontFamily, _ as AndroidTextView):
             throw DriverCannot("read a family: Android's typeface keeps no family's name")
         case (_, let view?):
@@ -96,4 +97,14 @@ extension AndroidDriver {
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
     static let getCurrentTextColor = Java.method(JavaAPI.textView, "getCurrentTextColor", "()I")
+
+    /// A colour Android holds as 0xAARRGGBB.
+    static func color(_ argb: UInt32) -> Color {
+        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
+    }
+
+    static let testPixels = Java.findClass("stateui/android/test/TestPixels")
+    static let background = Java.staticMethod(testPixels, "background", "(Landroid/view/View;)J")
+    static let pixel = Java.staticMethod(testPixels, "color", "(Landroid/view/View;II)I")
+    static let paintNothing = Java.staticMethod(testPixels, "paintNothing", "(Landroid/app/Activity;)V")
 }

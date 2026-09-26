@@ -43,7 +43,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of VStack - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of VStack - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of VStack - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of VStack - AppKit's driver has no path for it yet; Android Views: cannot read background of VStack - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ | ✅ |  | cannot read background of VStack - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -119,7 +119,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read clipsContent of VStack - AppKit's driver has no path for it yet; Android Views: cannot read clipsContent of VStack - Android's driver has no path for it yet |
+| `clipsContent` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read clipsContent of VStack - AppKit's driver has no path for it yet |
 | `letsInputThrough` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 
 ## From [StackBase](tiers/StackBase.md)

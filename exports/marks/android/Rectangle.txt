@@ -1,4 +1,4 @@
-Button.clicked: cannot read the colour of Rectangle - Android's driver has no path for it yet
-Rectangle: cannot read the colour of Rectangle - Android's driver has no path for it yet
-Rectangle.cornerRadius: cannot read the colour of Rectangle - Android's driver has no path for it yet
-Rectangle.fill: cannot read the colour of Rectangle - Android's driver has no path for it yet
+Button.clicked: ✅
+Rectangle: ✅
+Rectangle.cornerRadius: ✅
+Rectangle.fill: ✅

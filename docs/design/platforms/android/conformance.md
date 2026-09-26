@@ -56,6 +56,10 @@ seek bar's progress, a text view's words, a view's visibility, alpha and
 enabled state, its translation back in points, its rotation, scale and pivot,
 the words its accessibility node carries as TalkBack reads them, a text
 view's size in the scaled points the host sets it in, its bold and italic and
-its colour - never from what the host last wrote. What Android does not hold
+its colour - never from what the host last wrote. A colour is read from the
+window as the user sees it, the render thread's clips and outlines included
+(`PixelCopy`, once the window has drawn): a software drawing of the view
+leaves an outline's cut out. The test window stands on a colour of its own,
+which reads as nothing. What Android does not hold
 stays unread, with why: a heading's level, where Android marks a heading, and
 a typeface's family, which keeps no name.

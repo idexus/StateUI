@@ -55,7 +55,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ |  |  |  |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  | Android Views: cannot read background of WebView - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  |  |
 | `focus` | act | `() -> Bool` |  |  |  |  | ✅ |  |  |  |
 | `frame` | property | `Rect` | structure |  |  |  | ✅ |  |  |  |
 | `height` | property | `Double` | native |  |  |  | ✅ |  |  |  |

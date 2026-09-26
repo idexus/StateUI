@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ColorBoxContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `color` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read the colour of ColorBox - AppKit's driver has no path for it yet; Android Views: cannot read the colour of ColorBox - Android's driver has no path for it yet |
-| `cornerRadius` | property | `CornerRadius` | native |  |  |  |  | ✅ |  | cannot read the colour of ColorBox - AppKit's driver has no path for it yet; Android Views: cannot read the colour of ColorBox - Android's driver has no path for it yet |
+| `color` | property | `Color` | native |  |  |  | ✅ | ✅ |  | cannot read the colour of ColorBox - AppKit's driver has no path for it yet |
+| `cornerRadius` | property | `CornerRadius` | native |  |  |  | ✅ | ✅ |  | cannot read the colour of ColorBox - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -46,7 +46,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityHint of ColorBox - AppKit's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | ✅ |  | cannot read accessibilityLabel of ColorBox - AppKit's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read automationExcludedWithChildren of ColorBox - AppKit's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of ColorBox - AppKit's driver has no path for it yet; Android Views: cannot read background of ColorBox - Android's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  | ✅ |  |  | cannot read background of ColorBox - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
