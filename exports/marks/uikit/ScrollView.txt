@@ -1,8 +1,9 @@
-ScrollView: not realized
-ScrollView.horizontalScrollBarVisibility: not realized
-ScrollView.orientation: not realized
-ScrollView.scrollOffset: not realized
-ScrollView.scrollStopped: not realized
-ScrollView.scrollXChanged: not realized
-ScrollView.scrollYChanged: not realized
-ScrollView.verticalScrollBarVisibility: not realized
+Button.clicked: ✅
+ScrollView: ✅
+ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: ✅
+ScrollView.scrollXChanged: ✅
+ScrollView.scrollYChanged: ✅
+ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet

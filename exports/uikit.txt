@@ -155,6 +155,19 @@ Rectangle
   strokeLineJoin
   strokeMiterLimit
   strokeWidth
+ScrollView
+  background
+  horizontalScrollBarVisibility
+  orientation
+  padding
+  scrollOffset
+  shape
+  stroke
+  strokeWidth
+  verticalScrollBarVisibility
+  scrollStopped()
+  scrollXChanged()
+  scrollYChanged()
 SearchField
   cursorPosition
   fontAttributes

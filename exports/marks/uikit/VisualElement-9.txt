@@ -23,7 +23,7 @@ ProgressBar.isEnabled: cannot read isEnabled of ProgressBar - UIKit's driver has
 ProgressBar.zIndex: not realized
 RadioButton.scaleY: ✅
 Rectangle.rotationY: ✅
-ScrollView.pivotY: not realized
+ScrollView.pivotY: ✅
 SearchField.background: not realized
 Slider.accessibilityHeadingLevel: not realized
 Stepper.style: not realized

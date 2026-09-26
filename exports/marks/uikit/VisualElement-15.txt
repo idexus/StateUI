@@ -23,7 +23,7 @@ ProgressBar.style: not realized
 RadioButton.ignoresInput: not realized
 Rectangle.isEnabled: cannot read isEnabled of Rectangle - UIKit's driver has no path for it yet
 Rectangle.zIndex: not realized
-ScrollView.scaleY: not realized
+ScrollView.scaleY: ✅
 SearchField.rotationY: ✅
 Slider.pivotY: ✅
 Stepper.background: not realized

@@ -27,7 +27,7 @@ PositionIndicator.scaleX: not realized
 ProgressBar.rotationX: ✅
 RadioButton.pivotX: ✅
 Rectangle.automationExcludedWithChildren: not realized
-ScrollView.accessibilityHint: not realized
+ScrollView.accessibilityHint: ✅
 SearchField.focus: not realized
 SearchField.isFocusedChanged: not realized
 SearchField.unfocus: not realized

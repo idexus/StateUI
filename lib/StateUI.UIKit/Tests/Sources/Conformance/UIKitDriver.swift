@@ -92,6 +92,11 @@ final class UIKitDriver: HostDriver {
             guard stepped != stepper.value else { return }
             stepper.value = stepped
             stepper.sendActions(for: .valueChanged)
+        case (.scroll(let target), let scroll as UIKitScrollView):
+            // A finger takes the scroller, moves it there, and lets go without a throw.
+            scroll.scrollViewWillBeginDragging(scroll.scroller)
+            scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
+            scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
         case (.pickDate(let day), let picker as UIKitDateTimePickerView):
             picker.apply(value: day.propValue.numbers, minimum: nil, maximum: nil)
@@ -153,6 +158,9 @@ final class UIKitDriver: HostDriver {
             return ClockTime(propValue: .numbers(picker.lanes))?.propValue
         case (.minimumDate, let picker as UIKitDateTimePickerView): return picker.minimumDate.map(Self.day)
         case (.maximumDate, let picker as UIKitDateTimePickerView): return picker.maximumDate.map(Self.day)
+        case (.scrollOffset, let scroll as UIKitScrollView):
+            return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
+        case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue

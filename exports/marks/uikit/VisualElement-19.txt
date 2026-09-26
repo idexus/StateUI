@@ -23,8 +23,6 @@ ProgressBar.isAccessibilityHidden: not realized
 RadioButton.accessibilityLabel: ✅
 Rectangle.frame: not realized
 ScrollView.frameChanged: not realized
-ScrollView.height: not realized
-ScrollView.width: not realized
 SearchField.isVisible: ✅
 SearchField.translationX: ✅
 Slider.scale: ✅

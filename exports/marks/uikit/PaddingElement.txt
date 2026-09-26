@@ -4,6 +4,6 @@ Grid.padding: ✅
 HStack.padding: ✅
 Label.padding: cannot read padding of Label - UIKit's driver has no path for it yet
 RadioButton.padding: cannot read padding of RadioButton - UIKit's driver has no path for it yet
-ScrollView.padding: not realized
+ScrollView.padding: ✅
 VStack.padding: ✅
 ZStack.padding: ✅

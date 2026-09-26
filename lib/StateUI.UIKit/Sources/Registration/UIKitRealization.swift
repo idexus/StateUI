@@ -12,7 +12,7 @@ enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator",
-        "ModalStack", "NavigationStack", "Overlay", "Pin", "PositionIndicator", "ScrollView", "Span", "Spans",
+        "ModalStack", "NavigationStack", "Overlay", "Pin", "PositionIndicator", "Span", "Spans",
         "SplitView", "TabbedView", "TitleBar", "TitleView", "ToolbarItem", "ToolbarItems", "TrailingContent",
         "WebView",
     ]

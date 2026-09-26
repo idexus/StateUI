@@ -31,4 +31,6 @@ extension UIKitElement: FrameReporter {
             content: Point(x: window.safeAreaInsets.left, y: window.safeAreaInsets.top))
     }
 }
+
+extension UIKitScrollView: FramedScroller {}
 #endif

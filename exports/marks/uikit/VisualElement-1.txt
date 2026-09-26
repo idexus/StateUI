@@ -23,7 +23,7 @@ PositionIndicator.scale: not realized
 ProgressBar.rotation: ✅
 RadioButton.layoutDirection: not realized
 Rectangle.isAccessibilityHidden: not realized
-ScrollView.accessibilityLabel: not realized
+ScrollView.accessibilityLabel: ✅
 SearchField.frame: not realized
 Slider.frameChanged: not realized
 Stepper.isVisible: ✅

@@ -16,13 +16,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ScrollViewContract.s
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
-| `orientation` | property | `ScrollOrientation` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scrollOffset` | property | `Point` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
-| `onScrollStopped` (`scrollStopped`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
-| `scrollXChanged` | event | `Double` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
-| `scrollYChanged` | event | `Double` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
-| `verticalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read verticalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read verticalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
+| `horizontalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read horizontalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
+| `orientation` | property | `ScrollOrientation` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scrollOffset` | property | `Point` | structure | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
+| `onScrollStopped` (`scrollStopped`) | event |  | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
+| `scrollXChanged` | event | `Double` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
+| `scrollYChanged` | event | `Double` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
+| `verticalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read verticalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read verticalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read verticalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
 
 Realization:
 
@@ -48,35 +48,35 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `background` | property | `Background` | native | ☑️ |  |  | ✅ | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
+| `background` | property | `Background` | native | ☑️ |  |  | ✅ | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: cannot read background of ScrollView - UIKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of ScrollView - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -126,7 +126,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -134,6 +134,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read shape of ScrollView - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read stroke of ScrollView - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of ScrollView - Android's driver has no path for it yet |
+| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read shape of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read shape of ScrollView - Android's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read stroke of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read stroke of ScrollView - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read strokeWidth of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read strokeWidth of ScrollView - Android's driver has no path for it yet |

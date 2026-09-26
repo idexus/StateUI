@@ -33,7 +33,7 @@ ProgressBar.frameChanged: not realized
 RadioButton.opacity: ✅
 RadioButton.translationY: ✅
 Rectangle.scaleX: ✅
-ScrollView.rotationX: not realized
+ScrollView.rotationX: ✅
 SearchField.pivotX: ✅
 Slider.automationExcludedWithChildren: not realized
 Stepper.accessibilityHint: ✅

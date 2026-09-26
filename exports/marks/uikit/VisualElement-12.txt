@@ -23,7 +23,7 @@ ProgressBar.ignoresInput: not realized
 RadioButton.isEnabled: ✅
 RadioButton.zIndex: not realized
 Rectangle.scaleY: ✅
-ScrollView.rotationY: not realized
+ScrollView.rotationY: ✅
 SearchField.pivotY: ✅
 Slider.background: not realized
 Stepper.accessibilityHeadingLevel: not realized

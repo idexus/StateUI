@@ -72,23 +72,6 @@ final class UIKitElement: NativeElement {
     var chosenTab: Int? { nil }
 
     var showsSidebar: Bool? { nil }
-
-    // MARK: - What the user does
-
-    /// An event the view raised, with what it carries, to the handler the tree listens with.
-    func send(_ event: Event, _ values: [HostValue]) {
-        guard let host else { return }
-        element.send(event, values, in: host.runtime)
-    }
-
-    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button its
-    /// set's other checks take away shows them taken.
-    func report(_ property: Prop, _ event: Event, _ value: HostValue) {
-        guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { peer in
-            (peer.uiKit.view as? UIKitCheckView)?.setOn(false)
-        }
-    }
 }
 
 extension UIKitElement: PlacedView {

@@ -36,7 +36,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ProgressBar](ProgressBar.md) | 68 | 52 ✅ · 2 ☑️ | 16 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
 | [RadioButton](RadioButton.md) | 81 | 61 ✅ · 2 ☑️ | 24 ✅ | 18 ✅ | 61 ✅ | 62 ✅ |  |
 | [Rectangle](Rectangle.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [ScrollView](ScrollView.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 54 ✅ | 62 ✅ |  |
+| [ScrollView](ScrollView.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 54 ✅ | 62 ✅ |  |
 | [SearchField](SearchField.md) | 89 | 61 ✅ · 2 ☑️ | 29 ✅ | 16 ✅ | 60 ✅ | 60 ✅ |  |
 | [Slider](Slider.md) | 73 | 56 ✅ · 2 ☑️ | 20 ✅ | 17 ✅ | 59 ✅ | 56 ✅ |  |
 | [Stepper](Stepper.md) | 71 | 57 ✅ · 2 ☑️ | 20 ✅ | 18 ✅ | 53 ✅ | 56 ✅ |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 56 ✅ · 1 ☑️ | 19 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 18 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 546 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 566 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure

@@ -57,8 +57,6 @@ Rectangle.panTouchCount: not realized
 Rectangle.panUpdated: not realized
 Rectangle.panXChannel: not realized
 ScrollView.frameChanged: not realized
-ScrollView.gridColumnSpan: not realized
-ScrollView.gridRowSpan: not realized
 SearchField.frameChanged: not realized
 Slider.canDrag: not realized
 Slider.dragStarting: not realized

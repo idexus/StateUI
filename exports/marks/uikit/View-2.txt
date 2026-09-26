@@ -55,8 +55,6 @@ RadioButton.panYChannel: not realized
 Rectangle.tapCount: not realized
 Rectangle.tapped: not realized
 ScrollView.frameChanged: not realized
-ScrollView.gridColumn: not realized
-ScrollView.gridRow: not realized
 SearchField.allowDrop: not realized
 SearchField.dragLeave: not realized
 SearchField.dragOver: not realized

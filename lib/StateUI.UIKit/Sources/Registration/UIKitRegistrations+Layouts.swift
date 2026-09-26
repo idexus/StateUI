@@ -49,6 +49,41 @@ extension UIKitRegistrations {
         }
     }
 
+    /// A ScrollView: its orientation, bars and room, and the offset the tree moves it to. Where the user moves it is
+    /// reported by the element, on the display's frames.
+    /// Design: docs/design/platforms/uikit/layout.md#scrolling
+    static func scrolling(_ registry: Registry<UIView>) {
+        registry.add(ScrollViewContract.self, create: { _ in UIKitScrollView() }) { scroll in
+            scroll.applies([
+                ScrollViewContract.orientation, ScrollViewContract.verticalScrollBarVisibility,
+                ScrollViewContract.horizontalScrollBarVisibility, ScrollViewContract.scrollOffset,
+                PaddingElementContract.padding,
+            ]) { view, values in
+                view.apply(
+                    orientation: values[ScrollViewContract.orientation] ?? .vertical,
+                    padding: values[PaddingElementContract.padding] ?? Insets(0),
+                    verticalBar: values[ScrollViewContract.verticalScrollBarVisibility] ?? .default,
+                    horizontalBar: values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default,
+                    offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
+            }
+            scroll.applies([
+                VisualElementContract.background,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
+                view.setBox(
+                    fill: values[VisualElementContract.background]?.propValue,
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    width: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue,
+                    clips: true)
+            }
+            scroll.raises(ScrollViewContract.scrollXChanged)
+            scroll.raises(ScrollViewContract.scrollYChanged)
+            scroll.raises(ScrollViewContract.scrollStopped)
+        }
+    }
+
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     private static let boxMembers: [any ContractMember] = [
         VisualElementContract.background,

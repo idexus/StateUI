@@ -32,8 +32,8 @@ RadioButton.focus: not realized
 RadioButton.isFocusedChanged: not realized
 RadioButton.unfocus: not realized
 Rectangle.frameChanged: not realized
-ScrollView.opacity: not realized
-ScrollView.translationY: not realized
+ScrollView.opacity: ✅
+ScrollView.translationY: ✅
 SearchField.scaleX: ✅
 Slider.rotationX: ✅
 Stepper.pivotX: ✅

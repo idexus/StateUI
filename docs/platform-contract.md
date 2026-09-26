@@ -116,7 +116,7 @@ host whose passing test proved one of its members.
 | `RadioButton` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Rectangle` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Scene` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
-| `ScrollView` | native | ✅ |  | ✅ | ✅ | ✅ |  |
+| `ScrollView` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `SearchField` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Slider` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Span` | structure | ✅ |  |  | ✅ | ✅ |  |
@@ -443,7 +443,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ProgressBar](controls/ProgressBar.md) | 68 | 52 ✅ · 2 ☑️ | 16 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | 81 | 61 ✅ · 2 ☑️ | 24 ✅ | 18 ✅ | 61 ✅ | 62 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [ScrollView](controls/ScrollView.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 54 ✅ | 62 ✅ |  |
+| [ScrollView](controls/ScrollView.md) | 77 | 57 ✅ · 2 ☑️ | 20 ✅ | 13 ✅ | 54 ✅ | 62 ✅ |  |
 | [SearchField](controls/SearchField.md) | 89 | 61 ✅ · 2 ☑️ | 29 ✅ | 16 ✅ | 60 ✅ | 60 ✅ |  |
 | [Slider](controls/Slider.md) | 73 | 56 ✅ · 2 ☑️ | 20 ✅ | 17 ✅ | 59 ✅ | 56 ✅ |  |
 | [Stepper](controls/Stepper.md) | 71 | 57 ✅ · 2 ☑️ | 20 ✅ | 18 ✅ | 53 ✅ | 56 ✅ |  |
@@ -455,7 +455,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 19 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 18 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 546 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 566 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 

@@ -22,7 +22,7 @@ PositionIndicator.background: not realized
 ProgressBar.accessibilityHeadingLevel: not realized
 RadioButton.style: not realized
 Rectangle.ignoresInput: not realized
-ScrollView.isEnabled: not realized
+ScrollView.isEnabled: cannot read isEnabled of ScrollView - UIKit's driver has no path for it yet
 ScrollView.zIndex: not realized
 SearchField.scaleY: ✅
 Slider.rotationY: ✅

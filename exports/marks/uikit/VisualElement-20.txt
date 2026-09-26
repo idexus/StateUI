@@ -29,10 +29,6 @@ Rectangle.focus: not realized
 Rectangle.isFocusedChanged: not realized
 Rectangle.unfocus: not realized
 ScrollView.frameChanged: not realized
-ScrollView.maximumHeight: not realized
-ScrollView.maximumWidth: not realized
-ScrollView.minimumHeight: not realized
-ScrollView.minimumWidth: not realized
 SearchField.opacity: ✅
 SearchField.translationY: ✅
 Slider.scaleX: ✅

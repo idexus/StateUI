@@ -15,6 +15,7 @@ extension UIKitElement {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            if let scroll = registered as? UIKitScrollView { follow(scroll) }
             return registered
         }
         guard !NodeType.viewlessTypes.contains(type) else { return nil }

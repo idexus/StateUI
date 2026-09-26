@@ -21,6 +21,7 @@ enum UIKitRegistrations {
         pickers(registry)
         shapes(registry)
         layouts(registry)
+        scrolling(registry)
         shared(registry)
         return registry
     }()

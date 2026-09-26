@@ -54,8 +54,6 @@ ScrollView.dragLeave: not realized
 ScrollView.dragOver: not realized
 ScrollView.drop: not realized
 ScrollView.frameChanged: not realized
-ScrollView.horizontalAlignment: not realized
-ScrollView.verticalAlignment: not realized
 SearchField.pointerEntered: not realized
 SearchField.pointerExited: not realized
 SearchField.pointerMoved: not realized

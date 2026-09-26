@@ -11,9 +11,9 @@ HStack.strokeWidth: cannot read strokeWidth of HStack - UIKit's driver has no pa
 RadioButton.shape: not realized
 RadioButton.stroke: not realized
 RadioButton.strokeWidth: not realized
-ScrollView.shape: not realized
-ScrollView.stroke: not realized
-ScrollView.strokeWidth: not realized
+ScrollView.shape: cannot read shape of ScrollView - UIKit's driver has no path for it yet
+ScrollView.stroke: cannot read stroke of ScrollView - UIKit's driver has no path for it yet
+ScrollView.strokeWidth: cannot read strokeWidth of ScrollView - UIKit's driver has no path for it yet
 VStack.shape: cannot read shape of VStack - UIKit's driver has no path for it yet
 VStack.stroke: cannot read stroke of VStack - UIKit's driver has no path for it yet
 VStack.strokeWidth: cannot read strokeWidth of VStack - UIKit's driver has no path for it yet

@@ -23,7 +23,7 @@ PositionIndicator.zIndex: not realized
 ProgressBar.scaleY: ✅
 RadioButton.rotationY: ✅
 Rectangle.pivotY: ✅
-ScrollView.background: not realized
+ScrollView.background: cannot read background of ScrollView - UIKit's driver has no path for it yet
 SearchField.accessibilityHeadingLevel: not realized
 Slider.style: not realized
 Stepper.ignoresInput: not realized

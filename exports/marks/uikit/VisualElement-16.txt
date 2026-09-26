@@ -24,8 +24,8 @@ PositionIndicator.isAccessibilityHidden: not realized
 ProgressBar.accessibilityLabel: ✅
 RadioButton.frame: not realized
 Rectangle.frameChanged: not realized
-ScrollView.isVisible: not realized
-ScrollView.translationX: not realized
+ScrollView.isVisible: ✅
+ScrollView.translationX: ✅
 SearchField.scale: ✅
 Slider.rotation: ✅
 Stepper.layoutDirection: not realized

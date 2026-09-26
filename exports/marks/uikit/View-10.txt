@@ -54,7 +54,6 @@ ScrollView.dragStarting: not realized
 ScrollView.dragText: not realized
 ScrollView.dropCompleted: not realized
 ScrollView.frameChanged: not realized
-ScrollView.margin: not realized
 SearchField.pinchUpdated: not realized
 Slider.panYChannel: not realized
 Stepper.tapCount: not realized

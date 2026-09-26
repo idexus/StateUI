@@ -53,7 +53,6 @@ RadioButton.panTouchCount: not realized
 RadioButton.panUpdated: not realized
 RadioButton.panXChannel: not realized
 Rectangle.frameChanged: not realized
-ScrollView.area: not realized
 ScrollView.frameChanged: not realized
 SearchField.canDrag: not realized
 SearchField.dragStarting: not realized
