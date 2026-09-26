@@ -126,19 +126,6 @@ namespace {
             if (auto dialog = popup.Child().try_as<controls::ContentDialog>()) return dialog;
         return nullptr;
     }
-
-    /// The first element of type `T` in `element`'s tree, in order, named `name` where one is given; null for none.
-    template <typename T>
-    T first(xaml::DependencyObject const &element, wchar_t const *name = nullptr) {
-        auto count = xaml::Media::VisualTreeHelper::GetChildrenCount(element);
-        for (int32_t index = 0; index < count; ++index) {
-            auto child = xaml::Media::VisualTreeHelper::GetChild(element, index);
-            auto found = child.try_as<T>();
-            if (found && (!name || child.as<xaml::FrameworkElement>().Name() == name)) return found;
-            if (auto inner = first<T>(child, name)) return inner;
-        }
-        return nullptr;
-    }
 }
 
 namespace stateui {

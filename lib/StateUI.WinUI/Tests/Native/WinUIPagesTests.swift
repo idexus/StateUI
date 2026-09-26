@@ -37,6 +37,29 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A sidebar taller than the window scrolls: its scroller stands in the room the pane has, shorter than what it
+    /// holds.
+    func testASidebarTallerThanTheWindowScrolls() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    ScrollView {
+                        VStack { ForEach(Array(0..<100), id: \.self) { number in Label("Row \(number)") } }
+                    }
+                } detail: {
+                    Label("Detail")
+                }
+            }
+            host.layOut()
+            let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
+            let rows = try XCTUnwrap(host.views(WinUIStackView.self).first)
+            host.settle { scroller.frame.height > 0 && scroller.frame.height < rows.frame.height }
+
+            XCTAssertGreaterThan(scroller.frame.height, 0)
+            XCTAssertLessThan(scroller.frame.height, rows.frame.height, "the rows run past the scroller: it scrolls")
+        }
+    }
+
     /// A tabbed view in a split view's detail stands its tabs across the detail, beside the sidebar.
     func testATabbedDetailStandsItsTabsAcrossTheDetail() throws {
         try onUIThread {

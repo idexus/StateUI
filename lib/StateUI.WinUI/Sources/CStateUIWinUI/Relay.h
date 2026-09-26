@@ -112,6 +112,20 @@ namespace stateui {
         return grid;
     }
 
+    /// The first element of type `T` in `element`'s tree, depth first, named `name` where one is given - a part of a
+    /// control's template among them; null for none.
+    template <typename T>
+    T first(xaml::DependencyObject const &element, wchar_t const *name = nullptr) {
+        auto count = xaml::Media::VisualTreeHelper::GetChildrenCount(element);
+        for (int32_t index = 0; index < count; ++index) {
+            auto child = xaml::Media::VisualTreeHelper::GetChild(element, index);
+            auto found = child.try_as<T>();
+            if (found && (!name || child.as<xaml::FrameworkElement>().Name() == name)) return found;
+            if (auto inner = first<T>(child, name)) return inner;
+        }
+        return nullptr;
+    }
+
     /// Whether `element` is one of a window's layers over its rows - its sheets or its overlay - and no row's own.
     inline bool isLayer(xaml::FrameworkElement const &element) {
         auto name = winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"");

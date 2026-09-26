@@ -127,6 +127,18 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
         split.IsPaneToggleButtonVisible(false);
         split.IsTitleBarAutoPaddingEnabled(false);
         split.Content(rows({true, false}));
+        // The pane's own content stands in a row sized to what it holds, so a sidebar's scroller would never scroll.
+        // Design: docs/design/platforms/winui/pages.md#a-split-view
+        split.Loaded([](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+            auto split = sender.as<controls::NavigationView>();
+            auto sidebar = first<controls::ContentControl>(split, L"PaneCustomContentBorder");
+            auto items = first<controls::Grid>(split, L"ItemsContainerGrid");
+            auto pane = sidebar ? xaml::Media::VisualTreeHelper::GetParent(sidebar).try_as<controls::Grid>() : nullptr;
+            if (!pane || !items) return;
+            auto rows = pane.RowDefinitions();
+            rows.GetAt(controls::Grid::GetRow(sidebar)).Height(xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star));
+            rows.GetAt(controls::Grid::GetRow(items)).Height(xaml::GridLengthHelper::Auto());
+        });
         split.PaneOpening([view](controls::NavigationView const &, IInspectable const &) { callbacks.presented(view, true); });
         split.PaneClosing([view](controls::NavigationView const &, controls::NavigationViewPaneClosingEventArgs const &) {
             callbacks.presented(view, false);

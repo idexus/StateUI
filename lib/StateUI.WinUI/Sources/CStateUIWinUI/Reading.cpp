@@ -77,18 +77,6 @@ namespace {
         return words;
     }
 
-    /// The first element of type `T` under `element`, depth first.
-    template <typename T>
-    T first(xaml::DependencyObject const &element) {
-        auto count = media::VisualTreeHelper::GetChildrenCount(element);
-        for (int32_t index = 0; index < count; ++index) {
-            auto child = media::VisualTreeHelper::GetChild(element, index);
-            if (auto found = child.try_as<T>()) return found;
-            if (auto inner = first<T>(child)) return inner;
-        }
-        return nullptr;
-    }
-
     /// How words are written on a text block or a control.
     std::optional<std::string> font(IInspectable const &object, std::string_view what) {
         auto text = object.try_as<controls::TextBlock>();

@@ -53,7 +53,11 @@ its content: WinUI decides, as for any Windows application, whether the pane
 stands beside the detail - from 1008 DIPs, where its navigation pane expands -
 or opens over it, closed by a click beside it. The view shows none of its own
 buttons, which the window's chrome carries, and no compact rail: a sidebar is
-a page, with no icons to stand in one.
+a page, with no icons to stand in one. The pane's own content stands, in
+WinUI's template, in a row sized to what it holds, however tall - a sidebar's
+scroller would hold all its rows and never scroll - so once the view is
+loaded that row takes the pane's room, and the row of the items the view
+holds none of takes only theirs.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane opening or closing of WinUI's accord - a click beside it, the
