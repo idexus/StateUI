@@ -26,6 +26,16 @@ where the delegate hears it as it hears AppKit, and the application's being
 put behind another is told as AppKit's application delegate tells it. A
 window closed by the user is the window's own `close`.
 
+## Parts
+
+A family runs as one test, and the longest - a visual element's, a view's, a
+shape's, each a case for every element wearing the tier - in parts of some ten
+seconds, each a test of its own writing its own file of verdicts, which the
+dictionary reads together. A part runs alone by its name (`swift test
+--filter AppKitConformanceTests/testVisualElement5`), and the parts run side by
+side under `swift test --parallel`, the whole suite in some four minutes where
+one process takes nine.
+
 ## Pictures
 
 Every host's suite holds the two pictures the cases name, 6 by 4 and 40 by 20,

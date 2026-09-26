@@ -1,0 +1,38 @@
+ActivityIndicator.pivotY: cannot read pivotY of ActivityIndicator - AppKit's driver has no path for it yet
+Button.background: cannot read background of Button - AppKit's driver has no path for it yet
+Button.clicked: ✅
+Canvas.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Canvas - AppKit's driver has no path for it yet
+CheckBox.style: not realized
+ColorBox.ignoresInput: cannot read what reaches ColorBox - AppKit's driver has no path for it yet
+DatePicker.isEnabled: ✅
+DatePicker.zIndex: not realized
+Ellipse.scaleY: cannot read scaleY of Ellipse - AppKit's driver has no path for it yet
+Grid.rotationY: cannot read rotationY of Grid - AppKit's driver has no path for it yet
+HStack.pivotY: cannot read pivotY of HStack - AppKit's driver has no path for it yet
+Image.background: cannot read background of Image - AppKit's driver has no path for it yet
+Label.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Label - AppKit's driver has no path for it yet
+Line.style: not realized
+Map.ignoresInput: not realized
+Path.isEnabled: not realized
+Path.zIndex: not realized
+Picker.scaleY: cannot read scaleY of Picker - AppKit's driver has no path for it yet
+Polygon.rotationY: cannot read rotationY of Polygon - AppKit's driver has no path for it yet
+Polyline.pivotY: cannot read pivotY of Polyline - AppKit's driver has no path for it yet
+PositionIndicator.background: not realized
+ProgressBar.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ProgressBar - AppKit's driver has no path for it yet
+RadioButton.style: not realized
+Rectangle.ignoresInput: cannot read what reaches Rectangle - AppKit's driver has no path for it yet
+ScrollView.isEnabled: not realized
+ScrollView.zIndex: not realized
+SearchField.scaleY: cannot read scaleY of SearchField - AppKit's driver has no path for it yet
+Slider.rotationY: cannot read rotationY of Slider - AppKit's driver has no path for it yet
+Stepper.pivotY: cannot read pivotY of Stepper - AppKit's driver has no path for it yet
+Switch.background: cannot read background of Switch - AppKit's driver has no path for it yet
+TextEditor.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextEditor - AppKit's driver has no path for it yet
+TextField.style: not realized
+TimePicker.ignoresInput: cannot read what reaches TimePicker - AppKit's driver has no path for it yet
+TitleBar.isEnabled: not realized
+TitleBar.zIndex: not realized
+VStack.scaleY: cannot read scaleY of VStack - AppKit's driver has no path for it yet
+WebView.rotationY: not realized
+ZStack.pivotY: cannot read pivotY of ZStack - AppKit's driver has no path for it yet

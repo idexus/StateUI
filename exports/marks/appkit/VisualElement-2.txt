@@ -1,0 +1,63 @@
+ActivityIndicator.opacity: ✅
+ActivityIndicator.translationY: cannot read translationY of ActivityIndicator - AppKit's driver has no path for it yet
+Button.clicked: ✅
+Button.scaleX: cannot read scaleX of Button - AppKit's driver has no path for it yet
+Canvas.rotationX: cannot read rotationX of Canvas - AppKit's driver has no path for it yet
+CheckBox.pivotX: cannot read pivotX of CheckBox - AppKit's driver has no path for it yet
+ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - AppKit's driver has no path for it yet
+DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - AppKit's driver has no path for it yet
+Ellipse.focus: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
+Ellipse.isFocusedChanged: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
+Ellipse.unfocus: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
+Grid.frameChanged: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
+HStack.opacity: ✅
+HStack.translationY: cannot read translationY of HStack - AppKit's driver has no path for it yet
+Image.scaleX: cannot read scaleX of Image - AppKit's driver has no path for it yet
+Label.rotationX: cannot read rotationX of Label - AppKit's driver has no path for it yet
+Line.pivotX: cannot read pivotX of Line - AppKit's driver has no path for it yet
+Map.automationExcludedWithChildren: not realized
+Path.accessibilityHint: cannot read accessibilityHint of Path - AppKit's driver has no path for it yet
+Picker.focus: cannot read the focus of Picker - AppKit's driver has no path for it yet
+Picker.isFocusedChanged: cannot read the focus of Picker - AppKit's driver has no path for it yet
+Picker.unfocus: cannot read the focus of Picker - AppKit's driver has no path for it yet
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polyline.opacity: ✅
+Polyline.translationY: cannot read translationY of Polyline - AppKit's driver has no path for it yet
+PositionIndicator.scaleX: not realized
+ProgressBar.rotationX: cannot read rotationX of ProgressBar - AppKit's driver has no path for it yet
+RadioButton.pivotX: cannot read pivotX of RadioButton - AppKit's driver has no path for it yet
+Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - AppKit's driver has no path for it yet
+ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - AppKit's driver has no path for it yet
+SearchField.focus: cannot read the focus of SearchField - AppKit's driver has no path for it yet
+SearchField.isFocusedChanged: cannot read the focus of SearchField - AppKit's driver has no path for it yet
+SearchField.unfocus: cannot read the focus of SearchField - AppKit's driver has no path for it yet
+Slider.frameChanged: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Stepper.opacity: ✅
+Stepper.translationY: cannot read translationY of Stepper - AppKit's driver has no path for it yet
+Switch.scaleX: cannot read scaleX of Switch - AppKit's driver has no path for it yet
+TextEditor.rotationX: cannot read rotationX of TextEditor - AppKit's driver has no path for it yet
+TextField.pivotX: cannot read pivotX of TextField - AppKit's driver has no path for it yet
+TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - AppKit's driver has no path for it yet
+TitleBar.accessibilityHint: not realized
+VStack.focus: cannot read the focus of VStack - AppKit's driver has no path for it yet
+VStack.isFocusedChanged: cannot read the focus of VStack - AppKit's driver has no path for it yet
+VStack.unfocus: cannot read the focus of VStack - AppKit's driver has no path for it yet
+WebView.frameChanged: not realized
+WebView.maximumHeight: not realized
+WebView.maximumWidth: not realized
+WebView.minimumHeight: not realized
+WebView.minimumWidth: not realized
+ZStack.opacity: ✅
+ZStack.translationY: cannot read translationY of ZStack - AppKit's driver has no path for it yet

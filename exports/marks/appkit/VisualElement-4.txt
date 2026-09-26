@@ -1,0 +1,48 @@
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.height: ✅
+ActivityIndicator.width: ✅
+Button.clicked: ✅
+Button.isVisible: ✅
+Button.translationX: cannot read translationX of Button - AppKit's driver has no path for it yet
+Canvas.scale: cannot read scale of Canvas - AppKit's driver has no path for it yet
+CheckBox.rotation: cannot read rotation of CheckBox - AppKit's driver has no path for it yet
+ColorBox.layoutDirection: not realized
+DatePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of DatePicker - AppKit's driver has no path for it yet
+Ellipse.accessibilityLabel: cannot read accessibilityLabel of Ellipse - AppKit's driver has no path for it yet
+Grid.frame: ✅
+HStack.frameChanged: ✅
+HStack.height: ✅
+HStack.width: ✅
+Image.isVisible: ✅
+Image.translationX: cannot read translationX of Image - AppKit's driver has no path for it yet
+Label.scale: cannot read scale of Label - AppKit's driver has no path for it yet
+Line.rotation: cannot read rotation of Line - AppKit's driver has no path for it yet
+Map.layoutDirection: not realized
+Path.isAccessibilityHidden: cannot read isAccessibilityHidden of Path - AppKit's driver has no path for it yet
+Picker.accessibilityLabel: cannot read accessibilityLabel of Picker - AppKit's driver has no path for it yet
+Polygon.frame: ✅
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.width: ✅
+PositionIndicator.isVisible: not realized
+PositionIndicator.translationX: not realized
+ProgressBar.scale: cannot read scale of ProgressBar - AppKit's driver has no path for it yet
+RadioButton.rotation: cannot read rotation of RadioButton - AppKit's driver has no path for it yet
+Rectangle.layoutDirection: not realized
+ScrollView.isAccessibilityHidden: cannot read isAccessibilityHidden of ScrollView - AppKit's driver has no path for it yet
+SearchField.accessibilityLabel: cannot read accessibilityLabel of SearchField - AppKit's driver has no path for it yet
+Slider.frame: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.width: ✅
+Switch.isVisible: ✅
+Switch.translationX: cannot read translationX of Switch - AppKit's driver has no path for it yet
+TextEditor.scale: cannot read scale of TextEditor - AppKit's driver has no path for it yet
+TextField.rotation: cannot read rotation of TextField - AppKit's driver has no path for it yet
+TimePicker.layoutDirection: not realized
+TitleBar.isAccessibilityHidden: not realized
+VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - AppKit's driver has no path for it yet
+WebView.frame: not realized
+ZStack.frameChanged: ✅
+ZStack.height: ✅
+ZStack.width: ✅

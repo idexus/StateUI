@@ -1,0 +1,109 @@
+ActivityIndicator.pointerEntered: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pointerExited: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pointerMoved: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pointerPressed: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pointerReleased: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+Button.clicked: ✅
+Button.swipeDirection: cannot pan on Button - AppKit's driver has no path for it yet
+Button.swipeThreshold: cannot pan on Button - AppKit's driver has no path for it yet
+Button.swiped: cannot pan on Button - AppKit's driver has no path for it yet
+Canvas.panTouchCount: cannot pan on Canvas - AppKit's driver has no path for it yet
+Canvas.panUpdated: cannot pan on Canvas - AppKit's driver has no path for it yet
+Canvas.panXChannel: cannot pan on Canvas - AppKit's driver has no path for it yet
+CheckBox.frameChanged: ✅
+CheckBox.gridColumnSpan: ✅
+CheckBox.gridRowSpan: ✅
+ColorBox.area: ✅
+ColorBox.frameChanged: ✅
+DatePicker.canDrag: not realized
+DatePicker.dragStarting: not realized
+DatePicker.dragText: not realized
+DatePicker.dropCompleted: not realized
+DatePicker.frameChanged: ✅
+DatePicker.margin: ✅
+Ellipse.pinchUpdated: cannot pinch on Ellipse - AppKit's driver has no path for it yet
+Grid.panYChannel: cannot pan on Grid - AppKit's driver has no path for it yet
+HStack.tapCount: cannot tap on HStack - AppKit's driver has no path for it yet
+HStack.tapped: cannot tap on HStack - AppKit's driver has no path for it yet
+Image.frameChanged: ✅
+Image.gridColumn: ✅
+Image.gridRow: ✅
+Label.allowDrop: not realized
+Label.dragLeave: not realized
+Label.dragOver: not realized
+Label.drop: not realized
+Label.frameChanged: ✅
+Label.horizontalAlignment: ✅
+Label.verticalAlignment: ✅
+Line.pointerEntered: cannot hover on Line - AppKit's driver has no path for it yet
+Line.pointerExited: cannot hover on Line - AppKit's driver has no path for it yet
+Line.pointerMoved: cannot hover on Line - AppKit's driver has no path for it yet
+Line.pointerPressed: cannot hover on Line - AppKit's driver has no path for it yet
+Line.pointerReleased: cannot hover on Line - AppKit's driver has no path for it yet
+Map.swipeDirection: not realized
+Map.swipeThreshold: not realized
+Map.swiped: not realized
+Path.panTouchCount: cannot pan on Path - AppKit's driver has no path for it yet
+Path.panUpdated: cannot pan on Path - AppKit's driver has no path for it yet
+Path.panXChannel: cannot pan on Path - AppKit's driver has no path for it yet
+Picker.frameChanged: ✅
+Picker.gridColumnSpan: ✅
+Picker.gridRowSpan: ✅
+Polygon.area: ✅
+Polygon.frameChanged: ✅
+Polyline.canDrag: not realized
+Polyline.dragStarting: not realized
+Polyline.dragText: not realized
+Polyline.dropCompleted: not realized
+Polyline.frameChanged: ✅
+Polyline.margin: ✅
+PositionIndicator.pinchUpdated: not realized
+ProgressBar.panYChannel: cannot pan on ProgressBar - AppKit's driver has no path for it yet
+RadioButton.tapCount: cannot tap on RadioButton - AppKit's driver has no path for it yet
+RadioButton.tapped: cannot tap on RadioButton - AppKit's driver has no path for it yet
+Rectangle.frameChanged: ✅
+Rectangle.gridColumn: ✅
+Rectangle.gridRow: ✅
+ScrollView.allowDrop: not realized
+ScrollView.dragLeave: not realized
+ScrollView.dragOver: not realized
+ScrollView.drop: not realized
+ScrollView.frameChanged: ✅
+ScrollView.horizontalAlignment: ✅
+ScrollView.verticalAlignment: ✅
+SearchField.pointerEntered: cannot hover on SearchField - AppKit's driver has no path for it yet
+SearchField.pointerExited: cannot hover on SearchField - AppKit's driver has no path for it yet
+SearchField.pointerMoved: cannot hover on SearchField - AppKit's driver has no path for it yet
+SearchField.pointerPressed: cannot hover on SearchField - AppKit's driver has no path for it yet
+SearchField.pointerReleased: cannot hover on SearchField - AppKit's driver has no path for it yet
+Slider.swipeDirection: cannot pan on Slider - AppKit's driver has no path for it yet
+Slider.swipeThreshold: cannot pan on Slider - AppKit's driver has no path for it yet
+Slider.swiped: cannot pan on Slider - AppKit's driver has no path for it yet
+Stepper.panTouchCount: cannot pan on Stepper - AppKit's driver has no path for it yet
+Stepper.panUpdated: cannot pan on Stepper - AppKit's driver has no path for it yet
+Stepper.panXChannel: cannot pan on Stepper - AppKit's driver has no path for it yet
+Switch.frameChanged: ✅
+Switch.gridColumnSpan: ✅
+Switch.gridRowSpan: ✅
+TextEditor.area: ✅
+TextEditor.frameChanged: ✅
+TextField.canDrag: not realized
+TextField.dragStarting: not realized
+TextField.dragText: not realized
+TextField.dropCompleted: not realized
+TextField.frameChanged: ✅
+TextField.margin: ✅
+TimePicker.pinchUpdated: cannot pinch on TimePicker - AppKit's driver has no path for it yet
+TitleBar.panYChannel: not realized
+VStack.tapCount: cannot tap on VStack - AppKit's driver has no path for it yet
+VStack.tapped: cannot tap on VStack - AppKit's driver has no path for it yet
+WebView.frameChanged: not realized
+WebView.gridColumn: not realized
+WebView.gridRow: not realized
+ZStack.allowDrop: not realized
+ZStack.dragLeave: not realized
+ZStack.dragOver: not realized
+ZStack.drop: not realized
+ZStack.frameChanged: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.verticalAlignment: ✅
