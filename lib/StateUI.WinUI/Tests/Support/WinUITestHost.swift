@@ -56,8 +56,17 @@ extension WinUIRenderer {
         stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
-        WinUITestHost.pump()
+        renderer.waitForFirstLayout()
         return renderer
+    }
+
+    /// Runs the thread's messages until the window's content is laid out - its first frame - at most half a second:
+    /// a start waits for its window, not a fixed time.
+    func waitForFirstLayout() {
+        for _ in 0..<25 {
+            WinUITestHost.pump(0.02)
+            if let content = window?.content, content.laidOutFrame.width > 0 { return }
+        }
     }
 
     /// A host whose tree takes only what a test applies; its root stands in the test's window. The core's own
