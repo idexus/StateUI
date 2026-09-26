@@ -6,46 +6,21 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// Kept values: read from the preferences before the first render, and saved.
+/// Kept values in the preferences: read before the first render, each written as it changes, as the words every
+/// host keeps a value by.
+/// Design: docs/design/host/runtime.md#kept-values
 extension AppKitRenderer {
     func hydratePersistentState() {
-        var restored: [String: HostValue] = [:]
-
-        for key in runtime.core.persistentKeys {
-            guard preferences.object(forKey: key.name) != nil else { continue }
-
-            switch key.kind {
-            case .boolean:
-                restored[key.name] = .bool(preferences.bool(forKey: key.name))
-            case .integer, .number:
-                restored[key.name] = .number(preferences.double(forKey: key.name))
-            case .text:
-                if let value = preferences.string(forKey: key.name) {
-                    restored[key.name] = .string(value)
-                }
-            }
-        }
-
-        runtime.core.restorePersistent(restored)
+        let keys = runtime.core.persistentKeys
+        let words = Dictionary(uniqueKeysWithValues: keys.compactMap { key in
+            preferences.string(forKey: key.name).map { (key.name, $0) }
+        })
+        runtime.core.restorePersistent(KeptWord.restored(words, for: keys))
     }
 
     func savePersistent(_ call: HostActCall) {
-        guard call.arguments.count >= 2,
-              let name = call.arguments[0].name,
-              let key = runtime.core.persistentKeys.first(where: { $0.name == name })
-        else { return }
-
-        let value = call.arguments[1]
-        switch key.kind {
-        case .boolean:
-            if let value = value.bool { preferences.set(value, forKey: name) }
-        case .integer:
-            if let value = value.number { preferences.set(Int64(value), forKey: name) }
-        case .number:
-            if let value = value.number { preferences.set(value, forKey: name) }
-        case .text:
-            if let value = value.string { preferences.set(value, forKey: name) }
-        }
+        guard let kept = KeptWord.kept(call.arguments, keys: runtime.core.persistentKeys) else { return }
+        preferences.set(kept.word, forKey: kept.name)
     }
 }
 #endif

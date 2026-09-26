@@ -371,16 +371,20 @@ of another's.
 
 ## Kept values
 
-A host whose platform keeps no store an application can use keeps the
-application's kept values in a file of its own, and one codec says what the
-file holds (`KeptValuesText`): a line a key, its name and its words apart by
-a tab - a tab, a line's end and a backslash in either escaped - the keys in
-order, so the same values write the same file. A value is kept as the words
-its key's kind reads back, and a value of another kind is not kept. A key the
-application does not list still saves, as its value's own kind - true or
-false, a number, words - which its key's kind reads back once it is listed,
-as the application's session promises. Where the file stands and how it is
-read and written is the host's.
+Every host keeps a value as its words, by one rule (`KeptWord`): a value is
+kept as the words its key's kind reads back, and a value of another kind is
+not kept. A key the application does not list still saves, as its value's
+own kind - true or false, a number, words - which its key's kind reads back
+once it is listed, as the application's session promises. The words stand in
+the platform's own store where it has one - the preferences on a Mac and on
+Android.
+
+A host whose platform keeps no store an application can use keeps them in a
+file of its own, and one codec says what the file holds (`KeptValuesText`): a
+line a key, its name and its words apart by a tab - a tab, a line's end and a
+backslash in either escaped - the keys in order, so the same values write the
+same file. Where the file stands and how it is read and written is the
+host's.
 
 ## Kept scenes
 

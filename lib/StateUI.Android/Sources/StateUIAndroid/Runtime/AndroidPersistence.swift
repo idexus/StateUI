@@ -6,7 +6,7 @@
 import CStateUIAndroid
 
 /// The application's kept values in the platform's preferences: read before the first scene, written as each
-/// changes, each as words its key's kind reads back.
+/// changes, as the words every host keeps a value by.
 /// Design: docs/design/platforms/android/runtime.md#kept-values
 @MainActor
 enum AndroidPersistence {
@@ -27,36 +27,17 @@ enum AndroidPersistence {
             } ?? []
         }
 
-        var restored: [String: HostValue] = [:]
-        for (key, word) in zip(keys, words) {
-            guard let word else { continue }
-            switch key.kind {
-            case .boolean: restored[key.name] = .bool(word == "true")
-            case .integer, .number: if let number = Double(word) { restored[key.name] = .number(number) }
-            case .text: restored[key.name] = .string(word)
-            }
-        }
-        core.restorePersistent(restored)
+        let kept = zip(keys, words).compactMap { key, word in word.map { (key.name, $0) } }
+        core.restorePersistent(KeptWord.restored(Dictionary(uniqueKeysWithValues: kept), for: keys))
     }
 
     /// Keeps a key's new value, as the act `persistValue` carries it.
     static func keep(_ call: HostActCall, core: CoreLink, context: jobject) {
-        guard call.arguments.count >= 2,
-              let name = call.arguments[0].name,
-              let key = core.persistentKeys.first(where: { $0.name == name })
-        else { return }
-
-        let value = call.arguments[1]
-        let word: String? = switch key.kind {
-        case .boolean: value.bool.map { $0 ? "true" : "false" }
-        case .integer: value.number.map { String(Int64($0)) }
-        case .number: value.number.map { String($0) }
-        case .text: value.string
-        }
-        guard let word else { return }
+        guard let kept = KeptWord.kept(call.arguments, keys: core.persistentKeys) else { return }
         Java.frame {
             Java.callStatic(
-                JavaAPI.store, JavaAPI.writeStore, .object(context), .object(Java.string(name)), .object(Java.string(word)))
+                JavaAPI.store, JavaAPI.writeStore, .object(context), .object(Java.string(kept.name)),
+                .object(Java.string(kept.word)))
         }
     }
 }
