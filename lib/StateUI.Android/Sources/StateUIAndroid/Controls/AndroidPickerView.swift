@@ -28,12 +28,18 @@ final class AndroidPickerView: AndroidView {
         }
     }
 
-    /// The options, the title shown while nothing is chosen, and the chosen index; -1 for none.
-    func setChoices(_ options: [String], title: String, chosen: Int) {
+    /// The choices and the choice as the tree last wrote them (`PickerChoices`).
+    private var written = PickerChoices()
+
+    /// The options, the chosen index - written only where `writeChosen` or the options changed, so the user's
+    /// choice is never argued with - and the title shown while nothing is chosen.
+    func setChoices(_ options: [String], chosen: Int, writeChosen: Bool, title: String) {
+        let write = written.write(options, chosen: chosen, choiceChanged: writeChosen)
         Java.frame {
-            let array = Java.array(of: JavaAPI.string, options.map(Java.string))
+            let array = write.choices.flatMap { Java.array(of: JavaAPI.string, $0.map(Java.string)) }
             Java.call(
-                reference, JavaAPI.setChoices, .object(array), .object(Java.string(title)), .int(Int32(chosen)))
+                reference, JavaAPI.setChoices, .object(array), .object(Java.string(title)),
+                .int(Int32(write.chosen ?? -1)), .bool(write.writesChoice))
         }
     }
 

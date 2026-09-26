@@ -20,8 +20,8 @@ extension AndroidRegistrations {
             picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.title]) {
                 view, values in
                 view.setChoices(
-                    values[PickerContract.options] ?? [], title: values[PickerContract.title] ?? "",
-                    chosen: values[PickerContract.selectedIndex] ?? -1)
+                    values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.title] ?? "")
             }
             picker.property(PickerContract.isOpen) { view, open in
                 if open == true { view.openList() }

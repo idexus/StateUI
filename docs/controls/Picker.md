@@ -19,10 +19,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 | `onClosed` (`closed`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `isOpen` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
-| `options` | property | `[String]` | structure | ✅ |  | ✅ |  | ✅ |  | Android Views: cannot read options of Picker - Android's driver has no path for it yet |
-| `selectedIndex` | property | `Int` | native | ✅ |  | ✅ |  | ✅ |  | Android Views: cannot choose on Picker - Android's driver has no path for it yet |
-| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ |  | ✅ |  | ✅ |  | Android Views: cannot choose on Picker - Android's driver has no path for it yet |
-| `title` | property | `String` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read title of Picker - Android's driver has no path for it yet |
+| `options` | property | `[String]` | structure | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `selectedIndex` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `title` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 Realization:
 

@@ -34,6 +34,11 @@ extension AndroidDriver {
             let held = Java.callStaticLong(Self.testPixels, Self.background, .object(view.reference))
             guard held >> 32 == 1 else { throw DriverCannot("read a background of no one colour") }
             return Background.color(Self.color(UInt32(truncatingIfNeeded: held))).propValue
+        case (.options, let picker as AndroidPickerView): return Array(Self.rows(of: picker).dropFirst()).propValue
+        case (.title, let picker as AndroidPickerView): return Self.rows(of: picker).first?.propValue
+        case (.selectedIndex, let picker as AndroidPickerView):
+            // The title's row stands first: it is no choice.
+            return (Int(Java.callInt(picker.reference, Self.getSelectedItemPosition)) - 1).propValue
         case (.fontFamily, _ as AndroidTextView):
             throw DriverCannot("read a family: Android's typeface keeps no family's name")
         case (_, let view?):
@@ -97,6 +102,16 @@ extension AndroidDriver {
     static let points = Java.staticMethod(testText, "points", "(Landroid/widget/TextView;)F")
     static let style = Java.staticMethod(testText, "style", "(Landroid/widget/TextView;)I")
     static let getCurrentTextColor = Java.method(JavaAPI.textView, "getCurrentTextColor", "()I")
+
+    /// A picker's rows' words as its spinner shows them, the title's first.
+    private static func rows(of picker: AndroidPickerView) -> [String] {
+        Java.frame {
+            guard let rows = Java.callStaticObject(testPicker, pickerRows, .object(picker.reference)) else { return [] }
+            return (0..<Java.jni.GetArrayLength(Java.env, rows)).map { index in
+                Java.jni.GetObjectArrayElement(Java.env, rows, index).map { Java.text($0) } ?? ""
+            }
+        }
+    }
 
     /// A colour Android holds as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {

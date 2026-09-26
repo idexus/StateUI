@@ -107,7 +107,7 @@ host whose passing test proved one of its members.
 | `Overlay` | structure | ✅ |  |  |  | ✅ |  |
 | `Page` | adaptive | ✅ |  |  | ✅ | ✅ |  |
 | `Path` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
-| `Picker` | native | ✅ |  | ✅ |  | ✅ |  |
+| `Picker` | native | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Pin` | provider |  |  |  |  |  |  |
 | `Polygon` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
 | `Polyline` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |
@@ -436,7 +436,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 80 | 60 ✅ · 2 ☑️ |  | 13 ✅ | 61 ✅ | 64 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 | 57 ✅ · 2 ☑️ |  | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [Picker](controls/Picker.md) | 82 | 56 ✅ · 2 ☑️ |  | 16 ✅ | 53 ✅ | 64 ✅ |  |
+| [Picker](controls/Picker.md) | 82 | 56 ✅ · 2 ☑️ |  | 16 ✅ | 57 ✅ | 64 ✅ |  |
 | [Polygon](controls/Polygon.md) | 78 | 58 ✅ · 2 ☑️ |  | 13 ✅ | 59 ✅ | 62 ✅ |  |
 | [Polyline](controls/Polyline.md) | 78 | 58 ✅ · 2 ☑️ |  | 13 ✅ | 59 ✅ | 62 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
@@ -455,7 +455,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ |  | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ |  | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met |  | 376 of 2515 met | 1705 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met |  | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 

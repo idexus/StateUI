@@ -49,13 +49,17 @@ final class StateUIPicker extends Spinner implements AdapterView.OnItemSelectedL
         setOnItemSelectedListener(this);
     }
 
-    /** The options, the title shown while nothing is chosen, and the chosen index - -1 for none. */
-    void setChoices(String[] options, String title, int chosen) {
-        this.options = options;
+    /**
+     * The options - null where they stay - the title shown while nothing is chosen, and, where `writesChoice`,
+     * the chosen index, -1 for none.
+     */
+    void setChoices(String[] options, String title, int chosen, boolean writesChoice) {
+        if (options != null) this.options = options;
         this.title = title;
         rows.notifyDataSetChanged();
+        if (!writesChoice) return;
 
-        chosenRow = Math.max(chosen, -1) + 1;
+        chosenRow = chosen + 1;
         if (getSelectedItemPosition() != chosenRow) setSelection(chosenRow);
     }
 

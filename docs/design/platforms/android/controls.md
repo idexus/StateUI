@@ -150,7 +150,9 @@ and the open list leaves it out; a choice is the row after its index. Android
 tells a spinner's selection as it next measures or lays the spinner out -
 the row it started on, then the program's - when the program's write is long
 over, so the picker itself knows the row the program's choice stands on, and
-a report of that row, or of the title's, is no change.
+a report of that row, or of the title's, is no change. The picker is given
+its options where they changed and the choice only where the tree changed it
+or them (`PickerChoices`): a new title leaves the user's choice standing.
 
 The list opens on the user's tap, which is reported, or on `isOpen`, which
 is not. It takes the window's focus while it shows, and the focus coming back

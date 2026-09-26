@@ -28,6 +28,9 @@ extension AndroidDriver {
                     Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
             }
             guard answered else { throw DriverCannot("answer by \(caption)") }
+        case (.choose(let place), let picker as AndroidPickerView):
+            // The row after the title's, as the user's tap on it in the open list chooses it.
+            Java.callStatic(Self.testPicker, Self.choosePicker, .object(picker.reference), .int(Int32(place + 1)))
         case (.tap(let count), let view?): Self.tap(view, count: count)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
         case (.pinch(let scale, let point), let view?):
@@ -77,6 +80,12 @@ extension AndroidDriver {
     private static func pixels(_ points: Double) -> Float {
         Float(points * 2)
     }
+
+    static let testPicker = Java.findClass("stateui/android/test/TestPicker")
+    static let choosePicker = Java.staticMethod(testPicker, "choose", "(Landroid/widget/Spinner;I)V")
+    static let pickerRows = Java.staticMethod(testPicker, "rows", "(Landroid/widget/Spinner;)[Ljava/lang/String;")
+    static let getSelectedItemPosition = Java.method(
+        Java.findClass("android/widget/AdapterView"), "getSelectedItemPosition", "()I")
 
     /// A motion event's actions, as Android numbers them.
     private static let (down, up, move) = (Int32(0), Int32(1), Int32(2))
