@@ -1,4 +1,4 @@
-Button.clicked: cannot read currentPage of TabbedView - AppKit's driver has no path for it yet
-TabbedView: cannot read currentPage of TabbedView - AppKit's driver has no path for it yet
-TabbedView.currentPage: cannot read currentPage of TabbedView - AppKit's driver has no path for it yet
-TabbedView.currentPageChanged: cannot read currentPage of TabbedView - AppKit's driver has no path for it yet
+Button.clicked: ✅
+TabbedView: ✅
+TabbedView.currentPage: ✅
+TabbedView.currentPageChanged: ✅

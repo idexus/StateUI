@@ -204,12 +204,14 @@ final class AppKitElement: NSObject, NativeElement {
         guard let view else { return }
         view.isHidden = !leaving && value(.isVisible)?.bool == false
         view.alphaValue = value(.opacity)?.number ?? 1
+        let ignores = value(.ignoresInput)?.bool ?? false
         if let hitTestView = view as? AppKitHitTestView {
             // The whole view and its children, or only its own empty area.
-            let ignores = value(.ignoresInput)?.bool ?? false
             hitTestView.applyInputTransparency(
                 leaving || ignores || value(.letsInputThrough)?.bool == true,
                 cascades: leaving || ignores)
+        } else {
+            AppKitIgnoredInput.set(view, ignores: leaving || ignores)
         }
     }
 

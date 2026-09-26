@@ -46,13 +46,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of Rectangle - Android's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of Rectangle - Android's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read background of Rectangle - Android's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Rectangle - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches Rectangle - AppKit's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of Rectangle - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of Rectangle - AppKit's driver has no path for it yet |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read translationX of Rectangle - Android's driver has no path for it yet |
 | `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Rectangle - AppKit's driver has no path for it yet; Android Views: cannot read translationY of Rectangle - Android's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Rectangle - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 

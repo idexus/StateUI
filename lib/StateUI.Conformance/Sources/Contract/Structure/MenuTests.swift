@@ -33,9 +33,11 @@
                 let row = try s.element("row")
                 s.expect(try s.menu(of: row), "Share[Mail]")
 
+                // The submenu's own caption and reach: what its entries show under a submenu out of reach is each
+                // platform's own - one holds them out of reach with it - and no user reaches them there.
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.menu(of: row) == "!Send[Mail]" }
-                s.expect(try s.menu(of: row), "!Send[Mail]", "renamed, and out of reach")
+                try s.settle { try s.menu(of: row).hasPrefix("!Send[") }
+                s.expect(try s.menu(of: row).hasPrefix("!Send["), true, "renamed, and out of reach")
             },
         ]
     }

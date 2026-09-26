@@ -3,9 +3,9 @@ Button.clicked: ✅
 Button.pivotX: cannot read pivotX of Button - AppKit's driver has no path for it yet
 Canvas.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Canvas - AppKit's driver has no path for it yet
 CheckBox.accessibilityHint: cannot read accessibilityHint of CheckBox - AppKit's driver has no path for it yet
-ColorBox.focus: cannot read the focus of ColorBox - AppKit's driver has no path for it yet
-ColorBox.isFocusedChanged: cannot read the focus of ColorBox - AppKit's driver has no path for it yet
-ColorBox.unfocus: cannot read the focus of ColorBox - AppKit's driver has no path for it yet
+ColorBox.focus: ✅
+ColorBox.isFocusedChanged: ✅
+ColorBox.unfocus: ✅
 DatePicker.frameChanged: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
@@ -33,9 +33,9 @@ Polyline.rotationX: cannot read rotationX of Polyline - AppKit's driver has no p
 PositionIndicator.pivotX: not realized
 ProgressBar.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ProgressBar - AppKit's driver has no path for it yet
 RadioButton.accessibilityHint: cannot read accessibilityHint of RadioButton - AppKit's driver has no path for it yet
-Rectangle.focus: cannot read the focus of Rectangle - AppKit's driver has no path for it yet
-Rectangle.isFocusedChanged: cannot read the focus of Rectangle - AppKit's driver has no path for it yet
-Rectangle.unfocus: cannot read the focus of Rectangle - AppKit's driver has no path for it yet
+Rectangle.focus: ✅
+Rectangle.isFocusedChanged: ✅
+Rectangle.unfocus: ✅
 ScrollView.frameChanged: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
@@ -48,9 +48,9 @@ Stepper.rotationX: cannot read rotationX of Stepper - AppKit's driver has no pat
 Switch.pivotX: cannot read pivotX of Switch - AppKit's driver has no path for it yet
 TextEditor.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextEditor - AppKit's driver has no path for it yet
 TextField.accessibilityHint: cannot read accessibilityHint of TextField - AppKit's driver has no path for it yet
-TimePicker.focus: cannot read the focus of TimePicker - AppKit's driver has no path for it yet
-TimePicker.isFocusedChanged: cannot read the focus of TimePicker - AppKit's driver has no path for it yet
-TimePicker.unfocus: cannot read the focus of TimePicker - AppKit's driver has no path for it yet
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.unfocus: ✅
 TitleBar.frameChanged: not realized
 TitleBar.maximumHeight: not realized
 TitleBar.maximumWidth: not realized

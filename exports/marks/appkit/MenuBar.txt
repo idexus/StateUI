@@ -1,5 +1,5 @@
-Button.clicked: cannot read the menu of Window - AppKit's driver has no path for it yet
-Menu.text: cannot read the menu of Window - AppKit's driver has no path for it yet
+Button.clicked: ✅
+Menu.text: ✅
 MenuBar: ✅
 MenuItem.clicked: ✅
-MenuItem.isEnabled: cannot read the menu of Window - AppKit's driver has no path for it yet
+MenuItem.isEnabled: ✅

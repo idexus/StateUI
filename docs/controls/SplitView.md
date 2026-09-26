@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet |
+| `isSidebarVisible` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  |  | ✅ |  |  |
 
 Realization:
 

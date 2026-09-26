@@ -6,9 +6,9 @@ Canvas.rotationX: cannot read rotationX of Canvas - AppKit's driver has no path 
 CheckBox.pivotX: cannot read pivotX of CheckBox - AppKit's driver has no path for it yet
 ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - AppKit's driver has no path for it yet
 DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - AppKit's driver has no path for it yet
-Ellipse.focus: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
-Ellipse.isFocusedChanged: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
-Ellipse.unfocus: cannot read the focus of Ellipse - AppKit's driver has no path for it yet
+Ellipse.focus: ✅
+Ellipse.isFocusedChanged: ✅
+Ellipse.unfocus: ✅
 Grid.frameChanged: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
@@ -21,9 +21,9 @@ Label.rotationX: cannot read rotationX of Label - AppKit's driver has no path fo
 Line.pivotX: cannot read pivotX of Line - AppKit's driver has no path for it yet
 Map.automationExcludedWithChildren: not realized
 Path.accessibilityHint: cannot read accessibilityHint of Path - AppKit's driver has no path for it yet
-Picker.focus: cannot read the focus of Picker - AppKit's driver has no path for it yet
-Picker.isFocusedChanged: cannot read the focus of Picker - AppKit's driver has no path for it yet
-Picker.unfocus: cannot read the focus of Picker - AppKit's driver has no path for it yet
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.unfocus: ✅
 Polygon.frameChanged: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
@@ -36,9 +36,9 @@ ProgressBar.rotationX: cannot read rotationX of ProgressBar - AppKit's driver ha
 RadioButton.pivotX: cannot read pivotX of RadioButton - AppKit's driver has no path for it yet
 Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - AppKit's driver has no path for it yet
 ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - AppKit's driver has no path for it yet
-SearchField.focus: cannot read the focus of SearchField - AppKit's driver has no path for it yet
-SearchField.isFocusedChanged: cannot read the focus of SearchField - AppKit's driver has no path for it yet
-SearchField.unfocus: cannot read the focus of SearchField - AppKit's driver has no path for it yet
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
 Slider.frameChanged: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
@@ -51,9 +51,9 @@ TextEditor.rotationX: cannot read rotationX of TextEditor - AppKit's driver has 
 TextField.pivotX: cannot read pivotX of TextField - AppKit's driver has no path for it yet
 TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - AppKit's driver has no path for it yet
 TitleBar.accessibilityHint: not realized
-VStack.focus: cannot read the focus of VStack - AppKit's driver has no path for it yet
-VStack.isFocusedChanged: cannot read the focus of VStack - AppKit's driver has no path for it yet
-VStack.unfocus: cannot read the focus of VStack - AppKit's driver has no path for it yet
+VStack.focus: ✅
+VStack.isFocusedChanged: ✅
+VStack.unfocus: ✅
 WebView.frameChanged: not realized
 WebView.maximumHeight: not realized
 WebView.maximumWidth: not realized

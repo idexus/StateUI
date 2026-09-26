@@ -81,12 +81,27 @@ final class AppKitDriver: HostDriver {
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
         case (.options, let picker as AppKitPickerView): return picker.itemTitles.propValue
         case (.title, let picker as AppKitPickerView): return picker.title.propValue
+        case (.date, let picker as AppKitDateTimePickerView): return Self.day(picker.valueLanesForTesting)?.propValue
+        case (.minimumDate, let picker as AppKitDateTimePickerView):
+            return picker.minimumLanesForTesting.flatMap(Self.day)?.propValue
+        case (.maximumDate, let picker as AppKitDateTimePickerView):
+            return picker.maximumLanesForTesting.flatMap(Self.day)?.propValue
+        case (.time, let picker as AppKitDateTimePickerView):
+            let lanes = picker.valueLanesForTesting
+            return lanes.count >= 2 ? ClockTime(hour: Int(lanes[0]), minute: Int(lanes[1])).propValue : nil
+        case (.currentPage, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
+        case (.isSidebarVisible, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// The day a date picker's lanes say: year, month, day.
+    private static func day(_ lanes: [Double]) -> CalendarDate? {
+        lanes.count >= 3 ? CalendarDate(year: Int(lanes[0]), month: Int(lanes[1]), day: Int(lanes[2])) : nil
     }
 
     /// Tests/Resources/Images: the pictures the cases name.

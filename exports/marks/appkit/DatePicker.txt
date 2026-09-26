@@ -1,10 +1,10 @@
-Button.clicked: cannot read date of DatePicker - AppKit's driver has no path for it yet
-DatePicker: cannot read date of DatePicker - AppKit's driver has no path for it yet
+Button.clicked: ✅
+DatePicker: ✅
 DatePicker.closed: not realized
-DatePicker.date: cannot read date of DatePicker - AppKit's driver has no path for it yet
-DatePicker.dateChanged: cannot read date of DatePicker - AppKit's driver has no path for it yet
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
 DatePicker.format: not realized
 DatePicker.isOpen: not realized
-DatePicker.maximumDate: cannot read maximumDate of DatePicker - AppKit's driver has no path for it yet
-DatePicker.minimumDate: cannot read minimumDate of DatePicker - AppKit's driver has no path for it yet
+DatePicker.maximumDate: ✅
+DatePicker.minimumDate: ✅
 DatePicker.opened: not realized

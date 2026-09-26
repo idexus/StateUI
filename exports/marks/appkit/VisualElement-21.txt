@@ -4,7 +4,7 @@ Button.pivotY: cannot read pivotY of Button - AppKit's driver has no path for it
 Canvas.background: cannot read background of Canvas - AppKit's driver has no path for it yet
 CheckBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of CheckBox - AppKit's driver has no path for it yet
 ColorBox.style: not realized
-DatePicker.ignoresInput: cannot read what reaches DatePicker - AppKit's driver has no path for it yet
+DatePicker.ignoresInput: ✅
 Ellipse.isEnabled: not realized
 Ellipse.zIndex: not realized
 Grid.scaleY: cannot read scaleY of Grid - AppKit's driver has no path for it yet
@@ -13,7 +13,7 @@ Image.pivotY: cannot read pivotY of Image - AppKit's driver has no path for it y
 Label.background: cannot read background of Label - AppKit's driver has no path for it yet
 Line.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Line - AppKit's driver has no path for it yet
 Map.style: not realized
-Path.ignoresInput: cannot read what reaches Path - AppKit's driver has no path for it yet
+Path.ignoresInput: ✅
 Picker.isEnabled: ✅
 Picker.zIndex: not realized
 Polygon.scaleY: cannot read scaleY of Polygon - AppKit's driver has no path for it yet
@@ -22,7 +22,7 @@ PositionIndicator.pivotY: not realized
 ProgressBar.background: cannot read background of ProgressBar - AppKit's driver has no path for it yet
 RadioButton.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of RadioButton - AppKit's driver has no path for it yet
 Rectangle.style: not realized
-ScrollView.ignoresInput: cannot read what reaches ScrollView - AppKit's driver has no path for it yet
+ScrollView.ignoresInput: ✅
 SearchField.isEnabled: ✅
 SearchField.zIndex: not realized
 Slider.scaleY: cannot read scaleY of Slider - AppKit's driver has no path for it yet

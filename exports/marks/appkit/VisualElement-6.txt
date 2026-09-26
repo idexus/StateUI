@@ -1,4 +1,4 @@
-ActivityIndicator.ignoresInput: cannot read what reaches ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.ignoresInput: ✅
 Button.clicked: ✅
 Button.isEnabled: ✅
 Button.zIndex: not realized
@@ -8,7 +8,7 @@ ColorBox.pivotY: cannot read pivotY of ColorBox - AppKit's driver has no path fo
 DatePicker.background: cannot read background of DatePicker - AppKit's driver has no path for it yet
 Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - AppKit's driver has no path for it yet
 Grid.style: not realized
-HStack.ignoresInput: cannot read what reaches HStack - AppKit's driver has no path for it yet
+HStack.ignoresInput: ✅
 Image.isEnabled: not realized
 Image.zIndex: not realized
 Label.scaleY: cannot read scaleY of Label - AppKit's driver has no path for it yet
@@ -17,7 +17,7 @@ Map.pivotY: not realized
 Path.background: cannot read background of Path - AppKit's driver has no path for it yet
 Picker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Picker - AppKit's driver has no path for it yet
 Polygon.style: not realized
-Polyline.ignoresInput: cannot read what reaches Polyline - AppKit's driver has no path for it yet
+Polyline.ignoresInput: ✅
 PositionIndicator.isEnabled: not realized
 PositionIndicator.zIndex: not realized
 ProgressBar.scaleY: cannot read scaleY of ProgressBar - AppKit's driver has no path for it yet
@@ -26,7 +26,7 @@ Rectangle.pivotY: cannot read pivotY of Rectangle - AppKit's driver has no path 
 ScrollView.background: cannot read background of ScrollView - AppKit's driver has no path for it yet
 SearchField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of SearchField - AppKit's driver has no path for it yet
 Slider.style: not realized
-Stepper.ignoresInput: cannot read what reaches Stepper - AppKit's driver has no path for it yet
+Stepper.ignoresInput: ✅
 Switch.isEnabled: ✅
 Switch.zIndex: not realized
 TextEditor.scaleY: cannot read scaleY of TextEditor - AppKit's driver has no path for it yet
@@ -35,4 +35,4 @@ TimePicker.pivotY: cannot read pivotY of TimePicker - AppKit's driver has no pat
 TitleBar.background: cannot read background of TitleBar - AppKit's driver has no path for it yet
 VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - AppKit's driver has no path for it yet
 WebView.style: not realized
-ZStack.ignoresInput: cannot read what reaches ZStack - AppKit's driver has no path for it yet
+ZStack.ignoresInput: ✅

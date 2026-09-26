@@ -17,12 +17,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/DatePickerContract.
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClosed` (`closed`) | event |  | native |  |  |  |  | ✅ |  | Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
-| `date` | property | `CalendarDate` | native |  |  |  |  | ✅ |  | cannot read date of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
-| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native |  |  |  |  | ✅ |  | cannot read date of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
+| `date` | property | `CalendarDate` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
+| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read date of DatePicker - Android's driver has no path for it yet |
 | `format` | property | `String` | native |  |  |  |  | ☑️ |  | Android Views: cannot read format of DatePicker - Android's driver has no path for it yet; WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d". |
 | `isOpen` | property | `Bool` | native |  |  |  |  | ✅ |  | Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
-| `maximumDate` | property | `CalendarDate` | native |  |  |  |  | ✅ |  | cannot read maximumDate of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read maximumDate of DatePicker - Android's driver has no path for it yet |
-| `minimumDate` | property | `CalendarDate` | native |  |  |  |  | ✅ |  | cannot read minimumDate of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read minimumDate of DatePicker - Android's driver has no path for it yet |
+| `maximumDate` | property | `CalendarDate` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read maximumDate of DatePicker - Android's driver has no path for it yet |
+| `minimumDate` | property | `CalendarDate` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read minimumDate of DatePicker - Android's driver has no path for it yet |
 | `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
 
 Realization:
@@ -53,13 +53,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of DatePicker - Android's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of DatePicker - Android's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read background of DatePicker - Android's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of DatePicker - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches DatePicker - AppKit's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of DatePicker - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of DatePicker - AppKit's driver has no path for it yet |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
@@ -78,7 +78,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read translationX of DatePicker - Android's driver has no path for it yet |
 | `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of DatePicker - AppKit's driver has no path for it yet; Android Views: cannot read translationY of DatePicker - Android's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of DatePicker - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 

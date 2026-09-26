@@ -1,7 +1,7 @@
 ActivityIndicator.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ActivityIndicator - AppKit's driver has no path for it yet
 Button.clicked: ✅
 Button.style: not realized
-Canvas.ignoresInput: cannot read what reaches Canvas - AppKit's driver has no path for it yet
+Canvas.ignoresInput: ✅
 CheckBox.isEnabled: ✅
 CheckBox.zIndex: not realized
 ColorBox.scaleY: cannot read scaleY of ColorBox - AppKit's driver has no path for it yet
@@ -10,7 +10,7 @@ Ellipse.pivotY: cannot read pivotY of Ellipse - AppKit's driver has no path for 
 Grid.background: cannot read background of Grid - AppKit's driver has no path for it yet
 HStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of HStack - AppKit's driver has no path for it yet
 Image.style: not realized
-Label.ignoresInput: cannot read what reaches Label - AppKit's driver has no path for it yet
+Label.ignoresInput: ✅
 Line.isEnabled: not realized
 Line.zIndex: not realized
 Map.scaleY: not realized
@@ -19,7 +19,7 @@ Picker.pivotY: cannot read pivotY of Picker - AppKit's driver has no path for it
 Polygon.background: cannot read background of Polygon - AppKit's driver has no path for it yet
 Polyline.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polyline - AppKit's driver has no path for it yet
 PositionIndicator.style: not realized
-ProgressBar.ignoresInput: cannot read what reaches ProgressBar - AppKit's driver has no path for it yet
+ProgressBar.ignoresInput: ✅
 RadioButton.isEnabled: ✅
 RadioButton.zIndex: not realized
 Rectangle.scaleY: cannot read scaleY of Rectangle - AppKit's driver has no path for it yet
@@ -28,7 +28,7 @@ SearchField.pivotY: cannot read pivotY of SearchField - AppKit's driver has no p
 Slider.background: cannot read background of Slider - AppKit's driver has no path for it yet
 Stepper.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Stepper - AppKit's driver has no path for it yet
 Switch.style: not realized
-TextEditor.ignoresInput: cannot read what reaches TextEditor - AppKit's driver has no path for it yet
+TextEditor.ignoresInput: ✅
 TextField.isEnabled: cannot read isEnabled of TextField - AppKit's driver has no path for it yet
 TextField.zIndex: not realized
 TimePicker.scaleY: cannot read scaleY of TimePicker - AppKit's driver has no path for it yet

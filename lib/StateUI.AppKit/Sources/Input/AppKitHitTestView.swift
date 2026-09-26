@@ -39,11 +39,49 @@ class AppKitHitTestView: NSView {
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
-        guard ignoresInput else { return super.hitTest(point) }
+        guard ignoresInput else { return hitPassingIgnored(point) }
         guard !transparencyReachesChildren else { return nil }
 
-        let target = super.hitTest(point)
+        let target = hitPassingIgnored(point)
         return target === self ? nil : target
+    }
+
+    /// What a press at `point` reaches, passing over a native control of the host's that ignores input to what
+    /// stands behind it.
+    /// Design: docs/design/platforms/appkit/input.md#hit-testing
+    private func hitPassingIgnored(_ point: NSPoint) -> NSView? {
+        let target = super.hitTest(point)
+        guard let target, let ignored = AppKitIgnoredInput.child(of: self, holding: target) else { return target }
+
+        let local = convert(point, from: superview)
+        for subview in subviews.reversed()
+        where subview !== ignored && !subview.isHidden && !AppKitIgnoredInput.views.contains(subview) {
+            if let hit = subview.hitTest(local) { return hit }
+        }
+        return self
+    }
+}
+
+/// The native controls of the host - no view of StateUI's own - that ignore input: AppKit has no such flag on a
+/// view, so the layout holding one passes over it.
+@MainActor
+enum AppKitIgnoredInput {
+    /// The controls ignoring input now.
+    static let views = NSHashTable<NSView>.weakObjects()
+
+    /// Makes `view` ignore input, or take it again.
+    static func set(_ view: NSView, ignores: Bool) {
+        if ignores { views.add(view) } else { views.remove(view) }
+    }
+
+    /// The child of `layout` that holds `target` - itself or an ancestor of it - where that child ignores input.
+    static func child(of layout: NSView, holding target: NSView) -> NSView? {
+        var current: NSView? = target
+        while let view = current, view !== layout {
+            if view.superview === layout { return views.contains(view) ? view : nil }
+            current = view.superview
+        }
+        return nil
     }
 }
 

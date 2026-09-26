@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot read currentPage of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
-| `currentPageChanged` | event | `Int` | adaptive |  |  |  |  | ✅ |  | cannot read currentPage of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPage` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ |  |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 
 Realization:
 

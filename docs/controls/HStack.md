@@ -44,13 +44,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of HStack - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of HStack - Android's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of HStack - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of HStack - Android's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of HStack - AppKit's driver has no path for it yet; Android Views: cannot read background of HStack - Android's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of HStack - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read what reaches HStack - AppKit's driver has no path for it yet; Android Views: cannot read what reaches HStack - Android's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read what reaches HStack - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of HStack - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of HStack - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of HStack - AppKit's driver has no path for it yet |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -69,7 +69,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of HStack - AppKit's driver has no path for it yet; Android Views: cannot read translationX of HStack - Android's driver has no path for it yet |
 | `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of HStack - AppKit's driver has no path for it yet; Android Views: cannot read translationY of HStack - Android's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of HStack - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
@@ -120,7 +120,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
 | `clipsContent` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read clipsContent of HStack - AppKit's driver has no path for it yet; Android Views: cannot read clipsContent of HStack - Android's driver has no path for it yet |
-| `letsInputThrough` | property | `Bool` | native |  |  |  |  |  |  | cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet |
+| `letsInputThrough` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 
 ## From [StackBase](tiers/StackBase.md)
 

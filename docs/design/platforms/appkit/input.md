@@ -12,6 +12,12 @@ surface every StateUI container stands on. A transparent layout removes its
 whole subtree from the search; with cascading off, it removes only itself and
 keeps its interactive children reachable.
 
+A native control - a button, a field, a slider - is no such surface, and
+AppKit holds no flag on a view that takes it out of the search. So a control
+that ignores input is kept in a weak set, and the layout holding it, finding a
+point inside it, passes over it to what stands behind it: its other children,
+or the layout itself.
+
 An element that answers a tap is pressed by assistive technology too: its
 press action runs the same handler a click runs, so VoiceOver and automation
 reach it through the native accessibility press rather than a synthetic

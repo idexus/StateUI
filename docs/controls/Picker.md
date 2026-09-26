@@ -52,13 +52,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Picker - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of Picker - Android's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Picker - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of Picker - Android's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Picker - AppKit's driver has no path for it yet; Android Views: cannot read background of Picker - Android's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Picker - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches Picker - AppKit's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Picker - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of Picker - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of Picker - AppKit's driver has no path for it yet |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -77,7 +77,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Picker - AppKit's driver has no path for it yet; Android Views: cannot read translationX of Picker - Android's driver has no path for it yet |
 | `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Picker - AppKit's driver has no path for it yet; Android Views: cannot read translationY of Picker - Android's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of Picker - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 

@@ -43,4 +43,4 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read isDestructive of MenuItem - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
-| `text` | property | `String` | native |  |  |  |  | ✅ |  | cannot read text of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read text of MenuItem - Android's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read text of MenuItem - Android's driver has no path for it yet |

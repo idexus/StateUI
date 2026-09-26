@@ -2,9 +2,9 @@ ActivityIndicator.pivotX: cannot read pivotX of ActivityIndicator - AppKit's dri
 Button.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Button - AppKit's driver has no path for it yet
 Button.clicked: ✅
 Canvas.accessibilityHint: cannot read accessibilityHint of Canvas - AppKit's driver has no path for it yet
-CheckBox.focus: cannot read the focus of CheckBox - AppKit's driver has no path for it yet
-CheckBox.isFocusedChanged: cannot read the focus of CheckBox - AppKit's driver has no path for it yet
-CheckBox.unfocus: cannot read the focus of CheckBox - AppKit's driver has no path for it yet
+CheckBox.focus: ✅
+CheckBox.isFocusedChanged: ✅
+CheckBox.unfocus: ✅
 ColorBox.frameChanged: ✅
 ColorBox.maximumHeight: ✅
 ColorBox.maximumWidth: ✅
@@ -17,9 +17,9 @@ Grid.rotationX: cannot read rotationX of Grid - AppKit's driver has no path for 
 HStack.pivotX: cannot read pivotX of HStack - AppKit's driver has no path for it yet
 Image.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Image - AppKit's driver has no path for it yet
 Label.accessibilityHint: cannot read accessibilityHint of Label - AppKit's driver has no path for it yet
-Line.focus: cannot read the focus of Line - AppKit's driver has no path for it yet
-Line.isFocusedChanged: cannot read the focus of Line - AppKit's driver has no path for it yet
-Line.unfocus: cannot read the focus of Line - AppKit's driver has no path for it yet
+Line.focus: ✅
+Line.isFocusedChanged: ✅
+Line.unfocus: ✅
 Map.frameChanged: not realized
 Map.maximumHeight: not realized
 Map.maximumWidth: not realized
@@ -32,9 +32,9 @@ Polygon.rotationX: cannot read rotationX of Polygon - AppKit's driver has no pat
 Polyline.pivotX: cannot read pivotX of Polyline - AppKit's driver has no path for it yet
 PositionIndicator.automationExcludedWithChildren: not realized
 ProgressBar.accessibilityHint: cannot read accessibilityHint of ProgressBar - AppKit's driver has no path for it yet
-RadioButton.focus: cannot read the focus of RadioButton - AppKit's driver has no path for it yet
-RadioButton.isFocusedChanged: cannot read the focus of RadioButton - AppKit's driver has no path for it yet
-RadioButton.unfocus: cannot read the focus of RadioButton - AppKit's driver has no path for it yet
+RadioButton.focus: ✅
+RadioButton.isFocusedChanged: ✅
+RadioButton.unfocus: ✅
 Rectangle.frameChanged: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
@@ -47,9 +47,9 @@ Slider.rotationX: cannot read rotationX of Slider - AppKit's driver has no path 
 Stepper.pivotX: cannot read pivotX of Stepper - AppKit's driver has no path for it yet
 Switch.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Switch - AppKit's driver has no path for it yet
 TextEditor.accessibilityHint: cannot read accessibilityHint of TextEditor - AppKit's driver has no path for it yet
-TextField.focus: cannot read the focus of TextField - AppKit's driver has no path for it yet
-TextField.isFocusedChanged: cannot read the focus of TextField - AppKit's driver has no path for it yet
-TextField.unfocus: cannot read the focus of TextField - AppKit's driver has no path for it yet
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.unfocus: ✅
 TimePicker.frameChanged: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅

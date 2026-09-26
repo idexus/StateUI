@@ -1,13 +1,13 @@
-Button.clicked: cannot read clipsContent of Grid - AppKit's driver has no path for it yet
+Button.clicked: ✅
 Grid.avoidsSafeArea: not realized
 Grid.clipsContent: cannot read clipsContent of Grid - AppKit's driver has no path for it yet
-Grid.letsInputThrough: cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet
+Grid.letsInputThrough: ✅
 HStack.avoidsSafeArea: not realized
 HStack.clipsContent: cannot read clipsContent of HStack - AppKit's driver has no path for it yet
-HStack.letsInputThrough: cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet
+HStack.letsInputThrough: ✅
 VStack.avoidsSafeArea: not realized
 VStack.clipsContent: cannot read clipsContent of VStack - AppKit's driver has no path for it yet
-VStack.letsInputThrough: cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet
+VStack.letsInputThrough: ✅
 ZStack.avoidsSafeArea: not realized
 ZStack.clipsContent: cannot read clipsContent of ZStack - AppKit's driver has no path for it yet
-ZStack.letsInputThrough: cannot read letsInputThrough of ZStack - AppKit's driver has no path for it yet
+ZStack.letsInputThrough: ✅

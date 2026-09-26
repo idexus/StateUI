@@ -1,6 +1,6 @@
-ActivityIndicator.focus: cannot read the focus of ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.isFocusedChanged: cannot read the focus of ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.unfocus: cannot read the focus of ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.focus: ✅
+ActivityIndicator.isFocusedChanged: ✅
+ActivityIndicator.unfocus: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
@@ -14,9 +14,9 @@ ColorBox.rotationX: cannot read rotationX of ColorBox - AppKit's driver has no p
 DatePicker.pivotX: cannot read pivotX of DatePicker - AppKit's driver has no path for it yet
 Ellipse.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Ellipse - AppKit's driver has no path for it yet
 Grid.accessibilityHint: cannot read accessibilityHint of Grid - AppKit's driver has no path for it yet
-HStack.focus: cannot read the focus of HStack - AppKit's driver has no path for it yet
-HStack.isFocusedChanged: cannot read the focus of HStack - AppKit's driver has no path for it yet
-HStack.unfocus: cannot read the focus of HStack - AppKit's driver has no path for it yet
+HStack.focus: ✅
+HStack.isFocusedChanged: ✅
+HStack.unfocus: ✅
 Image.frameChanged: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
@@ -29,9 +29,9 @@ Map.rotationX: not realized
 Path.pivotX: cannot read pivotX of Path - AppKit's driver has no path for it yet
 Picker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Picker - AppKit's driver has no path for it yet
 Polygon.accessibilityHint: cannot read accessibilityHint of Polygon - AppKit's driver has no path for it yet
-Polyline.focus: cannot read the focus of Polyline - AppKit's driver has no path for it yet
-Polyline.isFocusedChanged: cannot read the focus of Polyline - AppKit's driver has no path for it yet
-Polyline.unfocus: cannot read the focus of Polyline - AppKit's driver has no path for it yet
+Polyline.focus: ✅
+Polyline.isFocusedChanged: ✅
+Polyline.unfocus: ✅
 PositionIndicator.frameChanged: not realized
 PositionIndicator.maximumHeight: not realized
 PositionIndicator.maximumWidth: not realized
@@ -44,9 +44,9 @@ Rectangle.rotationX: cannot read rotationX of Rectangle - AppKit's driver has no
 ScrollView.pivotX: cannot read pivotX of ScrollView - AppKit's driver has no path for it yet
 SearchField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of SearchField - AppKit's driver has no path for it yet
 Slider.accessibilityHint: cannot read accessibilityHint of Slider - AppKit's driver has no path for it yet
-Stepper.focus: cannot read the focus of Stepper - AppKit's driver has no path for it yet
-Stepper.isFocusedChanged: cannot read the focus of Stepper - AppKit's driver has no path for it yet
-Stepper.unfocus: cannot read the focus of Stepper - AppKit's driver has no path for it yet
+Stepper.focus: ✅
+Stepper.isFocusedChanged: ✅
+Stepper.unfocus: ✅
 Switch.frameChanged: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
@@ -59,6 +59,6 @@ TimePicker.rotationX: cannot read rotationX of TimePicker - AppKit's driver has 
 TitleBar.pivotX: not realized
 VStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of VStack - AppKit's driver has no path for it yet
 WebView.accessibilityHint: not realized
-ZStack.focus: cannot read the focus of ZStack - AppKit's driver has no path for it yet
-ZStack.isFocusedChanged: cannot read the focus of ZStack - AppKit's driver has no path for it yet
-ZStack.unfocus: cannot read the focus of ZStack - AppKit's driver has no path for it yet
+ZStack.focus: ✅
+ZStack.isFocusedChanged: ✅
+ZStack.unfocus: ✅

@@ -49,13 +49,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of TextField - AppKit's driver has no path for it yet; Android Views: cannot read accessibilityLabel of TextField - Android's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of TextField - AppKit's driver has no path for it yet; Android Views: cannot read automationExcludedWithChildren of TextField - Android's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of TextField - AppKit's driver has no path for it yet; Android Views: cannot read background of TextField - Android's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of TextField - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches TextField - AppKit's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of TextField - AppKit's driver has no path for it yet; Android Views: cannot read isAccessibilityHidden of TextField - Android's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ | ✅ | ✅ |  | cannot read isEnabled of TextField - AppKit's driver has no path for it yet |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ | ✅ |  | cannot read the focus of TextField - AppKit's driver has no path for it yet |
+| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
@@ -74,7 +74,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of TextField - AppKit's driver has no path for it yet; Android Views: cannot read translationX of TextField - Android's driver has no path for it yet |
 | `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of TextField - AppKit's driver has no path for it yet; Android Views: cannot read translationY of TextField - Android's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ✅ |  | cannot read the focus of TextField - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
