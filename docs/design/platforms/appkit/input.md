@@ -85,3 +85,13 @@ its tap, the states a drag carries and whether a drag that ended was a swipe
 are the host layer's (`MountedElement.hearing`, `hear`). AppKit drags with one
 pointer: an element asking a pan of more gets no drag recognizer.
 
+## Where a view stands
+
+A view whose frame the tree reads is followed by the host layer
+(`FrameFollowers`): AppKit tells it only that something moved - the view, or
+any ancestor up to its window's content, watched through their frame and
+bounds notifications, a scroller's clip among them - and the host layer asks
+each follower on the display's next frame, in the order they were made, as one
+of the user's transactions. The view says its place in its parent, its corner
+in its window and from the window's content, each from the top left.
+

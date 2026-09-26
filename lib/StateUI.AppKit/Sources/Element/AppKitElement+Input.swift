@@ -48,11 +48,15 @@ extension AppKitElement {
         (view as? AppKitRadioButtonView)?.setCheckedFromGroup(checked)
     }
 
+    /// Follows where the view stands while the tree reads it (`MountedElement.readsOwnFrame`): the host layer asks
+    /// the view on the display's frames after anything moved, and the view's ancestors are watched for moving.
+    /// Design: docs/design/platforms/appkit/input.md#where-a-view-stands
     func configureFrameObservation() {
-        guard view != nil else { return }
-        let wanted = driven[.frame] != nil || events[.frameChanged] != nil
+        guard view != nil, let host else { return }
+        let reads = element.readsOwnFrame
+        host.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: mount), reads: reads)
 
-        if !wanted {
+        if !reads {
             if observesFrame {
                 NotificationCenter.default.removeObserver(
                     self, name: NSView.frameDidChangeNotification, object: nil)
@@ -64,12 +68,9 @@ extension AppKitElement {
             return
         }
 
-        if !observesFrame {
-            observesFrame = true
-        }
-
+        observesFrame = true
         refreshFrameObservationChain()
-        queueFrameReport()
+        host.runtime.frames.laidOut()
     }
 
     /// A stationary child's window-space origin changes when an ancestor moves
@@ -153,26 +154,10 @@ extension AppKitElement {
         return made
     }
 
+    /// The view or one of its ancestors moved: whoever reads a frame says it on the display's next frame.
     @objc func frameDidChange(_ notification: Notification) {
-        queueFrameReport()
-    }
-
-    func queueFrameReport() {
-        guard !frameQueued else { return }
-        frameQueued = true
-
-        DispatchQueue.main.async { [weak self] in
-            self?.flushFrameReport()
-        }
-    }
-
-    func flushFrameReport() {
-        frameQueued = false
         refreshFrameObservationChain()
-        guard let numbers = frameNumbers(), let host else { return }
-
-        // One of the user's transactions, so a turn renders what the report moved.
-        host.runtime.performUserTransaction { element.reportFrame(numbers, in: host.runtime) }
+        host?.runtime.frames.laidOut()
     }
 
     /// Where the view stands now, as a frame report says it: in its parent, in its window, and from the window's
@@ -189,11 +174,6 @@ extension AppKitElement {
             content: Point(x: Double(safeArea.minX), y: Double(safeArea.minY)))
     }
 
-    func flushFrameReportForTesting() {
-        flushFrameReport()
-    }
-
-    var frameReportQueuedForTesting: Bool { frameQueued }
 
     func topLeftFrame(_ frame: NSRect, in parent: NSView?) -> NSRect {
         guard let parent, !parent.isFlipped else { return frame }
@@ -202,6 +182,14 @@ extension AppKitElement {
             y: parent.bounds.height - frame.maxY,
             width: frame.width,
             height: frame.height)
+    }
+}
+
+extension AppKitElement: FrameReporter {
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`).
+    func reportFrame() {
+        guard let host, let numbers = frameNumbers() else { return }
+        element.reportFrame(numbers, in: host.runtime)
     }
 }
 #endif

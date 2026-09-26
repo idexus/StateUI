@@ -57,10 +57,10 @@ final class AppKitFrameTests: XCTestCase {
         root.addSubview(parent)
         parent.addSubview(measured)
         measured.frame = NSRect(x: 5, y: 6, width: 40, height: 20)
-        node.flushFrameReportForTesting()
+        renderer.displayFrameForTesting()
 
         parent.frame.origin.y = 70
-        XCTAssertTrue(node.frameReportQueuedForTesting, "moving an ancestor queues a report")
+        XCTAssertTrue(renderer.runtime.frames.wantsFrames, "moving an ancestor asks the display's frame for a report")
         let values = try XCTUnwrap(node.frameNumbers())
         XCTAssertEqual(Array(values.prefix(4)), [5, 6, 40, 20])
         XCTAssertEqual(Array(values[4..<6]), [25, 76])

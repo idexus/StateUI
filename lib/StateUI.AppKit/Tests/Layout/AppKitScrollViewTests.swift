@@ -303,6 +303,7 @@ final class AppKitScrollViewTests: XCTestCase {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.runtime.pump.turn()
             scroller.window?.contentView?.layoutSubtreeIfNeeded()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
         }
 
         let room = scroller.contentView.bounds.width
@@ -331,6 +332,7 @@ final class AppKitScrollViewTests: XCTestCase {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.runtime.pump.turn()
             scroller.window?.contentView?.layoutSubtreeIfNeeded()
+            if renderer.frameClock.held { renderer.displayFrameForTesting() }
         }
 
         // A card is 176 wide and a turn is three fifths of one, 105.6; the push

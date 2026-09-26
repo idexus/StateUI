@@ -36,7 +36,6 @@ final class AppKitElement: NSObject, NativeElement {
     var buttonHeightConstraint: NSLayoutConstraint?
     var observesFrame = false
     var frameObservedViews: [NSView] = []
-    var frameQueued = false
 
     /// The focus this element last reported, where it follows its focus.
     var reportedFocus = false
@@ -212,6 +211,7 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func releaseNativeAttachments() {
+        host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: mount), reads: false)
         if observesFrame {
             NotificationCenter.default.removeObserver(
                 self, name: NSView.frameDidChangeNotification, object: nil)
