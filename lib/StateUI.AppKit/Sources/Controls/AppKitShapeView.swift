@@ -179,17 +179,9 @@ final class AppKitShapeView: AppKitHitTestView {
     /// Points - x and y in turn - joined by lines as the host layer joins them, closed where the shape is.
     private static func pointsPath(_ values: [Double], closed: Bool) -> NSBezierPath {
         let points = stride(from: 0, to: values.count - 1, by: 2).map { Point(values[$0], values[$0 + 1]) }
-        let commands = ShapeArithmetic.commands(through: points, closed: closed)
-        let path = NSBezierPath()
-        var index = 0
-        while index < commands.count {
-            switch commands[index] {
-            case 0: path.move(to: NSPoint(x: commands[index + 1], y: commands[index + 2])); index += 3
-            case 1: path.line(to: NSPoint(x: commands[index + 1], y: commands[index + 2])); index += 3
-            default: path.close(); index += 1
-            }
-        }
-        return path
+        let path = CGMutablePath()
+        append(ShapeArithmetic.curves(through: points, closed: closed), to: path)
+        return NSBezierPath(cgPath: path)
     }
 
     static func svgPath(_ data: String) -> NSBezierPath {

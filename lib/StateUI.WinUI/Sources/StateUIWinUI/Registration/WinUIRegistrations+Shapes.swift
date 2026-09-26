@@ -41,7 +41,7 @@ extension WinUIRegistrations {
             shape.applies(shapeMembers + [PolygonContract.points, PolygonContract.fillRule]) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.commands(through: values[PolygonContract.points] ?? [], closed: true),
+                    ShapeArithmetic.curves(through: values[PolygonContract.points] ?? [], closed: true).flatMap(\.numbers),
                     evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
@@ -49,7 +49,7 @@ extension WinUIRegistrations {
             shape.applies(shapeMembers + [PolylineContract.points, PolylineContract.fillRule]) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.commands(through: values[PolylineContract.points] ?? [], closed: false),
+                    ShapeArithmetic.curves(through: values[PolylineContract.points] ?? [], closed: false).flatMap(\.numbers),
                     evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }

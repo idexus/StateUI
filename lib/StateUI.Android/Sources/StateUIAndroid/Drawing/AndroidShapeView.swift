@@ -138,7 +138,7 @@ final class AndroidShapeView: AndroidView {
         case .ellipse: (1, [], false)
         case .line(let from, let to): (2, pixels([0, from.x, from.y, 1, to.x, to.y], density), false)
         case .points(let points, let closed, let evenOdd):
-            (2, pixels(ShapeArithmetic.commands(through: points, closed: closed), density), evenOdd)
+            (2, pixels(ShapeArithmetic.curves(through: points, closed: closed).flatMap(\.numbers), density), evenOdd)
         case .path(let data):
             (2, pixels((HostPath(svg: data)?.arcsAsCubics ?? []).flatMap(\.numbers), density), false)
         }

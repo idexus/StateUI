@@ -76,8 +76,10 @@ final class DrawingRulesTests: XCTestCase {
     /// stroke widths long.
     func testAShapesLinesAreItsPointsJoined() {
         let points = [Point(x: 0, y: 0), Point(x: .nan, y: 1), Point(x: 10, y: 5)]
-        XCTAssertEqual(ShapeArithmetic.commands(through: points, closed: true), [0, 0, 0, 1, 10, 5, 4])
-        XCTAssertEqual(ShapeArithmetic.commands(through: [], closed: false), [])
+        XCTAssertEqual(
+            ShapeArithmetic.curves(through: points, closed: true),
+            [.move(Point(x: 0, y: 0)), .line(Point(x: 10, y: 5)), .close])
+        XCTAssertEqual(ShapeArithmetic.curves(through: [], closed: false), [])
         XCTAssertEqual(ShapeArithmetic.dashLengths([2, -1], strokeWidth: 3), [6, 0])
         XCTAssertEqual(ShapeArithmetic.strokeWidth(.infinity), 0)
     }

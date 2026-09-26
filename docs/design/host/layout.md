@@ -192,10 +192,11 @@ then moved by the shape's own transform, as a transform moves a view after
 its layout, so a translation shows under every aspect. A geometry flat along
 one axis, a straight line, fits by the axis it has.
 
-A polygon's and a polyline's points are joined by lines as flat commands,
-closed where the shape is, a point that is no number left out; a stroke's
-dashes and gaps are measured in stroke widths
-(`ShapeArithmetic.commands`, `dashLengths`).
+A polygon's and a polyline's points are joined by lines - the same curve
+commands a path's data reads as - closed where the shape is, a point that is
+no number left out; a stroke's dashes and gaps are measured in stroke widths
+(`ShapeArithmetic.curves`, `dashLengths`). A host drawing in Swift takes the
+commands as they are; one whose relay reads numbers hands it each command's.
 
 ## Right to left
 

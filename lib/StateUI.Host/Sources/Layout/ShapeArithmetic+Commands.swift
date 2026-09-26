@@ -6,12 +6,12 @@
 /// A shape's lines and its stroke, as every host draws them.
 /// Design: docs/design/host/layout.md#a-shapes-own-geometry
 extension ShapeArithmetic {
-    /// Points joined by lines as the flat commands a geometry is written in - move, then lines - closed where the
-    /// shape is; a point that is no number is left out.
-    public static func commands(through points: [Point], closed: Bool) -> [Double] {
+    /// Points joined by lines - a move, then lines - closed where the shape is; a point that is no number is left
+    /// out.
+    public static func curves(through points: [Point], closed: Bool) -> [HostCurveCommand] {
         let finite = points.filter { $0.x.isFinite && $0.y.isFinite }
         guard let first = finite.first else { return [] }
-        return [0, first.x, first.y] + finite.dropFirst().flatMap { [1, $0.x, $0.y] } + (closed ? [4] : [])
+        return [.move(first)] + finite.dropFirst().map { .line($0) } + (closed ? [.close] : [])
     }
 
     /// A stroke's width, never below nothing, nothing where it is no number.
