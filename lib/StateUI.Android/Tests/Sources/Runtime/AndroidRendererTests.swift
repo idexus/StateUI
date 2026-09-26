@@ -43,8 +43,6 @@ final class AndroidRendererTests: XCTestCase {
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testASecondActivityShowsTheSceneTheFirstShowed", testASecondActivityShowsTheSceneTheFirstShowed),
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
-            ("testTheActivitysLifecycleMovesTheWindowAndTheScene", testTheActivitysLifecycleMovesTheWindowAndTheScene),
-            ("testAWindowStoppedComesBackResumedAndHearsItIsGoing", testAWindowStoppedComesBackResumedAndHearsItIsGoing),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
         ]
@@ -111,24 +109,6 @@ final class AndroidRendererTests: XCTestCase {
         }
     }
 
-    /// The activity's pause, resume and stop move the application's phase, and the window's and the scene's
-    /// with it, each rendered before the next is heard.
-    func testTheActivitysLifecycleMovesTheWindowAndTheScene() {
-        onMainActor {
-            let host = AndroidRenderer.running { PhaseLabel() }
-            var said: String { host.views(AndroidLabelView.self).map(\.text).joined() }
-
-            host.setPhase(.inactive)
-            XCTAssertEqual(said, "deactivated inactive")
-
-            host.setPhase(.active)
-            XCTAssertEqual(said, "activated active")
-
-            host.setPhase(.background)
-            XCTAssertEqual(said, "stopped background")
-        }
-    }
-
     /// Before the first render the host tells the core the device's locale, its battery and its network.
     func testTheHostReportsTheLocaleTheBatteryAndTheNetwork() {
         onMainActor {
@@ -139,24 +119,6 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertFalse(texts.first?.hasPrefix("locale  ") ?? true, "\(texts)")
             XCTAssertFalse(texts.contains("battery unknown"), "\(texts)")
             XCTAssertFalse(texts.contains("network unknown"), "\(texts)")
-        }
-    }
-}
-
-extension AndroidRendererTests {
-    /// A window stopped and shown again is resumed on its way to active; the activity finishing tells it it is
-    /// going; and it is told it was made once, not again with each render.
-    func testAWindowStoppedComesBackResumedAndHearsItIsGoing() {
-        onMainActor {
-            let log = Received<String>()
-            let host = AndroidRenderer.running { WindowPhaseLog(log: log) }
-
-            host.setPhase(.background)
-            host.setPhase(.active)
-            host.destroying()
-            host.runtime.pump.turn()
-
-            XCTAssertEqual(log.values, ["stopped", "resumed", "activated", "destroying"])
         }
     }
 }
@@ -180,27 +142,5 @@ private struct TitledWindowPage: ContentView {
         let window = self.window
         let title = self.title
         return Label(title).onCreated { window.title = title }
-    }
-}
-
-/// Each phase the window moves to, in order.
-private struct WindowPhaseLog: ContentView {
-    @Environment private var window: WindowSession
-    let log: Received<String>
-
-    var content: any View {
-        let window = self.window
-        let log = self.log
-        return Label("\(window.phase)").onChanged(window.phase) { log.values.append("\(window.phase)") }
-    }
-}
-
-/// The window's phase and the scene's, as a page reads them.
-private struct PhaseLabel: ContentView {
-    @Environment private var window: WindowSession
-    @Environment private var scene: SceneSession
-
-    var content: any View {
-        Label("\(window.phase) \(scene.phase)")
     }
 }

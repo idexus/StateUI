@@ -43,7 +43,9 @@ it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or
 beside the detail, puts it in place at once. Whether the sidebar shows is the split's binding: the user's
 opening and closing are reported into it, and a value the tree writes moves
-the drawer.
+the drawer. The first room at least 720 points wide shows the sidebar, said as
+the user's ([a sidebar on the first
+room](../../host/pages.md#a-sidebar-on-the-first-room)).
 
 ## Tabs
 
@@ -52,25 +54,31 @@ bottom, one for each tab with its picture over its title. On a bar colour
 the tree writes, the words are white where the colour is dark and the
 text's own where it is light, the chosen tab full and the others dimmed. A
 tab the user chooses shows its page, and is reported into the selection; a
-value the tree writes chooses the tab.
+value the tree writes chooses the tab, by the host layer's rule
+([tabs](../../host/pages.md#tabs)); the row stands at the bottom edge
+(`RowEdge`).
 
 ## A page's phases
 
 A page hears that it appears and disappears, and on a stack that it is
-navigated to and from, once Android shows what the tree shows. Each phase is
+navigated to and from, once Android shows what the tree shows, by the host
+layer's rule ([a page's phases](../../host/pages.md#a-pages-phases)). Each phase is
 rendered before the next one is heard, so the application sees every one: a
 push says the leaving page's phases, then the arriving page's. A page that
 has left the tree hears nothing more.
 
 ## The way back
 
-The way back is the innermost the page in front offers - a presented page
-first, then the shown arrangement: a sidebar open over the detail closes, a
-stack with a page pushed pops it - through tabs and split views to the stack
-the user sees. The system's back asks the host
-first, and the host tells the activity whenever it has a way back, so from
-Android 13 the system's predictive back animates to the launcher only where
-the application has nowhere to go back to.
+The system's back takes a sidebar open over the detail first - it closes -
+then the way back the host layer says the window offers ([the way
+back](../../host/pages.md#the-way-back)): the top sheet's own stack, else the
+top sheet, else the arrangement's stack. Android's back is the system's, not
+the bar's, so a page hiding its bar still goes back by it where it keeps its
+way back. A sheet going only tells the window how many remain; the sheet
+goes as the tree follows. The system's back asks the host first, and the host
+tells the activity whenever it has a way back, so from Android 13 the
+system's predictive back animates to the launcher only where the application
+has nowhere to go back to.
 
 ## A modal stack
 

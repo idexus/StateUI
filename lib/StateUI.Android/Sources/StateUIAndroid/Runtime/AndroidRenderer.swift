@@ -36,18 +36,11 @@ final class AndroidRenderer {
     let root: JavaObject
     private let density: Double
 
-    /// The arrangement of pages the root shows, held by its mounted element, which owns its Android half; and
-    /// whether the activity was last told there is a way back.
-    private var shownArrangementElement: MountedElement?
-    private var shownArrangement: AndroidElement? { shownArrangementElement?.android }
+    /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlay.
+    private let presentation = WindowPresentation()
+
+    /// Whether the activity was last told there is a way back.
     private var handlesBack = false
-
-    /// What the window lays over everything it shows - the inspector docked in it - held as the arrangement is.
-    private var shownOverlayElement: MountedElement?
-
-    /// The window told it was made, and whether the activity stands stopped.
-    private weak var createdWindow: MountedElement?
-    private var stopped = false
 
     /// The title the activity was last given, as the first window says it; none before any window says.
     private(set) var windowTitle: String??
@@ -124,33 +117,21 @@ final class AndroidRenderer {
         runtime.pump.turn()
     }
 
-    /// Reports the application's phase as the activity's lifecycle moves it, then the scene's and its window's,
-    /// each rendered before the next.
+    /// The activity's lifecycle moved: its one window stands activated in front of the user (onResume), off the
+    /// screen once stopped (onStop), and neither between; the host layer settles what that means for the
+    /// application, its scene and its window, each rendered before the next.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
     func setPhase(_ phase: ApplicationPhase) {
-        runtime.core.setApplicationPhase(phase)
-        runtime.pump.turn()
-
-        let tree = runtime.tree
-        let resumes = stopped && phase != .background
-        stopped = phase == .background
-        if resumes, let handler = tree.root?.first(type: .window)?.handler(.resumed) { runtime.dispatch(handler) }
-
-        let event: Event = switch phase {
-        case .active: .activated
-        case .inactive: .deactivated
-        default: .stopped
+        guard let window = runtime.tree.root?.first(type: .window) else {
+            runtime.core.setApplicationPhase(phase)
+            return runtime.pump.turn()
         }
-        for element in [tree.root?.first(type: .scene), tree.root?.first(type: .window)] {
-            if let handler = element?.handler(event) { runtime.dispatch(handler) }
-        }
+        runtime.windowStateChanged(window, minimized: phase == .background, activated: phase == .active)
     }
 
     /// The activity is finishing: its window hears it is going, then its scene.
     func destroying() {
-        for type in [NodeType.window, .scene] {
-            if let handler = runtime.tree.root?.first(type: type)?.handler(.destroying) { runtime.dispatch(handler) }
-        }
+        runtime.ending()
     }
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
@@ -177,90 +158,89 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// Names the activity after the first window, and tells a window it was made, once, in its turn.
-    private func showWindow() {
-        guard let window = runtime.tree.root?.first(type: .window) else { return }
-
+    /// Names the activity after the first window.
+    private func showTitle(of window: MountedElement) {
         let title = window.value(.title)?.string
-        if windowTitle != .some(title) {
-            windowTitle = .some(title)
-            Java.frame {
-                Java.callStatic(
-                    JavaAPI.environment, JavaAPI.setWindowTitle, .object(context.reference),
-                    .object(title.flatMap(Java.string)))
-            }
-        }
-        if window !== createdWindow {
-            createdWindow = window
-            if let handler = window.handler(.created) { runtime.pump.handlers.enqueuePhase(handler) }
+        guard windowTitle != .some(title) else { return }
+
+        windowTitle = .some(title)
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.environment, JavaAPI.setWindowTitle, .object(context.reference),
+                .object(title.flatMap(Java.string)))
         }
     }
 
-    /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show,
-    /// the pages its modal stack presents over it, and its overlay over them all.
+    /// Shows what the first window asks for: its arrangement of pages in the activity's root, the pages its modal
+    /// stack presents over it, and its overlay over them all. The host layer tells the page the user sees and the
+    /// window made.
     /// Design: docs/design/platforms/android/pages.md#the-windows-overlay
-    private func showPage() {
-        let window = runtime.tree.root?.first(type: .window)
-        let arrangement = window?.children.first { AndroidElement.pageTypes.contains($0.type) }
-        if arrangement !== shownArrangementElement {
-            shownArrangement?.setPagePresented(false, reason: .window)
-            shownArrangementElement = arrangement
-            shownOverlayElement = nil
+    private func showWindow() {
+        guard let window = runtime.tree.root?.first(type: .window) else { return }
+        showTitle(of: window)
+
+        let changes = presentation.show(window, in: runtime.lifecycle)
+        if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
-            if let page = shownArrangement?.view {
+            shownOverlay = nil
+            if let page = arrangement?.android.view {
                 page.forgetPlace()
                 Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
             }
-            shownArrangement?.setPagePresented(true, reason: .window)
         }
+        let rose = changes.sheets.map { modals.present($0) } ?? false
 
-        let rose = modals.present(
-            window?.children.first { $0.type == .modalStack }?.children ?? [], over: shownArrangement)
-        showOverlay(window?.children.first { $0.type == .overlay }, raised: rose)
+        // The overlay lies over everything, lifted over a page that rose after it; it takes no touch beside what it
+        // holds, which goes on to the page under it.
+        let overlay = presentation.overlay?.android.view
+        if overlay !== shownOverlay {
+            if let leaving = shownOverlay { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
+            if let overlay {
+                overlay.forgetPlace()
+                Java.call(root.reference, JavaAPI.addView, .object(overlay.reference), .int(-1), .int(-1))
+            }
+            shownOverlay = overlay
+        } else if rose, let overlay {
+            Java.call(overlay.reference, JavaAPI.bringToFront)
+        }
     }
 
-    /// Lays the window's overlay over the root's pages, lifted over a page that rose after it; it takes no touch
-    /// beside what it holds, which goes on to the page under it.
-    private func showOverlay(_ overlay: MountedElement?, raised: Bool) {
-        guard overlay === shownOverlayElement else {
-            if let leaving = shownOverlayElement?.android.view {
-                Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference))
-            }
-            shownOverlayElement = overlay
-            if let view = overlay?.android.view {
-                view.forgetPlace()
-                Java.call(root.reference, JavaAPI.addView, .object(view.reference), .int(-1), .int(-1))
-            }
-            return
-        }
-        if raised, let view = overlay?.android.view { Java.call(view.reference, JavaAPI.bringToFront) }
-    }
+    /// The overlay's view the root holds now, let go of as the window stops showing it.
+    private var shownOverlay: AndroidView?
 
-    /// Goes the way back the page in front offers - a presented page's own, else that page going down, else
-    /// the arrangement's; whether there was one.
-    /// Design: docs/design/platforms/android/pages.md#the-way-back
+    /// Goes the way back the window offers the user - a sidebar sliding over the page closing first, then the host
+    /// layer's (`WindowPresentation.wayBack`); whether there was one.
+    /// Design: docs/design/host/pages.md#the-way-back
     func goBack() -> Bool {
-        if let top = modals.top {
-            if let wayBack = top.wayBack {
-                wayBack()
-            } else {
-                modals.dismissTop(over: shownArrangement)
-                let window = runtime.tree.root?.first(type: .window)
-                if let handler = window?.handler(.modalPopped) {
-                    runtime.dispatch(handler, payload: [.number(Double(modals.count))])
-                }
-            }
+        if let close = (presentation.sheets.last ?? presentation.arrangement)?.android.drawerBack {
+            close()
             return true
         }
-        guard let wayBack = shownArrangement?.wayBack else { return false }
-
-        wayBack()
+        guard let way = systemWayBack else { return false }
+        goBack(way)
         return true
+    }
+
+    /// The way back the system's back takes: the host layer's, and a stack's top page going where the page hides its
+    /// bar but keeps its way back - Android's back is the system's, not the bar's.
+    private var systemWayBack: WayBack? {
+        if let way = presentation.wayBack { return way }
+        guard let stack = (presentation.sheets.last ?? presentation.arrangement)?.visibleNavigationStack,
+              stack.children.count > 1, stack.children.last?.value(.hasBackButton)?.bool != false
+        else { return nil }
+        return .pop(stack)
+    }
+
+    /// Goes `way` back in the first window.
+    func goBack(_ way: WayBack) {
+        guard let window = runtime.tree.root?.first(type: .window) else { return }
+        runtime.goBack(way, in: window)
     }
 
     /// Tells the activity whether there is a way back, so the system's own back gesture knows whose it is.
     func refreshBack() {
-        let handles = modals.top != nil || shownArrangement?.wayBack != nil
+        let handles = systemWayBack != nil
+            || (presentation.sheets.last ?? presentation.arrangement)?.android.drawerBack != nil
         guard handles != handlesBack else { return }
 
         handlesBack = handles
@@ -274,7 +254,6 @@ extension AndroidRenderer: TurnPresenter {
     /// whether there is a way back.
     func presentRendered() {
         showWindow()
-        showPage()
         refreshBack()
     }
 

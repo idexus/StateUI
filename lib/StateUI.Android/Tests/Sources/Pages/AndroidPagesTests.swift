@@ -262,8 +262,10 @@ extension AndroidPagesTests {
             XCTAssertEqual(navigation.bar.content.navigation, .none, "a page without a back button")
             path.wrappedValue = [1, 2]
             host.runtime.pump.turn()
-            XCTAssertEqual(navigation.bar.content.navigation, .back)
             XCTAssertFalse(navigation.showsBar, "a page without a navigation bar")
+            XCTAssertTrue(host.goBack(), "the system's back takes a page hiding its bar back")
+            host.runtime.pump.turn()
+            XCTAssertEqual(path.wrappedValue, [1])
         }
     }
 

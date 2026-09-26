@@ -23,8 +23,8 @@ final class AndroidTabbedView: AndroidLayoutView {
         var chosenColor: HostValue?
     }
 
-    /// The tab the user sees; nil until the tree or the user chooses one.
-    private(set) var selectedIndex: Int?
+    /// Which tab the view shows, by the host layer's rule.
+    private(set) var choice = TabChoice()
 
     /// What the view does when the user chooses a tab, handed the one it showed and the one it shows.
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
@@ -43,13 +43,13 @@ final class AndroidTabbedView: AndroidLayoutView {
     }
 
     /// Shows `row` and the tab the tree asks for, where the user has not chosen another since.
+    /// Design: docs/design/host/pages.md#tabs
     func show(_ row: Row, requested: Int?) {
-        if let requested, requested != selectedIndex {
-            selectedIndex = requested
+        if choice.request(requested) {
             holdChildren()
             invalidateMeasurements()
         }
-        let chosen = selectedIndex ?? 0
+        let chosen = choice.shown
         guard row != shownRow || chosen != shownChosen else { return }
 
         shownRow = row
@@ -59,10 +59,8 @@ final class AndroidTabbedView: AndroidLayoutView {
 
     /// The user chose a tab: it shows, and the view says so.
     func selectByUser(_ index: Int) {
-        let previous = selectedIndex ?? 0
-        guard index != previous, items.indices.contains(index) else { return }
+        guard let previous = choice.choose(index, of: items.count) else { return }
 
-        selectedIndex = index
         shownChosen = index
         holdChildren()
         invalidateMeasurements()
@@ -72,20 +70,20 @@ final class AndroidTabbedView: AndroidLayoutView {
 
     private var selectedItem: AndroidLayoutItem? {
         guard !items.isEmpty else { return nil }
-        return items[min(max(selectedIndex ?? 0, 0), items.count - 1)]
+        return items[min(max(choice.shown, 0), items.count - 1)]
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
         let page = SingleChildArithmetic.size(of: selectedItem, padding: Insets(0), width: width)
-        return LayoutSize(width: page.width, height: page.height + rowHeight(width: width))
+        return RowEdge.size(page: page, row: rowHeight(width: width))
     }
 
+    /// The row across the bottom, the chosen tab's page over the rest (`RowEdge`).
     override func arrange(in bounds: Rect) {
-        let height = rowHeight(width: bounds.width)
-        row.layout(Rect(x: 0, y: bounds.height - height, width: bounds.width, height: height))
+        let (rowRoom, room) = RowEdge.bottom.split(bounds, row: rowHeight(width: bounds.width))
+        row.layout(rowRoom)
         guard let page = selectedItem else { return }
 
-        let room = Rect(x: 0, y: 0, width: bounds.width, height: max(0, bounds.height - height))
         page.view.layout(SingleChildArithmetic.place(of: page, in: room, padding: Insets(0), direction: direction))
     }
 

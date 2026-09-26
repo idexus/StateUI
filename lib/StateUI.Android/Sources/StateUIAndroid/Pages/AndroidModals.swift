@@ -6,7 +6,8 @@
 import CStateUIAndroid
 
 /// The pages a window presents over its page, in order, the top one in front - each in a holder on the theme's
-/// window background, rising from the bottom as it comes and going down as it leaves.
+/// window background, rising from the bottom as it comes and going down as it leaves. The pages hear it from the
+/// host layer (`WindowPresentation`).
 /// Design: docs/design/platforms/android/pages.md#a-modal-stack
 @MainActor
 final class AndroidModals {
@@ -26,25 +27,19 @@ final class AndroidModals {
         self.reducesMotion = reducesMotion
     }
 
-    /// The page in front, where one is presented.
-    var top: AndroidElement? { shown.last?.element.android }
-
-    /// How many pages are presented.
-    var count: Int { shown.count }
 
     /// Presents the modal stack's pages: the ones shown and still described stay, the rest leave from the top,
     /// and each new one rises over the one before; the page in front is the one that shows. Whether one rose.
     @discardableResult
-    func present(_ target: [MountedElement], over page: AndroidElement?) -> Bool {
+    func present(_ target: [MountedElement]) -> Bool {
         var common = 0
         while common < shown.count, common < target.count, shown[common].element === target[common] {
             common += 1
         }
-        while shown.count > common { dismissTop(over: page) }
+        while shown.count > common { dismissTop() }
 
         for element in target[common...] {
             guard let view = element.android.view else { continue }
-            (top ?? page)?.setPagePresented(false, reason: .navigation)
             view.forgetPlace()
             let holder = Java.frame {
                 Java.callStaticObject(
@@ -56,20 +51,17 @@ final class AndroidModals {
                 JavaAPI.views, JavaAPI.rise, .object(root.reference), .object(holder.reference), .bool(true),
                 .long(duration))
             shown.append(Shown(element: element, holder: holder))
-            element.android.setPagePresented(true, reason: .navigation)
         }
         return shown.count > common
     }
 
     /// Takes the page in front down, and the one under it shows again.
-    func dismissTop(over page: AndroidElement?) {
+    private func dismissTop() {
         guard let leaving = shown.popLast() else { return }
 
-        leaving.element.android.setPagePresented(false, reason: .navigation)
         Java.callStatic(
             JavaAPI.views, JavaAPI.rise, .object(root.reference), .object(leaving.holder.reference), .bool(false),
             .long(duration))
-        (top ?? page)?.setPagePresented(true, reason: .navigation)
     }
 
     /// How long a page takes to rise or go, in milliseconds: none where the user asks for less motion.

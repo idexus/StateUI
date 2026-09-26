@@ -22,10 +22,6 @@ final class AndroidElement: NativeElement {
     /// Where the states a pan carries stood as it started.
     var panFrom = (x: 0.0, y: 0.0)
 
-    /// Whether this page tree is shown, as its pages last heard; and what an arrangement showed before a patch.
-    var pagePresented = false
-    private var previouslyShown: [MountedElement] = []
-
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host
@@ -43,9 +39,7 @@ final class AndroidElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {
-        previouslyShown = shownChildren.map(\.element)
-    }
+    func willApply() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
@@ -70,8 +64,6 @@ final class AndroidElement: NativeElement {
         arrangeChildren()
         arrangePages(changed: changed)
         configureContextMenu()
-        reconcilePresentation(from: previouslyShown.map(\.android))
-        previouslyShown = []
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 

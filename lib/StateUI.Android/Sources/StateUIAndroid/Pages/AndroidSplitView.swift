@@ -25,6 +25,12 @@ final class AndroidSplitView: AndroidLayoutView {
     /// What the split does when the user taps the detail beside an open drawer: closes it.
     var onScrimTapped: (() -> Void)?
 
+    /// What the split does when its first room shows the sidebar, said as the user's.
+    var onAdapted: (() -> Void)?
+
+    /// The split's one adaptation, by the host layer's rule.
+    private var adaptation = SidebarAdaptation()
+
     /// The drawer holding the sidebar page, and the shade over the detail while it is open.
     private let drawer = AndroidSingleChildView()
     private let scrim = AndroidColorBoxView()
@@ -68,6 +74,11 @@ final class AndroidSplitView: AndroidLayoutView {
     /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
     /// the drawer wider, or beside the detail rather than over it - puts it in place at once.
     override func arrange(in bounds: Rect) {
+        // Design: docs/design/host/pages.md#a-sidebar-on-the-first-room
+        if adaptation.room(bounds.width, breakpoint: Self.sideBySide, shown: isPresented) {
+            isPresented = true
+            onAdapted?()
+        }
         let overlaid = bounds.width < Self.sideBySide
         let width = min(320, bounds.width * (overlaid ? 0.84 : 0.4))
         let newRoom = overlaid != overlays || width != drawerWidth
@@ -106,5 +117,6 @@ final class AndroidSplitView: AndroidLayoutView {
     override func detach() {
         super.detach()
         onScrimTapped = nil
+        onAdapted = nil
     }
 }

@@ -11,10 +11,9 @@ extension AndroidElement {
         if let label = view as? AndroidLabelView {
             return arrangeRuns(of: label)
         }
-        let arranged = type == .page ? children.filter { !Self.slotTypes.contains($0.type) } : children
         let layout = view as? AndroidLayoutView
         layout?.direction = element.layoutDirection
-        layout?.setItems(arranged.compactMap(\.layoutItem))
+        layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
     }
 
     /// A label's spans as runs of its words; without spans, its own words, once they are gone.
