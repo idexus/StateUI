@@ -24,7 +24,6 @@ import XCTest
 func testRenderer(
     resourceDirectory: URL? = nil,
     presentsWindows: Bool = false,
-    eventSink: ((Int32, [HostValue]) -> Void)? = nil,
     preferences: UserDefaults = .standard,
     clock: (() -> Double)? = nil,
     reducesMotion: @escaping () -> Bool = { false }
@@ -32,7 +31,6 @@ func testRenderer(
     AppKitRenderer(
         resourceDirectory: resourceDirectory,
         presentsWindows: presentsWindows,
-        eventSink: eventSink,
         preferences: preferences,
         clock: clock,
         reducesMotion: reducesMotion)

@@ -44,7 +44,7 @@ extension AppKitWindowController {
         previous.appKit.setPagePresented(false, reason: .navigation)
         next?.setPagePresented(true, reason: .navigation)
         refreshVisiblePageChrome()
-        host?.commit(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
+        host?.tellPhase(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
     }
 
     func dismissTopModalForTesting() {

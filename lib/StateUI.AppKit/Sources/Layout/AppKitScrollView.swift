@@ -413,4 +413,6 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
     }
 }
 
+extension AppKitScrollView: FramedScroller {}
+
 #endif

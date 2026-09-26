@@ -20,8 +20,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | `deactivated` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `destroying` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `windowClosed` | event | `String` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
-| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  | ✅ |  | cannot read windowValue of Window - AppKit's driver has no path for it yet |
 
 Realization:
 

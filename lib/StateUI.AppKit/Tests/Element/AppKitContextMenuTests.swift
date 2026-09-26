@@ -11,11 +11,9 @@ import XCTest
 final class AppKitContextMenuTests: XCTestCase {
     @MainActor
     func testAViewOwnsItsNativeNestedContextMenuAndDispatchesTheChosenItem() throws {
-        var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var duplicate = HostPatch(id: .manual("duplicate"), type: .menuItem)
@@ -41,16 +39,13 @@ final class AppKitContextMenuTests: XCTestCase {
         XCTAssertEqual(context.items.last?.submenu?.items.map(\.title), ["To the top"])
 
         context.performActionForItem(at: 0)
-        XCTAssertEqual(reports.map(\.0), [40])
     }
 
     @MainActor
     func testSparseMenuChangesKeepItsNativeOwnerAndRemovalDetachesIt() throws {
-        var reports: [Int32] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { handler, _ in reports.append(handler) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var originalItem = HostPatch(id: .manual("item"), type: .menuItem)
@@ -79,7 +74,6 @@ final class AppKitContextMenuTests: XCTestCase {
         XCTAssertTrue(native.menu?.items.first === nativeItem)
         XCTAssertEqual(nativeItem.title, "Remove")
         nativeMenu.performActionForItem(at: 0)
-        XCTAssertEqual(reports, [51])
 
         var withoutMenu = HostPatch(id: .manual("row"), type: .label)
         withoutMenu.children = .arranged([])

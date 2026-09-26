@@ -37,7 +37,6 @@ final class AppKitElement: NSObject, NativeElement {
     var observesFrame = false
     var frameObservedViews: [NSView] = []
     var frameQueued = false
-    var lastFrameReport: [Double]?
 
     /// The focus this element last reported, where it follows its focus.
     var reportedFocus = false
@@ -149,13 +148,13 @@ final class AppKitElement: NSObject, NativeElement {
     func crossVisibility() {
         guard let host, let view else { return }
         let visible = value(.isVisible)?.bool != false
-        let law = host.layoutMotion.law(of: motion)
+        let law = host.runtime.layoutMotion.law(of: motion)
         let opacity = resolvedValue(.opacity) ?? .number(1)
 
         if !visible {
             guard !view.isHidden, !leaving, let law else { return }
             leaving = true
-            let started = host.tree.receiveProperty(
+            let started = host.runtime.tree.receiveProperty(
                 mount: mount,
                 property: .opacity,
                 standing: .number(Double(view.alphaValue)),
@@ -167,7 +166,7 @@ final class AppKitElement: NSObject, NativeElement {
             // BACK BEFORE IT WENT: up again from where the fade has reached,
             // or at once where nothing moves.
             leaving = false
-            host.tree.receiveProperty(
+            host.runtime.tree.receiveProperty(
                 mount: mount,
                 property: .opacity,
                 standing: .number(Double(view.alphaValue)),
@@ -175,7 +174,7 @@ final class AppKitElement: NSObject, NativeElement {
                 motion: law)
         } else if view.isHidden, let law {
             view.isHidden = false
-            host.tree.receiveProperty(
+            host.runtime.tree.receiveProperty(
                 mount: mount,
                 property: .opacity,
                 standing: .number(0),
@@ -238,17 +237,17 @@ final class AppKitElement: NSObject, NativeElement {
         pointerRecognizer?.detach()
         pointerRecognizer = nil
 
-        if let scroller = view as? AppKitScrollView { host?.stopFrames(for: scroller) }
+
     }
 
     /// Tells every element in this subtree that follows its focus where the
     /// focus now is, where that has changed.
     func reportFocus() {
-        if let handler = events[.isFocusedChanged], let view {
+        if events[.isFocusedChanged] != nil, let view {
             let focused = AppKitFocus.holds(view, view.window?.firstResponder)
             if focused != reportedFocus {
                 reportedFocus = focused
-                host?.dispatch(handler, payload: [.bool(focused)])
+                send(.isFocusedChanged, [.bool(focused)])
             }
         }
         for child in children { child.reportFocus() }
@@ -261,7 +260,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// same children in a room that is moving, and they follow it.
     func configureLayoutMotion() {
         guard let layout = view as? AppKitTravellingLayout else { return }
-        layout.layoutMotion = host?.layoutMotion
+        layout.layoutMotion = host?.runtime.layoutMotion
         layout.motion = motion
         layout.framesRead = framesRead
         layout.patchArrived()
@@ -281,10 +280,10 @@ final class AppKitElement: NSObject, NativeElement {
     /// moves, and a fade over it would be a second answer for one value.
     func fadeIn(under motion: Motion) {
         guard fadesIn, let host, let view,
-              host.tree.presentedPropertyValue(mount: mount, property: .opacity) == nil
+              host.runtime.tree.presentedPropertyValue(mount: mount, property: .opacity) == nil
         else { return }
 
-        host.tree.receiveProperty(
+        host.runtime.tree.receiveProperty(
             mount: mount,
             property: .opacity,
             standing: .number(0),

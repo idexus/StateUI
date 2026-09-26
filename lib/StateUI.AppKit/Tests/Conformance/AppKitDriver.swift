@@ -28,27 +28,38 @@ final class AppKitDriver: HostDriver {
     var register: HostRegister { AppKitRealization.register }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
+        run(clock: clock, reducesMotion: reducesMotion) { OneWindowApplication(page: page) }
+    }
+
+    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+        run(clock: clock, reducesMotion: false, application)
+    }
+
+    /// Runs `application` on a new host, its first window in front as AppKit brings it; the tree it mounted.
+    private func run(
+        clock: TestClock?, reducesMotion: Bool, _ application: @escaping @Sendable () -> any Application
+    ) -> MountedTree {
         renderer?.closeForTesting()
-        stateUIUseApp(OneWindowApplication(page: page))
+        stateUIUseApp(application())
         let renderer = testRenderer(
             resourceDirectory: Self.pictures, clock: clock.map { clock in { clock.now } },
             reducesMotion: { reducesMotion })
         self.renderer = renderer
         renderer.startForTesting()
         comeToTheFront(renderer.windowsForTesting.first?.window)
-        return renderer.tree
+        return renderer.runtime.tree
     }
 
     func step() {
         guard let renderer else { return }
         RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-        _ = renderer.core.runJobs()
-        renderer.pump()
+        _ = renderer.runtime.core.runJobs()
+        renderer.runtime.pump.turn()
         if renderer.frameClock.held { renderer.displayFrameForTesting() }
     }
 
     func turn() {
-        renderer?.pump()
+        renderer?.runtime.pump.turn()
     }
 
     func frame() {

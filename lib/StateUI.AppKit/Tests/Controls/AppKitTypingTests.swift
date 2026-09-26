@@ -28,15 +28,15 @@ final class AppKitTypingTests: XCTestCase {
 
         for typed in ["a", "ad", "ada"] {
             field.typeForTesting(typed)
-            renderer.pump()
+            renderer.runtime.pump.turn()
             XCTAssertEqual(field.textField.stringValue, typed, "the field")
 
             editor.typeForTesting(typed)
-            renderer.pump()
+            renderer.runtime.pump.turn()
             XCTAssertEqual(editor.textView.string, typed, "the editor")
 
             search.typeForTesting(typed)
-            renderer.pump()
+            renderer.runtime.pump.turn()
             XCTAssertEqual(search.stringValue, typed, "the search field")
         }
 

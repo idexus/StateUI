@@ -38,23 +38,6 @@ final class AppKitRadioButtonViewTests: XCTestCase {
         XCTAssertEqual(selections, 1)
     }
 
-    @MainActor
-    func testNamedGroupReportsOldFalseBeforeNewTrueAcrossContainers() {
-        var reports: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(applicationWithNamedRadios())
-        let second = renderer.viewForTesting(id: .manual("large")) as? AppKitRadioButtonView
-        second?.selectForTesting()
-
-        XCTAssertEqual(reports.map(\.0), [11, 12])
-        XCTAssertEqual(reports.map { $0.1.first?.bool }, [false, true])
-    }
-
     /// A radio button's caption follows its text case, and its padding is
     /// kept around the native control.
     @MainActor

@@ -9,81 +9,13 @@ import AppKit
 import XCTest
 
 final class AppKitPageTests: XCTestCase {
-    @MainActor
-    func testAWindowPresentsItsPageExactlyOnce() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(page("home", events: 100)))
-        renderer.applyForTesting(tree(page("home", events: 100)))
-
-        XCTAssertEqual(reported.map(\.0), [100])
-    }
-
-    @MainActor
-    func testNavigationMovesReportEachPagePhaseInDeterministicOrder() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(navigation([
-            page("home", events: 100),
-        ])))
-        XCTAssertEqual(reported.map(\.0), [100, 102])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(navigation([
-            page("home", events: 100),
-            page("details", events: 200),
-        ])))
-        XCTAssertEqual(reported.map(\.0), [103, 101, 104, 200, 202])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(navigation([
-            page("home", events: 100),
-        ])))
-        XCTAssertEqual(reported.map(\.0), [203, 201, 204, 100, 102])
-    }
-
-    @MainActor
-    func testNavigationBackReportsTheCommittedSurvivingDepth() throws {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(navigation([
-            page("home", events: 100),
-            page("one", events: 200),
-            page("two", events: 300),
-        ], popped: 9)))
-        reported.removeAll()
-
-        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
-        controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
-
-        XCTAssertEqual(reported.count, 1)
-        XCTAssertEqual(reported[0].0, 9)
-        XCTAssertEqual(reported[0].1, [.number(1)])
-    }
-
     /// The top page names the window, and the way back is the system's
     /// navigational toolbar item, labelled by the page it returns to.
     @MainActor
     func testTheWindowToolbarCarriesTheTopPageAndTheWayBack() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var home = page("home", title: "Home")
@@ -115,8 +47,7 @@ final class AppKitPageTests: XCTestCase {
     func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(navigation([page("home", title: "Home")])))
@@ -147,8 +78,7 @@ final class AppKitPageTests: XCTestCase {
     func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -194,8 +124,7 @@ final class AppKitPageTests: XCTestCase {
     func testAWrittenBarForegroundColoursThePagesTitleOnTheBand() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -217,8 +146,7 @@ final class AppKitPageTests: XCTestCase {
     func testAWrittenBarColourPaintsOnlyTheSplitDetailsBand() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -249,8 +177,7 @@ final class AppKitPageTests: XCTestCase {
     func testAWrittenBarColourIsTheWindowsBackgroundToo() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -284,8 +211,7 @@ final class AppKitPageTests: XCTestCase {
     func testATranslucentWindowLaysItsMaterialUnderThePage() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(windowTree(page("home", title: "Home"), translucent: true))
@@ -314,8 +240,7 @@ final class AppKitPageTests: XCTestCase {
     func testATranslucentWindowsBarColourTintsItsMaterial() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -352,8 +277,7 @@ final class AppKitPageTests: XCTestCase {
     func testATranslucentWindowsTintCoversItsWholeMaterial() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -380,8 +304,7 @@ final class AppKitPageTests: XCTestCase {
     func testTheDetailMeetsAFloatingSidebar() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
@@ -409,50 +332,21 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testTabSelectionChangesVisibilityWithoutInventingNavigation() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(tabbed([
-            page("home", events: 100),
-            page("browse", events: 200),
-        ], selected: 0)))
-        XCTAssertEqual(reported.map(\.0), [100])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(tabbed([
-            page("home", events: 100),
-            page("browse", events: 200),
-        ], selected: 1)))
-        XCTAssertEqual(reported.map(\.0), [101, 200])
-    }
-
-    @MainActor
     func testUserTabSelectionReportsTheSelectedIndexOnce() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(tabbed([
             page("home", title: "Home", events: 100),
             page("browse", title: "Browse", events: 200),
         ], selected: 0, changed: 9)))
-        reported.removeAll()
 
         let tabs = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
         tabs.selectForTesting(1)
 
-        XCTAssertEqual(reported.count, 3)
-        XCTAssertEqual(reported.map(\.0), [101, 200, 9])
-        XCTAssertEqual(reported.last?.1, [.number(1)])
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
     }
 
@@ -463,11 +357,9 @@ final class AppKitPageTests: XCTestCase {
     /// the row is the user choosing.
     @MainActor
     func testAWindowsTabbedViewSelectsFromTheRowBeneathItsToolbar() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
         let pages = [
             page("home", title: "Home", events: 100),
@@ -477,7 +369,6 @@ final class AppKitPageTests: XCTestCase {
         var painted = tabbed(pages, selected: 0, changed: 9)
         painted.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(painted))
-        reported.removeAll()
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let row = controller.tabRowForTesting
@@ -499,8 +390,6 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(tabs.layer?.backgroundColor, "the tab row and the tab view are the system's")
 
         row.chooseForTesting(1)
-        XCTAssertEqual(reported.map(\.0), [101, 200, 9])
-        XCTAssertEqual(reported.last?.1, [.number(1)])
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
 
         renderer.applyForTesting(tree(tabbed(pages, selected: 1, changed: 9)))
@@ -514,8 +403,7 @@ final class AppKitPageTests: XCTestCase {
     func testAUserChosenTabRenamesTheWindowAtOnce() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var unbound = tabbed([
@@ -545,8 +433,7 @@ final class AppKitPageTests: XCTestCase {
     func testATabbedPageOnTheDetailsStackKeepsBelowItsTabRow() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         let menu = page("menu", title: "Menu", events: 100)
@@ -594,8 +481,7 @@ final class AppKitPageTests: XCTestCase {
     func testATabbedDetailShowsItsTabsBeneathTheToolbar() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(flyout(
@@ -642,11 +528,9 @@ final class AppKitPageTests: XCTestCase {
     /// the user choosing. The window's toolbar serves only the outer one.
     @MainActor
     func testATabbedViewInsideATabShowsItsTabsOnItsContent() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(tabbed([
@@ -656,7 +540,6 @@ final class AppKitPageTests: XCTestCase {
             ], selected: 0, changed: 903, id: "inner"),
             page("browse", title: "Browse", events: 200),
         ], selected: 0)))
-        reported.removeAll()
 
         let inner = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("inner")) as? AppKitTabbedView)
@@ -667,8 +550,6 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(outer.showsTabsForTesting)
 
         inner.selectForTesting(1)
-        XCTAssertEqual(reported.map(\.0), [101, 300, 903])
-        XCTAssertEqual(reported.last?.1, [.number(1)])
     }
 
     /// Each of a window's tabs shows its glyph beside its title, the tabs
@@ -704,8 +585,7 @@ final class AppKitPageTests: XCTestCase {
     func testATabIsNamedByTheTitleAndIconOfWhatItShows() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var library = navigation([page("shelf", title: "Shelf", events: 100)])
@@ -744,8 +624,7 @@ final class AppKitPageTests: XCTestCase {
     func testAnArrangementCarriesItsAccessibilityIdentifier() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("shelf", title: "Shelf", events: 100)])
@@ -776,8 +655,7 @@ final class AppKitPageTests: XCTestCase {
     func testAPagesPaddingAndBackgroundReachItsView() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var padded = HostPatch(id: .manual("padded"), type: .page)
@@ -799,130 +677,10 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testChangingAHiddenTabStackReportsNoPageLifecycle() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(navigation([
-            tabbed([
-                page("home", events: 100),
-                page("browse", events: 200),
-            ], selected: 0),
-            page("details", events: 300),
-        ])))
-        reported.removeAll()
-
-        renderer.applyForTesting(tree(navigation([
-            tabbed([
-                page("home", events: 100),
-                page("browse", events: 200),
-            ], selected: 1),
-            page("details", events: 300),
-        ])))
-
-        XCTAssertTrue(reported.isEmpty)
-    }
-
-    @MainActor
-    func testFlyoutVisibilityDoesNotRecreateOrHideItsDetail() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(flyout(
-            presented: false,
-            menu: page("menu", events: 100),
-            detail: page("detail", events: 200))))
-        XCTAssertEqual(reported.map(\.0), [200])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(flyout(
-            presented: true,
-            menu: page("menu", events: 100),
-            detail: page("detail", events: 200))))
-        XCTAssertEqual(reported.map(\.0), [100])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(flyout(
-            presented: false,
-            menu: page("menu", events: 100),
-            detail: page("detail", events: 200))))
-        XCTAssertEqual(reported.map(\.0), [101])
-    }
-
-    /// A split view whose detail is REPLACED - a stack giving way to a tabbed
-    /// view, the way a section changes its arrangement - presents the new
-    /// tree: the old detail's page leaves, the selected tab's page arrives,
-    /// and a push on that tab's stack reports its phases.
-    @MainActor
-    func testAReplacedSplitDetailIsPresented() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(flyout(
-            presented: false,
-            menu: page("menu", events: 100),
-            detail: navigation([page("home", events: 200)]))))
-        reported.removeAll()
-
-        renderer.applyForTesting(tree(flyout(
-            presented: false,
-            menu: page("menu", events: 100),
-            detail: tabbed([navigation([page("tab", events: 300)])], selected: 0))))
-        XCTAssertEqual(reported.map(\.0), [201, 300])
-
-        reported.removeAll()
-        renderer.applyForTesting(tree(flyout(
-            presented: false,
-            menu: page("menu", events: 100),
-            detail: tabbed([navigation([
-                page("tab", events: 300),
-                page("level", events: 400),
-            ])], selected: 0))))
-        XCTAssertEqual(reported.map(\.0), [303, 301, 304, 400, 402])
-    }
-
-    /// The same for the sidebar: one replaced while it shows is presented.
-    @MainActor
-    func testAReplacedVisibleSidebarIsPresented() {
-        var reported: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(flyout(
-            presented: true,
-            menu: page("menu", events: 100),
-            detail: page("detail", events: 200))))
-        reported.removeAll()
-
-        renderer.applyForTesting(tree(flyout(
-            presented: true,
-            menu: page("sections", events: 500),
-            detail: page("detail", events: 200))))
-        XCTAssertEqual(reported.map(\.0), [101, 500])
-    }
-
-    @MainActor
     func testUserFlyoutToggleReportsItsSettledValueOnce() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(flyout(
@@ -930,14 +688,11 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", events: 100),
             detail: page("detail", events: 200),
             changed: 9), width: 600))
-        reported.removeAll()
 
         let flyout = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         flyout.toggleForTesting()
 
-        XCTAssertEqual(reported.map(\.0), [100, 9])
-        XCTAssertEqual(reported.last?.1, [.bool(true)])
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
     }
 
@@ -945,8 +700,7 @@ final class AppKitPageTests: XCTestCase {
     func testFlyoutIsPresentedByANativeSplitViewController() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(flyout(
@@ -980,11 +734,9 @@ final class AppKitPageTests: XCTestCase {
     /// and the user's answer stands: nothing forces it back.
     @MainActor
     func testTheUserMayHideTheSidebarOfAWideWindow() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(flyout(
@@ -996,23 +748,19 @@ final class AppKitPageTests: XCTestCase {
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
-        reported.removeAll()
 
         flyout.toggleForTesting()
         flyout.needsLayout = true
         flyout.layoutSubtreeIfNeeded()
 
         XCTAssertFalse(flyout.isEffectivelyPresentedForTesting)
-        XCTAssertEqual(reported.filter { $0.0 == 9 }.map(\.1), [[.bool(false)]])
     }
 
     @MainActor
     func testWideFlyoutUsesTheNativeSidebarAndSettlesItsBinding() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(flyout(
@@ -1027,16 +775,13 @@ final class AppKitPageTests: XCTestCase {
 
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
         XCTAssertGreaterThanOrEqual(flyout.sidebarWidthForTesting, 260)
-        XCTAssertTrue(reported.contains { $0.0 == 9 && $0.1 == [.bool(true)] })
     }
 
     @MainActor
     func testNavigationUsesThePagesTitleViewAndToolbarItems() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var title = HostPatch(id: .manual("title-label"), type: .label)
@@ -1059,7 +804,6 @@ final class AppKitPageTests: XCTestCase {
             page("home", events: 100),
             details,
         ])))
-        reported.removeAll()
 
         let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
         let customTitle = try XCTUnwrap(
@@ -1072,7 +816,6 @@ final class AppKitPageTests: XCTestCase {
 
         let saveItem = try XCTUnwrap(chrome.itemForTesting(titled: "Save"))
         chrome.performForTesting(saveItem.itemIdentifier)
-        XCTAssertEqual(reported.map(\.0), [50])
     }
 
     /// The page's actions are native toolbar items: the primary ones by
@@ -1082,8 +825,7 @@ final class AppKitPageTests: XCTestCase {
     func testThePagesActionsFollowTheirOrderAndPriorityInTheToolbar() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         func toolbarItem(
@@ -1144,11 +886,9 @@ final class AppKitPageTests: XCTestCase {
 
     @MainActor
     func testVisiblePageBuildsNativeNestedMenuItems() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var save = HostPatch(id: .manual("save"), type: .menuItem)
@@ -1175,7 +915,6 @@ final class AppKitPageTests: XCTestCase {
             page("home", events: 100),
             details,
         ])))
-        reported.removeAll()
 
         let menu = try XCTUnwrap(renderer.windowsForTesting.first?.pageMenuItemsForTesting.first)
         XCTAssertEqual(menu.title, "File")
@@ -1183,59 +922,45 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(menu.submenu?.items.last?.submenu?.items.map(\.title), ["notes.txt"])
 
         menu.submenu?.performActionForItem(at: 0)
-        XCTAssertEqual(reported.map(\.0), [60])
     }
 
     @MainActor
     func testModalStackMovesVisibilityBetweenRootAndTopSheet() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(page("root", events: 100)))
-        reported.removeAll()
 
         renderer.applyForTesting(tree(
             page("root", events: 100),
             modals: [page("sheet", events: 200)]))
-        XCTAssertEqual(reported.map(\.0), [103, 101, 104, 200, 202])
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 1)
 
-        reported.removeAll()
         renderer.applyForTesting(tree(
             page("root", events: 100),
             modals: [page("sheet", events: 200), page("about", events: 300)]))
-        XCTAssertEqual(reported.map(\.0), [203, 201, 204, 300, 302])
 
-        reported.removeAll()
         renderer.applyForTesting(tree(page("root", events: 100), modals: []))
-        XCTAssertEqual(reported.map(\.0), [303, 301, 304, 100, 102])
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 0)
     }
 
     @MainActor
     func testUserDismissalReportsTheSurvivingModalDepth() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(
             page("root", events: 100),
             modals: [page("sheet", events: 200), page("about", events: 300)],
             modalPopped: 9))
-        reported.removeAll()
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first)
         window.dismissTopModalForTesting()
 
-        XCTAssertEqual(reported.map(\.0), [303, 301, 304, 200, 202, 9])
-        XCTAssertEqual(reported.last?.1, [.number(1)])
         XCTAssertEqual(window.modalCountForTesting, 1)
     }
 
@@ -1255,11 +980,11 @@ final class AppKitPageTests: XCTestCase {
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
 
         path.wrappedValue = [.plain]
-        renderer.pump()
+        renderer.runtime.pump.turn()
         XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "an ordinary page")
 
         path.wrappedValue = [.plain, .withoutBackButton]
-        renderer.pump()
+        renderer.runtime.pump.turn()
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back))
     }
 
@@ -1280,12 +1005,12 @@ final class AppKitPageTests: XCTestCase {
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
 
         path.wrappedValue = [.plain]
-        renderer.pump()
+        renderer.runtime.pump.turn()
         XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "an ordinary page")
         XCTAssertEqual(toolbar.actionTitlesForTesting, ["Save"], "an ordinary page")
 
         path.wrappedValue = [.plain, .withoutNavigationBar]
-        renderer.pump()
+        renderer.runtime.pump.turn()
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back))
         XCTAssertEqual(toolbar.actionTitlesForTesting, [])
     }

@@ -11,11 +11,7 @@ import XCTest
 final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
-        var reports: [[HostValue]] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, payload in reports.append(payload) })
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var patch = HostPatch(id: .manual("measured"), type: .label)
@@ -37,21 +33,12 @@ final class AppKitFrameTests: XCTestCase {
         parent.addSubview(measured)
         measured.frame = NSRect(x: 10, y: 20, width: 100, height: 40)
 
-        node.flushFrameReportForTesting()
-
-        guard case .numbers(let values)? = reports.last?.first else {
-            return XCTFail("the native frame was not reported")
-        }
-        XCTAssertEqual(values, [10, 20, 100, 40, 35, 50, 30, 40])
+        XCTAssertEqual(node.frameNumbers(), [10, 20, 100, 40, 35, 50, 30, 40])
     }
 
     @MainActor
     func testAnAncestorMoveQueuesAFrameReportForAStationaryChild() throws {
-        var reports: [[HostValue]] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, payload in reports.append(payload) })
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var patch = HostPatch(id: .manual("measured"), type: .label)
@@ -71,15 +58,10 @@ final class AppKitFrameTests: XCTestCase {
         parent.addSubview(measured)
         measured.frame = NSRect(x: 5, y: 6, width: 40, height: 20)
         node.flushFrameReportForTesting()
-        reports.removeAll()
 
         parent.frame.origin.y = 70
-        XCTAssertTrue(node.frameReportQueuedForTesting)
-        node.flushFrameReportForTesting()
-
-        guard case .numbers(let values)? = reports.last?.first else {
-            return XCTFail("moving an ancestor did not report the changed global frame")
-        }
+        XCTAssertTrue(node.frameReportQueuedForTesting, "moving an ancestor queues a report")
+        let values = try XCTUnwrap(node.frameNumbers())
         XCTAssertEqual(Array(values.prefix(4)), [5, 6, 40, 20])
         XCTAssertEqual(Array(values[4..<6]), [25, 76])
     }

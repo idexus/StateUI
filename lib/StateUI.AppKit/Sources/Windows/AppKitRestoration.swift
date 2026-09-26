@@ -187,7 +187,7 @@ final class AppKitWindowRestorer: NSObject, NSWindowRestoration {
 
             completionHandler(window, nil)
         } catch {
-            NSLog("StateUI AppKit: ignored an unreadable restoration record: %@", String(describing: error))
+            AppKitRenderer.log.error("ignored an unreadable restoration record: \(error)")
             completionHandler(nil, nil)
         }
     }

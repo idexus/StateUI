@@ -101,7 +101,7 @@ extension AppKitElement {
             scroll.onScrollStopped = { [weak self] in self?.scrollStopped() }
             scroll.onFramesWanted = { [weak self, weak scroll] in
                 guard let scroll else { return }
-                self?.host?.requestFrames(for: scroll)
+                self?.host?.runtime.frames.serve(scroll, order: Int64(truncatingIfNeeded: self?.element.mount ?? 0))
             }
             return scroll
 

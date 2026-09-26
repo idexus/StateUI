@@ -38,15 +38,12 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     }
 
     /// A date picker wears the date the tree describes, and the date its
-    /// user picks is reported by member - as the three lanes a civil date is
     /// carried in, never as an instant in a zone.
     @MainActor
     func testADatePickerWearsItsDateAndReportsTheUsersChoice() throws {
-        var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
@@ -60,18 +57,14 @@ final class AppKitPickerRegistrationTests: XCTestCase {
 
         native.changeForTesting(to: [2027, 1, 1])
 
-        XCTAssertEqual(reports.map(\.0), [21])
-        XCTAssertEqual(reports.first?.1.first?.numbers, [2027, 1, 1])
     }
 
     /// A time picker does the same with the lanes a time of day is carried in.
     @MainActor
     func testATimePickerWearsItsTimeAndReportsTheUsersChoice() throws {
-        var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var alarm = HostPatch(id: .manual("alarm"), type: .timePicker)
@@ -85,8 +78,6 @@ final class AppKitPickerRegistrationTests: XCTestCase {
 
         native.changeForTesting(to: [7, 15, 0])
 
-        XCTAssertEqual(reports.map(\.0), [33])
-        XCTAssertEqual(reports.first?.1.first?.numbers, [7, 15, 0])
     }
 
     /// A date picker keeps the range its element describes, which the whole

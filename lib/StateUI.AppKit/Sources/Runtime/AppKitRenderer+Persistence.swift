@@ -11,7 +11,7 @@ extension AppKitRenderer {
     func hydratePersistentState() {
         var restored: [String: HostValue] = [:]
 
-        for key in core.persistentKeys {
+        for key in runtime.core.persistentKeys {
             guard preferences.object(forKey: key.name) != nil else { continue }
 
             switch key.kind {
@@ -26,13 +26,13 @@ extension AppKitRenderer {
             }
         }
 
-        core.restorePersistent(restored)
+        runtime.core.restorePersistent(restored)
     }
 
     func savePersistent(_ call: HostActCall) {
         guard call.arguments.count >= 2,
               let name = call.arguments[0].name,
-              let key = core.persistentKeys.first(where: { $0.name == name })
+              let key = runtime.core.persistentKeys.first(where: { $0.name == name })
         else { return }
 
         let value = call.arguments[1]

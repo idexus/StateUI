@@ -40,7 +40,8 @@ final class AppKitActPerformer {
             renderer.keepSceneValue(call)
 
         case .handlerFailed:
-            NSLog("StateUI AppKit: a handler failed: %@", call.arguments.first?.string ?? "")
+            AppKitRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")
+            reply(call, [])
 
         case .focus, .unfocus:
             aim(call)
@@ -137,7 +138,7 @@ final class AppKitActPerformer {
         if let completion = call.completion {
             _ = core.fail(completion, reason: reason)
         } else {
-            NSLog("StateUI AppKit: %@", reason)
+            AppKitRenderer.log.error(reason)
         }
     }
 

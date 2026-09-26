@@ -11,11 +11,9 @@ import XCTest
 final class AppKitTitleBarTests: XCTestCase {
     @MainActor
     func testTitleBarUsesANativeToolbarWithInteractiveStateUISlots() throws {
-        var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reported.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(titleBar(background: nil)))
@@ -39,7 +37,6 @@ final class AppKitTitleBarTests: XCTestCase {
         XCTAssertEqual(window.toolbarStyle, .unified)
 
         trailing.clickForTesting()
-        XCTAssertEqual(reported.map(\.0), [91])
     }
 
     /// The title bar's own title is text at the trailing edge of the
@@ -51,8 +48,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testTitleBarTitleStandsAtTheTrailingEdgeInSystemColours() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(titleBar(background: nil), windowTitle: "Workspace"))
@@ -78,8 +74,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testRemovingTitleBarLeavesThePlainNativeWindowChrome() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(titleBar()))
@@ -105,8 +100,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testAWrittenTitleBarBackgroundPaintsTheBandAndColoursItsTitle() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(titleBar()))
@@ -127,8 +121,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testTitleBarUpdatesInPlace() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(titleBar(title: "Notes", subtitle: "Personal")))
@@ -153,8 +146,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testTitleBarKeepsPageChromeInsideTheNativeContentLayout() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(navigationTree(titleBar()))
@@ -173,8 +165,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testAddingTitleBarRelaysOutTheExistingPageInsideNativeContent() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(navigationTree(nil))
@@ -197,8 +188,7 @@ final class AppKitTitleBarTests: XCTestCase {
     func testTitleBarContainsNestedFlyoutAndScrollInsideNativeContent() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(flyoutTree(titleBar()))

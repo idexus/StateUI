@@ -16,9 +16,12 @@ final class AppKitEnvironment {
     private let core: CoreLink
 
     /// Called after each locale report, so the tree follows the language's direction.
-    var localeReported: () -> Void = {}
+    /// How a change is reported: what the report tells the core, run as the runtime's step for a change of what
+    /// the application stands on.
+    private var reportChange: (() -> Void) -> Void = { $0() }
 
     private var observers: [NSObjectProtocol] = []
+    private var appearanceWatch: NSKeyValueObservation?
     private var powerSource: CFRunLoopSource?
     private var network: NWPathMonitor?
 
@@ -27,9 +30,12 @@ final class AppKitEnvironment {
     }
 
     /// Reports all three, then watches each for a change.
-    func start() {
+    /// Tells the core what stands now, then each change as it comes, through `reportingChanges`.
+    func start(reportingChanges: @escaping (() -> Void) -> Void) {
         reportLocale()
         reportBattery()
+        reportTheme()
+        reportChange = reportingChanges
         watch()
     }
 
@@ -38,20 +44,20 @@ final class AppKitEnvironment {
         let localeChanges: [Notification.Name] = [NSLocale.currentLocaleDidChangeNotification, .NSSystemTimeZoneDidChange]
         for name in localeChanges {
             observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.reportLocale() }
+                MainActor.assumeIsolated { self?.changed { $0.reportLocale() } }
             })
         }
         observers.append(center.addObserver(
             forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated { self?.reportBattery() }
+            MainActor.assumeIsolated { self?.changed { $0.reportBattery() } }
         })
 
         // A C callback carries no capture: the environment rides in the context pointer; the renderer keeps it.
         let notify: IOPowerSourceCallbackType = { context in
             guard let context else { return }
             let environment = Unmanaged<AppKitEnvironment>.fromOpaque(context).takeUnretainedValue()
-            MainActor.assumeIsolated { environment.reportBattery() }
+            MainActor.assumeIsolated { environment.changed { $0.reportBattery() } }
         }
         if let source = IOPSNotificationCreateRunLoopSource(notify, Unmanaged.passUnretained(self).toOpaque())?
             .takeRetainedValue() {
@@ -61,10 +67,25 @@ final class AppKitEnvironment {
 
         let network = NWPathMonitor()
         network.pathUpdateHandler = { [weak self] path in
-            MainActor.assumeIsolated { self?.report(path) }
+            MainActor.assumeIsolated { self?.changed { $0.report(path) } }
         }
         network.start(queue: .main)
         self.network = network
+
+        appearanceWatch = NSApplication.shared.observe(\.effectiveAppearance) { [weak self] _, _ in
+            MainActor.assumeIsolated { self?.changed { $0.reportTheme() } }
+        }
+    }
+
+    /// Reports a change through the runtime's step for it.
+    private func changed(_ report: @escaping (AppKitEnvironment) -> Void) {
+        reportChange { report(self) }
+    }
+
+    /// The system's appearance: dark or light.
+    func reportTheme() {
+        let appearance = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua])
+        core.setTheme(appearance == .darkAqua ? .dark : .light)
     }
 
     func reportLocale() {
@@ -80,7 +101,6 @@ final class AppKitEnvironment {
             firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
             isMetric: locale.measurementSystem != .us,
             layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight))
-        localeReported()
     }
 
     func reportBattery() {

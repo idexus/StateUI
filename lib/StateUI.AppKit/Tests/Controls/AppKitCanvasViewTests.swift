@@ -104,11 +104,9 @@ final class AppKitCanvasViewTests: XCTestCase {
 
     @MainActor
     func testHostPatchMapsDrawingAndInteractionEvents() throws {
-        var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
         let element = Canvas {
             Draw.fillColor(.blue)
@@ -130,10 +128,6 @@ final class AppKitCanvasViewTests: XCTestCase {
         native.releaseForTesting(at: NSPoint(x: 7, y: 8))
 
         XCTAssertEqual(native.commandKindsForTesting, [0, 14])
-        XCTAssertEqual(reports.map(\.0), [10, 11, 12])
-        XCTAssertEqual(reports.map(\.1), [
-            [.numbers([3, 4])], [.numbers([5, 6])], [.numbers([7, 8])],
-        ])
     }
 }
 

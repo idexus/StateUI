@@ -20,9 +20,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `created` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `deactivated` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `destroying` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read floatsOnTop of Window - AppKit's driver has no path for it yet |
 | `height` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read height of Window - AppKit's driver has no path for it yet |
-| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isVisible of Window - AppKit's driver has no path for it yet |
 | `isMaximizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isMaximizable of Window - AppKit's driver has no path for it yet |
 | `isMinimizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isMinimizable of Window - AppKit's driver has no path for it yet |
 | `isTranslucent` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isTranslucent of Window - AppKit's driver has no path for it yet |
@@ -35,8 +35,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `stopped` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of Window - AppKit's driver has no path for it yet; Android Views: cannot read title of Window - Android's driver has no path for it yet |
 | `width` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read width of Window - AppKit's driver has no path for it yet |
-| `windowType` | property | `WindowType` | structure |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
-| `windowValue` | property | `String` | structure |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `windowType` | property | `WindowType` | structure | ✅ |  |  |  | ✅ |  |  |
+| `windowValue` | property | `String` | structure |  |  |  |  | ✅ |  | cannot read windowValue of Window - AppKit's driver has no path for it yet |
 | `x` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot read x of Window - AppKit's driver has no path for it yet |
 | `y` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot read y of Window - AppKit's driver has no path for it yet |
 

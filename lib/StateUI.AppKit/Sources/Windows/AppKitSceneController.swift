@@ -129,11 +129,10 @@ final class AppKitSceneController {
               let handler = node?.handler(event)
         else { return }
 
-        let isPhase = [.activated, .deactivated, .stopped, .destroying].contains(event)
         if [.activated, .deactivated, .stopped].contains(event) {
             lastPhase = event
         }
-        host?.dispatch(handler, payload: payload, isPhase: isPhase)
+        host?.tellPhase(handler, payload: payload)
     }
 
     func keep(name: String, value: HostValue) {

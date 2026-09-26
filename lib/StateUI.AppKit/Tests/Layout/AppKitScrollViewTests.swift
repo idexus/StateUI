@@ -114,8 +114,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testHostUsesThePublicScrollOrientationValuesDirectly() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { _, _ in })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
@@ -244,90 +243,6 @@ final class AppKitScrollViewTests: XCTestCase {
         return try XCTUnwrap(NSEvent(cgEvent: event))
     }
 
-    @MainActor
-    func testHostPatchReportsChangedAxesAndRestExactlyOnce() throws {
-        var reports: [(Int32, [HostValue])] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { reports.append(($0, $1)) })
-        defer { renderer.closeForTesting() }
-        var content = HostPatch(id: .manual("content"), type: .colorBox)
-        content.properties = [.width: .number(500), .height: .number(500)]
-        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
-        scroll.properties = [
-            .orientation: .enumeration(2),
-        ]
-        scroll.events = .replace([
-            .scrollXChanged: 10,
-            .scrollYChanged: 11,
-            .scrollStopped: 13,
-        ])
-        scroll.children = .arranged([content])
-        renderer.applyForTesting(tree(scroll))
-
-        let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
-        native.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
-        native.layoutSubtreeIfNeeded()
-        reports.removeAll()
-        native.beginMovementForTesting()
-        native.moveAsUserForTesting(to: NSPoint(x: 120, y: 40))
-        renderer.displayFrameForTesting()
-        native.restForTesting()
-        renderer.displayFrameForTesting()
-
-        XCTAssertEqual(reports.map(\.0), [10, 11, 13])
-        XCTAssertEqual(reports[0].1, [.number(120)])
-        XCTAssertEqual(reports[1].1, [.number(40)])
-        XCTAssertEqual(reports.last?.1, [])
-    }
-
-    /// A movement no live scroll brackets - a wheel's click - rests once the
-    /// offset has stood still for 120 ms of the frame clock's time, and says so
-    /// once: the quiet is the display's own time, never a timer's.
-    @MainActor
-    func testAMovementNoLiveScrollBracketsRestsOnTheFrameClock() throws {
-        var now = 0.0
-        var reports: [Int32] = []
-        let renderer = testRenderer(
-            resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { handler, _ in reports.append(handler) },
-            clock: { now })
-        defer { renderer.closeForTesting() }
-        var content = HostPatch(id: .manual("content"), type: .colorBox)
-        content.properties = [.width: .number(500), .height: .number(500)]
-        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
-        scroll.properties = [.orientation: .enumeration(2)]
-        scroll.events = .replace([.scrollYChanged: 11, .scrollStopped: 13])
-        scroll.children = .arranged([content])
-        renderer.applyForTesting(tree(scroll))
-
-        let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
-        native.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
-        native.layoutSubtreeIfNeeded()
-        reports.removeAll()
-
-        native.beginMovementForTesting()
-        native.moveAsUserForTesting(to: NSPoint(x: 0, y: 40))
-        renderer.displayFrameForTesting()
-        XCTAssertEqual(reports, [11], "where it went, on the next frame")
-
-        now = 100
-        renderer.displayFrameForTesting()
-        XCTAssertEqual(reports, [11], "still for less than the quiet")
-
-        now = 120
-        renderer.displayFrameForTesting()
-        XCTAssertEqual(reports, [11, 13], "at rest once it has stood still long enough")
-
-        now = 300
-        renderer.displayFrameForTesting()
-        XCTAssertEqual(reports, [11, 13], "and said once")
-    }
-
     /// A vertical scroller's bar visibility reaches its native scroller:
     /// `.never` takes the bar away, `.always` keeps it from hiding, and a
     /// scroller that says neither leaves AppKit to show and hide it.
@@ -386,7 +301,7 @@ final class AppKitScrollViewTests: XCTestCase {
         while (scroller.documentView?.frame.width ?? 0) <= scroller.contentView.bounds.width + 1,
               Date() < deadline {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
-            renderer.pump()
+            renderer.runtime.pump.turn()
             scroller.window?.contentView?.layoutSubtreeIfNeeded()
         }
 
@@ -414,7 +329,7 @@ final class AppKitScrollViewTests: XCTestCase {
         while (scroller.documentView?.frame.width ?? 0) < scroller.contentView.bounds.width + 600,
               Date() < deadline {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
-            renderer.pump()
+            renderer.runtime.pump.turn()
             scroller.window?.contentView?.layoutSubtreeIfNeeded()
         }
 
@@ -428,7 +343,7 @@ final class AppKitScrollViewTests: XCTestCase {
               Date() < settled {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.displayFrameForTesting()
-            renderer.pump()
+            renderer.runtime.pump.turn()
         }
 
         XCTAssertEqual(scroller.contentView.bounds.origin.x, 105.6, accuracy: 0.5)

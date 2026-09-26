@@ -21,7 +21,7 @@ final class AppKitPhaseTests: XCTestCase {
         renderer.startForTesting()
 
         stack.path = [1]
-        renderer.pump()
+        renderer.runtime.pump.turn()
 
         XCTAssertEqual(stack.seen, [.appearing, .navigatedTo])
     }

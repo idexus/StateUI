@@ -19,7 +19,7 @@ extension AppKitRenderer {
 
     func openPlatformScene() {
         connectPlatformScene(restoring: [:])
-        pump()
+        runtime.pump.turn()
     }
 
     func reopen(hasVisibleWindows: Bool) {
@@ -36,55 +36,52 @@ extension AppKitRenderer {
     }
 
     func applicationBecameActive() {
-        core.setApplicationPhase(.active)
+        runtime.core.setApplicationPhase(.active)
         if let activeWindow {
             activeWindow.scene?.report(.activated)
             arrangeOwnedWindows(for: activeWindow.scene)
             installPageMenus(activeWindow.pageMenuItems)
         }
-        pump()
+        runtime.pump.turn()
     }
 
     func applicationResignedActive() {
         guard !applicationIsHidden else { return }
-        core.setApplicationPhase(.inactive)
+        runtime.core.setApplicationPhase(.inactive)
         activeWindow?.scene?.report(.deactivated)
-        pump()
+        runtime.pump.turn()
     }
 
     func applicationWasHidden() {
         applicationIsHidden = true
-        core.setApplicationPhase(.background)
+        runtime.core.setApplicationPhase(.background)
 
         for scene in orderedScenes {
             scene.applicationWasHidden()
         }
 
-        pump()
+        runtime.pump.turn()
     }
 
     func applicationWasUnhidden() {
         applicationIsHidden = false
-        core.setApplicationPhase(.inactive)
+        runtime.core.setApplicationPhase(.inactive)
 
         for scene in orderedScenes {
             scene.applicationWasUnhidden()
         }
 
-        pump()
+        runtime.pump.turn()
     }
 
     func connectPlatformScene(restoring values: [String: HostValue]) {
-        core.connectScene(restoring: values)
+        runtime.core.connectScene(restoring: values)
         connectedInitialScene = true
     }
 
     func synchronizeWindows() {
-        guard let root = tree.root, root.type == .application else { return }
+        guard let root = runtime.tree.root, root.type == .application else { return }
         windowSynchronizationCountForTesting += 1
-
-        synchronizingWindows = true
-        defer { synchronizingWindows = false }
 
         let sceneNodes = root.children.filter { $0.type == .scene }
         let nextIDs = sceneNodes.map(\.id)
@@ -111,8 +108,7 @@ extension AppKitRenderer {
         if let window = orderedWindowControllers.compactMap(\.window).first {
             frameClock.attach(to: window)
         }
-        offerRestoredWindows()
-        displayCycle.hold()
+        runtime.displayCycle.hold()
     }
 
     func keepSceneValue(_ call: HostActCall) {
@@ -140,7 +136,9 @@ extension AppKitRenderer {
 
         if record.ownerIdentifier == nil {
             connectPlatformScene(restoring: record.kept)
-            if started { pump() }
+            if started { runtime.pump.turn() }
+        } else if started {
+            offerRestoredWindows()
         }
 
         scheduleRestorationAbandonment()
@@ -168,6 +166,8 @@ extension AppKitRenderer {
         return AppKitRestoredWindow(record: record, window: window)
     }
 
+    /// Offers each scene the restored windows it owns, each once: the scene's handler hears its kind and value, and
+    /// one the next presentation finds no window claiming is declined.
     func offerRestoredWindows() {
         for scene in orderedScenes {
             guard let owner = scene.sessionIdentifier,
@@ -181,10 +181,8 @@ extension AppKitRenderer {
 
                 var payload: [HostValue] = [.string(kind)]
                 if let value = record.value { payload.append(.string(value)) }
-                queuedEvents.append(QueuedEvent(
-                    handler: handler,
-                    payload: payload,
-                    restorationIdentifier: record.windowIdentifier))
+                offersAwaitingClaim.append(record.windowIdentifier)
+                runtime.dispatch(handler, payload: payload)
             }
         }
     }
@@ -224,7 +222,7 @@ extension AppKitRenderer {
             arrangeOwnedWindows(for: controller.scene)
         }
 
-        core.setApplicationPhase(.active)
+        runtime.core.setApplicationPhase(.active)
     }
 
     func windowResignedKey(_ controller: AppKitWindowController) {
@@ -237,8 +235,8 @@ extension AppKitRenderer {
             else { return }
 
             controller.scene?.report(.deactivated)
-            core.setApplicationPhase(.inactive)
-            self.pump()
+            runtime.core.setApplicationPhase(.inactive)
+            self.runtime.pump.turn()
         }
     }
 
@@ -262,7 +260,7 @@ extension AppKitRenderer {
         if controller.isMain {
             controller.scene?.report(.destroying)
         } else {
-            controller.scene?.report(.windowClosed, payload: [controller.stateUIID.hostPayload])
+            controller.scene?.report(.windowClosed, payload: [controller.stateUIID.hostValue])
         }
 
         DispatchQueue.main.async { [weak self] in
@@ -271,8 +269,8 @@ extension AppKitRenderer {
                   !self.applicationIsHidden
             else { return }
 
-            core.setApplicationPhase(.inactive)
-            self.pump()
+            runtime.core.setApplicationPhase(.inactive)
+            self.runtime.pump.turn()
         }
     }
 
@@ -364,16 +362,6 @@ extension AppKitRenderer {
     ) -> HostValue? {
         orderedWindowControllers.first(where: { $0.presents(node) })?
             .standingValue(property)
-    }
-}
-
-/// An element's id as a window event carries it.
-extension ElementId {
-    var hostPayload: HostValue {
-        switch self {
-        case .manual(let value): .string(value)
-        case .auto(let value): .number(Double(value))
-        }
     }
 }
 

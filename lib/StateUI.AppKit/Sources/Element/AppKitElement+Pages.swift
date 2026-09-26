@@ -228,7 +228,7 @@ extension AppKitElement {
 
     func announce(_ event: Event) {
         guard let handler = events[event] else { return }
-        host?.enqueue(handler, isPhase: true)
+        host?.runtime.pump.handlers.enqueuePhase(handler)
     }
 
     /// What this arrangement shows while it is shown itself: a stack's top
@@ -272,7 +272,7 @@ extension AppKitElement {
     func reportTabFallback() {
         if let fallback = pendingTabFallback,
            let handler = events[.currentPageChanged] {
-            host?.enqueue(handler, payload: [.number(Double(fallback))])
+            host?.runtime.pump.handlers.enqueuePhase(handler, payload: [.number(Double(fallback))])
         }
         pendingTabFallback = nil
     }
@@ -363,7 +363,7 @@ extension AppKitElement {
               let handler = events[.popped]
         else { return }
 
-        host?.dispatch(handler, payload: [.number(Double(children.count - 2))])
+        host?.runtime.dispatch(handler, payload: [.number(Double(children.count - 2))])
     }
 
     func selectTab(from previous: Int, to selected: Int) {
@@ -376,7 +376,7 @@ extension AppKitElement {
             children[selected].setPagePresented(true, reason: .appearance)
         }
 
-        host?.commit(events[.currentPageChanged], payload: [.number(Double(selected))])
+        host?.tellPhase(events[.currentPageChanged], payload: [.number(Double(selected))])
 
         // The window's chrome follows what the user sees now - its title,
         // its actions, its row of tabs - whether or not the application binds
@@ -391,7 +391,7 @@ extension AppKitElement {
             children.first?.setPagePresented(presented, reason: .appearance)
         }
 
-        host?.commit(events[.isSidebarVisibleChanged], payload: [.bool(presented)])
+        host?.tellPhase(events[.isSidebarVisibleChanged], payload: [.bool(presented)])
     }
 
     static let pageTypes: Set<NodeType> = [

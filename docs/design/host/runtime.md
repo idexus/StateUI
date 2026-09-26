@@ -116,6 +116,14 @@ runs runs when it ends; the handlers a render created run and the turn goes
 round again; the handlers waiting in `HandlerDispatch` run, a phase rendered
 before what comes after it, and the turn goes round again; only then the acts.
 
+## The doorbell
+
+The core rings when it has work a turn must take - a handler resumed off the
+UI thread, a state an engine wrote. A host parks a thread of its own on the
+core (`CoreLink.ringForever`) and posts a turn onto its UI thread each time the
+core rings: AppKit onto the main queue, WinUI through its relay, GTK through
+GLib, Android onto its looper. The turn itself is the `Pump`'s.
+
 ## The handlers' order
 
 The application's handlers run in the order the user caused them, each on the

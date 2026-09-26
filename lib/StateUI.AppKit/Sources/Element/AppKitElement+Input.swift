@@ -9,82 +9,23 @@ import AppKit
 /// What the user does: clicks, reported values, gestures, scrolling and frame reports.
 extension AppKitElement {
     @objc func clicked(_ sender: Any?) {
-        guard let handler = events[.clicked] else { return }
-        host?.dispatch(handler)
+        send(.clicked, [])
     }
 
-    /// A value the user of a registered view changed, by member.
+    /// A value the user changed in the view; a radio button's peers turned off on their own buttons.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-
-        // A RADIO BUTTON'S SET LIVES ACROSS THE WINDOW, where AppKit clears only
-        // the buttons of one superview: the button reports that it is on, and
-        // the host - which holds the tree - takes the check off the others in
-        // the same breath.
-        guard type == .radioButton, property == .isOn, value.bool == true else {
-            return carry(property, event, value)
-        }
-
-        host.performUserTransaction {
-            clearRadioPeers()
-            carry(property, event, value)
-        }
-    }
-
-    /// The other buttons of this one's set lose their check, each reporting
-    /// what it became.
-    func clearRadioPeers() {
-        for peer in element.radioPeers.map(\.appKit) where peer.bool(.isOn) == true {
-            peer.setRadioChecked(false)
-            peer.carry(.isOn, .toggled, .bool(false))
-        }
-    }
-
-    /// One reported value: onto the state the element carries it in - text
-    /// where the value is text, lanes where it is a number, a flag or a choice
-    /// - and to the element's handler for the event.
-    func carry(_ property: Prop, _ event: Event, _ value: HostValue) {
-        guard let host else { return }
-
-        let carried: HostStateValue? = switch value {
-        case .string(let text): .text(text)
-        case .name(let name): .text(name)
-        case .bool(let flag): .lanes([flag ? 1 : 0])
-        case .number(let number): .lanes([number])
-        case .numbers(let numbers): .lanes(numbers)
-        case .enumeration(let choice): .lanes([Double(choice)])
-        default: nil
-        }
-
-        var reported = false
-
-        if let carried, let binding = driven[property] {
-            // A JOURNEY THE HOST CARRIES is taken at the position the user has
-            // just established - the old destination and velocity stop pulling
-            // against the hand. A value the host merely sets is reported as it
-            // stands.
-            if case .lanes(let lanes) = carried, binding.kind == .property {
-                reported = host.take(lanes, through: binding)
-            } else {
-                reported = host.report(carried, through: binding)
-            }
-        }
-
-        if let handler = events[event] {
-            host.dispatch(handler, payload: [value])
-        } else if reported {
-            host.settleUserWrite(true)
+        element.reportUserChange(property, event, value, in: host.runtime) { peer in
+            (peer.native as? AppKitElement)?.setRadioChecked(false)
         }
     }
 
     func tapped() {
-        guard let handler = events[.tapped] else { return }
-        host?.dispatch(handler)
+        send(.tapped, [])
     }
 
     func swiped(_ direction: Int32) {
-        guard let handler = events[.swiped] else { return }
-        host?.dispatch(handler, payload: [.enumeration(direction)])
+        send(.swiped, [.enumeration(direction)])
     }
 
     func panChanged(_ phase: AppKitGesturePhase, total: NSPoint) {
@@ -93,32 +34,18 @@ extension AppKitElement {
         let down = whole(.panYChannel).flatMap { $0 == 0 ? nil : Int32($0) }
 
         if phase == .started {
-            panFromX = across.flatMap(host.standingGestureValue(state:)) ?? 0
-            panFromY = down.flatMap(host.standingGestureValue(state:)) ?? 0
+            panFromX = across.flatMap(host.runtime.standingGestureValue(state:)) ?? 0
+            panFromY = down.flatMap(host.runtime.standingGestureValue(state:)) ?? 0
         }
 
-        var changedState = false
-        host.performUserTransaction {
+        let runtime = host.runtime
+        runtime.performUserTransaction {
             if phase == .running {
-                if let across {
-                    changedState = host.takeGestureValue(
-                        panFromX + Double(total.x), state: across) || changedState
-                }
-                if let down {
-                    changedState = host.takeGestureValue(
-                        panFromY + Double(total.y), state: down) || changedState
-                }
+                if let across { runtime.takeGestureValue(panFromX + Double(total.x), state: across) }
+                if let down { runtime.takeGestureValue(panFromY + Double(total.y), state: down) }
             }
-
-            if let handler = events[.panUpdated] {
-                host.dispatch(handler, payload: [
-                    .enumeration(phase.rawValue),
-                    .number(Double(total.x)),
-                    .number(Double(total.y)),
-                ])
-            }
+            send(.panUpdated, [.enumeration(phase.rawValue), .number(Double(total.x)), .number(Double(total.y))])
         }
-        host.settleUserWrite(changedState)
     }
 
     func pinchChanged(
@@ -126,8 +53,7 @@ extension AppKitElement {
         scale: CGFloat,
         origin: NSPoint
     ) {
-        guard let handler = events[.pinchUpdated] else { return }
-        host?.dispatch(handler, payload: [
+        send(.pinchUpdated, [
             .enumeration(phase.rawValue),
             .number(Double(scale)),
             .numbers([Double(origin.x), Double(origin.y)]),
@@ -145,42 +71,25 @@ extension AppKitElement {
         case .pressed: .pointerPressed
         case .released: .pointerReleased
         }
-        guard let handler = events[event] else { return }
-        let payload: [HostValue] = point.map {
-            [.numbers([Double($0.x), Double($0.y)])]
-        } ?? []
-        host?.dispatch(handler, payload: payload)
+        send(event, point.map { [.numbers([Double($0.x), Double($0.y)])] } ?? [])
     }
 
+    /// The user moved the scroller from `old` to `new`, as the display's frame saw it.
     func scrolled(from old: NSPoint, to new: NSPoint) {
         guard let host else { return }
-        var tookState = false
-        host.performUserTransaction {
-            if old != new, let binding = driven[.scrollOffset] {
-                tookState = host.take([Double(new.x), Double(new.y)], through: binding)
-            }
-
-            if old.x != new.x, let handler = events[.scrollXChanged] {
-                host.dispatch(handler, payload: [.number(Double(new.x))])
-            }
-            if old.y != new.y, let handler = events[.scrollYChanged] {
-                host.dispatch(handler, payload: [.number(Double(new.y))])
-            }
-        }
-        host.settleUserWrite(tookState)
+        element.reportScrolled(
+            from: Point(x: Double(old.x), y: Double(old.y)), to: Point(x: Double(new.x), y: Double(new.y)),
+            in: host.runtime)
     }
 
     func scrollStopped() {
-        guard let handler = events[.scrollStopped] else { return }
-        host?.dispatch(handler)
+        send(.scrollStopped, [])
     }
 
-    /// Hands an event a registered view raised to this element's handler for
-    /// it - nothing where the tree subscribed none.
+    /// An event the view raised, with what it carries.
     func send(_ event: Event, _ values: [HostValue]) {
-        guard let handler = events[event] else { return }
-
-        host?.dispatch(handler, payload: values)
+        guard let host else { return }
+        element.send(event, values, in: host.runtime)
     }
 
     func setRadioChecked(_ checked: Bool) {
@@ -368,29 +277,24 @@ extension AppKitElement {
     func flushFrameReport() {
         frameQueued = false
         refreshFrameObservationChain()
-        guard let view, let content = view.window?.contentView else { return }
+        guard let numbers = frameNumbers(), let host else { return }
+
+        // One of the user's transactions, so a turn renders what the report moved.
+        host.runtime.performUserTransaction { element.reportFrame(numbers, in: host.runtime) }
+    }
+
+    /// Where the view stands now, as a frame report says it: in its parent, in its window, and from the window's
+    /// content clear of its chrome - each from the top left; nil for a view in no window.
+    func frameNumbers() -> [Double]? {
+        guard let view, let content = view.window?.contentView else { return nil }
 
         let parentFrame = topLeftFrame(view.frame, in: view.superview)
         let windowFrame = topLeftFrame(view.convert(view.bounds, to: content), in: content)
         let safeArea = topLeftFrame(content.safeAreaRect, in: content)
-        let report = [
-            parentFrame.minX, parentFrame.minY, parentFrame.width, parentFrame.height,
-            windowFrame.minX, windowFrame.minY,
-            windowFrame.minX - safeArea.minX, windowFrame.minY - safeArea.minY,
-        ].map(Double.init)
-
-        guard report != lastFrameReport else { return }
-        lastFrameReport = report
-
-        let reported = driven[.frame].map {
-            host?.report(.lanes(Array(report.prefix(4))), through: $0) ?? false
-        } ?? false
-
-        if let handler = events[.frameChanged] {
-            host?.dispatch(handler, payload: [.numbers(report)])
-        } else if reported {
-            host?.pump()
-        }
+        return MountedElement.frameNumbers(
+            place: parentFrame.placed,
+            corner: Point(x: Double(windowFrame.minX), y: Double(windowFrame.minY)),
+            content: Point(x: Double(safeArea.minX), y: Double(safeArea.minY)))
     }
 
     func flushFrameReportForTesting() {

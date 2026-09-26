@@ -8,69 +8,44 @@ import QuartzCore
 @_spi(Host) import StateUIHost
 
 /// The AppKit runtime: the mounted tree over AppKit views, the scenes and windows around it, and the turn.
-/// Unchecked Sendable: every mutation is on MainActor; the doorbell only posts `pump()` to the main queue.
+/// Unchecked Sendable: every mutation is on MainActor; the doorbell only posts a turn to the main queue.
+/// Design: docs/design/platforms/appkit/runtime.md#the-appkit-runtime
 @MainActor
 final class AppKitRenderer: @unchecked Sendable {
-    struct QueuedEvent {
-        let handler: Int32
-        let payload: [HostValue]
-        let restorationIdentifier: String?
-
-        /// A phase report, rendered before the next report moves the phase
-        /// again.
-        var isPhase = false
-    }
+    /// What the host says for whoever reads its log: standard error, or wherever a test listens.
+    static var log = HostLog(host: "AppKit")
 
     let resourceDirectory: URL?
     let presentsWindows: Bool
-    let eventSink: ((Int32, [HostValue]) -> Void)?
     let preferences: UserDefaults
-    let core = CoreLink()
-    private(set) lazy var environment = AppKitEnvironment(core: core)
-    let animator: Animator
-    let stateChannels: StateChannels
-    let describedMotion: DescribedMotion
-    let layoutMotion: LayoutMotion
-    let displayCycle: DisplayCycle
     let images = NSCache<NSString, NSImage>()
     let frameClock: AppKitFrameClock
     let reducesMotion: () -> Bool
-    let intake = PatchIntake()
+
+    /// The parts every host holds alike - the core's link, the motions, the display cycle, the mounted tree and the
+    /// turn - each element's AppKit half an `AppKitElement`.
+    private(set) lazy var runtime = HostRuntime(
+        clock: frameClock, reducesMotion: reducesMotion,
+        makeNative: { [unowned self] element in AppKitElement(element, host: self) },
+        log: { AppKitRenderer.log.error($0) })
+
+    private(set) lazy var environment = AppKitEnvironment(core: runtime.core)
     lazy var actPerformer = AppKitActPerformer(renderer: self)
     var focusReportQueued = false
-
-    /// The mounted tree; each element's AppKit half is an `AppKitElement`.
-    private(set) lazy var tree = MountedTree(
-        core: core,
-        intake: intake,
-        stateChannels: stateChannels,
-        describedMotion: describedMotion,
-        layoutMotion: layoutMotion,
-        now: frameClock.now,
-        reducesMotion: reducesMotion,
-        makeNative: { [unowned self] element in AppKitElement(element, host: self) })
     var scenes: [ElementId: AppKitSceneController] = [:]
     var sceneOrder: [ElementId] = []
-
-    /// The scrollers moving or waiting to report, each given the display's
-    /// frames until it stands and has said everything.
-    let framedScrollers = NSHashTable<AppKitScrollView>.weakObjects()
     var doorbellStarted = false
     var connectedInitialScene = false
     var started = false
-    var synchronizingWindows = false
-
-    /// Whether the queue is being delivered. A render inside the delivery
-    /// queues what it raises behind what already waits, in order.
-    var deliveringEvents = false
-    var userTransactionDepth = 0
-    var userTransactionChangedState = false
-    var queuedEvents: [QueuedEvent] = []
     weak var activeWindow: AppKitWindowController?
     var applicationIsHidden = false
     let restorationQueue = AppKitRestorationQueue()
     var restoredWindows: [String: NSWindow] = [:]
     var offeredRestorations = Set<String>()
+
+    /// The restored windows offered to their scenes in the last presentation: one no scene claimed by the next is
+    /// declined.
+    var offersAwaitingClaim: [String] = []
     var abandonmentScheduled = false
     var pageMenuInsertions: [(menu: NSMenu, item: NSMenuItem)] = []
     var windowSynchronizationCountForTesting = 0
@@ -78,7 +53,6 @@ final class AppKitRenderer: @unchecked Sendable {
     init(
         resourceDirectory: URL?,
         presentsWindows: Bool = true,
-        eventSink: ((Int32, [HostValue]) -> Void)? = nil,
         preferences: UserDefaults = .standard,
         clock: (() -> Double)? = nil,
         reducesMotion: @escaping () -> Bool = {
@@ -87,55 +61,35 @@ final class AppKitRenderer: @unchecked Sendable {
     ) {
         self.resourceDirectory = resourceDirectory
         self.presentsWindows = presentsWindows
-        self.eventSink = eventSink
         self.preferences = preferences
-        let frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
-        self.frameClock = frameClock
+        frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
-        let animator = Animator()
-        self.animator = animator
-        stateChannels = StateChannels(animator: animator)
-        describedMotion = DescribedMotion(animator: animator)
-        layoutMotion = LayoutMotion(
-            animator: animator, now: frameClock.now, reducesMotion: reducesMotion)
-        displayCycle = DisplayCycle(
-            core: core,
-            clock: frameClock,
-            animator: animator,
-            stateChannels: stateChannels,
-            describedMotion: describedMotion,
-            layoutMotion: layoutMotion,
-            reducesMotion: reducesMotion)
-        frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
-        layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
-        tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
-        displayCycle.presenter = self
+        runtime.displayCycle.presenter = self
+        runtime.pump.presenter = self
     }
 
     func start() {
-        environment.localeReported = { [weak self] in self?.tree.followTheLanguagesDirection() }
-        environment.start()
+        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
         startRuntime()
         startDoorbell()
     }
 
     func startRuntime() {
         started = true
-        core.setRealization(AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized)
+        runtime.core.setRealization(AppKitRegistrations.registry.realization, unrealized: AppKitRealization.unrealized)
         configureEnvironment()
-        let appearance = NSApplication.shared.effectiveAppearance
-            .bestMatch(from: [.darkAqua, .aqua])
-        core.setTheme(appearance == .darkAqua ? .dark : .light)
+        runtime.tree.followTheLanguagesDirection()
         hydratePersistentState()
         if !connectedInitialScene {
             connectPlatformScene(restoring: [:])
         }
-        pump()
+        runtime.pump.turn()
     }
 
     func configureEnvironment() {
         let process = ProcessInfo.processInfo
         let bundle = Bundle.main
+        let core = runtime.core
 
         core.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop,
@@ -149,11 +103,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if let screen = NSScreen.main {
             let scale = screen.backingScaleFactor
             core.setDisplayInfo(HostDisplayInfo(
-                width: screen.frame.width * scale,
-                height: screen.frame.height * scale,
-                density: scale,
-                orientation: screen.frame.width >= screen.frame.height ? .landscape : .portrait,
-                rotation: .rotation0,
+                width: screen.frame.width * scale, height: screen.frame.height * scale, density: scale,
                 refreshRate: Double(screen.maximumFramesPerSecond)))
         }
 
@@ -177,204 +127,30 @@ final class AppKitRenderer: @unchecked Sendable {
         return String(decoding: bytes[..<end].map(UInt8.init(bitPattern:)), as: UTF8.self)
     }
 
-    func dispatch(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
-        if synchronizingWindows || userTransactionDepth > 0 || intake.isApplying {
-            queuedEvents.append(QueuedEvent(
-                handler: handler,
-                payload: payload,
-                restorationIdentifier: nil,
-                isPhase: isPhase))
-            return
-        }
-
-        if let eventSink {
-            eventSink(handler, payload)
-            return
-        }
-
-        _ = core.dispatch(handler, payload: payload)
-        pump()
+    /// Tells a window's or a scene's phase - or what the user settled on a native control, after the phases it
+    /// moved - in its turn: rendered before anything after it.
+    func tellPhase(_ handler: Int32?, payload: [HostValue] = []) {
+        if let handler { runtime.pump.handlers.enqueuePhase(handler, payload: payload) }
+        runtime.pump.turn()
     }
 
-    /// Defers a platform notification until the current tree is fully applied.
-    /// Page visibility can change while children are being reconciled; running
-    /// Swift from inside that mutation would make the next render observe a
-    /// half-old, half-new native tree.
-    func enqueue(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
-        queuedEvents.append(QueuedEvent(
-            handler: handler,
-            payload: payload,
-            restorationIdentifier: nil,
-            isPhase: isPhase))
-    }
-
-    /// Commits a user-driven page change and its lifecycle as one ordered
-    /// batch. The native control has already settled before this is called.
-    func commit(_ handler: Int32?, payload: [HostValue] = []) {
-        if let handler { enqueue(handler, payload: payload) }
-        if !synchronizingWindows, userTransactionDepth == 0 { flushQueuedEvents() }
-    }
-
-    /// Makes a compound user gesture visible to Swift as one settled native
-    /// transaction. Radio groups use it to report the old false before the new
-    /// true without rendering between those two halves.
-    func performUserTransaction(_ body: () -> Void) {
-        userTransactionDepth += 1
-        body()
-        userTransactionDepth -= 1
-
-        guard userTransactionDepth == 0, !synchronizingWindows else { return }
-        let changedState = userTransactionChangedState
-        userTransactionChangedState = false
-
-        if !queuedEvents.isEmpty {
-            flushQueuedEvents()
-        } else if changedState, eventSink == nil {
-            pump()
-        }
-    }
-
-    func settleUserWrite(_ changedState: Bool) {
-        guard changedState, userTransactionDepth == 0 else { return }
-        if eventSink == nil { pump() }
-    }
-
-    /// Keeps the display's frames coming for `scroller` until it stands and
-    /// has said everything - see `AppKitScrollView.frame(now:)`.
-    func requestFrames(for scroller: AppKitScrollView) {
-        framedScrollers.add(scroller)
-        displayCycle.hold()
-    }
-
-    /// Lets `scroller` go of the display's frames, as it leaves the tree.
-    func stopFrames(for scroller: AppKitScrollView) {
-        framedScrollers.remove(scroller)
-        displayCycle.hold()
-    }
-
-    @discardableResult
-    func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
-        guard core.report(value, through: binding) else { return false }
-
-        if userTransactionDepth > 0 { userTransactionChangedState = true }
-
-        displayCycle.drain(now: frameClock.now(), reported: [binding.state: value])
-        return true
-    }
-
-    @discardableResult
-    func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
-        guard stateChannels.take(value, through: binding) else { return false }
-
-        displayCycle.drain(now: frameClock.now())
-        return true
-    }
-
-    /// Reads a numerical state named directly by a gesture channel.
-    func standingGestureValue(state: Int32) -> Double? {
-        core.gestureValue(state: state)
-    }
-
-    @discardableResult
-    func takeGestureValue(_ value: Double, state: Int32) -> Bool {
-        guard core.moveGestureValue(value, state: state) else { return false }
-        displayCycle.drain(now: frameClock.now())
-        return true
-    }
-
-    /// One turn of the host: the jobs a resumed handler left, a pending cycle,
-    /// a render when the core needs one, then the acts - on the interface the
-    /// render has just brought up to date.
-    func pump() {
-        _ = core.runJobs()
-
-        if tree.root != nil, core.cyclesPending {
-            displayCycle.drain(now: frameClock.now())
-        }
-
-        if tree.root == nil || core.needsRender {
-            let rendered = core.render(baseline: intake.baseline)
-
-            if !intake.take(rendered.root, generation: rendered.generation, apply: {
-                tree.apply($0, complete: rendered.complete)
-            }) {
-                // REFUSED, then asked for whole once: a complete render is
-                // reconciled against the tree the core holds, so every identity,
-                // handler and state survives it.
-                NSLog("StateUI AppKit: the interface drifted and is asked for whole: %@",
-                      intake.lastDrift ?? "")
-                let complete = core.render(baseline: 0)
-                intake.take(complete.root, generation: complete.generation, apply: {
-                    tree.apply($0, complete: complete.complete)
-                })
-            }
-
-            displayCycle.presentStateChannels()
-
-            let created = tree.root?.takeCreatedHandlers() ?? []
-            if !created.isEmpty {
-                for handler in created {
-                    _ = core.dispatch(handler)
-                }
-                pump()
-                return
-            }
-
-            synchronizeWindows()
-            flushQueuedEvents()
-        }
-
-        // THE ACTS LAND ON THE INTERFACE THEIR HANDLER CHANGED: taken once the
-        // render is in, so a handler that enables a field and focuses it in the
-        // same breath finds it enabled.
-        for call in core.takeActCalls() {
-            actPerformer.perform(call)
-        }
-    }
-
+    /// Rings the core's doorbell from a thread of its own: each ring puts a turn on the main queue.
+    /// Design: docs/design/host/runtime.md#the-doorbell
     func startDoorbell() {
         guard !doorbellStarted else { return }
         doorbellStarted = true
 
-        DispatchQueue.global(qos: .userInteractive).async { [self] in
-            while true {
-                _ = core.waitForWork()
-                DispatchQueue.main.async { [self] in pump() }
+        let core = runtime.core
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            core.ringForever {
+                DispatchQueue.main.async { self?.runtime.pump.turn() }
             }
-        }
-    }
-
-    /// Delivers what waits, in order. A phase is state the application
-    /// watches, so each phase report is rendered before the next report moves
-    /// the phase again: a push that reports a page's arrival and its
-    /// navigation in one native move still shows both.
-    func flushQueuedEvents() {
-        guard !deliveringEvents, !queuedEvents.isEmpty else { return }
-        deliveringEvents = true
-        var restored: [String] = []
-
-        while !queuedEvents.isEmpty {
-            let event = queuedEvents.removeFirst()
-            if let eventSink {
-                eventSink(event.handler, event.payload)
-            } else {
-                _ = core.dispatch(event.handler, payload: event.payload)
-            }
-            if let identifier = event.restorationIdentifier { restored.append(identifier) }
-            if event.isPhase, eventSink == nil { pump() }
-        }
-
-        deliveringEvents = false
-        if eventSink == nil { pump() }
-
-        for identifier in restored {
-            declineRestorationIfUnclaimed(identifier)
         }
     }
 
     /// The native view of the element with `id`, as the tree stands.
     func presentedView(id: ElementId) -> NSView? {
-        tree.root?.first(id: id)?.appKit.view
+        runtime.tree.root?.first(id: id)?.appKit.view
     }
 
     /// The window the user is looking at: the key window, else the main one.
@@ -392,7 +168,7 @@ final class AppKitRenderer: @unchecked Sendable {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             focusReportQueued = false
-            tree.root?.appKit.reportFocus()
+            runtime.tree.root?.appKit.reportFocus()
         }
     }
 
@@ -407,21 +183,15 @@ final class AppKitRenderer: @unchecked Sendable {
         return loaded
     }
 
+    /// The picture `name` stands for: the file of the name, else its drawing, by the host layer's rule.
     func loadImage(named name: String) -> NSImage? {
-        let url = resourceDirectory?.appendingPathComponent(name)
-
-        if let url, let image = NSImage(contentsOf: url) {
-            return image
+        for file in PictureArithmetic.files(for: name) {
+            if let url = resourceDirectory?.appendingPathComponent(file), let image = NSImage(contentsOf: url) {
+                return image
+            }
         }
-
-        if let url, url.pathExtension.lowercased() == "png" {
-            let svg = url.deletingPathExtension().appendingPathExtension("svg")
-            if let image = NSImage(contentsOf: svg) { return image }
-        }
-
         return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
     }
-
 }
 
 /// An element's view, placed by the layout motion of the layout it stands in.
@@ -432,30 +202,36 @@ extension AppKitElement: PlacedView {
     }
 }
 
+extension AppKitRenderer: TurnPresenter {
+    func presentRendered() {
+        let offered = offersAwaitingClaim
+        offersAwaitingClaim = []
+        synchronizeWindows()
+        for identifier in offered { declineRestorationIfUnclaimed(identifier) }
+        offerRestoredWindows()
+    }
+
+    func perform(_ call: HostActCall) {
+        actPerformer.perform(call)
+    }
+}
+
 extension AppKitRenderer: FramePresenter {
-    var wantsFrames: Bool { framedScrollers.anyObject != nil }
+    var wantsFrames: Bool {
+        runtime.frames.wantsFrames
+    }
 
-    /// Lets every moving scroller say what the frame saw it do, as one user transaction;
-    /// a scroller that stands and has said everything lets the clock go.
     func commitUserReports(now: Double) {
-        let scrollers = framedScrollers.allObjects
-        guard !scrollers.isEmpty else { return }
-
-        performUserTransaction {
-            for scroller in scrollers {
-                scroller.frame(now: now)
-                if !scroller.wantsFrames { framedScrollers.remove(scroller) }
-            }
-        }
+        runtime.frames.commit(now: now)
     }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        let impact = tree.present(states: states, properties: properties)
+        let impact = runtime.tree.present(states: states, properties: properties)
         if impact.windowChrome { synchronizeWindows() }
     }
 
     func renderIfNeeded() {
-        if eventSink == nil, core.needsRender { pump() }
+        if runtime.core.needsRender { runtime.pump.turn() }
     }
 }
 #endif

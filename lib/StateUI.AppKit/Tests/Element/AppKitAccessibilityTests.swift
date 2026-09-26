@@ -95,11 +95,9 @@ final class AppKitAccessibilityTests: XCTestCase {
 
     @MainActor
     func testAViewThatAnswersATapIsPressedByAssistiveTechnology() throws {
-        var reports: [Int32] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
-            presentsWindows: false,
-            eventSink: { id, _ in reports.append(id) })
+            presentsWindows: false)
         defer { renderer.closeForTesting() }
         var caption = HostPatch(id: .manual("caption"), type: .label)
         caption.properties[.text] = .string("Motion")
@@ -117,7 +115,6 @@ final class AppKitAccessibilityTests: XCTestCase {
         XCTAssertEqual(nativeCard.accessibilityRole(), .button)
         XCTAssertTrue(nativeCard.accessibilityPerformPress())
         XCTAssertTrue(nativeCaption.accessibilityPerformPress())
-        XCTAssertEqual(reports, [300, 301])
 
         var plain = HostPatch(id: .manual("card"), type: .vStack)
         plain.events = .replace([:])
@@ -125,7 +122,6 @@ final class AppKitAccessibilityTests: XCTestCase {
 
         XCTAssertFalse(nativeCard.accessibilityPerformPress())
         XCTAssertNotEqual(nativeCard.accessibilityRole(), .button)
-        XCTAssertEqual(reports, [300, 301])
     }
 
     @MainActor

@@ -29,7 +29,7 @@ extension AppKitWindowController: NSWindowDelegate {
     func reportWindow(_ event: Event) {
         guard lastWindowEvent != event, let handler = node?.handler(event) else { return }
         lastWindowEvent = event
-        host?.dispatch(handler, isPhase: true)
+        host?.tellPhase(handler)
     }
 
     func setSceneActive(_ active: Bool) {

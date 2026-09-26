@@ -17,7 +17,7 @@ final class AppKitFocusTests: XCTestCase {
     private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
         for _ in 0..<150 where !done() {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
-            renderer.pump()
+            renderer.runtime.pump.turn()
         }
     }
 
