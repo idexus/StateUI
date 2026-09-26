@@ -119,8 +119,8 @@ final class AndroidTextFieldView: AndroidTextView {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = text
-        if let maximumLength, text.count > maximumLength {
-            kept = String(text.prefix(maximumLength))
+        if let cut = InputWords.cut(text, toBound: maximumLength) {
+            kept = cut
             ProgramWrite.perform { setText(kept) }
         }
         onTextChanged?(kept)
@@ -157,12 +157,10 @@ final class AndroidTextFieldView: AndroidTextView {
 
     /// Selects `length` characters from `position`: a caret where `length` is zero.
     func select(from position: Int, length: Int) {
-        let words = text
-        func offset(_ characters: Int) -> Int32 {
-            Int32(words.prefix(max(0, characters)).utf16.count)
-        }
-
-        Java.call(reference, JavaAPI.setSelection, .int(offset(position)), .int(offset(position + max(0, length))))
+        let selection = InputWords.utf16Selection(start: position, length: length, in: text)
+        Java.call(
+            reference, JavaAPI.setSelection, .int(Int32(selection.start)),
+            .int(Int32(selection.start + selection.length)))
     }
 
     override func detach() {
