@@ -654,8 +654,8 @@ enum SourceTree {
     static func runtimeSources() throws -> [(path: String, text: String)] {
         let lib = repository.appendingPathComponent("lib")
         let roots = [
-            "StateUI.Host/Sources", "StateUI.AppKit/Sources", "StateUI.Android/Sources", "StateUI.WinUI/Sources",
-            "StateUI.GTK/Sources",
+            "StateUI.Host/Sources", "StateUI.AppKit/Sources", "StateUI.UIKit/Sources", "StateUI.Android/Sources",
+            "StateUI.WinUI/Sources", "StateUI.GTK/Sources",
         ]
         var found: [(path: String, text: String)] = []
 
