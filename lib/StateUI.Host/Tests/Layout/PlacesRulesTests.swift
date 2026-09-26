@@ -13,6 +13,10 @@ final class PlacesRulesTests: XCTestCase {
     func testAPicturesNameStandsForItsFiles() {
         XCTAssertEqual(PictureArithmetic.files(for: "logo.PNG"), ["logo.PNG", "logo.svg"])
         XCTAssertEqual(PictureArithmetic.files(for: "logo.jpg"), ["logo.jpg"])
+        // A host that draws no SVG finds its drawing, made three times over as the application is built.
+        let drawn = PictureArithmetic.drawnFiles(for: "logo.png")
+        XCTAssertEqual(drawn.map(\.file), ["logo.png", "logo@3x.png"])
+        XCTAssertEqual(drawn.map(\.scale), [1, 3])
     }
 
     /// A picture fits in or covers its room with its proportions kept, stands at its own size, or is stretched -

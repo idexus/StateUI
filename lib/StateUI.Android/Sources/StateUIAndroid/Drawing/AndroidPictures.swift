@@ -9,11 +9,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/drawing.md#pictures
 @MainActor
 enum AndroidPictures {
-    /// The pixels per inch a picture drawn three times over is kept at, `DisplayMetrics.DENSITY_XXHIGH`.
-    private static let threeTimes: Int32 = 480
-
-    /// A picture kept as it was drawn, at one pixel a point.
-    private static let once: Int32 = 160
+    /// The pixels per inch of one pixel a point, `DisplayMetrics.DENSITY_DEFAULT`: a picture of more pixels a point
+    /// is kept at as many times it.
+    private static let onePixelAPoint: Int32 = 160
 
     /// The most a picture is thinned: one pixel in 16 across and down.
     private static let thinnest: Int32 = 16
@@ -104,13 +102,9 @@ enum AndroidPictures {
     private static func asset(named name: String) -> Asset? {
         if let asset = assets[name] { return asset }
 
-        // The name's own file, else its drawing - an SVG, drawn three times over when the application is built.
-        let found: (path: String, density: Int32)? = PictureArithmetic.files(for: name).lazy.compactMap { file in
-            if file.lowercased().hasSuffix(".svg") {
-                let drawn = "\(file.dropLast(4))@3x.png"
-                return files.contains(drawn) ? ("images/\(drawn)", threeTimes) : nil
-            }
-            return files.contains(file) ? ("images/\(file)", once) : nil
+        // The name's own file, else its drawing (`PictureArithmetic.drawnFiles`).
+        let found: (path: String, density: Int32)? = PictureArithmetic.drawnFiles(for: name).lazy.compactMap { drawn in
+            files.contains(drawn.file) ? ("images/\(drawn.file)", Int32(drawn.scale) * onePixelAPoint) : nil
         }.first
         let asset = found.flatMap { found in
             bounds(found.path).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }

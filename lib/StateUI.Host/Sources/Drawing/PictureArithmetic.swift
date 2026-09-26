@@ -14,6 +14,15 @@
         return [name, String(name.dropLast(4)) + ".svg"]
     }
 
+    /// The files a picture `name` stands for where a host draws no SVG, in order, each with how many pixels a point
+    /// it holds: its own at one, an SVG's drawing - made three times over as the application is built, as
+    /// `<name>@3x.png` - at three.
+    public static func drawnFiles(for name: String) -> [(file: String, scale: Int)] {
+        files(for: name).map { file in
+            file.lowercased().hasSuffix(".svg") ? (String(file.dropLast(4)) + "@3x.png", 3) : (file, 1)
+        }
+    }
+
     /// Where a picture `size` across stands in a room at the origin, as `aspect` says: fitted in or covering it,
     /// its proportions kept, or at its own size, in its middle; stretched over the whole of it. A picture of no
     /// size stands nowhere.
