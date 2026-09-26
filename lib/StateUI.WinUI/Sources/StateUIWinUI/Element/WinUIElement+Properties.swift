@@ -42,8 +42,8 @@ extension WinUIElement {
             && !NodeType.viewlessTypes.contains(type) && !NodeType.pageTypes.contains(type) && type != .overlay
     }
 
-    /// Puts the changed properties on the element as the program's write: its registration's first,
-    /// then what every element takes.
+    /// Puts the changed properties on the element - a patch's or a frame's, the program's write either way: its
+    /// registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
         guard let view else {
@@ -51,31 +51,29 @@ extension WinUIElement {
             return
         }
 
-        ProgramWrite.perform {
-            let taken = WinUIRegistrations.registry.apply(
-                changed, to: view, of: type,
-                reading: { [element] in element.value($0) },
-                carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        let taken = WinUIRegistrations.registry.apply(
+            changed, to: view, of: type,
+            reading: { [element] in element.value($0) },
+            carriedIn: { [element] in element.driven[$0]?.mode == .in })
 
-            let own = changed.subtracting(taken)
-            for property in own {
-                switch property {
-                case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
-                case .isVisible: view.setShown(isShown)
-                case .background: (view as? WinUILayoutView)?.setBackground(value(.background))
-                case .padding where type == .page:
-                    let sides = value(.padding)?.numbers ?? []
-                    (view as? WinUISingleChildView)?.padding =
-                        sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
-                default: break
-                }
+        let own = changed.subtracting(taken)
+        for property in own {
+            switch property {
+            case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
+            case .isVisible: view.setShown(isShown)
+            case .background: (view as? WinUILayoutView)?.setBackground(value(.background))
+            case .padding where type == .page:
+                let sides = value(.padding)?.numbers ?? []
+                (view as? WinUISingleChildView)?.padding =
+                    sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
+            default: break
             }
-            if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-            if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
-                view.setAccessibility(element.accessibilityWords)
-            }
-            if let layers = view as? WinUIZStackView { layers.placement = element.placement }
         }
+        if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
+        if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+            view.setAccessibility(element.accessibilityWords)
+        }
+        if let layers = view as? WinUIZStackView { layers.placement = element.placement }
 
         if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {
             invalidateMeasurements()

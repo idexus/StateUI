@@ -181,10 +181,11 @@
         root?.directionTurned(arrangingItself: true)
     }
 
-    /// Presents one frame's batch in one walk of the tree.
+    /// Presents one frame's batch in one walk of the tree, every write in it the program's.
+    /// Design: docs/design/host/patches.md#program-write
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
-        root?.applyFrame(states: states, properties: properties) ?? .none
+        ProgramWrite.perform { root?.applyFrame(states: states, properties: properties) ?? .none }
     }
 
     /// Starts, retargets or cuts short the animation of `property` on the element `mount`.

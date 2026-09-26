@@ -139,6 +139,13 @@ measured only where its natural size places it - on an axis it does not fill
 and states no size for - so a child that fills both ways takes the room
 whatever it would measure. A container with no shown child is its padding.
 
+## A row beside a page
+
+An arrangement's own row - a tabbed view's tabs where they stand in no window
+row - stands across the top or the bottom of its room (`RowEdge`), and the
+page takes the rest, never less than none; the arrangement's size is its
+page's with the row's height added.
+
 ## A box
 
 A box - a layout's, a button's, a colour box's, a rectangle's - is read the

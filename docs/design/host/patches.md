@@ -20,10 +20,12 @@ one claims nothing and the next render is complete.
 
 ## Program write
 
-While the program writes a native control - a patch applied, or the host moving
-a control itself - the control's own callbacks are the write's echo and report
-nothing, so an application's write never returns as a user event. One mark
-says so, `ProgramWrite`; no control keeps a flag of its own. A callback the
+While the program writes a native control - a patch applied, a display frame
+presented, or the host moving a control itself - the control's own callbacks
+are the write's echo and report nothing, so an application's write never returns as a user event. One mark
+says so, `ProgramWrite`; no control keeps a flag of its own. The intake marks
+each patch it applies and the tree each frame's walk, so a host marks only
+the writes it makes of its own accord. A callback the
 platform delivers after the write has returned is outside the mark, so a
 control that raises one - a pop-up menu the program opens - marks it where it
 opens.

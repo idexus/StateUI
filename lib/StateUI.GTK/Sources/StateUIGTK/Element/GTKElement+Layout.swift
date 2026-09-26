@@ -11,7 +11,7 @@ extension GTKElement {
         if let label = view as? GTKLabelView {
             return arrangeRuns(of: label)
         }
-        let arranged = type == .page ? children.filter { !Self.slotTypes.contains($0.type) } : children
+        let arranged = element.arrangedChildren.map(\.gtk)
         (view as? GTKNavigationView)?.titles = arranged.map { $0.element.visiblePage?.value(.title)?.string ?? "" }
         (view as? GTKSplitView)?.framedPanes = arranged.map { Self.framedTypes.contains($0.type) }
         let layout = view as? GTKLayoutView

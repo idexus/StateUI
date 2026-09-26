@@ -15,14 +15,14 @@ struct WinUIMenu {
     private(set) var identifiers: [String] = []
     private(set) var actions: [() -> Void] = []
 
-    /// The entries `container` holds, in order; none for no container.
+    /// The entries `container` holds, as the host layer walks them; none for no container.
     init(_ container: WinUIElement? = nil) {
-        if let container { add(container.children) }
+        if let container { add(MenuEntry.entries(of: container.element)) }
     }
 
-    /// The menus `bar` holds, in order - what else stands at its top stands on no bar; none for no bar.
+    /// The menus `bar` holds, as the host layer walks them; none for no bar.
     init(bar: WinUIElement?) {
-        if let bar { add(bar.children.filter { $0.type == .menu }) }
+        if let bar { add(MenuEntry.menus(of: bar.element)) }
     }
 
     /// Whether the menu has no entries.
@@ -33,28 +33,27 @@ struct WinUIMenu {
         kinds == other.kinds && titles == other.titles && enabled == other.enabled && identifiers == other.identifiers
     }
 
-    private mutating func add(_ entries: [WinUIElement]) {
+    /// The relay's kinds: an item 0, a separator 1, a submenu opening 2 and closing 3.
+    private mutating func add(_ entries: [MenuEntry]) {
         for entry in entries {
-            switch entry.type {
-            case .menuItem:
-                append(0, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true, entry)
-                actions.append { [weak entry] in entry?.send(.clicked, []) }
-            case .menuSeparator:
+            switch entry.kind {
+            case .item:
+                append(0, entry.title, entry.isEnabled, entry.identifier)
+                actions.append { [weak element = entry.element] in element?.winUI.send(.clicked, []) }
+            case .separator:
                 append(1, "", true, nil)
-            case .menu:
-                append(2, entry.value(.text)?.string ?? "", entry.value(.isEnabled)?.bool ?? true, entry)
-                add(entry.children)
+            case .submenu:
+                append(2, entry.title, entry.isEnabled, entry.identifier)
+                add(entry.entries)
                 append(3, "", true, nil)
-            default:
-                break
             }
         }
     }
 
-    private mutating func append(_ kind: Int32, _ title: String, _ isEnabled: Bool, _ entry: WinUIElement?) {
+    private mutating func append(_ kind: Int32, _ title: String, _ isEnabled: Bool, _ identifier: String?) {
         kinds.append(kind)
         titles.append(title)
         enabled.append(isEnabled)
-        identifiers.append(entry?.value(.accessibilityIdentifier)?.string ?? "")
+        identifiers.append(identifier ?? "")
     }
 }

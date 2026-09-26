@@ -486,6 +486,18 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(rootElement?.children.last?.layoutDirection, .rightToLeft, "a language written right to left")
     }
 
+    /// Every write a frame's walk makes is the program's: a native callback it sets off reports nothing.
+    @MainActor
+    func testAFramesWritesAreTheProgramsOwn() throws {
+        let (tree, log) = Self.tree()
+        tree.apply(Self.stack("stack", ["a"]), complete: true)
+        let mount = try XCTUnwrap(tree.root?.children.first?.mount)
+
+        tree.present(states: [:], properties: [mount: [.opacity]])
+
+        XCTAssertEqual(log.presentedWriting, [true])
+    }
+
     // MARK: - A tree over a recording native half
 
     @MainActor
@@ -545,6 +557,7 @@ private final class NativeLog {
     var applied: [String] = []
     var arranged: [String] = []
     var left: [String] = []
+    var presentedWriting: [Bool] = []
 }
 
 /// A native half that records what the tree asks of it.
@@ -572,7 +585,8 @@ private final class RecordingNative: NativeElement {
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
-        FrameImpact(content: true, arrangement: changed.contains(.width))
+        log.presentedWriting.append(ProgramWrite.isWriting)
+        return FrameImpact(content: true, arrangement: changed.contains(.width))
     }
     func arrangeChildren() { log.arranged.append(name) }
     func leave() { log.left.append(name) }

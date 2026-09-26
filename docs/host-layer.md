@@ -169,8 +169,9 @@ these that the text shows, and a type named for an engine or a channel
   ([The handlers' order](design/host/runtime.md#the-handlers-order))
 - **`ProgramWrite`** is the one mark that the program, not the user, writes a
   native control; a native callback inside it reports nothing. The intake
-  marks every patch; the host marks every other write it makes - a frame's
-  values, a control it moves, a pop-up it opens - with `ProgramWrite.perform`.
+  marks every patch and the tree every frame's walk; the host marks every
+  other write it makes - a control it moves, a pop-up it opens - with
+  `ProgramWrite.perform`.
   ([Program write](design/host/patches.md#program-write))
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
   the animations, the core's cycle, one walk of the tree, a render, and the
@@ -295,8 +296,14 @@ toolkit's calls:
 - **`WayBack`** is the way back a window offers - a stack's top page going, or
   the top sheet - which `HostRuntime.goBack` takes.
   ([The way back](design/host/pages.md#the-way-back))
-- **`slotContent`** and **`presentingElement`** say what stands in a slot and
-  which element's view shows an element. ([Slots](design/host/pages.md#slots))
+- **`slotContent`**, **`presentingElement`** and **`arrangedChildren`** say
+  what stands in a slot, which element's view shows an element, and which
+  children a layout places - a page's slots stand in none of its room.
+  ([Slots](design/host/pages.md#slots))
+- **`MenuEntry`** walks a menu - its items, separators and submenus in order,
+  each with its caption, whether it can be chosen and its identifier - and a
+  menu bar's menus. The host builds its toolkit's menu from the walk.
+  ([Menus](design/host/pages.md#menus))
 - **`WindowChrome`**, **`chromeActions`** and **`barColors`** compose a
   window's one chrome from what it shows: its title, the way back, the visible
   page's actions, the title's place and what stands beside it, the bars'
@@ -335,6 +342,9 @@ measures only its native views.
   `drawnOpacity` and `drawnShade` say where a placing run stands a ZStack's
   children, how opaque it draws them, and in what order.
   ([A placing run](design/host/layout.md#a-placing-run))
+- **`RowEdge`** stands an arrangement's own row - a tabbed view's tabs -
+  across the top or the bottom of its room, the page taking the rest.
+  ([A row beside a page](design/host/layout.md#a-row-beside-a-page))
 - **`ScrollArithmetic`** gives a scroller's content size and the document the
   content stands in; `offsetWritten`, `kept` and `differs` say where an offset
   the tree writes moves it.

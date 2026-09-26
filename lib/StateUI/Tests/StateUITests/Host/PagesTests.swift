@@ -140,6 +140,37 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(chrome.sidebarToggle)
     }
 
+    /// A menu walks its items, separators and submenus in order, each with its caption and whether it can be chosen;
+    /// a bar holds only its menus.
+    func testAMenuIsWalkedInOrder() throws {
+        let runtime = runtime(node("bar", .menuBar, children: [
+            node("file", .menu, [.text: .string("File")], children: [
+                node("open", .menuItem, [.text: .string("Open")]),
+                node("line", .menuSeparator),
+                node("recent", .menu, [.text: .string("Recent")], children: [
+                    node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),
+                ]),
+            ]),
+            node("stray", .menuItem),
+        ])) { _ in }
+
+        let menus = MenuEntry.menus(of: try XCTUnwrap(runtime.tree.root))
+        XCTAssertEqual(menus.map(\.title), ["File"], "the bar holds only its menus")
+        let file = try XCTUnwrap(menus.first).entries
+        XCTAssertEqual(file.map(\.kind), [.item, .separator, .submenu])
+        XCTAssertEqual(file.map(\.title), ["Open", "", "Recent"])
+        XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
+    }
+
+    /// A page's slots furnish its chrome and stand in none of its room; another element places every child.
+    func testAPagePlacesAllButItsSlots() throws {
+        let runtime = runtime(node("page", .page, children: [
+            node("items", .toolbarItems), node("words", .label), node("view", .titleView),
+        ])) { _ in }
+
+        XCTAssertEqual(try XCTUnwrap(runtime.tree.root).arrangedChildren.map(\.id), [.manual("words")])
+    }
+
     /// Back in a window takes the top sheet's own stack, else the top sheet, else the arrangement's stack.
     func testTheWayBackTakesTheTopSheetFirst() throws {
         let twoPages = { (id: String) in

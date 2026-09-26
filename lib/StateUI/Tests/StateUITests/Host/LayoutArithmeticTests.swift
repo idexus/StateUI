@@ -6,6 +6,20 @@ import XCTest
 
 /// The layout arithmetic every Swift host places its children with.
 final class LayoutArithmeticTests: XCTestCase {
+    /// A row of an arrangement's own stands across the top or the bottom of its room, the page taking the rest -
+    /// never less than none where the row is taller than the room.
+    func testARowBesideAPageLeavesItTheRest() {
+        let room = Rect(x: 0, y: 10, width: 300, height: 200)
+        let top = RowEdge.top.split(room, row: 40)
+        XCTAssertEqual(top.row, Rect(x: 0, y: 10, width: 300, height: 40))
+        XCTAssertEqual(top.page, Rect(x: 0, y: 50, width: 300, height: 160))
+        let bottom = RowEdge.bottom.split(room, row: 40)
+        XCTAssertEqual(bottom.row, Rect(x: 0, y: 170, width: 300, height: 40))
+        XCTAssertEqual(bottom.page, Rect(x: 0, y: 10, width: 300, height: 160))
+        XCTAssertEqual(RowEdge.top.split(room, row: 500).page.height, 0)
+        XCTAssertEqual(RowEdge.size(page: LayoutSize(width: 100, height: 60), row: 40), LayoutSize(width: 100, height: 100))
+    }
+
     /// A contradiction between a least and a most size is settled by the least; the room caps both.
     func testTheLeastSizeWinsAndTheRoomCaps() {
         XCTAssertEqual(Extent.bounded(10, minimum: 40, maximum: 20), 40)

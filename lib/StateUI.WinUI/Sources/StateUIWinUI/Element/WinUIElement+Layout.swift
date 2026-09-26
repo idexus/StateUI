@@ -11,7 +11,7 @@ extension WinUIElement {
         if let label = view as? WinUILabelView {
             return arrangeRuns(of: label)
         }
-        let arranged = type == .page ? children.filter { !NodeType.slotTypes.contains($0.type) } : children
+        let arranged = element.arrangedChildren.map(\.winUI)
         let layout = view as? WinUILayoutView
         layout?.direction = element.layoutDirection
         layout?.setItems(arranged.compactMap(\.layoutItem))

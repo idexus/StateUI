@@ -91,3 +91,11 @@ sidebar's toggle where the window shows a split view. A host lays these out
 in its own chrome. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`)
 and its bar's colours.
+
+## Menus
+
+A menu is walked the same way on every host (`MenuEntry`): its items, its
+separators and its submenus in order, each submenu holding entries of its
+own, each entry with its caption, whether the user can choose it and its
+identifier; a menu bar holds only its menus. A host builds its toolkit's menu
+from the walk, and an item's element hears it chosen.

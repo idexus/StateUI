@@ -8,9 +8,6 @@
 /// and the states.
 /// Design: docs/design/platforms/gtk/pages.md
 extension GTKElement {
-    /// A page's children that furnish its header bar rather than stand in its room.
-    static let slotTypes: Set<NodeType> = [.toolbarItems, .titleView, .menuBar, .contextMenu]
-
     /// What stands in a frame of its own, with a header bar: a page, and a tabbed view.
     static let framedTypes: Set<NodeType> = [.page, .tabbedView]
 
