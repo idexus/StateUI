@@ -95,7 +95,7 @@ newer):
 cd lib/StateUI.VSCode
 npm ci
 npm run package
-code --install-extension stateui-*.vsix
+code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
 The AppKit host needs only Xcode 27, on macOS 26 or newer. StateUI builds

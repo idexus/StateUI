@@ -36,10 +36,10 @@ The extension is built from the checkout. From the repository root:
 cd lib/StateUI.VSCode
 npm ci
 npm run package
-code --install-extension stateui-*.vsix
+code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
-`npm run package` writes `stateui-<version>.vsix` beside `package.json`.
+`npm run package` writes `stateui-<version>.vsix` into `artifacts/` at the repository root.
 Without the `code` command on the path, use **Extensions: Install from VSIX…**
 in the Command Palette and pick that file. Build and install it again after
 pulling changes to the extension.

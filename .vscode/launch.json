@@ -1,6 +1,6 @@
 {
   // Debugging StateUI's applications - through the StateUI extension,
-  // lib/StateUI.VSCode (install stateui-*.vsix, built by `npm run package`).
+  // lib/StateUI.VSCode (install artifacts/stateui-*.vsix, built by `npm run package`).
   //
   // "StateUI: Debug" and "StateUI: Release" are the whole of it. The extension's
   // status bar chooses:

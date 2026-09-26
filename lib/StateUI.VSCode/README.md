@@ -12,10 +12,11 @@ From a StateUI checkout, with Node.js 20 or newer:
 cd lib/StateUI.VSCode
 npm ci
 npm run package
-code --install-extension stateui-*.vsix
+code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
-`npm run package` compiles the extension and writes `stateui-<version>.vsix`.
+`npm run package` compiles the extension and writes `stateui-<version>.vsix` into
+`artifacts/` at the repository root.
 **Extensions: Install from VSIX…** installs that file without the `code`
 command.
 
