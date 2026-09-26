@@ -58,9 +58,9 @@ build_head () {
 
   # Android draws no SVG: the application's pictures are drawn for it, into the APK's assets.
   local rasterizer="$build/tools/rasterize-images"
-  if [[ ! -x "$rasterizer" || "$script_dir/rasterize-images.swift" -nt "$rasterizer" ]]; then
+  if [[ ! -x "$rasterizer" || "$script_dir/../rasterize-images.swift" -nt "$rasterizer" ]]; then
     mkdir -p "$build/tools"
-    xcrun swiftc -O "$script_dir/rasterize-images.swift" -o "$rasterizer" >&2 || return 1
+    xcrun swiftc -O "$script_dir/../rasterize-images.swift" -o "$rasterizer" >&2 || return 1
   fi
   "$rasterizer" "$app/Resources/Images" "$build/assets/images" >&2 || return 1
 

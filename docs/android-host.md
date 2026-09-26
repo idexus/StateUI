@@ -21,7 +21,6 @@ lib/StateUI.Android/
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
-  rasterize-images.swift     draws an application's SVG pictures for its APK
   run-app.sh                 builds an application's Android head, installs and starts it
   test-android.sh            builds and runs the host's suite on a device
   devices.sh                 the devices attached, the emulators, and booting one

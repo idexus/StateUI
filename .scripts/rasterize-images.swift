@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 //
-// Draws an application's pictures for its Android head: every SVG three times
-// over, in sRGB, as <name>@3x.png, and every other picture copied as it is.
-// Android draws no SVG, and a picture three times over is what its densest
-// common screens show at one pixel a pixel. Only what changed is drawn again,
-// and a picture whose file went away goes with it.
+// Draws an application's pictures for a head whose toolkit draws no SVG - its
+// Android and its UIKit head: every SVG three times over, in sRGB, as
+// <name>@3x.png, and every other picture copied as it is. A picture three
+// times over is what the densest common screens show at one pixel a pixel.
+// Only what changed is drawn again, and a picture whose file went away goes
+// with it.
 //
 // USAGE: rasterize-images <Resources/Images> <assets/images>
 
