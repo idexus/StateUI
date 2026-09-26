@@ -156,8 +156,10 @@ rectangle where the tree asks none, a rounded one's radius never below
 nothing; and the outline is drawn one wide where the tree gives it a colour
 and no width, and not at all without a colour. A fill is read as the tree
 sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
-between 0 and 1, and a gradient given no geometry runs top to bottom, or from
-the middle to the edge. A line drawn in one colour takes the brush's first.
+between 0 and 1, a gradient given no geometry runs top to bottom, or from
+the middle to the edge, and a gradient of one stop is its colour, of none
+nothing - whatever a toolkit makes of one that short. A line drawn in one
+colour takes the brush's first.
 A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.

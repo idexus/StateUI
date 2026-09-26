@@ -22,6 +22,14 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
+    /// A gradient of one stop paints its one colour; of none, nothing - on every host, whatever its toolkit makes of
+    /// a gradient that short.
+    func testAGradientOfOneStopIsItsColour() {
+        XCTAssertEqual(HostBrush(.values([.enumeration(2), .numbers([0, 0, 1, 1]), .number(0.5), red])), .solid(red))
+        XCTAssertEqual(HostBrush(.values([.enumeration(3), .numbers([]), .number(1), blue])), .solid(blue))
+        XCTAssertEqual(HostBrush(.values([.enumeration(2), .numbers([0, 0, 1, 1])])), .none)
+    }
+
     /// A radial gradient runs out from its centre to its radius, in fractions of what it paints, and from the
     /// middle to the edge where it gives no geometry.
     func testARadialGradientIsReadFromItsCentreToItsRadius() {
