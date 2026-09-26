@@ -11,6 +11,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +36,9 @@ final class StateUIWebView extends FrameLayout {
     /** What hears the page take the keyboard and lose it; none before anything listens. */
     private OnFocusChangeListener focusListener;
     private String userAgent;
+
+    /** What sees the page's touches and hovering first: its element's gestures. */
+    private final StateUIWatch watch = new StateUIWatch();
 
     /** Why the next navigation happens, and how the one under way failed - none yet. */
     private int cause = NEW_PAGE;
@@ -163,6 +167,21 @@ final class StateUIWebView extends FrameLayout {
         make();
         StateUIHost.webProcessGone(view);
         historyChanged();
+    }
+
+    /** Lets `listener`'s gestures see what the page gets. */
+    void watch(StateUIListener listener) {
+        watch.watch(listener);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return watch.touch(this, event, super::dispatchTouchEvent);
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        return watch.hover(this, event, super::dispatchGenericMotionEvent);
     }
 
     private final class Client extends WebViewClient {

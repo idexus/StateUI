@@ -186,6 +186,7 @@ enum JavaAPI {
     static let webGoBack = Java.method(webView, "goBack", "()V")
     static let webGoForward = Java.method(webView, "goForward", "()V")
     static let webReload = Java.method(webView, "reload", "()V")
+    static let watchWeb = Java.method(webView, "watch", "(Lstateui/android/StateUIListener;)V")
     static let webEvaluate = Java.method(webView, "evaluate", "(Ljava/lang/String;J)V")
     static let releaseWeb = Java.method(webView, "release", "()V")
 
@@ -280,6 +281,9 @@ enum JavaAPI {
 
     static let linearLayout = Java.findClass("android/widget/LinearLayout")
     static let newLinearLayout = Java.method(linearLayout, "<init>", "(Landroid/content/Context;)V")
+    static let stepper = Java.findClass("stateui/android/StateUIStepper")
+    static let newStepper = Java.method(stepper, "<init>", "(Landroid/content/Context;)V")
+    static let watchStepper = Java.method(stepper, "watch", "(Lstateui/android/StateUIListener;)V")
     static let setMinWidth = Java.method(textView, "setMinWidth", "(I)V")
     static let setMinimumWidth = Java.method(view, "setMinimumWidth", "(I)V")
     static let setMinHeight = Java.method(textView, "setMinHeight", "(I)V")

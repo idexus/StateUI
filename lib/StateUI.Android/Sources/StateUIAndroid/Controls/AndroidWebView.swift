@@ -25,6 +25,11 @@ final class AndroidWebView: AndroidView {
     private var canGoBack = false
     private var canGoForward = false
 
+    /// The page's own touches and hovering are seen by its element's gestures before the page gets them.
+    override func watchTouches() {
+        Java.call(reference, JavaAPI.watchWeb, .object(listener.reference))
+    }
+
     init() {
         super.init { number in
             Java.new(JavaAPI.webView, JavaAPI.newWebView, .object(AndroidRenderer.context), .long(number))

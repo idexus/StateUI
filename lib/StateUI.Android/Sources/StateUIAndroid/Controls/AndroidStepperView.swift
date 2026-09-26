@@ -6,7 +6,7 @@
 import CStateUIAndroid
 
 /// A Stepper: Android has none, so its own buttons side by side in a `LinearLayout` - one a step down,
-/// one a step up - each off at its end of the range.
+/// one a step up - each off at its end of the range; its element's gestures see the buttons' touches.
 /// Design: docs/design/platforms/android/controls.md#a-stepper
 @MainActor
 final class AndroidStepperView: AndroidView {
@@ -26,7 +26,7 @@ final class AndroidStepperView: AndroidView {
     private var enabled = true
 
     init() {
-        super.init { _ in Java.new(JavaAPI.linearLayout, JavaAPI.newLinearLayout, .object(AndroidRenderer.context)) }
+        super.init { _ in Java.new(JavaAPI.stepper, JavaAPI.newStepper, .object(AndroidRenderer.context)) }
         for (button, caption) in [(down, "−"), (up, "+")] {
             button.setText(caption)
             button.setLeastSize(width: pixels(48), height: pixels(48))
@@ -34,6 +34,10 @@ final class AndroidStepperView: AndroidView {
         }
         down.onClicked = { [weak self] in self?.stepped(by: -1) }
         up.onClicked = { [weak self] in self?.stepped(by: 1) }
+    }
+
+    override func watchTouches() {
+        Java.call(reference, JavaAPI.watchStepper, .object(listener.reference))
     }
 
     /// The range, the step and whether it can be stepped - the stepper itself on or off, as its buttons are - then

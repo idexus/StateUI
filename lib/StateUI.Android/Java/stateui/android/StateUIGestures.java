@@ -84,8 +84,7 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
      * touch, the view's own handling cancelled; a view with no handling of its own is given the whole touch.
      */
     boolean onTouch(MotionEvent event) {
-        boolean wanted = taps > 1 || panFingers > 0 || swipeDirections != 0 || pinch || pointer;
-        if (!wanted) return false;
+        if (!wanted()) return false;
         if (pinch) scale.onTouchEvent(event);
 
         float dx = event.getRawX() - downX;
@@ -127,6 +126,16 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
                 break;
         }
         return panning || pinching || !(host.isClickable() || host.isLongClickable());
+    }
+
+    /** Whether the element listens for any gesture. */
+    boolean wanted() {
+        return taps > 1 || panFingers > 0 || swipeDirections != 0 || pinch || pointer;
+    }
+
+    /** Whether a pan or a pinch under way takes the rest of the touch. */
+    boolean taking() {
+        return panning || pinching;
     }
 
     /** Follows the pointer hovering over the view - a mouse's, a stylus's; it takes nothing. */

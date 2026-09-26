@@ -75,6 +75,13 @@ class AndroidView {
         for setter in setters { Java.call(object, setter, .object(listener.reference)) }
     }
 
+    /// Lets the view's listener see its touches and its hovering pointer, for the gestures its element listens
+    /// for. A view made of parts lets it see what its parts get, before they get it.
+    /// Design: docs/design/platforms/android/controls.md#gestures
+    func watchTouches() {
+        listen(JavaAPI.setOnTouchListener, JavaAPI.setOnHoverListener)
+    }
+
     /// The one listener forwarding what the user does to this view, whichever of its interfaces a setter takes.
     private(set) lazy var listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
 

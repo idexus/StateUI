@@ -233,3 +233,9 @@ past its threshold, in a direction asked for. A pinch starts once Android
 tells it apart - past its own slop, as a pan does - scales from there, and ends
 where it was last centred. A view with no handling of its own is given the
 whole touch; a control keeps its own.
+
+A view made of parts - a stepper's two buttons, a web view's page - would hand
+its listener only what no part takes, so its gestures see the touches and the
+hovering first, before the parts do (`StateUIWatch`): a pan or a pinch under
+way takes the rest of the touch from the parts, which are told it was called
+off, and a touch no part takes stays the view's where its element listens.

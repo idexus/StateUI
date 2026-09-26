@@ -92,6 +92,16 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
         gestures.configure(taps, panFingers, swipeDirections, swipeThreshold, pinch, pointer);
     }
 
+    /** Whether a gesture under way takes the rest of the touch from the view's own handling. */
+    boolean takesTouch() {
+        return gestures != null && gestures.taking();
+    }
+
+    /** Whether the view's element listens for a gesture, so a touch nothing else takes stays the view's. */
+    boolean wantsTouch() {
+        return gestures != null && gestures.wanted();
+    }
+
     /**
      * Says when a finger takes hold of the view and when it lets go, and follows the gestures its element
      * listens for; the view handles the touch itself unless a gesture takes it.

@@ -54,7 +54,7 @@ extension AndroidView {
     /// pointer the first time any is wanted.
     func setGestures(_ wanted: Gestures) {
         guard wanted != gestures else { return }
-        if gestures == .none { listen(JavaAPI.setOnTouchListener, JavaAPI.setOnHoverListener) }
+        if gestures == .none { watchTouches() }
         gestures = wanted
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
