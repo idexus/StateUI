@@ -4,7 +4,7 @@ Window: ✅
 Window.activated: ✅
 Window.created: ✅
 Window.deactivated: ✅
-Window.destroying: not realized
+Window.destroying: ✅
 Window.floatsOnTop: not realized
 Window.height: ✅
 Window.hidesWhenInactive: not realized

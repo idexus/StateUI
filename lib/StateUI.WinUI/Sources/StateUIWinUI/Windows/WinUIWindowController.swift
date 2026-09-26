@@ -28,12 +28,12 @@ final class WinUIWindowController {
     /// and so before it hears it came to the front.
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
-        applyFrame(of: element)
         // What the user sees is the top sheet, else the window's arrangement: the one that stops showing hears it,
         // then the one that starts - by the window's own coming and going, or by a sheet's, as a move.
         let previousVisible = sheets.last?.element ?? presentation.arrangement
         let hadSheets = !sheets.isEmpty
         let changes = presentation.show(element)
+        stand(element, as: changes)
         if let created = changes.created { runtime.pump.handlers.enqueuePhase(created) }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(of: element)
@@ -46,14 +46,13 @@ final class WinUIWindowController {
         }
     }
 
-    /// Stands the window as the element asks: its place and size, their bounds, its buttons and its backdrop.
+    /// Stands the window as the element asks: the place, the size and the bounds the tree changed, its buttons and
+    /// its backdrop.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
-    private func applyFrame(of element: MountedElement) {
-        let number = { (property: Prop) in element.value(property)?.number }
-        window.request(x: number(.x), y: number(.y), width: number(.width), height: number(.height))
-        window.bound(
-            minimumWidth: number(.minimumWidth) ?? 0, minimumHeight: number(.minimumHeight) ?? 0,
-            maximumWidth: number(.maximumWidth) ?? 0, maximumHeight: number(.maximumHeight) ?? 0,
+    private func stand(_ element: MountedElement, as changes: WindowPresentation.Changes) {
+        if let frame = changes.frame { window.request(frame) }
+        if let bounds = changes.bounds { window.bound(bounds) }
+        window.setButtons(
             maximizable: element.value(.isMaximizable)?.bool ?? true,
             minimizable: element.value(.isMinimizable)?.bool ?? true)
         window.setTranslucent(element.value(.isTranslucent)?.bool == true)

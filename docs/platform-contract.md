@@ -474,7 +474,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 |  |  |  |  | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | 6 |  |  |  |  | 3 ✅ |  |
+| [Scene](controls/Scene.md) | 6 |  |  |  |  | 4 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  |  | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 |  |  |  |  | 4 ✅ |  |
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 |  |  |  |  | 18 ✅ |  |
-| **Met** - ✅ and – | 104 |  |  |  |  | 70 of 104 met |  |
+| [Window](controls/Window.md) | 23 |  |  |  |  | 19 ✅ |  |
+| **Met** - ✅ and – | 104 |  |  |  |  | 72 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

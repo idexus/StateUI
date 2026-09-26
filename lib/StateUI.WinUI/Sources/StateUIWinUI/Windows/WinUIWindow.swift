@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIWinUI
+@_spi(Host) import StateUI
 
 /// A WinUI window: its title, its one chrome across the top, its menu bar and the row of tabs beneath it, and the
 /// page shown in it, activated the first time it has one.
@@ -34,11 +35,8 @@ final class WinUIWindow {
 
     private var activated = false
 
-    /// The place and size last asked for - x, y, width, height - each its own request.
-    private var frameRequests: [Double?] = [nil, nil, nil, nil]
-
-    /// The bounds last given and whether the window was translucent; nil before the first.
-    private var bounds: [Double]?
+    /// Whether the user may maximize and minimize the window, as last given, and whether it was translucent.
+    private var buttons = (maximizable: true, minimizable: true)
     private var translucent = false
 
     /// The number the window's own events name it by: its chrome's.
@@ -63,29 +61,25 @@ final class WinUIWindow {
         stateui_winui_window_set_title(handle, title ?? "")
     }
 
-    /// Moves and sizes the window where a request changed, each alone: one kept leaves the window where the user put
-    /// it. Places and sizes are DIPs, a place from the corner of the screen's work area, a size the content's.
+    /// Moves and sizes the window as `frame` asks, each request alone: a place from the corner of the screen's work
+    /// area, a size the content's, in DIPs.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-frame
-    func request(x: Double?, y: Double?, width: Double?, height: Double?) {
-        let requests = [x, y, width, height]
-        let changed = zip(requests, frameRequests).map { request, last in request != nil && request != last }
-        frameRequests = requests
-        guard changed.contains(true) else { return }
-        stateui_winui_window_set_frame(handle, changed, requests.map { $0 ?? 0 })
+    func request(_ frame: WindowFrame) {
+        let requests = [frame.x, frame.y, frame.width, frame.height]
+        stateui_winui_window_set_frame(handle, requests.map { $0 != nil }, requests.map { $0 ?? 0 })
     }
 
-    /// Bounds the content's size - 0 for no bound, the least winning - and lets the user maximize and minimize the
-    /// window or not.
-    func bound(
-        minimumWidth: Double, minimumHeight: Double, maximumWidth: Double, maximumHeight: Double,
-        maximizable: Bool, minimizable: Bool
-    ) {
-        let bounds = [
-            minimumWidth, minimumHeight, maximumWidth, maximumHeight, maximizable ? 1 : 0, minimizable ? 1 : 0,
-        ]
-        guard self.bounds != bounds else { return }
-        self.bounds = bounds
-        stateui_winui_window_set_limits(handle, bounds, maximizable, minimizable)
+    /// Bounds the content's size as `bounds` says; one it leaves unsaid is WinUI's own.
+    func bound(_ bounds: WindowBounds) {
+        let limits = [bounds.minimumWidth, bounds.minimumHeight, bounds.maximumWidth, bounds.maximumHeight]
+        stateui_winui_window_set_limits(handle, limits.map { $0 ?? 0 })
+    }
+
+    /// Lets the user maximize and minimize the window or not.
+    func setButtons(maximizable: Bool, minimizable: Bool) {
+        guard buttons != (maximizable, minimizable) else { return }
+        buttons = (maximizable, minimizable)
+        stateui_winui_window_set_buttons(handle, maximizable, minimizable)
     }
 
     /// Paints the window's backdrop translucent, or of the desktop's tint.
@@ -157,9 +151,15 @@ final class WinUIWindow {
         stateui_winui_window_set_overlay(handle, view?.handle)
     }
 
-    /// Closes the window.
+    /// Closes the window; one closed already stays as it is.
     func close() {
+        guard !isClosed else { return }
         isClosed = true
         stateui_winui_window_close(handle)
+    }
+
+    /// The window closed of WinUI's accord - the user closed it: what it tells after that is no one's to hear.
+    func closed() {
+        isClosed = true
     }
 }

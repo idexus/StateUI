@@ -19,7 +19,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `activated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `created` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `destroying` | event |  | adaptive |  |  |  |  |  |  |  |
+| `destroying` | event |  | adaptive |  |  |  |  | ✅ |  |  |
 | `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `height` | property | `Double` | native |  |  |  |  | ✅ |  |  |
 | `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |

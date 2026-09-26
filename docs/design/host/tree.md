@@ -104,7 +104,19 @@ counts the numbers held to see every view let go.
 A window shows the first arrangement of pages among its children - a page, a
 stack of them, tabs, a split view - and what it lays over them, and says
 each to its host only when it changed; it is told it was made once, in its
-turn (`WindowPresentation`). The host shows them in its toolkit's window.
+turn (`WindowPresentation`), before it is first shown, and so before it
+hears it came to the front. The host shows them in its toolkit's window.
+
+## A window's frame
+
+A window's place and size are four requests in DIPs, each alone
+(`WindowFrame`): one the tree changes is said, and one it keeps or takes away
+says nothing, so the window stays where the user put it or sized it. A place
+is counted from the corner of the work area of the screen the window stands
+on; a size that is not a finite number of at least nothing asks for none.
+Its bounds (`WindowBounds`) are said the first time and where they change:
+nil leaves the toolkit's own, and a greatest size below the least is the
+least. The host turns each into its toolkit's units and calls.
 
 ## Runs of words
 

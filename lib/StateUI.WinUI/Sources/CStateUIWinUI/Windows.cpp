@@ -92,6 +92,7 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
                 if (!args.DidPresenterChange() && !args.DidSizeChange()) return;
                 if (phase(sender, false) == 2) callbacks.phaseChanged(number, 2);
             });
+        window.Closed([number](IInspectable const &, xaml::WindowEventArgs const &) { callbacks.windowClosed(number); });
         return detach(window);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a window");
@@ -216,9 +217,7 @@ extern "C" void stateui_winui_window_set_frame(StateUIObjectRef handle, bool con
     }
 }
 
-extern "C" void stateui_winui_window_set_limits(
-    StateUIObjectRef handle, double const *limits, bool maximizable, bool minimizable
-) {
+extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double const *limits) {
     try {
         auto window = borrow<xaml::Window>(handle);
         auto presenter = window.AppWindow().Presenter().try_as<windowing::OverlappedPresenter>();
@@ -230,13 +229,21 @@ extern "C" void stateui_winui_window_set_limits(
         };
         presenter.PreferredMinimumWidth(size(limits[0]));
         presenter.PreferredMinimumHeight(size(limits[1]));
-        // The least wins over a greatest that is smaller.
-        presenter.PreferredMaximumWidth(size(limits[2] > 0 ? std::max(limits[2], limits[0]) : 0));
-        presenter.PreferredMaximumHeight(size(limits[3] > 0 ? std::max(limits[3], limits[1]) : 0));
+        presenter.PreferredMaximumWidth(size(limits[2]));
+        presenter.PreferredMaximumHeight(size(limits[3]));
+    } catch (winrt::hresult_error const &error) {
+        report(error, "bounding a window");
+    }
+}
+
+extern "C" void stateui_winui_window_set_buttons(StateUIObjectRef handle, bool maximizable, bool minimizable) {
+    try {
+        auto presenter = borrow<xaml::Window>(handle).AppWindow().Presenter().try_as<windowing::OverlappedPresenter>();
+        if (!presenter) return;
         presenter.IsMaximizable(maximizable);
         presenter.IsMinimizable(minimizable);
     } catch (winrt::hresult_error const &error) {
-        report(error, "bounding a window");
+        report(error, "setting a window's buttons");
     }
 }
 

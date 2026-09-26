@@ -1,7 +1,7 @@
 Scene: ✅
 Scene.activated: ✅
 Scene.deactivated: ✅
-Scene.destroying: not realized
+Scene.destroying: ✅
 Scene.stopped: ✅
 Scene.windowClosed: not realized
 Scene.windowRestored: not realized

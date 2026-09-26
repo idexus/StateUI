@@ -57,10 +57,24 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 22, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 23, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
+        }
+    }
+
+    /// A window the tree closes tells nothing: WinUI says it closed, and that is the tree's own closing.
+    func testAWindowTheTreeClosesTellsNothing() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { PhasePage() }
+            let window = try XCTUnwrap(host.window)
+            let before = host.views(WinUILabelView.self).map(\.text)
+
+            window.close()
+            for _ in 0..<10 { host.step() }
+
+            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), before, "no phase, no going")
         }
     }
 

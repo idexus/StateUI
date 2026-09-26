@@ -123,6 +123,7 @@ final class WinUIDriver: HostDriver {
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
+        case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
         case (.minimize, _) where element.type == .window: try phase(2)
         case (.restore, _) where element.type == .window: try phase(0)
         case (.switchAway, _) where element.type == .window: try phase(1)

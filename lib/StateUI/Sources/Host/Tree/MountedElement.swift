@@ -260,6 +260,13 @@
         return nil
     }
 
+    /// The nearest element of `type` holding this one, this one first.
+    public func enclosing(type sought: NodeType) -> MountedElement? {
+        var element: MountedElement? = self
+        while let each = element, each.type != sought { element = each.parent }
+        return element
+    }
+
     /// The first element with key `sought` in this subtree, this one first.
     public func first(id sought: ElementId) -> MountedElement? {
         if id == sought { return self }

@@ -98,21 +98,19 @@ sheets over it.
 
 ## A window's frame
 
-A window's place, width and height are four requests, each alone: one the
-tree changes moves or sizes the window, and one it keeps leaves the window
-where the user put it. The size is the content's, the chrome's included, as
-WinUI's content reaches under it; the place is counted from the corner of the
-work area of the screen the window stands on. WinUI's `AppWindow` takes
+A window stands where the host layer says its element asks ([a window's
+frame](../../host/tree.md#a-windows-frame)): the place, the size and the
+bounds the tree changed, each alone. The size is the content's, the chrome's
+included, as WinUI's content reaches under it. WinUI's `AppWindow` takes
 pixels, so each DIP is the window's DPI over 96 of them - known before
-anything is laid out, where the root's rasterization scale is not. The size is
-set as the whole window's, the content's asked for plus the frame around it
-as it stands: `ResizeClient` would add the title bar's height again, which
+anything is laid out, where the root's rasterization scale is not. The size
+is set as the whole window's, the content's asked for plus the frame around
+it as it stands: `ResizeClient` would add the title bar's height again, which
 the content already covers.
 
-The bounds are the presenter's preferred least and greatest size, the least
-winning over a greatest that is smaller; the presenter also lets the user
-maximize and minimize the window or not. A translucent window's backdrop is
-acrylic, and any other window's is Mica.
+The bounds are the presenter's preferred least and greatest size; the
+presenter also lets the user maximize and minimize the window or not. A
+translucent window's backdrop is acrylic, and any other window's is Mica.
 
 ## The application's phase
 

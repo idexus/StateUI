@@ -277,6 +277,16 @@ phase the application stands in already tells nothing: a lifecycle is a
 state, not a count of the toolkit's callbacks. As the application ends, the
 window hears that it is going, then the scene.
 
+## A window the user closes
+
+A window the user closes hears that it is going, then its scene hears what
+that means for it, each rendered before the next (`HostRuntime.userClosed`):
+the scene's main window - one of no kind of its own - takes the scene with
+it, so the scene hears that it is going too; a window of its own kind is one
+of the scene's windows gone, and the scene hears that it closed, carrying the
+window's key, which forgets the window and its session. A window the tree
+closes tells nothing: the tree already knows.
+
 ## Acts
 
 An act the application calls is answered on every host the same way: with

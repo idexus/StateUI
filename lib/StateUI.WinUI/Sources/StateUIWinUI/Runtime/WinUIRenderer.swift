@@ -90,6 +90,16 @@ final class WinUIRenderer {
         runtime.enterPhase(phase)
     }
 
+    /// The window numbered `number` closed: one the tree closed tells nothing; one the user closed is heard by it
+    /// and its scene.
+    /// Design: docs/design/host/runtime.md#a-window-the-user-closes
+    func windowClosed(number: Int64) {
+        guard let controller = windows.first(where: { $0.window.number == number }), !controller.window.isClosed
+        else { return }
+        controller.window.closed()
+        if let element = controller.element { runtime.userClosed(element) }
+    }
+
     /// Renders the application whole, connecting its scene first.
     func show() {
         WinUIEnvironment.report(to: runtime.core)

@@ -44,9 +44,10 @@
         return true
     }
 
-    /// Queues a page's or a window's phase: it runs in its turn, and is rendered before anything after it.
-    public func enqueuePhase(_ handler: Int32) {
-        queued.append(Queued(handler: handler, payload: [], isPhase: true))
+    /// Queues a page's, a window's or a scene's phase, with `payload`: it runs in its turn, and is rendered before
+    /// anything after it.
+    public func enqueuePhase(_ handler: Int32, payload: [HostValue] = []) {
+        queued.append(Queued(handler: handler, payload: payload, isPhase: true))
     }
 
     /// Runs `body` as the user's transaction; whether it was the outermost.

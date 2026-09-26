@@ -113,6 +113,9 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated {
                     WinUIRenderer.shared?.phaseChanged(ApplicationPhase(rawValue: phase) ?? .active, window: window)
                 }
+            },
+            windowClosed: { window in
+                MainActor.assumeIsolated { WinUIRenderer.shared?.windowClosed(number: window) }
             })
     }
 }

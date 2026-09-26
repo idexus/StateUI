@@ -135,6 +135,25 @@
         tell(ApplicationLifecycle.ending)
     }
 
+    /// The user closed `window`: what that tells (`toldOnClosing`) runs in order, each rendered before the next.
+    public func userClosed(_ window: MountedElement) {
+        for each in Self.toldOnClosing(window) { pump.handlers.enqueuePhase(each.handler, payload: each.payload) }
+        pump.turn()
+    }
+
+    /// What the user closing `window` tells, in order: the window that it is going, then its scene - that it is
+    /// going too where the window is its main one, else that one of its windows closed, by the window's key.
+    /// Design: docs/design/host/runtime.md#a-window-the-user-closes
+    public static func toldOnClosing(_ window: MountedElement) -> [(handler: Int32, payload: [HostValue])] {
+        let scene = window.enclosing(type: .scene)
+        let sceneTold: (handler: Int32?, payload: [HostValue]) = window.value(.windowType) == nil
+            ? (scene?.handler(.destroying), [])
+            : (scene?.handler(.windowClosed), [window.id.hostValue])
+        return [(window.handler(.destroying), []), sceneTold].compactMap { told in
+            told.handler.map { (handler: $0, payload: told.payload) }
+        }
+    }
+
     private func tell(_ told: [ApplicationLifecycle.Told]) {
         for each in told {
             if let handler = tree.root?.first(type: each.element)?.handler(each.event) {

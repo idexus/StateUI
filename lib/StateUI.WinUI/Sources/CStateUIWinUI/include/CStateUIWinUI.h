@@ -142,6 +142,9 @@ typedef struct {
     /// The window `window` names moved the application's phase: 0 in use, 1 showing behind another window, 2
     /// minimized.
     void (*phaseChanged)(int64_t window, int32_t phase);
+
+    /// The window `window` names closed - the user's click, or the program's.
+    void (*windowClosed)(int64_t window);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -190,10 +193,12 @@ void stateui_winui_window_close(StateUIObjectRef window);
 /// area and the width and height of its content, in DIPs.
 void stateui_winui_window_set_frame(StateUIObjectRef window, bool const *has, double const *values);
 
-/// The least and the greatest size of the window's content in DIPs (least width, least height, greatest width,
-/// greatest height; 0 for none; the least wins), and whether the user may maximize and minimize it.
-void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits, bool maximizable,
-                                     bool minimizable);
+/// The least and the greatest size of the window's content in DIPs: least width, least height, greatest width,
+/// greatest height, 0 for none.
+void stateui_winui_window_set_limits(StateUIObjectRef window, double const *limits);
+
+/// Whether the user may maximize and minimize the window.
+void stateui_winui_window_set_buttons(StateUIObjectRef window, bool maximizable, bool minimizable);
 
 /// Paints the window's backdrop translucent (acrylic) or of the desktop's tint (Mica).
 void stateui_winui_window_set_translucent(StateUIObjectRef window, bool translucent);

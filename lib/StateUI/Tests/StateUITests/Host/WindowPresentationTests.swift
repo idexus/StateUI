@@ -31,4 +31,47 @@ final class WindowPresentationTests: XCTestCase {
         XCTAssertTrue(again.overlay == nil, "nothing new to lay over")
         XCTAssertNil(again.created, "told it was made once")
     }
+
+    /// A window's place and size are four requests, each said alone where the tree changed it; one it keeps, or
+    /// takes away, moves nothing.
+    func testAWindowsFrameIsFourRequestsEachAlone() throws {
+        let runtime = HostRuntime.still()
+        var window = HostPatch(id: .manual("window"), type: .window)
+        window.properties = [.x: .number(40), .width: .number(640)]
+        runtime.tree.apply(window, complete: true)
+        let presentation = WindowPresentation()
+        let root = try XCTUnwrap(runtime.tree.root)
+        func change(_ properties: [Prop: HostValue], clearing cleared: [Prop] = []) -> WindowFrame? {
+            var patch = HostPatch(id: .manual("window"), type: .window)
+            patch.properties = properties
+            patch.clearedProperties = cleared
+            runtime.tree.apply(patch, complete: false)
+            return presentation.show(root).frame
+        }
+
+        XCTAssertEqual(presentation.show(root).frame, WindowFrame(x: 40, width: 640))
+        XCTAssertEqual(
+            change([.x: .number(40), .width: .number(800), .height: .number(480)]), WindowFrame(width: 800, height: 480))
+        XCTAssertNil(change([:]), "nothing changed: the window stays where the user put it")
+        XCTAssertNil(change([:], clearing: [.x]), "a request taken away moves nothing")
+        XCTAssertEqual(change([.x: .number(40)]), WindowFrame(x: 40), "asked again, it moves the window again")
+        XCTAssertNil(change([.width: .number(-1)]), "a size below nothing asks for none")
+    }
+
+    /// A window's bounds are said the first time and where they change; a greatest below the least is the least.
+    func testAWindowsGreatestSizeNeverStandsBelowItsLeast() throws {
+        let runtime = HostRuntime.still()
+        var window = HostPatch(id: .manual("window"), type: .window)
+        window.properties = [.minimumWidth: .number(400), .maximumWidth: .number(300), .maximumHeight: .number(900)]
+        runtime.tree.apply(window, complete: true)
+        let presentation = WindowPresentation()
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        let bounds = try XCTUnwrap(presentation.show(root).bounds)
+        XCTAssertEqual(bounds.minimumWidth, 400)
+        XCTAssertEqual(bounds.maximumWidth, 400, "the least wins")
+        XCTAssertNil(bounds.minimumHeight, "unsaid: the toolkit's own")
+        XCTAssertEqual(bounds.maximumHeight, 900)
+        XCTAssertNil(presentation.show(root).bounds, "said once until they change")
+    }
 }
