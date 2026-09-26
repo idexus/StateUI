@@ -8,76 +8,23 @@
 extension AndroidElement {
     /// An event the view raised, with what it carries, to the handler the tree listens with.
     func send(_ event: Event, _ values: [HostValue]) {
-        guard let handler = element.handler(event) else { return }
-
-        host?.runtime.dispatch(handler, payload: values)
-    }
-
-    /// A value the user changed in the view: onto its state first, then the event with it. A radio button
-    /// checked takes its peers' checks away first, each reporting that it is off, in one transaction.
-    /// Design: docs/design/host/patches.md#program-write
-    func report(_ property: Prop, _ event: Event, _ value: HostValue) {
-        guard let host, !ProgramWrite.isWriting else { return }
-
-        guard element.type == .radioButton, property == .isOn, value == .bool(true) else {
-            return carry(property, event, value)
-        }
-        host.runtime.performUserTransaction {
-            for peer in element.radioPeers.compactMap({ $0.native as? AndroidElement })
-            where peer.element.value(.isOn)?.bool == true {
-                ProgramWrite.perform { (peer.view as? AndroidToggleView)?.setOn(false) }
-                peer.carry(.isOn, event, .bool(false))
-            }
-            carry(property, event, value)
-        }
-    }
-
-    /// One value onto the state that carries it, then the event with it.
-    private func carry(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
+        element.send(event, values, in: host.runtime)
+    }
 
-        let carried: HostStateValue? = switch value {
-        case .string(let text): .text(text)
-        case .name(let name): .text(name)
-        case .bool(let flag): .lanes([flag ? 1 : 0])
-        case .number(let number): .lanes([number])
-        case .numbers(let numbers): .lanes(numbers)
-        case .enumeration(let choice): .lanes([Double(choice)])
-        default: nil
-        }
-
-        var reported = false
-        if let carried, let binding = element.driven[property] {
-            if case .lanes(let lanes) = carried, binding.kind == .property {
-                reported = host.runtime.take(lanes, through: binding)
-            } else {
-                reported = host.runtime.report(carried, through: binding)
-            }
-        }
-
-        if let handler = element.handler(event) {
-            host.runtime.dispatch(handler, payload: [value])
-        } else if reported {
-            host.runtime.pump.turn()
+    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button's
+    /// peers turned off on their own buttons.
+    func report(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
+        element.reportUserChange(property, event, value, in: host.runtime) { peer in
+            ((peer.native as? AndroidElement)?.view as? AndroidToggleView)?.setOn(false)
         }
     }
 
-    /// The user moved a scroller: onto its offset state first, then an event for each axis that moved.
-    /// Design: docs/design/host/runtime.md#a-scrollers-movement
+    /// The user moved a scroller from `old` to `new`, as the display's frame saw it.
     func scrolled(from old: Point, to new: Point) {
         guard let host else { return }
-
-        host.runtime.performUserTransaction {
-            if old != new, let binding = element.driven[.scrollOffset] {
-                host.runtime.take([new.x, new.y], through: binding)
-            }
-            if old.x != new.x, let handler = element.handler(.scrollXChanged) {
-                host.runtime.dispatch(handler, payload: [.number(new.x)])
-            }
-            if old.y != new.y, let handler = element.handler(.scrollYChanged) {
-                host.runtime.dispatch(handler, payload: [.number(new.y)])
-            }
-        }
+        element.reportScrolled(from: old, to: new, in: host.runtime)
     }
 
     /// Whether the tree reads where this element stands (`MountedElement.readsOwnFrame`), where it shows a view.
