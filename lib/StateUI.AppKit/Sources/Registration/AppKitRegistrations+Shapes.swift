@@ -89,7 +89,7 @@ extension AppKitRegistrations {
         view.apply(
             fill: values[ShapeContract.fill]?.propValue,
             stroke: values[ShapeContract.stroke]?.propValue,
-            strokeWidth: values[ShapeContract.strokeWidth] ?? 1,
+            strokeWidth: values[ShapeContract.strokeWidth],
             dash: values[ShapeContract.strokeDashPattern] ?? [],
             dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
             lineCap: values[ShapeContract.strokeLineCap]?.rawValue ?? 0,

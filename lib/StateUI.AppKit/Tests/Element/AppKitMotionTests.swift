@@ -905,6 +905,7 @@ final class AppKitMotionTests: XCTestCase {
 
         var initial = HostPatch(id: .manual("line"), type: .line)
         initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
+        initial.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
         initial.properties[.strokeDashPattern] = .numbers([1, 1])
         renderer.applyForTesting(initial)
 

@@ -68,7 +68,7 @@ final class AppKitShapeView: AppKitHitTestView {
     func apply(
         fill: HostValue?,
         stroke: HostValue?,
-        strokeWidth: Double,
+        strokeWidth: Double?,
         dash: [Double],
         dashOffset: Double,
         lineCap: Int32,
@@ -80,7 +80,7 @@ final class AppKitShapeView: AppKitHitTestView {
     ) {
         self.fill = AppKitBrush(fill)
         self.stroke = AppKitBrush(stroke)
-        self.strokeWidth = CGFloat(ShapeArithmetic.strokeWidth(strokeWidth))
+        self.strokeWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth))
         self.dash = dash
         self.dashOffset = dashOffset.isFinite ? CGFloat(dashOffset) : 0
         self.lineCap = lineCap

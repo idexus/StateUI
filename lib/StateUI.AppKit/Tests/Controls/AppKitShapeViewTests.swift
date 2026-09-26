@@ -160,6 +160,7 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.y1] = .number(2)
         line.properties[.x2] = .number(41)
         line.properties[.y2] = .number(22)
+        line.properties[.stroke] = brush(.black)
         line.properties[.strokeWidth] = .number(3)
         line.properties[.strokeDashPattern] = .numbers([2, 1])
         line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
@@ -209,6 +210,7 @@ final class AppKitShapeViewTests: XCTestCase {
             defer { renderer.closeForTesting() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
+                .stroke: brush(.black),
                 .strokeWidth: .number(2),
                 .strokeDashPattern: .numbers([3, 1]),
                 .strokeDashOffset: .number(0.5),
