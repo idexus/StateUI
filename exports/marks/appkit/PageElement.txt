@@ -1,0 +1,9 @@
+Button.clicked: cannot read icon of NavigationStack - AppKit's driver has no path for it yet
+NavigationStack.icon: cannot read icon of NavigationStack - AppKit's driver has no path for it yet
+NavigationStack.title: cannot read title of NavigationStack - AppKit's driver has no path for it yet
+Page.icon: cannot read icon of Page - AppKit's driver has no path for it yet
+Page.title: cannot read title of Page - AppKit's driver has no path for it yet
+SplitView.icon: cannot read icon of SplitView - AppKit's driver has no path for it yet
+SplitView.title: cannot read title of SplitView - AppKit's driver has no path for it yet
+TabbedView.icon: cannot read icon of TabbedView - AppKit's driver has no path for it yet
+TabbedView.title: cannot read title of TabbedView - AppKit's driver has no path for it yet

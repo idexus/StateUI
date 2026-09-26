@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/LineContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `x1` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `x2` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `y1` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `y2` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
+| `x1` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `x2` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `y1` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
+| `y2` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read the colour of Line - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -36,7 +36,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of Line - AppKit's driver has no path for it yet |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -44,38 +44,38 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
-| `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |
-| `height` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Line - AppKit's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityHint of Line - AppKit's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Line - AppKit's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Line - AppKit's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of Line - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  | cannot read the focus of Line - AppKit's driver has no path for it yet |
+| `frame` | property | `Rect` | structure | ✅ |  |  |  | ✅ |  |  |
+| `height` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | cannot read what reaches Line - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Line - AppKit's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isVisible` | property | `Bool` | native |  |  | ✅ |  | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  | cannot read the focus of Line - AppKit's driver has no path for it yet |
+| `isVisible` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `opacity` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scale` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `maximumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotX of Line - AppKit's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotY of Line - AppKit's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read rotation of Line - AppKit's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationX of Line - AppKit's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationY of Line - AppKit's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scale of Line - AppKit's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleX of Line - AppKit's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleY of Line - AppKit's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  |  |
-| `width` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
+| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Line - AppKit's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Line - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  | cannot read the focus of Line - AppKit's driver has no path for it yet |
+| `width` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
@@ -85,7 +85,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure |  |  |  |  | ✅ |  |  |
+| `area` | property | `Area` | structure | ✅ |  |  |  | ✅ |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -93,29 +93,29 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | ✅ |  | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
-| `margin` | property | `Insets` | native |  |  | ✅ |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `margin` | property | `Insets` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on Line - AppKit's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Line - AppKit's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Line - AppKit's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Line - AppKit's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Line - AppKit's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Line - AppKit's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on Line - AppKit's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on Line - AppKit's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on Line - AppKit's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
 
 ## From [Shape](tiers/Shape.md)
 
@@ -123,13 +123,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  |  |
-| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  |  |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  |  |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
+| `aspect` | property | `Aspect` | native |  |  |  |  | ✅ |  | cannot read aspect of Line - AppKit's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read fill of Line - AppKit's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  |  | ✅ |  | cannot read renderTransform of Line - AppKit's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Line - AppKit's driver has no path for it yet |
+| `strokeDashOffset` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashOffset of Line - AppKit's driver has no path for it yet |
+| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  |  | ✅ |  | cannot read strokeDashPattern of Line - AppKit's driver has no path for it yet |
+| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineCap of Line - AppKit's driver has no path for it yet |
+| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  |  | ✅ |  | cannot read strokeLineJoin of Line - AppKit's driver has no path for it yet |
+| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeMiterLimit of Line - AppKit's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Line - AppKit's driver has no path for it yet |

@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 final class AppKitSliderViewTests: XCTestCase {
@@ -15,7 +16,6 @@ final class AppKitSliderViewTests: XCTestCase {
 
         view.apply(
             value: 40,
-            writeValue: true,
             minimum: 20,
             maximum: 80,
             tint: .systemBlue,
@@ -35,7 +35,6 @@ final class AppKitSliderViewTests: XCTestCase {
 
         view.apply(
             value: 30,
-            writeValue: true,
             minimum: 80,
             maximum: 20,
             tint: nil,
@@ -65,7 +64,6 @@ final class AppKitSliderViewTests: XCTestCase {
         view.onValueChanged = { reports.append($0) }
         view.apply(
             value: 0,
-            writeValue: true,
             minimum: 0,
             maximum: 1,
             tint: nil,

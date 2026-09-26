@@ -1,0 +1,8 @@
+Scene: ✅
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.destroying: ✅
+Scene.stopped: ✅
+Scene.windowClosed: cannot start an application - AppKit's driver has no path for it yet
+Scene.windowRestored: cannot start an application - AppKit's driver has no path for it yet
+Window.windowType: cannot start an application - AppKit's driver has no path for it yet

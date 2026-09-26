@@ -70,19 +70,23 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         guard growsWithText else {
             return NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
         }
+        return NSSize(width: NSView.noIntrinsicMetric, height: grownHeight(at: nil))
+    }
 
-        if let layoutManager = textView.layoutManager,
-           let textContainer = textView.textContainer {
-            layoutManager.ensureLayout(for: textContainer)
-            let used = layoutManager.usedRect(for: textContainer)
-            let inset = textView.textContainerInset.height * 2
-            let line = textView.font?.boundingRectForFont.height ?? 17
-            return NSSize(
-                width: NSView.noIntrinsicMetric,
-                height: ceil(max(used.height, line) + inset + 2))
-        }
-
-        return NSSize(width: NSView.noIntrinsicMetric, height: 24)
+    /// The height of the words laid out at `width` - the editor's own where none is offered - a line at the least,
+    /// with the text's insets and the border around them.
+    private func grownHeight(at width: CGFloat?) -> CGFloat {
+        let font = textView.font ?? .systemFont(ofSize: NSFont.systemFontSize)
+        let line = font.boundingRectForFont.height
+        let sides = (textView.textContainer?.lineFragmentPadding ?? 0) * 2 + textView.textContainerInset.width * 2 + 2
+        let room = (width ?? bounds.width) - sides
+        let words = NSAttributedString(string: textView.string, attributes: [.font: font])
+        let used = room > 0
+            ? words.boundingRect(
+                with: NSSize(width: room, height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading]).height
+            : line
+        return ceil(max(used, line) + textView.textContainerInset.height * 2 + 2)
     }
 
     func apply(
@@ -208,6 +212,14 @@ private final class AppKitTextEditorPlaceholder: NSTextField {
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
+/// A growing editor stands as tall as its words at the width offered; a fixed one as AppKit measures it.
+extension AppKitTextEditorView: AppKitWidthConstrainedMeasuring {
+    func fittingContentSize(width: CGFloat?) -> NSSize {
+        let native = fittingSize
+        return growsWithText ? NSSize(width: native.width, height: grownHeight(at: width)) : native
+    }
 }
 
 extension AppKitTextEditorView: AppKitAccessibilityPresenting {

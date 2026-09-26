@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  |  | ✅ |  |  |
-| `priority` | property | `Int` | adaptive |  |  |  |  | ✅ |  |  |
+| `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  |  | ✅ |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet |
+| `priority` | property | `Int` | adaptive |  |  |  |  | ✅ |  | cannot read priority of ToolbarItem - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of ToolbarItem - AppKit's driver has no path for it yet |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -42,8 +42,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
+| `onClicked` (`clicked`) | event |  | native |  |  |  |  | ✅ |  | cannot activate on ToolbarItem - AppKit's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `text` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot activate on ToolbarItem - AppKit's driver has no path for it yet |
+| `text` | property | `String` | native |  |  |  |  | ✅ |  | cannot read text of ToolbarItem - AppKit's driver has no path for it yet |

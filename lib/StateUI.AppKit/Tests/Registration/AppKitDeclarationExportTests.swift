@@ -23,26 +23,7 @@ final class AppKitDeclarationExportTests: XCTestCase {
     /// The export is what the registry says, to the line.
     @MainActor
     func testWhatThisHostDeclaresIsWhatItExports() throws {
-        let exported = Self.declaration().text
-        let text = Self.exports.appendingPathComponent("appkit.txt")
-
-        if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
-            try FileManager.default.createDirectory(
-                at: Self.exports, withIntermediateDirectories: true)
-            try exported.write(to: text, atomically: true, encoding: .utf8)
-            return
-        }
-
-        let hint = """
-
-
-            Either a registration changed - in which case run the suite again \
-            with STATEUI_UPDATE_EXPORTS=1 and read the diff - or something \
-            stopped being realized.
-            """
-
-        XCTAssertEqual(
-            exported, try String(contentsOf: text, encoding: .utf8), "exports/appkit.txt\(hint)")
+        try AppKitExports.hold(AppKitRealization.declaration.text, at: "appkit.txt")
     }
 
     /// The export is deterministic: the same registry writes the same text.
@@ -77,27 +58,16 @@ final class AppKitDeclarationExportTests: XCTestCase {
         XCTAssertTrue(declaration.acts.isSuperset(of: ["focus", "unfocus", "persistValue"]))
     }
 
-    // MARK: - Support
-
-    /// `exports`, a directory of its own: an export is written by a RUNTIME
-    /// saying what it realizes.
-    private static var exports: URL {
-        URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Registration
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .deletingLastPathComponent()    // lib
-            .deletingLastPathComponent()    // the repository
-            .appendingPathComponent("exports")
+    /// What this host wrote of its register by hand is true of the contracts: no record names what its owner does
+    /// not declare, none is written twice, a partial one says what is missing and a never says why.
+    @MainActor
+    func testTheRegisterThisHostWroteIsTrueOfTheContracts() {
+        XCTAssertEqual(AppKitRealization.register.problems, [])
     }
 
-    /// What this host declares, read off its registry.
     @MainActor
     private static func declaration() -> HostDeclaration {
-        let registry = AppKitRegistrations.registry
-        return HostDeclaration(
-            realization: registry.realization, shared: registry.sharedNames,
-            acts: AppKitRegistrations.acts.map(\.name))
+        AppKitRealization.declaration
     }
 }
 

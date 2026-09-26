@@ -1,0 +1,6 @@
+Button.clicked: cannot read the menu of Label - AppKit's driver has no path for it yet
+ContextMenu: cannot read the menu of Label - AppKit's driver has no path for it yet
+Menu.text: cannot read the menu of Label - AppKit's driver has no path for it yet
+MenuItem.isEnabled: cannot read the menu of Label - AppKit's driver has no path for it yet
+MenuItem.text: cannot read the menu of Label - AppKit's driver has no path for it yet
+MenuSeparator: cannot read the menu of Label - AppKit's driver has no path for it yet

@@ -1,0 +1,4 @@
+Button.clicked: cannot read the colour of Polyline - AppKit's driver has no path for it yet
+Polyline: cannot read the colour of Polyline - AppKit's driver has no path for it yet
+Polyline.fillRule: cannot read the colour of Polyline - AppKit's driver has no path for it yet
+Polyline.points: cannot read the colour of Polyline - AppKit's driver has no path for it yet

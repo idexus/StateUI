@@ -1,0 +1,14 @@
+Application: ✅
+Application.alert: not realized
+Application.announce: not realized
+Application.chooseAction: not realized
+Application.confirm: not realized
+Application.currentTime: not realized
+Application.currentTimeZone: not realized
+Application.handlerFailed: not realized
+Application.hideOnScreenKeyboard: cannot focus on TextField - AppKit's driver has no path for it yet
+Application.persistSceneValue: cannot read what is kept - AppKit's driver has no path for it yet
+Application.persistValue: cannot read what is kept - AppKit's driver has no path for it yet
+Application.prompt: not realized
+Application.utcOffset: not realized
+Button.clicked: cannot focus on TextField - AppKit's driver has no path for it yet

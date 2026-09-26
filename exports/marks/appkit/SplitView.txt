@@ -1,0 +1,4 @@
+Button.clicked: cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet
+SplitView: cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet
+SplitView.isSidebarVisible: cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet
+SplitView.isSidebarVisibleChanged: cannot read isSidebarVisible of SplitView - AppKit's driver has no path for it yet

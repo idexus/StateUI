@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 /// The smallest complete application around one piece of content: one
@@ -34,35 +35,6 @@ func changedTree(_ content: HostPatch) -> HostPatch {
     var application = HostPatch(id: .manual("application"), type: .application)
     application.children = .changed([scene])
     return application
-}
-
-/// The same smallest application written in Swift, the way an author writes
-/// one: its only scene a window showing what `page` builds.
-struct OneWindowApplication: Application {
-    let page: @Sendable () -> any Page
-
-    var scene: any Scene { OneWindow(content: page) }
-}
-
-/// The window of a `OneWindowApplication`. Its page is built again each
-/// time the window is, as an application's own window's is.
-struct OneWindow: Window {
-    let content: @Sendable () -> any Page
-
-    var page: any Page { content() }
-}
-
-/// What a page's handlers received, in the order they received it.
-///
-/// It is `Sendable`, keeping its values in a `State` the way an application
-/// keeps its own, so the page that records into it can capture it.
-final class Received<Value>: Sendable {
-    private let received = State(wrappedValue: [Value]())
-
-    var values: [Value] {
-        get { received.wrappedValue }
-        set { received.wrappedValue = newValue }
-    }
 }
 
 extension AppKitRenderer {

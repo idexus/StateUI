@@ -13,7 +13,6 @@ final class AppKitStepperViewTests: XCTestCase {
 
         stepper.apply(
             value: 7,
-            writeValue: true,
             minimum: 2,
             maximum: 12,
             step: 2.5,
@@ -34,7 +33,6 @@ final class AppKitStepperViewTests: XCTestCase {
         stepper.onValueChanged = { reports.append($0) }
         stepper.apply(
             value: 4,
-            writeValue: true,
             minimum: 0,
             maximum: 10,
             step: 1,

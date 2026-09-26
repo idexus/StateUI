@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUIHost
 
 /// A native continuous slider with explicit boundaries between StateUI writes
 /// and values moved by the user.
@@ -25,24 +26,12 @@ final class AppKitSliderView: NSSlider {
         fatalError("AppKitSliderView is created in code")
     }
 
-    /// Applies the StateUI range before its value so AppKit clamps only against
-    /// the current range. Reversed endpoints describe the same closed interval.
-    func apply(
-        value: Double?,
-        writeValue: Bool,
-        minimum: Double,
-        maximum: Double,
-        tint: NSColor?,
-        enabled: Bool
-    ) {
-        minValue = min(minimum, maximum)
-        maxValue = max(minimum, maximum)
+    /// Applies the range before the value, so AppKit clamps only against the range it has now.
+    func apply(value: Double, minimum: Double, maximum: Double, tint: NSColor?, enabled: Bool) {
+        (minValue, maxValue) = ValueArithmetic.range(minimum, maximum)
         trackFillColor = tint
         isEnabled = enabled
-
-        if writeValue, let value {
-            setValue(value)
-        }
+        setValue(value)
     }
 
     /// Writes a value from StateUI without turning it into a user report.

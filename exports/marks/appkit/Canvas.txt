@@ -1,0 +1,6 @@
+Button.clicked: cannot read the colour of Canvas - AppKit's driver has no path for it yet
+Canvas: cannot read the colour of Canvas - AppKit's driver has no path for it yet
+Canvas.dragged: cannot pressDown on Canvas - AppKit's driver has no path for it yet
+Canvas.drawable: cannot read the colour of Canvas - AppKit's driver has no path for it yet
+Canvas.pressed: cannot pressDown on Canvas - AppKit's driver has no path for it yet
+Canvas.released: cannot pressDown on Canvas - AppKit's driver has no path for it yet

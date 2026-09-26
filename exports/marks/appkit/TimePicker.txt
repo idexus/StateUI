@@ -1,0 +1,8 @@
+Button.clicked: cannot read time of TimePicker - AppKit's driver has no path for it yet
+TimePicker: cannot read time of TimePicker - AppKit's driver has no path for it yet
+TimePicker.closed: not realized
+TimePicker.format: not realized
+TimePicker.isOpen: not realized
+TimePicker.opened: not realized
+TimePicker.time: cannot read time of TimePicker - AppKit's driver has no path for it yet
+TimePicker.timeChanged: cannot read time of TimePicker - AppKit's driver has no path for it yet

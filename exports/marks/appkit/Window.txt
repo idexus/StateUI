@@ -1,0 +1,26 @@
+Button.clicked: cannot read height of Window - AppKit's driver has no path for it yet
+ModalStack: cannot goBack on Window - AppKit's driver has no path for it yet
+Window: ✅
+Window.activated: ✅
+Window.created: ✅
+Window.deactivated: ✅
+Window.destroying: ✅
+Window.floatsOnTop: cannot start an application - AppKit's driver has no path for it yet
+Window.height: cannot read height of Window - AppKit's driver has no path for it yet
+Window.hidesWhenInactive: cannot start an application - AppKit's driver has no path for it yet
+Window.isMaximizable: cannot read isMaximizable of Window - AppKit's driver has no path for it yet
+Window.isMinimizable: cannot read isMinimizable of Window - AppKit's driver has no path for it yet
+Window.isTranslucent: cannot read isTranslucent of Window - AppKit's driver has no path for it yet
+Window.maximumHeight: cannot read maximumHeight of Window - AppKit's driver has no path for it yet
+Window.maximumWidth: cannot read maximumWidth of Window - AppKit's driver has no path for it yet
+Window.minimumHeight: cannot read minimumHeight of Window - AppKit's driver has no path for it yet
+Window.minimumWidth: cannot read minimumWidth of Window - AppKit's driver has no path for it yet
+Window.modalPopped: cannot goBack on Window - AppKit's driver has no path for it yet
+Window.resumed: ✅
+Window.stopped: ✅
+Window.title: cannot read title of Window - AppKit's driver has no path for it yet
+Window.width: cannot read width of Window - AppKit's driver has no path for it yet
+Window.windowType: cannot start an application - AppKit's driver has no path for it yet
+Window.windowValue: cannot start an application - AppKit's driver has no path for it yet
+Window.x: cannot read x of Window - AppKit's driver has no path for it yet
+Window.y: cannot read y of Window - AppKit's driver has no path for it yet

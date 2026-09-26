@@ -16,16 +16,16 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `backButtonTitle` | property | `String` | adaptive |  |  |  |  |  |  |  |
-| `background` | property | `Color` | native |  |  |  |  | ✅ |  |  |
-| `disappearing` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `hasBackButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `navigatedFrom` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `navigatedTo` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `navigatingFrom` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `padding` | property | `Insets` | native |  |  |  |  | ✅ |  |  |
+| `appearing` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `backButtonTitle` | property | `String` | adaptive |  |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet |
+| `background` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read background of Page - AppKit's driver has no path for it yet |
+| `disappearing` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `hasBackButton` | property | `Bool` | adaptive |  |  |  |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet |
+| `hasNavigationBar` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet |
+| `navigatedFrom` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `navigatedTo` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `navigatingFrom` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ |  |  |  | ✅ |  |  |
 
 Realization:
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
-| `title` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of Page - AppKit's driver has no path for it yet |
+| `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of Page - AppKit's driver has no path for it yet |

@@ -1,0 +1,11 @@
+Button.clicked: cannot read icon of MenuItem - AppKit's driver has no path for it yet
+MenuItem.clicked: cannot activate on MenuItem - AppKit's driver has no path for it yet
+MenuItem.icon: cannot read icon of MenuItem - AppKit's driver has no path for it yet
+MenuItem.isDestructive: cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet
+MenuItem.isEnabled: cannot activate on MenuItem - AppKit's driver has no path for it yet
+MenuItem.text: cannot read text of MenuItem - AppKit's driver has no path for it yet
+ToolbarItem.clicked: cannot activate on ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem.icon: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem.isDestructive: not realized
+ToolbarItem.isEnabled: cannot activate on ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem.text: cannot read text of ToolbarItem - AppKit's driver has no path for it yet

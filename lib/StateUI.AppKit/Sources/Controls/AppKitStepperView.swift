@@ -3,11 +3,15 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUIHost
 
 /// AppKit's exact-step numeric input with one report per settled step.
 @MainActor
 final class AppKitStepperView: NSStepper {
     var onValueChanged: ((Double) -> Void)?
+
+    /// The value the stepper stood at before a click.
+    private var shown = 0.0
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -26,25 +30,19 @@ final class AppKitStepperView: NSStepper {
         fatalError("AppKitStepperView is created in code")
     }
 
-    func apply(
-        value: Double?,
-        writeValue: Bool,
-        minimum: Double,
-        maximum: Double,
-        step: Double,
-        enabled: Bool
-    ) {
-        minValue = min(minimum, maximum)
-        maxValue = max(minimum, maximum)
-        self.increment = step.isFinite && step > 0 ? step : 1
+    /// Applies the range and the step before the value, so AppKit clamps only against the range it has now.
+    func apply(value: Double, minimum: Double, maximum: Double, step: Double, enabled: Bool) {
+        (minValue, maxValue) = ValueArithmetic.range(minimum, maximum)
+        increment = ValueArithmetic.step(step)
         isEnabled = enabled
-
-        if writeValue, let value {
-            doubleValue = min(max(value, minValue), maxValue)
-        }
+        doubleValue = min(max(value, minValue), maxValue)
+        shown = doubleValue
     }
 
+    /// A click at an end moves nothing, and nobody hears it.
     @objc private func changed(_ sender: NSStepper) {
+        guard sender.doubleValue != shown else { return }
+        shown = sender.doubleValue
         onValueChanged?(sender.doubleValue)
     }
 

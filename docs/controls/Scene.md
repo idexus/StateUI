@@ -16,12 +16,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `destroying` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `stopped` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `windowClosed` | event | `String` | adaptive |  |  |  |  | ✅ |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  | ✅ |  |  |
+| `activated` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `deactivated` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `destroying` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `stopped` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `windowClosed` | event | `String` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
 
 Realization:
 

@@ -16,29 +16,29 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `created` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `deactivated` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `destroying` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `height` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `isMaximizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `isMinimizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `isTranslucent` | property | `Bool` | adaptive |  |  |  |  | ✅ |  |  |
-| `maximumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `modalPopped` | event | `Int` | adaptive |  |  |  |  | ✅ |  |  |
-| `resumed` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `stopped` | event |  | adaptive |  |  |  |  | ✅ |  |  |
-| `title` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `width` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `windowType` | property | `WindowType` | structure |  |  |  |  | ✅ |  |  |
-| `windowValue` | property | `String` | structure |  |  |  |  | ✅ |  |  |
-| `x` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
-| `y` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
+| `activated` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `created` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `deactivated` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `destroying` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `floatsOnTop` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `height` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read height of Window - AppKit's driver has no path for it yet |
+| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `isMaximizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isMaximizable of Window - AppKit's driver has no path for it yet |
+| `isMinimizable` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isMinimizable of Window - AppKit's driver has no path for it yet |
+| `isTranslucent` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isTranslucent of Window - AppKit's driver has no path for it yet |
+| `maximumHeight` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read maximumHeight of Window - AppKit's driver has no path for it yet |
+| `maximumWidth` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read maximumWidth of Window - AppKit's driver has no path for it yet |
+| `minimumHeight` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read minimumHeight of Window - AppKit's driver has no path for it yet |
+| `minimumWidth` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read minimumWidth of Window - AppKit's driver has no path for it yet |
+| `modalPopped` | event | `Int` | adaptive |  |  |  |  | ✅ |  | cannot goBack on Window - AppKit's driver has no path for it yet |
+| `resumed` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `stopped` | event |  | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of Window - AppKit's driver has no path for it yet |
+| `width` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read width of Window - AppKit's driver has no path for it yet |
+| `windowType` | property | `WindowType` | structure |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `windowValue` | property | `String` | structure |  |  |  |  | ✅ |  | cannot start an application - AppKit's driver has no path for it yet |
+| `x` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot read x of Window - AppKit's driver has no path for it yet |
+| `y` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot read y of Window - AppKit's driver has no path for it yet |
 
 Realization:
 

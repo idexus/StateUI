@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `columnSpacing` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `columns` | property | `[GridLength]` | stateUI |  |  |  |  | ✅ |  |  |
-| `rowSpacing` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
-| `rows` | property | `[GridLength]` | stateUI |  |  |  |  | ✅ |  |  |
+| `columnSpacing` | property | `Double` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `columns` | property | `[GridLength]` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `rowSpacing` | property | `Double` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `rows` | property | `[GridLength]` | stateUI | ✅ |  |  |  | ✅ |  |  |
 
 Realization:
 
@@ -36,7 +36,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of Grid - AppKit's driver has no path for it yet |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -44,38 +44,38 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `background` | property | `Background` | native |  |  |  |  | ✅ |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  |  |
-| `frame` | property | `Rect` | structure |  |  |  |  | ✅ |  |  |
-| `height` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read accessibilityHeadingLevel of Grid - AppKit's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityHint of Grid - AppKit's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityLabel of Grid - AppKit's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read automationExcludedWithChildren of Grid - AppKit's driver has no path for it yet |
+| `background` | property | `Background` | native |  |  |  |  | ✅ |  | cannot read background of Grid - AppKit's driver has no path for it yet |
+| `focus` | act | `() -> Bool` |  |  |  |  |  | ✅ |  | cannot read the focus of Grid - AppKit's driver has no path for it yet |
+| `frame` | property | `Rect` | structure | ✅ |  |  |  | ✅ |  |  |
+| `height` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read what reaches Grid - AppKit's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isAccessibilityHidden of Grid - AppKit's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `isVisible` | property | `Bool` | native |  |  | ✅ |  | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  |  | ✅ |  | cannot read the focus of Grid - AppKit's driver has no path for it yet |
+| `isVisible` | property | `Bool` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `opacity` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  |  |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  |  |
-| `scale` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
+| `maximumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotX of Grid - AppKit's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read pivotY of Grid - AppKit's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read rotation of Grid - AppKit's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationX of Grid - AppKit's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  |  |  |  | cannot read rotationY of Grid - AppKit's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scale of Grid - AppKit's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleX of Grid - AppKit's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read scaleY of Grid - AppKit's driver has no path for it yet |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  |  |
-| `width` | property | `Double` | native |  |  | ✅ |  | ✅ |  |  |
+| `translationX` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationX of Grid - AppKit's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read translationY of Grid - AppKit's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  |  |  |  |  | ✅ |  | cannot read the focus of Grid - AppKit's driver has no path for it yet |
+| `width` | property | `Double` | native | ✅ |  | ✅ |  | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
@@ -85,7 +85,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure |  |  |  |  | ✅ |  |  |
+| `area` | property | `Area` | structure | ✅ |  |  |  | ✅ |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -93,29 +93,29 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | ✅ |  | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
-| `margin` | property | `Insets` | native |  |  | ✅ |  | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  | ✅ |  | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  |  | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `margin` | property | `Insets` | native | ✅ |  | ✅ |  | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on Grid - AppKit's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Grid - AppKit's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on Grid - AppKit's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Grid - AppKit's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Grid - AppKit's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on Grid - AppKit's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on Grid - AppKit's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on Grid - AppKit's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on Grid - AppKit's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ |  | ✅ |  |  |
 
 ## From [Layout](tiers/Layout.md)
 
@@ -124,8 +124,8 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native |  |  |  |  | ✅ |  |  |
-| `letsInputThrough` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `clipsContent` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read clipsContent of Grid - AppKit's driver has no path for it yet |
+| `letsInputThrough` | property | `Bool` | native |  |  |  |  |  |  | cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -133,7 +133,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native |  |  |  |  | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ |  |  |  | ✅ |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -141,6 +141,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  |  |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  |  |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  |  |
+| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of Grid - AppKit's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Grid - AppKit's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Grid - AppKit's driver has no path for it yet |

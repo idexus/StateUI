@@ -1,55 +1,27 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What this host realizes, member by member - the AppKit column of the
-/// control dictionary, `docs/controls/`.
-///
-/// A record names an entry of the dictionary - a control, or a part of an
-/// application's structure - or a tier, the protocol an entry takes the member
-/// from; an entry's own record wins over its tier's. A member is recorded once
-/// this host realizes it and a test of this package covers it; `.partial` says
-/// what is still missing; an act is recorded where a test of this package
-/// performs it. `ControlDictionaryTests`, in the core's suite, reads these
-/// records, holds each to the contracts, and renders the dictionary's AppKit
-/// column from them.
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+/// What this host realizes beyond its registry, whose export says the rest - the AppKit column of the control
+/// dictionary; a member is recorded once a test of this package covers it.
+/// Design: docs/design/contracts/dictionary.md#marks
 enum AppKitRealization {
-    /// Realized in full.
-    case complete(_ owner: String, _ member: String)
-
-    /// Realized, but incomplete - `missing` says what is not.
-    case partial(_ owner: String, _ member: String, missing: String)
-
-    /// The entry or tier the record is about.
-    var owner: String {
-        switch self {
-        case .complete(let owner, _), .partial(let owner, _, _):
-            return owner
-        }
-    }
-
-    /// The member the record is about - a property, or a handler's event.
-    var member: String {
-        switch self {
-        case .complete(_, let member), .partial(_, let member, _):
-            return member
-        }
-    }
-
-    /// The entries this host realizes none of: those it shows as unsupported,
-    /// `AppKitUnsupportedView`, the parts of one, and a style's setters and
-    /// visual states, which it has no handling of.
+    /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
         "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
-    /// The entries this host presents with no view of their own - a title
-    /// bar is the window's, a span a run of its label's text - so no tier's
-    /// record reaches them: only a member the entry's own records name is
-    /// realized.
+    /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its
+    /// label's words - so no tier's record reaches them: only a member the entry's own records name is realized.
     static let viewless: Set<String> = ["Span", "TitleBar"]
 
+    /// The entries the Mac will not have; none.
+    static let notPlanned: [String: String] = [:]
+
     /// Every record, the tiers' first.
-    static let records: [AppKitRealization] = [
+    static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("BarElement", "barBackgroundColor"),
         .complete("DecorableTextElement", "textDecorations"),
@@ -172,4 +144,17 @@ enum AppKitRealization {
         .complete("ZStack", "ignoresInput"),
         .complete("ZStack", "padding"),
     ]
+
+    /// What AppKit's registry says it realizes: the export's content.
+    @MainActor static var declaration: HostDeclaration {
+        let registry = AppKitRegistrations.registry
+        return HostDeclaration(
+            realization: registry.realization, shared: registry.sharedNames,
+            acts: AppKitRegistrations.acts.map(\.name))
+    }
+
+    /// What AppKit realizes, member by member: these records before what its registry says.
+    @MainActor static var register: HostRegister {
+        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
+    }
 }

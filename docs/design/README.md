@@ -43,7 +43,7 @@ it.
   `platforms/appkit/`: [input](platforms/appkit/input.md),
   [views](platforms/appkit/views.md),
   [registrations](platforms/appkit/registrations.md),
-  [runtime](platforms/appkit/runtime.md).
+  [runtime](platforms/appkit/runtime.md), [conformance](platforms/appkit/conformance.md).
   `platforms/android/`: [the runtime](platforms/android/runtime.md),
   [JNI](platforms/android/jni.md), [layout](platforms/android/layout.md),
   [controls](platforms/android/controls.md), [motion](platforms/android/motion.md),

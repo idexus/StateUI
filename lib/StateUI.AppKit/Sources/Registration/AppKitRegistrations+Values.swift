@@ -7,9 +7,8 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// A slider and a stepper: one number the user moves, inside the range
-    /// its element describes. The value is written onto the native control only
-    /// where the tree changed it, so a hand on the thumb is never argued with.
+    /// A slider and a stepper: one number the user moves, inside the range its element describes, written as the host
+    /// layer decides (`ElementValues.written`).
     static func values(_ registry: Registry<NSView>) {
         registry.add(SliderContract.self, create: { reports in
             let slider = AppKitSliderView()
@@ -24,11 +23,10 @@ extension AppKitRegistrations {
                 SliderContract.value, SliderContract.minimum, SliderContract.maximum,
                 TintElementContract.tint, VisualElementContract.isEnabled,
             ]) { view, values in
-                let moved = values[SliderContract.value]
-
                 view.apply(
-                    value: moved,
-                    writeValue: values.changed(SliderContract.value) && moved != nil,
+                    value: values.written(
+                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        standing: view.doubleValue),
                     minimum: values[SliderContract.minimum] ?? 0,
                     maximum: values[SliderContract.maximum] ?? 1,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
@@ -51,8 +49,9 @@ extension AppKitRegistrations {
                 StepperContract.step, VisualElementContract.isEnabled,
             ]) { view, values in
                 view.apply(
-                    value: values[StepperContract.value],
-                    writeValue: values.changed(StepperContract.value),
+                    value: values.written(
+                        StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum],
+                        standing: view.doubleValue),
                     minimum: values[StepperContract.minimum] ?? 0,
                     maximum: values[StepperContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,

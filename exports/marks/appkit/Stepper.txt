@@ -1,0 +1,7 @@
+Button.clicked: ✅
+Stepper: ✅
+Stepper.maximum: ✅
+Stepper.minimum: ✅
+Stepper.step: ✅
+Stepper.value: ✅
+Stepper.valueChanged: ✅

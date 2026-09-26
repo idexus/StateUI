@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.s
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  |  |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  |  |
-| `subtitle` | property | `String` | adaptive |  |  |  |  |  |  |  |
-| `title` | property | `String` | native |  |  |  |  |  |  |  |
+| `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | cannot read barForegroundColor of TitleBar - AppKit's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of TitleBar - AppKit's driver has no path for it yet |
+| `subtitle` | property | `String` | adaptive |  |  |  |  |  |  | cannot read subtitle of TitleBar - AppKit's driver has no path for it yet |
+| `title` | property | `String` | native |  |  |  |  |  |  | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet |
 
 Realization:
 
@@ -48,7 +48,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native |  |  |  |  |  |  |  |
 | `accessibilityLabel` | property | `String` | native |  |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  |  |
+| `background` | property | `Background` | native |  |  |  |  |  |  | cannot read background of TitleBar - AppKit's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  |  |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure |  |  |  |  |  |  |  |
 | `height` | property | `Double` | native |  |  |  |  |  |  |  |
