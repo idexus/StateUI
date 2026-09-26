@@ -52,6 +52,19 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(line, [Self.red, 0])
     }
 
+    /// A figure its transform moves past its room is drawn whole: a lean reaches beyond the room's edge, and leaves
+    /// the corner it moved from.
+    func testAFigureMovedPastItsRoomIsDrawnWhole() throws {
+        let colours = try drawn(width: 80, height: 40, at: [(48, 36), (5, 36), (20, 4)]) {
+            ZStack {
+                Rectangle().fill(Color("#FF0000")).renderTransform(.skew(20, 0)).width(40).height(40)
+                    .horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            .width(80).height(40)
+        }
+        XCTAssertEqual(colours, [Self.red, 0, Self.red])
+    }
+
     /// A gradient runs across the shape it fills.
     func testAGradientRunsAcrossTheShape() throws {
         let colours = try drawn(width: 100, height: 20, at: [(1, 10), (99, 10)]) {

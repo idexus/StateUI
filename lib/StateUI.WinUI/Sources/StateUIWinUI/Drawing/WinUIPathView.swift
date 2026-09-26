@@ -57,15 +57,26 @@ final class WinUIPathView: WinUIView {
         if let placed { draw(in: placed) }
     }
 
-    /// A shape has no size of its own: it takes the room its layout gives it, and asks WinUI for none.
+    /// How far the figure reaches from its room's corner, as WinUI measures it: a lean or a cap may reach past the
+    /// room.
+    private var reach = LayoutSize(width: 0, height: 0)
+
+    /// A shape has no size of its own: it takes the room its layout gives it, and asks the layout for none.
     override func measure(width: Double?, height: Double?) -> LayoutSize {
-        _ = super.measure(width: 0, height: 0)
+        reach = super.measure(width: nil, height: nil)
         return LayoutSize(width: 0, height: 0)
     }
 
     override func layout(_ place: Rect) {
-        super.layout(place)
         draw(in: place)
+        super.layout(place)
+    }
+
+    /// WinUI cuts an element to its place where it measured larger: a figure stands in a place from its room's
+    /// corner as far as it reaches, so a lean or a cap past the room is drawn whole.
+    /// Design: docs/design/platforms/winui/drawing.md#the-shapes
+    override func arranged(_ place: Rect) -> Rect {
+        Rect(x: place.x, y: place.y, width: max(place.width, reach.width), height: max(place.height, reach.height))
     }
 
     /// Runs `draw` with a transform's six numbers as WinUI's matrix takes them; with none where there is none, or

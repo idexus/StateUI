@@ -159,11 +159,18 @@ class WinUIView {
                 _ = measure(width: place.width, height: nil)
                 layout.standsAt = place.width
             }
-            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
+            let native = arranged(place)
+            stateui_winui_arrange(handle, native.x, native.y, native.width, native.height)
         } else {
             placingLayout?.invalidateArrange()
         }
         if resized, transform != .identity || placedDrawing != nil { writeTransform() }
+    }
+
+    /// The place WinUI puts the element in for StateUI's `place`: the place itself, but where the element draws
+    /// past it.
+    func arranged(_ place: Rect) -> Rect {
+        place
     }
 
     /// Where the element's top left corner stands in its window's content, in DIPs.

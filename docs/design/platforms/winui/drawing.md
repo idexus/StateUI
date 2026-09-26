@@ -49,8 +49,9 @@ begins at its corner.
 Each of the six shapes is one WinUI `Path`, whose geometry the host hands
 over for the room its layout gives it, again whenever that room changes. A
 rectangle and an ellipse fill the room, drawn half their outline in from its
-edges so the outline stays inside, as WinUI's own `Rectangle` does; a
-rectangle's corners are its own arcs, each corner its radius. A line, a
+edges so the outline stays inside, as WinUI's own `Rectangle` does, then
+moved by their transform; a rectangle's corners are its own arcs, each
+corner its radius. A line, a
 path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by their
 aspect: fitted, covering, stretched or at their own size, centred, then
@@ -60,8 +61,12 @@ measures the geometry's bounds, once for each geometry, and the host hands
 the relay the place the arithmetic gives for the room; a geometry left where
 it stands takes no transform, since WinUI draws nothing of one given the
 identity. A shape has
-no size of its own and asks WinUI for none: it is drawn in the place its
-layout gives it. Dashes, gaps and their offset are outline widths in WinUI
+no size of its own and asks its layout for none: it is drawn in the place its
+layout gives it. WinUI cuts an element to the place it is put in where it
+measured larger, so a figure a lean or a cap takes past its room would be
+cut there: the shape is measured with no bound, which tells how far its
+figure reaches, and WinUI puts it in a place from its room's corner as far
+as that - the frame StateUI reports stays the room. Dashes, gaps and their offset are outline widths in WinUI
 as in StateUI; a mitred corner's limit WinUI measures against half the
 outline's width and StateUI against the whole, so it is doubled.
 
