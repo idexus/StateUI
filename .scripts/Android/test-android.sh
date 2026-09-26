@@ -8,8 +8,13 @@
 # USAGE:
 #   test-android.sh [serial]
 #
-# STATEUI_FILTER=<text> runs only the tests whose "Case.test" name holds the text, and then holds nothing to
-# exports/: a part of the suite proves only part of what the host declares.
+# STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one of the names, split at commas
+# ("testPicker,AndroidColorBoxViewTests"), and then holds nothing to exports/: a part of the suite proves only part
+# of what the host declares.
+#
+# Each item, and each conformance case, says as it ends where the run stands and how long it took
+# ("[12/310] ... passed in 812 ms"), followed from the device's log as it comes. The screen is woken and kept on
+# for the run - a phone whose screen goes off freezes the test app - and the setting put back after.
 #
 # The suite also writes what the host declares - its registry, as exports/
 # holds it for the control dictionary. The run is held to exports/android.txt;
@@ -47,6 +52,25 @@ package="$("$AAPT2" dump packagename "$apk")"
 # The verdicts of a run before this one stay in the APK's files: none may stand for this run's.
 "$ADB" -s "$serial" shell run-as "$package" rm -rf files/marks
 
+declared=""
+follower=""
+stay_on="$("$ADB" -s "$serial" shell settings get global stay_on_while_plugged_in | tr -d '\r')"
+cleanup() {
+  [[ -z "$follower" ]] || kill "$follower" 2>/dev/null || true
+  "$ADB" -s "$serial" shell settings put global stay_on_while_plugged_in "${stay_on:-0}" >/dev/null 2>&1 || true
+  [[ -z "$declared" ]] || rm -rf "$declared"
+}
+trap cleanup EXIT
+"$ADB" -s "$serial" shell svc power stayon usb
+"$ADB" -s "$serial" shell input keyevent KEYCODE_WAKEUP
+"$ADB" -s "$serial" shell wm dismiss-keyguard >/dev/null 2>&1 || true
+
+# The follower is the log's own reader, so ending it ends the filter after it: a filter left holding the output
+# keeps whatever reads this script's output waiting.
+"$ADB" -s "$serial" logcat -c
+"$ADB" -s "$serial" logcat -v raw -s StateUI 2>/dev/null > >(grep --line-buffered -E '\[[0-9]+/[0-9]+\]') &
+follower=$!
+
 filter=()
 [[ -n "${STATEUI_FILTER:-}" ]] && filter=(-e filter "$STATEUI_FILTER")
 output="$("$ADB" -s "$serial" shell am instrument -w ${filter[@]+"${filter[@]}"} "$package/stateui.android.test.StateUITestRunner" | tr -d '\r')"
@@ -58,7 +82,6 @@ summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" 
 [[ -z "${STATEUI_FILTER:-}" ]] || exit 0
 
 declared="$(mktemp -d)"
-trap 'rm -rf "$declared"' EXIT
 for name in android.txt; do
   "$ADB" -s "$serial" exec-out run-as "$package" cat "files/$name" > "$declared/$name"
   if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then

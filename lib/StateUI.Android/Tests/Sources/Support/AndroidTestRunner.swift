@@ -106,6 +106,11 @@ enum AndroidTestRunner {
     nonisolated(unsafe) private static var executed = 0
     nonisolated(unsafe) private static var failed = 0
 
+    /// How many items the run holds, and how many have ended: each says so as it ends (`HostLog.note`).
+    nonisolated(unsafe) private static var count = 0
+    nonisolated(unsafe) private static var ended = 0
+    private static let progress = HostLog(host: "Android Views")
+
     /// The most cases of a conformance family one item runs: a family longer than that runs in parts, each in a
     /// message of its own, so no message of the UI thread runs long.
     static let casesAnItem = 15
@@ -129,7 +134,9 @@ enum AndroidTestRunner {
             TestContext.context = JavaObject(Java.jni.NewLocalRef(env, context)!)
             TestContext.window = JavaObject(Java.jni.NewLocalRef(env, window)!)
             XCTestObservationCenter.shared.addTestObserver(observer)
-            return plan(filter: Java.text(filter))
+            let items = plan(filter: Java.text(filter))
+            count = items.count
+            return items
         }
 
         let stringClass = env.pointee!.pointee.FindClass(env, "java/lang/String")
@@ -143,10 +150,12 @@ enum AndroidTestRunner {
         return array
     }
 
-    /// Every test whose "Case.test" name holds `filter` - every test where it is empty - a long conformance family
-    /// in parts, each named "Case.test@part/parts", which a filter may name alone.
+    /// Every test whose "Case.test" name holds one of `filter`'s names, split at commas - every test where it is
+    /// empty - a long conformance family in parts, each named "Case.test@part/parts", which a filter may name alone.
     @MainActor
     private static func plan(filter: String) -> [String] {
+        let names = filter.split(separator: ",").map { $0.trimmingPrefix(" ") }.filter { !$0.isEmpty }
+        let wanted = { (title: String) in names.isEmpty || names.contains { title.contains($0) } }
         var items: [String] = []
         for entry in testCases {
             for (name, test) in entry.allTests {
@@ -155,7 +164,7 @@ enum AndroidTestRunner {
                    let family = Families.all.first(where: { "test\($0.name)" == name }),
                    family.cases.count > casesAnItem {
                     let count = (family.cases.count + casesAnItem - 1) / casesAnItem
-                    for number in 1...count where filter.isEmpty || "\(title)@\(number)/\(count)".contains(filter) {
+                    for number in 1...count where wanted("\(title)@\(number)/\(count)") {
                         let item = "\(title)@\(number)/\(count)"
                         planned[item] = AndroidConformanceTests(name: "\(name)@\(number)/\(count)") { testCase in
                             try (testCase as! AndroidConformanceTests).conform(
@@ -163,7 +172,7 @@ enum AndroidTestRunner {
                         }
                         items.append(item)
                     }
-                } else if filter.isEmpty || title.contains(filter) {
+                } else if wanted(title) {
                     planned[title] = entry.testCaseClass.init(name: name, testClosure: test)
                     items.append(title)
                 }
@@ -175,10 +184,17 @@ enum AndroidTestRunner {
     private static func run(item: jstring?) {
         nonisolated(unsafe) let item = item
         MainActor.assumeIsolated {
-            guard let test = planned.removeValue(forKey: Java.text(item)) else { return }
+            let name = Java.text(item)
+            guard let test = planned.removeValue(forKey: name) else { return }
+            let began = ContinuousClock.now
             test.run()
             executed += test.testRun?.executionCount ?? 0
             failed += test.testRun?.totalFailureCount ?? 0
+            ended += 1
+            let took = (ContinuousClock.now - began).components
+            let milliseconds = took.seconds * 1_000 + took.attoseconds / 1_000_000_000_000_000
+            let outcome = test.testRun?.hasSucceeded == true ? "passed" : "FAILED"
+            progress.note("[\(ended)/\(count)] \(name) \(outcome) in \(milliseconds) ms")
         }
     }
 
