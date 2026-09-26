@@ -73,8 +73,7 @@ class AndroidTextView: AndroidView {
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
     /// truncated one says so.
     func setLines(breaking: LineBreak, maximum: Int?) {
-        let single = breaking != .wordWrap && breaking != .characterWrap
-        let lines = single ? 1 : maximum.flatMap { $0 > 0 ? Int32($0) : nil } ?? Int32.max
+        let lines = breaking.lines(maximum: maximum).map { Int32(clamping: $0) } ?? Int32.max
         Java.call(reference, JavaAPI.setMaxLines, .int(lines))
         Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(breaking == .noWrap))
 

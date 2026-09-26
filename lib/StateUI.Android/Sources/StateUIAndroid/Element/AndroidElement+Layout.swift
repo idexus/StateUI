@@ -16,30 +16,20 @@ extension AndroidElement {
         layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
     }
 
-    /// A label's spans as runs of its words; without spans, its own words, once they are gone.
+    /// A label's spans as runs of its words, as the host layer reads them; without spans, its own words, once they
+    /// are gone.
     private func arrangeRuns(of label: AndroidLabelView) {
-        guard let spans = children.first(where: { $0.type == .spans }) else {
+        guard let runs = element.textRuns else {
             if hasRuns {
                 hasRuns = false
-                label.setText(AndroidRegistrations.cased(value(.text)?.string ?? "", textCase(of: self)))
+                let textCase = value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:)) ?? .none
+                label.setText(textCase.applied(to: value(.text)?.string ?? ""))
             }
             return
         }
 
         hasRuns = true
-        label.setRuns(spans.children.filter { $0.type == .span }.map { span in
-            AndroidLabelView.Run(
-                text: AndroidRegistrations.cased(span.value(.text)?.string ?? "", textCase(of: span) ?? textCase(of: self)),
-                color: span.value(.textColor),
-                size: span.value(.fontSize)?.number,
-                attributes: span.value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) },
-                background: span.value(.background),
-                decorations: span.value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) })
-        })
-    }
-
-    private func textCase(of element: AndroidElement) -> TextCase? {
-        element.value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:))
+        label.setRuns(runs)
     }
 
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.

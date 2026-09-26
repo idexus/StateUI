@@ -9,16 +9,6 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-labels-words
 @MainActor
 final class AndroidLabelView: AndroidTextView {
-    /// One run of a label's words, and how it differs from the label's own.
-    struct Run: Equatable {
-        var text: String
-        var color: HostValue?
-        var size: Double?
-        var attributes: FontAttributes?
-        var background: HostValue?
-        var decorations: TextDecorations?
-    }
-
     /// The space between the letters, in points.
     private var spacing = 0.0
 
@@ -26,8 +16,8 @@ final class AndroidLabelView: AndroidTextView {
         super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
     }
 
-    /// The words as runs, each spanning its own part of them.
-    func setRuns(_ runs: [Run]) {
+    /// The words as runs, each spanning its own part of them with how its look differs from the label's.
+    func setRuns(_ runs: [TextRun]) {
         let scale = Self.fontScale
         Java.frame {
             let words = Java.new(JavaAPI.spannableBuilder, JavaAPI.newSpannableBuilder)
@@ -48,25 +38,27 @@ final class AndroidLabelView: AndroidTextView {
     }
 
     /// The Java spans that make a run differ from the label.
-    private func spans(of run: Run, scale: Double) -> [JavaObject] {
+    private func spans(of run: TextRun, scale: Double) -> [JavaObject] {
+        let look = run.look
         var spans: [JavaObject] = []
-        if let argb = run.color.flatMap(Self.argb) {
+        if let argb = look.color.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.foregroundSpan, JavaAPI.newForegroundSpan, .int(argb)))
         }
-        if let size = run.size {
+        if let size = look.size {
             let pixels = Int32((size * density * scale).rounded())
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(pixels), .bool(false)))
         }
-        if let style = run.attributes.map({ $0.rawValue & 3 }), style != 0 {
+        let style = look.attributes.rawValue & 3
+        if style != 0 {
             spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(style)))
         }
-        if let argb = run.background.flatMap(Self.argb) {
+        if let argb = look.background.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))
         }
-        if run.decorations?.contains(.underline) == true {
+        if look.decorations.contains(.underline) {
             spans.append(Java.new(JavaAPI.underlineSpan, JavaAPI.newUnderlineSpan))
         }
-        if run.decorations?.contains(.strikethrough) == true {
+        if look.decorations.contains(.strikethrough) {
             spans.append(Java.new(JavaAPI.strikethroughSpan, JavaAPI.newStrikethroughSpan))
         }
         return spans

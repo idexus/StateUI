@@ -105,7 +105,8 @@ enum AndroidRegistrations {
     /// Puts `textMembers` on a text view.
     static func applyText<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
         if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            view.setText(cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase]))
+            let textCase = values[TextElementContract.textCase] ?? .none
+            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
         if values.changed(FontElementContract.fontSize) {
             view.setFontSize(values[FontElementContract.fontSize])
@@ -121,15 +122,6 @@ enum AndroidRegistrations {
         }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])
-        }
-    }
-
-    /// `text` in the case the tree asks for: as written, or in one case throughout.
-    static func cased(_ text: String, _ textCase: TextCase?) -> String {
-        switch textCase {
-        case .lowercase: text.lowercased()
-        case .uppercase: text.uppercased()
-        default: text
         }
     }
 }
