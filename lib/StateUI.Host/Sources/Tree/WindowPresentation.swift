@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 
 /// What a window element asks its host to show, as it changes, the same on every host: the arrangement of pages
-/// among its children, its sheets, what it lays over them, its frame, its bounds, its traits and whether its scene
-/// hides it - each said where it changed - while the page the user sees hears it is shown, and the window that it
-/// was made.
+/// among its children, its sheets, what it lays over them, its frame, its bounds, its traits, the window it belongs
+/// to and whether its scene hides it - each said where it changed - while the page the user sees hears it is shown,
+/// and the window that it was made.
 /// Design: docs/design/host/tree.md#a-window-shown
 @_spi(Host) @MainActor public final class WindowPresentation {
     /// What changed of a window since it was last shown.
@@ -32,6 +32,10 @@
 
         /// Whether its scene hides it, where that changed - the first time whatever it is.
         public var hidden: Bool?
+
+        /// The window it belongs to, where that changed - the first time whatever it is: its scene's main window for
+        /// a window of a kind of its own, nil for a main one.
+        public var owner: MountedElement??
     }
 
     /// The arrangement of pages shown.
@@ -47,6 +51,8 @@
     private var bounds: WindowBounds?
     private var traits: WindowTraits?
     private var hidden: Bool?
+    private weak var owner: MountedElement?
+    private var ownerSaid = false
 
     /// Nothing shown yet.
     public init() {}
@@ -94,6 +100,12 @@
         if hidden != self.hidden {
             changes.hidden = hidden
             self.hidden = hidden
+        }
+        let owner = window.ownerWindow
+        if !ownerSaid || owner !== self.owner {
+            changes.owner = .some(owner)
+            self.owner = owner
+            ownerSaid = true
         }
 
         let visible = sheets.last ?? arrangement

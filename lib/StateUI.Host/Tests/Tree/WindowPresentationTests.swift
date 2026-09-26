@@ -77,4 +77,24 @@ final class WindowPresentationTests: XCTestCase {
         XCTAssertEqual(bounds.maximumHeight, 900)
         XCTAssertNil(presentation.show(root, in: runtime.lifecycle).bounds, "said once until they change")
     }
+
+    /// A window of a kind of its own belongs to its scene's main window, and a main window to none - said the first
+    /// time, whatever it is, and then only where it changes.
+    func testAWindowOfItsOwnBelongsToItsScenesMainWindow() throws {
+        let runtime = HostRuntime.still()
+        var tool = HostPatch(id: .manual("tool"), type: .window)
+        tool.properties = [.windowType: .name("tool")]
+        var scene = HostPatch(id: .manual("scene"), type: .scene)
+        scene.children = .arranged([tool, HostPatch(id: .manual("main"), type: .window)])
+        runtime.tree.apply(scene, complete: true)
+        let main = try XCTUnwrap(runtime.tree.root?.first(id: .manual("main")))
+        let owned = try XCTUnwrap(runtime.tree.root?.first(id: .manual("tool")))
+        let (mainPresentation, toolPresentation) = (WindowPresentation(), WindowPresentation())
+
+        let mainOwner = try XCTUnwrap(mainPresentation.show(main, in: runtime.lifecycle).owner, "said the first time")
+        XCTAssertNil(mainOwner, "a main window belongs to none")
+        XCTAssertTrue(toolPresentation.show(owned, in: runtime.lifecycle).owner??.id == .manual("main"),
+                      "wherever it stands among the scene's windows")
+        XCTAssertNil(toolPresentation.show(owned, in: runtime.lifecycle).owner, "said once until it changes")
+    }
 }

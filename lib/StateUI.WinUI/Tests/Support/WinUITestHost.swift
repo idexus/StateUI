@@ -81,7 +81,7 @@ extension WinUIRenderer {
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> WinUIRenderer {
         shared?.runtime.tree.root?.leave()
-        for controller in shared?.windows ?? [] { controller.window.close() }
+        for controller in (shared?.windows ?? []).reversed() { controller.window.close() }
         WinUITestHost.window.show(nil)
 
         let renderer = WinUIRenderer(clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })

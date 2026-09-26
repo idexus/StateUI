@@ -105,7 +105,12 @@ A window shows the first arrangement of pages among its children - a page, a
 stack of them, tabs, a split view - the pages its modal stack presents as
 sheets, what it lays over them, and whether its scene hides it ([the
 application's phase](runtime.md#the-applications-phase)), and says each to
-its host only when it changed (`WindowPresentation`). The page the user sees hears it is shown
+its host only when it changed (`WindowPresentation`). It says too the window
+it belongs to: a window of a kind of its own is its scene's main window's,
+and a main window is nobody's (`MountedElement.ownerWindow`); a toolkit that
+knows owned windows stands the one above the other, hides it with it and
+leaves it out of the system's list of the application's windows. The page
+the user sees hears it is shown
 ([a page's phases](pages.md#a-pages-phases)), then the window hears, once,
 that it was made - in their turn, before the host first shows the window,
 and so before it hears it came to the front. The host shows them in its
@@ -135,7 +140,9 @@ says nothing of is the toolkit's own; the rest are false until said.
 Every host keeps the windows alike (`WindowRoster`): each window element
 under the root, in the tree's order - a window holds none - with the host's
 controller of it. A window the tree keeps keeps its controller, one it no
-longer holds has its controller closed, and one new has one made; the first
+longer holds has its controller closed - the last first, so a window of a
+kind of its own closes before the main window it belongs to, which a
+toolkit would otherwise take down with it - and one new has one made; the first
 window's coming is said, since the screen is known only once there is one.
 A window is told apart by the element itself, since two scenes each name
 their main window alike.

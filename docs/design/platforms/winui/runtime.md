@@ -126,7 +126,12 @@ also told it lost its activation, in either order; a change of its size or
 presenter tells it only where it is minimized. A window its scene hides is
 `AppWindow.Hide`, and shown again without being activated; one hidden before
 it was ever shown is activated as it is first shown. A floating window is
-`IsAlwaysOnTop` while the application is in front. A window is told it was made before it is
+`IsAlwaysOnTop` while the application is in front. A window of a kind of its
+own is owned by its scene's main window (`GWLP_HWNDPARENT`), as a tool window
+is on Windows: above it, hidden while it is minimized, and out of the
+taskbar and the switcher (`IsShownInSwitchers`). A window hidden - with its
+owner, or by its scene - tells its state as it hides and shows again
+(`AppWindow.Changed`), off the screen while it is hidden. A window is told it was made before it is
 first shown: WinUI tells it that it was activated inside `Activate`, before
 the call returns.
 

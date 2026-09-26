@@ -268,8 +268,9 @@ renders what it all changed.
 
 ## The application's phase
 
-A toolkit tells what each window does - whether it is minimized, whether it
-is activated - and whether the whole application is hidden, and every host
+A toolkit tells what each window does - whether it stands off the screen,
+minimized or hidden with the window it belongs to, and whether it is
+activated - and whether the whole application is hidden, and every host
 tells it on alike (`ApplicationLifecycle`, `HostRuntime.windowStateChanged`).
 What it tells settles a turn later, with whatever else it tells in the same
 one: a toolkit tells a window deactivated before it tells another activated,

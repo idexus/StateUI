@@ -97,6 +97,22 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
+    /// A window of a kind of its own belongs to its scene's main window, as a tool window does on Windows: above it,
+    /// hidden with it, out of the switchers; the main window belongs to none.
+    func testAWindowOfItsOwnBelongsToTheMainWindow() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(application: { ToolApplication() })
+            let open = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+
+            stateui_winui_button_invoke(open.handle)
+            for _ in 0..<30 where host.windows.count < 2 { host.step() }
+            XCTAssertEqual(host.windows.count, 2)
+            let (main, tool) = (host.windows[0].window, host.windows[1].window)
+            XCTAssertTrue(stateui_winui_window_belongs_to(tool.handle, main.handle))
+            XCTAssertFalse(stateui_winui_window_belongs_to(main.handle, tool.handle))
+        }
+    }
+
     /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
     /// has it now.
     func testThePageReadsWindowsAndItsTheme() {
@@ -119,6 +135,34 @@ private struct PhasePage: ContentView {
     var content: any View {
         Label("\(application.phase) \(window.phase)")
     }
+}
+
+/// An application whose main window opens a tool window of its scene.
+private struct ToolApplication: Application {
+    var scene: any Scene { ToolScene() }
+}
+
+private struct ToolScene: Scene {
+    var windows: Windows {
+        Windows({ WindowGroup(WindowType("renderer.tool")) { ToolWindow() } }, main: { ToolMainWindow() })
+    }
+}
+
+private struct ToolMainWindow: Window {
+    var page: any Page { ToolOpeningPage() }
+}
+
+private struct ToolOpeningPage: ContentView {
+    @Environment private var scene: SceneSession
+
+    var content: any View {
+        let scene = self.scene
+        return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
+    }
+}
+
+private struct ToolWindow: Window {
+    var page: any Page { Label("A tool") }
 }
 
 /// A page saying what it runs on and the theme it runs in.

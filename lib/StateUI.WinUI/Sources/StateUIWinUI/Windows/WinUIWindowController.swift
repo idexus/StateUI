@@ -25,11 +25,13 @@ final class WinUIWindowController {
         self.element = element
     }
 
-    /// Shows what the element asks for now. The host layer tells the page the user sees and the window made before
-    /// the window is first shown, and so before it hears it came to the front.
-    func present(_ element: MountedElement, in runtime: HostRuntime) {
+    /// Shows what the element asks for now, the window it belongs to found by `windowOf`. The host layer tells
+    /// the page the user sees and the window made before the window is first shown, and so before it hears it came
+    /// to the front.
+    func present(_ element: MountedElement, in runtime: HostRuntime, windowOf: (MountedElement) -> WinUIWindow?) {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
+        if let owner = changes.owner { window.setOwner(owner.flatMap(windowOf)) }
         stand(changes)
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets)

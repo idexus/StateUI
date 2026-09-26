@@ -73,6 +73,25 @@ namespace {
         auto presenter = window.Presenter().try_as<windowing::OverlappedPresenter>();
         return presenter && presenter.State() == windowing::OverlappedPresenterState::Minimized;
     }
+
+    /// Lets go of the windows `owner` owns, so Windows does not destroy them with it: each closes as the tree
+    /// closes it. Only the application's own windows - a flyout's or a popup's window is left to its owner.
+    void releaseOwned(HWND owner) {
+        EnumThreadWindows(GetCurrentThreadId(), [](HWND each, LPARAM owner) -> BOOL {
+            wchar_t name[64] = {};
+            GetClassNameW(each, name, 64);
+            if (GetWindow(each, GW_OWNER) == reinterpret_cast<HWND>(owner)
+                && std::wcscmp(name, L"WinUIDesktopWin32WindowClass") == 0) {
+                SetWindowLongPtrW(each, GWLP_HWNDPARENT, 0);
+            }
+            return TRUE;
+        }, reinterpret_cast<LPARAM>(owner));
+    }
+
+    /// Whether `window` stands off the screen: minimized, or hidden.
+    bool offScreen(windowing::AppWindow const &window) {
+        return minimized(window) || !window.IsVisible();
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
@@ -80,17 +99,26 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
         xaml::Window window;
         window.SystemBackdrop(xaml::Media::MicaBackdrop());
         window.Content(rows({true, true, true, false}));
-        // The window's state is read at each of them: a minimized window is also told it lost its activation.
+        // The window's state is read at each of them: a minimized window is also told it lost its activation, and
+        // one hidden - with the window it belongs to, or by its scene - stands off the screen as a minimized one.
         window.Activated([number](IInspectable const &sender, xaml::WindowActivatedEventArgs const &args) {
             auto activated = args.WindowActivationState() != xaml::WindowActivationState::Deactivated;
-            callbacks.windowStateChanged(number, minimized(sender.as<xaml::Window>().AppWindow()), activated);
+            callbacks.windowStateChanged(number, offScreen(sender.as<xaml::Window>().AppWindow()), activated);
         });
         window.AppWindow().Changed(
             [number](windowing::AppWindow const &sender, windowing::AppWindowChangedEventArgs const &args) {
+                if (args.DidVisibilityChange()) {
+                    auto active = GetActiveWindow() == reinterpret_cast<HWND>(sender.Id().Value);
+                    callbacks.windowStateChanged(number, offScreen(sender), active && sender.IsVisible());
+                    return;
+                }
                 if (!args.DidPresenterChange() && !args.DidSizeChange()) return;
                 if (minimized(sender)) callbacks.windowStateChanged(number, true, false);
             });
-        window.Closed([number](IInspectable const &, xaml::WindowEventArgs const &) { callbacks.windowClosed(number); });
+        window.Closed([number](IInspectable const &sender, xaml::WindowEventArgs const &) {
+            releaseOwned(reinterpret_cast<HWND>(sender.as<xaml::Window>().AppWindow().Id().Value));
+            callbacks.windowClosed(number);
+        });
         return detach(window);
     } catch (winrt::hresult_error const &error) {
         report(error, "making a window");
@@ -170,9 +198,34 @@ extern "C" void stateui_winui_window_activate(StateUIObjectRef handle) {
 
 extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
     try {
-        borrow<xaml::Window>(handle).Close();
+        auto window = borrow<xaml::Window>(handle);
+        releaseOwned(reinterpret_cast<HWND>(window.AppWindow().Id().Value));
+        window.Close();
     } catch (winrt::hresult_error const &error) {
         report(error, "closing a window");
+    }
+}
+
+extern "C" void stateui_winui_window_set_owner(StateUIObjectRef handle, StateUIObjectRef owner) {
+    try {
+        auto app = borrow<xaml::Window>(handle).AppWindow();
+        auto owning = owner ? reinterpret_cast<HWND>(borrow<xaml::Window>(owner).AppWindow().Id().Value) : nullptr;
+        // A window owned stands above its owner, is hidden with it, and has no button of its own in the switchers.
+        SetWindowLongPtrW(reinterpret_cast<HWND>(app.Id().Value), GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(owning));
+        app.IsShownInSwitchers(owner == nullptr);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "giving a window its owner");
+    }
+}
+
+extern "C" bool stateui_winui_window_belongs_to(StateUIObjectRef handle, StateUIObjectRef owner) {
+    try {
+        auto app = borrow<xaml::Window>(handle).AppWindow();
+        auto owning = reinterpret_cast<HWND>(borrow<xaml::Window>(owner).AppWindow().Id().Value);
+        return GetWindow(reinterpret_cast<HWND>(app.Id().Value), GW_OWNER) == owning && !app.IsShownInSwitchers();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a window's owner");
+        return false;
     }
 }
 

@@ -49,6 +49,13 @@ final class WindowRosterTests: XCTestCase {
         _ = update()
         XCTAssertEqual(closed, ["note"])
         XCTAssertEqual(roster.controllers.map(\.name), ["main"])
+
+        scene(["main", "note", "fonts"])
+        _ = update()
+        closed = []
+        scene([])
+        _ = update()
+        XCTAssertEqual(closed, ["fonts", "note", "main"], "the last first: a window before the one it belongs to")
     }
 
     /// A window's traits are said the first time and where they change; what it leaves unsaid of its buttons is

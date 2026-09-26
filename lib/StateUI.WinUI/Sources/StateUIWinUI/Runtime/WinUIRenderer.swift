@@ -131,7 +131,9 @@ final class WinUIRenderer {
             WinUIEnvironment.reportDisplay(to: runtime.core, window: window)
             runtime.pump.turn()
         }
-        for (element, controller) in roster.windows { controller.present(element, in: runtime) }
+        for (element, controller) in roster.windows {
+            controller.present(element, in: runtime, windowOf: { [roster] in roster.controller(of: $0)?.window })
+        }
     }
 
     /// Composes every window's chrome again from what it shows now.

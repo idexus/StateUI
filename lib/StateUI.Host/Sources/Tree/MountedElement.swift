@@ -285,6 +285,14 @@
         type == .window ? [self] : children.flatMap(\.windows)
     }
 
+    /// The window this one belongs to: its scene's main window, where it is a window of a kind of its own; nil for a
+    /// main window, and for any other element.
+    public var ownerWindow: MountedElement? {
+        guard type == .window, value(.windowType) != nil else { return nil }
+
+        return enclosing(type: .scene)?.windows.first { $0.value(.windowType) == nil }
+    }
+
     /// The first element with key `sought` in this subtree, this one first.
     public func first(id sought: ElementId) -> MountedElement? {
         if id == sought { return self }

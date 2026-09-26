@@ -190,6 +190,11 @@ void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 /// Hides the window, or shows it again without activating it.
 void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
+/// Makes `owner` the window's owner - it stands above it, is hidden with it, and leaves the switchers - or, for
+/// null, a window of its own again.
+void stateui_winui_window_set_owner(StateUIObjectRef window, StateUIObjectRef owner);
+/// Whether `owner` owns the window and the switchers leave it out. What a test reads.
+bool stateui_winui_window_belongs_to(StateUIObjectRef window, StateUIObjectRef owner);
 
 /// Moves or sizes the window where `has` says, each alone: `values` are x and y from the corner of the screen's work
 /// area and the width and height of its content, in DIPs.

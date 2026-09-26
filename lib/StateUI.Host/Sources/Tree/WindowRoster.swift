@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 
 /// The windows a tree holds, the same on every host: its window elements in the tree's order, each with the host's
-/// controller of it - the one a window the tree keeps had, made for one new, closed for one gone.
+/// controller of it - the one a window the tree keeps had, made for one new, closed for one gone, the last first, so
+/// a window closes before the one it belongs to.
 /// Design: docs/design/host/tree.md#the-windows-a-tree-holds
 @_spi(Host) @MainActor public final class WindowRoster<Controller: AnyObject> {
     private struct Entry {
@@ -28,13 +29,15 @@
     }
 
     /// Stands the roster as `root` holds its windows now: a controller made by `make` for each new window, one
-    /// handed to `close` for each window gone; whether the first window came now.
+    /// handed to `close` for each window gone, the last first; whether the first window came now.
     @discardableResult
     public func update(
         root: MountedElement?, make: (MountedElement) -> Controller, close: (Controller) -> Void
     ) -> Bool {
         let elements = root?.windows ?? []
-        for entry in entries where !elements.contains(where: { $0 === entry.element }) { close(entry.controller) }
+        for entry in entries.reversed() where !elements.contains(where: { $0 === entry.element }) {
+            close(entry.controller)
+        }
 
         let first = entries.isEmpty && !elements.isEmpty
         entries = elements.map { element in

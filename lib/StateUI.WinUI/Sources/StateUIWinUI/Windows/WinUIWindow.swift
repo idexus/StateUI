@@ -101,6 +101,11 @@ final class WinUIWindow {
         }
     }
 
+    /// Makes the window `owner`'s - above it, hidden with it, out of the switchers - or, for nil, one of its own.
+    func setOwner(_ owner: WinUIWindow?) {
+        stateui_winui_window_set_owner(handle, owner?.handle)
+    }
+
     /// Activates the window the first time it has content and stands shown.
     private func activateFirstTime() {
         guard content != nil, !activated, !isHidden else { return }
