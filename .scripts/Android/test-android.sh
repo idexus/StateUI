@@ -71,10 +71,11 @@ trap cleanup EXIT
 "$ADB" -s "$serial" shell wm dismiss-keyguard >/dev/null 2>&1 || true
 
 # The follower is the log's own reader, so ending it ends the filter after it: a filter left holding the output
-# keeps whatever reads this script's output waiting.
+# keeps whatever reads this script's output waiting. Disowned, its ending is not announced.
 "$ADB" -s "$serial" logcat -c
 "$ADB" -s "$serial" logcat -v raw -s StateUI 2>/dev/null > >(grep --line-buffered -E '\[[0-9]+/[0-9]+\]') &
 follower=$!
+disown "$follower"
 
 filter=()
 [[ -n "${STATEUI_FILTER:-}" ]] && filter=(-e filter "$STATEUI_FILTER")
