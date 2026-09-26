@@ -6,31 +6,6 @@
 
 /// The widget: made, and given the element's properties.
 extension GTKElement {
-    /// Properties a parent reads into its child's layout item: a change arranges the parent again.
-    static let arrangedProperties: Set<Prop> = [
-        .margin, .horizontalAlignment, .verticalAlignment,
-        .width, .height,
-        .minimumWidth, .minimumHeight,
-        .maximumWidth, .maximumHeight,
-        .isVisible,
-        .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
-        .area,
-    ]
-
-    /// Properties drawn without changing any measurement; any other one measures the element again.
-    static let unmeasuredProperties = Set<Prop>([
-        .opacity, .background, .textColor, .isEnabled,
-        .isOn, .value, .minimum, .maximum,
-        .stroke, .strokeWidth, .shape, .clipsContent, .ignoresInput,
-    ]).union(MountedElement.transformProperties).union(MountedElement.accessibilityProperties)
-
-    /// The entries that have no view of their own: structure, and the parts of another's view.
-    static let viewlessTypes: Set<NodeType> = [
-        .application, .scene, .window, .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-        .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu, .menu, .menuItem, .menuSeparator, .spans,
-        .span,
-    ]
-
     func makeView() -> GTKView? {
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
@@ -41,7 +16,7 @@ extension GTKElement {
             return registered
         }
 
-        guard !Self.viewlessTypes.contains(type) else { return nil }
+        guard !NodeType.viewlessTypes.contains(type) else { return nil }
 
         switch type {
         case .page: return GTKSingleChildView()
@@ -68,7 +43,7 @@ extension GTKElement {
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
         guard let view else {
-            if !changed.isDisjoint(with: Self.arrangedProperties) { parent?.invalidateMeasurements() }
+            if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
         }
 
@@ -97,7 +72,7 @@ extension GTKElement {
         }
         if let layers = view as? GTKZStackView { layers.placement = element.placement }
 
-        if !changed.subtracting(element.ownPlacementRun).isSubset(of: Self.unmeasuredProperties) {
+        if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {
             invalidateMeasurements()
         }
     }

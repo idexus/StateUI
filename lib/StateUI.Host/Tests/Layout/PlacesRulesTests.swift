@@ -62,6 +62,22 @@ final class PlacesRulesTests: XCTestCase {
             [1, 2, 30, 40, 11, 52, 11, 20])
     }
 
+    /// What only paints, places a cursor, reports a value or is read by assistive technology never asks for a new
+    /// measure, on any host; what changes a size always does.
+    func testOnlyWhatChangesASizeIsMeasuredAgain() {
+        let drawn: Set<Prop> = [
+            .opacity, .background, .textColor, .placeholderColor, .tint, .color, .isEnabled,
+            .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
+            .stroke, .fill, .strokeWidth, .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
+            .strokeMiterLimit, .shape, .cornerRadius, .renderTransform, .barBackgroundColor, .barForegroundColor,
+            .drawable, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
+        ]
+        XCTAssertEqual(drawn.subtracting(MountedElement.unmeasuredProperties), [])
+        XCTAssertEqual(
+            MountedElement.unmeasuredProperties.intersection([.text, .fontSize, .fontFamily, .padding, .width, .isVisible]),
+            [])
+    }
+
     /// A property is either read into a child's place or only drawn, never both.
     func testAPropertyArrangesOrIsOnlyDrawn() {
         XCTAssertEqual(MountedElement.arrangedProperties.intersection(MountedElement.unmeasuredProperties), [])

@@ -277,8 +277,8 @@ final class AppKitElement: NSObject, NativeElement {
         // drawn by the nearest ancestor that has one, which arranges again. A
         // layout's own placement run moves its children inside the room it
         // already has, so it arranges the layout and not its parent.
-        let arranged = properties.subtracting(ownPlacementRun)
-        if view == nil || !arranged.isDisjoint(with: Self.arrangedProperties) {
+        let arranged = properties.subtracting(element.ownPlacementRun)
+        if view == nil || !arranged.isDisjoint(with: MountedElement.arrangedProperties) {
             impact.arrangement = true
         }
         if needsWindowSynchronization(for: properties) {

@@ -64,7 +64,7 @@ final class GTKElement: NativeElement {
         applyProperties(changed: changed)
 
         var impact = FrameImpact(content: true)
-        if view == nil || !changed.isDisjoint(with: Self.arrangedProperties) {
+        if view == nil || !changed.isDisjoint(with: MountedElement.arrangedProperties) {
             impact.arrangement = true
         }
         return impact

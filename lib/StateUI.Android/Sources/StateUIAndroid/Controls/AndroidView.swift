@@ -239,30 +239,27 @@ class AndroidView {
     /// hint after them - none leaves the view's own - whether it is a heading, and whether it, or it and its
     /// children, are met at all: none, as the view is of itself.
     /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
-    func setAccessibility(
-        identifier: String?, label: String?, hint: String?, heading: Bool, met: AccessibilityPresence?
-    ) {
+    func setAccessibility(_ words: AccessibilityWords) {
         let own = ownPresence ?? Java.callInt(reference, JavaAPI.getImportantForAccessibility)
         ownPresence = own
+        // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
+        let presence: Int32 = switch words.presence {
+        case .met?: 1
+        case .hidden?: 2
+        case .hiddenWithChildren?: 4
+        case nil: own
+        }
         Java.frame {
             Java.callStatic(
-                JavaAPI.views, JavaAPI.setAccessibility, .object(reference), .object(identifier.flatMap(Java.string)),
-                .object(label.flatMap(Java.string)), .object(hint.flatMap(Java.string)), .bool(heading),
-                .int(met?.rawValue ?? own))
+                JavaAPI.views, JavaAPI.setAccessibility, .object(reference),
+                .object(words.identifier.flatMap(Java.string)), .object(words.label.flatMap(Java.string)),
+                .object(words.hint.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
         }
     }
 
     /// Whether assistive technology met the view of itself - a text view is met, a layout as Android decides -
     /// read before the element first says.
     private var ownPresence: Int32?
-
-    /// Whether assistive technology meets a view, as Android numbers it.
-    enum AccessibilityPresence: Int32 {
-        case met = 1
-        case hidden = 2
-        /// The view and everything in it.
-        case hiddenWithChildren = 4
-    }
 
     /// What the view does when the user taps it; nil where it takes no tap.
     private(set) var onTapped: (() -> Void)?

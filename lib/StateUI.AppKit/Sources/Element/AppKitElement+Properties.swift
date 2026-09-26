@@ -8,36 +8,6 @@ import AppKit
 
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
-    /// Properties a parent reads into its child's layout item. A frame that
-    /// moves one of them makes the parent arrange again; no other frame
-    /// arranges an ancestor.
-    static let arrangedProperties: Set<Prop> = [
-        .margin, .horizontalAlignment, .verticalAlignment,
-        .width, .height,
-        .minimumWidth, .minimumHeight,
-        .maximumWidth, .maximumHeight,
-        .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
-        .area,
-    ]
-
-    /// Properties whose change is drawn without changing any native
-    /// measurement. Applying any other property may change a view's size, so
-    /// it forgets the measurements from that view up to its window.
-    static let unmeasuredProperties: Set<Prop> = [
-        .opacity, .translationX, .translationY,
-        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
-        .pivotX, .pivotY,
-        .background, .color, .textColor, .placeholderColor,
-        .tint, .stroke, .fill, .strokeWidth,
-        .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
-        .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
-        .barBackgroundColor, .barForegroundColor,
-        .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
-        .ignoresInput, .letsInputThrough,
-        .accessibilityIdentifier, .isAccessibilityHidden, .automationExcludedWithChildren,
-        .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
-    ]
-
     /// Only properties whose native presentation lives outside the mounted
     /// content view need the scene/window reconciliation path. Ordinary view
     /// frames are already applied in place and AppKit lays them out before the
@@ -117,17 +87,10 @@ extension AppKitElement {
         }
     }
 
-    /// The layout's own placement run, where a state drives one: the room's
-    /// arithmetic over the children, which moves them without changing what
-    /// the layout measures - a run is not part of its natural size.
-    var ownPlacementRun: Set<Prop> {
-        driven[.area]?.kind == .placement ? [.area] : []
-    }
-
     func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
 
-        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) {
+        if !changed.subtracting(element.ownPlacementRun).isSubset(of: MountedElement.unmeasuredProperties) {
             view.invalidateMeasurements()
         }
 
