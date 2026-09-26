@@ -130,8 +130,7 @@ final class AppKitConformanceTests: XCTestCase {
         let driver = AppKitDriver()
         defer { driver.renderer?.closeForTesting() }
         let verdicts = Conformance.run(
-            family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) },
-            log: { print($0) })
+            family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         XCTAssertNoThrow(try AppKitExports.hold(HostVerdict.text(verdicts), at: "marks/appkit/\(file).txt"))
     }

@@ -37,6 +37,11 @@ import CRT
         output(line(message))
     }
 
+    /// Says how something long goes - a run's progress - as it goes.
+    public func note(_ message: String) {
+        output(line(message))
+    }
+
     /// The line `message` is written as.
     public func line(_ message: String) -> String {
         "StateUI \(host): \(message)\n"

@@ -35,39 +35,56 @@
     }
 
     /// Runs `family` - or `part` of it - on `driver`'s host, handing every failure to `report` and a line for each
-    /// case to `log`; the verdict on each member its cases cover - ✅ or ☑️ where a passing case proved it, – where
-    /// the host's family never has it, and why it stays empty otherwise. A member of a failing case gets no verdict
-    /// from it.
+    /// case to `log`, or, where none is given, saying each as it ends - its place in the run and how long it took
+    /// (`HostLog.note`); the verdict on each member its cases cover - ✅ or ☑️ where a passing case proved it, –
+    /// where the host's family never has it, and why it stays empty otherwise. A member of a failing case gets no
+    /// verdict from it.
     @discardableResult
     public static func run(
         _ family: any ConformanceFamily.Type, part: Part = .whole, on driver: any HostDriver,
-        report: @escaping (Failure) -> Void, log: (String) -> Void
+        report: @escaping (Failure) -> Void, log: ((String) -> Void)? = nil
     ) -> [HostVerdict] {
+        let held = family.cases.indices.filter(part.holds)
+        let progress = HostLog(host: driver.host)
+        // The register is the host's whole registry read: once a run, not once a case.
+        let register = driver.register
         var verdicts: [HostVerdict] = []
-        for (index, each) in family.cases.enumerated() where part.holds(index) {
+        for (place, index) in held.enumerated() {
+            let each = family.cases[index]
             let title = "Conformance \(driver.host) · \(family.name)/\(each.name)"
+            let began = ContinuousClock.now
+            let tell = { (line: String) in
+                if let log { return log(line) }
+                progress.note("[\(place + 1)/\(held.count)] \(line) in \(Self.milliseconds(since: began)) ms")
+            }
             guard !each.covers.isEmpty else {
                 report(Failure(message: "\(title) covers no member of the contract", file: #filePath, line: #line))
                 continue
             }
-            let outcome = Outcome(covering: each.covers, on: driver.register)
+            let outcome = Outcome(covering: each.covers, on: register)
             verdicts += outcome.facts
             if let reason = outcome.reason {
-                log("\(title): \(reason)")
+                tell("\(title): \(reason)")
                 continue
             }
             switch run(each, as: title, on: driver, report: report) {
             case .passed:
-                log("\(title): passed")
+                tell("\(title): passed")
                 verdicts += outcome.proofs
             case .cannot(let cannot, let reason):
-                log("\(title): the driver cannot \(cannot) - \(reason)")
+                tell("\(title): the driver cannot \(cannot) - \(reason)")
                 verdicts += each.covers.map { $0.verdict(.cannot("\(cannot) - \(reason)")) }
             case .failed:
-                log("\(title): failed")
+                tell("\(title): failed")
             }
         }
         return HostVerdict.merged(verdicts)
+    }
+
+    /// Whole milliseconds since `instant`.
+    private static func milliseconds(since instant: ContinuousClock.Instant) -> Int64 {
+        let elapsed = (ContinuousClock.now - instant).components
+        return elapsed.seconds * 1_000 + elapsed.attoseconds / 1_000_000_000_000_000
     }
 
     /// How one case came out.

@@ -99,8 +99,7 @@ final class WinUIConformanceTests: XCTestCase {
     private func conform(_ family: any ConformanceFamily.Type, part: Conformance.Part = .whole) {
         let verdicts = onUIThread {
             Conformance.run(
-                family, part: part, on: WinUIDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) },
-                log: { print($0) })
+                family, part: part, on: WinUIDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         }
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         XCTAssertNoThrow(try WinUIExports.hold(HostVerdict.text(verdicts), at: "marks/winui/\(file).txt"))

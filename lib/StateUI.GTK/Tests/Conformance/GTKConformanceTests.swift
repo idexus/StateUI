@@ -90,8 +90,7 @@ final class GTKConformanceTests: XCTestCase {
     private func conform(_ family: any ConformanceFamily.Type) {
         let verdicts = onUIThread {
             Conformance.run(
-                family, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) },
-                log: { print($0) })
+                family, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         }
         XCTAssertNoThrow(try GTKExports.hold(HostVerdict.text(verdicts), at: "marks/gtk/\(family.name).txt"))
     }

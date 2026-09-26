@@ -104,7 +104,10 @@ the time a machine takes.
 
 The runner runs a family on a host and says one line for each case - passed,
 failed, not planned, a gap, or what the driver cannot do and why - and gives
-the verdict on every member the cases cover. Nothing is passed over in
+the verdict on every member the cases cover. Each line is said as its case
+ends, with its place in the run and how long it took ("[3/15] ... passed in
+812 ms"), to standard error, which nothing buffers (`HostLog.note`): a long
+run shows how far it has come, and a run that stops shows where. Nothing is passed over in
 silence: a case covering no member fails, and a family none of whose cases
 ran - an element the host realizes none of - says why for each, and its
 verdicts say it too. A failure names the host and the case, at the line of
