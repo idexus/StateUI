@@ -37,7 +37,7 @@ let package = Package(
         ),
     ],
     // NO DEPENDENCIES, and it is worth a sentence: everything here is this
-    // library's own code - state, the differ, the wire, the views. A class's
+    // library's own code - state, the differ, the typed boundary, the views. A class's
     // properties are state by wearing `@State`, which is a property wrapper
     // like the one a view uses and needs no compiler plugin, so a cold build
     // compiles this package and nothing else.

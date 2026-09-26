@@ -35,9 +35,10 @@ framework. Application code may import Foundation. Platform frameworks remain in
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
-`#if APPKIT`, which every AppKit build of an application defines through its
-manifest, and `#if ANDROID`, which every Android Views build of an application
-defines the same way, from `STATEUI_ANDROID=1`. `NativeProjectTests` refuses
+`#if APPKIT`, `#if ANDROID`, `#if WINUI` and `#if GTK`, which every build of an
+application for that host defines through its manifest, from
+`STATEUI_APPKIT=1`, `STATEUI_ANDROID=1`, `STATEUI_WINUI=1` and
+`STATEUI_GTK=1`. `NativeProjectTests` refuses
 any other mention of a host in the library and in the applications'
 `Sources/`.
 

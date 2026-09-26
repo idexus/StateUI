@@ -4,10 +4,10 @@ A host - the platform backend that shows StateUI with one toolkit - is Swift in
 the application's process, and most of what it does is the same on every
 platform. That part is the host layer: the toolkit-neutral half of every
 runtime, in `lib/StateUI.Host` - the module `StateUIHost`, a library of its own
-beside the `StateUI` core, which it reaches through `@_spi(Host)`. It holds the
-mounted tree, the turn and the display frame, the animations, the layout
-arithmetic, and the rules that turn what the user does into state. Every host runs on it and adds only its
-toolkit's calls.
+beside the [`StateUI` core](core.md), which it reaches through `@_spi(Host)`.
+It holds the mounted tree, the turn and the display frame, the animations, the
+layout arithmetic, and the rules that turn what the user does into state.
+Every host runs on it and adds only its toolkit's calls.
 The [host contract](host-contract.md) specifies the typed patch the layer
 takes.
 
@@ -522,8 +522,8 @@ and nothing more.
 
 ## Testing
 
-- The layer's own tests, in `lib/StateUI.Host/Tests`, prove its
-  rules and arithmetic, pure, in the core suite on every platform the core
+- The layer's own tests, in `lib/StateUI.Host/Tests`, prove its rules and
+  arithmetic, pure, in its own package's suite on every platform the core
   builds on. They need no toolkit: a hand-wound clock reproduces every frame,
   and a native half of the test's own stands for a view.
 - The conformance suite, in `lib/StateUI.Conformance`, proves the

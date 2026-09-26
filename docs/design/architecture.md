@@ -12,6 +12,8 @@ the packages, what crosses between them, and where each part of the work runs.
     Sources/                              views, @State, handlers, engines
     Platforms/AppKit                      the AppKit head: an executable
     Platforms/Android                     the Android head: Gradle and a Swift library
+    Platforms/WinUI                       the WinUI head: an executable
+    Platforms/GTK                         the GTK head: an executable
         |
         |  depends on
         v
@@ -28,10 +30,17 @@ the packages, what crosses between them, and where each part of the work runs.
         v
   StateUI.AppKit (lib/StateUI.AppKit)          StateUI.Android (lib/StateUI.Android)
     Swift, in the application's process          Swift, in the application's process,
-    links the same StateUI library               Java beneath it through JNI
+    over AppKit                                  Java beneath it through JNI
         |                                             |
         v                                             v
     AppKit views                                  Android views
+
+  StateUI.WinUI (lib/StateUI.WinUI)            StateUI.GTK (lib/StateUI.GTK)
+    Swift, in the application's process,         Swift, in the application's process,
+    C++/WinRT beneath it behind a C ABI          over GTK 4's and libadwaita's C API
+        |                                             |
+        v                                             v
+    WinUI 3 elements                              GTK widgets
 
   lib/StateUI.VSCode                      the editor extension: new application,
                                           build, run and debug for every head

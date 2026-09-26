@@ -9,10 +9,9 @@ host per process.
 ## One renderer
 
 The renderer is entered only from the host's UI thread, synchronously, through
-a `@_cdecl` export or the typed `HostBoundary` SPI. It is `@unchecked Sendable`
-rather than `@MainActor`: isolating it would add an `assumeIsolated` to every
-entry point for a promise the compiler cannot check across the C boundary
-anyway. The part that can suspend - a handler - is what `@MainActor` names.
+the typed `HostBoundary` SPI. It is `@unchecked Sendable` rather than
+`@MainActor`: isolating it would add an `assumeIsolated` to every entry point
+for a promise the compiler cannot check across a relay's callbacks anyway. The part that can suspend - a handler - is what `@MainActor` names.
 
 What more than one thread touches stands behind the renderer's `guarded` lock:
 the change bookkeeping, the live reader counts, the act queue, the completion
@@ -133,7 +132,7 @@ act already answered; ignoring it is correct.
 
 An event's payload reaches its handler through `EventBuffer`, and an act's
 outcome reaches its continuation through `ReplyBuffer`. A side channel keeps
-the dispatch export to one id and one byte buffer instead of a variant per
+`HostBoundary.dispatch` to one id and one payload instead of a variant per
 event shape. `start` reads the payload before the task begins, so a handler
 that suspends keeps the payload it started with. The two buffers stay apart
 because an outcome is values or a failure and an event is only values.

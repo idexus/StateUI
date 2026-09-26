@@ -28,7 +28,7 @@ it.
   the threads, drawn.
 - [Glossary](glossary.md): StateUI's words and the common term for each.
 - [`core/`](core/README.md): the core drawn - a state write to a patch, the
-  display cycle, the UI thread and the C bridge - and the reasons of each part.
+  display cycle, the UI thread and the typed boundary - and the reasons of each part.
 - [`views/`](views/README.md): how an application's views become the
   described tree - composition, builders, modifiers, bindings, pages, styles.
 - [`types/`](types/README.md): the values an application passes and how

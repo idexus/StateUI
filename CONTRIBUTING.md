@@ -35,9 +35,9 @@ Code under `lib/StateUI/Sources` and `lib/StateUI.Host/Sources` does not
 import Foundation or a platform UI framework. Each host is a sibling package of
 its own - `lib/StateUI.AppKit`, `lib/StateUI.Android`, `lib/StateUI.WinUI`,
 `lib/StateUI.GTK` - standing on the host layer, with its build in
-`.scripts/<Platform>`. Swift written for one host alone stands
-under that host's condition - `#if APPKIT`, `#if ANDROID` - which its builds
-define.
+`.scripts/<Platform>`. Swift written for one host alone stands under that
+host's condition - `#if APPKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` - which
+its builds define.
 
 The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
 `DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
@@ -74,8 +74,8 @@ once with AppKit and once with Android chosen. From a terminal,
 .scripts/Android/test-android.sh emulator-5554
 ```
 
-A plain `swift test` compiles no `#if APPKIT` or `#if ANDROID` code, so it does
-not test either host's half on its own.
+A plain `swift test` compiles no code under a host's condition, so it does not
+test any host's half on its own.
 
 Run the Gallery with **StateUI: Debug** on each host the change reaches. From a
 terminal:

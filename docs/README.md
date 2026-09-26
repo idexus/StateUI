@@ -49,6 +49,9 @@ usable platform promise.
 
 - [Host contract](host-contract.md) specifies typed sparse patches, update
   order, host-carried state, native ownership, and the values a host is handed.
+- [StateUI core](core.md) maps the library every application and host links,
+  folder by folder: what each part owns, who reaches it, and the typed
+  boundary a host reads.
 - [Host layer](host-layer.md) maps the Swift every host runs on, module by
   module: what it decides for every host, and what a host provides and calls.
 - [Platform contract](platform-contract.md) is the checked control, property,
