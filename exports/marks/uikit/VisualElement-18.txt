@@ -1,10 +1,10 @@
-ActivityIndicator.pivotY: not realized
+ActivityIndicator.pivotY: ✅
 Button.background: not realized
 Button.clicked: ✅
 Canvas.accessibilityHeadingLevel: not realized
 CheckBox.style: not realized
 ColorBox.ignoresInput: not realized
-DatePicker.isEnabled: not realized
+DatePicker.isEnabled: ✅
 DatePicker.zIndex: not realized
 Ellipse.scaleY: not realized
 Grid.rotationY: ✅
@@ -15,7 +15,7 @@ Line.style: not realized
 Map.ignoresInput: not realized
 Path.isEnabled: not realized
 Path.zIndex: not realized
-Picker.scaleY: not realized
+Picker.scaleY: ✅
 Polygon.rotationY: not realized
 Polyline.pivotY: not realized
 PositionIndicator.background: not realized
@@ -24,9 +24,9 @@ RadioButton.style: not realized
 Rectangle.ignoresInput: not realized
 ScrollView.isEnabled: not realized
 ScrollView.zIndex: not realized
-SearchField.scaleY: not realized
-Slider.rotationY: not realized
-Stepper.pivotY: not realized
+SearchField.scaleY: ✅
+Slider.rotationY: ✅
+Stepper.pivotY: ✅
 Switch.background: not realized
 TextEditor.accessibilityHeadingLevel: not realized
 TextField.style: not realized

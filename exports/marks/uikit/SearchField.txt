@@ -1,5 +1,6 @@
-SearchField: not realized
+Button.clicked: ✅
+SearchField: ✅
 SearchField.returnKey: not realized
-SearchField.submitted: not realized
-SearchField.text: not realized
-SearchField.textChanged: not realized
+SearchField.submitted: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅

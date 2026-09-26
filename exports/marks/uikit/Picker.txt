@@ -1,8 +1,8 @@
-Picker: not realized
-Picker.closed: not realized
+Button.clicked: ✅
+Label.text: ✅
+Picker: ✅
 Picker.isOpen: not realized
-Picker.opened: not realized
-Picker.options: not realized
-Picker.selectedIndex: not realized
-Picker.selectedIndexChanged: not realized
-Picker.title: not realized
+Picker.options: ✅
+Picker.selectedIndex: ✅
+Picker.selectedIndexChanged: ✅
+Picker.title: ✅

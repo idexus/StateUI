@@ -15,6 +15,10 @@ enum UIKitRegistrations {
         buttons(registry)
         fields(registry)
         pictures(registry)
+        toggles(registry)
+        values(registry)
+        indicators(registry)
+        pickers(registry)
         layouts(registry)
         shared(registry)
         return registry

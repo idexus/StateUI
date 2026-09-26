@@ -1,4 +1,4 @@
-ActivityIndicator.pivotX: not realized
+ActivityIndicator.pivotX: ✅
 Button.automationExcludedWithChildren: not realized
 Button.clicked: ✅
 Canvas.accessibilityHint: not realized
@@ -6,8 +6,8 @@ CheckBox.focus: not realized
 CheckBox.isFocusedChanged: not realized
 CheckBox.unfocus: not realized
 ColorBox.frameChanged: not realized
-DatePicker.opacity: not realized
-DatePicker.translationY: not realized
+DatePicker.opacity: ✅
+DatePicker.translationY: ✅
 Ellipse.scaleX: not realized
 Grid.rotationX: ✅
 HStack.pivotX: ✅
@@ -23,11 +23,11 @@ Map.minimumHeight: not realized
 Map.minimumWidth: not realized
 Path.opacity: not realized
 Path.translationY: not realized
-Picker.scaleX: not realized
+Picker.scaleX: ✅
 Polygon.rotationX: not realized
 Polyline.pivotX: not realized
 PositionIndicator.automationExcludedWithChildren: not realized
-ProgressBar.accessibilityHint: not realized
+ProgressBar.accessibilityHint: ✅
 RadioButton.focus: not realized
 RadioButton.isFocusedChanged: not realized
 RadioButton.unfocus: not realized
@@ -38,19 +38,15 @@ Rectangle.minimumHeight: not realized
 Rectangle.minimumWidth: not realized
 ScrollView.opacity: not realized
 ScrollView.translationY: not realized
-SearchField.scaleX: not realized
-Slider.rotationX: not realized
-Stepper.pivotX: not realized
+SearchField.scaleX: ✅
+Slider.rotationX: ✅
+Stepper.pivotX: ✅
 Switch.automationExcludedWithChildren: not realized
-TextEditor.accessibilityHint: not realized
+TextEditor.accessibilityHint: ✅
 TextField.focus: not realized
 TextField.isFocusedChanged: not realized
 TextField.unfocus: not realized
 TimePicker.frameChanged: not realized
-TimePicker.maximumHeight: not realized
-TimePicker.maximumWidth: not realized
-TimePicker.minimumHeight: not realized
-TimePicker.minimumWidth: not realized
 TitleBar.opacity: not realized
 TitleBar.translationY: not realized
 VStack.scaleX: ✅

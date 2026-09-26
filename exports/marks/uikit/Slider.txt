@@ -1,7 +1,9 @@
-Slider: not realized
-Slider.dragCompleted: not realized
-Slider.dragStarted: not realized
-Slider.maximum: not realized
-Slider.minimum: not realized
-Slider.value: not realized
-Slider.valueChanged: not realized
+Button.clicked: ✅
+Label.text: ✅
+Slider: ✅
+Slider.dragCompleted: cannot pressDown on Slider - UIKit's driver has no path for it yet
+Slider.dragStarted: cannot pressDown on Slider - UIKit's driver has no path for it yet
+Slider.maximum: ✅
+Slider.minimum: ✅
+Slider.value: ✅
+Slider.valueChanged: ✅

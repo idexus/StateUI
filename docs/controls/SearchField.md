@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swi
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  |  |  |  | Android Views: cannot read returnKey of SearchField - Android's driver has no path for it yet |
-| `onSubmitted` (`submitted`) | event |  | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -43,8 +43,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -52,26 +52,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -121,16 +121,16 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native |  |  |  |  |  |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of SearchField - Android's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  |  |  |  |
-| `isReadOnly` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
-| `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  |  |  | cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  |  |  | cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet |
-| `maximumLength` | property | `Int` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `placeholder` | property | `String` | native |  |  |  |  | ✅ |  | cannot read placeholder of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read placeholder of SearchField - Android's driver has no path for it yet |
-| `placeholderColor` | property | `Color` | native |  |  |  |  |  |  | cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read placeholderColor of SearchField - Android's driver has no path for it yet |
-| `selectionLength` | property | `Int` | native |  |  |  |  |  |  | cannot read selectionLength of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of SearchField - Android's driver has no path for it yet |
-| `onTextChanged` (`textChanged`) | event | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `cursorPosition` | property | `Int` | native |  | ✅ |  |  |  |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of SearchField - Android's driver has no path for it yet |
+| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  |  |  | UIKit: cannot read inputPurpose of SearchField - UIKit's driver has no path for it yet |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native |  | ✅ |  |  |  |  | cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet |
+| `isTextPredictionEnabled` | property | `Bool` | native |  | ✅ |  |  |  |  | cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet |
+| `maximumLength` | property | `Int` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `placeholder` | property | `String` | native |  | ✅ |  |  | ✅ |  | cannot read placeholder of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read placeholder of SearchField - Android's driver has no path for it yet |
+| `placeholderColor` | property | `Color` | native |  |  |  |  |  |  | cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet; Android Views: cannot read placeholderColor of SearchField - Android's driver has no path for it yet |
+| `selectionLength` | property | `Int` | native |  | ✅ |  |  |  |  | cannot read selectionLength of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of SearchField - Android's driver has no path for it yet |
+| `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -138,7 +138,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native |  |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -148,7 +148,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `textColor` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -156,10 +156,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -167,7 +167,7 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | cannot read horizontalTextAlignment of SearchField - AppKit's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | cannot read horizontalTextAlignment of SearchField - AppKit's driver has no path for it yet; UIKit: cannot read horizontalTextAlignment of SearchField - UIKit's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |
 
 ## From [TintElement](tiers/TintElement.md)

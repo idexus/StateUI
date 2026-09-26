@@ -5,7 +5,7 @@ Canvas.style: not realized
 CheckBox.ignoresInput: not realized
 ColorBox.isEnabled: cannot read isEnabled of ColorBox - UIKit's driver has no path for it yet
 ColorBox.zIndex: not realized
-DatePicker.scaleY: not realized
+DatePicker.scaleY: ✅
 Ellipse.rotationY: not realized
 Grid.pivotY: ✅
 HStack.background: cannot read background of HStack - UIKit's driver has no path for it yet
@@ -15,7 +15,7 @@ Line.ignoresInput: not realized
 Map.isEnabled: not realized
 Map.zIndex: not realized
 Path.scaleY: not realized
-Picker.rotationY: not realized
+Picker.rotationY: ✅
 Polygon.pivotY: not realized
 Polyline.background: not realized
 PositionIndicator.accessibilityHeadingLevel: not realized
@@ -24,13 +24,13 @@ RadioButton.ignoresInput: not realized
 Rectangle.isEnabled: not realized
 Rectangle.zIndex: not realized
 ScrollView.scaleY: not realized
-SearchField.rotationY: not realized
-Slider.pivotY: not realized
+SearchField.rotationY: ✅
+Slider.pivotY: ✅
 Stepper.background: not realized
 Switch.accessibilityHeadingLevel: not realized
 TextEditor.style: not realized
 TextField.ignoresInput: not realized
-TimePicker.isEnabled: not realized
+TimePicker.isEnabled: ✅
 TimePicker.zIndex: not realized
 TitleBar.scaleY: not realized
 VStack.rotationY: ✅

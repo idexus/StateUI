@@ -1,4 +1,5 @@
-RadioButton: not realized
-RadioButton.groupName: not realized
-RadioButton.isOn: not realized
-RadioButton.toggled: not realized
+Button.clicked: ✅
+RadioButton: ✅
+RadioButton.groupName: ✅
+RadioButton.isOn: ✅
+RadioButton.toggled: ✅

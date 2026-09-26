@@ -3,7 +3,7 @@ Button.clicked: ✅
 Button.isEnabled: ✅
 Button.zIndex: not realized
 Canvas.scaleY: not realized
-CheckBox.rotationY: not realized
+CheckBox.rotationY: ✅
 ColorBox.pivotY: ✅
 DatePicker.background: not realized
 Ellipse.accessibilityHeadingLevel: not realized
@@ -20,18 +20,18 @@ Polygon.style: not realized
 Polyline.ignoresInput: not realized
 PositionIndicator.isEnabled: not realized
 PositionIndicator.zIndex: not realized
-ProgressBar.scaleY: not realized
-RadioButton.rotationY: not realized
+ProgressBar.scaleY: ✅
+RadioButton.rotationY: ✅
 Rectangle.pivotY: not realized
 ScrollView.background: not realized
 SearchField.accessibilityHeadingLevel: not realized
 Slider.style: not realized
 Stepper.ignoresInput: not realized
-Switch.isEnabled: not realized
+Switch.isEnabled: ✅
 Switch.zIndex: not realized
-TextEditor.scaleY: not realized
+TextEditor.scaleY: ✅
 TextField.rotationY: ✅
-TimePicker.pivotY: not realized
+TimePicker.pivotY: ✅
 TitleBar.background: not realized
 VStack.accessibilityHeadingLevel: not realized
 WebView.style: not realized

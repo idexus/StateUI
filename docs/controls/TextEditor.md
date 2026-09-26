@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `growsWithText` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `growsWithText` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -42,8 +42,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -51,26 +51,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native |  |  | ✅ | ✅ | ✅ |  | cannot read isEnabled of TextEditor - AppKit's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native |  |  | ✅ | ✅ | ✅ |  | cannot read isEnabled of TextEditor - AppKit's driver has no path for it yet; UIKit: cannot read isEnabled of TextEditor - UIKit's driver has no path for it yet |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -120,16 +120,16 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native |  |  |  |  | ✅ |  | cannot read cursorPosition of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextEditor - Android's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  |  |
-| `isReadOnly` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
-| `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet |
-| `maximumLength` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `placeholder` | property | `String` | native |  |  |  |  | ✅ |  | cannot read placeholder of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read placeholder of TextEditor - Android's driver has no path for it yet |
-| `placeholderColor` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read placeholderColor of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read placeholderColor of TextEditor - Android's driver has no path for it yet |
-| `selectionLength` | property | `Int` | native |  |  |  |  | ✅ |  | cannot read selectionLength of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of TextEditor - Android's driver has no path for it yet |
-| `onTextChanged` (`textChanged`) | event | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `cursorPosition` | property | `Int` | native |  | ✅ |  |  | ✅ |  | cannot read cursorPosition of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextEditor - Android's driver has no path for it yet |
+| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  | UIKit: cannot read inputPurpose of TextEditor - UIKit's driver has no path for it yet |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet |
+| `isTextPredictionEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet |
+| `maximumLength` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `placeholder` | property | `String` | native |  | ✅ |  |  | ✅ |  | cannot read placeholder of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read placeholder of TextEditor - Android's driver has no path for it yet |
+| `placeholderColor` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read placeholderColor of TextEditor - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of TextEditor - UIKit's driver has no path for it yet; Android Views: cannot read placeholderColor of TextEditor - Android's driver has no path for it yet |
+| `selectionLength` | property | `Int` | native |  | ✅ |  |  | ✅ |  | cannot read selectionLength of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of TextEditor - Android's driver has no path for it yet |
+| `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -137,7 +137,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `textCase` | property | `TextCase` | native |  |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
@@ -147,7 +147,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet |
+| `textColor` | property | `Color` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet; UIKit: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -155,10 +155,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet; UIKit: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native |  |  |  |  | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet; Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
-| `fontSize` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native |  |  |  |  | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet; UIKit: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet; Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native |  |  |  | ✅ | ✅ |  | cannot read the words of a AppKitTextEditorView - AppKit's driver has no path for it yet; UIKit: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -166,5 +166,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  | ✅ |  | cannot read horizontalTextAlignment of TextEditor - AppKit's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  | ✅ |  | cannot read horizontalTextAlignment of TextEditor - AppKit's driver has no path for it yet; UIKit: cannot read horizontalTextAlignment of TextEditor - UIKit's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |

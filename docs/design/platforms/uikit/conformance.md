@@ -27,12 +27,20 @@ simulator reads and writes the Mac's files where they are, so a run holds
 ## What the driver does
 
 A user's act goes through the path UIKit's own input takes into the host: a
-button's primary action, a field's words replaced and its editing-changed
-event sent, as a key sends it, and the return key's question to the field's
-delegate.
+button's primary action, and a check box's; a switch turned and its
+value-changed event sent; a slider taken, moved and let go; a stepper's step,
+which at an end of its range - where UIKit turns the button off - does
+nothing; a menu's choice; a date or a time picked. Typed words first ask the
+view's delegate, as a key does, then replace the words and send the change;
+the return key asks the field's delegate.
 
 ## What the driver reads
 
 A member's value is read from the view UIKit holds - a label's and a field's
-words, a button's title, a view's hiding, alpha and a control's enabled
-state - never from what the host last wrote.
+words, caret and selection, a button's title, a toggle's state, a slider's
+and a stepper's value and range, a picker's choices, a view's hiding, alpha
+and a control's enabled state, its transform as its layer holds it, what
+VoiceOver meets, a control's font and colours - never from what the host last
+wrote. A colour at a point is read from the screen: the view drawn as the
+screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
+window's own hit testing at that point.

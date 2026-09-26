@@ -3,8 +3,6 @@ ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
 ActivityIndicator.drop: not realized
 ActivityIndicator.frameChanged: not realized
-ActivityIndicator.horizontalAlignment: not realized
-ActivityIndicator.verticalAlignment: not realized
 Button.pointerEntered: not realized
 Button.pointerExited: not realized
 Button.pointerMoved: not realized
@@ -17,7 +15,6 @@ CheckBox.panTouchCount: not realized
 CheckBox.panUpdated: not realized
 CheckBox.panXChannel: not realized
 ColorBox.frameChanged: not realized
-DatePicker.area: not realized
 DatePicker.frameChanged: not realized
 Ellipse.canDrag: not realized
 Ellipse.dragStarting: not realized
@@ -71,8 +68,6 @@ SearchField.dragLeave: not realized
 SearchField.dragOver: not realized
 SearchField.drop: not realized
 SearchField.frameChanged: not realized
-SearchField.horizontalAlignment: not realized
-SearchField.verticalAlignment: not realized
 Slider.pointerEntered: not realized
 Slider.pointerExited: not realized
 Slider.pointerMoved: not realized
@@ -85,15 +80,12 @@ Switch.panTouchCount: not realized
 Switch.panUpdated: not realized
 Switch.panXChannel: not realized
 TextEditor.frameChanged: not realized
-TextEditor.gridColumnSpan: not realized
-TextEditor.gridRowSpan: not realized
 TextField.frameChanged: not realized
 TimePicker.canDrag: not realized
 TimePicker.dragStarting: not realized
 TimePicker.dragText: not realized
 TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: not realized
-TimePicker.margin: not realized
 TitleBar.pinchUpdated: not realized
 VStack.panYChannel: not realized
 WebView.tapCount: not realized

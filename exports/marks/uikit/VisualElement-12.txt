@@ -2,10 +2,10 @@ ActivityIndicator.accessibilityHeadingLevel: not realized
 Button.clicked: ✅
 Button.style: not realized
 Canvas.ignoresInput: not realized
-CheckBox.isEnabled: not realized
+CheckBox.isEnabled: ✅
 CheckBox.zIndex: not realized
 ColorBox.scaleY: ✅
-DatePicker.rotationY: not realized
+DatePicker.rotationY: ✅
 Ellipse.pivotY: not realized
 Grid.background: cannot read background of Grid - UIKit's driver has no path for it yet
 HStack.accessibilityHeadingLevel: not realized
@@ -15,23 +15,23 @@ Line.isEnabled: not realized
 Line.zIndex: not realized
 Map.scaleY: not realized
 Path.rotationY: not realized
-Picker.pivotY: not realized
+Picker.pivotY: ✅
 Polygon.background: not realized
 Polyline.accessibilityHeadingLevel: not realized
 PositionIndicator.style: not realized
 ProgressBar.ignoresInput: not realized
-RadioButton.isEnabled: not realized
+RadioButton.isEnabled: ✅
 RadioButton.zIndex: not realized
 Rectangle.scaleY: not realized
 ScrollView.rotationY: not realized
-SearchField.pivotY: not realized
+SearchField.pivotY: ✅
 Slider.background: not realized
 Stepper.accessibilityHeadingLevel: not realized
 Switch.style: not realized
 TextEditor.ignoresInput: not realized
 TextField.isEnabled: ✅
 TextField.zIndex: not realized
-TimePicker.scaleY: not realized
+TimePicker.scaleY: ✅
 TitleBar.rotationY: not realized
 VStack.pivotY: ✅
 WebView.background: not realized

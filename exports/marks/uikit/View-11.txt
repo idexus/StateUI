@@ -10,15 +10,12 @@ Canvas.panTouchCount: not realized
 Canvas.panUpdated: not realized
 Canvas.panXChannel: not realized
 CheckBox.frameChanged: not realized
-CheckBox.gridColumnSpan: not realized
-CheckBox.gridRowSpan: not realized
 ColorBox.frameChanged: not realized
 DatePicker.canDrag: not realized
 DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
 DatePicker.dropCompleted: not realized
 DatePicker.frameChanged: not realized
-DatePicker.margin: not realized
 Ellipse.pinchUpdated: not realized
 Grid.panYChannel: not realized
 HStack.tapCount: not realized
@@ -41,8 +38,6 @@ Path.panTouchCount: not realized
 Path.panUpdated: not realized
 Path.panXChannel: not realized
 Picker.frameChanged: not realized
-Picker.gridColumnSpan: not realized
-Picker.gridRowSpan: not realized
 Polygon.area: not realized
 Polygon.frameChanged: not realized
 Polyline.canDrag: not realized
@@ -77,9 +72,6 @@ Stepper.panTouchCount: not realized
 Stepper.panUpdated: not realized
 Stepper.panXChannel: not realized
 Switch.frameChanged: not realized
-Switch.gridColumnSpan: not realized
-Switch.gridRowSpan: not realized
-TextEditor.area: not realized
 TextEditor.frameChanged: not realized
 TextField.canDrag: not realized
 TextField.dragStarting: not realized

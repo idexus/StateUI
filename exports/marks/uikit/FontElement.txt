@@ -15,22 +15,22 @@ Picker.fontAttributes: not realized
 Picker.fontAutoScalingEnabled: not realized
 Picker.fontFamily: not realized
 Picker.fontSize: not realized
-RadioButton.fontAttributes: not realized
+RadioButton.fontAttributes: ✅
 RadioButton.fontAutoScalingEnabled: not realized
-RadioButton.fontFamily: not realized
-RadioButton.fontSize: not realized
-SearchField.fontAttributes: not realized
+RadioButton.fontFamily: ✅
+RadioButton.fontSize: ✅
+SearchField.fontAttributes: ✅
 SearchField.fontAutoScalingEnabled: not realized
-SearchField.fontFamily: not realized
-SearchField.fontSize: not realized
+SearchField.fontFamily: ✅
+SearchField.fontSize: ✅
 Span.fontAttributes: not realized
 Span.fontAutoScalingEnabled: not realized
 Span.fontFamily: not realized
 Span.fontSize: not realized
-TextEditor.fontAttributes: not realized
+TextEditor.fontAttributes: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet
 TextEditor.fontAutoScalingEnabled: not realized
-TextEditor.fontFamily: not realized
-TextEditor.fontSize: not realized
+TextEditor.fontFamily: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet
+TextEditor.fontSize: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet
 TextField.fontAttributes: ✅
 TextField.fontAutoScalingEnabled: not realized
 TextField.fontFamily: ✅

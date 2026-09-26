@@ -1,34 +1,34 @@
 Button.clicked: ✅
-SearchField.cursorPosition: not realized
-SearchField.inputPurpose: not realized
-SearchField.isReadOnly: not realized
-SearchField.isSpellCheckEnabled: not realized
-SearchField.isTextPredictionEnabled: not realized
-SearchField.maximumLength: not realized
-SearchField.placeholder: not realized
-SearchField.placeholderColor: not realized
-SearchField.selectionLength: not realized
-SearchField.text: not realized
-SearchField.textChanged: not realized
-TextEditor.cursorPosition: not realized
-TextEditor.inputPurpose: not realized
-TextEditor.isReadOnly: not realized
-TextEditor.isSpellCheckEnabled: not realized
-TextEditor.isTextPredictionEnabled: not realized
-TextEditor.maximumLength: not realized
-TextEditor.placeholder: not realized
-TextEditor.placeholderColor: not realized
-TextEditor.selectionLength: not realized
-TextEditor.text: not realized
-TextEditor.textChanged: not realized
-TextField.cursorPosition: not realized
-TextField.inputPurpose: not realized
-TextField.isReadOnly: not realized
-TextField.isSpellCheckEnabled: not realized
-TextField.isTextPredictionEnabled: not realized
+SearchField.cursorPosition: ✅
+SearchField.inputPurpose: cannot read inputPurpose of SearchField - UIKit's driver has no path for it yet
+SearchField.isReadOnly: ✅
+SearchField.isSpellCheckEnabled: ✅
+SearchField.isTextPredictionEnabled: ✅
+SearchField.maximumLength: ✅
+SearchField.placeholder: ✅
+SearchField.placeholderColor: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet
+SearchField.selectionLength: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: cannot read inputPurpose of TextEditor - UIKit's driver has no path for it yet
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: cannot read placeholderColor of TextEditor - UIKit's driver has no path for it yet
+TextEditor.selectionLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: ✅
+TextField.inputPurpose: cannot read inputPurpose of TextField - UIKit's driver has no path for it yet
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: ✅
+TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
-TextField.placeholder: cannot read placeholder of TextField - UIKit's driver has no path for it yet
-TextField.placeholderColor: not realized
-TextField.selectionLength: not realized
+TextField.placeholder: ✅
+TextField.placeholderColor: cannot read placeholderColor of TextField - UIKit's driver has no path for it yet
+TextField.selectionLength: ✅
 TextField.text: ✅
 TextField.textChanged: ✅

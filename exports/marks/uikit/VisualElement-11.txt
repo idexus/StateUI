@@ -1,4 +1,4 @@
-ActivityIndicator.accessibilityHint: not realized
+ActivityIndicator.accessibilityHint: ✅
 Button.clicked: ✅
 Button.focus: not realized
 Button.isFocusedChanged: not realized
@@ -8,10 +8,10 @@ Canvas.maximumHeight: not realized
 Canvas.maximumWidth: not realized
 Canvas.minimumHeight: not realized
 Canvas.minimumWidth: not realized
-CheckBox.opacity: not realized
-CheckBox.translationY: not realized
+CheckBox.opacity: ✅
+CheckBox.translationY: ✅
 ColorBox.scaleX: ✅
-DatePicker.rotationX: not realized
+DatePicker.rotationX: ✅
 Ellipse.pivotX: not realized
 Grid.automationExcludedWithChildren: not realized
 HStack.accessibilityHint: ✅
@@ -23,35 +23,27 @@ Line.opacity: not realized
 Line.translationY: not realized
 Map.scaleX: not realized
 Path.rotationX: not realized
-Picker.pivotX: not realized
+Picker.pivotX: ✅
 Polygon.automationExcludedWithChildren: not realized
 Polyline.accessibilityHint: not realized
 PositionIndicator.focus: not realized
 PositionIndicator.isFocusedChanged: not realized
 PositionIndicator.unfocus: not realized
 ProgressBar.frameChanged: not realized
-ProgressBar.maximumHeight: not realized
-ProgressBar.maximumWidth: not realized
-ProgressBar.minimumHeight: not realized
-ProgressBar.minimumWidth: not realized
-RadioButton.opacity: not realized
-RadioButton.translationY: not realized
+RadioButton.opacity: ✅
+RadioButton.translationY: ✅
 Rectangle.scaleX: not realized
 ScrollView.rotationX: not realized
-SearchField.pivotX: not realized
+SearchField.pivotX: ✅
 Slider.automationExcludedWithChildren: not realized
-Stepper.accessibilityHint: not realized
+Stepper.accessibilityHint: ✅
 Switch.focus: not realized
 Switch.isFocusedChanged: not realized
 Switch.unfocus: not realized
 TextEditor.frameChanged: not realized
-TextEditor.maximumHeight: not realized
-TextEditor.maximumWidth: not realized
-TextEditor.minimumHeight: not realized
-TextEditor.minimumWidth: not realized
 TextField.opacity: ✅
 TextField.translationY: ✅
-TimePicker.scaleX: not realized
+TimePicker.scaleX: ✅
 TitleBar.rotationX: not realized
 VStack.pivotX: ✅
 WebView.automationExcludedWithChildren: not realized

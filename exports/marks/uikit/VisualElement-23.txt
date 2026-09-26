@@ -1,4 +1,4 @@
-ActivityIndicator.scaleX: not realized
+ActivityIndicator.scaleX: ✅
 Button.clicked: ✅
 Button.rotationX: ✅
 Canvas.pivotX: not realized
@@ -23,32 +23,24 @@ Path.focus: not realized
 Path.isFocusedChanged: not realized
 Path.unfocus: not realized
 Picker.frameChanged: not realized
-Picker.maximumHeight: not realized
-Picker.maximumWidth: not realized
-Picker.minimumHeight: not realized
-Picker.minimumWidth: not realized
 Polygon.opacity: not realized
 Polygon.translationY: not realized
 Polyline.scaleX: not realized
 PositionIndicator.rotationX: not realized
-ProgressBar.pivotX: not realized
+ProgressBar.pivotX: ✅
 RadioButton.automationExcludedWithChildren: not realized
 Rectangle.accessibilityHint: not realized
 ScrollView.focus: not realized
 ScrollView.isFocusedChanged: not realized
 ScrollView.unfocus: not realized
 SearchField.frameChanged: not realized
-SearchField.maximumHeight: not realized
-SearchField.maximumWidth: not realized
-SearchField.minimumHeight: not realized
-SearchField.minimumWidth: not realized
-Slider.opacity: not realized
-Slider.translationY: not realized
-Stepper.scaleX: not realized
-Switch.rotationX: not realized
-TextEditor.pivotX: not realized
+Slider.opacity: ✅
+Slider.translationY: ✅
+Stepper.scaleX: ✅
+Switch.rotationX: ✅
+TextEditor.pivotX: ✅
 TextField.automationExcludedWithChildren: not realized
-TimePicker.accessibilityHint: not realized
+TimePicker.accessibilityHint: ✅
 TitleBar.focus: not realized
 TitleBar.isFocusedChanged: not realized
 TitleBar.unfocus: not realized

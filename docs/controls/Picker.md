@@ -19,10 +19,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 | `onClosed` (`closed`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `isOpen` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
-| `options` | property | `[String]` | structure | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `selectedIndex` | property | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `title` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `options` | property | `[String]` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `selectedIndex` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `title` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -48,8 +48,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -57,26 +57,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |

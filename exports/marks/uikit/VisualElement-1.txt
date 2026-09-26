@@ -1,11 +1,11 @@
-ActivityIndicator.isVisible: not realized
-ActivityIndicator.translationX: not realized
+ActivityIndicator.isVisible: ✅
+ActivityIndicator.translationX: ✅
 Button.clicked: ✅
 Button.scale: ✅
 Canvas.rotation: not realized
 CheckBox.layoutDirection: not realized
 ColorBox.isAccessibilityHidden: not realized
-DatePicker.accessibilityLabel: not realized
+DatePicker.accessibilityLabel: ✅
 Ellipse.frame: not realized
 Grid.frameChanged: not realized
 HStack.isVisible: ✅
@@ -22,18 +22,16 @@ Polygon.width: not realized
 Polyline.isVisible: not realized
 Polyline.translationX: not realized
 PositionIndicator.scale: not realized
-ProgressBar.rotation: not realized
+ProgressBar.rotation: ✅
 RadioButton.layoutDirection: not realized
 Rectangle.isAccessibilityHidden: not realized
 ScrollView.accessibilityLabel: not realized
 SearchField.frame: not realized
 Slider.frameChanged: not realized
-Slider.height: not realized
-Slider.width: not realized
-Stepper.isVisible: not realized
-Stepper.translationX: not realized
-Switch.scale: not realized
-TextEditor.rotation: not realized
+Stepper.isVisible: ✅
+Stepper.translationX: ✅
+Switch.scale: ✅
+TextEditor.rotation: ✅
 TextField.layoutDirection: not realized
 TimePicker.isAccessibilityHidden: not realized
 TitleBar.accessibilityLabel: not realized

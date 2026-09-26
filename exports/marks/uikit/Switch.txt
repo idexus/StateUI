@@ -1,3 +1,5 @@
-Switch: not realized
-Switch.isOn: not realized
-Switch.toggled: not realized
+Button.clicked: ✅
+Label.text: ✅
+Switch: ✅
+Switch.isOn: ✅
+Switch.toggled: ✅

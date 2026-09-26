@@ -1,3 +1,6 @@
+ActivityIndicator
+  isRunning
+  tint
 Button
   fontAttributes
   fontFamily
@@ -7,9 +10,17 @@ Button
   textCase
   textColor
   clicked()
+CheckBox
+  isOn
+  toggled()
 ColorBox
   color
   cornerRadius
+DatePicker
+  date
+  maximumDate
+  minimumDate
+  dateChanged()
 Grid
   background
   clipsContent
@@ -48,16 +59,101 @@ Label
   textCase
   textColor
   verticalTextAlignment
-TextField
+Picker
+  options
+  selectedIndex
+  title
+  closed()
+  opened()
+  selectedIndexChanged()
+ProgressBar
+  progress
+  tint
+RadioButton
   fontAttributes
   fontFamily
   fontSize
+  isOn
+  padding
+  text
+  textCase
+  textColor
+  toggled()
+SearchField
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  inputPurpose
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
+  placeholderColor
+  selectionLength
   text
   textColor
   submitted()
   textChanged()
+Slider
+  maximum
+  minimum
+  tint
+  value
+  dragCompleted()
+  dragStarted()
+  valueChanged()
+Stepper
+  maximum
+  minimum
+  step
+  value
+  valueChanged()
+Switch
+  isOn
+  toggled()
+TextEditor
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  growsWithText
+  horizontalTextAlignment
+  inputPurpose
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  textChanged()
+TextField
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  inputPurpose
+  isPassword
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
+TimePicker
+  time
+  timeChanged()
 VStack
   background
   clipsContent

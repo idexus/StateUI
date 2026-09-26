@@ -3,9 +3,9 @@ Button.clicked: ✅
 Button.ignoresInput: not realized
 Canvas.isEnabled: not realized
 Canvas.zIndex: not realized
-CheckBox.scaleY: not realized
+CheckBox.scaleY: ✅
 ColorBox.rotationY: ✅
-DatePicker.pivotY: not realized
+DatePicker.pivotY: ✅
 Ellipse.background: not realized
 Grid.accessibilityHeadingLevel: not realized
 HStack.style: not realized
@@ -19,19 +19,19 @@ Picker.background: not realized
 Polygon.accessibilityHeadingLevel: not realized
 Polyline.style: not realized
 PositionIndicator.ignoresInput: not realized
-ProgressBar.isEnabled: not realized
+ProgressBar.isEnabled: cannot read isEnabled of ProgressBar - UIKit's driver has no path for it yet
 ProgressBar.zIndex: not realized
-RadioButton.scaleY: not realized
+RadioButton.scaleY: ✅
 Rectangle.rotationY: not realized
 ScrollView.pivotY: not realized
 SearchField.background: not realized
 Slider.accessibilityHeadingLevel: not realized
 Stepper.style: not realized
 Switch.ignoresInput: not realized
-TextEditor.isEnabled: not realized
+TextEditor.isEnabled: cannot read isEnabled of TextEditor - UIKit's driver has no path for it yet
 TextEditor.zIndex: not realized
 TextField.scaleY: ✅
-TimePicker.rotationY: not realized
+TimePicker.rotationY: ✅
 TitleBar.pivotY: not realized
 VStack.background: cannot read background of VStack - UIKit's driver has no path for it yet
 WebView.accessibilityHeadingLevel: not realized

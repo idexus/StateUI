@@ -1,9 +1,9 @@
-ActivityIndicator.isEnabled: not realized
+ActivityIndicator.isEnabled: cannot read isEnabled of ActivityIndicator - UIKit's driver has no path for it yet
 ActivityIndicator.zIndex: not realized
 Button.clicked: ✅
 Button.scaleY: ✅
 Canvas.rotationY: not realized
-CheckBox.pivotY: not realized
+CheckBox.pivotY: ✅
 ColorBox.background: not realized
 DatePicker.accessibilityHeadingLevel: not realized
 Ellipse.style: not realized
@@ -20,16 +20,16 @@ Polygon.ignoresInput: not realized
 Polyline.isEnabled: not realized
 Polyline.zIndex: not realized
 PositionIndicator.scaleY: not realized
-ProgressBar.rotationY: not realized
-RadioButton.pivotY: not realized
+ProgressBar.rotationY: ✅
+RadioButton.pivotY: ✅
 Rectangle.background: not realized
 ScrollView.accessibilityHeadingLevel: not realized
 SearchField.style: not realized
 Slider.ignoresInput: not realized
-Stepper.isEnabled: not realized
+Stepper.isEnabled: ✅
 Stepper.zIndex: not realized
-Switch.scaleY: not realized
-TextEditor.rotationY: not realized
+Switch.scaleY: ✅
+TextEditor.rotationY: ✅
 TextField.pivotY: ✅
 TimePicker.background: not realized
 TitleBar.accessibilityHeadingLevel: not realized

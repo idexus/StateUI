@@ -7,31 +7,92 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A TextField: the user's words reported onto the state they are carried in, the program's only written.
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
+    /// report is `InputViewContract.textChanged`. Each member reaches the view only where the tree changed it,
+    /// which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<UIView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = UIKitTextFieldView()
-            field.onTextChanged = { typed in
-                reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged)
-            }
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            hearInput(field, reports)
+            field.typing.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return field
         }, members: { field in
-            field.applies([
-                TextElementContract.text, FontElementContract.fontSize, FontElementContract.fontAttributes,
-                FontElementContract.fontFamily, TextStyleElementContract.textColor, InputViewContract.placeholder,
-                InputViewContract.maximumLength,
-            ]) { view, values in
-                if values.changed(TextElementContract.text), !values.carriedIn(TextElementContract.text) {
-                    view.setText(values[TextElementContract.text] ?? "")
-                }
-                if let look = TextMembers.look(values) { view.setLook(look) }
-                if values.changed(InputViewContract.placeholder) { view.placeholder = values[InputViewContract.placeholder] }
-                view.maximumLength = values[InputViewContract.maximumLength].map { max(0, $0) }
-            }
+            field.applies(inputMembers) { view, values in applyInput(view, values) }
+            field.property(TextFieldContract.isPassword) { view, hidden in view.isSecureTextEntry = hidden ?? false }
             field.raises(InputViewContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
+        registry.add(TextEditorContract.self, create: { reports in
+            let editor = UIKitTextEditorView()
+            hearInput(editor, reports)
+            return editor
+        }, members: { editor in
+            editor.applies(inputMembers) { view, values in applyInput(view, values) }
+            editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
+            editor.raises(InputViewContract.textChanged)
+        })
+        registry.add(SearchFieldContract.self, create: { reports in
+            let search = UIKitSearchFieldView()
+            hearInput(search, reports)
+            search.typing.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            return search
+        }, members: { search in
+            search.applies(inputMembers) { view, values in applyInput(view, values) }
+            search.raises(InputViewContract.textChanged)
+            search.raises(SearchFieldContract.submitted)
+        })
+    }
+
+    private static func hearInput<Realized: ElementContract>(_ view: any UIKitInputView, _ reports: Reports<Realized>) {
+        view.typing.onTextChanged = { typed in
+            reports.report(TextElementContract.text, typed, as: InputViewContract.textChanged)
+        }
+    }
+
+    /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
+    /// and how it takes them, their look and where they stand, and the caret and the selection.
+    private static let inputMembers: [any ContractMember] = [
+        TextElementContract.text, InputViewContract.placeholder, InputViewContract.maximumLength,
+        VisualElementContract.isEnabled, InputViewContract.isReadOnly, InputViewContract.isSpellCheckEnabled,
+        InputViewContract.isTextPredictionEnabled, InputViewContract.inputPurpose, FontElementContract.fontSize,
+        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
+        InputViewContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
+        InputViewContract.cursorPosition, InputViewContract.selectionLength,
+    ]
+
+    private static func applyInput<Realized: ElementContract>(
+        _ view: any UIKitInputView, _ values: ElementValues<Realized>
+    ) {
+        if values.changed(InputViewContract.maximumLength) {
+            view.typing.maximumLength = values[InputViewContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
+        }
+        if values.changed(TextElementContract.text) { view.setText(values[TextElementContract.text] ?? "") }
+        if values.changed(InputViewContract.placeholder) || values.changed(InputViewContract.placeholderColor) {
+            view.setPlaceholder(
+                values[InputViewContract.placeholder],
+                color: values[InputViewContract.placeholderColor].flatMap { UIColor(stateUI: $0.propValue) })
+        }
+        if values.changed(VisualElementContract.isEnabled) {
+            (view as? UIControl)?.isEnabled = values[VisualElementContract.isEnabled] ?? true
+            (view as? UITextView)?.isSelectable = values[VisualElementContract.isEnabled] ?? true
+        }
+        if values.changed(InputViewContract.isReadOnly) || values.changed(InputViewContract.isSpellCheckEnabled)
+            || values.changed(InputViewContract.isTextPredictionEnabled) || values.changed(InputViewContract.inputPurpose) {
+            view.setBehaviour(
+                readOnly: values[InputViewContract.isReadOnly] ?? false,
+                keyboard: UIKitKeyboard(
+                    spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,
+                    predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
+                    purpose: values[InputViewContract.inputPurpose]))
+        }
+        if let look = TextMembers.look(values) { view.setLook(look) }
+        if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
+            view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
+        }
+        if values.changed(InputViewContract.cursorPosition) || values.changed(InputViewContract.selectionLength),
+           let caret = values[InputViewContract.cursorPosition] {
+            view.select(start: caret, length: values[InputViewContract.selectionLength] ?? 0)
+        }
     }
 }
 #endif

@@ -9,8 +9,6 @@ CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized
 CheckBox.drop: not realized
 CheckBox.frameChanged: not realized
-CheckBox.horizontalAlignment: not realized
-CheckBox.verticalAlignment: not realized
 ColorBox.pointerEntered: not realized
 ColorBox.pointerExited: not realized
 ColorBox.pointerMoved: not realized
@@ -41,8 +39,6 @@ Picker.dragLeave: not realized
 Picker.dragOver: not realized
 Picker.drop: not realized
 Picker.frameChanged: not realized
-Picker.horizontalAlignment: not realized
-Picker.verticalAlignment: not realized
 Polygon.pointerEntered: not realized
 Polygon.pointerExited: not realized
 Polygon.pointerMoved: not realized
@@ -55,9 +51,6 @@ PositionIndicator.panTouchCount: not realized
 PositionIndicator.panUpdated: not realized
 PositionIndicator.panXChannel: not realized
 ProgressBar.frameChanged: not realized
-ProgressBar.gridColumnSpan: not realized
-ProgressBar.gridRowSpan: not realized
-RadioButton.area: not realized
 RadioButton.frameChanged: not realized
 Rectangle.canDrag: not realized
 Rectangle.dragStarting: not realized
@@ -70,15 +63,11 @@ SearchField.panYChannel: not realized
 Slider.tapCount: not realized
 Slider.tapped: not realized
 Stepper.frameChanged: not realized
-Stepper.gridColumn: not realized
-Stepper.gridRow: not realized
 Switch.allowDrop: not realized
 Switch.dragLeave: not realized
 Switch.dragOver: not realized
 Switch.drop: not realized
 Switch.frameChanged: not realized
-Switch.horizontalAlignment: not realized
-Switch.verticalAlignment: not realized
 TextEditor.pointerEntered: not realized
 TextEditor.pointerExited: not realized
 TextEditor.pointerMoved: not realized

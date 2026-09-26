@@ -1,4 +1,3 @@
-ActivityIndicator.area: not realized
 ActivityIndicator.frameChanged: not realized
 Button.canDrag: not realized
 Button.dragStarting: not realized
@@ -10,8 +9,6 @@ CheckBox.panYChannel: not realized
 ColorBox.tapCount: not realized
 ColorBox.tapped: not realized
 DatePicker.frameChanged: not realized
-DatePicker.gridColumn: not realized
-DatePicker.gridRow: not realized
 Ellipse.allowDrop: not realized
 Ellipse.dragLeave: not realized
 Ellipse.dragOver: not realized
@@ -67,14 +64,12 @@ Rectangle.panXChannel: not realized
 ScrollView.frameChanged: not realized
 ScrollView.gridColumnSpan: not realized
 ScrollView.gridRowSpan: not realized
-SearchField.area: not realized
 SearchField.frameChanged: not realized
 Slider.canDrag: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
 Slider.dropCompleted: not realized
 Slider.frameChanged: not realized
-Slider.margin: not realized
 Stepper.pinchUpdated: not realized
 Switch.panYChannel: not realized
 TextEditor.tapCount: not realized
@@ -85,8 +80,6 @@ TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized
 TimePicker.drop: not realized
 TimePicker.frameChanged: not realized
-TimePicker.horizontalAlignment: not realized
-TimePicker.verticalAlignment: not realized
 TitleBar.pointerEntered: not realized
 TitleBar.pointerExited: not realized
 TitleBar.pointerMoved: not realized

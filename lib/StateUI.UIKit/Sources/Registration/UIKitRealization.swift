@@ -11,16 +11,19 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "ActivityIndicator", "Canvas", "CheckBox", "Content", "ContextMenu", "DatePicker", "Ellipse",
+        "Canvas", "Content", "ContextMenu", "Ellipse",
         "LeadingContent", "Line", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
-        "NavigationStack", "Overlay", "Path", "Picker", "Pin", "Polygon", "Polyline", "PositionIndicator",
-        "ProgressBar", "RadioButton", "Rectangle", "ScrollView", "SearchField", "Slider", "Span", "Spans",
-        "SplitView", "Stepper", "Switch", "TabbedView", "TextEditor", "TimePicker", "TitleBar", "TitleView",
+        "NavigationStack", "Overlay", "Path", "Pin", "Polygon", "Polyline", "PositionIndicator",
+        "Rectangle", "ScrollView", "Span", "Spans",
+        "SplitView", "TabbedView", "TitleBar", "TitleView",
         "ToolbarItem", "ToolbarItems", "TrailingContent", "WebView",
     ]
 
-    /// Every record: none yet, so the registry's export says all this host realizes.
-    static let records: [HostRecord] = []
+    /// Every record, beside what the registry's export says.
+    static let records: [HostRecord] = [
+        // MARK: Entries - a control's or a part's own
+        .complete("RadioButton", "groupName"),
+    ]
 
     /// What UIKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

@@ -1,2 +1,3 @@
-ActivityIndicator: not realized
-ActivityIndicator.isRunning: not realized
+ActivityIndicator: ✅
+ActivityIndicator.isRunning: ✅
+Button.clicked: ✅

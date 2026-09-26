@@ -1,6 +1,7 @@
+Button.clicked: ✅
 Label.text: ✅
 TextField: ✅
-TextField.isPassword: not realized
+TextField.isPassword: ✅
 TextField.returnKey: not realized
 TextField.showsClearButton: not realized
 TextField.submitted: ✅

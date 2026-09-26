@@ -1,0 +1,40 @@
+# Controls on UIKit
+
+Which of UIKit's own controls each element is, and what the host does around
+them.
+
+## Toggles, values and indicators
+
+A Switch is UIKit's switch; a Slider, a Stepper, a ProgressBar and an
+ActivityIndicator are UIKit's own too, an indicator standing still - shown -
+while its work does not run. UIKit has no check box and no radio button, so
+each is a button of its own showing the system's symbol for a box or a
+circle, ticked or not, before a radio button's caption: a tap turns a box
+either way and a radio button only on, and the host layer takes the tick from
+the rest of its set. What the program writes is only shown - UIKit's controls
+send no event for a value set in code - and what the user does is reported.
+
+## Pickers
+
+A Picker is UIKit's pop-up button: its menu holds the choices, the chosen one
+ticked and its caption on the button, and the picker's title stands there
+while nothing is chosen, which UIKit's own selection-changing button cannot
+say, so the host keeps the tick itself. A menu cannot be opened from code, so
+a picker's `isOpen` is left unrealized; its opening and closing are heard.
+
+A DatePicker and a TimePicker are UIKit's date picker, compact. A day of the
+calendar and a time of the clock belong to no zone, so the picker counts and
+shows them in the Gregorian calendar at UTC: the day the user picks is the day
+the tree reads.
+
+## A field and its words
+
+A TextField is UIKit's field, a SearchField its search field, a TextEditor its
+text view; each takes the words the tree changed and leaves the user's typing
+and caret alone. One delegate serves them all: it reports the user's words,
+cut to the view's bound, keeps them unchanged while the view is read only,
+and hears the return key as submitting a field. A caret and a selection are
+counted in characters and handed to UIKit in its UTF-16 units. A text view has
+no placeholder of its own, so an editor shows one in a label over itself; an
+editor that grows with its words asks for their whole height instead of
+scrolling them.

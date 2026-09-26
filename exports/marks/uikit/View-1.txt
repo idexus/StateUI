@@ -3,7 +3,6 @@ ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
 ActivityIndicator.dropCompleted: not realized
 ActivityIndicator.frameChanged: not realized
-ActivityIndicator.margin: not realized
 Button.pinchUpdated: not realized
 Canvas.panYChannel: not realized
 CheckBox.tapCount: not realized
@@ -14,8 +13,6 @@ DatePicker.dragLeave: not realized
 DatePicker.dragOver: not realized
 DatePicker.drop: not realized
 DatePicker.frameChanged: not realized
-DatePicker.horizontalAlignment: not realized
-DatePicker.verticalAlignment: not realized
 Ellipse.pointerEntered: not realized
 Ellipse.pointerExited: not realized
 Ellipse.pointerMoved: not realized
@@ -70,14 +67,11 @@ SearchField.dragStarting: not realized
 SearchField.dragText: not realized
 SearchField.dropCompleted: not realized
 SearchField.frameChanged: not realized
-SearchField.margin: not realized
 Slider.pinchUpdated: not realized
 Stepper.panYChannel: not realized
 Switch.tapCount: not realized
 Switch.tapped: not realized
 TextEditor.frameChanged: not realized
-TextEditor.gridColumn: not realized
-TextEditor.gridRow: not realized
 TextField.allowDrop: not realized
 TextField.dragLeave: not realized
 TextField.dragOver: not realized

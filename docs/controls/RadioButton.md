@@ -16,9 +16,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/RadioButtonContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `groupName` | property | `Name` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `isOn` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `onToggled` (`toggled`) | event | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `groupName` | property | `Name` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `isOn` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `onToggled` (`toggled`) | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -44,8 +44,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
 | `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
@@ -53,26 +53,26 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `isVisible` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `maximumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ |  |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
@@ -122,8 +122,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `textCase` | property | `TextCase` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -132,7 +132,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `textColor` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -140,10 +140,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -151,7 +151,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native |  |  |  |  | ✅ |  | cannot read padding of RadioButton - AppKit's driver has no path for it yet; Android Views: cannot read padding of RadioButton - Android's driver has no path for it yet |
+| `padding` | property | `Insets` | native |  |  |  |  | ✅ |  | cannot read padding of RadioButton - AppKit's driver has no path for it yet; UIKit: cannot read padding of RadioButton - UIKit's driver has no path for it yet; Android Views: cannot read padding of RadioButton - Android's driver has no path for it yet |
 
 ## From [BorderElement](tiers/BorderElement.md)
 

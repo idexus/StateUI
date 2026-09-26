@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isPassword` | property | `Bool` | native |  |  |  |  |  |  | cannot read isPassword of TextField - AppKit's driver has no path for it yet; Android Views: cannot read isPassword of TextField - Android's driver has no path for it yet |
+| `isPassword` | property | `Bool` | native |  | ✅ |  |  |  |  | cannot read isPassword of TextField - AppKit's driver has no path for it yet; Android Views: cannot read isPassword of TextField - Android's driver has no path for it yet |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  |  |  |  | Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet |
 | `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
@@ -123,15 +123,15 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native |  |  |  |  | ✅ |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextField - Android's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  |  |
-| `isReadOnly` | property | `Bool` | native | ✅ |  |  |  | ✅ |  |  |
-| `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet |
+| `cursorPosition` | property | `Int` | native |  | ✅ |  |  | ✅ |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextField - Android's driver has no path for it yet |
+| `inputPurpose` | property | `InputPurpose` | adaptive |  |  |  |  | ✅ |  | UIKit: cannot read inputPurpose of TextField - UIKit's driver has no path for it yet |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet |
+| `isTextPredictionEnabled` | property | `Bool` | native |  | ✅ |  |  | ✅ |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `placeholder` | property | `String` | native |  |  |  |  | ✅ |  | cannot read placeholder of TextField - AppKit's driver has no path for it yet; UIKit: cannot read placeholder of TextField - UIKit's driver has no path for it yet; Android Views: cannot read placeholder of TextField - Android's driver has no path for it yet |
-| `placeholderColor` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; Android Views: cannot read placeholderColor of TextField - Android's driver has no path for it yet |
-| `selectionLength` | property | `Int` | native |  |  |  |  | ✅ |  | cannot read selectionLength of TextField - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of TextField - Android's driver has no path for it yet |
+| `placeholder` | property | `String` | native |  | ✅ |  |  | ✅ |  | cannot read placeholder of TextField - AppKit's driver has no path for it yet; Android Views: cannot read placeholder of TextField - Android's driver has no path for it yet |
+| `placeholderColor` | property | `Color` | native |  |  |  |  | ✅ |  | cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of TextField - UIKit's driver has no path for it yet; Android Views: cannot read placeholderColor of TextField - Android's driver has no path for it yet |
+| `selectionLength` | property | `Int` | native |  | ✅ |  |  | ✅ |  | cannot read selectionLength of TextField - AppKit's driver has no path for it yet; Android Views: cannot read selectionLength of TextField - Android's driver has no path for it yet |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
@@ -169,5 +169,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  | ✅ |  | cannot read horizontalTextAlignment of TextField - AppKit's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native |  |  |  |  | ✅ |  | cannot read horizontalTextAlignment of TextField - AppKit's driver has no path for it yet; UIKit: cannot read horizontalTextAlignment of TextField - UIKit's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  |  |

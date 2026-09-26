@@ -1,16 +1,12 @@
-ActivityIndicator.rotationX: not realized
+ActivityIndicator.rotationX: ✅
 Button.clicked: ✅
 Button.pivotX: ✅
 Canvas.automationExcludedWithChildren: not realized
-CheckBox.accessibilityHint: not realized
+CheckBox.accessibilityHint: ✅
 ColorBox.focus: not realized
 ColorBox.isFocusedChanged: not realized
 ColorBox.unfocus: not realized
 DatePicker.frameChanged: not realized
-DatePicker.maximumHeight: not realized
-DatePicker.maximumWidth: not realized
-DatePicker.minimumHeight: not realized
-DatePicker.minimumWidth: not realized
 Ellipse.opacity: not realized
 Ellipse.translationY: not realized
 Grid.scaleX: ✅
@@ -26,13 +22,13 @@ Path.maximumHeight: not realized
 Path.maximumWidth: not realized
 Path.minimumHeight: not realized
 Path.minimumWidth: not realized
-Picker.opacity: not realized
-Picker.translationY: not realized
+Picker.opacity: ✅
+Picker.translationY: ✅
 Polygon.scaleX: not realized
 Polyline.rotationX: not realized
 PositionIndicator.pivotX: not realized
 ProgressBar.automationExcludedWithChildren: not realized
-RadioButton.accessibilityHint: not realized
+RadioButton.accessibilityHint: ✅
 Rectangle.focus: not realized
 Rectangle.isFocusedChanged: not realized
 Rectangle.unfocus: not realized
@@ -41,11 +37,11 @@ ScrollView.maximumHeight: not realized
 ScrollView.maximumWidth: not realized
 ScrollView.minimumHeight: not realized
 ScrollView.minimumWidth: not realized
-SearchField.opacity: not realized
-SearchField.translationY: not realized
-Slider.scaleX: not realized
-Stepper.rotationX: not realized
-Switch.pivotX: not realized
+SearchField.opacity: ✅
+SearchField.translationY: ✅
+Slider.scaleX: ✅
+Stepper.rotationX: ✅
+Switch.pivotX: ✅
 TextEditor.automationExcludedWithChildren: not realized
 TextField.accessibilityHint: ✅
 TimePicker.focus: not realized

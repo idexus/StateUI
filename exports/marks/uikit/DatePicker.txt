@@ -1,9 +1,10 @@
-DatePicker: not realized
+Button.clicked: ✅
+DatePicker: ✅
 DatePicker.closed: not realized
-DatePicker.date: not realized
-DatePicker.dateChanged: not realized
+DatePicker.date: ✅
+DatePicker.dateChanged: ✅
 DatePicker.format: not realized
 DatePicker.isOpen: not realized
-DatePicker.maximumDate: not realized
-DatePicker.minimumDate: not realized
+DatePicker.maximumDate: ✅
+DatePicker.minimumDate: ✅
 DatePicker.opened: not realized

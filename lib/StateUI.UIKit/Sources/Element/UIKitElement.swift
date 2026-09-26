@@ -81,10 +81,13 @@ final class UIKitElement: NativeElement {
         element.send(event, values, in: host.runtime)
     }
 
-    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`).
+    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button its
+    /// set's other checks take away shows them taken.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { _ in }
+        element.reportUserChange(property, event, value, in: host.runtime) { peer in
+            (peer.uiKit.view as? UIKitCheckView)?.setOn(false)
+        }
     }
 }
 

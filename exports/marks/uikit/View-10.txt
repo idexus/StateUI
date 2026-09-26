@@ -3,8 +3,6 @@ Button.panYChannel: not realized
 Canvas.tapCount: not realized
 Canvas.tapped: not realized
 CheckBox.frameChanged: not realized
-CheckBox.gridColumn: not realized
-CheckBox.gridRow: not realized
 ColorBox.allowDrop: not realized
 ColorBox.dragLeave: not realized
 ColorBox.dragOver: not realized
@@ -33,8 +31,6 @@ Map.panYChannel: not realized
 Path.tapCount: not realized
 Path.tapped: not realized
 Picker.frameChanged: not realized
-Picker.gridColumn: not realized
-Picker.gridRow: not realized
 Polygon.allowDrop: not realized
 Polygon.dragLeave: not realized
 Polygon.dragOver: not realized
@@ -54,8 +50,6 @@ ProgressBar.panTouchCount: not realized
 ProgressBar.panUpdated: not realized
 ProgressBar.panXChannel: not realized
 RadioButton.frameChanged: not realized
-RadioButton.gridColumnSpan: not realized
-RadioButton.gridRowSpan: not realized
 Rectangle.area: not realized
 Rectangle.frameChanged: not realized
 ScrollView.canDrag: not realized
@@ -69,15 +63,11 @@ Slider.panYChannel: not realized
 Stepper.tapCount: not realized
 Stepper.tapped: not realized
 Switch.frameChanged: not realized
-Switch.gridColumn: not realized
-Switch.gridRow: not realized
 TextEditor.allowDrop: not realized
 TextEditor.dragLeave: not realized
 TextEditor.dragOver: not realized
 TextEditor.drop: not realized
 TextEditor.frameChanged: not realized
-TextEditor.horizontalAlignment: not realized
-TextEditor.verticalAlignment: not realized
 TextField.pointerEntered: not realized
 TextField.pointerExited: not realized
 TextField.pointerMoved: not realized

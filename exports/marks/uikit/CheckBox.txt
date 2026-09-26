@@ -1,3 +1,4 @@
-CheckBox: not realized
-CheckBox.isOn: not realized
-CheckBox.toggled: not realized
+Button.clicked: ✅
+CheckBox: ✅
+CheckBox.isOn: ✅
+CheckBox.toggled: ✅
