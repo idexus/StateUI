@@ -118,6 +118,17 @@ web view waits the same way, until the page answers. A ticket is one number
 across the process, so an answer that arrives after its renderer has gone
 answers nothing of another's.
 
+## The application's own acts
+
+An act no control of the library's stands behind - one the application's
+contract declares - is performed by what the application registered for it
+(`StateUIActs`, the host layer's `InteropActs`), handed the values its
+contract declares and answered with those it returns, once the performer
+returns; an act nothing registered is refused by its name. An event the
+application raises (`StateUIEvents`) reaches every listener to it. Both are
+said as the library loads: `JNI_OnLoad` runs on the UI thread, before
+`StateUIAndroid.load(_:)` starts the host.
+
 ## Kept values
 
 A kept state's key is in the platform's preferences, as the words its kind

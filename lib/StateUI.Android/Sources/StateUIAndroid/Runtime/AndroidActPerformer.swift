@@ -48,8 +48,9 @@ final class AndroidActPerformer {
     func perform(_ call: HostActCall, in tree: MountedTree) {
         switch call.act {
         case .currentTime:
-            let clock = Java.frame { Java.callStaticObject(JavaAPI.environment, JavaAPI.clock).map(Java.intsOf) } ?? []
-            reply(call, [clock.map(Double.init).propValue])
+            let clock = (Java.frame { Java.callStaticObject(JavaAPI.environment, JavaAPI.clock).map(Java.intsOf) } ?? [])
+                .map(Int.init) + [0, 0, 0, 0]
+            reply(call, HostActs.currentTime(hour: clock[0], minute: clock[1], second: clock[2], millisecond: clock[3]))
         case .currentTimeZone:
             let zone = Java.frame { Java.text(Java.callStaticObject(JavaAPI.environment, JavaAPI.zone)) }
             reply(call, [.string(zone)])
@@ -79,6 +80,11 @@ final class AndroidActPerformer {
             AndroidLog.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
         default:
+            // An act the application registered (`InteropActs`).
+            guard !AndroidInterop.acts.perform(
+                call, in: tree, core: core, view: { ($0.native as? AndroidElement)?.view },
+                log: { AndroidLog.error($0) })
+            else { return }
             fail(call, "the Android Views host does not perform the act '\(call.act.name)'")
         }
     }
@@ -178,22 +184,20 @@ final class AndroidActPerformer {
         reply(call, [])
     }
 
-    /// The view the act is aimed at, which its first argument names; nil, the act failed, where there is none.
+    /// The view the act is aimed at, which its first argument names (`MountedTree.aimed`); nil, the act failed,
+    /// where there is none.
     private func aimed(_ call: HostActCall, in tree: MountedTree) -> AndroidView? {
-        let target: ElementId? = switch call.arguments.first {
-        case .string(let name)?: .manual(name)
-        case .number(let number)?: .auto(Int(number))
-        default: nil
-        }
-        guard let target else {
-            fail(call, "\(call.act.name) has to say which view it is for")
+        do {
+            let element = try tree.aimed(call)
+            guard let view = (element.native as? AndroidElement)?.view else {
+                fail(call, "\(element.id) has no view")
+                return nil
+            }
+            return view
+        } catch {
+            fail(call, error.reason)
             return nil
         }
-        guard let view = (tree.root?.first(id: target)?.native as? AndroidElement)?.view else {
-            fail(call, "there is no view \(target) on screen")
-            return nil
-        }
-        return view
     }
 
     /// Keeps a script's `call` waiting for its answer, under the ticket this answers.
@@ -205,15 +209,11 @@ final class AndroidActPerformer {
     }
 
     private func reply(_ call: HostActCall, _ values: [HostValue]) {
-        if let completion = call.completion { _ = core.reply(completion, with: values) }
+        core.reply(call, values)
     }
 
     /// Fails an act: a caller waiting on it throws the reason, and one nobody waits for is logged.
     private func fail(_ call: HostActCall, _ reason: String) {
-        if let completion = call.completion {
-            _ = core.fail(completion, reason: reason)
-        } else {
-            AndroidLog.error(reason)
-        }
+        core.fail(call, reason, log: { AndroidLog.error($0) })
     }
 }
