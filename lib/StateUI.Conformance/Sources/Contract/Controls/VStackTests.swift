@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `VStackContract` on a host: a vertical stack stands its children one under another, in the order the tree gives
-/// them, and again in the order the tree changes it to.
+/// them, and again in the order the tree changes it to; what it holds is measured at its own width.
 @_spi(Host) public enum VStackTests: ConformanceFamily {
     public static let name = "VStack"
 
@@ -40,6 +40,23 @@
                 s.settle { first.values.last.map(FrameReport.place) == [0, 30, 40, 20] }
                 s.expect(second.values.last.map(FrameReport.place), [0, 0, 40, 30], "in the order the tree changed")
                 s.expect(first.values.last.map(FrameReport.place), [0, 30, 40, 20])
+            },
+            ConformanceCase("whatItHoldsIsMeasuredAtItsOwnWidth", covers: [Covered(VStackContract.self)]) { s in
+                let (stack, line) = (Received<[Double]>(), Received<[Double]>())
+                s.start {
+                    VStack {
+                        VStack { Label(LabelTests.long).lineBreak(.wordWrap) }.width(100)
+                            .onEvent(ViewContract.frameChanged) { stack.values.append($0) }.id("stack")
+                        Label("Words").onEvent(ViewContract.frameChanged) { line.values.append($0) }.id("line")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.settle { !stack.values.isEmpty && !line.values.isEmpty }
+                let one = line.values.last.map(FrameReport.size)?[1] ?? 0
+                s.settle { (stack.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2 }
+                s.expect((stack.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true,
+                         "its words wrap at its hundred, not at the room it is offered")
             },
         ]
     }

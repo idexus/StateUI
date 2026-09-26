@@ -50,21 +50,22 @@ struct AppKitLayoutItem: LayoutChild {
         LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
     }
 
-    /// The view's size for the width offered to it, its margin already taken out; its stated sizes and bounds
-    /// applied.
+    /// The view's size for the width offered to it, its margin already taken out: measured at the width it takes of
+    /// the offer, its stated sizes and bounds applied (`LayoutValues.offer`, `sized`).
+    /// Design: docs/design/host/layout.md#a-child-measured
     func fittingSize(width available: CGFloat? = nil) -> NSSize {
+        let offer = values.offer(available.map { Double($0) }).map { CGFloat($0) }
         let measured: NSSize
         if let measurable = view as? AppKitWidthConstrainedMeasuring {
-            measured = measurable.fittingContentSize(width: available)
+            measured = measurable.fittingContentSize(width: offer)
         } else {
-            if let label = view as? NSTextField, let available, available.isFinite {
-                label.preferredMaxLayoutWidth = available
+            if let label = view as? NSTextField, let offer, offer.isFinite {
+                label.preferredMaxLayoutWidth = offer
             }
             measured = view.fittingSize
         }
-        return NSSize(
-            width: values.boundedWidth(values.width ?? Double(measured.width)),
-            height: values.boundedHeight(values.height ?? Double(measured.height)))
+        let sized = values.sized(LayoutSize(width: Double(measured.width), height: Double(measured.height)))
+        return NSSize(width: sized.width, height: sized.height)
     }
 
     /// Whether a parent would place this item as it places `other`: the same view with the same values.
