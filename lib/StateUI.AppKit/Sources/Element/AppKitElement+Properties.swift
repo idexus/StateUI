@@ -312,71 +312,33 @@ extension AppKitElement {
     }
 
     func font(fallback: NSFont) -> NSFont {
-        appKitFont(
-            family: name(.fontFamily),
-            size: value(.fontSize)?.number,
-            attributes: value(.fontAttributes)?.enumeration,
-            fallback: fallback)
+        let look = element.textLook
+        return appKitFont(family: look.family, size: look.size, attributes: look.attributes, fallback: fallback)
     }
 
+    /// A label's words: its spans as runs over the label's own look (`MountedElement.textRuns`), else its own words
+    /// in its case.
+    /// Design: docs/design/host/tree.md#runs-of-words
     func attributedLabelText() -> NSAttributedString {
-        let baseFont = font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
-        let baseColor = color(.textColor) ?? .labelColor
-        let formatted = slot(.spans)
-        let runs = formatted?.children ?? [self]
+        let look = element.textLook
+        let fallbackFont = NSFont.systemFont(ofSize: NSFont.systemFontSize)
+        let labelCase = value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:)) ?? .none
+        let runs = element.textRuns ?? [TextRun(text: labelCase.applied(to: string(.text) ?? ""), look: TextLook())]
         let result = NSMutableAttributedString()
-
-        for run in runs where run.type == .span || run === self {
-            let source = run.string(.text) ?? ""
-            let text = run.transformed(source, by: run.enumeration(.textCase))
-            let font = run === self ? baseFont : run.font(fallback: baseFont)
-            let color = run === self ? baseColor : (run.color(.textColor) ?? baseColor)
-            let spacing = run.number(.characterSpacing) ?? number(.characterSpacing) ?? 0
-            let decorations = run.enumeration(.textDecorations)
-                ?? enumeration(.textDecorations) ?? 0
-            let lineHeight = run.number(.lineHeight) ?? number(.lineHeight)
-            var attributes: [NSAttributedString.Key: Any] = [
-                .font: font,
-                .foregroundColor: color,
-                .kern: spacing,
-            ]
-
-            if run !== self, let background = run.color(.background) {
-                attributes[.backgroundColor] = background
-            }
-            if decorations & 1 == 1 {
-                attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
-            }
-            if decorations & 2 == 2 {
-                attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
-            }
-            if let lineHeight, lineHeight.isFinite, lineHeight > 0 {
-                let paragraph = NSMutableParagraphStyle()
-                let height = font.boundingRectForFont.height * lineHeight
-                paragraph.minimumLineHeight = height
-                paragraph.maximumLineHeight = height
-                attributes[.paragraphStyle] = paragraph
-            }
-
-            result.append(NSAttributedString(string: text, attributes: attributes))
+        for run in runs {
+            let runLook = run.look.over(look)
+            let font = appKitFont(
+                family: runLook.family, size: runLook.size, attributes: runLook.attributes, fallback: fallbackFont)
+            result.append(NSAttributedString(
+                string: run.text, attributes: appKitAttributes(runLook, font: font, fallbackColor: .labelColor)))
         }
-
         return result
     }
 
-    func effectiveMaximumLines() -> Int {
-        switch enumeration(.lineBreak) {
-        case 0, 3, 4, 5: return 1
-        default: return max(0, whole(.maximumLines) ?? 0)
-        }
-    }
-
-    /// The text a field shows from its state. The value this frame carries
-    /// comes first: a user's report reaches the core's store only when its
-    /// jobs run, so reading the store here would write the field back one
-    /// keystroke behind the user.
-    func transformed(_ text: String, by transform: Int32?) -> String {
-        appKitTextCased(text, transform)
+    /// The most lines a label's words stand on, by the host layer's rule; none for no bound.
+    func maximumLines() -> Int {
+        let breaking = value(.lineBreak)?.enumeration.flatMap(LineBreak.init(rawValue:)) ?? .wordWrap
+        return breaking.lines(maximum: whole(.maximumLines)) ?? 0
     }
 
     func color(_ property: Prop) -> NSColor? {

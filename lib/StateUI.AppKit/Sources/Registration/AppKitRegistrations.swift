@@ -79,7 +79,7 @@ enum AppKitRegistrations {
         appKitFont(
             family: values[FontElementContract.fontFamily]?.text,
             size: values[FontElementContract.fontSize],
-            attributes: values[FontElementContract.fontAttributes]?.rawValue,
+            attributes: values[FontElementContract.fontAttributes],
             fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
     }
 }

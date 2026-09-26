@@ -35,7 +35,7 @@ extension AppKitRegistrations {
                     font: appKitFont(
                         family: values[FontElementContract.fontFamily]?.text,
                         size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes]?.rawValue,
+                        attributes: values[FontElementContract.fontAttributes],
                         fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
@@ -74,7 +74,7 @@ extension AppKitRegistrations {
                     font: appKitFont(
                         family: values[FontElementContract.fontFamily]?.text,
                         size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes]?.rawValue,
+                        attributes: values[FontElementContract.fontAttributes],
                         fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
@@ -105,7 +105,7 @@ extension AppKitRegistrations {
                     font: appKitFont(
                         family: values[FontElementContract.fontFamily]?.text,
                         size: values[FontElementContract.fontSize],
-                        attributes: values[FontElementContract.fontAttributes]?.rawValue,
+                        attributes: values[FontElementContract.fontAttributes],
                         fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                     textColor: values[TextStyleElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,

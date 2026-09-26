@@ -3,6 +3,8 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A native single-line text field that can change between ordinary and
 /// secure AppKit editors without changing the StateUI element's identity.
@@ -127,7 +129,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     func controlTextDidChange(_ notification: Notification) {
         guard !writing else { return }
 
-        let typed = limited(textField.stringValue)
+        let typed = InputWords.cut(textField.stringValue, toBound: maximumLength) ?? textField.stringValue
 
         if typed != textField.stringValue {
             writing = true
@@ -193,23 +195,12 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         else { return }
 
         let text = editor.string
-        let start = utf16Offset(of: max(0, cursorPosition ?? 0), in: text)
-        let end = utf16Offset(
-            of: max(0, cursorPosition ?? 0) + max(0, selectionLength ?? 0),
-            in: text)
-        editor.selectedRange = NSRange(location: start, length: max(0, end - start))
+        let selection = InputWords.utf16Selection(
+            start: cursorPosition ?? 0, length: selectionLength ?? 0, in: text)
+        editor.selectedRange = NSRange(location: selection.start, length: selection.length)
     }
 
-    private func limited(_ text: String) -> String {
-        guard let maximumLength, text.count > maximumLength else { return text }
-        return String(text.prefix(maximumLength))
-    }
 
-    private func utf16Offset(of characterOffset: Int, in text: String) -> Int {
-        let offset = min(characterOffset, text.count)
-        let index = text.index(text.startIndex, offsetBy: offset)
-        return index.utf16Offset(in: text)
-    }
 
     func typeForTesting(_ text: String) {
         textField.stringValue = text

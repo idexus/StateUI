@@ -19,22 +19,8 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
     /// The layout's own box: its background and outline on its shape, and its cut.
     let decoration = AppKitDecoration()
 
-    /// Where the children's places animate; nil places them at once.
-    weak var layoutMotion: LayoutMotion?
-
-    /// The layout's own motion, as its patches said it; nil while it says nothing of its own.
-    var motion: HostLayoutMotion?
-
-    /// Whether this layout's frame, or any frame under it, is read.
-    var framesRead = false
-
-    /// Whether a patch reached the layout since its last arrangement.
-    private var patched = false
-
-    /// The width of the last arrangement; nil before the first.
-    private var arrangedWidth: CGFloat?
-
-    private var arrangement = Arrangement()
+    /// How the children travel to their places, by the host layer's rule.
+    let places = TravellingPlaces()
 
     override func layout() {
         super.layout()
@@ -53,43 +39,18 @@ class AppKitTravellingLayout: AppKitHitTestView, AppKitDirectedLayout {
         decoration.draw(in: bounds)
     }
 
-    /// Notes that a patch reached the layout: its next arrangement places what the patch changed.
-    func patchArrived() {
-        patched = true
-    }
-
     /// Starts an arrangement, deciding once for every child how it is placed.
     func beginArrangement() {
-        let width = bounds.width
-        let said = patched && arrangedWidth != nil
-        let resized = arrangedWidth.map { abs($0 - width) > 0.5 } ?? false
-        patched = false
-        arrangedWidth = width
-
-        arrangement = layoutMotion?.arrangement(
-            said: said,
-            resized: resized,
-            motion: motion,
-            framesRead: framesRead) ?? Arrangement()
+        places.begin(width: Double(bounds.width))
     }
 
     /// Stands `item` at `frame`, or on its way there; an item no element places arrives at once.
     func place(_ item: AppKitLayoutItem, at frame: NSRect) {
-        guard let layoutMotion, let placed = item.placed else {
+        guard let placed = item.placed else {
             item.view.frame = frame
             return
         }
-
-        var stated: MotionLanes = []
-        if item.values.width != nil { stated.insert(.width) }
-        if item.values.height != nil { stated.insert(.height) }
-        layoutMotion.place(
-            placed,
-            mount: item.mount,
-            at: frame.placed,
-            stated: stated,
-            fadeIn: item.fadeIn,
-            in: arrangement)
+        places.place(placed, mount: item.mount, at: frame.placed, values: item.values, fadeIn: item.fadeIn)
     }
 }
 

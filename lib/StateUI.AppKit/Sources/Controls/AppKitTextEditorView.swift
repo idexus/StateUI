@@ -3,6 +3,8 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
 /// A native multiline editor whose scroll ownership stays inside the control.
 @MainActor
@@ -147,7 +149,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
 
     func textDidChange(_ notification: Notification) {
         guard !writing else { return }
-        let typed = limited(textView.string)
+        let typed = InputWords.cut(textView.string, toBound: maximumLength) ?? textView.string
 
         if typed != textView.string {
             writing = true
@@ -171,23 +173,12 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     private func applySelection() {
         guard cursorPosition != nil || selectionLength != nil else { return }
         let words = textView.string
-        let start = utf16Offset(of: max(0, cursorPosition ?? 0), in: words)
-        let end = utf16Offset(
-            of: max(0, cursorPosition ?? 0) + max(0, selectionLength ?? 0),
-            in: words)
-        textView.selectedRange = NSRange(location: start, length: max(0, end - start))
+        let selection = InputWords.utf16Selection(
+            start: cursorPosition ?? 0, length: selectionLength ?? 0, in: words)
+        textView.selectedRange = NSRange(location: selection.start, length: selection.length)
     }
 
-    private func limited(_ text: String) -> String {
-        guard let maximumLength, text.count > maximumLength else { return text }
-        return String(text.prefix(maximumLength))
-    }
 
-    private func utf16Offset(of characterOffset: Int, in text: String) -> Int {
-        let offset = min(characterOffset, text.count)
-        let index = text.index(text.startIndex, offsetBy: offset)
-        return index.utf16Offset(in: text)
-    }
 
     private func nativeAlignment(_ value: Int32?) -> NSTextAlignment {
         switch value {

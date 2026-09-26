@@ -170,7 +170,7 @@ final class AppKitElement: NSObject, NativeElement {
     func crossed() {
         guard leaving, let view else { return }
         leaving = false
-        (view.superview as? AppKitTravellingLayout)?.patchArrived()
+        (view.superview as? AppKitTravellingLayout)?.places.patchArrived()
         applyVisibility()
         view.invalidateMeasurements()
     }
@@ -238,10 +238,10 @@ final class AppKitElement: NSObject, NativeElement {
     /// same children in a room that is moving, and they follow it.
     func configureLayoutMotion() {
         guard let layout = view as? AppKitTravellingLayout else { return }
-        layout.layoutMotion = host?.runtime.layoutMotion
-        layout.motion = motion
-        layout.framesRead = framesRead
-        layout.patchArrived()
+        layout.places.layoutMotion = host?.runtime.layoutMotion
+        layout.places.motion = motion
+        layout.places.framesRead = framesRead
+        layout.places.patchArrived()
     }
 
     /// Whether this element can fade in as it joins a standing layout: its

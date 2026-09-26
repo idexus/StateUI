@@ -23,7 +23,8 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     private var menuOpen = false
     private var openingScheduled = false
     private var suppressLifecycle = false
-    private var sourceItems: [String] = []
+    /// The choices and the choice as the tree last wrote them (`PickerChoices`).
+    private var written = PickerChoices()
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -90,11 +91,10 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         writeOpen: Bool
     ) {
         ProgramWrite.perform {
-            let itemsChanged = sourceItems != items
-            sourceItems = items
-            if itemsChanged {
+            let write = written.write(items, chosen: selectedIndex, choiceChanged: writeSelection)
+            if let choices = write.choices {
                 button.removeAllItems()
-                button.addItems(withTitles: items)
+                button.addItems(withTitles: choices)
                 button.menu?.delegate = self
             }
 
@@ -104,14 +104,8 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
             button.contentTintColor = tint
             styleItems(font: font, color: textColor, alignment: alignment)
 
-            if writeSelection || itemsChanged {
-                if items.indices.contains(selectedIndex) {
-                    button.selectItem(at: selectedIndex)
-                } else {
-                    button.select(nil)
-                }
-            } else if !items.indices.contains(button.indexOfSelectedItem) {
-                button.select(nil)
+            if write.writesChoice {
+                if let chosen = write.chosen { button.selectItem(at: chosen) } else { button.select(nil) }
             }
 
             placeholder.stringValue = title ?? ""
@@ -127,7 +121,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     private func styleItems(font: NSFont, color: NSColor, alignment: NSTextAlignment) {
         for (index, item) in button.itemArray.enumerated() {
             item.attributedTitle = styled(
-                sourceItems[index],
+                written.choices[index],
                 font: font,
                 color: color,
                 alignment: alignment)
@@ -214,7 +208,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     var contentTintForTesting: NSColor? { button.contentTintColor }
 
     func chooseForTesting(index: Int) {
-        if sourceItems.indices.contains(index) {
+        if written.choices.indices.contains(index) {
             button.selectItem(at: index)
         } else {
             button.select(nil)

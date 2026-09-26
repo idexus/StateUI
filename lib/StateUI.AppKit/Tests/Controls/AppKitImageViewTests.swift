@@ -24,7 +24,7 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertEqual(view.renderedImageFrame.origin.y, -30, accuracy: 0.001)
         XCTAssertEqual(view.renderedImageFrame.width, 120, accuracy: 0.001)
         XCTAssertEqual(view.renderedImageFrame.height, 120, accuracy: 0.001)
-        XCTAssertEqual(view.nativeImageScaling, .scaleProportionallyUpOrDown)
+        XCTAssertEqual(view.nativeImageScaling, .scaleAxesIndependently, "over the place it covers")
     }
 
     @MainActor

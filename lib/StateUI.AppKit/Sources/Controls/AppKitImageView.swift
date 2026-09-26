@@ -3,9 +3,13 @@
 
 #if os(macOS)
 import AppKit
-import StateUI
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
-/// A native image surface with the same four scaling choices on every host.
+/// A native image surface with the same four scaling choices on every host: fitted, stretched and centred by the
+/// native view's own scaling, and covering the room where the host layer places it (`PictureArithmetic.place`),
+/// which no scaling of AppKit's does.
+/// Design: docs/design/host/layout.md#a-picture
 @MainActor
 final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     private let imageView = NSImageView()
@@ -72,41 +76,21 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
 
     override func layout() {
         super.layout()
-
+        imageView.frame = bounds
         switch aspect {
         case .fit:
-            imageView.frame = bounds
             imageView.imageScaling = .scaleProportionallyUpOrDown
-
         case .fill:
-            imageView.frame = Self.fillFrame(
-                imageSize: imageView.image?.size ?? .zero,
-                bounds: bounds)
-            imageView.imageScaling = .scaleProportionallyUpOrDown
-
-        case .stretch:
-            imageView.frame = bounds
+            let size = imageView.image?.size ?? .zero
+            imageView.frame = NSRect(placed: PictureArithmetic.place(
+                LayoutSize(width: Double(size.width), height: Double(size.height)),
+                in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: .fill))
             imageView.imageScaling = .scaleAxesIndependently
-
+        case .stretch:
+            imageView.imageScaling = .scaleAxesIndependently
         case .center:
-            imageView.frame = bounds
             imageView.imageScaling = .scaleNone
         }
-    }
-
-    private static func fillFrame(imageSize: NSSize, bounds: NSRect) -> NSRect {
-        guard imageSize.width > 0, imageSize.height > 0,
-              bounds.width > 0, bounds.height > 0 else {
-            return bounds
-        }
-
-        let scale = max(bounds.width / imageSize.width, bounds.height / imageSize.height)
-        let size = NSSize(width: imageSize.width * scale, height: imageSize.height * scale)
-        return NSRect(
-            x: bounds.midX - size.width / 2,
-            y: bounds.midY - size.height / 2,
-            width: size.width,
-            height: size.height)
     }
 }
 

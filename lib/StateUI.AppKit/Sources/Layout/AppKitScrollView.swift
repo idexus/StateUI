@@ -28,7 +28,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private let documentSurface = AppKitScrollDocumentView()
     private let stackWrapper = AppKitStackView(axis: .vertical)
     private var usesStackWrapper = false
-    private var pendingOffset: NSPoint?
+    /// The offset the tree writes, kept for the first layout where it comes before it (`WrittenScrollOffset`).
+    private var writtenOffset = WrittenScrollOffset()
     private var lastObservedOffset = NSPoint.zero
     private var gestureScroller: WheelScroller?
 
@@ -119,24 +120,12 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         hasVerticalScroller = allowsVertical && verticalBarVisibility != 2
         autohidesScrollers = verticalBarVisibility != 1 && horizontalBarVisibility != 1
 
-        if self.orientation == .neither {
-            pendingOffset = .zero
-        } else if let offset, offset.x.isFinite, offset.y.isFinite {
-            // An offset the scroller already stands at is not written again:
-            // the user's own report comes back as the state it wrote, and
-            // moving the clip view to where it stands mid-gesture interrupts
-            // the platform's own scroll on every report.
-            if abs(offset.x - lastObservedOffset.x) < 0.5, abs(offset.y - lastObservedOffset.y) < 0.5 {
-                pendingOffset = nil
-            } else {
-                pendingOffset = offset
-                if documentSurface.frame.width > 0, documentSurface.frame.height > 0 {
-                    move(to: offset, asUser: false)
-                    pendingOffset = nil
-                }
-            }
+        // Design: docs/design/host/layout.md#an-offset-the-tree-writes
+        if let target = writtenOffset.written(
+            offset.map { Point($0) }, standing: Point(lastObservedOffset), orientation: self.orientation
+        ) {
+            move(to: NSPoint(x: target.x, y: target.y), asUser: false)
         }
-        if pendingOffset != nil { needsLayout = true }
     }
 
     override var intrinsicContentSize: NSSize {
@@ -196,9 +185,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         documentSurface.arrange(in: contentSize)
         super.layout()
 
-        if let pendingOffset {
-            self.pendingOffset = nil
-            move(to: pendingOffset, asUser: false)
+        if let target = writtenOffset.laidOutNow() {
+            move(to: NSPoint(x: target.x, y: target.y), asUser: false)
         } else {
             move(to: contentView.bounds.origin, asUser: false)
         }
