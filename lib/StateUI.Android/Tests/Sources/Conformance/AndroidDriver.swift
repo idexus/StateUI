@@ -89,35 +89,6 @@ final class AndroidDriver: HostDriver {
         layOut()
     }
 
-    func perform(_ act: UserAct, on element: MountedElement) throws {
-        let view = (element.native as? AndroidElement)?.view
-        switch (act, view) {
-        case (.activate, let button as AndroidButtonView): button.click()
-        case (.toggle, let toggle as AndroidToggleView): toggle.click()
-        case (.type(let words), let field as AndroidTextFieldView): Self.type(words, into: field)
-        case (.submit, let field as AndroidTextFieldView):
-            // The keyboard's own action, as the field's return key says it: done, or search for a search field.
-            Java.call(field.reference, Self.onEditorAction, .int(element.type == .searchField ? 3 : 6))
-        case (.answer(let caption, let words), _):
-            let answered = Java.frame {
-                Java.callStaticBool(
-                    Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
-            }
-            guard answered else { throw DriverCannot("answer by \(caption)") }
-        case (.switchAway, _) where element.type == .window: renderer?.setPhase(.inactive)
-        case (.switchBack, _) where element.type == .window: renderer?.setPhase(.active)
-        case (.minimize, _) where element.type == .window:
-            renderer?.setPhase(.inactive)
-            renderer?.setPhase(.background)
-        case (.restore, _) where element.type == .window: renderer?.setPhase(.active)
-        case (.close, _) where element.type == .window:
-            renderer?.setPhase(.inactive)
-            renderer?.setPhase(.background)
-            renderer?.destroying()
-        default: throw DriverCannot(act, on: element)
-        }
-    }
-
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         let view = (element.native as? AndroidElement)?.view
         switch (property, view) {
@@ -164,33 +135,22 @@ final class AndroidDriver: HostDriver {
         return Java.callBool(view.reference, TestJava.hasFocus)
     }
 
-    /// Types `words` as the whole of a field's words, as the keyboard edits them: the field's own words replaced in
-    /// its editable text, which its watcher hears as it hears a key.
-    private static func type(_ words: String, into field: AndroidTextFieldView) {
-        let editable = Java.callObject(field.reference, JavaAPI.getText)!
-        let text = Java.string(words)
-        let length = Java.callInt(editable, length)
-        Java.release(local: Java.callObject(editable, replace, .int(0), .int(length), .object(text)))
-        Java.release(local: text)
-        Java.release(local: editable)
-    }
-
-    private static let clearFocus = Java.method(JavaAPI.view, "clearFocus", "()V")
-    private static let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
-    private static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
-    private static let question = Java.staticMethod(dialogs, "question", "()[Ljava/lang/String;")
-    private static let answer = Java.staticMethod(
+    static let clearFocus = Java.method(JavaAPI.view, "clearFocus", "()V")
+    static let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
+    static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
+    static let question = Java.staticMethod(dialogs, "question", "()[Ljava/lang/String;")
+    static let answer = Java.staticMethod(
         dialogs, "answer", "(Ljava/lang/String;Ljava/lang/String;)Z")
-    private static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
-    private static let setContentView = Java.method(
+    static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
+    static let setContentView = Java.method(
         Java.findClass("android/app/Activity"), "setContentView", "(Landroid/view/View;)V")
-    private static let looper = Java.findClass("stateui/android/test/TestLooper")
-    private static let runLooperFor = Java.staticMethod(looper, "run", "(J)V")
-    private static let editable = Java.findClass("android/text/Editable")
-    private static let replace = Java.method(
+    static let looper = Java.findClass("stateui/android/test/TestLooper")
+    static let runLooperFor = Java.staticMethod(looper, "run", "(J)V")
+    static let editable = Java.findClass("android/text/Editable")
+    static let replace = Java.method(
         editable, "replace", "(IILjava/lang/CharSequence;)Landroid/text/Editable;")
-    private static let length = Java.method(Java.findClass("java/lang/CharSequence"), "length", "()I")
-    private static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
-    private static let getAlpha = Java.method(JavaAPI.view, "getAlpha", "()F")
-    private static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
+    static let length = Java.method(Java.findClass("java/lang/CharSequence"), "length", "()I")
+    static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
+    static let getAlpha = Java.method(JavaAPI.view, "getAlpha", "()F")
+    static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
 }

@@ -27,6 +27,21 @@ public final class TestTouches {
         send(view, time + 10, MotionEvent.ACTION_UP, 1, x, y, to);
     }
 
+    /**
+     * Two fingers on either side of (`x`, `y`) pixels of the view, 600 pixels apart, spreading by a tenth so Android
+     * tells the pinch apart, then by `scale` in one step - one step of the pinch scaled by `scale` - then lifted.
+     */
+    public static void pinchBy(View view, float x, float y, float scale) {
+        float begun = 660;
+        long time = 0;
+        send(view, time, MotionEvent.ACTION_DOWN, 1, x, y, 600);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_DOWN | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, 600);
+        send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, begun);
+        send(view, time += 20, MotionEvent.ACTION_MOVE, 2, x, y, begun * scale);
+        send(view, time += 10, MotionEvent.ACTION_POINTER_UP | (1 << MotionEvent.ACTION_POINTER_INDEX_SHIFT), 2, x, y, begun * scale);
+        send(view, time + 10, MotionEvent.ACTION_UP, 1, x, y, begun * scale);
+    }
+
     private static void send(View view, long time, int action, int fingers, float x, float y, float apart) {
         MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[fingers];
         MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[fingers];
@@ -43,6 +58,14 @@ public final class TestTouches {
         MotionEvent event = MotionEvent.obtain(0, time, action, fingers, properties, coords, 0, 0, 1, 1, 0, 0,
                 InputDevice.SOURCE_TOUCHSCREEN, 0);
         view.dispatchTouchEvent(event);
+        event.recycle();
+    }
+
+    /** A mouse doing `action` - entering, moving or leaving - over the view at (`x`, `y`) pixels. */
+    public static void hover(View view, int action, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, action, x, y, 0);
+        event.setSource(InputDevice.SOURCE_MOUSE);
+        view.dispatchGenericMotionEvent(event);
         event.recycle();
     }
 

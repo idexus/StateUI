@@ -14,21 +14,21 @@ ActivityIndicator.gridRow: ✅
 ActivityIndicator.gridRowSpan: ✅
 ActivityIndicator.horizontalAlignment: ✅
 ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.panUpdated: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.panXChannel: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.panYChannel: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pinchUpdated: cannot pinch on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pointerEntered: cannot hover on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pointerExited: cannot hover on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pointerMoved: cannot hover on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pointerPressed: cannot hover on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.pointerReleased: cannot hover on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.swipeDirection: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.swipeThreshold: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.swiped: cannot pan on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.tapCount: cannot tap on ActivityIndicator - Android's driver has no path for it yet
-ActivityIndicator.tapped: cannot tap on ActivityIndicator - Android's driver has no path for it yet
+ActivityIndicator.panTouchCount: ✅
+ActivityIndicator.panUpdated: ✅
+ActivityIndicator.panXChannel: ✅
+ActivityIndicator.panYChannel: ✅
+ActivityIndicator.pinchUpdated: ✅
+ActivityIndicator.pointerEntered: ✅
+ActivityIndicator.pointerExited: ✅
+ActivityIndicator.pointerMoved: ✅
+ActivityIndicator.pointerPressed: ✅
+ActivityIndicator.pointerReleased: ✅
+ActivityIndicator.swipeDirection: ✅
+ActivityIndicator.swipeThreshold: ✅
+ActivityIndicator.swiped: ✅
+ActivityIndicator.tapCount: ✅
+ActivityIndicator.tapped: ✅
 ActivityIndicator.verticalAlignment: ✅
 Button.allowDrop: not realized
 Button.area: ✅
@@ -47,21 +47,21 @@ Button.gridRow: ✅
 Button.gridRowSpan: ✅
 Button.horizontalAlignment: ✅
 Button.margin: ✅
-Button.panTouchCount: cannot pan on Button - Android's driver has no path for it yet
-Button.panUpdated: cannot pan on Button - Android's driver has no path for it yet
-Button.panXChannel: cannot pan on Button - Android's driver has no path for it yet
-Button.panYChannel: cannot pan on Button - Android's driver has no path for it yet
-Button.pinchUpdated: cannot pinch on Button - Android's driver has no path for it yet
-Button.pointerEntered: cannot hover on Button - Android's driver has no path for it yet
-Button.pointerExited: cannot hover on Button - Android's driver has no path for it yet
-Button.pointerMoved: cannot hover on Button - Android's driver has no path for it yet
-Button.pointerPressed: cannot hover on Button - Android's driver has no path for it yet
-Button.pointerReleased: cannot hover on Button - Android's driver has no path for it yet
-Button.swipeDirection: cannot pan on Button - Android's driver has no path for it yet
-Button.swipeThreshold: cannot pan on Button - Android's driver has no path for it yet
-Button.swiped: cannot pan on Button - Android's driver has no path for it yet
-Button.tapCount: cannot tap on Button - Android's driver has no path for it yet
-Button.tapped: cannot tap on Button - Android's driver has no path for it yet
+Button.panTouchCount: ✅
+Button.panUpdated: ✅
+Button.panXChannel: ✅
+Button.panYChannel: ✅
+Button.pinchUpdated: ✅
+Button.pointerEntered: ✅
+Button.pointerExited: ✅
+Button.pointerMoved: ✅
+Button.pointerPressed: ✅
+Button.pointerReleased: ✅
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
+Button.tapCount: ✅
+Button.tapped: ✅
 Button.verticalAlignment: ✅
 Canvas.allowDrop: not realized
 Canvas.area: ✅
@@ -79,21 +79,21 @@ Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
 Canvas.horizontalAlignment: ✅
 Canvas.margin: ✅
-Canvas.panTouchCount: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.panUpdated: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.panXChannel: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.panYChannel: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.pinchUpdated: cannot pinch on Canvas - Android's driver has no path for it yet
-Canvas.pointerEntered: cannot hover on Canvas - Android's driver has no path for it yet
-Canvas.pointerExited: cannot hover on Canvas - Android's driver has no path for it yet
-Canvas.pointerMoved: cannot hover on Canvas - Android's driver has no path for it yet
-Canvas.pointerPressed: cannot hover on Canvas - Android's driver has no path for it yet
-Canvas.pointerReleased: cannot hover on Canvas - Android's driver has no path for it yet
-Canvas.swipeDirection: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.swipeThreshold: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.swiped: cannot pan on Canvas - Android's driver has no path for it yet
-Canvas.tapCount: cannot tap on Canvas - Android's driver has no path for it yet
-Canvas.tapped: cannot tap on Canvas - Android's driver has no path for it yet
+Canvas.panTouchCount: ✅
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
+Canvas.panYChannel: ✅
+Canvas.pinchUpdated: ✅
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Canvas.pointerMoved: ✅
+Canvas.pointerPressed: ✅
+Canvas.pointerReleased: ✅
+Canvas.swipeDirection: ✅
+Canvas.swipeThreshold: ✅
+Canvas.swiped: ✅
+Canvas.tapCount: ✅
+Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 CheckBox.allowDrop: not realized
 CheckBox.area: ✅
@@ -111,21 +111,21 @@ CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.margin: ✅
-CheckBox.panTouchCount: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.panUpdated: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.panXChannel: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.panYChannel: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.pinchUpdated: cannot pinch on CheckBox - Android's driver has no path for it yet
-CheckBox.pointerEntered: cannot hover on CheckBox - Android's driver has no path for it yet
-CheckBox.pointerExited: cannot hover on CheckBox - Android's driver has no path for it yet
-CheckBox.pointerMoved: cannot hover on CheckBox - Android's driver has no path for it yet
-CheckBox.pointerPressed: cannot hover on CheckBox - Android's driver has no path for it yet
-CheckBox.pointerReleased: cannot hover on CheckBox - Android's driver has no path for it yet
-CheckBox.swipeDirection: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.swipeThreshold: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.swiped: cannot pan on CheckBox - Android's driver has no path for it yet
-CheckBox.tapCount: cannot tap on CheckBox - Android's driver has no path for it yet
-CheckBox.tapped: cannot tap on CheckBox - Android's driver has no path for it yet
+CheckBox.panTouchCount: ✅
+CheckBox.panUpdated: ✅
+CheckBox.panXChannel: ✅
+CheckBox.panYChannel: ✅
+CheckBox.pinchUpdated: ✅
+CheckBox.pointerEntered: ✅
+CheckBox.pointerExited: ✅
+CheckBox.pointerMoved: ✅
+CheckBox.pointerPressed: ✅
+CheckBox.pointerReleased: ✅
+CheckBox.swipeDirection: ✅
+CheckBox.swipeThreshold: ✅
+CheckBox.swiped: ✅
+CheckBox.tapCount: ✅
+CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
 ColorBox.allowDrop: not realized
 ColorBox.area: ✅
@@ -143,21 +143,21 @@ ColorBox.gridRow: ✅
 ColorBox.gridRowSpan: ✅
 ColorBox.horizontalAlignment: ✅
 ColorBox.margin: ✅
-ColorBox.panTouchCount: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.panUpdated: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.panXChannel: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.panYChannel: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.pinchUpdated: cannot pinch on ColorBox - Android's driver has no path for it yet
-ColorBox.pointerEntered: cannot hover on ColorBox - Android's driver has no path for it yet
-ColorBox.pointerExited: cannot hover on ColorBox - Android's driver has no path for it yet
-ColorBox.pointerMoved: cannot hover on ColorBox - Android's driver has no path for it yet
-ColorBox.pointerPressed: cannot hover on ColorBox - Android's driver has no path for it yet
-ColorBox.pointerReleased: cannot hover on ColorBox - Android's driver has no path for it yet
-ColorBox.swipeDirection: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.swipeThreshold: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.swiped: cannot pan on ColorBox - Android's driver has no path for it yet
-ColorBox.tapCount: cannot tap on ColorBox - Android's driver has no path for it yet
-ColorBox.tapped: cannot tap on ColorBox - Android's driver has no path for it yet
+ColorBox.panTouchCount: ✅
+ColorBox.panUpdated: ✅
+ColorBox.panXChannel: ✅
+ColorBox.panYChannel: ✅
+ColorBox.pinchUpdated: ✅
+ColorBox.pointerEntered: ✅
+ColorBox.pointerExited: ✅
+ColorBox.pointerMoved: ✅
+ColorBox.pointerPressed: ✅
+ColorBox.pointerReleased: ✅
+ColorBox.swipeDirection: ✅
+ColorBox.swipeThreshold: ✅
+ColorBox.swiped: ✅
+ColorBox.tapCount: ✅
+ColorBox.tapped: ✅
 ColorBox.verticalAlignment: ✅
 DatePicker.allowDrop: not realized
 DatePicker.area: ✅
@@ -175,21 +175,21 @@ DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.margin: ✅
-DatePicker.panTouchCount: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.panUpdated: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.panXChannel: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.panYChannel: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.pinchUpdated: cannot pinch on DatePicker - Android's driver has no path for it yet
-DatePicker.pointerEntered: cannot hover on DatePicker - Android's driver has no path for it yet
-DatePicker.pointerExited: cannot hover on DatePicker - Android's driver has no path for it yet
-DatePicker.pointerMoved: cannot hover on DatePicker - Android's driver has no path for it yet
-DatePicker.pointerPressed: cannot hover on DatePicker - Android's driver has no path for it yet
-DatePicker.pointerReleased: cannot hover on DatePicker - Android's driver has no path for it yet
-DatePicker.swipeDirection: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.swipeThreshold: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.swiped: cannot pan on DatePicker - Android's driver has no path for it yet
-DatePicker.tapCount: cannot tap on DatePicker - Android's driver has no path for it yet
-DatePicker.tapped: cannot tap on DatePicker - Android's driver has no path for it yet
+DatePicker.panTouchCount: ✅
+DatePicker.panUpdated: ✅
+DatePicker.panXChannel: ✅
+DatePicker.panYChannel: ✅
+DatePicker.pinchUpdated: ✅
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+DatePicker.pointerMoved: ✅
+DatePicker.pointerPressed: ✅
+DatePicker.pointerReleased: ✅
+DatePicker.swipeDirection: ✅
+DatePicker.swipeThreshold: ✅
+DatePicker.swiped: ✅
+DatePicker.tapCount: ✅
+DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowDrop: not realized
 Ellipse.area: ✅
@@ -207,21 +207,21 @@ Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.margin: ✅
-Ellipse.panTouchCount: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.panUpdated: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.panXChannel: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.panYChannel: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.pinchUpdated: cannot pinch on Ellipse - Android's driver has no path for it yet
-Ellipse.pointerEntered: cannot hover on Ellipse - Android's driver has no path for it yet
-Ellipse.pointerExited: cannot hover on Ellipse - Android's driver has no path for it yet
-Ellipse.pointerMoved: cannot hover on Ellipse - Android's driver has no path for it yet
-Ellipse.pointerPressed: cannot hover on Ellipse - Android's driver has no path for it yet
-Ellipse.pointerReleased: cannot hover on Ellipse - Android's driver has no path for it yet
-Ellipse.swipeDirection: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.swipeThreshold: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.swiped: cannot pan on Ellipse - Android's driver has no path for it yet
-Ellipse.tapCount: cannot tap on Ellipse - Android's driver has no path for it yet
-Ellipse.tapped: cannot tap on Ellipse - Android's driver has no path for it yet
+Ellipse.panTouchCount: ✅
+Ellipse.panUpdated: ✅
+Ellipse.panXChannel: ✅
+Ellipse.panYChannel: ✅
+Ellipse.pinchUpdated: ✅
+Ellipse.pointerEntered: ✅
+Ellipse.pointerExited: ✅
+Ellipse.pointerMoved: ✅
+Ellipse.pointerPressed: ✅
+Ellipse.pointerReleased: ✅
+Ellipse.swipeDirection: ✅
+Ellipse.swipeThreshold: ✅
+Ellipse.swiped: ✅
+Ellipse.tapCount: ✅
+Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
 Grid.allowDrop: not realized
 Grid.area: ✅
@@ -239,21 +239,21 @@ Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
 Grid.horizontalAlignment: ✅
 Grid.margin: ✅
-Grid.panTouchCount: cannot pan on Grid - Android's driver has no path for it yet
-Grid.panUpdated: cannot pan on Grid - Android's driver has no path for it yet
-Grid.panXChannel: cannot pan on Grid - Android's driver has no path for it yet
-Grid.panYChannel: cannot pan on Grid - Android's driver has no path for it yet
-Grid.pinchUpdated: cannot pinch on Grid - Android's driver has no path for it yet
-Grid.pointerEntered: cannot hover on Grid - Android's driver has no path for it yet
-Grid.pointerExited: cannot hover on Grid - Android's driver has no path for it yet
-Grid.pointerMoved: cannot hover on Grid - Android's driver has no path for it yet
-Grid.pointerPressed: cannot hover on Grid - Android's driver has no path for it yet
-Grid.pointerReleased: cannot hover on Grid - Android's driver has no path for it yet
-Grid.swipeDirection: cannot pan on Grid - Android's driver has no path for it yet
-Grid.swipeThreshold: cannot pan on Grid - Android's driver has no path for it yet
-Grid.swiped: cannot pan on Grid - Android's driver has no path for it yet
-Grid.tapCount: cannot tap on Grid - Android's driver has no path for it yet
-Grid.tapped: cannot tap on Grid - Android's driver has no path for it yet
+Grid.panTouchCount: ✅
+Grid.panUpdated: ✅
+Grid.panXChannel: ✅
+Grid.panYChannel: ✅
+Grid.pinchUpdated: ✅
+Grid.pointerEntered: ✅
+Grid.pointerExited: ✅
+Grid.pointerMoved: ✅
+Grid.pointerPressed: ✅
+Grid.pointerReleased: ✅
+Grid.swipeDirection: ✅
+Grid.swipeThreshold: ✅
+Grid.swiped: ✅
+Grid.tapCount: ✅
+Grid.tapped: ✅
 Grid.verticalAlignment: ✅
 HStack.allowDrop: not realized
 HStack.area: ✅
@@ -271,21 +271,21 @@ HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
 HStack.horizontalAlignment: ✅
 HStack.margin: ✅
-HStack.panTouchCount: cannot pan on HStack - Android's driver has no path for it yet
-HStack.panUpdated: cannot pan on HStack - Android's driver has no path for it yet
-HStack.panXChannel: cannot pan on HStack - Android's driver has no path for it yet
-HStack.panYChannel: cannot pan on HStack - Android's driver has no path for it yet
-HStack.pinchUpdated: cannot pinch on HStack - Android's driver has no path for it yet
-HStack.pointerEntered: cannot hover on HStack - Android's driver has no path for it yet
-HStack.pointerExited: cannot hover on HStack - Android's driver has no path for it yet
-HStack.pointerMoved: cannot hover on HStack - Android's driver has no path for it yet
-HStack.pointerPressed: cannot hover on HStack - Android's driver has no path for it yet
-HStack.pointerReleased: cannot hover on HStack - Android's driver has no path for it yet
-HStack.swipeDirection: cannot pan on HStack - Android's driver has no path for it yet
-HStack.swipeThreshold: cannot pan on HStack - Android's driver has no path for it yet
-HStack.swiped: cannot pan on HStack - Android's driver has no path for it yet
-HStack.tapCount: cannot tap on HStack - Android's driver has no path for it yet
-HStack.tapped: cannot tap on HStack - Android's driver has no path for it yet
+HStack.panTouchCount: ✅
+HStack.panUpdated: ✅
+HStack.panXChannel: ✅
+HStack.panYChannel: ✅
+HStack.pinchUpdated: ✅
+HStack.pointerEntered: ✅
+HStack.pointerExited: ✅
+HStack.pointerMoved: ✅
+HStack.pointerPressed: ✅
+HStack.pointerReleased: ✅
+HStack.swipeDirection: ✅
+HStack.swipeThreshold: ✅
+HStack.swiped: ✅
+HStack.tapCount: ✅
+HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.allowDrop: not realized
 Image.area: ✅
@@ -303,21 +303,21 @@ Image.gridRow: ✅
 Image.gridRowSpan: ✅
 Image.horizontalAlignment: ✅
 Image.margin: ✅
-Image.panTouchCount: cannot pan on Image - Android's driver has no path for it yet
-Image.panUpdated: cannot pan on Image - Android's driver has no path for it yet
-Image.panXChannel: cannot pan on Image - Android's driver has no path for it yet
-Image.panYChannel: cannot pan on Image - Android's driver has no path for it yet
-Image.pinchUpdated: cannot pinch on Image - Android's driver has no path for it yet
-Image.pointerEntered: cannot hover on Image - Android's driver has no path for it yet
-Image.pointerExited: cannot hover on Image - Android's driver has no path for it yet
-Image.pointerMoved: cannot hover on Image - Android's driver has no path for it yet
-Image.pointerPressed: cannot hover on Image - Android's driver has no path for it yet
-Image.pointerReleased: cannot hover on Image - Android's driver has no path for it yet
-Image.swipeDirection: cannot pan on Image - Android's driver has no path for it yet
-Image.swipeThreshold: cannot pan on Image - Android's driver has no path for it yet
-Image.swiped: cannot pan on Image - Android's driver has no path for it yet
-Image.tapCount: cannot tap on Image - Android's driver has no path for it yet
-Image.tapped: cannot tap on Image - Android's driver has no path for it yet
+Image.panTouchCount: ✅
+Image.panUpdated: ✅
+Image.panXChannel: ✅
+Image.panYChannel: ✅
+Image.pinchUpdated: ✅
+Image.pointerEntered: ✅
+Image.pointerExited: ✅
+Image.pointerMoved: ✅
+Image.pointerPressed: ✅
+Image.pointerReleased: ✅
+Image.swipeDirection: ✅
+Image.swipeThreshold: ✅
+Image.swiped: ✅
+Image.tapCount: ✅
+Image.tapped: ✅
 Image.verticalAlignment: ✅
 Label.allowDrop: not realized
 Label.area: ✅
@@ -335,21 +335,21 @@ Label.gridRow: ✅
 Label.gridRowSpan: ✅
 Label.horizontalAlignment: ✅
 Label.margin: ✅
-Label.panTouchCount: cannot pan on Label - Android's driver has no path for it yet
-Label.panUpdated: cannot pan on Label - Android's driver has no path for it yet
-Label.panXChannel: cannot pan on Label - Android's driver has no path for it yet
-Label.panYChannel: cannot pan on Label - Android's driver has no path for it yet
-Label.pinchUpdated: cannot pinch on Label - Android's driver has no path for it yet
-Label.pointerEntered: cannot hover on Label - Android's driver has no path for it yet
-Label.pointerExited: cannot hover on Label - Android's driver has no path for it yet
-Label.pointerMoved: cannot hover on Label - Android's driver has no path for it yet
-Label.pointerPressed: cannot hover on Label - Android's driver has no path for it yet
-Label.pointerReleased: cannot hover on Label - Android's driver has no path for it yet
-Label.swipeDirection: cannot pan on Label - Android's driver has no path for it yet
-Label.swipeThreshold: cannot pan on Label - Android's driver has no path for it yet
-Label.swiped: cannot pan on Label - Android's driver has no path for it yet
-Label.tapCount: cannot tap on Label - Android's driver has no path for it yet
-Label.tapped: cannot tap on Label - Android's driver has no path for it yet
+Label.panTouchCount: ✅
+Label.panUpdated: ✅
+Label.panXChannel: ✅
+Label.panYChannel: ✅
+Label.pinchUpdated: ✅
+Label.pointerEntered: ✅
+Label.pointerExited: ✅
+Label.pointerMoved: ✅
+Label.pointerPressed: ✅
+Label.pointerReleased: ✅
+Label.swipeDirection: ✅
+Label.swipeThreshold: ✅
+Label.swiped: ✅
+Label.tapCount: ✅
+Label.tapped: ✅
 Label.verticalAlignment: ✅
 Line.allowDrop: not realized
 Line.area: ✅
@@ -367,21 +367,21 @@ Line.gridRow: ✅
 Line.gridRowSpan: ✅
 Line.horizontalAlignment: ✅
 Line.margin: ✅
-Line.panTouchCount: cannot pan on Line - Android's driver has no path for it yet
-Line.panUpdated: cannot pan on Line - Android's driver has no path for it yet
-Line.panXChannel: cannot pan on Line - Android's driver has no path for it yet
-Line.panYChannel: cannot pan on Line - Android's driver has no path for it yet
-Line.pinchUpdated: cannot pinch on Line - Android's driver has no path for it yet
-Line.pointerEntered: cannot hover on Line - Android's driver has no path for it yet
-Line.pointerExited: cannot hover on Line - Android's driver has no path for it yet
-Line.pointerMoved: cannot hover on Line - Android's driver has no path for it yet
-Line.pointerPressed: cannot hover on Line - Android's driver has no path for it yet
-Line.pointerReleased: cannot hover on Line - Android's driver has no path for it yet
-Line.swipeDirection: cannot pan on Line - Android's driver has no path for it yet
-Line.swipeThreshold: cannot pan on Line - Android's driver has no path for it yet
-Line.swiped: cannot pan on Line - Android's driver has no path for it yet
-Line.tapCount: cannot tap on Line - Android's driver has no path for it yet
-Line.tapped: cannot tap on Line - Android's driver has no path for it yet
+Line.panTouchCount: ✅
+Line.panUpdated: ✅
+Line.panXChannel: ✅
+Line.panYChannel: ✅
+Line.pinchUpdated: ✅
+Line.pointerEntered: ✅
+Line.pointerExited: ✅
+Line.pointerMoved: ✅
+Line.pointerPressed: ✅
+Line.pointerReleased: ✅
+Line.swipeDirection: ✅
+Line.swipeThreshold: ✅
+Line.swiped: ✅
+Line.tapCount: ✅
+Line.tapped: ✅
 Line.verticalAlignment: ✅
 Map.allowDrop: not realized
 Map.area: not realized
@@ -431,21 +431,21 @@ Path.gridRow: ✅
 Path.gridRowSpan: ✅
 Path.horizontalAlignment: ✅
 Path.margin: ✅
-Path.panTouchCount: cannot pan on Path - Android's driver has no path for it yet
-Path.panUpdated: cannot pan on Path - Android's driver has no path for it yet
-Path.panXChannel: cannot pan on Path - Android's driver has no path for it yet
-Path.panYChannel: cannot pan on Path - Android's driver has no path for it yet
-Path.pinchUpdated: cannot pinch on Path - Android's driver has no path for it yet
-Path.pointerEntered: cannot hover on Path - Android's driver has no path for it yet
-Path.pointerExited: cannot hover on Path - Android's driver has no path for it yet
-Path.pointerMoved: cannot hover on Path - Android's driver has no path for it yet
-Path.pointerPressed: cannot hover on Path - Android's driver has no path for it yet
-Path.pointerReleased: cannot hover on Path - Android's driver has no path for it yet
-Path.swipeDirection: cannot pan on Path - Android's driver has no path for it yet
-Path.swipeThreshold: cannot pan on Path - Android's driver has no path for it yet
-Path.swiped: cannot pan on Path - Android's driver has no path for it yet
-Path.tapCount: cannot tap on Path - Android's driver has no path for it yet
-Path.tapped: cannot tap on Path - Android's driver has no path for it yet
+Path.panTouchCount: ✅
+Path.panUpdated: ✅
+Path.panXChannel: ✅
+Path.panYChannel: ✅
+Path.pinchUpdated: ✅
+Path.pointerEntered: ✅
+Path.pointerExited: ✅
+Path.pointerMoved: ✅
+Path.pointerPressed: ✅
+Path.pointerReleased: ✅
+Path.swipeDirection: ✅
+Path.swipeThreshold: ✅
+Path.swiped: ✅
+Path.tapCount: ✅
+Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowDrop: not realized
 Picker.area: ✅
@@ -463,21 +463,21 @@ Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
 Picker.horizontalAlignment: ✅
 Picker.margin: ✅
-Picker.panTouchCount: cannot pan on Picker - Android's driver has no path for it yet
-Picker.panUpdated: cannot pan on Picker - Android's driver has no path for it yet
-Picker.panXChannel: cannot pan on Picker - Android's driver has no path for it yet
-Picker.panYChannel: cannot pan on Picker - Android's driver has no path for it yet
-Picker.pinchUpdated: cannot pinch on Picker - Android's driver has no path for it yet
-Picker.pointerEntered: cannot hover on Picker - Android's driver has no path for it yet
-Picker.pointerExited: cannot hover on Picker - Android's driver has no path for it yet
-Picker.pointerMoved: cannot hover on Picker - Android's driver has no path for it yet
-Picker.pointerPressed: cannot hover on Picker - Android's driver has no path for it yet
-Picker.pointerReleased: cannot hover on Picker - Android's driver has no path for it yet
-Picker.swipeDirection: cannot pan on Picker - Android's driver has no path for it yet
-Picker.swipeThreshold: cannot pan on Picker - Android's driver has no path for it yet
-Picker.swiped: cannot pan on Picker - Android's driver has no path for it yet
-Picker.tapCount: cannot tap on Picker - Android's driver has no path for it yet
-Picker.tapped: cannot tap on Picker - Android's driver has no path for it yet
+Picker.panTouchCount: ✅
+Picker.panUpdated: ✅
+Picker.panXChannel: ✅
+Picker.panYChannel: ✅
+Picker.pinchUpdated: ✅
+Picker.pointerEntered: ✅
+Picker.pointerExited: ✅
+Picker.pointerMoved: ✅
+Picker.pointerPressed: ✅
+Picker.pointerReleased: ✅
+Picker.swipeDirection: ✅
+Picker.swipeThreshold: ✅
+Picker.swiped: ✅
+Picker.tapCount: ✅
+Picker.tapped: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowDrop: not realized
 Polygon.area: ✅
@@ -495,21 +495,21 @@ Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
 Polygon.horizontalAlignment: ✅
 Polygon.margin: ✅
-Polygon.panTouchCount: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.panUpdated: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.panXChannel: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.panYChannel: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.pinchUpdated: cannot pinch on Polygon - Android's driver has no path for it yet
-Polygon.pointerEntered: cannot hover on Polygon - Android's driver has no path for it yet
-Polygon.pointerExited: cannot hover on Polygon - Android's driver has no path for it yet
-Polygon.pointerMoved: cannot hover on Polygon - Android's driver has no path for it yet
-Polygon.pointerPressed: cannot hover on Polygon - Android's driver has no path for it yet
-Polygon.pointerReleased: cannot hover on Polygon - Android's driver has no path for it yet
-Polygon.swipeDirection: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.swipeThreshold: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.swiped: cannot pan on Polygon - Android's driver has no path for it yet
-Polygon.tapCount: cannot tap on Polygon - Android's driver has no path for it yet
-Polygon.tapped: cannot tap on Polygon - Android's driver has no path for it yet
+Polygon.panTouchCount: ✅
+Polygon.panUpdated: ✅
+Polygon.panXChannel: ✅
+Polygon.panYChannel: ✅
+Polygon.pinchUpdated: ✅
+Polygon.pointerEntered: ✅
+Polygon.pointerExited: ✅
+Polygon.pointerMoved: ✅
+Polygon.pointerPressed: ✅
+Polygon.pointerReleased: ✅
+Polygon.swipeDirection: ✅
+Polygon.swipeThreshold: ✅
+Polygon.swiped: ✅
+Polygon.tapCount: ✅
+Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowDrop: not realized
 Polyline.area: ✅
@@ -527,21 +527,21 @@ Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
 Polyline.horizontalAlignment: ✅
 Polyline.margin: ✅
-Polyline.panTouchCount: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.panUpdated: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.panXChannel: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.panYChannel: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.pinchUpdated: cannot pinch on Polyline - Android's driver has no path for it yet
-Polyline.pointerEntered: cannot hover on Polyline - Android's driver has no path for it yet
-Polyline.pointerExited: cannot hover on Polyline - Android's driver has no path for it yet
-Polyline.pointerMoved: cannot hover on Polyline - Android's driver has no path for it yet
-Polyline.pointerPressed: cannot hover on Polyline - Android's driver has no path for it yet
-Polyline.pointerReleased: cannot hover on Polyline - Android's driver has no path for it yet
-Polyline.swipeDirection: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.swipeThreshold: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.swiped: cannot pan on Polyline - Android's driver has no path for it yet
-Polyline.tapCount: cannot tap on Polyline - Android's driver has no path for it yet
-Polyline.tapped: cannot tap on Polyline - Android's driver has no path for it yet
+Polyline.panTouchCount: ✅
+Polyline.panUpdated: ✅
+Polyline.panXChannel: ✅
+Polyline.panYChannel: ✅
+Polyline.pinchUpdated: ✅
+Polyline.pointerEntered: ✅
+Polyline.pointerExited: ✅
+Polyline.pointerMoved: ✅
+Polyline.pointerPressed: ✅
+Polyline.pointerReleased: ✅
+Polyline.swipeDirection: ✅
+Polyline.swipeThreshold: ✅
+Polyline.swiped: ✅
+Polyline.tapCount: ✅
+Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 PositionIndicator.allowDrop: not realized
 PositionIndicator.area: not realized
@@ -591,21 +591,21 @@ ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.margin: ✅
-ProgressBar.panTouchCount: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.panUpdated: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.panXChannel: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.panYChannel: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pinchUpdated: cannot pinch on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pointerEntered: cannot hover on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pointerExited: cannot hover on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pointerMoved: cannot hover on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pointerPressed: cannot hover on ProgressBar - Android's driver has no path for it yet
-ProgressBar.pointerReleased: cannot hover on ProgressBar - Android's driver has no path for it yet
-ProgressBar.swipeDirection: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.swipeThreshold: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.swiped: cannot pan on ProgressBar - Android's driver has no path for it yet
-ProgressBar.tapCount: cannot tap on ProgressBar - Android's driver has no path for it yet
-ProgressBar.tapped: cannot tap on ProgressBar - Android's driver has no path for it yet
+ProgressBar.panTouchCount: ✅
+ProgressBar.panUpdated: ✅
+ProgressBar.panXChannel: ✅
+ProgressBar.panYChannel: ✅
+ProgressBar.pinchUpdated: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
+ProgressBar.swipeDirection: ✅
+ProgressBar.swipeThreshold: ✅
+ProgressBar.swiped: ✅
+ProgressBar.tapCount: ✅
+ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
 RadioButton.allowDrop: not realized
 RadioButton.area: ✅
@@ -623,21 +623,21 @@ RadioButton.gridRow: ✅
 RadioButton.gridRowSpan: ✅
 RadioButton.horizontalAlignment: ✅
 RadioButton.margin: ✅
-RadioButton.panTouchCount: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.panUpdated: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.panXChannel: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.panYChannel: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.pinchUpdated: cannot pinch on RadioButton - Android's driver has no path for it yet
-RadioButton.pointerEntered: cannot hover on RadioButton - Android's driver has no path for it yet
-RadioButton.pointerExited: cannot hover on RadioButton - Android's driver has no path for it yet
-RadioButton.pointerMoved: cannot hover on RadioButton - Android's driver has no path for it yet
-RadioButton.pointerPressed: cannot hover on RadioButton - Android's driver has no path for it yet
-RadioButton.pointerReleased: cannot hover on RadioButton - Android's driver has no path for it yet
-RadioButton.swipeDirection: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.swipeThreshold: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.swiped: cannot pan on RadioButton - Android's driver has no path for it yet
-RadioButton.tapCount: cannot tap on RadioButton - Android's driver has no path for it yet
-RadioButton.tapped: cannot tap on RadioButton - Android's driver has no path for it yet
+RadioButton.panTouchCount: ✅
+RadioButton.panUpdated: ✅
+RadioButton.panXChannel: ✅
+RadioButton.panYChannel: ✅
+RadioButton.pinchUpdated: ✅
+RadioButton.pointerEntered: ✅
+RadioButton.pointerExited: ✅
+RadioButton.pointerMoved: ✅
+RadioButton.pointerPressed: ✅
+RadioButton.pointerReleased: ✅
+RadioButton.swipeDirection: ✅
+RadioButton.swipeThreshold: ✅
+RadioButton.swiped: ✅
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
 RadioButton.verticalAlignment: ✅
 Rectangle.allowDrop: not realized
 Rectangle.area: ✅
@@ -655,21 +655,21 @@ Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.horizontalAlignment: ✅
 Rectangle.margin: ✅
-Rectangle.panTouchCount: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.panUpdated: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.panXChannel: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.panYChannel: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.pinchUpdated: cannot pinch on Rectangle - Android's driver has no path for it yet
-Rectangle.pointerEntered: cannot hover on Rectangle - Android's driver has no path for it yet
-Rectangle.pointerExited: cannot hover on Rectangle - Android's driver has no path for it yet
-Rectangle.pointerMoved: cannot hover on Rectangle - Android's driver has no path for it yet
-Rectangle.pointerPressed: cannot hover on Rectangle - Android's driver has no path for it yet
-Rectangle.pointerReleased: cannot hover on Rectangle - Android's driver has no path for it yet
-Rectangle.swipeDirection: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.swipeThreshold: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.swiped: cannot pan on Rectangle - Android's driver has no path for it yet
-Rectangle.tapCount: cannot tap on Rectangle - Android's driver has no path for it yet
-Rectangle.tapped: cannot tap on Rectangle - Android's driver has no path for it yet
+Rectangle.panTouchCount: ✅
+Rectangle.panUpdated: ✅
+Rectangle.panXChannel: ✅
+Rectangle.panYChannel: ✅
+Rectangle.pinchUpdated: ✅
+Rectangle.pointerEntered: ✅
+Rectangle.pointerExited: ✅
+Rectangle.pointerMoved: ✅
+Rectangle.pointerPressed: ✅
+Rectangle.pointerReleased: ✅
+Rectangle.swipeDirection: ✅
+Rectangle.swipeThreshold: ✅
+Rectangle.swiped: ✅
+Rectangle.tapCount: ✅
+Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowDrop: not realized
 ScrollView.area: ✅
@@ -687,21 +687,21 @@ ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.margin: ✅
-ScrollView.panTouchCount: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.panUpdated: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.panXChannel: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.panYChannel: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.pinchUpdated: cannot pinch on ScrollView - Android's driver has no path for it yet
-ScrollView.pointerEntered: cannot hover on ScrollView - Android's driver has no path for it yet
-ScrollView.pointerExited: cannot hover on ScrollView - Android's driver has no path for it yet
-ScrollView.pointerMoved: cannot hover on ScrollView - Android's driver has no path for it yet
-ScrollView.pointerPressed: cannot hover on ScrollView - Android's driver has no path for it yet
-ScrollView.pointerReleased: cannot hover on ScrollView - Android's driver has no path for it yet
-ScrollView.swipeDirection: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.swipeThreshold: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.swiped: cannot pan on ScrollView - Android's driver has no path for it yet
-ScrollView.tapCount: cannot tap on ScrollView - Android's driver has no path for it yet
-ScrollView.tapped: cannot tap on ScrollView - Android's driver has no path for it yet
+ScrollView.panTouchCount: ✅
+ScrollView.panUpdated: ✅
+ScrollView.panXChannel: ✅
+ScrollView.panYChannel: ✅
+ScrollView.pinchUpdated: ✅
+ScrollView.pointerEntered: ✅
+ScrollView.pointerExited: ✅
+ScrollView.pointerMoved: ✅
+ScrollView.pointerPressed: ✅
+ScrollView.pointerReleased: ✅
+ScrollView.swipeDirection: ✅
+ScrollView.swipeThreshold: ✅
+ScrollView.swiped: ✅
+ScrollView.tapCount: ✅
+ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowDrop: not realized
 SearchField.area: ✅
@@ -719,21 +719,21 @@ SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.margin: ✅
-SearchField.panTouchCount: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.panUpdated: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.panXChannel: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.panYChannel: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.pinchUpdated: cannot pinch on SearchField - Android's driver has no path for it yet
-SearchField.pointerEntered: cannot hover on SearchField - Android's driver has no path for it yet
-SearchField.pointerExited: cannot hover on SearchField - Android's driver has no path for it yet
-SearchField.pointerMoved: cannot hover on SearchField - Android's driver has no path for it yet
-SearchField.pointerPressed: cannot hover on SearchField - Android's driver has no path for it yet
-SearchField.pointerReleased: cannot hover on SearchField - Android's driver has no path for it yet
-SearchField.swipeDirection: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.swipeThreshold: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.swiped: cannot pan on SearchField - Android's driver has no path for it yet
-SearchField.tapCount: cannot tap on SearchField - Android's driver has no path for it yet
-SearchField.tapped: cannot tap on SearchField - Android's driver has no path for it yet
+SearchField.panTouchCount: ✅
+SearchField.panUpdated: ✅
+SearchField.panXChannel: ✅
+SearchField.panYChannel: ✅
+SearchField.pinchUpdated: ✅
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+SearchField.pointerMoved: ✅
+SearchField.pointerPressed: ✅
+SearchField.pointerReleased: ✅
+SearchField.swipeDirection: ✅
+SearchField.swipeThreshold: ✅
+SearchField.swiped: ✅
+SearchField.tapCount: ✅
+SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Slider.allowDrop: not realized
 Slider.area: ✅
@@ -751,21 +751,21 @@ Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
 Slider.horizontalAlignment: ✅
 Slider.margin: ✅
-Slider.panTouchCount: cannot pan on Slider - Android's driver has no path for it yet
-Slider.panUpdated: cannot pan on Slider - Android's driver has no path for it yet
-Slider.panXChannel: cannot pan on Slider - Android's driver has no path for it yet
-Slider.panYChannel: cannot pan on Slider - Android's driver has no path for it yet
-Slider.pinchUpdated: cannot pinch on Slider - Android's driver has no path for it yet
-Slider.pointerEntered: cannot hover on Slider - Android's driver has no path for it yet
-Slider.pointerExited: cannot hover on Slider - Android's driver has no path for it yet
-Slider.pointerMoved: cannot hover on Slider - Android's driver has no path for it yet
-Slider.pointerPressed: cannot hover on Slider - Android's driver has no path for it yet
-Slider.pointerReleased: cannot hover on Slider - Android's driver has no path for it yet
-Slider.swipeDirection: cannot pan on Slider - Android's driver has no path for it yet
-Slider.swipeThreshold: cannot pan on Slider - Android's driver has no path for it yet
-Slider.swiped: cannot pan on Slider - Android's driver has no path for it yet
-Slider.tapCount: cannot tap on Slider - Android's driver has no path for it yet
-Slider.tapped: cannot tap on Slider - Android's driver has no path for it yet
+Slider.panTouchCount: ✅
+Slider.panUpdated: ✅
+Slider.panXChannel: ✅
+Slider.panYChannel: ✅
+Slider.pinchUpdated: ✅
+Slider.pointerEntered: ✅
+Slider.pointerExited: ✅
+Slider.pointerMoved: ✅
+Slider.pointerPressed: ✅
+Slider.pointerReleased: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Slider.tapCount: ✅
+Slider.tapped: ✅
 Slider.verticalAlignment: ✅
 Stepper.allowDrop: not realized
 Stepper.area: ✅
@@ -783,21 +783,21 @@ Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.margin: ✅
-Stepper.panTouchCount: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.panUpdated: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.panXChannel: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.panYChannel: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.pinchUpdated: cannot pinch on Stepper - Android's driver has no path for it yet
-Stepper.pointerEntered: cannot hover on Stepper - Android's driver has no path for it yet
-Stepper.pointerExited: cannot hover on Stepper - Android's driver has no path for it yet
-Stepper.pointerMoved: cannot hover on Stepper - Android's driver has no path for it yet
-Stepper.pointerPressed: cannot hover on Stepper - Android's driver has no path for it yet
-Stepper.pointerReleased: cannot hover on Stepper - Android's driver has no path for it yet
-Stepper.swipeDirection: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.swipeThreshold: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.swiped: cannot pan on Stepper - Android's driver has no path for it yet
-Stepper.tapCount: cannot tap on Stepper - Android's driver has no path for it yet
-Stepper.tapped: cannot tap on Stepper - Android's driver has no path for it yet
+Stepper.panTouchCount: ✅
+Stepper.panUpdated: ✅
+Stepper.panXChannel: ✅
+Stepper.panYChannel: ✅
+Stepper.pinchUpdated: ✅
+Stepper.pointerEntered: ✅
+Stepper.pointerExited: ✅
+Stepper.pointerMoved: ✅
+Stepper.pointerPressed: ✅
+Stepper.pointerReleased: ✅
+Stepper.swipeDirection: ✅
+Stepper.swipeThreshold: ✅
+Stepper.swiped: ✅
+Stepper.tapCount: ✅
+Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowDrop: not realized
 Switch.area: ✅
@@ -815,21 +815,21 @@ Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
 Switch.horizontalAlignment: ✅
 Switch.margin: ✅
-Switch.panTouchCount: cannot pan on Switch - Android's driver has no path for it yet
-Switch.panUpdated: cannot pan on Switch - Android's driver has no path for it yet
-Switch.panXChannel: cannot pan on Switch - Android's driver has no path for it yet
-Switch.panYChannel: cannot pan on Switch - Android's driver has no path for it yet
-Switch.pinchUpdated: cannot pinch on Switch - Android's driver has no path for it yet
-Switch.pointerEntered: cannot hover on Switch - Android's driver has no path for it yet
-Switch.pointerExited: cannot hover on Switch - Android's driver has no path for it yet
-Switch.pointerMoved: cannot hover on Switch - Android's driver has no path for it yet
-Switch.pointerPressed: cannot hover on Switch - Android's driver has no path for it yet
-Switch.pointerReleased: cannot hover on Switch - Android's driver has no path for it yet
-Switch.swipeDirection: cannot pan on Switch - Android's driver has no path for it yet
-Switch.swipeThreshold: cannot pan on Switch - Android's driver has no path for it yet
-Switch.swiped: cannot pan on Switch - Android's driver has no path for it yet
-Switch.tapCount: cannot tap on Switch - Android's driver has no path for it yet
-Switch.tapped: cannot tap on Switch - Android's driver has no path for it yet
+Switch.panTouchCount: ✅
+Switch.panUpdated: ✅
+Switch.panXChannel: ✅
+Switch.panYChannel: ✅
+Switch.pinchUpdated: ✅
+Switch.pointerEntered: ✅
+Switch.pointerExited: ✅
+Switch.pointerMoved: ✅
+Switch.pointerPressed: ✅
+Switch.pointerReleased: ✅
+Switch.swipeDirection: ✅
+Switch.swipeThreshold: ✅
+Switch.swiped: ✅
+Switch.tapCount: ✅
+Switch.tapped: ✅
 Switch.verticalAlignment: ✅
 TextEditor.allowDrop: not realized
 TextEditor.area: ✅
@@ -847,21 +847,21 @@ TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.margin: ✅
-TextEditor.panTouchCount: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.panUpdated: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.panXChannel: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.panYChannel: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.pinchUpdated: cannot pinch on TextEditor - Android's driver has no path for it yet
-TextEditor.pointerEntered: cannot hover on TextEditor - Android's driver has no path for it yet
-TextEditor.pointerExited: cannot hover on TextEditor - Android's driver has no path for it yet
-TextEditor.pointerMoved: cannot hover on TextEditor - Android's driver has no path for it yet
-TextEditor.pointerPressed: cannot hover on TextEditor - Android's driver has no path for it yet
-TextEditor.pointerReleased: cannot hover on TextEditor - Android's driver has no path for it yet
-TextEditor.swipeDirection: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.swipeThreshold: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.swiped: cannot pan on TextEditor - Android's driver has no path for it yet
-TextEditor.tapCount: cannot tap on TextEditor - Android's driver has no path for it yet
-TextEditor.tapped: cannot tap on TextEditor - Android's driver has no path for it yet
+TextEditor.panTouchCount: ✅
+TextEditor.panUpdated: ✅
+TextEditor.panXChannel: ✅
+TextEditor.panYChannel: ✅
+TextEditor.pinchUpdated: ✅
+TextEditor.pointerEntered: ✅
+TextEditor.pointerExited: ✅
+TextEditor.pointerMoved: ✅
+TextEditor.pointerPressed: ✅
+TextEditor.pointerReleased: ✅
+TextEditor.swipeDirection: ✅
+TextEditor.swipeThreshold: ✅
+TextEditor.swiped: ✅
+TextEditor.tapCount: ✅
+TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowDrop: not realized
 TextField.area: ✅
@@ -879,21 +879,21 @@ TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
 TextField.horizontalAlignment: ✅
 TextField.margin: ✅
-TextField.panTouchCount: cannot pan on TextField - Android's driver has no path for it yet
-TextField.panUpdated: cannot pan on TextField - Android's driver has no path for it yet
-TextField.panXChannel: cannot pan on TextField - Android's driver has no path for it yet
-TextField.panYChannel: cannot pan on TextField - Android's driver has no path for it yet
-TextField.pinchUpdated: cannot pinch on TextField - Android's driver has no path for it yet
-TextField.pointerEntered: cannot hover on TextField - Android's driver has no path for it yet
-TextField.pointerExited: cannot hover on TextField - Android's driver has no path for it yet
-TextField.pointerMoved: cannot hover on TextField - Android's driver has no path for it yet
-TextField.pointerPressed: cannot hover on TextField - Android's driver has no path for it yet
-TextField.pointerReleased: cannot hover on TextField - Android's driver has no path for it yet
-TextField.swipeDirection: cannot pan on TextField - Android's driver has no path for it yet
-TextField.swipeThreshold: cannot pan on TextField - Android's driver has no path for it yet
-TextField.swiped: cannot pan on TextField - Android's driver has no path for it yet
-TextField.tapCount: cannot tap on TextField - Android's driver has no path for it yet
-TextField.tapped: cannot tap on TextField - Android's driver has no path for it yet
+TextField.panTouchCount: ✅
+TextField.panUpdated: ✅
+TextField.panXChannel: ✅
+TextField.panYChannel: ✅
+TextField.pinchUpdated: ✅
+TextField.pointerEntered: ✅
+TextField.pointerExited: ✅
+TextField.pointerMoved: ✅
+TextField.pointerPressed: ✅
+TextField.pointerReleased: ✅
+TextField.swipeDirection: ✅
+TextField.swipeThreshold: ✅
+TextField.swiped: ✅
+TextField.tapCount: ✅
+TextField.tapped: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowDrop: not realized
 TimePicker.area: ✅
@@ -911,21 +911,21 @@ TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
 TimePicker.horizontalAlignment: ✅
 TimePicker.margin: ✅
-TimePicker.panTouchCount: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.panUpdated: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.panXChannel: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.panYChannel: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.pinchUpdated: cannot pinch on TimePicker - Android's driver has no path for it yet
-TimePicker.pointerEntered: cannot hover on TimePicker - Android's driver has no path for it yet
-TimePicker.pointerExited: cannot hover on TimePicker - Android's driver has no path for it yet
-TimePicker.pointerMoved: cannot hover on TimePicker - Android's driver has no path for it yet
-TimePicker.pointerPressed: cannot hover on TimePicker - Android's driver has no path for it yet
-TimePicker.pointerReleased: cannot hover on TimePicker - Android's driver has no path for it yet
-TimePicker.swipeDirection: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.swipeThreshold: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.swiped: cannot pan on TimePicker - Android's driver has no path for it yet
-TimePicker.tapCount: cannot tap on TimePicker - Android's driver has no path for it yet
-TimePicker.tapped: cannot tap on TimePicker - Android's driver has no path for it yet
+TimePicker.panTouchCount: ✅
+TimePicker.panUpdated: ✅
+TimePicker.panXChannel: ✅
+TimePicker.panYChannel: ✅
+TimePicker.pinchUpdated: ✅
+TimePicker.pointerEntered: ✅
+TimePicker.pointerExited: ✅
+TimePicker.pointerMoved: ✅
+TimePicker.pointerPressed: ✅
+TimePicker.pointerReleased: ✅
+TimePicker.swipeDirection: ✅
+TimePicker.swipeThreshold: ✅
+TimePicker.swiped: ✅
+TimePicker.tapCount: ✅
+TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
 TitleBar.allowDrop: not realized
 TitleBar.area: not realized
@@ -975,21 +975,21 @@ VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
 VStack.horizontalAlignment: ✅
 VStack.margin: ✅
-VStack.panTouchCount: cannot pan on VStack - Android's driver has no path for it yet
-VStack.panUpdated: cannot pan on VStack - Android's driver has no path for it yet
-VStack.panXChannel: cannot pan on VStack - Android's driver has no path for it yet
-VStack.panYChannel: cannot pan on VStack - Android's driver has no path for it yet
-VStack.pinchUpdated: cannot pinch on VStack - Android's driver has no path for it yet
-VStack.pointerEntered: cannot hover on VStack - Android's driver has no path for it yet
-VStack.pointerExited: cannot hover on VStack - Android's driver has no path for it yet
-VStack.pointerMoved: cannot hover on VStack - Android's driver has no path for it yet
-VStack.pointerPressed: cannot hover on VStack - Android's driver has no path for it yet
-VStack.pointerReleased: cannot hover on VStack - Android's driver has no path for it yet
-VStack.swipeDirection: cannot pan on VStack - Android's driver has no path for it yet
-VStack.swipeThreshold: cannot pan on VStack - Android's driver has no path for it yet
-VStack.swiped: cannot pan on VStack - Android's driver has no path for it yet
-VStack.tapCount: cannot tap on VStack - Android's driver has no path for it yet
-VStack.tapped: cannot tap on VStack - Android's driver has no path for it yet
+VStack.panTouchCount: ✅
+VStack.panUpdated: ✅
+VStack.panXChannel: ✅
+VStack.panYChannel: ✅
+VStack.pinchUpdated: ✅
+VStack.pointerEntered: ✅
+VStack.pointerExited: ✅
+VStack.pointerMoved: ✅
+VStack.pointerPressed: ✅
+VStack.pointerReleased: ✅
+VStack.swipeDirection: ✅
+VStack.swipeThreshold: ✅
+VStack.swiped: ✅
+VStack.tapCount: ✅
+VStack.tapped: ✅
 VStack.verticalAlignment: ✅
 WebView.allowDrop: not realized
 WebView.area: ✅
@@ -1007,21 +1007,21 @@ WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
 WebView.horizontalAlignment: ✅
 WebView.margin: ✅
-WebView.panTouchCount: cannot pan on WebView - Android's driver has no path for it yet
-WebView.panUpdated: cannot pan on WebView - Android's driver has no path for it yet
-WebView.panXChannel: cannot pan on WebView - Android's driver has no path for it yet
-WebView.panYChannel: cannot pan on WebView - Android's driver has no path for it yet
-WebView.pinchUpdated: cannot pinch on WebView - Android's driver has no path for it yet
-WebView.pointerEntered: cannot hover on WebView - Android's driver has no path for it yet
-WebView.pointerExited: cannot hover on WebView - Android's driver has no path for it yet
-WebView.pointerMoved: cannot hover on WebView - Android's driver has no path for it yet
-WebView.pointerPressed: cannot hover on WebView - Android's driver has no path for it yet
-WebView.pointerReleased: cannot hover on WebView - Android's driver has no path for it yet
-WebView.swipeDirection: cannot pan on WebView - Android's driver has no path for it yet
-WebView.swipeThreshold: cannot pan on WebView - Android's driver has no path for it yet
-WebView.swiped: cannot pan on WebView - Android's driver has no path for it yet
-WebView.tapCount: cannot tap on WebView - Android's driver has no path for it yet
-WebView.tapped: cannot tap on WebView - Android's driver has no path for it yet
+WebView.panTouchCount: ✅
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowDrop: not realized
 ZStack.area: ✅
@@ -1039,19 +1039,19 @@ ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
 ZStack.horizontalAlignment: ✅
 ZStack.margin: ✅
-ZStack.panTouchCount: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.panUpdated: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.panXChannel: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.panYChannel: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.pinchUpdated: cannot pinch on ZStack - Android's driver has no path for it yet
-ZStack.pointerEntered: cannot hover on ZStack - Android's driver has no path for it yet
-ZStack.pointerExited: cannot hover on ZStack - Android's driver has no path for it yet
-ZStack.pointerMoved: cannot hover on ZStack - Android's driver has no path for it yet
-ZStack.pointerPressed: cannot hover on ZStack - Android's driver has no path for it yet
-ZStack.pointerReleased: cannot hover on ZStack - Android's driver has no path for it yet
-ZStack.swipeDirection: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.swipeThreshold: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.swiped: cannot pan on ZStack - Android's driver has no path for it yet
-ZStack.tapCount: cannot tap on ZStack - Android's driver has no path for it yet
-ZStack.tapped: cannot tap on ZStack - Android's driver has no path for it yet
+ZStack.panTouchCount: ✅
+ZStack.panUpdated: ✅
+ZStack.panXChannel: ✅
+ZStack.panYChannel: ✅
+ZStack.pinchUpdated: ✅
+ZStack.pointerEntered: ✅
+ZStack.pointerExited: ✅
+ZStack.pointerMoved: ✅
+ZStack.pointerPressed: ✅
+ZStack.pointerReleased: ✅
+ZStack.swipeDirection: ✅
+ZStack.swipeThreshold: ✅
+ZStack.swiped: ✅
+ZStack.tapCount: ✅
+ZStack.tapped: ✅
 ZStack.verticalAlignment: ✅

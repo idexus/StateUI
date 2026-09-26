@@ -4,6 +4,6 @@ Button.icon: cannot read icon of Button - Android's driver has no path for it ye
 Button.iconPosition: cannot read iconPosition of Button - Android's driver has no path for it yet
 Button.iconSpacing: cannot read iconSpacing of Button - Android's driver has no path for it yet
 Button.lineBreak: cannot read lineBreak of Button - Android's driver has no path for it yet
-Button.pressed: cannot pressDown on Button - Android's driver has no path for it yet
-Button.released: cannot pressDown on Button - Android's driver has no path for it yet
+Button.pressed: ✅
+Button.released: ✅
 Label.text: ✅

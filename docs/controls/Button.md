@@ -21,8 +21,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | `iconPosition` | property | `IconPosition` | adaptive |  |  |  |  |  |  | cannot read iconPosition of Button - AppKit's driver has no path for it yet; Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet |
 | `iconSpacing` | property | `Double` | adaptive |  |  |  |  |  |  | Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet |
 | `lineBreak` | property | `LineBreak` | native |  |  |  |  |  |  | cannot read lineBreak of Button - AppKit's driver has no path for it yet; Android Views: cannot read lineBreak of Button - Android's driver has no path for it yet |
-| `onPressed` (`pressed`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pressDown on Button - Android's driver has no path for it yet |
-| `onReleased` (`released`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pressDown on Button - Android's driver has no path for it yet |
+| `onPressed` (`pressed`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onReleased` (`released`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -103,21 +103,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `margin` | property | `Insets` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure | ☑️ |  |  |  | ✅ |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `panXChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `panYChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pinch on Button - Android's driver has no path for it yet |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on Button - Android's driver has no path for it yet |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on Button - Android's driver has no path for it yet |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on Button - Android's driver has no path for it yet |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on Button - Android's driver has no path for it yet |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on Button - Android's driver has no path for it yet |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `swipeThreshold` | property | `Double` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on Button - Android's driver has no path for it yet |
-| `tapCount` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on Button - Android's driver has no path for it yet |
-| `onTapped` (`tapped`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on Button - Android's driver has no path for it yet |
+| `panTouchCount` | property | `Int` | structure | ☑️ |  |  | ✅ | ✅ |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `panXChannel` | property | `Int` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `swipeThreshold` | property | `Double` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `tapCount` | property | `Int` | structure | ✅ |  |  | ✅ | ✅ |  |  |
+| `onTapped` (`tapped`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
 | `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
