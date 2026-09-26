@@ -46,25 +46,23 @@ extension AppKitDriver {
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
         case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))
         case (.drag(let point), _) where native?.pointerRecognizer != nil:
-            native?.pointerRecognizer?.emitForTesting(.moved, point: NSPoint(point))
+            native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
         case (.hover(let point), _) where native?.pointerRecognizer != nil:
-            native?.pointerRecognizer?.emitForTesting(.entered)
-            native?.pointerRecognizer?.emitForTesting(.moved, point: NSPoint(point))
-        case (.leave, _) where native?.pointerRecognizer != nil: native?.pointerRecognizer?.emitForTesting(.exited)
+            native?.pointerRecognizer?.pointed(.pointerEntered, at: point)
+            native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
+        case (.leave, _) where native?.pointerRecognizer != nil:
+            native?.pointerRecognizer?.pointed(.pointerExited, at: Point(x: 0, y: 0))
         case (.tap(let count), _) where native?.tapRecognizer != nil:
-            // A run of clicks is recognized as AppKit's click recognizer does: once it reaches the clicks it requires.
-            if let taps = native?.tapRecognizer, count >= taps.numberOfClicksRequired { taps.fire() }
-        case (.pan(let offset), _) where native?.panRecognizer != nil || native?.swipeRecognizer != nil:
-            let total = NSPoint(offset)
-            native?.panRecognizer?.emitForTesting(.started, total: .zero)
-            native?.panRecognizer?.emitForTesting(.running, total: total)
-            native?.panRecognizer?.emitForTesting(.completed, total: .zero)
-            native?.swipeRecognizer?.emitForTesting(total: total)
+            // A quick run of clicks, each told with its place in the run, as AppKit's click recognizer tells them.
+            for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
+        case (.pan(let offset), _) where native?.panRecognizer != nil:
+            native?.panRecognizer?.dragged(.started, x: 0, y: 0)
+            native?.panRecognizer?.dragged(.running, x: offset.x, y: offset.y)
+            native?.panRecognizer?.dragged(.completed, x: offset.x, y: offset.y)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
-            let origin = NSPoint(point)
-            native?.pinchRecognizer?.emitForTesting(.started, scale: 1, origin: origin)
-            native?.pinchRecognizer?.emitForTesting(.running, scale: scale, origin: origin)
-            native?.pinchRecognizer?.emitForTesting(.completed, scale: 1, origin: origin)
+            native?.pinchRecognizer?.pinched(.started, scale: 1, at: point)
+            native?.pinchRecognizer?.pinched(.running, scale: scale, at: point)
+            native?.pinchRecognizer?.pinched(.completed, scale: scale, at: point)
         case (.scroll(let offset), let scroll as AppKitScrollView):
             // A live scroll: its start, the user's move, and its rest.
             scroll.beginMovementForTesting()
@@ -137,7 +135,7 @@ extension AppKitDriver {
     ) throws {
         var done = false
         if let pointer = native?.pointerRecognizer {
-            pointer.emitForTesting(down ? .pressed : .released, point: NSPoint(point))
+            pointer.pointed(down ? .pointerPressed : .pointerReleased, at: point)
             done = true
         }
         switch view {

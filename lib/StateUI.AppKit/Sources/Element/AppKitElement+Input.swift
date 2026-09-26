@@ -20,58 +20,10 @@ extension AppKitElement {
         }
     }
 
-    func tapped() {
-        send(.tapped, [])
-    }
-
-    func swiped(_ direction: Int32) {
-        send(.swiped, [.enumeration(direction)])
-    }
-
-    func panChanged(_ phase: AppKitGesturePhase, total: NSPoint) {
+    /// What a recognizer heard, turned into the element's events by the host layer's rule.
+    func hear(_ heard: HeardInput) {
         guard let host else { return }
-        let across = whole(.panXChannel).flatMap { $0 == 0 ? nil : Int32($0) }
-        let down = whole(.panYChannel).flatMap { $0 == 0 ? nil : Int32($0) }
-
-        if phase == .started {
-            panFromX = across.flatMap(host.runtime.standingGestureValue(state:)) ?? 0
-            panFromY = down.flatMap(host.runtime.standingGestureValue(state:)) ?? 0
-        }
-
-        let runtime = host.runtime
-        runtime.performUserTransaction {
-            if phase == .running {
-                if let across { runtime.takeGestureValue(panFromX + Double(total.x), state: across) }
-                if let down { runtime.takeGestureValue(panFromY + Double(total.y), state: down) }
-            }
-            send(.panUpdated, [.enumeration(phase.rawValue), .number(Double(total.x)), .number(Double(total.y))])
-        }
-    }
-
-    func pinchChanged(
-        _ phase: AppKitGesturePhase,
-        scale: CGFloat,
-        origin: NSPoint
-    ) {
-        send(.pinchUpdated, [
-            .enumeration(phase.rawValue),
-            .number(Double(scale)),
-            .numbers([Double(origin.x), Double(origin.y)]),
-        ])
-    }
-
-    func pointerChanged(
-        _ report: AppKitPointerRecognizer.Report,
-        point: NSPoint?
-    ) {
-        let event: Event = switch report {
-        case .entered: .pointerEntered
-        case .exited: .pointerExited
-        case .moved: .pointerMoved
-        case .pressed: .pointerPressed
-        case .released: .pointerReleased
-        }
-        send(event, point.map { [.numbers([Double($0.x), Double($0.y)])] } ?? [])
+        element.hear(heard, in: host.runtime)
     }
 
     /// The user moved the scroller from `old` to `new`, as the display's frame saw it.
@@ -160,105 +112,45 @@ extension AppKitElement {
         }
     }
 
+    /// Installs the recognizers for what the element asks to hear (`MountedElement.hearing`), and takes away those
+    /// it no longer does.
+    /// Design: docs/design/platforms/appkit/input.md#what-the-user-does
     func configureGestures() {
         guard let view else { return }
+        let hearing = element.hearing
+        let heard: AppKitHearing = { [weak self] input in self?.hear(input) }
 
-        if events[.tapped] != nil {
-            let recognizer: AppKitTapRecognizer
-
-            if let existing = tapRecognizer {
-                recognizer = existing
-            } else {
-                recognizer = AppKitTapRecognizer { [weak self] in self?.tapped() }
-                tapRecognizer = recognizer
-                view.addGestureRecognizer(recognizer)
-            }
-
-            recognizer.apply(tapCount: whole(.tapCount) ?? 1)
-        } else if let recognizer = tapRecognizer {
-            view.removeGestureRecognizer(recognizer)
-            tapRecognizer = nil
+        tapRecognizer = installed(tapRecognizer, hearing.contains(.taps), on: view) { AppKitTapRecognizer(hearing: heard) }
+        (view as? AppKitHitTestView)?.pressAction = hearing.contains(.taps)
+            ? { [weak self] in self?.hear(.tap(run: 0)) }
+            : nil
+        panRecognizer = installed(panRecognizer, hearing.contains(.drags), on: view) { AppKitPanRecognizer(hearing: heard) }
+        pinchRecognizer = installed(pinchRecognizer, hearing.contains(.pinches), on: view) {
+            AppKitPinchRecognizer(hearing: heard)
         }
 
-        (view as? AppKitHitTestView)?.pressAction = events[.tapped] == nil
-            ? nil
-            : { [weak self] in self?.tapped() }
-
-        if events[.swiped] != nil {
-            let recognizer: AppKitSwipeRecognizer
-            if let existing = swipeRecognizer {
-                recognizer = existing
-            } else {
-                recognizer = AppKitSwipeRecognizer { [weak self] direction in
-                    self?.swiped(direction)
-                }
-                swipeRecognizer = recognizer
-                view.addGestureRecognizer(recognizer)
-            }
-            recognizer.directions = enumeration(.swipeDirection) ?? 15
-            recognizer.threshold = max(
-                0,
-                number(.swipeThreshold).map { CGFloat($0) } ?? 40)
-        } else if let recognizer = swipeRecognizer {
-            view.removeGestureRecognizer(recognizer)
-            swipeRecognizer = nil
-        }
-
-        let panX = whole(.panXChannel).flatMap { $0 == 0 ? nil : Int32($0) }
-        let panY = whole(.panYChannel).flatMap { $0 == 0 ? nil : Int32($0) }
-        let wantsPan = events[.panUpdated] != nil || panX != nil || panY != nil
-        if wantsPan {
-            let recognizer: AppKitPanRecognizer
-            if let existing = panRecognizer {
-                recognizer = existing
-            } else {
-                recognizer = AppKitPanRecognizer { [weak self] phase, total in
-                    self?.panChanged(phase, total: total)
-                }
-                panRecognizer = recognizer
-                view.addGestureRecognizer(recognizer)
-            }
-
-            // AppKit's stable pan contract is a primary-pointer drag. The
-            // multi-touch count API before macOS 26 refers to Touch Bar input,
-            // so an authored count other than one cannot truthfully match here.
-            recognizer.isEnabled = whole(.panTouchCount).map { $0 == 1 } ?? true
-        } else if let recognizer = panRecognizer {
-            view.removeGestureRecognizer(recognizer)
-            panRecognizer = nil
-        }
-
-        if events[.pinchUpdated] != nil {
-            if pinchRecognizer == nil {
-                let recognizer = AppKitPinchRecognizer { [weak self] phase, scale, origin in
-                    self?.pinchChanged(phase, scale: scale, origin: origin)
-                }
-                pinchRecognizer = recognizer
-                view.addGestureRecognizer(recognizer)
-            }
-        } else if let recognizer = pinchRecognizer {
-            view.removeGestureRecognizer(recognizer)
-            pinchRecognizer = nil
-        }
-
-        let pointerEvents = [
-            Event.pointerEntered, .pointerExited, .pointerMoved, .pointerPressed, .pointerReleased,
-        ]
-        if pointerEvents.contains(where: { events[$0] != nil }) {
-            let recognizer: AppKitPointerRecognizer
-            if let existing = pointerRecognizer {
-                recognizer = existing
-            } else {
-                recognizer = AppKitPointerRecognizer { [weak self] report, point in
-                    self?.pointerChanged(report, point: point)
-                }
-                pointerRecognizer = recognizer
-            }
+        if hearing.contains(.pointer) {
+            let recognizer = pointerRecognizer ?? AppKitPointerRecognizer(hearing: heard)
+            pointerRecognizer = recognizer
             recognizer.install(on: view)
         } else if let recognizer = pointerRecognizer {
             recognizer.detach()
             pointerRecognizer = nil
         }
+    }
+
+    /// `standing`, kept where `wanted` - made by `make` where there is none - on `view`; nil, taken off, where not.
+    private func installed<Recognizer: NSGestureRecognizer>(
+        _ standing: Recognizer?, _ wanted: Bool, on view: NSView, make: () -> Recognizer
+    ) -> Recognizer? {
+        guard wanted else {
+            if let standing { view.removeGestureRecognizer(standing) }
+            return nil
+        }
+        if let standing { return standing }
+        let made = make()
+        view.addGestureRecognizer(made)
+        return made
     }
 
     @objc func frameDidChange(_ notification: Notification) {

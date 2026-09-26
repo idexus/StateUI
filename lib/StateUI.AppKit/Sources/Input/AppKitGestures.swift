@@ -3,13 +3,11 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
-enum AppKitGesturePhase: Int32 {
-    case started = 0
-    case running = 1
-    case completed = 2
-    case canceled = 3
-}
+/// What a recognizer heard, handed to its element, which the host layer turns into its events.
+typealias AppKitHearing = (HeardInput) -> Void
 
 @MainActor
 private final class AppKitGestureAction: NSObject {
@@ -24,29 +22,28 @@ private final class AppKitGestureAction: NSObject {
     }
 }
 
-/// AppKit's native mouse-drag recognizer expressed in StateUI's stable phase
-/// vocabulary and top-left view coordinates.
+extension NSView {
+    /// `point`, in this view's own coordinates, from its top left: where the host layer measures what it heard.
+    func topLeft(_ point: NSPoint) -> Point {
+        Point(x: Double(point.x), y: Double(isFlipped ? point.y : bounds.height - point.y))
+    }
+}
+
+/// AppKit's drag recognizer: a press dragged, told as it starts, runs and ends, with how far it has come, from the top
+/// left.
 @MainActor
 final class AppKitPanRecognizer: NSPanGestureRecognizer {
-    typealias Update = (AppKitGesturePhase, NSPoint) -> Void
-
-    private let update: Update
+    private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
 
-    init(update: @escaping Update) {
-        self.update = update
-        actionTarget = AppKitGestureAction { recognizer in
-            guard let recognizer = recognizer as? NSPanGestureRecognizer else { return }
-            let translation = recognizer.translation(in: recognizer.view)
-            switch recognizer.state {
-            case .began: update(.started, .zero)
-            case .changed: update(.running, translation)
-            case .ended: update(.completed, .zero)
-            case .cancelled, .failed: update(.canceled, .zero)
-            default: break
-            }
-        }
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
+        actionTarget = AppKitGestureAction { _ in }
         super.init(target: actionTarget, action: #selector(AppKitGestureAction.invoke(_:)))
+        actionTarget.action = { [weak self] recognizer in
+            guard let self, let recognizer = recognizer as? NSPanGestureRecognizer else { return }
+            recognized(recognizer)
+        }
         delaysPrimaryMouseButtonEvents = false
     }
 
@@ -55,86 +52,42 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
         fatalError("AppKitPanRecognizer is created in code")
     }
 
-    func emitForTesting(_ phase: AppKitGesturePhase, total: NSPoint) {
-        update(phase, total)
+    /// A press dragged, at `phase`, `x` across and `y` down from where it began.
+    func dragged(_ phase: GesturePhase, x: Double, y: Double) {
+        hearing(.drag(phase, x: x, y: y))
+    }
+
+    private func recognized(_ recognizer: NSPanGestureRecognizer) {
+        let moved = recognizer.translation(in: recognizer.view)
+        // AppKit's translation grows upward in a view drawn from the bottom.
+        let down = recognizer.view?.isFlipped == false ? -moved.y : moved.y
+        let phase: GesturePhase? = switch recognizer.state {
+        case .began: .started
+        case .changed: .running
+        case .ended: .completed
+        case .cancelled, .failed: .canceled
+        default: nil
+        }
+        guard let phase else { return }
+        dragged(phase, x: Double(moved.x), y: Double(down))
     }
 }
 
-/// A discrete StateUI swipe recognized from AppKit's native mouse pan. The
-/// dominant axis answers exactly one direction, so a diagonal gesture never
-/// reports a direction set.
-@MainActor
-final class AppKitSwipeRecognizer: NSPanGestureRecognizer {
-    var directions: Int32 = 15
-    var threshold: CGFloat = 40
-
-    private let report: (Int32) -> Void
-    private let actionTarget: AppKitGestureAction
-
-    init(report: @escaping (Int32) -> Void) {
-        self.report = report
-        actionTarget = AppKitGestureAction { recognizer in
-            guard let recognizer = recognizer as? AppKitSwipeRecognizer,
-                  recognizer.state == .ended
-            else { return }
-            recognizer.reportIfRecognized(recognizer.translation(in: recognizer.view))
-        }
-        super.init(target: actionTarget, action: #selector(AppKitGestureAction.invoke(_:)))
-        delaysPrimaryMouseButtonEvents = false
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("AppKitSwipeRecognizer is created in code")
-    }
-
-    override func canPrevent(_ preventedGestureRecognizer: NSGestureRecognizer) -> Bool {
-        false
-    }
-
-    override func canBePrevented(by preventingGestureRecognizer: NSGestureRecognizer) -> Bool {
-        false
-    }
-
-    func emitForTesting(total: NSPoint) {
-        reportIfRecognized(total)
-    }
-
-    private func reportIfRecognized(_ total: NSPoint) {
-        let horizontal = abs(total.x) >= abs(total.y)
-        let distance = horizontal ? abs(total.x) : abs(total.y)
-        guard distance >= max(0, threshold), distance > 0 else { return }
-
-        let direction: Int32
-        if horizontal {
-            direction = total.x > 0 ? 1 : 2
-        } else {
-            direction = total.y < 0 ? 4 : 8
-        }
-        guard directions & direction != 0 else { return }
-        report(direction)
-    }
-}
-
-/// A native trackpad pinch whose cumulative AppKit magnification is converted
-/// to StateUI's factor since the preceding report.
+/// AppKit's trackpad pinch, each step told by the scale since the last - the host layer's `PinchStep` - and where it
+/// is, as shares of the view's size.
 @MainActor
 final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
-    typealias Update = (AppKitGesturePhase, CGFloat, NSPoint) -> Void
-
-    private let update: Update
+    private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
-    private var previousFactor: CGFloat = 1
+    private var steps = PinchStep()
 
-    init(update: @escaping Update) {
-        self.update = update
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
         actionTarget = AppKitGestureAction { _ in }
         super.init(target: actionTarget, action: #selector(AppKitGestureAction.invoke(_:)))
         actionTarget.action = { [weak self] recognizer in
-            guard let self,
-                  let recognizer = recognizer as? NSMagnificationGestureRecognizer
-            else { return }
-            self.recognized(recognizer)
+            guard let self, let recognizer = recognizer as? NSMagnificationGestureRecognizer else { return }
+            recognized(recognizer)
         }
         delaysMagnificationEvents = false
     }
@@ -144,63 +97,33 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
         fatalError("AppKitPinchRecognizer is created in code")
     }
 
-    override func reset() {
-        super.reset()
-        previousFactor = 1
-    }
-
-    func emitForTesting(
-        _ phase: AppKitGesturePhase,
-        scale: CGFloat,
-        origin: NSPoint
-    ) {
-        update(phase, scale, origin)
+    /// A pinch at `phase`, its magnification since it began `scale`, at `at` in shares of the view's size.
+    func pinched(_ phase: GesturePhase, scale: Double, at: Point) {
+        hearing(.pinch(phase, scale: steps.step(phase, scale: scale), at: at))
     }
 
     private func recognized(_ recognizer: NSMagnificationGestureRecognizer) {
-        let factor = max(0.000_001, 1 + recognizer.magnification)
-        let origin: NSPoint
-        if let view = recognizer.view, view.bounds.width > 0, view.bounds.height > 0 {
-            let point = recognizer.location(in: view)
-            origin = NSPoint(
-                x: (point.x - view.bounds.minX) / view.bounds.width,
-                y: (point.y - view.bounds.minY) / view.bounds.height)
-        } else {
-            origin = NSPoint(x: 0.5, y: 0.5)
+        let phase: GesturePhase? = switch recognizer.state {
+        case .began: .started
+        case .changed: .running
+        case .ended: .completed
+        case .cancelled, .failed: .canceled
+        default: nil
         }
-
-        switch recognizer.state {
-        case .began:
-            previousFactor = factor
-            update(.started, 1, origin)
-        case .changed:
-            update(.running, factor / max(0.000_001, previousFactor), origin)
-            previousFactor = factor
-        case .ended:
-            update(.completed, 1, origin)
-            previousFactor = 1
-        case .cancelled, .failed:
-            update(.canceled, 1, origin)
-            previousFactor = 1
-        default:
-            break
-        }
+        guard let phase else { return }
+        let view = recognizer.view
+        let at = PinchStep.share(
+            of: view.map { $0.topLeft(recognizer.location(in: $0)) },
+            width: Double(view?.bounds.width ?? 0), height: Double(view?.bounds.height ?? 0))
+        pinched(phase, scale: Double(1 + recognizer.magnification), at: at)
     }
 }
 
-/// Pointer tracking that can sit on any native control without replacing it
-/// or intercepting its button action.
+/// Pointer tracking that can sit on any native control without replacing it or intercepting its button action: the
+/// pointer coming, moving, pressing, letting go and leaving, where it is from the view's top left.
 @MainActor
 final class AppKitPointerRecognizer: NSGestureRecognizer {
-    enum Report {
-        case entered
-        case exited
-        case moved
-        case pressed
-        case released
-    }
-
-    var onReport: ((Report, NSPoint?) -> Void)?
+    private var hearing: AppKitHearing?
     private weak var trackedView: NSView?
     private var trackingArea: NSTrackingArea?
 
@@ -209,9 +132,9 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
         delaysPrimaryMouseButtonEvents = false
     }
 
-    convenience init(onReport: @escaping (Report, NSPoint?) -> Void) {
+    convenience init(hearing: @escaping AppKitHearing) {
         self.init(target: nil, action: nil)
-        self.onReport = onReport
+        self.hearing = hearing
     }
 
     @available(*, unavailable)
@@ -241,30 +164,35 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
         trackedView = nil
     }
 
+    /// The pointer did `event` at `point` of the view, from its top left.
+    func pointed(_ event: Event, at point: Point) {
+        hearing?(.pointer(event, point))
+    }
+
     @objc func mouseEntered(with event: NSEvent) {
-        onReport?(.entered, nil)
+        pointed(.pointerEntered, at: point(in: event))
     }
 
     @objc func mouseExited(with event: NSEvent) {
-        onReport?(.exited, nil)
+        pointed(.pointerExited, at: point(in: event))
     }
 
     @objc func mouseMoved(with event: NSEvent) {
-        onReport?(.moved, point(in: event))
+        pointed(.pointerMoved, at: point(in: event))
     }
 
     override func mouseDown(with event: NSEvent) {
-        onReport?(.pressed, point(in: event))
+        pointed(.pointerPressed, at: point(in: event))
         state = .began
     }
 
     override func mouseDragged(with event: NSEvent) {
-        onReport?(.moved, point(in: event))
+        pointed(.pointerMoved, at: point(in: event))
         state = .changed
     }
 
     override func mouseUp(with event: NSEvent) {
-        onReport?(.released, point(in: event))
+        pointed(.pointerReleased, at: point(in: event))
         state = .ended
     }
 
@@ -280,12 +208,9 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
         false
     }
 
-    func emitForTesting(_ report: Report, point: NSPoint? = nil) {
-        onReport?(report, point)
-    }
-
-    private func point(in event: NSEvent) -> NSPoint? {
-        trackedView.map { $0.convert(event.locationInWindow, from: nil) }
+    private func point(in event: NSEvent) -> Point {
+        guard let view = trackedView else { return Point(x: 0, y: 0) }
+        return view.topLeft(view.convert(event.locationInWindow, from: nil))
     }
 }
 

@@ -3,15 +3,18 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 
-/// A native click recognizer whose mutable configuration follows the current
-/// StateUI patch while its identity remains attached to one mounted view.
+/// AppKit's click recognizer, each click told with its place in a quick run of clicks: how many clicks in a run make
+/// a tap is the host layer's to count.
+/// Design: docs/design/platforms/appkit/input.md#what-the-user-does
 @MainActor
 final class AppKitTapRecognizer: NSClickGestureRecognizer {
-    private let report: () -> Void
+    private let hearing: AppKitHearing
 
-    init(report: @escaping () -> Void) {
-        self.report = report
+    init(hearing: @escaping AppKitHearing) {
+        self.hearing = hearing
         super.init(target: nil, action: nil)
         target = self
         action = #selector(recognized(_:))
@@ -22,18 +25,13 @@ final class AppKitTapRecognizer: NSClickGestureRecognizer {
         fatalError("AppKitTapRecognizer is created in code")
     }
 
-    /// Applies a valid native click count; StateUI treats zero and negative
-    /// counts as one tap rather than creating a recognizer that cannot fire.
-    func apply(tapCount: Int) {
-        numberOfClicksRequired = max(1, tapCount)
-    }
-
     @objc private func recognized(_ sender: NSClickGestureRecognizer) {
-        fire()
+        clicked(run: NSApp.currentEvent.map { max(1, $0.clickCount) } ?? 1)
     }
 
-    func fire() {
-        report()
+    /// A click, the `run`th of a quick run.
+    func clicked(run: Int) {
+        hearing(.tap(run: run))
     }
 }
 

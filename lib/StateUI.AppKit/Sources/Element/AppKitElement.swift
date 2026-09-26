@@ -45,7 +45,6 @@ final class AppKitElement: NSObject, NativeElement {
     /// hidden once the fade lands.
     var leaving = false
     var tapRecognizer: AppKitTapRecognizer?
-    var swipeRecognizer: AppKitSwipeRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var pinchRecognizer: AppKitPinchRecognizer?
     var pointerRecognizer: AppKitPointerRecognizer?
@@ -55,8 +54,6 @@ final class AppKitElement: NSObject, NativeElement {
     )?
     var accessibilityThroughCell: Bool?
     var accessibilityChildrenSuppressed = false
-    var panFromX: Double = 0
-    var panFromY: Double = 0
     var pagePresented = false
     var pendingTabFallback: Int?
     var platformMenuItem: NSMenuItem?
@@ -225,13 +222,12 @@ final class AppKitElement: NSObject, NativeElement {
         }
 
         let recognizers: [NSGestureRecognizer?] = [
-            tapRecognizer, swipeRecognizer, panRecognizer, pinchRecognizer,
+            tapRecognizer, panRecognizer, pinchRecognizer,
         ]
         for recognizer in recognizers.compactMap({ $0 }) {
             view?.removeGestureRecognizer(recognizer)
         }
         tapRecognizer = nil
-        swipeRecognizer = nil
         panRecognizer = nil
         pinchRecognizer = nil
         pointerRecognizer?.detach()

@@ -72,3 +72,16 @@ The offset is written to the scroller only where the tree moved it: the
 user's own scrolling comes back as the state it wrote, and putting the clip
 view back where it already stands would interrupt the platform's scroll
 mid-gesture.
+
+## What the user does
+
+What the user does with the pointer and the trackpad AppKit's own recognizers
+hear, and each tells the host layer what it heard - never an event: a click
+with its place in a quick run of clicks, a press dragged with its phase and
+how far it has come, a pinch's step, the pointer's coming, moving, pressing,
+letting go and leaving - each measured from the view's top left, as every
+host measures it. Which of them an element listens for, how many clicks make
+its tap, the states a drag carries and whether a drag that ended was a swipe
+are the host layer's (`MountedElement.hearing`, `hear`). AppKit drags with one
+pointer: an element asking a pan of more gets no drag recognizer.
+

@@ -11,30 +11,6 @@ import XCTest
 
 final class AppKitGestureTests: XCTestCase {
     @MainActor
-    func testPanMovesAHostJourneyFromWhereThePointerLanded() throws {
-        Renderer.shared.clearInvalidation()
-        defer { Renderer.shared.clearInvalidation() }
-        let across = State(wrappedValue: 10.0)
-        let differ = Differ()
-        differ.motion = .standard
-        let rendered = differ.reconcile(
-            nil,
-            with: ColorBox(.transparent).panX(across.projectedValue).body,
-            changed: [])
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-        renderer.applyForTesting(tree(rendered.patch))
-
-        let native = try XCTUnwrap(renderer.viewForTesting(id: rendered.patch.id))
-        let pan = try XCTUnwrap(
-            native.gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }.first)
-        pan.emitForTesting(.started, total: .zero)
-        pan.emitForTesting(.running, total: NSPoint(x: 7, y: 0))
-
-        XCTAssertEqual(across.projectedValue.journey.value, 17)
-    }
-
-    @MainActor
     func testRemovingPointerEventsDetachesTheNativeRecognizer() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
@@ -55,8 +31,8 @@ final class AppKitGestureTests: XCTestCase {
     }
 
     /// A pan asked of one pointer is recognised and reaches its handler. A
-    /// pan asked of two leaves the view no active pan recogniser: AppKit
-    /// recognises a one-pointer drag only, so it cannot honour that count.
+    /// pan asked of two leaves the view no pan recogniser: AppKit recognises a
+    /// one-pointer drag only, so it cannot honour that count.
     @MainActor
     func testOnlyAOnePointerPanIsRecognised() throws {
         let totals = Received<Double>()
@@ -73,10 +49,10 @@ final class AppKitGestureTests: XCTestCase {
         let onePointer = boxes[0].gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }
         let twoPointers = boxes[1].gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }
 
-        XCTAssertEqual(onePointer.map { $0.isEnabled }, [true])
-        XCTAssertFalse(twoPointers.contains { $0.isEnabled })
+        XCTAssertEqual(onePointer.count, 1)
+        XCTAssertTrue(twoPointers.isEmpty)
 
-        onePointer.first?.emitForTesting(.running, total: NSPoint(x: 8, y: 5))
+        onePointer.first?.dragged(.running, x: 8, y: 5)
 
         XCTAssertEqual(totals.values, [8])
     }
