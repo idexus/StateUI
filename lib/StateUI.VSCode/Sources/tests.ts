@@ -56,7 +56,8 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
             continue;
         }
 
-        const name = directory === root ? path.basename(root) : path.relative(root, directory);
+        // A label reads the same on every platform: a path written with forward slashes.
+        const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
         const hostPackage = path.basename(directory).match(/\.(AppKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
@@ -84,7 +85,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
     const testScript = androidScript(root, "test-android.sh");
     if (host === "android" && fs.existsSync(testScript)) {
         suites.push({
-            label: path.join("lib", "StateUI.Android", "Tests"), detail: "test-android.sh - the Android host's own tests, on the device chosen",
+            label: "lib/StateUI.Android/Tests", detail: "test-android.sh - the Android host's own tests, on the device chosen",
             command: "bash", args: [testScript], env: {}, onDevice: true,
         });
     }

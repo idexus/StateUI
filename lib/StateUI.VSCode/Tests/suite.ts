@@ -76,25 +76,30 @@ export async function run(): Promise<void> {
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
 
-        // 1. Android: the plain symbol resolves, the AppKit one does not.
-        await api.selectHost("android");
-        await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
-        check("android: Cube3D under #if APPKIT || GTK does not resolve",
-            !(await resolves(conditional, "Cube3D()", "var content: any View")));
+        // 1-3 ask the language server as AppKit and as Android, hosts only macOS builds.
+        if (process.platform === "darwin") {
+            // 1. Android: the plain symbol resolves, the AppKit one does not.
+            await api.selectHost("android");
+            await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
+            check("android: Cube3D under #if APPKIT || GTK does not resolve",
+                !(await resolves(conditional, "Cube3D()", "var content: any View")));
 
-        // 2. AppKit, with no reload: the conditional symbol and the head resolve.
-        await api.selectHost("appkit");
-        await until("appkit: Cube3D under #if APPKIT || GTK resolves",
-            () => resolves(conditional, "Cube3D()", "var content: any View"), 900);
-        // A target the package did not have a moment ago: the server has to
-        // load it, so this is waited for rather than asked once.
-        await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
+            // 2. AppKit, with no reload: the conditional symbol and the head resolve.
+            await api.selectHost("appkit");
+            await until("appkit: Cube3D under #if APPKIT || GTK resolves",
+                () => resolves(conditional, "Cube3D()", "var content: any View"), 900);
+            // A target the package did not have a moment ago: the server has to
+            // load it, so this is waited for rather than asked once.
+            await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
 
-        // 3. And back, still with no reload.
-        await api.selectHost("android");
-        await until("android again: Cube3D stops resolving while the plain symbol does", async () =>
-            (await resolves(plain, "Palette.accent"))
-            && !(await resolves(conditional, "Cube3D()", "var content: any View")), 900);
+            // 3. And back, still with no reload.
+            await api.selectHost("android");
+            await until("android again: Cube3D stops resolving while the plain symbol does", async () =>
+                (await resolves(plain, "Palette.accent"))
+                && !(await resolves(conditional, "Cube3D()", "var content: any View")), 900);
+        } else {
+            say("skip the language server as AppKit and Android: only macOS builds those hosts");
+        }
 
         // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
         //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine
@@ -140,7 +145,7 @@ export async function run(): Promise<void> {
             hosts.every((host) => {
                 const values = environment(host.id);
                 const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
-                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_WINUI"])
+                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_GTK", "STATEUI_WINUI"])
                     && JSON.stringify(set) === JSON.stringify([[host.variable, "1"]]);
             }) && environment("android").STATEUI_ANDROID === "1"
             && Object.values(environment(undefined)).every((value) => value === undefined));
@@ -347,7 +352,7 @@ export async function run(): Promise<void> {
             const made = inAppsCommand(root.uri.fsPath, "Notes", "darwin");
             const windows = inAppsCommand(root.uri.fsPath, "Notes", "win32");
             check("in apps/ it is the checkout's scaffolder: new-app.sh Notes, new-app.ps1 -Name Notes",
-                made.command === "bash" && made.args[0].endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
+                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
                 && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
         }
         // 8. The package holds what the sources build today and nothing an
@@ -360,27 +365,77 @@ export async function run(): Promise<void> {
             check(`the package holds the manifest, the readme, the icon and out/Sources alone${stray.length > 0 ? ` - not ${stray.slice(0, 3).join(", ")}` : ""}`,
                 stray.length === 0 && packed.includes("out/Sources/extension.js"));
         }
-        // 9. StateUI: Debug on AppKit runs the REMEMBERED application - no
-        //    question asked - built, under lldb-dap.
-        await api.selectHost("appkit");
-        await api.selectApplication("HelloWorld");
-        check("the chosen application is remembered", api.application() === "HelloWorld");
-        const session = new Promise<vscode.DebugSession>((resolve) => {
-            const listener = vscode.debug.onDidStartDebugSession((each) => {
-                if (each.type === "lldb-dap") {
-                    listener.dispose();
-                    resolve(each);
-                }
+        // 9. StateUI: Debug runs the REMEMBERED application - no question asked - on this machine's host: AppKit
+        //    built and under lldb-dap on macOS, WinUI built and started by run-app.ps1 on Windows, GTK built and
+        //    under lldb-dap on Linux.
+        if (process.platform === "darwin") {
+            await api.selectHost("appkit");
+            await api.selectApplication("HelloWorld");
+            check("the chosen application is remembered", api.application() === "HelloWorld");
+            const session = new Promise<vscode.DebugSession>((resolve) => {
+                const listener = vscode.debug.onDidStartDebugSession((each) => {
+                    if (each.type === "lldb-dap") {
+                        listener.dispose();
+                        resolve(each);
+                    }
+                });
             });
-        });
-        check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
-            { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
-        const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
-        check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/debug/HelloWorldAppKit"));
-        await new Promise((resume) => setTimeout(resume, 4000));
-        const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
-        check("the HelloWorldAppKit process is running", alive);
-        await vscode.debug.stopDebugging(running);
+            check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+            const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
+            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/debug/HelloWorldAppKit"));
+            await new Promise((resume) => setTimeout(resume, 4000));
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
+            check("the HelloWorldAppKit process is running", alive);
+            await vscode.debug.stopDebugging(running);
+        } else if (process.platform === "win32") {
+            await api.selectHost("winui");
+            await api.selectApplication("HelloWorld");
+            check("the chosen application is remembered", api.application() === "HelloWorld");
+            const started = new Promise<vscode.TaskExecution>((resolve) => {
+                const listener = vscode.tasks.onDidStartTask((each) => {
+                    if (each.execution.task.name.startsWith("Run HelloWorld (WinUI")) {
+                        listener.dispose();
+                        resolve(each.execution);
+                    }
+                });
+            });
+            await vscode.debug.startDebugging(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
+            const execution = await Promise.race([started, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 60_000))]);
+            check("StateUI: Debug starts run-app.ps1 for HelloWorld as a task", execution !== undefined);
+            const running = (): boolean => {
+                try {
+                    return execSync('tasklist /FI "IMAGENAME eq HelloWorldWinUI.exe" /NH').toString().includes("HelloWorldWinUI.exe");
+                } catch {
+                    return false;
+                }
+            };
+            await until("the HelloWorldWinUI process is running", async () => running(), 900);
+            execSync("taskkill /IM HelloWorldWinUI.exe /F");
+            execution?.terminate();
+        } else {
+            await api.selectHost("gtk");
+            await api.selectApplication("HelloWorld");
+            check("the chosen application is remembered", api.application() === "HelloWorld");
+            const session = new Promise<vscode.DebugSession>((resolve) => {
+                const listener = vscode.debug.onDidStartDebugSession((each) => {
+                    if (each.type === "lldb-dap") {
+                        listener.dispose();
+                        resolve(each);
+                    }
+                });
+            });
+            check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+            const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
+            check("an lldb-dap session starts on HelloWorldGTK",
+                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build-gtk/debug/HelloWorldGTK"));
+            await new Promise((resume) => setTimeout(resume, 4000));
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build-gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
+            check("the HelloWorldGTK process is running", alive);
+            await vscode.debug.stopDebugging(running);
+        }
 
         say("PASS");
     } catch (error) {
