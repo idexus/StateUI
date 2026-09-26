@@ -364,7 +364,8 @@ message, the accepting caption ("OK" where it names none), the cancelling one
 one), a choice's dangerous action and its others, a prompt's placeholder,
 bound, purpose and starting words. It answers as its kind does: a
 confirmation yes or no, a choice or a prompt its words where the user
-accepted and nothing where not, an alert nothing. Questions show one at a
+accepted - a prompt's cut to its bound, by characters - and nothing where
+not, an alert nothing. Questions show one at a
 time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.

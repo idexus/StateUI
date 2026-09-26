@@ -41,6 +41,10 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertEqual(try question(.prompt).answer(accepted: true, words: "Ada"), ["Ada".propValue])
         XCTAssertEqual(try question(.prompt).answer(accepted: false, words: "Ada"), [(nil as String?).propValue])
         XCTAssertEqual(try question(.alert).answer(accepted: true, words: nil), [])
+
+        let bounded = try XCTUnwrap(HostQuestion(HostActCall(
+            act: .prompt, arguments: [.string("Name"), .nothing, .nothing, .nothing, .nothing, .number(3)], completion: 4)))
+        XCTAssertEqual(bounded.answer(accepted: true, words: "Adé👍x"), ["Adé".propValue], "cut to its bound, by characters")
     }
 
     /// Questions show one at a time, in the order asked; answering the one showing shows the next, and an answer

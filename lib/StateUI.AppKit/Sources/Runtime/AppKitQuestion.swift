@@ -76,7 +76,7 @@ final class AppKitQuestion {
     }
 
     /// The button at `response` was pressed: accepted or not, and the words - the caption a choice pressed, the
-    /// words a prompt holds, cut to its bound.
+    /// words a prompt holds, which the host layer cuts to its bound.
     private func respond(_ response: NSApplication.ModalResponse) {
         let index = response.rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
         guard buttons.indices.contains(index), let answer else { return }
@@ -85,7 +85,7 @@ final class AppKitQuestion {
         let pressed = buttons[index]
         let words: String? = switch question.kind {
         case .chooseAction: pressed.caption
-        case .prompt: InputWords.cut(field.stringValue, toBound: question.maximumLength) ?? field.stringValue
+        case .prompt: field.stringValue
         case .alert, .confirm: nil
         }
         answer(pressed.accepts, words)

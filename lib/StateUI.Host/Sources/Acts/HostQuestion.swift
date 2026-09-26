@@ -84,13 +84,15 @@
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 
-    /// The act's answer: a confirmation's yes or no; a choice's action or a prompt's words where the user accepted,
-    /// nothing where not; an alert's nothing.
+    /// The act's answer: a confirmation's yes or no; a choice's action or a prompt's words - cut to its bound - where
+    /// the user accepted, nothing where not; an alert's nothing.
     public func answer(accepted: Bool, words: String?) -> [HostValue] {
         switch kind {
         case .alert: []
         case .confirm: [.bool(accepted)]
-        case .chooseAction, .prompt: [(accepted ? words : nil).propValue]
+        case .chooseAction: [(accepted ? words : nil).propValue]
+        case .prompt:
+            [(accepted ? words.map { InputWords.cut($0, toBound: maximumLength) ?? $0 } : nil).propValue]
         }
     }
 }
