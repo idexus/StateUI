@@ -264,8 +264,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         toolbar.items.first { $0.label == title && views[$0.itemIdentifier] == nil }
     }
 
+    /// Chooses the action `identifier` as the user does - on the bar or in its overflow - where it can be chosen.
     func performForTesting(_ identifier: NSToolbarItem.Identifier) {
-        actions[identifier]?.perform()
+        guard let action = actions[identifier] ?? overflowActions.first(where: { $0.identifier == identifier }),
+              action.isEnabled
+        else { return }
+        action.perform()
     }
 }
 

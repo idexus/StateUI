@@ -37,3 +37,12 @@ to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller cuts and draws no outline.
 
+
+## A radio button's set
+
+StateUI owns a radio button's set - its name, across the whole window - and
+turns the others of a set off as one is checked. AppKit keeps sets of its own:
+the radio buttons of one superview sharing one action turn each other off as
+one is clicked, whatever sets StateUI put them in. So the host's radio button
+takes a turn only from StateUI's own writes and from a click on itself, which
+its cell makes; AppKit's turning off of the others is refused.

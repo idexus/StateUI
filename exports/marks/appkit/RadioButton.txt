@@ -1,5 +1,5 @@
 Button.clicked: ✅
-RadioButton: cannot toggle on RadioButton - AppKit's driver has no path for it yet
-RadioButton.groupName: cannot toggle on RadioButton - AppKit's driver has no path for it yet
+RadioButton: ✅
+RadioButton.groupName: ✅
 RadioButton.isOn: ✅
-RadioButton.toggled: cannot toggle on RadioButton - AppKit's driver has no path for it yet
+RadioButton.toggled: ✅

@@ -45,6 +45,18 @@ final class AppKitRadioButtonView: NSButton {
         }
     }
 
+    /// Only StateUI turns a radio button: AppKit turns off every radio button of one superview and action as one of
+    /// them is clicked, whatever set StateUI puts each in, and that turn is refused. The click's own turn is its
+    /// cell's, and stands.
+    /// Design: docs/design/platforms/appkit/views.md#a-radio-buttons-set
+    override var state: NSControl.StateValue {
+        get { super.state }
+        set {
+            guard ProgramWrite.isWriting else { return }
+            super.state = newValue
+        }
+    }
+
     func setCheckedFromGroup(_ checked: Bool) {
         ProgramWrite.perform {
             state = checked ? .on : .off
@@ -57,7 +69,7 @@ final class AppKitRadioButtonView: NSButton {
     }
 
     func selectForTesting() {
-        state = .on
+        ProgramWrite.perform { state = .on }
         selected(self)
     }
 }

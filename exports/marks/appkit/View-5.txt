@@ -10,10 +10,10 @@ Canvas.dragText: not realized
 Canvas.dropCompleted: not realized
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
-CheckBox.pinchUpdated: cannot pinch on CheckBox - AppKit's driver has no path for it yet
-ColorBox.panYChannel: cannot pan on ColorBox - AppKit's driver has no path for it yet
-DatePicker.tapCount: cannot tap on DatePicker - AppKit's driver has no path for it yet
-DatePicker.tapped: cannot tap on DatePicker - AppKit's driver has no path for it yet
+CheckBox.pinchUpdated: ✅
+ColorBox.panYChannel: ✅
+DatePicker.tapCount: ✅
+DatePicker.tapped: ✅
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
@@ -24,17 +24,17 @@ Grid.drop: not realized
 Grid.frameChanged: ✅
 Grid.horizontalAlignment: ✅
 Grid.verticalAlignment: ✅
-HStack.pointerEntered: cannot hover on HStack - AppKit's driver has no path for it yet
-HStack.pointerExited: cannot hover on HStack - AppKit's driver has no path for it yet
-HStack.pointerMoved: cannot hover on HStack - AppKit's driver has no path for it yet
-HStack.pointerPressed: cannot hover on HStack - AppKit's driver has no path for it yet
-HStack.pointerReleased: cannot hover on HStack - AppKit's driver has no path for it yet
-Image.swipeDirection: cannot pan on Image - AppKit's driver has no path for it yet
-Image.swipeThreshold: cannot pan on Image - AppKit's driver has no path for it yet
-Image.swiped: cannot pan on Image - AppKit's driver has no path for it yet
-Label.panTouchCount: cannot pan on Label - AppKit's driver has no path for it yet
-Label.panUpdated: cannot pan on Label - AppKit's driver has no path for it yet
-Label.panXChannel: cannot pan on Label - AppKit's driver has no path for it yet
+HStack.pointerEntered: ✅
+HStack.pointerExited: ✅
+HStack.pointerMoved: ✅
+HStack.pointerPressed: ✅
+HStack.pointerReleased: ✅
+Image.swipeDirection: ✅
+Image.swipeThreshold: ✅
+Image.swiped: ✅
+Label.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Label.panUpdated: ✅
+Label.panXChannel: ✅
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
@@ -46,10 +46,10 @@ Path.dragText: not realized
 Path.dropCompleted: not realized
 Path.frameChanged: ✅
 Path.margin: ✅
-Picker.pinchUpdated: cannot pinch on Picker - AppKit's driver has no path for it yet
-Polygon.panYChannel: cannot pan on Polygon - AppKit's driver has no path for it yet
-Polyline.tapCount: cannot tap on Polyline - AppKit's driver has no path for it yet
-Polyline.tapped: cannot tap on Polyline - AppKit's driver has no path for it yet
+Picker.pinchUpdated: ✅
+Polygon.panYChannel: ✅
+Polyline.tapCount: ✅
+Polyline.tapped: ✅
 PositionIndicator.frameChanged: not realized
 PositionIndicator.gridColumn: not realized
 PositionIndicator.gridRow: not realized
@@ -60,17 +60,17 @@ ProgressBar.drop: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.pointerEntered: cannot hover on RadioButton - AppKit's driver has no path for it yet
-RadioButton.pointerExited: cannot hover on RadioButton - AppKit's driver has no path for it yet
-RadioButton.pointerMoved: cannot hover on RadioButton - AppKit's driver has no path for it yet
-RadioButton.pointerPressed: cannot hover on RadioButton - AppKit's driver has no path for it yet
-RadioButton.pointerReleased: cannot hover on RadioButton - AppKit's driver has no path for it yet
-Rectangle.swipeDirection: cannot pan on Rectangle - AppKit's driver has no path for it yet
-Rectangle.swipeThreshold: cannot pan on Rectangle - AppKit's driver has no path for it yet
-Rectangle.swiped: cannot pan on Rectangle - AppKit's driver has no path for it yet
-ScrollView.panTouchCount: cannot pan on ScrollView - AppKit's driver has no path for it yet
-ScrollView.panUpdated: cannot pan on ScrollView - AppKit's driver has no path for it yet
-ScrollView.panXChannel: cannot pan on ScrollView - AppKit's driver has no path for it yet
+RadioButton.pointerEntered: ✅
+RadioButton.pointerExited: ✅
+RadioButton.pointerMoved: ✅
+RadioButton.pointerPressed: ✅
+RadioButton.pointerReleased: ✅
+Rectangle.swipeDirection: ✅
+Rectangle.swipeThreshold: ✅
+Rectangle.swiped: ✅
+ScrollView.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ScrollView.panUpdated: ✅
+ScrollView.panXChannel: ✅
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
@@ -82,10 +82,10 @@ Stepper.dragText: not realized
 Stepper.dropCompleted: not realized
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
-Switch.pinchUpdated: cannot pinch on Switch - AppKit's driver has no path for it yet
-TextEditor.panYChannel: cannot pan on TextEditor - AppKit's driver has no path for it yet
-TextField.tapCount: cannot tap on TextField - AppKit's driver has no path for it yet
-TextField.tapped: cannot tap on TextField - AppKit's driver has no path for it yet
+Switch.pinchUpdated: ✅
+TextEditor.panYChannel: ✅
+TextField.tapCount: ✅
+TextField.tapped: ✅
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
@@ -96,14 +96,14 @@ TitleBar.drop: not realized
 TitleBar.frameChanged: not realized
 TitleBar.horizontalAlignment: not realized
 TitleBar.verticalAlignment: not realized
-VStack.pointerEntered: cannot hover on VStack - AppKit's driver has no path for it yet
-VStack.pointerExited: cannot hover on VStack - AppKit's driver has no path for it yet
-VStack.pointerMoved: cannot hover on VStack - AppKit's driver has no path for it yet
-VStack.pointerPressed: cannot hover on VStack - AppKit's driver has no path for it yet
-VStack.pointerReleased: cannot hover on VStack - AppKit's driver has no path for it yet
+VStack.pointerEntered: ✅
+VStack.pointerExited: ✅
+VStack.pointerMoved: ✅
+VStack.pointerPressed: ✅
+VStack.pointerReleased: ✅
 WebView.swipeDirection: not realized
 WebView.swipeThreshold: not realized
 WebView.swiped: not realized
-ZStack.panTouchCount: cannot pan on ZStack - AppKit's driver has no path for it yet
-ZStack.panUpdated: cannot pan on ZStack - AppKit's driver has no path for it yet
-ZStack.panXChannel: cannot pan on ZStack - AppKit's driver has no path for it yet
+ZStack.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ZStack.panUpdated: ✅
+ZStack.panXChannel: ✅

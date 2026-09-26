@@ -1,5 +1,5 @@
 Button.clicked: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet
-ToolbarItem: cannot activate on ToolbarItem - AppKit's driver has no path for it yet
-ToolbarItem.clicked: cannot activate on ToolbarItem - AppKit's driver has no path for it yet
+ToolbarItem: ✅
+ToolbarItem.clicked: ✅
 ToolbarItem.placement: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet
 ToolbarItem.priority: cannot read priority of ToolbarItem - AppKit's driver has no path for it yet

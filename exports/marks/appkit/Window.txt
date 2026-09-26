@@ -1,5 +1,5 @@
 Button.clicked: cannot read height of Window - AppKit's driver has no path for it yet
-ModalStack: cannot goBack on Window - AppKit's driver has no path for it yet
+ModalStack: ✅
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
@@ -15,7 +15,7 @@ Window.maximumHeight: cannot read maximumHeight of Window - AppKit's driver has 
 Window.maximumWidth: cannot read maximumWidth of Window - AppKit's driver has no path for it yet
 Window.minimumHeight: cannot read minimumHeight of Window - AppKit's driver has no path for it yet
 Window.minimumWidth: cannot read minimumWidth of Window - AppKit's driver has no path for it yet
-Window.modalPopped: cannot goBack on Window - AppKit's driver has no path for it yet
+Window.modalPopped: ✅
 Window.resumed: ✅
 Window.stopped: ✅
 Window.title: cannot read title of Window - AppKit's driver has no path for it yet

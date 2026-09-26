@@ -18,10 +18,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ScrollViewContract.s
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `horizontalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
 | `orientation` | property | `ScrollOrientation` | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `scrollOffset` | property | `Point` | structure |  |  |  |  | ✅ |  | cannot read scrollOffset of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
-| `onScrollStopped` (`scrollStopped`) | event |  | native |  |  |  |  | ✅ |  | cannot scroll on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
-| `scrollXChanged` | event | `Double` | native |  |  |  |  | ✅ |  | cannot scroll on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
-| `scrollYChanged` | event | `Double` | native |  |  |  |  | ✅ |  | cannot read scrollOffset of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
+| `scrollOffset` | property | `Point` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
+| `onScrollStopped` (`scrollStopped`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
+| `scrollXChanged` | event | `Double` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
+| `scrollYChanged` | event | `Double` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
 | `verticalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read verticalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; Android Views: cannot read verticalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
 
 Realization:
@@ -103,21 +103,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `margin` | property | `Insets` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pinch on ScrollView - Android's driver has no path for it yet |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot tap on ScrollView - Android's driver has no path for it yet |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on ScrollView - AppKit's driver has no path for it yet; Android Views: cannot tap on ScrollView - Android's driver has no path for it yet |
+| `panTouchCount` | property | `Int` | structure | ☑️ |  |  |  | ✅ |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pinch on ScrollView - Android's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on ScrollView - Android's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on ScrollView - Android's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on ScrollView - Android's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on ScrollView - Android's driver has no path for it yet |
 | `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)

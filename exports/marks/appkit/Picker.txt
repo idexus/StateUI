@@ -1,9 +1,9 @@
 Button.clicked: ✅
 Label.text: ✅
 Picker: ✅
-Picker.closed: cannot open on Picker - AppKit's driver has no path for it yet
-Picker.isOpen: cannot open on Picker - AppKit's driver has no path for it yet
-Picker.opened: cannot open on Picker - AppKit's driver has no path for it yet
+Picker.closed: cannot read isOpen of Picker - AppKit's driver has no path for it yet
+Picker.isOpen: cannot read isOpen of Picker - AppKit's driver has no path for it yet
+Picker.opened: cannot read isOpen of Picker - AppKit's driver has no path for it yet
 Picker.options: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅

@@ -1,2 +1,2 @@
-MenuItem: cannot activate on MenuItem - AppKit's driver has no path for it yet
-MenuItem.clicked: cannot activate on MenuItem - AppKit's driver has no path for it yet
+MenuItem: ✅
+MenuItem.clicked: ✅

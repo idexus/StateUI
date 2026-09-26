@@ -16,9 +16,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/RadioButtonContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `groupName` | property | `Name` | stateUI |  |  | ✅ | ✅ | ✅ |  | cannot toggle on RadioButton - AppKit's driver has no path for it yet |
+| `groupName` | property | `Name` | stateUI | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `isOn` | property | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `onToggled` (`toggled`) | event | `Bool` | native |  |  | ✅ | ✅ | ✅ |  | cannot toggle on RadioButton - AppKit's driver has no path for it yet |
+| `onToggled` (`toggled`) | event | `Bool` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -99,21 +99,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ |  |  | ✅ | ✅ |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 | `margin` | property | `Insets` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `panXChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `panYChannel` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  | ✅ |  | cannot pinch on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pinch on RadioButton - Android's driver has no path for it yet |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  | ✅ |  | cannot hover on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  | ✅ |  | cannot hover on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  | ✅ |  | cannot pan on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
-| `tapCount` | property | `Int` | structure |  |  |  |  | ✅ |  | cannot tap on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot tap on RadioButton - Android's driver has no path for it yet |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  | ✅ |  | cannot tap on RadioButton - AppKit's driver has no path for it yet; Android Views: cannot tap on RadioButton - Android's driver has no path for it yet |
+| `panTouchCount` | property | `Int` | structure | ☑️ |  |  |  | ✅ |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pinch on RadioButton - Android's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot hover on RadioButton - Android's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot pan on RadioButton - Android's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on RadioButton - Android's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot tap on RadioButton - Android's driver has no path for it yet |
 | `verticalAlignment` | property | `Alignment` | native | ✅ |  | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)

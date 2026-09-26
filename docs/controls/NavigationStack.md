@@ -17,7 +17,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet |
-| `popped` | event | `Int` | adaptive |  |  |  |  | ✅ |  | cannot goBack on NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
+| `popped` | event | `Int` | adaptive | ✅ |  |  |  | ✅ |  | Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
 
 Realization:
 

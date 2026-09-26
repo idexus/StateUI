@@ -1,8 +1,8 @@
-ActivityIndicator.pinchUpdated: cannot pinch on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pinchUpdated: ✅
 Button.clicked: ✅
-Button.panYChannel: cannot pan on Button - AppKit's driver has no path for it yet
-Canvas.tapCount: cannot tap on Canvas - AppKit's driver has no path for it yet
-Canvas.tapped: cannot tap on Canvas - AppKit's driver has no path for it yet
+Button.panYChannel: ✅
+Canvas.tapCount: ✅
+Canvas.tapped: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
@@ -13,17 +13,17 @@ ColorBox.drop: not realized
 ColorBox.frameChanged: ✅
 ColorBox.horizontalAlignment: ✅
 ColorBox.verticalAlignment: ✅
-DatePicker.pointerEntered: cannot hover on DatePicker - AppKit's driver has no path for it yet
-DatePicker.pointerExited: cannot hover on DatePicker - AppKit's driver has no path for it yet
-DatePicker.pointerMoved: cannot hover on DatePicker - AppKit's driver has no path for it yet
-DatePicker.pointerPressed: cannot hover on DatePicker - AppKit's driver has no path for it yet
-DatePicker.pointerReleased: cannot hover on DatePicker - AppKit's driver has no path for it yet
-Ellipse.swipeDirection: cannot pan on Ellipse - AppKit's driver has no path for it yet
-Ellipse.swipeThreshold: cannot pan on Ellipse - AppKit's driver has no path for it yet
-Ellipse.swiped: cannot pan on Ellipse - AppKit's driver has no path for it yet
-Grid.panTouchCount: cannot pan on Grid - AppKit's driver has no path for it yet
-Grid.panUpdated: cannot pan on Grid - AppKit's driver has no path for it yet
-Grid.panXChannel: cannot pan on Grid - AppKit's driver has no path for it yet
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+DatePicker.pointerMoved: ✅
+DatePicker.pointerPressed: ✅
+DatePicker.pointerReleased: ✅
+Ellipse.swipeDirection: ✅
+Ellipse.swipeThreshold: ✅
+Ellipse.swiped: ✅
+Grid.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Grid.panUpdated: ✅
+Grid.panXChannel: ✅
 HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
@@ -35,10 +35,10 @@ Label.dragText: not realized
 Label.dropCompleted: not realized
 Label.frameChanged: ✅
 Label.margin: ✅
-Line.pinchUpdated: cannot pinch on Line - AppKit's driver has no path for it yet
+Line.pinchUpdated: ✅
 Map.panYChannel: not realized
-Path.tapCount: cannot tap on Path - AppKit's driver has no path for it yet
-Path.tapped: cannot tap on Path - AppKit's driver has no path for it yet
+Path.tapCount: ✅
+Path.tapped: ✅
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
@@ -49,17 +49,17 @@ Polygon.drop: not realized
 Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅
 Polygon.verticalAlignment: ✅
-Polyline.pointerEntered: cannot hover on Polyline - AppKit's driver has no path for it yet
-Polyline.pointerExited: cannot hover on Polyline - AppKit's driver has no path for it yet
-Polyline.pointerMoved: cannot hover on Polyline - AppKit's driver has no path for it yet
-Polyline.pointerPressed: cannot hover on Polyline - AppKit's driver has no path for it yet
-Polyline.pointerReleased: cannot hover on Polyline - AppKit's driver has no path for it yet
+Polyline.pointerEntered: ✅
+Polyline.pointerExited: ✅
+Polyline.pointerMoved: ✅
+Polyline.pointerPressed: ✅
+Polyline.pointerReleased: ✅
 PositionIndicator.swipeDirection: not realized
 PositionIndicator.swipeThreshold: not realized
 PositionIndicator.swiped: not realized
-ProgressBar.panTouchCount: cannot pan on ProgressBar - AppKit's driver has no path for it yet
-ProgressBar.panUpdated: cannot pan on ProgressBar - AppKit's driver has no path for it yet
-ProgressBar.panXChannel: cannot pan on ProgressBar - AppKit's driver has no path for it yet
+ProgressBar.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ProgressBar.panUpdated: ✅
+ProgressBar.panXChannel: ✅
 RadioButton.frameChanged: ✅
 RadioButton.gridColumnSpan: ✅
 RadioButton.gridRowSpan: ✅
@@ -71,10 +71,10 @@ ScrollView.dragText: not realized
 ScrollView.dropCompleted: not realized
 ScrollView.frameChanged: ✅
 ScrollView.margin: ✅
-SearchField.pinchUpdated: cannot pinch on SearchField - AppKit's driver has no path for it yet
-Slider.panYChannel: cannot pan on Slider - AppKit's driver has no path for it yet
-Stepper.tapCount: cannot tap on Stepper - AppKit's driver has no path for it yet
-Stepper.tapped: cannot tap on Stepper - AppKit's driver has no path for it yet
+SearchField.pinchUpdated: ✅
+Slider.panYChannel: ✅
+Stepper.tapCount: ✅
+Stepper.tapped: ✅
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
@@ -85,14 +85,14 @@ TextEditor.drop: not realized
 TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.verticalAlignment: ✅
-TextField.pointerEntered: cannot hover on TextField - AppKit's driver has no path for it yet
-TextField.pointerExited: cannot hover on TextField - AppKit's driver has no path for it yet
-TextField.pointerMoved: cannot hover on TextField - AppKit's driver has no path for it yet
-TextField.pointerPressed: cannot hover on TextField - AppKit's driver has no path for it yet
-TextField.pointerReleased: cannot hover on TextField - AppKit's driver has no path for it yet
-TimePicker.swipeDirection: cannot pan on TimePicker - AppKit's driver has no path for it yet
-TimePicker.swipeThreshold: cannot pan on TimePicker - AppKit's driver has no path for it yet
-TimePicker.swiped: cannot pan on TimePicker - AppKit's driver has no path for it yet
+TextField.pointerEntered: ✅
+TextField.pointerExited: ✅
+TextField.pointerMoved: ✅
+TextField.pointerPressed: ✅
+TextField.pointerReleased: ✅
+TimePicker.swipeDirection: ✅
+TimePicker.swipeThreshold: ✅
+TimePicker.swiped: ✅
 TitleBar.panTouchCount: not realized
 TitleBar.panUpdated: not realized
 TitleBar.panXChannel: not realized

@@ -1,15 +1,15 @@
-ActivityIndicator.pointerEntered: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.pointerExited: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.pointerMoved: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.pointerPressed: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
-ActivityIndicator.pointerReleased: cannot hover on ActivityIndicator - AppKit's driver has no path for it yet
+ActivityIndicator.pointerEntered: ✅
+ActivityIndicator.pointerExited: ✅
+ActivityIndicator.pointerMoved: ✅
+ActivityIndicator.pointerPressed: ✅
+ActivityIndicator.pointerReleased: ✅
 Button.clicked: ✅
-Button.swipeDirection: cannot pan on Button - AppKit's driver has no path for it yet
-Button.swipeThreshold: cannot pan on Button - AppKit's driver has no path for it yet
-Button.swiped: cannot pan on Button - AppKit's driver has no path for it yet
-Canvas.panTouchCount: cannot pan on Canvas - AppKit's driver has no path for it yet
-Canvas.panUpdated: cannot pan on Canvas - AppKit's driver has no path for it yet
-Canvas.panXChannel: cannot pan on Canvas - AppKit's driver has no path for it yet
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
+Canvas.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
@@ -21,10 +21,10 @@ DatePicker.dragText: not realized
 DatePicker.dropCompleted: not realized
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
-Ellipse.pinchUpdated: cannot pinch on Ellipse - AppKit's driver has no path for it yet
-Grid.panYChannel: cannot pan on Grid - AppKit's driver has no path for it yet
-HStack.tapCount: cannot tap on HStack - AppKit's driver has no path for it yet
-HStack.tapped: cannot tap on HStack - AppKit's driver has no path for it yet
+Ellipse.pinchUpdated: ✅
+Grid.panYChannel: ✅
+HStack.tapCount: ✅
+HStack.tapped: ✅
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
@@ -35,17 +35,17 @@ Label.drop: not realized
 Label.frameChanged: ✅
 Label.horizontalAlignment: ✅
 Label.verticalAlignment: ✅
-Line.pointerEntered: cannot hover on Line - AppKit's driver has no path for it yet
-Line.pointerExited: cannot hover on Line - AppKit's driver has no path for it yet
-Line.pointerMoved: cannot hover on Line - AppKit's driver has no path for it yet
-Line.pointerPressed: cannot hover on Line - AppKit's driver has no path for it yet
-Line.pointerReleased: cannot hover on Line - AppKit's driver has no path for it yet
+Line.pointerEntered: ✅
+Line.pointerExited: ✅
+Line.pointerMoved: ✅
+Line.pointerPressed: ✅
+Line.pointerReleased: ✅
 Map.swipeDirection: not realized
 Map.swipeThreshold: not realized
 Map.swiped: not realized
-Path.panTouchCount: cannot pan on Path - AppKit's driver has no path for it yet
-Path.panUpdated: cannot pan on Path - AppKit's driver has no path for it yet
-Path.panXChannel: cannot pan on Path - AppKit's driver has no path for it yet
+Path.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Path.panUpdated: ✅
+Path.panXChannel: ✅
 Picker.frameChanged: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅
@@ -58,9 +58,9 @@ Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
 PositionIndicator.pinchUpdated: not realized
-ProgressBar.panYChannel: cannot pan on ProgressBar - AppKit's driver has no path for it yet
-RadioButton.tapCount: cannot tap on RadioButton - AppKit's driver has no path for it yet
-RadioButton.tapped: cannot tap on RadioButton - AppKit's driver has no path for it yet
+ProgressBar.panYChannel: ✅
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
@@ -71,17 +71,17 @@ ScrollView.drop: not realized
 ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.verticalAlignment: ✅
-SearchField.pointerEntered: cannot hover on SearchField - AppKit's driver has no path for it yet
-SearchField.pointerExited: cannot hover on SearchField - AppKit's driver has no path for it yet
-SearchField.pointerMoved: cannot hover on SearchField - AppKit's driver has no path for it yet
-SearchField.pointerPressed: cannot hover on SearchField - AppKit's driver has no path for it yet
-SearchField.pointerReleased: cannot hover on SearchField - AppKit's driver has no path for it yet
-Slider.swipeDirection: cannot pan on Slider - AppKit's driver has no path for it yet
-Slider.swipeThreshold: cannot pan on Slider - AppKit's driver has no path for it yet
-Slider.swiped: cannot pan on Slider - AppKit's driver has no path for it yet
-Stepper.panTouchCount: cannot pan on Stepper - AppKit's driver has no path for it yet
-Stepper.panUpdated: cannot pan on Stepper - AppKit's driver has no path for it yet
-Stepper.panXChannel: cannot pan on Stepper - AppKit's driver has no path for it yet
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+SearchField.pointerMoved: ✅
+SearchField.pointerPressed: ✅
+SearchField.pointerReleased: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Stepper.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Stepper.panUpdated: ✅
+Stepper.panXChannel: ✅
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
@@ -93,10 +93,10 @@ TextField.dragText: not realized
 TextField.dropCompleted: not realized
 TextField.frameChanged: ✅
 TextField.margin: ✅
-TimePicker.pinchUpdated: cannot pinch on TimePicker - AppKit's driver has no path for it yet
+TimePicker.pinchUpdated: ✅
 TitleBar.panYChannel: not realized
-VStack.tapCount: cannot tap on VStack - AppKit's driver has no path for it yet
-VStack.tapped: cannot tap on VStack - AppKit's driver has no path for it yet
+VStack.tapCount: ✅
+VStack.tapped: ✅
 WebView.frameChanged: not realized
 WebView.gridColumn: not realized
 WebView.gridRow: not realized

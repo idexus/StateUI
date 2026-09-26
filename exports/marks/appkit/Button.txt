@@ -4,6 +4,6 @@ Button.icon: cannot read icon of Button - AppKit's driver has no path for it yet
 Button.iconPosition: cannot read iconPosition of Button - AppKit's driver has no path for it yet
 Button.iconSpacing: not realized
 Button.lineBreak: cannot read lineBreak of Button - AppKit's driver has no path for it yet
-Button.pressed: cannot pressDown on Button - AppKit's driver has no path for it yet
-Button.released: cannot pressDown on Button - AppKit's driver has no path for it yet
+Button.pressed: ✅
+Button.released: ✅
 Label.text: ✅

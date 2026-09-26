@@ -42,8 +42,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native |  |  |  |  | ✅ |  | cannot activate on ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native | ✅ |  |  |  | ✅ |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot activate on ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | `text` | property | `String` | native |  |  |  |  | ✅ |  | cannot read text of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read text of ToolbarItem - Android's driver has no path for it yet |
