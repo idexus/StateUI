@@ -24,8 +24,8 @@ extern "C" void stateui_winui_fill_place(StateUIObjectRef handle) {
         auto element = as<xaml::FrameworkElement>(handle);
         element.HorizontalAlignment(xaml::HorizontalAlignment::Stretch);
         element.VerticalAlignment(xaml::VerticalAlignment::Stretch);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "filling a place");
+    } catch (...) {
+        report("filling a place");
     }
 }
 
@@ -36,8 +36,8 @@ extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, dou
         auto desired = element.DesiredSize();
         size[0] = desired.Width;
         size[1] = desired.Height;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "measuring");
+    } catch (...) {
+        report("measuring");
     }
 }
 
@@ -45,32 +45,32 @@ extern "C" void stateui_winui_arrange(StateUIObjectRef handle, double x, double 
     try {
         as<xaml::UIElement>(handle).Arrange(Rect(
             static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height)));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "arranging");
+    } catch (...) {
+        report("arranging");
     }
 }
 
 extern "C" void stateui_winui_invalidate_measure(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).InvalidateMeasure();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "invalidating a measure");
+    } catch (...) {
+        report("invalidating a measure");
     }
 }
 
 extern "C" void stateui_winui_set_shown(StateUIObjectRef handle, bool shown) {
     try {
         as<xaml::UIElement>(handle).Visibility(shown ? xaml::Visibility::Visible : xaml::Visibility::Collapsed);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "showing");
+    } catch (...) {
+        report("showing");
     }
 }
 
 extern "C" void stateui_winui_set_opacity(StateUIObjectRef handle, double opacity) {
     try {
         as<xaml::UIElement>(handle).Opacity(opacity);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting the opacity");
+    } catch (...) {
+        report("setting the opacity");
     }
 }
 
@@ -83,8 +83,8 @@ extern "C" void stateui_winui_frame(StateUIObjectRef handle, double *frame) {
         frame[1] = offset.y;
         frame[2] = size.x;
         frame[3] = size.y;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a frame");
+    } catch (...) {
+        report("reading a frame");
     }
 }
 
@@ -96,16 +96,16 @@ extern "C" void stateui_winui_origin(StateUIObjectRef handle, double *origin) {
         auto corner = element.TransformToVisual(nullptr).TransformPoint({0, 0});
         origin[0] = corner.X;
         origin[1] = corner.Y;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "finding where an element stands in its window");
+    } catch (...) {
+        report("finding where an element stands in its window");
     }
 }
 
 extern "C" void stateui_winui_invalidate_arrange(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).InvalidateArrange();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "invalidating an arrangement");
+    } catch (...) {
+        report("invalidating an arrangement");
     }
 }
 
@@ -132,32 +132,32 @@ extern "C" void stateui_winui_set_clip(
             rectangle.CornerRadius({r, r});
             visual.Clip(compositor.CreateGeometricClip(rectangle));
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "cutting an element to its outline");
+    } catch (...) {
+        report("cutting an element to its outline");
     }
 }
 
 extern "C" void stateui_winui_set_hit_testable(StateUIObjectRef handle, bool testable) {
     try {
         as<xaml::UIElement>(handle).IsHitTestVisible(testable);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "letting clicks through");
+    } catch (...) {
+        report("letting clicks through");
     }
 }
 
 extern "C" void stateui_winui_set_z_index(StateUIObjectRef handle, int32_t z) {
     try {
         controls::Canvas::SetZIndex(as<xaml::UIElement>(handle), z);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "ordering an element among its panel's children");
+    } catch (...) {
+        report("ordering an element among its panel's children");
     }
 }
 
 extern "C" void stateui_winui_update_layout(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).UpdateLayout();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "laying out");
+    } catch (...) {
+        report("laying out");
     }
 }
 
@@ -181,8 +181,8 @@ extern "C" void stateui_winui_set_transform(
         transform.Rotation(rotation);
         transform.ScaleX(scaleX);
         transform.ScaleY(scaleY);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "transforming");
+    } catch (...) {
+        report("transforming");
     }
 }
 
@@ -195,16 +195,16 @@ extern "C" void stateui_winui_transform(StateUIObjectRef handle, double *values)
             std::memcpy(read, held, sizeof read);
         }
         std::memcpy(values, read, sizeof read);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a transform");
+    } catch (...) {
+        report("reading a transform");
     }
 }
 
 extern "C" double stateui_winui_opacity(StateUIObjectRef handle) {
     try {
         return as<xaml::UIElement>(handle).Opacity();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading the opacity");
+    } catch (...) {
+        report("reading the opacity");
         return 1;
     }
 }
@@ -212,8 +212,8 @@ extern "C" double stateui_winui_opacity(StateUIObjectRef handle) {
 extern "C" bool stateui_winui_is_shown(StateUIObjectRef handle) {
     try {
         return as<xaml::UIElement>(handle).Visibility() == xaml::Visibility::Visible;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether an element shows");
+    } catch (...) {
+        report("reading whether an element shows");
         return false;
     }
 }
@@ -222,8 +222,8 @@ extern "C" bool stateui_winui_is_enabled(StateUIObjectRef handle) {
     try {
         auto control = as<IInspectable>(handle).try_as<controls::Control>();
         return !control || control.IsEnabled();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether a control is enabled");
+    } catch (...) {
+        report("reading whether a control is enabled");
         return false;
     }
 }
@@ -233,8 +233,8 @@ extern "C" bool stateui_winui_animations_enabled(void) {
         // One, kept: a fresh UISettings for every reading is a WinRT activation each time.
         static winrt::Windows::UI::ViewManagement::UISettings settings;
         return settings.AnimationsEnabled();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether animations are on");
+    } catch (...) {
+        report("reading whether animations are on");
         return true;
     }
 }
@@ -242,8 +242,8 @@ extern "C" bool stateui_winui_animations_enabled(void) {
 extern "C" void stateui_winui_set_enabled(StateUIObjectRef handle, bool enabled) {
     try {
         as<controls::Control>(handle).IsEnabled(enabled);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "enabling");
+    } catch (...) {
+        report("enabling");
     }
 }
 
@@ -270,8 +270,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
             utf8[count] = 0;
         }
         return static_cast<int32_t>(bytes.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading the words");
+    } catch (...) {
+        report("reading the words");
         return 0;
     }
 }

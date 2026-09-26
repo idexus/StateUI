@@ -26,10 +26,9 @@ final class GTKListening {
     /// Where the pointer's press went down in the view.
     private var pointerFrom = Point(x: 0, y: 0)
 
-    /// The press dragged: where it went down on the window, how far it has come, and whether it became a drag.
+    /// The press dragged, by the host layer's rule: where it went down on the window, and whether it became a drag.
     private var dragFrom = Point(x: 0, y: 0)
-    private var dragMoved = Point(x: 0, y: 0)
-    private var dragging = false
+    private var drag = DragRecognition(distance: .eachAxis(x: 0, y: 0))
 
     /// The scale the pinch last said, since it began.
     private var pinch = PinchStep()
@@ -104,7 +103,7 @@ final class GTKListening {
     /// Design: docs/design/platforms/gtk/input.md#taps
     func tapStopped(at point: Point?) {
         guard let point else { return }
-        if moved(from: tapFrom, to: point) { tapMoved = true }
+        if dragDistance.isPassed(by: Point(x: point.x - tapFrom.x, y: point.y - tapFrom.y)) { tapMoved = true }
     }
 
     /// A press let go: a tap where it has not moved and is let go over the view, claimed so no view around it
@@ -180,36 +179,34 @@ final class GTKListening {
 
     private func dragBegan(_ gesture: OpaquePointer?) {
         dragFrom = Self.onWindow(gesture) ?? Point(x: 0, y: 0)
-        dragMoved = Point(x: 0, y: 0)
-        dragging = false
+        drag = DragRecognition(distance: dragDistance)
+        drag.pressed(at: dragFrom)
     }
 
     /// The press moved: measured on the window, which the view it moves does not move; past the drag threshold it
     /// is a drag, claimed so its press is no tap and no view around it drags too.
     /// Design: docs/design/platforms/gtk/input.md#a-press-dragged
     private func dragUpdated(_ gesture: OpaquePointer?, offset: Point) {
-        let now = Self.onWindow(gesture).map { Point(x: $0.x - dragFrom.x, y: $0.y - dragFrom.y) } ?? offset
-        dragMoved = now
-        if !dragging {
-            guard moved(from: Point(x: 0, y: 0), to: now) else { return }
-            dragging = true
-            if let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
-            tell(.drag(.started, x: 0, y: 0))
-        }
-        tell(.drag(.running, x: now.x, y: now.y))
+        let point = Self.onWindow(gesture) ?? Point(x: dragFrom.x + offset.x, y: dragFrom.y + offset.y)
+        let wasDragging = drag.isDragging
+        let heard = drag.moved(to: point)
+        if drag.isDragging, !wasDragging, let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
+        for each in heard { tell(each) }
     }
 
     /// The press ended: a drag it became ends with it - let go, or cancelled.
     private func dragEnded(_ gesture: OpaquePointer?) {
-        guard dragging else { return }
-        dragging = false
+        guard drag.isDragging else {
+            _ = drag.ended(letGo: true)
+            return
+        }
 
         var letGo = true
         if let gesture, let last = gtk_gesture_get_last_event(gesture, gtk_gesture_single_get_current_sequence(gesture)) {
             let type = gdk_event_get_event_type(last)
             letGo = type == GDK_BUTTON_RELEASE || type == GDK_TOUCH_END
         }
-        tell(.drag(letGo ? .completed : .canceled, x: dragMoved.x, y: dragMoved.y))
+        if let end = drag.ended(letGo: letGo) { tell(end) }
     }
 
     // MARK: - A pinch
@@ -253,10 +250,10 @@ final class GTKListening {
 
     // MARK: - Measures
 
-    /// Whether a press went past GTK's drag threshold, as GTK's own click tells it.
-    private func moved(from start: Point, to point: Point) -> Bool {
+    /// GTK's drag threshold, across and down alike, which its own click measures too.
+    private var dragDistance: DragRecognition.Distance {
         let threshold = Self.dragThreshold(of: widget)
-        return abs(point.x - start.x) >= threshold || abs(point.y - start.y) >= threshold
+        return .eachAxis(x: threshold, y: threshold)
     }
 
     private static func dragThreshold(of widget: GTKWidget) -> Double {

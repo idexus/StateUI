@@ -83,6 +83,63 @@
                 s.expect(try s.held(StepperContract.value, on: stepper), 0)
                 s.expect(heard.values, [], "a step that moved nothing heard by nobody")
             },
+            ConformanceCase("aRangeWidenedOverItsValueShowsIt", covers: [
+                Covered(StepperContract.value), Covered(StepperContract.maximum), Covered(ButtonContract.clicked),
+            ]) { s in
+                let top = State(wrappedValue: 10.0)
+                let level = State(wrappedValue: 15.0)
+                s.start {
+                    VStack {
+                        Stepper(level.projectedValue).minimum(0).maximum(top.wrappedValue).step(1).id("control")
+                        Button("Widen").onClicked { top.wrappedValue = 20 }.id("widen")
+                    }
+                }
+                let control = try s.element("control")
+                try s.settle { try s.held(StepperContract.value, on: control) == 10 }
+
+                try s.perform(.activate, on: s.element("widen"))
+                try s.settle { try s.held(StepperContract.maximum, on: control) == 20 }
+                try s.settle { try s.held(StepperContract.value, on: control) == 15 }
+                s.expect(try s.held(StepperContract.value, on: control), 15, "the value its state holds, no longer at an end")
+                s.expect(level.wrappedValue, 15)
+            },
+            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", covers: [
+                Covered(StepperContract.value), Covered(StepperContract.minimum), Covered(StepperContract.maximum),
+                Covered(StepperContract.valueChanged), Covered(ButtonContract.clicked),
+            ]) { s in
+                let range = State(wrappedValue: 0.0...10.0)
+                let count = State(wrappedValue: 4.0)
+                let heard = Received<Double>()
+                s.start {
+                    VStack {
+                        Stepper(count.projectedValue).minimum(range.wrappedValue.lowerBound)
+                            .maximum(range.wrappedValue.upperBound).step(1)
+                            .onValueChanged { heard.values.append($0) }.id("stepper")
+                        Button("Up").onClicked {
+                            range.wrappedValue = 20...30
+                            count.wrappedValue = 25
+                        }.id("up")
+                        Button("Down").onClicked {
+                            range.wrappedValue = -30 ... -20
+                            count.wrappedValue = -25
+                        }.id("down")
+                    }
+                }
+                let stepper = try s.element("stepper")
+
+                try s.perform(.activate, on: s.element("up"))
+                try s.settle { try s.held(StepperContract.minimum, on: stepper) == 20 }
+                // The state's write travels to the control, standing at the range's end on its way.
+                try s.settle { try s.held(StepperContract.value, on: stepper) == 25 }
+                s.expect(try s.held(StepperContract.value, on: stepper), 25, "wholly above the value")
+                try s.perform(.activate, on: s.element("down"))
+                try s.settle { try s.held(StepperContract.maximum, on: stepper) == -20 }
+                // The state's write travels to the control, standing at the range's end on its way.
+                try s.settle { try s.held(StepperContract.value, on: stepper) == -25 }
+                s.expect(try s.held(StepperContract.value, on: stepper), -25, "wholly below the value")
+                s.expect(count.wrappedValue, -25)
+                s.expect(heard.values, [], "the program's writes are heard by nobody")
+            },
             ConformanceCase("aStepIsAsLongAsTheTreeSays", covers: [
                 Covered(StepperContract.step), Covered(StepperContract.value), Covered(StepperContract.valueChanged),
             ]) { s in

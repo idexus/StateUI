@@ -68,8 +68,8 @@ extern "C" void stateui_winui_set_tint(
             }
         }
         readThemeAgain(control);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "tinting a control");
+    } catch (...) {
+        report("tinting a control");
     }
 }
 

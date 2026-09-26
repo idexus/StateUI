@@ -36,8 +36,8 @@ extern "C" StateUIObjectRef stateui_winui_scroller_make(int64_t view) {
             callbacks.held(view, false);
         });
         return detach(scroller);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a scroller");
+    } catch (...) {
+        report("making a scroller");
         return nullptr;
     }
 }
@@ -55,8 +55,8 @@ extern "C" void stateui_winui_scroller_set(
         scroller.HorizontalScrollBarVisibility(visibility(across, horizontalBar));
         auto element = content ? as<xaml::UIElement>(content) : xaml::UIElement{nullptr};
         if (scroller.Content() != element) scroller.Content(element);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a scroller");
+    } catch (...) {
+        report("setting a scroller");
     }
 }
 
@@ -65,8 +65,8 @@ extern "C" void stateui_winui_scroller_move(StateUIObjectRef handle, double x, d
         borrow<controls::ScrollViewer>(handle).ChangeView(
             winrt::box_value(x).as<winrt::Windows::Foundation::IReference<double>>(),
             winrt::box_value(y).as<winrt::Windows::Foundation::IReference<double>>(), nullptr, true);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "moving a scroller");
+    } catch (...) {
+        report("moving a scroller");
     }
 }
 
@@ -77,7 +77,7 @@ extern "C" void stateui_winui_scroller_offset(StateUIObjectRef handle, double *o
         offset[1] = scroller.VerticalOffset();
         offset[2] = scroller.ScrollableWidth();
         offset[3] = scroller.ScrollableHeight();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a scroller");
+    } catch (...) {
+        report("reading a scroller");
     }
 }

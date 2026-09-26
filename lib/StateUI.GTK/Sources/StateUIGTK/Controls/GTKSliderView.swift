@@ -33,14 +33,13 @@ final class GTKSliderView: GTKView {
     /// The value the thumb stands at.
     var value: Double { gtk_range_get_value(range) }
 
-    /// The range, then the value: `value` where `writeValue`, else the one the thumb stands at, kept inside the range.
-    func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double) {
-        let kept = writeValue ? value ?? self.value : self.value
+    /// The range, then `value`, kept inside it.
+    func apply(value: Double, minimum: Double, maximum: Double) {
         (self.minimum, self.maximum) = ValueArithmetic.range(minimum, maximum)
         let steps = ValueArithmetic.sliderSteps(lower: self.minimum, upper: self.maximum)
         gtk_range_set_range(range, self.minimum, self.maximum)
         gtk_range_set_increments(range, steps.key, steps.page)
-        gtk_range_set_value(range, kept)
+        gtk_range_set_value(range, value)
     }
 
     override func detach() {

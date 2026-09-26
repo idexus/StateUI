@@ -33,10 +33,12 @@ final class WinUIFrameClock: FrameClock {
     }
 
     /// A clock telling `now`'s time, its frames WinUI's where `ticksWithWinUI`, and otherwise whoever tells its time.
+    /// A new clock holds nothing: the frames a clock before it held are let go.
     init(now: @escaping () -> Double, ticksWithWinUI: Bool) {
         self.now = now
         self.ticksWithWinUI = ticksWithWinUI
         Self.current = self
+        stateui_winui_hold_frames(false)
     }
 
     /// A frame WinUI composes: the frame's work at this moment, on a clock WinUI's frames drive.

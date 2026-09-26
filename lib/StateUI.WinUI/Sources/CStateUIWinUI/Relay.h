@@ -66,12 +66,26 @@ namespace stateui {
     /// Keeps what the screen reader was told, which a test reads back (`stateui_winui_announced`).
     void announced(std::string const &words);
 
-    /// Says what failed on standard error, where the host's log goes.
-    inline void report(winrt::hresult_error const &error, char const *where) {
+    /// Says on standard error, where the host's log goes, what failed and why - the exception being handled,
+    /// WinUI's, the standard library's or any other - so that none crosses the C boundary; answers its code, WinUI's
+    /// own or `E_FAIL`. Called only inside a `catch (...)`.
+    inline int32_t report(char const *where) {
+        int32_t code = E_FAIL;
+        std::string words;
+        try {
+            throw;
+        } catch (winrt::hresult_error const &error) {
+            code = error.code();
+            words = winrt::to_string(error.message());
+        } catch (std::exception const &error) {
+            words = error.what();
+        } catch (...) {
+            words = "an exception of no kind known";
+        }
         // As UTF-8: `%ls` stops at the first letter outside ASCII, the rest of the line with it.
-        std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %s\n", where,
-                     static_cast<unsigned>(error.code().value), winrt::to_string(error.message()).c_str());
+        std::fprintf(stderr, "StateUI WinUI: %s failed: 0x%08x %s\n", where, static_cast<unsigned>(code), words.c_str());
         std::fflush(stderr);
+        return code;
     }
 
     /// Hands a projected object's default interface to the host, AddRef'd.

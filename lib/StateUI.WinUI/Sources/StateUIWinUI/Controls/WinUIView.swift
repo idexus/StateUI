@@ -268,6 +268,16 @@ class WinUIView {
     private(set) var hearing: Hearing = []
     private var onHeard: ((HeardInput) -> Void)?
 
+    /// The press the view heard, on its way to a drag by the host layer's rule.
+    private var press = DragRecognition(distance: WinUIView.dragDistance)
+
+    /// The system's drag distance, in DIPs.
+    private static let dragDistance: DragRecognition.Distance = {
+        var distance = [4.0, 4.0]
+        stateui_winui_drag_distance(&distance)
+        return .eachAxis(x: distance[0], y: distance[1])
+    }()
+
     /// Listens for what `hearing` names, `heard` hearing it; the relay is told only a change, in its bits, which
     /// are `Hearing`'s.
     /// Design: docs/design/platforms/winui/input.md
@@ -282,6 +292,23 @@ class WinUIView {
     /// What the relay says the view heard.
     func heard(_ heard: HeardInput) {
         onHeard?(heard)
+    }
+
+    /// A press the relay tells - down, moved, let go or taken away, at `point` of the window's content: a drag by the
+    /// host layer's rule, and as it becomes one the view holds the pointer.
+    /// Design: docs/design/platforms/winui/input.md#a-press-dragged
+    func heardPress(phase: Int32, at point: Point) {
+        switch phase {
+        case 0:
+            press.pressed(at: point)
+        case 1:
+            let wasDragging = press.isDragging
+            let told = press.moved(to: point)
+            if press.isDragging, !wasDragging { stateui_winui_press_dragged(number) }
+            for each in told { heard(each) }
+        default:
+            if let end = press.ended(letGo: phase == 2) { heard(end) }
+        }
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it. A view that

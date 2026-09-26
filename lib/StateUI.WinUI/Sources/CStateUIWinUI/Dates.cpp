@@ -66,8 +66,8 @@ extern "C" StateUIObjectRef stateui_winui_date_make(int64_t view) {
         picker.Opened([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); });
         picker.Closed([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); });
         return detach(picker);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a date picker");
+    } catch (...) {
+        report("making a date picker");
         return nullptr;
     }
 }
@@ -87,8 +87,8 @@ extern "C" void stateui_winui_date_set(StateUIObjectRef handle, bool hasDate, in
             if (parts[0] == year && parts[1] == month && parts[2] == day) return;
         }
         picker.Date(wanted);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a date picker's day");
+    } catch (...) {
+        report("setting a date picker's day");
     }
 }
 
@@ -100,32 +100,32 @@ extern "C" void stateui_winui_date_set_range(StateUIObjectRef handle, int32_t co
         else picker.ClearValue(controls::CalendarDatePicker::MinDateProperty());
         if (latest) picker.MaxDate(noon(latest[0], latest[1], latest[2]));
         else picker.ClearValue(controls::CalendarDatePicker::MaxDateProperty());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "bounding a date picker");
+    } catch (...) {
+        report("bounding a date picker");
     }
 }
 
 extern "C" void stateui_winui_date_set_format(StateUIObjectRef handle, bool longForm) {
     try {
         borrow<controls::CalendarDatePicker>(handle).DateFormat(dayPattern(longForm));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting how a date picker writes its day");
+    } catch (...) {
+        report("setting how a date picker writes its day");
     }
 }
 
 extern "C" void stateui_winui_date_set_open(StateUIObjectRef handle, bool open) {
     try {
         borrow<controls::CalendarDatePicker>(handle).IsCalendarOpen(open);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "opening a date picker's calendar");
+    } catch (...) {
+        report("opening a date picker's calendar");
     }
 }
 
 extern "C" bool stateui_winui_date_is_open(StateUIObjectRef handle) {
     try {
         return borrow<controls::CalendarDatePicker>(handle).IsCalendarOpen();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether a date picker's calendar shows");
+    } catch (...) {
+        report("reading whether a date picker's calendar shows");
         return false;
     }
 }
@@ -136,8 +136,8 @@ extern "C" bool stateui_winui_date(StateUIObjectRef handle, int32_t *parts) {
         if (!shown) return false;
         dayOf(shown.Value(), parts);
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a date picker's day");
+    } catch (...) {
+        report("reading a date picker's day");
         return false;
     }
 }
@@ -145,8 +145,8 @@ extern "C" bool stateui_winui_date(StateUIObjectRef handle, int32_t *parts) {
 extern "C" void stateui_winui_date_pick_as_user(StateUIObjectRef handle, int32_t year, int32_t month, int32_t day) {
     try {
         borrow<controls::CalendarDatePicker>(handle).Date(noon(year, month, day));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "picking a day as the user");
+    } catch (...) {
+        report("picking a day as the user");
     }
 }
 
@@ -159,8 +159,8 @@ extern "C" StateUIObjectRef stateui_winui_time_make(int64_t view) {
             callbacks.picked(view, static_cast<int32_t>(minutes / 60), static_cast<int32_t>(minutes % 60), 0);
         });
         return detach(picker);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a time picker");
+    } catch (...) {
+        report("making a time picker");
         return nullptr;
     }
 }
@@ -175,8 +175,8 @@ extern "C" void stateui_winui_time_set(StateUIObjectRef handle, bool hasTime, in
         TimeSpan wanted = std::chrono::hours(hour) + std::chrono::minutes(minute);
         auto shown = picker.SelectedTime();
         if (!shown || shown.Value() != wanted) picker.SelectedTime(wanted);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a time picker's time");
+    } catch (...) {
+        report("setting a time picker's time");
     }
 }
 
@@ -188,8 +188,8 @@ extern "C" bool stateui_winui_time(StateUIObjectRef handle, int32_t *parts) {
         parts[0] = static_cast<int32_t>(minutes / 60);
         parts[1] = static_cast<int32_t>(minutes % 60);
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a time picker's time");
+    } catch (...) {
+        report("reading a time picker's time");
         return false;
     }
 }
@@ -197,7 +197,7 @@ extern "C" bool stateui_winui_time(StateUIObjectRef handle, int32_t *parts) {
 extern "C" void stateui_winui_time_pick_as_user(StateUIObjectRef handle, int32_t hour, int32_t minute) {
     try {
         borrow<controls::TimePicker>(handle).SelectedTime(TimeSpan{std::chrono::hours(hour) + std::chrono::minutes(minute)});
-    } catch (winrt::hresult_error const &error) {
-        report(error, "picking a time as the user");
+    } catch (...) {
+        report("picking a time as the user");
     }
 }

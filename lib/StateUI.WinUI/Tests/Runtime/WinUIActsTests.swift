@@ -25,4 +25,25 @@ final class WinUIActsTests: XCTestCase {
             XCTAssertEqual(WinUIPersistence.read(), kept)
         }
     }
+
+    /// A write that fails keeps what the store kept: the whole store is written aside first, and takes the old one's
+    /// place only once it is written - here the place aside cannot be written.
+    func testAFailedWriteKeepsWhatWasKept() throws {
+        try onUIThread {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-store-failing")
+            try? FileManager.default.removeItem(at: folder)
+            stateui_winui_set_store(folder.path)
+            defer {
+                stateui_winui_set_store("")
+                try? FileManager.default.removeItem(at: folder)
+            }
+            let kept = KeptValuesText("com.example.name\tAda\n")
+            WinUIPersistence.write(kept)
+            let aside = folder.appendingPathComponent(WinUIPersistence.valuesFile + ".writing")
+            try FileManager.default.createDirectory(at: aside, withIntermediateDirectories: true)
+
+            XCTAssertFalse(stateui_winui_store(WinUIPersistence.valuesFile, "com.example.name\tGrace\n"))
+            XCTAssertEqual(WinUIPersistence.read(), kept, "the old store stands")
+        }
+    }
 }

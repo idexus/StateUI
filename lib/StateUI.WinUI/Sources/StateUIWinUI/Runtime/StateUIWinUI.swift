@@ -89,6 +89,9 @@ enum WinUICallbacks {
                 MainActor.assumeIsolated { WinUIRenderer.shared?.environmentChanged() }
             },
             heard: { view, what, phase, x, y, scale in
+                if what == StateUIHeardPress {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase: phase, at: Point(x: x, y: y)) }
+                }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },

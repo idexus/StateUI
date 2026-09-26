@@ -19,8 +19,12 @@ work it asks for.
 A handle is a WinRT object's default interface, `AddRef`'d, which the host
 lets go of with `stateui_winui_release`. A handle is read back as the type it
 was made as with no `QueryInterface`, or as any of its interfaces with one.
-No C++ exception leaves a function of the relay: each says what failed on
-standard error and leaves the object as it was.
+No C++ exception leaves a function of the relay: each catches whatever its
+body throws - WinUI's, the standard library's, any other - says what failed
+and why on standard error (`report`, which names each kind), and answers
+nothing, false or 0, leaving the object as it was. An exception crossing the
+C boundary ends the process where nobody can say why; a guard reads every
+function of the relay for its catch (`testNoCppExceptionLeavesTheRelay`).
 
 ## The callbacks
 

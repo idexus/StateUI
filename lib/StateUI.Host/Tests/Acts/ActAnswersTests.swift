@@ -58,6 +58,19 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertNil(queue.answered(first.ticket))
     }
 
+    /// Every question's ticket is its own across the process, whatever its queue asks: an answer under a ticket
+    /// another queue gave - one whose runtime has gone - answers nothing here, and the question here still waits.
+    func testAnAnswerUnderAnotherQueuesTicketAnswersNothing() throws {
+        let gone = QuestionQueue<Int>()
+        let theirs = gone.ask(1)
+        let queue = QuestionQueue<String>()
+        let ours = queue.ask("ours")
+
+        XCTAssertNotEqual(ours.ticket, theirs.ticket)
+        XCTAssertNil(queue.answered(theirs.ticket))
+        XCTAssertEqual(try XCTUnwrap(queue.answered(ours.ticket)).question, "ours", "still waiting for its own")
+    }
+
     /// An act is aimed at the element its first argument names; one naming none, or one not on screen, fails with
     /// the reason.
     func testAnActIsAimedAtTheElementItNames() {

@@ -294,4 +294,88 @@ final class StateChannelsTests: XCTestCase {
             channels.takeCompletions(),
             [JourneyCompletion(id: -42, succeeded: true)])
     }
+
+    /// One state is one channel however many controls wear it: it stays while any of them does, and goes when
+    /// the last one leaves.
+    @MainActor
+    func testAChannelGoesWhenTheLastControlWearingItLeaves() {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(Self.labels(["a", "b"]), complete: true)
+        Self.open(Self.worn, in: runtime, from: 1, to: 1)
+        XCTAssertEqual(runtime.stateChannels.count, 1)
+
+        runtime.tree.apply(Self.labels(["b"]), complete: false)
+        XCTAssertEqual(runtime.stateChannels.count, 1, "the other label still wears it")
+
+        runtime.tree.apply(Self.labels([]), complete: false)
+        XCTAssertEqual(runtime.stateChannels.count, 0, "the last one took it with it")
+    }
+
+    /// A channel still moving when its last control leaves runs to where it was sent, and only then goes.
+    @MainActor
+    func testAMovingChannelWhoseLastControlLeftLandsAndThenGoes() {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(Self.labels(["a"]), complete: true)
+        Self.open(Self.worn, in: runtime, from: 0, to: 1)
+        XCTAssertTrue(runtime.stateChannels.isActive)
+
+        runtime.tree.apply(Self.labels([]), complete: false)
+        runtime.stateChannels.follow(runtime.animator.advance(to: 100))
+        XCTAssertEqual(runtime.stateChannels.count, 1, "it goes on to where it was sent")
+
+        runtime.stateChannels.follow(runtime.animator.advance(to: 200))
+        XCTAssertEqual(runtime.stateChannels.count, 0, "and goes once it has landed")
+    }
+
+    /// A control whose patch binds none of its properties any more lets go of every state it wore.
+    @MainActor
+    func testAnEmptyDrivenMapLetsItsStatesGo() throws {
+        let runtime = HostRuntime.still()
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.driven = .replace([
+            .opacity: HostStateBinding(state: Self.worn, mode: .out, kind: .property),
+            .rotation: HostStateBinding(state: Self.worn + 1, mode: .out, kind: .property),
+        ])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([label])
+        runtime.tree.apply(stack, complete: true)
+        Self.open(Self.worn, in: runtime, from: 1, to: 1)
+        Self.open(Self.worn + 1, in: runtime, from: 0, to: 0)
+        XCTAssertEqual(runtime.stateChannels.count, 2)
+
+        var unbound = HostPatch(id: .manual("label"), type: .label)
+        unbound.driven = .replace([:])
+        stack.children = .changed([unbound])
+        runtime.tree.apply(stack, complete: false)
+
+        XCTAssertEqual(try XCTUnwrap(runtime.tree.root?.first(id: .manual("label"))).driven, [:])
+        XCTAssertEqual(runtime.stateChannels.count, 0)
+    }
+
+    /// The state the labels' opacity wears.
+    private static let worn: Int32 = 801
+
+    /// Labels under a stack, each wearing `worn` on its opacity.
+    private static func labels(_ names: [String]) -> HostPatch {
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged(names.map { name in
+            var label = HostPatch(id: .manual(name), type: .label)
+            label.driven = .replace([.opacity: HostStateBinding(state: worn, mode: .out, kind: .property)])
+            return label
+        })
+        return stack
+    }
+
+    /// Opens the channel of `state` on a 200 ms linear journey from `value` to `destination`.
+    @MainActor
+    private static func open(_ state: Int32, in runtime: HostRuntime, from value: Double, to destination: Double) {
+        let journey = HostJourney(
+            value: [value], destination: [destination], velocity: [0], motion: .eased(200, .linear), completion: nil,
+            stopped: 0)
+        _ = runtime.stateChannels.presentedValue(
+            for: HostStateBinding(state: state, mode: .out, kind: .property),
+            from: HostBoundary.value(of: journey),
+            now: 0,
+            reducesMotion: false)
+    }
 }

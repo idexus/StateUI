@@ -14,8 +14,8 @@ extern "C" StateUIObjectRef stateui_winui_progress_bar_make(void) {
         bar.Minimum(0);
         bar.Maximum(1);
         return detach(bar);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a progress bar");
+    } catch (...) {
+        report("making a progress bar");
         return nullptr;
     }
 }
@@ -23,8 +23,8 @@ extern "C" StateUIObjectRef stateui_winui_progress_bar_make(void) {
 extern "C" void stateui_winui_progress_bar_set(StateUIObjectRef handle, double progress) {
     try {
         borrow<controls::ProgressBar>(handle).Value(progress);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "moving a progress bar");
+    } catch (...) {
+        report("moving a progress bar");
     }
 }
 
@@ -33,8 +33,8 @@ extern "C" StateUIObjectRef stateui_winui_progress_ring_make(void) {
         controls::ProgressRing ring;
         ring.IsActive(false);
         return detach(ring);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a spinner");
+    } catch (...) {
+        report("making a spinner");
         return nullptr;
     }
 }
@@ -42,16 +42,16 @@ extern "C" StateUIObjectRef stateui_winui_progress_ring_make(void) {
 extern "C" void stateui_winui_progress_ring_set_running(StateUIObjectRef handle, bool running) {
     try {
         borrow<controls::ProgressRing>(handle).IsActive(running);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "turning a spinner");
+    } catch (...) {
+        report("turning a spinner");
     }
 }
 
 extern "C" double stateui_winui_progress_bar_value(StateUIObjectRef handle) {
     try {
         return borrow<controls::ProgressBar>(handle).Value();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading how far along");
+    } catch (...) {
+        report("reading how far along");
         return 0;
     }
 }
@@ -59,8 +59,8 @@ extern "C" double stateui_winui_progress_bar_value(StateUIObjectRef handle) {
 extern "C" bool stateui_winui_progress_ring_running(StateUIObjectRef handle) {
     try {
         return borrow<controls::ProgressRing>(handle).IsActive();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether a spinner turns");
+    } catch (...) {
+        report("reading whether a spinner turns");
         return false;
     }
 }

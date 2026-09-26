@@ -79,21 +79,22 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
-    /// The state a window tells moves the application's phase, and its scene's and window's, settled in the turn
-    /// after it: minimized, the window stops; shown again, it resumes on its way to being in use.
-    func testTheWindowsStateMovesTheApplicationsPhaseAndItsOwn() throws {
+    /// A window minimized and restored as the user does it - WinUI telling its activation, its presenter and its
+    /// visibility in whatever order it tells them - stops, then stands again.
+    func testAMinimizedWindowIsStoppedWhateverOrderWinUITellsIt() throws {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
-            let window = try XCTUnwrap(host.window).number
-            defer { WinUICallbacks.table.windowStateChanged(window, false, true) }
+            let window = try XCTUnwrap(host.window)
+            let said = { host.views(WinUILabelView.self).map(\.text).first ?? "" }
 
-            WinUICallbacks.table.windowStateChanged(window, true, false)
-            for _ in 0..<10 { host.step() }
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["background stopped"])
+            stateui_winui_window_show_as_user(window.handle, 6)
+            host.settle(until: { said().hasSuffix("stopped") })
+            XCTAssertEqual(said(), "background stopped")
 
-            WinUICallbacks.table.windowStateChanged(window, false, true)
-            for _ in 0..<10 { host.step() }
-            XCTAssertEqual(host.views(WinUILabelView.self).map(\.text), ["active activated"])
+            stateui_winui_window_show_as_user(window.handle, 9)
+            host.settle(until: { !said().hasSuffix("stopped") })
+            XCTAssertFalse(said().contains("background"), said())
+            XCTAssertFalse(said().hasSuffix("stopped"), said())
         }
     }
 

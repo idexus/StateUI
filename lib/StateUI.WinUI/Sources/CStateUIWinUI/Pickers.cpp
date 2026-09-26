@@ -25,8 +25,8 @@ extern "C" StateUIObjectRef stateui_winui_picker_make(int64_t view) {
         box.DropDownOpened([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, true); });
         box.DropDownClosed([view](IInspectable const &, IInspectable const &) { callbacks.presented(view, false); });
         return detach(box);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a picker");
+    } catch (...) {
+        report("making a picker");
         return nullptr;
     }
 }
@@ -36,8 +36,8 @@ extern "C" void stateui_winui_picker_set_options(StateUIObjectRef handle, char c
         auto items = borrow<controls::ComboBox>(handle).Items();
         items.Clear();
         for (int32_t index = 0; index < count; ++index) items.Append(winrt::box_value(text(options[index])));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "giving a picker its choices");
+    } catch (...) {
+        report("giving a picker its choices");
     }
 }
 
@@ -47,8 +47,8 @@ extern "C" void stateui_winui_picker_set(StateUIObjectRef handle, int32_t select
         box.PlaceholderText(text(title));
         auto count = static_cast<int32_t>(box.Items().Size());
         if (writeSelected) box.SelectedIndex(selected >= 0 && selected < count ? selected : -1);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "choosing in a picker");
+    } catch (...) {
+        report("choosing in a picker");
     }
 }
 
@@ -63,24 +63,24 @@ extern "C" void stateui_winui_picker_set_alignment(StateUIObjectRef handle, int3
         xaml::Style items{winrt::xaml_typename<controls::ComboBoxItem>()};
         items.Setters().Append(xaml::Setter(controls::Control::HorizontalContentAlignmentProperty(), winrt::box_value(across)));
         box.ItemContainerStyle(items);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a picker's choices across it");
+    } catch (...) {
+        report("setting a picker's choices across it");
     }
 }
 
 extern "C" void stateui_winui_picker_set_open(StateUIObjectRef handle, bool open) {
     try {
         borrow<controls::ComboBox>(handle).IsDropDownOpen(open);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "opening a picker's list");
+    } catch (...) {
+        report("opening a picker's list");
     }
 }
 
 extern "C" bool stateui_winui_picker_is_open(StateUIObjectRef handle) {
     try {
         return borrow<controls::ComboBox>(handle).IsDropDownOpen();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether a picker's list shows");
+    } catch (...) {
+        report("reading whether a picker's list shows");
         return false;
     }
 }
@@ -88,8 +88,8 @@ extern "C" bool stateui_winui_picker_is_open(StateUIObjectRef handle) {
 extern "C" int32_t stateui_winui_picker_selected(StateUIObjectRef handle) {
     try {
         return borrow<controls::ComboBox>(handle).SelectedIndex();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a picker's choice");
+    } catch (...) {
+        report("reading a picker's choice");
         return -1;
     }
 }
@@ -108,8 +108,8 @@ extern "C" int32_t stateui_winui_picker_choices(StateUIObjectRef handle, char *u
             utf8[count] = 0;
         }
         return static_cast<int32_t>(words.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a picker's choices");
+    } catch (...) {
+        report("reading a picker's choices");
         return 0;
     }
 }
@@ -119,15 +119,15 @@ extern "C" void stateui_winui_picker_open_as_user(StateUIObjectRef handle, bool 
         auto expanding = pattern<provider::IExpandCollapseProvider>(borrow<controls::ComboBox>(handle), PatternInterface::ExpandCollapse);
         if (open) expanding.Expand();
         else expanding.Collapse();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "opening a picker's list as the user");
+    } catch (...) {
+        report("opening a picker's list as the user");
     }
 }
 
 extern "C" void stateui_winui_picker_choose_as_user(StateUIObjectRef handle, int32_t index) {
     try {
         borrow<controls::ComboBox>(handle).SelectedIndex(index);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "choosing in a picker as the user");
+    } catch (...) {
+        report("choosing in a picker as the user");
     }
 }

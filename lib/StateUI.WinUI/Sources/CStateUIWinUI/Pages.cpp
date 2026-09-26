@@ -51,8 +51,8 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
         right.Children().Append(controls::ContentControl());
         bar.RightHeader(right);
         return detach(bar);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a title bar");
+    } catch (...) {
+        report("making a title bar");
         return nullptr;
     }
 }
@@ -70,8 +70,8 @@ extern "C" void stateui_winui_title_bar_set(
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (hasForeground) bar.Foreground(media::SolidColorBrush(color(foreground)));
         else bar.ClearValue(controls::Control::ForegroundProperty());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a title bar");
+    } catch (...) {
+        report("setting a title bar");
     }
 }
 
@@ -97,8 +97,8 @@ extern "C" void stateui_winui_title_bar_set_actions(
             });
             (overflows[index] ? actions.SecondaryCommands() : actions.PrimaryCommands()).Append(button);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a title bar's actions");
+    } catch (...) {
+        report("setting a title bar's actions");
     }
 }
 
@@ -110,8 +110,8 @@ extern "C" void stateui_winui_title_bar_set_slots(
         fill(bar.LeftHeader().as<controls::ContentControl>(), leading);
         fill(bar.Content().as<controls::ContentControl>(), center);
         fill(rightHeader(bar).Children().GetAt(1).as<controls::ContentControl>(), trailing);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "filling a title bar");
+    } catch (...) {
+        report("filling a title bar");
     }
 }
 
@@ -144,8 +144,8 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
             callbacks.presented(view, false);
         });
         return detach(split);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a split view");
+    } catch (...) {
+        report("making a split view");
         return nullptr;
     }
 }
@@ -161,8 +161,8 @@ extern "C" void stateui_winui_split_set(
         standInRow(detail, 0, row);
         standInRow(detail, 1, content);
         if (split.IsPaneOpen() != open) split.IsPaneOpen(open);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a split view");
+    } catch (...) {
+        report("setting a split view");
     }
 }
 
@@ -176,8 +176,8 @@ extern "C" StateUIObjectRef stateui_winui_tabs_make(int64_t view) {
             }
         });
         return detach(tabs);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a row of tabs");
+    } catch (...) {
+        report("making a row of tabs");
         return nullptr;
     }
 }
@@ -187,8 +187,8 @@ extern "C" void stateui_winui_tabs_choose_as_user(StateUIObjectRef handle, int32
         // The row's own selection, which the user's click makes and SelectionChanged tells.
         auto tabs = borrow<controls::SelectorBar>(handle);
         if (index >= 0 && index < static_cast<int32_t>(tabs.Items().Size())) tabs.SelectedItem(tabs.Items().GetAt(index));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "choosing a tab as the user");
+    } catch (...) {
+        report("choosing a tab as the user");
     }
 }
 
@@ -205,7 +205,7 @@ extern "C" void stateui_winui_tabs_set(StateUIObjectRef handle, char const *cons
         if (selected >= 0 && selected < count && tabs.SelectedItem() != items.GetAt(selected)) {
             tabs.SelectedItem(items.GetAt(selected));
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a row of tabs");
+    } catch (...) {
+        report("setting a row of tabs");
     }
 }

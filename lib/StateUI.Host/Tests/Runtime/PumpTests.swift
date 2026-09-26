@@ -107,6 +107,28 @@ final class PumpTests: XCTestCase {
 
         XCTAssertEqual(runtime.performed, ["hideOnScreenKeyboard on count 1"])
     }
+
+    /// A render about a tree the runtime no longer holds is refused and asked for whole once: the log hears why,
+    /// one render brings the lost element back as the core describes it, and the complete render is claimed.
+    @MainActor
+    func testADriftedRenderIsAskedForWholeOnce() throws {
+        let runtime = TurnRuntime()
+        runtime.pump.turn()
+        runtime.expectsDrift = true
+        runtime.tree.root?.forgetForTesting { $0.type == .label }
+
+        runtime.pump.dispatch(runtime.add)
+
+        let drift = try XCTUnwrap(runtime.intake.lastDrift)
+        XCTAssertEqual(runtime.drifts.count, 1)
+        XCTAssertTrue(runtime.drifts.first?.hasSuffix(drift) ?? false, runtime.drifts.joined())
+        XCTAssertEqual(runtime.shown, ["count 0", "count 1"], "one render shows the label back")
+        XCTAssertGreaterThan(runtime.intake.baseline, 0, "the complete render is claimed")
+
+        runtime.pump.dispatch(runtime.add)
+        XCTAssertEqual(runtime.drifts.count, 1, "the next render applies as it is")
+        XCTAssertEqual(runtime.shown.last, "count 2")
+    }
 }
 
 /// A page whose handlers add one, the second also calling an act.
@@ -157,6 +179,12 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
     /// What an element's native half does as a patch reaches it.
     var onApply: (() -> Void)?
 
+    /// Whether a drift is what the test is after; any other test fails on one.
+    var expectsDrift = false
+
+    /// What the pump logged of each drift.
+    private(set) var drifts: [String] = []
+
     init() {
         stateUIUseApp(CountingApplication())
         let animator = Animator()
@@ -173,7 +201,10 @@ private final class TurnRuntime: TurnPresenter, FrameClock {
             makeNative: { [unowned self] in HeldNative($0, runtime: self) })
         pump = Pump(
             core: core, intake: intake, tree: tree, displayCycle: displayCycle, now: now,
-            log: { XCTFail("a drift: \($0)") })
+            log: { [unowned self] line in
+                if !self.expectsDrift { XCTFail("a drift: \(line)") }
+                self.drifts.append(line)
+            })
         pump.presenter = self
         core.connectScene()
     }

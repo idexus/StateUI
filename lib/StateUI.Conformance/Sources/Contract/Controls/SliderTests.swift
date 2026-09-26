@@ -42,6 +42,62 @@
                 s.expect(try s.held(SliderContract.maximum, on: slider), 8)
                 s.expect(try s.held(SliderContract.value, on: slider), 4, within: 1e-9)
             },
+            ConformanceCase("aRangeWidenedOverItsValueShowsIt", covers: [
+                Covered(SliderContract.value), Covered(SliderContract.maximum), Covered(ButtonContract.clicked),
+            ]) { s in
+                let top = State(wrappedValue: 10.0)
+                let level = State(wrappedValue: 15.0)
+                s.start {
+                    VStack {
+                        Slider(level.projectedValue).minimum(0).maximum(top.wrappedValue).id("control")
+                        Button("Widen").onClicked { top.wrappedValue = 20 }.id("widen")
+                    }
+                }
+                let control = try s.element("control")
+                try s.settle { try s.held(SliderContract.value, on: control) == 10 }
+
+                try s.perform(.activate, on: s.element("widen"))
+                try s.settle { try s.held(SliderContract.maximum, on: control) == 20 }
+                try s.settle { try s.held(SliderContract.value, on: control) == 15 }
+                s.expect(try s.held(SliderContract.value, on: control), 15, "the value its state holds, no longer at an end")
+                s.expect(level.wrappedValue, 15)
+            },
+            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", covers: [
+                Covered(SliderContract.value), Covered(SliderContract.minimum), Covered(SliderContract.maximum),
+                Covered(SliderContract.valueChanged), Covered(ButtonContract.clicked),
+            ]) { s in
+                let range = State(wrappedValue: 0.0...10.0)
+                let level = State(wrappedValue: 4.0)
+                let heard = Received<Double>()
+                s.start {
+                    VStack {
+                        Slider(level.projectedValue).minimum(range.wrappedValue.lowerBound)
+                            .maximum(range.wrappedValue.upperBound).onValueChanged { heard.values.append($0) }.id("slider")
+                        Button("Up").onClicked {
+                            range.wrappedValue = 20...30
+                            level.wrappedValue = 25
+                        }.id("up")
+                        Button("Down").onClicked {
+                            range.wrappedValue = -30 ... -20
+                            level.wrappedValue = -25
+                        }.id("down")
+                    }
+                }
+                let slider = try s.element("slider")
+
+                try s.perform(.activate, on: s.element("up"))
+                try s.settle { try s.held(SliderContract.minimum, on: slider) == 20 }
+                // The state's write travels to the control, standing at the range's end on its way.
+                try s.settle { try s.held(SliderContract.value, on: slider) == 25 }
+                s.expect(try s.held(SliderContract.value, on: slider), 25, within: 1e-9, "wholly above the value")
+                try s.perform(.activate, on: s.element("down"))
+                try s.settle { try s.held(SliderContract.maximum, on: slider) == -20 }
+                // The state's write travels to the control, standing at the range's end on its way.
+                try s.settle { try s.held(SliderContract.value, on: slider) == -25 }
+                s.expect(try s.held(SliderContract.value, on: slider), -25, within: 1e-9, "wholly below the value")
+                s.expect(level.wrappedValue, -25)
+                s.expect(heard.values, [], "the program's writes are heard by nobody")
+            },
             ConformanceCase("aStateWriteTravelsToTheThumbUnheard", covers: [
                 Covered(SliderContract.value), Covered(SliderContract.valueChanged), Covered(ButtonContract.clicked),
             ]) { s in

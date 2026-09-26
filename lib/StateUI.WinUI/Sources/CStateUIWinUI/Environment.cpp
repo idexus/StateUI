@@ -151,8 +151,8 @@ extern "C" int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef windo
             utf8[count] = 0;
         }
         return static_cast<int32_t>(facts.text.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading the environment");
+    } catch (...) {
+        report("reading the environment");
         return 0;
     }
 }
@@ -170,7 +170,7 @@ extern "C" void stateui_winui_watch_environment(void) {
         power::PowerManager::RemainingChargePercentChanged([](auto const &, auto const &) { changed(); });
         power::PowerManager::EnergySaverStatusChanged([](auto const &, auto const &) { changed(); });
         connectivity::NetworkInformation::NetworkStatusChanged([](auto const &) { changed(); });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "watching the environment");
+    } catch (...) {
+        report("watching the environment");
     }
 }

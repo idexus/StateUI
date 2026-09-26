@@ -40,8 +40,8 @@ extern "C" StateUIObjectRef stateui_winui_field_make(int64_t view) {
             if (args.Key() == winrt::Windows::System::VirtualKey::Enter) callbacks.submitted(view);
         });
         return detach(field);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a field");
+    } catch (...) {
+        report("making a field");
         return nullptr;
     }
 }
@@ -54,8 +54,8 @@ extern "C" StateUIObjectRef stateui_winui_editor_make(int64_t view) {
         controls::ScrollViewer::SetVerticalScrollBarVisibility(editor, controls::ScrollBarVisibility::Auto);
         hearWords(editor, view);
         return detach(editor);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making an editor");
+    } catch (...) {
+        report("making an editor");
         return nullptr;
     }
 }
@@ -73,8 +73,8 @@ extern "C" StateUIObjectRef stateui_winui_search_make(int64_t view) {
             callbacks.submitted(view);
         });
         return detach(search);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a search box");
+    } catch (...) {
+        report("making a search box");
         return nullptr;
     }
 }
@@ -91,8 +91,8 @@ extern "C" void stateui_winui_field_set_text(StateUIObjectRef handle, char const
         if (field.Text() == words) return;
         field.Text(words);
         field.Select(static_cast<int32_t>(words.size()), 0);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a field's words");
+    } catch (...) {
+        report("setting a field's words");
     }
 }
 
@@ -101,8 +101,8 @@ extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, cha
         auto control = as<IInspectable>(handle);
         if (auto search = control.try_as<controls::AutoSuggestBox>()) search.PlaceholderText(text(utf8));
         else control.as<controls::TextBox>().PlaceholderText(text(utf8));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a field's placeholder");
+    } catch (...) {
+        report("setting a field's placeholder");
     }
 }
 
@@ -115,8 +115,8 @@ extern "C" void stateui_winui_field_set_behaviour(
         field.IsSpellCheckEnabled(spellChecked);
         field.IsTextPredictionEnabled(predicted);
         field.InputScope(inputScope(purpose));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting how a field takes words");
+    } catch (...) {
+        report("setting how a field takes words");
     }
 }
 
@@ -132,8 +132,8 @@ extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t al
                 static_cast<uint8_t>(placeholderArgb >> 8), static_cast<uint8_t>(placeholderArgb)}));
         else
             field.ClearValue(controls::TextBox::PlaceholderForegroundProperty());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a field's look");
+    } catch (...) {
+        report("setting a field's look");
     }
 }
 
@@ -143,8 +143,8 @@ extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t star
         auto size = static_cast<int32_t>(field.Text().size());
         auto from = std::clamp(start, 0, size);
         field.Select(from, std::clamp(length, 0, size - from));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "selecting in a field");
+    } catch (...) {
+        report("selecting in a field");
     }
 }
 
@@ -159,8 +159,8 @@ extern "C" void stateui_winui_field_facts(StateUIObjectRef handle, int32_t *fact
             field.PlaceholderForeground() != nullptr, field.AcceptsReturn(),
         };
         std::memcpy(facts, read, sizeof read);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a field");
+    } catch (...) {
+        report("reading a field");
     }
 }
 
@@ -178,8 +178,8 @@ extern "C" void stateui_winui_search_type(StateUIObjectRef handle, char const *u
             for (int32_t index = 0, count = media::VisualTreeHelper::GetChildrenCount(at); index < count; ++index)
                 left.push_back(media::VisualTreeHelper::GetChild(at, index));
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "typing in a search box");
+    } catch (...) {
+        report("typing in a search box");
     }
 }
 
@@ -187,7 +187,7 @@ extern "C" void stateui_winui_search_submit_as_user(StateUIObjectRef handle) {
     try {
         // A search box's automation peer submits its query as its own button does.
         pattern<provider::IInvokeProvider>(as<xaml::UIElement>(handle), PatternInterface::Invoke).Invoke();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "submitting a search as the user");
+    } catch (...) {
+        report("submitting a search as the user");
     }
 }

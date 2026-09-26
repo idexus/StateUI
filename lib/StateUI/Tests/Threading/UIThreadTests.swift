@@ -527,6 +527,34 @@ final class UIThreadTests: XCTestCase {
             """)
     }
 
+    /// The hosts that run where nothing turns libdispatch's main queue or a run loop - Android, Windows and Linux -
+    /// lean on neither: their work for the UI thread goes to MainActor, which each host drains.
+    func testNoHostOnAndroidWindowsOrLinuxLeansOnAQueueNothingDrains() throws {
+        let banned = [
+            "DispatchQueue.main": "nothing drains libdispatch's main queue there - work for the UI thread goes to MainActor",
+            "Timer": "a Foundation Timer hangs off a run loop nothing turns there",
+            "RunLoop": "a RunLoop is drained by nothing there",
+        ]
+        var broken: [String] = []
+        var read = 0
+
+        for host in ["StateUI.Android", "StateUI.WinUI", "StateUI.GTK"] {
+            let root = SourceTree.repository.appendingPathComponent("lib/\(host)/Sources")
+            for path in try SourceTree.files(under: root, entering: SourceTree.entersSources)
+            where path.hasSuffix(".swift") {
+                read += 1
+                let code = UIThreadTests.withoutComments(try String(
+                    contentsOf: root.appendingPathComponent(path), encoding: .utf8))
+                for (needle, why) in banned.sorted(by: { $0.key < $1.key }) where code.contains(needle) {
+                    broken.append("\(host)/\(path) uses \(needle) - \(why)")
+                }
+            }
+        }
+
+        XCTAssertGreaterThan(read, 100, "the walk read the three hosts' sources")
+        XCTAssertEqual(broken, [], broken.joined(separator: "\n"))
+    }
+
     /// Source with every comment taken out, so a rule's own explanation is not
     /// read as a breach of it. Line comments and block comments both, and
     /// string literals are left alone - a banned word inside a message is text,

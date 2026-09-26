@@ -16,10 +16,10 @@ extension GTKRegistrations {
             return slider
         }, members: { slider in
             slider.applies([SliderContract.value, SliderContract.minimum, SliderContract.maximum]) { view, values in
-                let moved = values[SliderContract.value]
                 view.apply(
-                    value: moved,
-                    writeValue: values.changed(SliderContract.value) && moved != nil,
+                    value: values.written(
+                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        standing: view.value),
                     minimum: values[SliderContract.minimum] ?? 0,
                     maximum: values[SliderContract.maximum] ?? 1)
             }
@@ -37,8 +37,9 @@ extension GTKRegistrations {
                 StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
             ]) { view, values in
                 view.apply(
-                    value: values[StepperContract.value],
-                    writeValue: values.changed(StepperContract.value),
+                    value: values.written(
+                        StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum],
+                        standing: view.value),
                     minimum: values[StepperContract.minimum] ?? 0,
                     maximum: values[StepperContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1)

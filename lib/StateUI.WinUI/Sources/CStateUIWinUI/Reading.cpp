@@ -347,8 +347,8 @@ extern "C" int32_t stateui_winui_read(StateUIObjectRef handle, char const *what,
         if (!value) return -1;
         copy(*value, utf8, capacity);
         return static_cast<int32_t>(value->size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading an element");
+    } catch (...) {
+        report("reading an element");
         return -1;
     }
 }
@@ -377,17 +377,22 @@ extern "C" int32_t stateui_winui_question(StateUIObjectRef handle, char *utf8, i
         for (auto const &choice : choices) words += separator + choice;
         copy(words, utf8, capacity);
         return static_cast<int32_t>(words.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a question");
+    } catch (...) {
+        report("reading a question");
         return -1;
     }
 }
 
 extern "C" int32_t stateui_winui_announced(char *utf8, int32_t capacity) {
-    std::string words;
-    for (auto const &said : announcements) words += (words.empty() ? "" : "\x1f") + said;
-    copy(words, utf8, capacity);
-    return static_cast<int32_t>(words.size());
+    try {
+        std::string words;
+        for (auto const &said : announcements) words += (words.empty() ? "" : "\x1f") + said;
+        copy(words, utf8, capacity);
+        return static_cast<int32_t>(words.size());
+    } catch (...) {
+        report("reading what was announced");
+        return 0;
+    }
 }
 
 void stateui::announced(std::string const &words) {

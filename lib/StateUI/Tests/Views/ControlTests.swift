@@ -996,6 +996,35 @@ final class ControlTests: XCTestCase {
         XCTAssertFalse(chosen.wrappedValue)
     }
 
+    /// A day READS AND WRITES its text form - year, month and day, hyphen-separated,
+    /// the year at least four digits and a minus before one before the first -
+    /// and what it writes it reads back.
+    func testADayIsReadAndWrittenAsYearMonthDay() {
+        XCTAssertEqual(CalendarDate(year: 2026, month: 8, day: 2).text, "2026-08-02")
+        XCTAssertEqual(CalendarDate("2026-8-2"), CalendarDate(year: 2026, month: 8, day: 2), "leading zeros or not")
+        XCTAssertEqual(CalendarDate(year: 987, month: 1, day: 5).text, "0987-01-05")
+        XCTAssertEqual(CalendarDate(year: -5, month: 3, day: 1).text, "-0005-03-01", "a minus before the digits")
+        XCTAssertEqual(CalendarDate("-2026-08-02")?.year, -2026)
+
+        for day in [
+            CalendarDate(year: -5, month: 3, day: 1), CalendarDate(year: 0, month: 12, day: 31),
+            CalendarDate(year: 2026, month: 8, day: 2), CalendarDate(year: 12345, month: 6, day: 7),
+        ] {
+            XCTAssertEqual(CalendarDate(day.text), day, "\(day.text) reads back as the day it was written from")
+        }
+    }
+
+    /// Text of another shape is no day - an empty part, a sign where none belongs, a letter - so a value that did
+    /// not survive the trip shows where it is read.
+    func testTextOfAnotherShapeIsNoDay() {
+        for text in [
+            "2026--08-02", "2026-08-02-", "+2026-08-02", "2026-+8-02", "--2026-08-02", "2026-08", "2026/08/02",
+            "2026-08-0x", "", "-", " 2026-08-02",
+        ] {
+            XCTAssertNil(CalendarDate(text), text)
+        }
+    }
+
     /// A time of day READS AND WRITES its text form, which is a convenience for
     /// an author and not the form it travels in: in the patch it is its numbers,
     /// for the reason a date is - a formatter would mean ICU. The patch's rule is

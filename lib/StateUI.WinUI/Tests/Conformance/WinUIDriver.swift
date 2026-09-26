@@ -117,9 +117,10 @@ final class WinUIDriver: HostDriver {
         case (.tap(let count), let view?) where view.hearing.contains(.taps):
             for run in 1...max(count, 1) { view.heard(.tap(run: run)) }
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
-            view.heard(.drag(.started, x: 0, y: 0))
-            view.heard(.drag(.running, x: offset.x, y: offset.y))
-            view.heard(.drag(.completed, x: offset.x, y: offset.y))
+            // The press the relay tells, which the host layer's rule makes a drag.
+            view.heardPress(phase: 0, at: Point(x: 100, y: 100))
+            view.heardPress(phase: 1, at: Point(x: 100 + offset.x, y: 100 + offset.y))
+            view.heardPress(phase: 2, at: Point(x: 100 + offset.x, y: 100 + offset.y))
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
             view.heard(.pinch(.started, scale: 1, at: point))
             view.heard(.pinch(.running, scale: scale, at: point))

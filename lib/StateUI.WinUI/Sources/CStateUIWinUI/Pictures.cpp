@@ -143,15 +143,19 @@ namespace {
 }
 
 extern "C" void stateui_winui_set_pictures(char const *utf8) {
-    folder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
-    if (!folder.empty() && folder.back() != L'\\' && folder.back() != L'/') folder += L'\\';
+    try {
+        folder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
+        if (!folder.empty() && folder.back() != L'\\' && folder.back() != L'/') folder += L'\\';
+    } catch (...) {
+        report("naming the pictures' folder");
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_image_make(void) {
     try {
         return detach(controls::Image());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making an image");
+    } catch (...) {
+        report("making an image");
         return nullptr;
     }
 }
@@ -213,8 +217,8 @@ extern "C" bool stateui_winui_image_set(
         }
         image.Source(drawing(text));
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "showing a picture");
+    } catch (...) {
+        report("showing a picture");
         return false;
     }
 }
@@ -226,8 +230,8 @@ extern "C" void stateui_winui_image_size(StateUIObjectRef handle, double *size) 
         if (!bitmap) return;
         size[0] = bitmap.PixelWidth();
         size[1] = bitmap.PixelHeight();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a picture's size");
+    } catch (...) {
+        report("reading a picture's size");
     }
 }
 
@@ -239,7 +243,7 @@ extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, 
         auto scale = image.XamlRoot() ? image.XamlRoot().RasterizationScale() : 1.0;
         drawn.RasterizePixelWidth(std::ceil(width * scale));
         drawn.RasterizePixelHeight(std::ceil(height * scale));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "drawing a picture");
+    } catch (...) {
+        report("drawing a picture");
     }
 }

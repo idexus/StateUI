@@ -40,8 +40,9 @@ typedef enum {
 } StateUIHearing;
 
 /// What a view heard: a tap, its place in a quick run of taps from 1, 0 for a press assistive technology made; the
-/// pointer at (x, y) DIPs of the view; a drag's phase - 0 began, 1 moved, 2 ended, 3 cancelled - moved by (x, y)
-/// DIPs since it began; a pinch's phase, its scale since the last, at (x, y) as shares of the view's size.
+/// pointer at (x, y) DIPs of the view; a pinch's phase, its scale since the last, at (x, y) as shares of the view's
+/// size; a press a drag may become - 0 down, 1 moved, 2 let go, 3 taken away - at (x, y) DIPs of the window's content,
+/// which the host's rule makes a drag.
 typedef enum {
     StateUIHeardTap,
     StateUIHeardPointerEntered,
@@ -49,8 +50,8 @@ typedef enum {
     StateUIHeardPointerMoved,
     StateUIHeardPointerPressed,
     StateUIHeardPointerReleased,
-    StateUIHeardDrag,
     StateUIHeardPinch,
+    StateUIHeardPress,
 } StateUIHeard;
 
 /// A question for the user: `kind` 0 an alert, 1 a confirmation, 2 a choice of actions, 3 a prompt; its title
@@ -172,6 +173,8 @@ void stateui_winui_post_turn(void);
 
 /// Subscribes to CompositionTarget.Rendering, or lets go of it.
 void stateui_winui_hold_frames(bool hold);
+/// Whether WinUI's frames are subscribed to now. What a test reads.
+bool stateui_winui_holds_frames(void);
 
 /// Lets go of a handle.
 void stateui_winui_release(StateUIObjectRef object);
@@ -190,6 +193,8 @@ void stateui_winui_window_activate(StateUIObjectRef window);
 void stateui_winui_window_close(StateUIObjectRef window);
 /// Hides the window, or shows it again without activating it.
 void stateui_winui_window_set_shown(StateUIObjectRef window, bool shown);
+/// Minimizes or restores the window as its buttons do: `ShowWindow` with `command`. What a test does.
+void stateui_winui_window_show_as_user(StateUIObjectRef window, int32_t command);
 /// Makes `owner` the window's owner - it stands above it, is hidden with it, and leaves the switchers - or, for
 /// null, a window of its own again.
 void stateui_winui_window_set_owner(StateUIObjectRef window, StateUIObjectRef owner);
@@ -603,6 +608,12 @@ void stateui_winui_watch_environment(void);
 /// Listens on `element`, which the view `view` shows, for what `hearing` names, each heard through `heard`; 0
 /// stops. A panel that listens is hit where it draws nothing, and one that hears taps assistive technology presses.
 void stateui_winui_hear(StateUIObjectRef element, int64_t view, uint32_t hearing);
+
+/// The host says the press the view `view` heard is a drag: the view holds the pointer from the move it heard it in.
+void stateui_winui_press_dragged(int64_t view);
+
+/// The system's drag distance, across and down, in DIPs.
+void stateui_winui_drag_distance(double *distance);
 
 /// Presses `element` as assistive technology does, through its automation peer; whether it could be pressed.
 bool stateui_winui_press(StateUIObjectRef element);

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIWinUI
@@ -83,6 +84,35 @@ final class WinUIMotionTests: XCTestCase {
 
             XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).drawnOpacity, 0.75, accuracy: 1e-6)
             XCTAssertFalse(host.runtime.animator.isMoving)
+        }
+    }
+
+    /// A still page holds no frames: WinUI's frames are subscribed to only while something moves, and let go once it
+    /// stands again.
+    func testAStillPageHoldsNoFramesTillSomethingMoves() throws {
+        try onUIThread {
+            let level = State(wrappedValue: 0.0)
+            let arrived = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                VStack {
+                    Slider(level.projectedValue)
+                    Button("Go").onClicked {
+                        try await level.projectedValue.journey.move(to: 1, .eased(100, .linear))
+                        arrived.wrappedValue = true
+                    }
+                }
+            }
+            for _ in 0..<10 { host.step() }
+            XCTAssertFalse(host.frameClock.held, "a still page")
+            XCTAssertFalse(stateui_winui_holds_frames(), "no frame of WinUI's heard")
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.step()
+            XCTAssertTrue(stateui_winui_holds_frames(), "frames while it moves")
+            host.settle(until: { arrived.wrappedValue })
+            for _ in 0..<10 { host.step() }
+            XCTAssertFalse(host.frameClock.held)
+            XCTAssertFalse(stateui_winui_holds_frames(), "and none once it stands again")
         }
     }
 

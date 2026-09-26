@@ -81,43 +81,52 @@ namespace {
 }
 
 extern "C" void stateui_winui_clock(int32_t *time) {
-    SYSTEMTIME now;
-    GetLocalTime(&now);
-    time[0] = now.wHour;
-    time[1] = now.wMinute;
-    time[2] = now.wSecond;
-    time[3] = now.wMilliseconds;
+    try {
+        SYSTEMTIME now;
+        GetLocalTime(&now);
+        time[0] = now.wHour;
+        time[1] = now.wMinute;
+        time[2] = now.wSecond;
+        time[3] = now.wMilliseconds;
+    } catch (...) {
+        report("reading the clock");
+    }
 }
 
 extern "C" int32_t stateui_winui_time_zone(char *utf8, int32_t capacity) {
     try {
         return hand(winrt::to_string(winrt::Windows::Globalization::Calendar().GetTimeZone()), utf8, capacity);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading the time zone");
+    } catch (...) {
+        report("reading the time zone");
         return hand({}, utf8, capacity);
     }
 }
 
 extern "C" bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes) {
-    auto name = zone ? winrt::to_hstring(std::string_view(zone)) : winrt::hstring();
-    UErrorCode status = U_ZERO_ERROR;
-    if (zone) {
-        UBool system = false;
-        UChar canonical[128];
-        ucal_getCanonicalTimeZoneID(reinterpret_cast<UChar const *>(name.c_str()), static_cast<int32_t>(name.size()),
-                                    canonical, 128, &system, &status);
-        if (U_FAILURE(status) || !system) return false;
+    try {
+        auto name = zone ? winrt::to_hstring(std::string_view(zone)) : winrt::hstring();
+        UErrorCode status = U_ZERO_ERROR;
+        if (zone) {
+            UBool system = false;
+            UChar canonical[128];
+            ucal_getCanonicalTimeZoneID(reinterpret_cast<UChar const *>(name.c_str()), static_cast<int32_t>(name.size()),
+                                        canonical, 128, &system, &status);
+            if (U_FAILURE(status) || !system) return false;
+        }
+        auto calendar = ucal_open(zone ? reinterpret_cast<UChar const *>(name.c_str()) : nullptr,
+                                  zone ? static_cast<int32_t>(name.size()) : 0, nullptr, UCAL_GREGORIAN, &status);
+        if (U_FAILURE(status)) return false;
+        // The day's noon: a day's offset is its own, whatever hour its summer time begins or ends at.
+        if (year > 0) ucal_setDateTime(calendar, year, month - 1, day, 12, 0, 0, &status);
+        auto offset = ucal_get(calendar, UCAL_ZONE_OFFSET, &status) + ucal_get(calendar, UCAL_DST_OFFSET, &status);
+        ucal_close(calendar);
+        if (U_FAILURE(status)) return false;
+        *minutes = offset / 60000;
+        return true;
+    } catch (...) {
+        report("reading a zone's distance from UTC");
+        return false;
     }
-    auto calendar = ucal_open(zone ? reinterpret_cast<UChar const *>(name.c_str()) : nullptr,
-                              zone ? static_cast<int32_t>(name.size()) : 0, nullptr, UCAL_GREGORIAN, &status);
-    if (U_FAILURE(status)) return false;
-    // The day's noon: a day's offset is its own, whatever hour its summer time begins or ends at.
-    if (year > 0) ucal_setDateTime(calendar, year, month - 1, day, 12, 0, 0, &status);
-    auto offset = ucal_get(calendar, UCAL_ZONE_OFFSET, &status) + ucal_get(calendar, UCAL_DST_OFFSET, &status);
-    ucal_close(calendar);
-    if (U_FAILURE(status)) return false;
-    *minutes = offset / 60000;
-    return true;
 }
 
 extern "C" void stateui_winui_announce(StateUIObjectRef handle, char const *utf8) {
@@ -131,8 +140,8 @@ extern "C" void stateui_winui_announce(StateUIObjectRef handle, char const *utf8
                                         text(utf8), L"StateUI");
             announced(utf8 ? utf8 : "");
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "announcing");
+    } catch (...) {
+        report("announcing");
     }
 }
 
@@ -144,8 +153,8 @@ extern "C" bool stateui_winui_focus(StateUIObjectRef handle, bool focus) {
             ? element.as<xaml::DependencyObject>() : input::FocusManager::FindFirstFocusableElement(element);
         auto takes = target ? target.try_as<xaml::UIElement>() : nullptr;
         return takes && takes.Focus(xaml::FocusState::Programmatic);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "moving the keyboard's focus");
+    } catch (...) {
+        report("moving the keyboard's focus");
         return false;
     }
 }
@@ -157,8 +166,8 @@ bool stateui::holdsFocus(xaml::UIElement const &element) {
 extern "C" bool stateui_winui_focused(StateUIObjectRef handle) {
     try {
         return holdsFocus(as<xaml::UIElement>(handle));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading the keyboard's focus");
+    } catch (...) {
+        report("reading the keyboard's focus");
         return false;
     }
 }
@@ -168,35 +177,49 @@ extern "C" bool stateui_winui_hide_keyboard(StateUIObjectRef handle) {
         auto held = focused(as<xaml::UIElement>(handle));
         bool typing = held && (held.try_as<controls::TextBox>() || held.try_as<controls::PasswordBox>());
         return typing && letGoOfFocus(as<xaml::UIElement>(handle));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "taking the keyboard down");
+    } catch (...) {
+        report("taking the keyboard down");
         return false;
     }
 }
 
 extern "C" void stateui_winui_set_store(char const *utf8) {
-    storeFolder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
+    try {
+        storeFolder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
+    } catch (...) {
+        report("naming the stores' folder");
+    }
 }
 
 extern "C" int32_t stateui_winui_stored(char const *name, char *utf8, int32_t capacity) {
-    std::string text;
-    FILE *file = nullptr;
-    if (_wfopen_s(&file, storePath(name).c_str(), L"rb") == 0 && file) {
-        char buffer[4096];
-        for (size_t read; (read = std::fread(buffer, 1, sizeof buffer, file)) > 0;) text.append(buffer, read);
-        std::fclose(file);
+    try {
+        std::string text;
+        FILE *file = nullptr;
+        if (_wfopen_s(&file, storePath(name).c_str(), L"rb") == 0 && file) {
+            char buffer[4096];
+            for (size_t read; (read = std::fread(buffer, 1, sizeof buffer, file)) > 0;) text.append(buffer, read);
+            std::fclose(file);
+        }
+        return hand(text, utf8, capacity);
+    } catch (...) {
+        report("reading a store");
+        return 0;
     }
-    return hand(text, utf8, capacity);
 }
 
 extern "C" bool stateui_winui_store(char const *name, char const *utf8) {
-    auto path = storePath(name);
-    auto writing = path + L".writing";
-    FILE *file = nullptr;
-    if (_wfopen_s(&file, writing.c_str(), L"wb") != 0 || !file) return false;
-    auto length = std::strlen(utf8 ? utf8 : "");
-    bool written = std::fwrite(utf8 ? utf8 : "", 1, length, file) == length;
-    written = std::fclose(file) == 0 && written;
-    // The whole store is written aside and then takes the old one's place, so a failed write keeps the old.
-    return written && MoveFileExW(writing.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING);
+    try {
+        auto path = storePath(name);
+        auto writing = path + L".writing";
+        FILE *file = nullptr;
+        if (_wfopen_s(&file, writing.c_str(), L"wb") != 0 || !file) return false;
+        auto length = std::strlen(utf8 ? utf8 : "");
+        bool written = std::fwrite(utf8 ? utf8 : "", 1, length, file) == length;
+        written = std::fclose(file) == 0 && written;
+        // The whole store is written aside and then takes the old one's place, so a failed write keeps the old.
+        return written && MoveFileExW(writing.c_str(), path.c_str(), MOVEFILE_REPLACE_EXISTING);
+    } catch (...) {
+        report("writing a store");
+        return false;
+    }
 }

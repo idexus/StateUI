@@ -93,8 +93,8 @@ namespace stateui {
     void post(void (*work)()) {
         try {
             if (queue) queue.TryEnqueue([work] { work(); });
-        } catch (winrt::hresult_error const &error) {
-            report(error, "posting work to the UI thread");
+        } catch (...) {
+            report("posting work to the UI thread");
         }
     }
 }
@@ -109,9 +109,8 @@ extern "C" int32_t stateui_winui_run(StateUIWinUICallbacks const *given) {
         winrt::init_apartment(winrt::apartment_type::single_threaded);
         xaml::Application::Start([](auto &&) { winrt::make<StateUIApplication>(false); });
         return 0;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "starting WinUI");
-        return error.code();
+    } catch (...) {
+        return report("starting WinUI");
     }
 }
 
@@ -130,35 +129,37 @@ extern "C" int32_t stateui_winui_embed(StateUIWinUICallbacks const *given) {
         queue = controller.DispatcherQueue();
         embedded = true;
         return 0;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "embedding WinUI");
-        return error.code();
+    } catch (...) {
+        return report("embedding WinUI");
     }
 }
 
 extern "C" void stateui_winui_pump(double seconds) {
-    auto until = std::chrono::steady_clock::now() + std::chrono::duration<double>(seconds);
-    MSG message;
-    do {
-        while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&message);
-            DispatchMessageW(&message);
-        }
-        MsgWaitForMultipleObjects(0, nullptr, FALSE, 5, QS_ALLINPUT);
-    } while (std::chrono::steady_clock::now() < until);
+    try {
+        auto until = std::chrono::steady_clock::now() + std::chrono::duration<double>(seconds);
+        MSG message;
+        do {
+            while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&message);
+                DispatchMessageW(&message);
+            }
+            MsgWaitForMultipleObjects(0, nullptr, FALSE, 5, QS_ALLINPUT);
+        } while (std::chrono::steady_clock::now() < until);
+    } catch (...) {
+        report("running the thread's messages");
+    }
 }
 
 extern "C" void stateui_winui_post_turn(void) {
     try {
         if (queue) queue.TryEnqueue([] { callbacks.turn(); });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "posting a turn");
+    } catch (...) {
+        report("posting a turn");
     }
 }
 
 extern "C" void stateui_winui_hold_frames(bool hold) {
     if (hold == holding) return;
-    holding = hold;
     try {
         if (hold) {
             rendering = xaml::Media::CompositionTarget::Rendering(
@@ -166,11 +167,26 @@ extern "C" void stateui_winui_hold_frames(bool hold) {
         } else {
             xaml::Media::CompositionTarget::Rendering(rendering);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "holding the frames");
+        // Held only once WinUI took it: a subscription that failed is asked for again at the next hold.
+        holding = hold;
+    } catch (...) {
+        report("holding the frames");
+    }
+}
+
+extern "C" bool stateui_winui_holds_frames(void) {
+    try {
+        return holding;
+    } catch (...) {
+        report("reading whether frames are held");
+        return false;
     }
 }
 
 extern "C" void stateui_winui_release(StateUIObjectRef object) {
-    if (object) reinterpret_cast<::IUnknown *>(object)->Release();
+    try {
+        if (object) reinterpret_cast<::IUnknown *>(object)->Release();
+    } catch (...) {
+        report("letting go of an object");
+    }
 }

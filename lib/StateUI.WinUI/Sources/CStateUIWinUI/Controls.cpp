@@ -21,8 +21,8 @@ extern "C" StateUIObjectRef stateui_winui_text_make(void) {
         controls::TextBlock block;
         block.TextWrapping(xaml::TextWrapping::Wrap);
         return detach(block);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a text block");
+    } catch (...) {
+        report("making a text block");
         return nullptr;
     }
 }
@@ -30,8 +30,8 @@ extern "C" StateUIObjectRef stateui_winui_text_make(void) {
 extern "C" void stateui_winui_text_set_text(StateUIObjectRef handle, char const *utf8) {
     try {
         borrow<controls::TextBlock>(handle).Text(text(utf8));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a text block's words");
+    } catch (...) {
+        report("setting a text block's words");
     }
 }
 
@@ -46,8 +46,8 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view) {
                 callbacks.held(view, sender.as<controls::Primitives::ButtonBase>().IsPressed());
             });
         return detach(button);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a button");
+    } catch (...) {
+        report("making a button");
         return nullptr;
     }
 }
@@ -91,23 +91,23 @@ extern "C" void stateui_winui_button_set_look(
 
         if (cornerRadius >= 0) button.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
         else button.ClearValue(controls::Control::CornerRadiusProperty());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "dressing a button");
+    } catch (...) {
+        report("dressing a button");
     }
 }
 
 extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *utf8) {
     try {
         as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a caption");
+    } catch (...) {
+        report("setting a caption");
     }
 }
 
 extern "C" void stateui_winui_button_invoke(StateUIObjectRef handle) {
     try {
         pattern<provider::IInvokeProvider>(borrow<controls::Button>(handle), PatternInterface::Invoke).Invoke();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "pressing a button");
+    } catch (...) {
+        report("pressing a button");
     }
 }

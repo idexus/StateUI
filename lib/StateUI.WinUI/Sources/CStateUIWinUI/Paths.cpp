@@ -122,8 +122,8 @@ extern "C" StateUIObjectRef stateui_winui_path_make(int64_t view) {
         auto held = stateui::figure(view);
         held.Children().Append(figure);
         return detach(held);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a shape");
+    } catch (...) {
+        report("making a shape");
         return nullptr;
     }
 }
@@ -149,8 +149,8 @@ extern "C" void stateui_winui_path_paint(
         path.StrokeLineJoin(join == 1 ? media::PenLineJoin::Bevel : join == 2 ? media::PenLineJoin::Round : media::PenLineJoin::Miter);
         // WinUI measures a mitred corner against half the outline's width; StateUI against the whole.
         path.StrokeMiterLimit(miter * 2);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "painting a shape");
+    } catch (...) {
+        report("painting a shape");
     }
 }
 
@@ -161,8 +161,8 @@ extern "C" void stateui_winui_path_bounds(double const *commands, int32_t count,
             && std::isfinite(box.Height);
         double const read[] = {known ? box.X : 0, known ? box.Y : 0, known ? box.Width : 0, known ? box.Height : 0};
         std::copy(read, read + 4, bounds);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "measuring a shape");
+    } catch (...) {
+        report("measuring a shape");
     }
 }
 
@@ -197,7 +197,7 @@ extern "C" void stateui_winui_path_draw(
             }
         }
         path.Data(geometry);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "drawing a shape");
+    } catch (...) {
+        report("drawing a shape");
     }
 }

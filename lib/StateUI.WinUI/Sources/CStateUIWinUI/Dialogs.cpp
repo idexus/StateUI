@@ -147,8 +147,8 @@ extern "C" void stateui_winui_ask(StateUIObjectRef handle, int64_t ticket, State
         auto root = as<xaml::UIElement>(handle).XamlRoot();
         if (!root) return answer(ticket, false, {}, false);
         ask(root, ticket, *question);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "asking the user");
+    } catch (...) {
+        report("asking the user");
         answer(ticket, false, {}, false);
     }
 }
@@ -171,8 +171,8 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
         peers::FrameworkElementAutomationPeer::CreatePeerForElement(pressed)
             .GetPattern(peers::PatternInterface::Invoke).as<provider::IInvokeProvider>().Invoke();
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "answering a dialog");
+    } catch (...) {
+        report("answering a dialog");
         return false;
     }
 }

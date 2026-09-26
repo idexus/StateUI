@@ -244,6 +244,19 @@ enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
 
+## A press dragged
+
+A host whose toolkit tells a press and its moves, and no drag of its own,
+tells a drag by one rule (`DragRecognition`): the press is a drag once it
+has moved MORE than the platform's distance from where it went down - along
+either axis where the platform measures a rectangle, Windows and GTK, or any
+way where it measures a radius, Android. It starts there, at nothing, and
+then each move is the drag's, measured from where the press went down, until
+the press lets go and it completes, or the platform takes the press away and
+it is cancelled. A press that never became a drag ends with nothing. The
+distance is the platform's, in DIPs; the toolkit holds the pointer once the
+press is a drag, which the host asks for as the rule says so.
+
 ## A swipe
 
 A host whose toolkit tells it a press and how far it has moved, and no swipe,
@@ -399,6 +412,14 @@ is 1; a share of work past an end stands at that end, one that is no number
 at the start; a slider's key moves a hundredth of its range and a page a
 tenth; and a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six.
+
+Such a control is written, as its value and its ends apply, by one rule
+(`ElementValues.written`): the tree's value where the tree changed the value
+or an end, else the value the control shows, so a hand on the thumb or the
+buttons is never argued with. A range that moves takes the tree's value
+again: the control stood clamped at the old range's end - a state's value
+outside it, or one travelling to the value written with the range - and a
+range widened over that value shows it rather than the end it stood at.
 
 ## The log
 

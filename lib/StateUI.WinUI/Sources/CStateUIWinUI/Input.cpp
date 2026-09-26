@@ -27,8 +27,8 @@ namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
 namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
-    /// One view's listening: what it listens for, the run of taps it heard, the press it holds and whether that
-    /// became a drag, and the handlers hung on its element.
+    /// One view's listening: what it listens for, the run of taps it heard, the press it holds, whether the host
+    /// said that became a drag and whether the view is yet to hold the pointer, and the handlers hung on its element.
     struct Listening {
         uint32_t hearing = 0;
 
@@ -37,8 +37,7 @@ namespace {
 
         uint32_t pointer = 0;
         bool dragging = false;
-        Point from{};
-        Point moved{};
+        bool capturing = false;
 
         winrt::event_token tapped, doubleTapped, entered, exited, movedToken, pressed, released, lost, canceled,
             started, delta, completed;
@@ -79,15 +78,15 @@ namespace {
         tell(view, StateUIHeardTap, entry->run, point);
     }
 
-    /// The press ends: a drag it became ends with it, `phase` saying how.
+    /// The press ends, `phase` saying how: 2 let go, 3 taken away. The host says whether a drag ends with it.
     void letGo(int64_t view, int32_t phase) {
         auto found = listening.find(view);
         if (found == listening.end() || !found->second.pointer) return;
         auto &entry = found->second;
         entry.pointer = 0;
-        if (!entry.dragging) return;
         entry.dragging = false;
-        tell(view, StateUIHeardDrag, phase, entry.moved);
+        entry.capturing = false;
+        tell(view, StateUIHeardPress, phase, {});
     }
 
     void pointer(int64_t view, StateUIHeard what, IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
@@ -120,25 +119,22 @@ namespace {
             if (!entry || !args.GetCurrentPoint(sender.as<xaml::UIElement>()).Properties().IsLeftButtonPressed()) return;
             entry->pointer = args.Pointer().PointerId();
             entry->dragging = false;
-            entry->from = onContent(args);
-            entry->moved = {};
+            entry->capturing = false;
+            tell(view, StateUIHeardPress, 0, onContent(args));
         });
         entry.movedToken = element.PointerMoved([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerMoved, sender, args);
             auto *entry = listener(view, StateUIHearingDrags);
             if (!entry || entry->pointer != args.Pointer().PointerId()) return;
-            auto now = onContent(args);
-            entry->moved = {now.X - entry->from.X, now.Y - entry->from.Y};
-            if (!entry->dragging) {
-                // A press becomes a drag past the system's drag distance, and holds the pointer from there.
-                if (std::abs(entry->moved.X) < GetSystemMetrics(SM_CXDRAG)
-                    && std::abs(entry->moved.Y) < GetSystemMetrics(SM_CYDRAG)) return;
-                entry->dragging = true;
+            tell(view, StateUIHeardPress, 1, onContent(args));
+            // The host said, as it heard the move, whether the press is a drag: the view holds the pointer from there.
+            entry = listener(view, StateUIHearingDrags);
+            if (!entry || !entry->dragging) return;
+            if (entry->capturing) {
+                entry->capturing = false;
                 sender.as<xaml::UIElement>().CapturePointer(args.Pointer());
-                tell(view, StateUIHeardDrag, 0, {});
             }
             args.Handled(true);
-            tell(view, StateUIHeardDrag, 1, entry->moved);
         });
         entry.released = element.PointerReleased([view](IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
             pointer(view, StateUIHeardPointerReleased, sender, args);
@@ -229,8 +225,28 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         element.ManipulationMode(
             hearing & StateUIHearingPinches ? input::ManipulationModes::Scale : input::ManipulationModes::System);
         holdHitArea(element, view);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "listening for the user's input");
+    } catch (...) {
+        report("listening for the user's input");
+    }
+}
+
+extern "C" void stateui_winui_press_dragged(int64_t view) {
+    try {
+        auto found = listening.find(view);
+        if (found == listening.end() || !found->second.pointer) return;
+        found->second.dragging = true;
+        found->second.capturing = true;
+    } catch (...) {
+        report("holding a dragged press");
+    }
+}
+
+extern "C" void stateui_winui_drag_distance(double *distance) {
+    try {
+        distance[0] = GetSystemMetricsForDpi(SM_CXDRAG, USER_DEFAULT_SCREEN_DPI);
+        distance[1] = GetSystemMetricsForDpi(SM_CYDRAG, USER_DEFAULT_SCREEN_DPI);
+    } catch (...) {
+        report("reading the drag distance");
     }
 }
 
@@ -242,8 +258,8 @@ extern "C" bool stateui_winui_press(StateUIObjectRef handle) {
         if (!invoke) return false;
         invoke.Invoke();
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "pressing an element");
+    } catch (...) {
+        report("pressing an element");
         return false;
     }
 }
@@ -256,8 +272,8 @@ extern "C" bool stateui_winui_hits(StateUIObjectRef handle, double x, double y) 
         for (auto const &hit : xaml::Media::VisualTreeHelper::FindElementsInHostCoordinates(point, element))
             if (hit == element) return true;
         return false;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "finding what a click hits");
+    } catch (...) {
+        report("finding what a click hits");
         return false;
     }
 }
@@ -274,8 +290,8 @@ extern "C" bool stateui_winui_reaches(StateUIObjectRef handle, double x, double 
             return false;
         }
         return false;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "finding what a click reaches");
+    } catch (...) {
+        report("finding what a click reaches");
         return false;
     }
 }
@@ -316,11 +332,16 @@ extern "C" void stateui_winui_hear_focus(StateUIObjectRef handle, int64_t view, 
         entry.lost = element.LostFocus([view](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             tellFocus(view, holdsFocus(sender.as<xaml::UIElement>()));
         });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "hearing an element's focus");
+    } catch (...) {
+        report("hearing an element's focus");
     }
 }
 
 extern "C" int32_t stateui_winui_listeners(void) {
-    return static_cast<int32_t>(listening.size());
+    try {
+        return static_cast<int32_t>(listening.size());
+    } catch (...) {
+        report("counting the listeners");
+        return 0;
+    }
 }

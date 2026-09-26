@@ -28,16 +28,18 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     }
 
     /// Reads `2026-08-02` - year, month and day, hyphen-separated, with or
-    /// without the leading zeros.
+    /// without the leading zeros, and a minus before a year before the first.
     ///
     ///     guard let due = CalendarDate(row.dueDate) else { return }
     ///
     /// Nil for any other shape, so text that is not a date shows up at the
     /// point it is read instead of becoming a silent 0-0-0.
     public init?(_ text: String) {
-        let parts = text.split(separator: "-")
+        let before = text.hasPrefix("-")
+        let parts = text.dropFirst(before ? 1 : 0).split(separator: "-", omittingEmptySubsequences: false)
 
         guard parts.count == 3,
+              parts.allSatisfy({ part in !part.isEmpty && part.allSatisfy { ("0"..."9").contains($0) } }),
               let year = Int(parts[0]),
               let month = Int(parts[1]),
               let day = Int(parts[2])
@@ -45,7 +47,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
             return nil
         }
 
-        self.init(year: year, month: month, day: day)
+        self.init(year: before ? -year : year, month: month, day: day)
     }
 
     /// The day back from the three numbers a picker reports - year, month,
@@ -69,7 +71,8 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     }
 
     /// `2026-08-02` - the day as a line of text, for putting one in a label:
-    /// `Label("Due \(due.text)")`.
+    /// `Label("Due \(due.text)")`. A year before the first is written with a
+    /// minus, `-0005-03-01`, and reads back.
     ///
     /// One fixed shape, never a display format: a `DatePicker` writes a date
     /// for the user with `.format(…)`, against the user's locale.
@@ -88,15 +91,15 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
         (left.year, left.month, left.day) < (right.year, right.month, right.day)
     }
 
-    /// Zero-padded by hand, without Foundation.
+    /// Zero-padded by hand, without Foundation; a minus before the zeros.
     private func pad(_ value: Int, _ width: Int) -> String {
-        var digits = String(value)
+        var digits = String(value.magnitude)
 
         while digits.count < width {
             digits = "0" + digits
         }
 
-        return digits
+        return value < 0 ? "-" + digits : digits
     }
 }
 

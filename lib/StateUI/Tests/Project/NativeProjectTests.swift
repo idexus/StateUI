@@ -165,6 +165,70 @@ final class NativeProjectTests: XCTestCase {
             "declared by the relay's header or defined by its sources, and not both")
     }
 
+    /// No C++ exception leaves the WinUI relay: every function it gives Swift catches whatever its body throws -
+    /// WinUI's, the standard library's, any other - and says it on the host's log, since an exception crossing the C
+    /// boundary ends the process where nobody can say why.
+    func testNoCppExceptionLeavesTheRelay() throws {
+        let relay = SourceTree.repository.appendingPathComponent("lib/StateUI.WinUI/Sources/CStateUIWinUI")
+        var open: [String] = []
+        var functions = 0
+        for file in try SourceTree.files(under: relay, entering: { _ in true }) where file.hasSuffix(".cpp") {
+            let text = try String(contentsOf: relay.appendingPathComponent(file), encoding: .utf8)
+            for function in Self.cFunctions(in: text) {
+                functions += 1
+                if !function.body.contains("catch (...)") { open.append("\(file): \(function.name)") }
+            }
+        }
+
+        XCTAssertGreaterThan(functions, 150, "the walk read the relay's functions")
+        XCTAssertEqual(open, [], "a C function of the relay lets an exception out")
+    }
+
+    /// Each `extern "C"` function `text` defines: its name, and its body - braces counted outside words, letters and
+    /// comments.
+    private static func cFunctions(in text: String) -> [(name: String, body: String)] {
+        let characters = Array(text)
+        let opener = Array("extern \"C\" ")
+        var found: [(name: String, body: String)] = []
+        var at = 0
+        while at + opener.count <= characters.count {
+            guard Array(characters[at..<at + opener.count]) == opener, at == 0 || characters[at - 1] == "\n" else {
+                at += 1
+                continue
+            }
+            guard let open = characters[at...].firstIndex(of: "(") else { break }
+            let name = String(characters[at..<open]).split(separator: " ").last.map(String.init) ?? "?"
+            guard let start = characters[open...].firstIndex(where: { $0 == "{" || $0 == ";" }),
+                  characters[start] == "{"
+            else {
+                at = open
+                continue
+            }
+            var depth = 0
+            var index = start
+            while index < characters.count {
+                switch characters[index] {
+                case "\"", "'":
+                    let quote = characters[index]
+                    index += 1
+                    while index < characters.count, characters[index] != quote {
+                        index += characters[index] == "\\" ? 2 : 1
+                    }
+                case "/" where index + 1 < characters.count && characters[index + 1] == "/":
+                    while index < characters.count, characters[index] != "\n" { index += 1 }
+                case "{": depth += 1
+                case "}": depth -= 1
+                default: break
+                }
+                if depth == 0 { break }
+                index += 1
+            }
+            found.append((name, String(characters[start...min(index, characters.count - 1)])))
+            at = index
+        }
+        return found
+    }
+
     /// No WinUI script writes into an executable a build linked: the next build would link it again, however
     /// little changed. The Windows App SDK's manifest stands beside each one.
     func testTheWinUIScriptsLeaveWhatABuildLinked() throws {

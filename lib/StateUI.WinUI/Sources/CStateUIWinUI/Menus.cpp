@@ -138,16 +138,16 @@ extern "C" void stateui_winui_set_context_menu(
             element.ContextFlyout(flyout);
         }
         holdHitArea(element, view);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "giving a view its context menu");
+    } catch (...) {
+        report("giving a view its context menu");
     }
 }
 
 extern "C" StateUIObjectRef stateui_winui_menu_bar_make(int64_t) {
     try {
         return detach(controls::MenuBar());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a menu bar");
+    } catch (...) {
+        report("making a menu bar");
         return nullptr;
     }
 }
@@ -163,8 +163,8 @@ extern "C" void stateui_winui_menu_bar_set(
         for (int32_t index = 0; index < count; ++index) {
             writer.write(kinds[index], titles[index], enabled[index], identifiers[index]);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "writing a menu bar");
+    } catch (...) {
+        report("writing a menu bar");
     }
 }
 
@@ -187,8 +187,8 @@ extern "C" int32_t stateui_winui_menus(StateUIObjectRef handle, char *utf8, int3
             utf8[size] = 0;
         }
         return static_cast<int32_t>(bytes.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a view's menus");
+    } catch (...) {
+        report("reading a view's menus");
         return 0;
     }
 }
@@ -201,8 +201,8 @@ extern "C" void stateui_winui_menus_choose(StateUIObjectRef handle, int32_t inde
                 return;
             }
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "choosing in a view's menus");
+    } catch (...) {
+        report("choosing in a view's menus");
     }
 }
 
@@ -227,8 +227,8 @@ extern "C" int32_t stateui_winui_menus_identifiers(StateUIObjectRef handle, char
             utf8[size] = 0;
         }
         return static_cast<int32_t>(bytes.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a view's menus' identifiers");
+    } catch (...) {
+        report("reading a view's menus' identifiers");
         return 0;
     }
 }

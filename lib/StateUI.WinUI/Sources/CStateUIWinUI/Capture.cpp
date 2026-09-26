@@ -78,8 +78,8 @@ extern "C" bool stateui_winui_pixels(StateUIObjectRef handle, double const *poin
                 | static_cast<uint32_t>(pixel[1]) << 8 | pixel[0];
         }
         return true;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading pixels");
+    } catch (...) {
+        report("reading pixels");
         return false;
     }
 }

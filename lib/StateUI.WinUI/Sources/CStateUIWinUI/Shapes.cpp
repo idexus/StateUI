@@ -68,8 +68,8 @@ extern "C" StateUIObjectRef stateui_winui_shape_make(StateUIOutline outline) {
     try {
         if (outline == StateUIOutlineEllipse) return detach(shapes::Ellipse());
         return detach(shapes::Rectangle());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a shape");
+    } catch (...) {
+        report("making a shape");
         return nullptr;
     }
 }
@@ -86,16 +86,16 @@ extern "C" void stateui_winui_shape_set(
             rectangle.RadiusX(radius);
             rectangle.RadiusY(radius);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "painting a shape");
+    } catch (...) {
+        report("painting a shape");
     }
 }
 
 extern "C" StateUIObjectRef stateui_winui_color_box_make(int64_t view) {
     try {
         return detach(figure(view));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a colour box");
+    } catch (...) {
+        report("making a colour box");
         return nullptr;
     }
 }
@@ -105,7 +105,7 @@ extern "C" void stateui_winui_color_box_set(StateUIObjectRef handle, uint32_t fi
         auto box = borrow<controls::Grid>(handle);
         box.Background(media::SolidColorBrush(color(fill)));
         box.CornerRadius({corners[0], corners[1], corners[2], corners[3]});
-    } catch (winrt::hresult_error const &error) {
-        report(error, "painting a colour box");
+    } catch (...) {
+        report("painting a colour box");
     }
 }

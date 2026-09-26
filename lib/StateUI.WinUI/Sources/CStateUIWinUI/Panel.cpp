@@ -82,8 +82,8 @@ namespace {
 extern "C" StateUIObjectRef stateui_winui_panel_make(int64_t view) {
     try {
         return detach(winrt::make<StateUIPanel>(view).as<controls::Panel>());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a panel");
+    } catch (...) {
+        report("making a panel");
         return nullptr;
     }
 }
@@ -97,15 +97,15 @@ extern "C" void stateui_winui_panel_set_children(
         held.reserve(count);
         for (int32_t index = 0; index < count; ++index) held.push_back(as<xaml::UIElement>(children[index]));
         items.ReplaceAll(held);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "holding a panel's children");
+    } catch (...) {
+        report("holding a panel's children");
     }
 }
 
 extern "C" void stateui_winui_panel_hide_children(StateUIObjectRef handle, bool hidden) {
     try {
         panel(as<xaml::UIElement>(handle))->childrenHidden = hidden;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "hiding a panel's children from assistive technology");
+    } catch (...) {
+        report("hiding a panel's children from assistive technology");
     }
 }

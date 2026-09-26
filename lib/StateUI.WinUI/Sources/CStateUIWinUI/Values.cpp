@@ -24,8 +24,8 @@ extern "C" StateUIObjectRef stateui_winui_slider_make(int64_t view) {
             callbacks.valueChanged(view, args.NewValue());
         });
         return detach(slider);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a slider");
+    } catch (...) {
+        report("making a slider");
         return nullptr;
     }
 }
@@ -47,8 +47,8 @@ extern "C" void stateui_winui_slider_set(
         }
         auto kept = std::min(std::max(value, lower), upper);
         if (slider.Value() != kept) slider.Value(kept);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a slider");
+    } catch (...) {
+        report("setting a slider");
     }
 }
 
@@ -58,16 +58,16 @@ extern "C" void stateui_winui_slider_steps(StateUIObjectRef handle, double *step
         steps[0] = slider.SmallChange();
         steps[1] = slider.LargeChange();
         steps[2] = slider.StepFrequency();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a slider's steps");
+    } catch (...) {
+        report("reading a slider's steps");
     }
 }
 
 extern "C" double stateui_winui_slider_value(StateUIObjectRef handle) {
     try {
         return borrow<controls::Slider>(handle).Value();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a slider");
+    } catch (...) {
+        report("reading a slider");
         return 0;
     }
 }
@@ -91,8 +91,8 @@ extern "C" StateUIObjectRef stateui_winui_stepper_make(int64_t view) {
             callbacks.valueChanged(view, args.NewValue());
         });
         return detach(box);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a stepper");
+    } catch (...) {
+        report("making a stepper");
         return nullptr;
     }
 }
@@ -114,16 +114,16 @@ extern "C" void stateui_winui_stepper_set(
         box.NumberFormatter(formatter);
         auto kept = std::clamp(value, box.Minimum(), box.Maximum());
         if (box.Value() != kept) box.Value(kept);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a stepper");
+    } catch (...) {
+        report("setting a stepper");
     }
 }
 
 extern "C" double stateui_winui_stepper_value(StateUIObjectRef handle) {
     try {
         return borrow<controls::NumberBox>(handle).Value();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a stepper");
+    } catch (...) {
+        report("reading a stepper");
         return 0;
     }
 }
@@ -143,9 +143,9 @@ extern "C" void stateui_winui_stepper_step_as_user(StateUIObjectRef handle, bool
             for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(at); index < count; ++index)
                 left.push_back(xaml::Media::VisualTreeHelper::GetChild(at, index));
         }
-        report(winrt::hresult_error(E_FAIL, L"the box has no spin button"), "stepping a stepper as the user");
-    } catch (winrt::hresult_error const &error) {
-        report(error, "stepping a stepper as the user");
+        throw winrt::hresult_error(E_FAIL, L"the box has no spin button");
+    } catch (...) {
+        report("stepping a stepper as the user");
     }
 }
 
@@ -153,15 +153,15 @@ extern "C" void stateui_winui_stepper_enter_as_user(StateUIObjectRef handle, cha
     try {
         // The box reads its words as it does when Enter is pressed in it.
         borrow<controls::NumberBox>(handle).Text(text(utf8));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "entering words in a stepper as the user");
+    } catch (...) {
+        report("entering words in a stepper as the user");
     }
 }
 
 extern "C" void stateui_winui_value_move(StateUIObjectRef handle, double value) {
     try {
         pattern<provider::IRangeValueProvider>(as<xaml::UIElement>(handle), PatternInterface::RangeValue).SetValue(value);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "moving a value as the user");
+    } catch (...) {
+        report("moving a value as the user");
     }
 }

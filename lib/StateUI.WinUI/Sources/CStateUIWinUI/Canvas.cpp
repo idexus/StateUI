@@ -455,8 +455,8 @@ namespace {
                     // Windows took the device away: a new one, a new surface, and the drawing again.
                     devices.device = nullptr;
                 }
-            } catch (winrt::hresult_error const &error) {
-                report(error, "drawing a canvas");
+            } catch (...) {
+                report("drawing a canvas");
             }
         }
 
@@ -478,8 +478,8 @@ namespace {
             context->Clear(D2D1::ColorF(0, 0, 0, 0));
             try {
                 replay(context.get(), base, drawing);
-            } catch (winrt::hresult_error const &error) {
-                report(error, "replaying a drawing");
+            } catch (...) {
+                report("replaying a drawing");
             }
             context->PopAxisAlignedClip();
             return native->EndDraw();
@@ -573,8 +573,8 @@ namespace {
 extern "C" StateUIObjectRef stateui_winui_canvas_make(int64_t view) {
     try {
         return detach(winrt::make<StateUICanvas>(view).as<controls::Panel>());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a canvas");
+    } catch (...) {
+        report("making a canvas");
         return nullptr;
     }
 }
@@ -590,11 +590,16 @@ extern "C" void stateui_winui_canvas_draw(
         for (int32_t index = 0, at = 0; index < wordCount; at += lengths[index++])
             drawing.words.emplace_back(winrt::to_hstring(std::string_view(words + at, lengths[index])));
         canvas(handle)->show(std::move(drawing));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "handing a canvas its drawing");
+    } catch (...) {
+        report("handing a canvas its drawing");
     }
 }
 
 extern "C" int32_t stateui_winui_canvases(void) {
-    return canvases;
+    try {
+        return canvases;
+    } catch (...) {
+        report("counting the canvases");
+        return 0;
+    }
 }

@@ -15,6 +15,23 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual([0, -1, .nan, .infinity].map(ValueArithmetic.step), [1, 1, 1, 1])
     }
 
+    /// A control of a range is written the tree's value where the tree changed it or an end - a range widened over a
+    /// value the control stood clamped at shows it - and otherwise keeps the one it shows.
+    func testARangeThatMovesTakesTheTreesValue() {
+        func written(changed: Set<Prop>, tree: Double?) -> Double {
+            let values = ElementValues<SliderContract>(changed: changed) { key in
+                key == SliderContract.value.token ? tree.map { .number($0) } : nil
+            }
+            return values.written(
+                SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum], standing: 10)
+        }
+
+        XCTAssertEqual(written(changed: [SliderContract.minimum.token], tree: 25), 25, "the range moved")
+        XCTAssertEqual(written(changed: [SliderContract.value.token], tree: 25), 25, "the value changed")
+        XCTAssertEqual(written(changed: [], tree: 25), 10, "nothing the tree changed: the hand on the control stays")
+        XCTAssertEqual(written(changed: [SliderContract.maximum.token], tree: nil), 10, "no value in the tree")
+    }
+
     /// A share of work past an end stands at that end; one that is no number stands at the start.
     func testAShareOfWorkStandsInsideItsEnds() {
         XCTAssertEqual([0.5, 1.5, -1, .nan].map(ValueArithmetic.share), [0.5, 1, 0, 0])

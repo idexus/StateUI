@@ -120,8 +120,8 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
             callbacks.windowClosed(number);
         });
         return detach(window);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a window");
+    } catch (...) {
+        report("making a window");
         return nullptr;
     }
 }
@@ -129,16 +129,16 @@ extern "C" StateUIObjectRef stateui_winui_window_make(int64_t number) {
 extern "C" void stateui_winui_window_set_title(StateUIObjectRef handle, char const *title) {
     try {
         borrow<xaml::Window>(handle).Title(text(title));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "titling a window");
+    } catch (...) {
+        report("titling a window");
     }
 }
 
 extern "C" void stateui_winui_window_set_content(StateUIObjectRef handle, StateUIObjectRef content) {
     try {
         standInRow(root(borrow<xaml::Window>(handle)), 3, content);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "filling a window");
+    } catch (...) {
+        report("filling a window");
     }
 }
 
@@ -162,8 +162,8 @@ extern "C" void stateui_winui_window_set_overlay(StateUIObjectRef handle, StateU
         layer.Children().Clear();
         if (overlay) layer.Children().Append(as<xaml::UIElement>(overlay));
         else if (uint32_t index; children.IndexOf(layer, index)) children.RemoveAt(index);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "laying the overlay over a window");
+    } catch (...) {
+        report("laying the overlay over a window");
     }
 }
 
@@ -183,16 +183,16 @@ extern "C" void stateui_winui_window_set_chrome(
             window.AppWindow().TitleBar().PreferredHeightOption(winrt::Microsoft::UI::Windowing::TitleBarHeightOption::Tall);
             takeTheWayBack(grid, winrt::unbox_value<int64_t>(bar.Tag()));
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "dressing a window");
+    } catch (...) {
+        report("dressing a window");
     }
 }
 
 extern "C" void stateui_winui_window_activate(StateUIObjectRef handle) {
     try {
         borrow<xaml::Window>(handle).Activate();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "showing a window");
+    } catch (...) {
+        report("showing a window");
     }
 }
 
@@ -201,8 +201,8 @@ extern "C" void stateui_winui_window_close(StateUIObjectRef handle) {
         auto window = borrow<xaml::Window>(handle);
         releaseOwned(reinterpret_cast<HWND>(window.AppWindow().Id().Value));
         window.Close();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "closing a window");
+    } catch (...) {
+        report("closing a window");
     }
 }
 
@@ -213,8 +213,8 @@ extern "C" void stateui_winui_window_set_owner(StateUIObjectRef handle, StateUIO
         // A window owned stands above its owner, is hidden with it, and has no button of its own in the switchers.
         SetWindowLongPtrW(reinterpret_cast<HWND>(app.Id().Value), GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(owning));
         app.IsShownInSwitchers(owner == nullptr);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "giving a window its owner");
+    } catch (...) {
+        report("giving a window its owner");
     }
 }
 
@@ -223,9 +223,17 @@ extern "C" bool stateui_winui_window_belongs_to(StateUIObjectRef handle, StateUI
         auto app = borrow<xaml::Window>(handle).AppWindow();
         auto owning = reinterpret_cast<HWND>(borrow<xaml::Window>(owner).AppWindow().Id().Value);
         return GetWindow(reinterpret_cast<HWND>(app.Id().Value), GW_OWNER) == owning && !app.IsShownInSwitchers();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a window's owner");
+    } catch (...) {
+        report("reading a window's owner");
         return false;
+    }
+}
+
+extern "C" void stateui_winui_window_show_as_user(StateUIObjectRef handle, int32_t command) {
+    try {
+        ShowWindow(reinterpret_cast<HWND>(borrow<xaml::Window>(handle).AppWindow().Id().Value), command);
+    } catch (...) {
+        report("minimizing or restoring a window as the user");
     }
 }
 
@@ -234,8 +242,8 @@ extern "C" void stateui_winui_window_set_shown(StateUIObjectRef handle, bool sho
         auto app = borrow<xaml::Window>(handle).AppWindow();
         if (shown) app.Show(false);
         else app.Hide();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "showing or hiding a window");
+    } catch (...) {
+        report("showing or hiding a window");
     }
 }
 
@@ -273,8 +281,8 @@ extern "C" void stateui_winui_window_set_frame(StateUIObjectRef handle, bool con
             if (has[3]) outer.Height += static_cast<int32_t>(std::lround(values[3] * pixels)) - client.Height;
             app.Resize(outer);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "placing a window");
+    } catch (...) {
+        report("placing a window");
     }
 }
 
@@ -292,8 +300,8 @@ extern "C" void stateui_winui_window_set_limits(StateUIObjectRef handle, double 
         presenter.PreferredMinimumHeight(size(limits[1]));
         presenter.PreferredMaximumWidth(size(limits[2]));
         presenter.PreferredMaximumHeight(size(limits[3]));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "bounding a window");
+    } catch (...) {
+        report("bounding a window");
     }
 }
 
@@ -312,8 +320,8 @@ extern "C" void stateui_winui_window_set_traits(
         if (translucent == static_cast<bool>(acrylic)) return;
         if (translucent) window.SystemBackdrop(xaml::Media::DesktopAcrylicBackdrop());
         else window.SystemBackdrop(xaml::Media::MicaBackdrop());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting what a window is");
+    } catch (...) {
+        report("setting what a window is");
     }
 }
 
@@ -342,8 +350,8 @@ extern "C" void stateui_winui_window_frame(StateUIObjectRef handle, double *valu
         values[10] = window.SystemBackdrop().try_as<xaml::Media::DesktopAcrylicBackdrop>() ? 1 : 0;
         values[11] = presenter && presenter.IsAlwaysOnTop() ? 1 : 0;
         values[12] = app.IsVisible() ? 1 : 0;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a window's frame");
+    } catch (...) {
+        report("reading a window's frame");
     }
 }
 
@@ -356,8 +364,8 @@ extern "C" int32_t stateui_winui_window_system_title(StateUIObjectRef handle, ch
             utf8[size] = 0;
         }
         return static_cast<int32_t>(bytes.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a window's name");
+    } catch (...) {
+        report("reading a window's name");
         return 0;
     }
 }

@@ -61,8 +61,8 @@ extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, boo
             [&](controls::Control const &control) {
                 apply(control, controls::Control::FontSizeProperty(), controls::Control::FontFamilyProperty());
             });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a font");
+    } catch (...) {
+        report("setting a font");
     }
 }
 
@@ -86,8 +86,8 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
                     if (has) resources.Insert(name, brush);
                 }
             });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "colouring words");
+    } catch (...) {
+        report("colouring words");
     }
 }
 
@@ -97,8 +97,8 @@ extern "C" void stateui_winui_set_padding(StateUIObjectRef handle, double left, 
         either(handle,
             [&](controls::TextBlock const &block) { block.Padding(room); },
             [&](controls::Control const &control) { control.Padding(room); });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting the room around words");
+    } catch (...) {
+        report("setting the room around words");
     }
 }
 
@@ -108,8 +108,8 @@ extern "C" void stateui_winui_text_set_lines(StateUIObjectRef handle, bool wraps
         block.TextWrapping(wraps ? xaml::TextWrapping::Wrap : xaml::TextWrapping::NoWrap);
         block.TextTrimming(trims ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
         block.MaxLines(std::max(0, lines));
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a label's lines");
+    } catch (...) {
+        report("setting a label's lines");
     }
 }
 
@@ -118,8 +118,8 @@ extern "C" void stateui_winui_text_set_alignment(StateUIObjectRef handle, int32_
         auto aligned = horizontal == 1 ? xaml::TextAlignment::Center
             : horizontal == 2 ? xaml::TextAlignment::End : xaml::TextAlignment::Start;
         borrow<controls::TextBlock>(handle).TextAlignment(aligned);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "aligning a label's words");
+    } catch (...) {
+        report("aligning a label's words");
     }
 }
 
@@ -130,8 +130,8 @@ extern "C" void stateui_winui_text_set_spacing(StateUIObjectRef handle, int32_t 
         block.LineStackingStrategy(lineHeight > 0 ? xaml::LineStackingStrategy::BlockLineHeight
                                                   : xaml::LineStackingStrategy::MaxHeight);
         block.LineHeight(lineHeight > 0 ? lineHeight : 0);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "spacing a label's words");
+    } catch (...) {
+        report("spacing a label's words");
     }
 }
 
@@ -171,8 +171,8 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             }
             at += length;
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "setting a label's runs of words");
+    } catch (...) {
+        report("setting a label's runs of words");
     }
 }
 
@@ -207,8 +207,8 @@ extern "C" int32_t stateui_winui_text_runs(StateUIObjectRef handle, double *valu
             at += length;
         }
         return count;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading a label's runs");
+    } catch (...) {
+        report("reading a label's runs");
         return 0;
     }
 }
@@ -220,8 +220,8 @@ extern "C" void stateui_winui_text_set_decorations(StateUIObjectRef handle, bool
         if (underline) lines = lines | TextDecorations::Underline;
         if (strikethrough) lines = lines | TextDecorations::Strikethrough;
         borrow<controls::TextBlock>(handle).TextDecorations(lines);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "decorating a label's words");
+    } catch (...) {
+        report("decorating a label's words");
     }
 }
 
@@ -242,7 +242,7 @@ extern "C" void stateui_winui_text_style(StateUIObjectRef handle, double *style)
                 style[3] = 0;
                 style[4] = argb(control.Foreground());
             });
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading how words look");
+    } catch (...) {
+        report("reading how words look");
     }
 }

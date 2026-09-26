@@ -19,9 +19,6 @@ extension HeardInput {
         case StateUIHeardPointerMoved: self = .pointer(.pointerMoved, point)
         case StateUIHeardPointerPressed: self = .pointer(.pointerPressed, point)
         case StateUIHeardPointerReleased: self = .pointer(.pointerReleased, point)
-        case StateUIHeardDrag:
-            guard let phase = GesturePhase(rawValue: phase) else { return nil }
-            self = .drag(phase, x: x, y: y)
         case StateUIHeardPinch:
             guard let phase = GesturePhase(rawValue: phase) else { return nil }
             self = .pinch(phase, scale: scale, at: point)

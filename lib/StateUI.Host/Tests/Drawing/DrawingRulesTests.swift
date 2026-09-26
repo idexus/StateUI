@@ -22,6 +22,22 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(gradient.firstColor, red)
     }
 
+    /// A radial gradient runs out from its centre to its radius, in fractions of what it paints, and from the
+    /// middle to the edge where it gives no geometry.
+    func testARadialGradientIsReadFromItsCentreToItsRadius() {
+        let stops = [HostBrush.Stop(offset: 0, color: red), HostBrush.Stop(offset: 1, color: blue)]
+        let authored = Brush.radialGradient(
+            [GradientStop(Color(red: 255, green: 0, blue: 0), 0), GradientStop(Color(red: 0, green: 0, blue: 255), 1)],
+            center: Point(0.25, 0.75), radius: 0.4)
+
+        let brush = HostBrush(authored.propValue)
+        XCTAssertEqual(brush, .radial(center: Point(x: 0.25, y: 0.75), radius: 0.4, stops: stops))
+        XCTAssertEqual(brush.firstColor, red)
+        XCTAssertEqual(
+            HostBrush(.values([.enumeration(3), .numbers([]), .number(0), red, .number(1), blue])),
+            .radial(center: Point(x: 0.5, y: 0.5), radius: 0.5, stops: stops))
+    }
+
     /// A colour crosses to a relay as one number, alpha highest; what is no colour gives none.
     func testAColourIsOneARGBNumber() {
         XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78).propValue.argb, 0x7812_3456)

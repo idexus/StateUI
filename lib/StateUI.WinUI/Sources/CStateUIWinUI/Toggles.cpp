@@ -30,8 +30,8 @@ extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
             callbacks.toggled(view, sender.as<controls::ToggleSwitch>().IsOn());
         });
         return detach(toggle);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a switch");
+    } catch (...) {
+        report("making a switch");
         return nullptr;
     }
 }
@@ -44,8 +44,8 @@ extern "C" StateUIObjectRef stateui_winui_check_box_make(int64_t view) {
         box.Padding({0, 0, 0, 0});
         hear(box, view);
         return detach(box);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a check box");
+    } catch (...) {
+        report("making a check box");
         return nullptr;
     }
 }
@@ -56,8 +56,8 @@ extern "C" StateUIObjectRef stateui_winui_radio_make(int64_t view) {
         radio.GroupName(L"StateUI " + std::to_wstring(view));
         hear(radio, view);
         return detach(radio);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a radio button");
+    } catch (...) {
+        report("making a radio button");
         return nullptr;
     }
 }
@@ -72,8 +72,8 @@ extern "C" void stateui_winui_toggle_set_on(StateUIObjectRef handle, bool on) {
         auto button = control.as<primitives::ToggleButton>();
         auto checked = button.IsChecked();
         if (!checked || checked.Value() != on) button.IsChecked(on);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "turning a control on or off");
+    } catch (...) {
+        report("turning a control on or off");
     }
 }
 
@@ -83,8 +83,8 @@ extern "C" bool stateui_winui_toggle_is_on(StateUIObjectRef handle) {
         if (auto toggle = control.try_as<controls::ToggleSwitch>()) return toggle.IsOn();
         auto checked = control.as<primitives::ToggleButton>().IsChecked();
         return checked && checked.Value();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading whether a control is on");
+    } catch (...) {
+        report("reading whether a control is on");
         return false;
     }
 }
@@ -96,8 +96,8 @@ extern "C" void stateui_winui_toggle_press(StateUIObjectRef handle) {
             pattern<provider::ISelectionItemProvider>(control, PatternInterface::SelectionItem).Select();
         else
             pattern<provider::IToggleProvider>(control, PatternInterface::Toggle).Toggle();
-    } catch (winrt::hresult_error const &error) {
-        report(error, "turning a control as the user");
+    } catch (...) {
+        report("turning a control as the user");
     }
 }
 
@@ -123,7 +123,7 @@ extern "C" void stateui_winui_toggle_set_background(StateUIObjectRef handle, Sta
         if (fill) control.Background(fill);
         else control.ClearValue(controls::Control::BackgroundProperty());
         readThemeAgain(control);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "painting a control that is on or off");
+    } catch (...) {
+        report("painting a control that is on or off");
     }
 }

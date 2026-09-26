@@ -15,13 +15,11 @@ final class WinUIStepperView: WinUIValueView {
     /// The number it shows.
     var value: Double { stateui_winui_stepper_value(handle) }
 
-    /// The range and the step, then the value: `value` where `writeValue`, else the one it shows, kept inside the
-    /// range; written with as many decimals as they take.
-    func apply(value: Double?, writeValue: Bool, minimum: Double, maximum: Double, step: Double) {
-        let kept = writeValue ? value ?? self.value : self.value
+    /// The range and the step, then `value`, kept inside the range; written with as many decimals as they take.
+    func apply(value: Double, minimum: Double, maximum: Double, step: Double) {
         let (low, high) = ValueArithmetic.range(minimum, maximum)
         let step = ValueArithmetic.step(step)
         stateui_winui_stepper_set(
-            handle, kept, low, high, step, Int32(ValueArithmetic.decimals(of: [step, low, high, kept])))
+            handle, value, low, high, step, Int32(ValueArithmetic.decimals(of: [step, low, high, value])))
     }
 }

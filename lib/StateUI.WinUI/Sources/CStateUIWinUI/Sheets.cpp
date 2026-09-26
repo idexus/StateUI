@@ -81,8 +81,8 @@ extern "C" StateUIObjectRef stateui_winui_sheet_make(void) {
         card.Child(content);
         sheet.Children().Append(card);
         return detach(sheet);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "making a sheet");
+    } catch (...) {
+        report("making a sheet");
         return nullptr;
     }
 }
@@ -95,8 +95,8 @@ extern "C" void stateui_winui_sheet_set(StateUIObjectRef handle, char const *tit
         words.Text(text(title));
         words.Visibility(text(title).empty() ? xaml::Visibility::Collapsed : xaml::Visibility::Visible);
         standInRow(content, 1, page);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "filling a sheet");
+    } catch (...) {
+        report("filling a sheet");
     }
 }
 
@@ -120,8 +120,8 @@ extern "C" void stateui_winui_window_set_sheets(StateUIObjectRef handle, StateUI
             if (auto first = xaml::Input::FocusManager::FindFirstFocusableElement(top))
                 if (auto focusable = first.try_as<xaml::UIElement>()) focusable.Focus(xaml::FocusState::Programmatic);
         }
-    } catch (winrt::hresult_error const &error) {
-        report(error, "presenting sheets");
+    } catch (...) {
+        report("presenting sheets");
     }
 }
 
@@ -129,8 +129,8 @@ extern "C" int32_t stateui_winui_window_sheets(StateUIObjectRef handle) {
     try {
         auto held = layer(borrow<xaml::Window>(handle), false);
         return held ? static_cast<int32_t>(held.Children().Size()) : 0;
-    } catch (winrt::hresult_error const &error) {
-        report(error, "counting sheets");
+    } catch (...) {
+        report("counting sheets");
         return 0;
     }
 }

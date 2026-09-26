@@ -126,8 +126,8 @@ extern "C" void stateui_winui_set_accessibility(
             });
         }
         leaveOutParts(element, record);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "telling assistive technology of an element");
+    } catch (...) {
+        report("telling assistive technology of an element");
     }
 }
 
@@ -142,8 +142,8 @@ extern "C" int32_t stateui_winui_automation_words(StateUIObjectRef handle, int32
             utf8[count] = 0;
         }
         return static_cast<int32_t>(read.size());
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading what assistive technology meets");
+    } catch (...) {
+        report("reading what assistive technology meets");
         return 0;
     }
 }
@@ -158,7 +158,7 @@ extern "C" void stateui_winui_automation_facts(StateUIObjectRef handle, int32_t 
             read[3] = metWithin(met);
         }
         std::memcpy(facts, read, sizeof read);
-    } catch (winrt::hresult_error const &error) {
-        report(error, "reading what assistive technology meets");
+    } catch (...) {
+        report("reading what assistive technology meets");
     }
 }

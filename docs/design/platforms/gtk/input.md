@@ -59,8 +59,10 @@ pointer's.
 
 ## A press dragged
 
-A press of the primary button, or a finger, becomes a drag once it has moved
-past GTK's drag threshold, the distance GTK's own click stops at. From there
+A press of the primary button, or a finger, becomes a drag by the host
+layer's rule ([a press dragged](../../host/runtime.md#a-press-dragged)) once
+it has moved past GTK's drag threshold along either axis - the distance
+GTK's own click stops at, which also tells a press that moved from a tap. From there
 the drag claims its press: GTK denies it to the tap on the same press and to
 every view around the one dragged, so a view dragged inside another drags
 alone. It is measured on the window, from each event's own position, where
