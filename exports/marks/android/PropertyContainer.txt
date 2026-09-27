@@ -1,6 +1,6 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
-Button.clicked: ✅
 Canvas.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 ColorBox.accessibilityIdentifier: ✅

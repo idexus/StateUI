@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aTitleBarStandsOverItsWindow", covers: [
+            ConformanceCase("aTitleBarStandsOverItsWindow", proves: [
                 Covered(TitleBarContract.self), Covered(TitleBarContract.title),
             ]) { s in
                 s.start { Specimens.page("TitleBar", [Write(TitleBarContract.title, "Notes")]) }

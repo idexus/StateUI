@@ -1,4 +1,4 @@
-Button.clicked: ✅
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Button.fontAttributes: ✅
 Button.fontAutoScalingEnabled: not realized
 Button.fontFamily: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet

@@ -1,3 +1,4 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 ActivityIndicator.allowDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: not realized
@@ -33,7 +34,6 @@ ActivityIndicator.verticalAlignment: ✅
 Button.allowDrop: not realized
 Button.area: ✅
 Button.canDrag: not realized
-Button.clicked: ✅
 Button.dragLeave: not realized
 Button.dragOver: not realized
 Button.dragStarting: not realized

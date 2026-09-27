@@ -8,15 +8,15 @@ Layer: `adaptive`. Every base host presents it by its platform's conventions, ke
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [PageElement](tiers/PageElement.md)
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (5) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 3 ✅ of 5 | `NSSplitViewController` |  |
-| UIKit | ✅ | 4 ✅ of 5 | `UISplitViewController` |  |
-| Android Views | ✅ | 1 ✅ of 5 | AndroidX `DrawerLayout` |  |
-| WinUI 3 | ✅ | 4 ✅ of 5 | `SplitView` |  |
-| GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no test of it has run yet |
+| AppKit | ✅ | 3 ✅ | `NSSplitViewController` |  |
+| UIKit | ✅ | 3 ✅ | `UISplitViewController` |  |
+| Android Views | ✅ | 1 ✅ | AndroidX `DrawerLayout` |  |
+| WinUI 3 | ⌛ |  | `SplitView` | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no run of it on these sources |
 | Web |  |  | `<aside>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ |  | ✅ |  |  |  |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: its test waits on SplitView.isSidebarVisible, not realized yet |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ◐ |  | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | · | ⏸ | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: waits on SplitView.isSidebarVisible, not realized yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet |
-| `title` | property | `String` | native |  | ✅ |  | ✅ |  |  | cannot read title of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read title of SplitView - Android's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `title` | property | `String` | native | · | ✅ | · | ⌛ |  |  | cannot read title of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read title of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Picker"),
-            ConformanceCase("aPickerOffersItsChoicesAndShowsTheOneMade", covers: [
-                Covered(PickerContract.self), Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
+            ConformanceCase("aPickerOffersItsChoicesAndShowsTheOneMade", proves: [
+                Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
             ]) { s in
                 s.start { VStack { Picker(["S", "M", "L"]).selectedIndex(State(wrappedValue: 1).projectedValue).id("picker") } }
                 let picker = try s.element("picker")
@@ -21,10 +21,10 @@
                 s.expect(try s.held(PickerContract.options, on: picker), ["S", "M", "L"])
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 1)
             },
-            ConformanceCase("aUsersChoiceIsHeardAndTheProgramsIsNot", covers: [
+            ConformanceCase("aUsersChoiceIsHeardAndTheProgramsIsNot", proves: [
                 Covered(PickerContract.selectedIndex), Covered(PickerContract.selectedIndexChanged),
-                Covered(TextElementContract.text, on: LabelContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+                Covered(TextElementContract.text, on: LabelContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: 1)
                 let heard = Received<String>()
                 s.start {
@@ -50,9 +50,9 @@
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 0, "the program's choice shown")
                 s.expect(heard.values, ["chose 2"], "and heard by nobody")
             },
-            ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", covers: [
-                Covered(PickerContract.title), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", proves: [
+                Covered(PickerContract.title),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let named = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -68,9 +68,9 @@
                 try s.settle { try s.held(PickerContract.title, on: picker) == "Size" }
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the user's choice, not argued with")
             },
-            ConformanceCase("choicesTheTreeChangesAreOffered", covers: [
-                Covered(PickerContract.options), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("choicesTheTreeChangesAreOffered", proves: [
+                Covered(PickerContract.options),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let more = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -84,7 +84,7 @@
                 try s.settle { try s.held(PickerContract.options, on: picker) == ["S", "M", "L", "XL"] }
                 s.expect(try s.held(PickerContract.options, on: picker), ["S", "M", "L", "XL"])
             },
-            ConformanceCase("theListTheUserOpensAndClosesIsHeard", covers: [
+            ConformanceCase("theListTheUserOpensAndClosesIsHeard", proves: [
                 Covered(PickerContract.isOpen), Covered(PickerContract.opened), Covered(PickerContract.closed),
             ]) { s in
                 let heard = Received<String>()
@@ -107,9 +107,9 @@
                 s.expect(heard.values, ["opened", "closed"])
                 s.expect(try s.held(PickerContract.isOpen, on: picker), false)
             },
-            ConformanceCase("theListTheProgramOpensIsHeardOnlyAsTheUserClosesIt", covers: [
-                Covered(PickerContract.isOpen), Covered(PickerContract.closed), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theListTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
+                Covered(PickerContract.isOpen), Covered(PickerContract.closed),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 s.start {

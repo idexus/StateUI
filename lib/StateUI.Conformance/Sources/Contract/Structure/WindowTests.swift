@@ -13,7 +13,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aWindowIsMadeAndComesToTheFront", covers: [
+            ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
                 Covered(WindowContract.self), Covered(WindowContract.created), Covered(WindowContract.activated),
             ]) { s in
                 let log = Received<WindowPhase>()
@@ -23,7 +23,7 @@
                 s.expect(log.values.first, .created, "made first")
                 s.expect(log.values.last, .activated, "then in front")
             },
-            ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", covers: [
+            ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", proves: [
                 Covered(WindowContract.deactivated), Covered(WindowContract.activated),
             ]) { s in
                 let log = Received<WindowPhase>()
@@ -38,7 +38,7 @@
                 s.settle { log.values.last == .activated }
                 s.expect(log.values.last, .activated, "in front again")
             },
-            ConformanceCase("aWindowPutAwayStopsAndResumesWhenBroughtBack", covers: [
+            ConformanceCase("aWindowPutAwayStopsAndResumesWhenBroughtBack", proves: [
                 Covered(WindowContract.stopped), Covered(WindowContract.resumed),
             ]) { s in
                 let log = Received<WindowPhase>()
@@ -53,7 +53,7 @@
                 s.settle { log.values.contains(.resumed) && log.values.last == .activated }
                 s.expect(log.values.suffix(2).map { $0 }, [.resumed, .activated], "brought back on its way to the front")
             },
-            ConformanceCase("aClosedWindowHearsItIsGoing", covers: [Covered(WindowContract.destroying)]) { s in
+            ConformanceCase("aClosedWindowHearsItIsGoing", proves: [Covered(WindowContract.destroying)]) { s in
                 let log = Received<WindowPhase>()
                 s.start { WindowPhasePage(log: log) }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -63,7 +63,7 @@
                 s.settle { log.values.last == .destroying }
                 s.expect(log.values.last, .destroying)
             },
-            ConformanceCase("aModalTheUserTakesAwayIsHeardByItsWindow", covers: [
+            ConformanceCase("aModalTheUserTakesAwayIsHeardByItsWindow", proves: [
                 Covered(WindowContract.modalPopped), Covered(ModalStackContract.self),
             ]) { s in
                 let sheets = State(wrappedValue: [1])
@@ -86,7 +86,7 @@
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
             holds(WindowContract.isTranslucent, true, then: false) { $0.isTranslucent = $1 },
-            ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", covers: [
+            ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in
                 try s.start(application: { NotesApplication() })
@@ -98,9 +98,9 @@
                 s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
-            ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", covers: [
-                Covered(WindowContract.floatsOnTop), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", proves: [
+                Covered(WindowContract.floatsOnTop),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -117,9 +117,9 @@
                 try s.settle { try s.held(WindowContract.floatsOnTop, on: note) == true }
                 s.expect(try s.held(WindowContract.floatsOnTop, on: note), true, "with the application in front again")
             },
-            ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", covers: [
-                Covered(WindowContract.hidesWhenInactive), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", proves: [
+                Covered(WindowContract.hidesWhenInactive),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -149,9 +149,9 @@
         _ member: ElementProperty<WindowContract, Value>, _ first: Value, then second: Value,
         _ write: @escaping @Sendable (WindowSession, Value) -> Void
     ) -> ConformanceCase {
-        ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", covers: [
-            Covered(member), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 SessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],

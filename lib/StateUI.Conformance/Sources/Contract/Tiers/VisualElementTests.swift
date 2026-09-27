@@ -42,9 +42,9 @@
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     static func shown(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isShownAsTheTreeSays", covers: [
-            Covered(VisualElementContract.isVisible, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).isShownAsTheTreeSays", proves: [
+            Covered(VisualElementContract.isVisible, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let shown = State(wrappedValue: true)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.isVisible, shown.wrappedValue)], beside: [
@@ -62,9 +62,9 @@
 
     /// A view is as opaque as the tree says, and changes as the tree does.
     static func opacity(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isAsOpaqueAsTheTreeSays", covers: [
-            Covered(VisualElementContract.opacity, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).isAsOpaqueAsTheTreeSays", proves: [
+            Covered(VisualElementContract.opacity, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let opacity = State(wrappedValue: 0.5)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.opacity, opacity.wrappedValue)], beside: [
@@ -82,9 +82,9 @@
 
     /// A view takes input or not as the tree says, and stops when the tree says so.
     static func enabled(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).takesInputAsTheTreeSays", covers: [
-            Covered(VisualElementContract.isEnabled, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).takesInputAsTheTreeSays", proves: [
+            Covered(VisualElementContract.isEnabled, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let enabled = State(wrappedValue: true)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.isEnabled, enabled.wrappedValue)], beside: [
@@ -102,7 +102,7 @@
 
     /// A view stands at the size the tree states.
     static func sized(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsAtItsStatedSize", covers: [
+        ConformanceCase("\(element).standsAtItsStatedSize", proves: [
             Covered(VisualElementContract.width, on: element), Covered(VisualElementContract.height, on: element),
             Covered(ViewContract.frameChanged, on: element),
         ]) { s in
@@ -124,7 +124,7 @@
 
     /// A stated size is held to the bounds the tree sets it.
     static func bounded(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isHeldToTheBoundsTheTreeSets", covers: [
+        ConformanceCase("\(element).isHeldToTheBoundsTheTreeSets", proves: [
             Covered(VisualElementContract.maximumWidth, on: element),
             Covered(VisualElementContract.minimumWidth, on: element),
             Covered(VisualElementContract.maximumHeight, on: element),
@@ -169,9 +169,9 @@
 
     /// A press reaches a view, and goes through it to what is beneath once the tree says it ignores input.
     static func reachable(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPressReachesItUnlessItIgnoresInput", covers: [
-            Covered(VisualElementContract.ignoresInput, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).aPressReachesItUnlessItIgnoresInput", proves: [
+            Covered(VisualElementContract.ignoresInput, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let ignores = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -196,9 +196,9 @@
 
     /// A view's frame lands in the state the tree gives it, and again where the tree moves it.
     static func framed(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).itsFrameLandsInItsState", covers: [
-            Covered(VisualElementContract.frame, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).itsFrameLandsInItsState", proves: [
+            Covered(VisualElementContract.frame, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
             let wide = State(wrappedValue: false)
             s.start {
@@ -221,13 +221,13 @@
         }
     }
 
-    /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off; a view that
-    /// refuses it says so and hears nothing.
+    /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off. A view that
+    /// refuses it says so and hears nothing - and proves nothing of focus on that host.
     static func focused(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", covers: [
+        ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
             Covered(VisualElementContract.focus, on: element), Covered(VisualElementContract.unfocus, on: element),
-            Covered(VisualElementContract.isFocusedChanged, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+            Covered(VisualElementContract.isFocusedChanged, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let aim = FocusAim()
             let heard = Received<Bool>()
             let took = Received<Bool>()
@@ -246,7 +246,8 @@
             s.settle { !took.values.isEmpty && (took.values == [false] || heard.values == [true]) }
             guard took.values == [true] else {
                 s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
-                return s.expect(try s.focused(view), false)
+                s.expect(try s.focused(view), false)
+                throw s.unprovable("focus \(element): it takes no keyboard focus here")
             }
             s.expect(heard.values, [true], "the keyboard coming heard")
             s.expect(try s.focused(view), true)
@@ -260,7 +261,7 @@
 
     /// A view naming a style takes the values the style gives it.
     static func styled(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", covers: [
+        ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", proves: [
             Covered(VisualElementContract.style, on: element),
         ]) { s in
             s.start {

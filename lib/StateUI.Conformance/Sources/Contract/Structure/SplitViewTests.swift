@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("standsAloneShowingItsDetail", covers: [
+            ConformanceCase("standsAloneShowingItsDetail", proves: [
                 Covered(SplitViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
             ]) { s in
                 let frames = Received<[Double]>()
@@ -23,8 +23,8 @@
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
             },
-            ConformanceCase("theSidebarStandsBesideTheDetail", covers: [
-                Covered(SplitViewContract.self), Covered(SplitViewContract.isSidebarVisible),
+            ConformanceCase("theSidebarStandsBesideTheDetail", proves: [
+                Covered(SplitViewContract.isSidebarVisible),
             ]) { s in
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
@@ -37,7 +37,7 @@
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("detail")), true)
                 s.expect(try s.held(SplitViewContract.isSidebarVisible, on: split), true)
             },
-            ConformanceCase("theUsersHidingIsHeardOnTheBinding", covers: [
+            ConformanceCase("theUsersHidingIsHeardOnTheBinding", proves: [
                 Covered(SplitViewContract.isSidebarVisible), Covered(SplitViewContract.isSidebarVisibleChanged),
             ]) { s in
                 let open = State(wrappedValue: true)
@@ -56,9 +56,9 @@
                 s.settle { open.wrappedValue }
                 s.expect(open.wrappedValue, true, "and showed it again")
             },
-            ConformanceCase("theProgramsHidingIsShown", covers: [
-                Covered(SplitViewContract.isSidebarVisible), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theProgramsHidingIsShown", proves: [
+                Covered(SplitViewContract.isSidebarVisible),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
                     SplitView(open.projectedValue) {

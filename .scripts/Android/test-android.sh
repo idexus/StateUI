@@ -26,6 +26,9 @@ repository_dir="$(cd "$script_dir/../.." && pwd)"
 # shellcheck source=tools.sh
 source "$script_dir/tools.sh"
 
+# The sources as they stand before the build: what the run's verdicts are of, written over each verdict file.
+inputs="$("$repository_dir/.scripts/Marks/inputs.sh" android)"
+
 tests_dir="$repository_dir/lib/StateUI.Android/Tests"
 runner="$tests_dir/Sources/Support/AndroidTestRunner.swift"
 
@@ -104,14 +107,20 @@ held="$declared/marks"
 marks="$repository_dir/exports/marks/android"
 mkdir -p "$held"
 for name in $("$ADB" -s "$serial" exec-out run-as "$package" ls files/marks/android | tr -d '\r'); do
-  "$ADB" -s "$serial" exec-out run-as "$package" cat "files/marks/android/$name" > "$held/$name"
+  { echo "# inputs $inputs"; "$ADB" -s "$serial" exec-out run-as "$package" cat "files/marks/android/$name"; } > "$held/$name"
 done
+# Two runs of other sources compare by their verdicts, the line naming the inputs aside.
+verdicts_alone () {
+  mkdir -p "$2"
+  for file in "$1"/*.txt; do [[ -e "$file" ]] && grep -v '^# inputs ' "$file" > "$2/$(basename "$file")"; done
+}
 if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
   rm -rf "$marks"
   mkdir -p "$marks"
   cp "$held"/*.txt "$marks/"
-elif ! diff -r "$held" "$marks" >/dev/null 2>&1; then
-  diff -r "$held" "$marks" | head -n 40
+elif verdicts_alone "$held" "$declared/run" && verdicts_alone "$marks" "$declared/kept" \
+     && ! diff -r "$declared/run" "$declared/kept" >/dev/null 2>&1; then
+  diff -r "$declared/run" "$declared/kept" | head -n 40
   echo "ERROR: exports/marks/android is not what this run proved - a verdict changed, or something stopped"
   echo "working. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."
   exit 1

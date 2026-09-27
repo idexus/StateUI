@@ -1,16 +1,17 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: ✅
-ActivityIndicator.focus: ✅
+ActivityIndicator.focus: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: not realized
-ActivityIndicator.isFocusedChanged: ✅
+ActivityIndicator.isFocusedChanged: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.isVisible: ✅
 ActivityIndicator.layoutDirection: not realized
 ActivityIndicator.maximumHeight: ✅
@@ -29,7 +30,7 @@ ActivityIndicator.scaleY: ✅
 ActivityIndicator.style: not realized
 ActivityIndicator.translationX: ✅
 ActivityIndicator.translationY: ✅
-ActivityIndicator.unfocus: ✅
+ActivityIndicator.unfocus: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: not realized
 Button.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -37,15 +38,14 @@ Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
 Button.automationExcludedWithChildren: ✅
 Button.background: cannot read a background of no one colour - Android's driver has no path for it yet
-Button.clicked: ✅
-Button.focus: ✅
+Button.focus: cannot focus Button: it takes no keyboard focus here
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
-Button.isFocusedChanged: ✅
+Button.isFocusedChanged: cannot focus Button: it takes no keyboard focus here
 Button.isVisible: ✅
 Button.layoutDirection: not realized
 Button.maximumHeight: ✅
@@ -64,7 +64,7 @@ Button.scaleY: ✅
 Button.style: not realized
 Button.translationX: ✅
 Button.translationY: ✅
-Button.unfocus: ✅
+Button.unfocus: cannot focus Button: it takes no keyboard focus here
 Button.width: ✅
 Button.zIndex: not realized
 Canvas.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -72,14 +72,14 @@ Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
 Canvas.automationExcludedWithChildren: ✅
 Canvas.background: ✅
-Canvas.focus: ✅
+Canvas.focus: cannot focus Canvas: it takes no keyboard focus here
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: not realized
-Canvas.isFocusedChanged: ✅
+Canvas.isFocusedChanged: cannot focus Canvas: it takes no keyboard focus here
 Canvas.isVisible: ✅
 Canvas.layoutDirection: not realized
 Canvas.maximumHeight: ✅
@@ -98,7 +98,7 @@ Canvas.scaleY: ✅
 Canvas.style: not realized
 Canvas.translationX: ✅
 Canvas.translationY: ✅
-Canvas.unfocus: ✅
+Canvas.unfocus: cannot focus Canvas: it takes no keyboard focus here
 Canvas.width: ✅
 Canvas.zIndex: not realized
 CheckBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -106,14 +106,14 @@ CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: ✅
-CheckBox.focus: ✅
+CheckBox.focus: cannot focus CheckBox: it takes no keyboard focus here
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
-CheckBox.isFocusedChanged: ✅
+CheckBox.isFocusedChanged: cannot focus CheckBox: it takes no keyboard focus here
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: not realized
 CheckBox.maximumHeight: ✅
@@ -132,7 +132,7 @@ CheckBox.scaleY: ✅
 CheckBox.style: not realized
 CheckBox.translationX: ✅
 CheckBox.translationY: ✅
-CheckBox.unfocus: ✅
+CheckBox.unfocus: cannot focus CheckBox: it takes no keyboard focus here
 CheckBox.width: ✅
 CheckBox.zIndex: not realized
 ColorBox.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -140,14 +140,14 @@ ColorBox.accessibilityHint: ✅
 ColorBox.accessibilityLabel: ✅
 ColorBox.automationExcludedWithChildren: ✅
 ColorBox.background: ✅
-ColorBox.focus: ✅
+ColorBox.focus: cannot focus ColorBox: it takes no keyboard focus here
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
 ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: not realized
-ColorBox.isFocusedChanged: ✅
+ColorBox.isFocusedChanged: cannot focus ColorBox: it takes no keyboard focus here
 ColorBox.isVisible: ✅
 ColorBox.layoutDirection: not realized
 ColorBox.maximumHeight: ✅
@@ -166,7 +166,7 @@ ColorBox.scaleY: ✅
 ColorBox.style: not realized
 ColorBox.translationX: ✅
 ColorBox.translationY: ✅
-ColorBox.unfocus: ✅
+ColorBox.unfocus: cannot focus ColorBox: it takes no keyboard focus here
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
 DatePicker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -174,14 +174,14 @@ DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
 DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: ✅
-DatePicker.focus: ✅
+DatePicker.focus: cannot focus DatePicker: it takes no keyboard focus here
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
-DatePicker.isFocusedChanged: ✅
+DatePicker.isFocusedChanged: cannot focus DatePicker: it takes no keyboard focus here
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: not realized
 DatePicker.maximumHeight: ✅
@@ -200,7 +200,7 @@ DatePicker.scaleY: ✅
 DatePicker.style: not realized
 DatePicker.translationX: ✅
 DatePicker.translationY: ✅
-DatePicker.unfocus: ✅
+DatePicker.unfocus: cannot focus DatePicker: it takes no keyboard focus here
 DatePicker.width: ✅
 DatePicker.zIndex: not realized
 Ellipse.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -208,14 +208,14 @@ Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: ✅
-Ellipse.focus: ✅
+Ellipse.focus: cannot focus Ellipse: it takes no keyboard focus here
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: not realized
-Ellipse.isFocusedChanged: ✅
+Ellipse.isFocusedChanged: cannot focus Ellipse: it takes no keyboard focus here
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: not realized
 Ellipse.maximumHeight: ✅
@@ -234,7 +234,7 @@ Ellipse.scaleY: ✅
 Ellipse.style: not realized
 Ellipse.translationX: ✅
 Ellipse.translationY: ✅
-Ellipse.unfocus: ✅
+Ellipse.unfocus: cannot focus Ellipse: it takes no keyboard focus here
 Ellipse.width: ✅
 Ellipse.zIndex: not realized
 Grid.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -242,14 +242,14 @@ Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
 Grid.background: ✅
-Grid.focus: ✅
+Grid.focus: cannot focus Grid: it takes no keyboard focus here
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: not realized
-Grid.isFocusedChanged: ✅
+Grid.isFocusedChanged: cannot focus Grid: it takes no keyboard focus here
 Grid.isVisible: ✅
 Grid.layoutDirection: not realized
 Grid.maximumHeight: ✅
@@ -268,7 +268,7 @@ Grid.scaleY: ✅
 Grid.style: not realized
 Grid.translationX: ✅
 Grid.translationY: ✅
-Grid.unfocus: ✅
+Grid.unfocus: cannot focus Grid: it takes no keyboard focus here
 Grid.width: ✅
 Grid.zIndex: not realized
 HStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -276,14 +276,14 @@ HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
 HStack.automationExcludedWithChildren: ✅
 HStack.background: ✅
-HStack.focus: ✅
+HStack.focus: cannot focus HStack: it takes no keyboard focus here
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: not realized
-HStack.isFocusedChanged: ✅
+HStack.isFocusedChanged: cannot focus HStack: it takes no keyboard focus here
 HStack.isVisible: ✅
 HStack.layoutDirection: not realized
 HStack.maximumHeight: ✅
@@ -302,7 +302,7 @@ HStack.scaleY: ✅
 HStack.style: not realized
 HStack.translationX: ✅
 HStack.translationY: ✅
-HStack.unfocus: ✅
+HStack.unfocus: cannot focus HStack: it takes no keyboard focus here
 HStack.width: ✅
 HStack.zIndex: not realized
 Image.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -310,14 +310,14 @@ Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
 Image.automationExcludedWithChildren: ✅
 Image.background: ✅
-Image.focus: ✅
+Image.focus: cannot focus Image: it takes no keyboard focus here
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: not realized
-Image.isFocusedChanged: ✅
+Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
 Image.isVisible: ✅
 Image.layoutDirection: not realized
 Image.maximumHeight: ✅
@@ -336,7 +336,7 @@ Image.scaleY: ✅
 Image.style: not realized
 Image.translationX: ✅
 Image.translationY: ✅
-Image.unfocus: ✅
+Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Image.width: ✅
 Image.zIndex: not realized
 Label.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -344,14 +344,14 @@ Label.accessibilityHint: ✅
 Label.accessibilityLabel: ✅
 Label.automationExcludedWithChildren: ✅
 Label.background: ✅
-Label.focus: ✅
+Label.focus: cannot focus Label: it takes no keyboard focus here
 Label.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.ignoresInput: not realized
 Label.isAccessibilityHidden: ✅
 Label.isEnabled: not realized
-Label.isFocusedChanged: ✅
+Label.isFocusedChanged: cannot focus Label: it takes no keyboard focus here
 Label.isVisible: ✅
 Label.layoutDirection: not realized
 Label.maximumHeight: ✅
@@ -370,7 +370,7 @@ Label.scaleY: ✅
 Label.style: not realized
 Label.translationX: ✅
 Label.translationY: ✅
-Label.unfocus: ✅
+Label.unfocus: cannot focus Label: it takes no keyboard focus here
 Label.width: ✅
 Label.zIndex: not realized
 Line.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -378,14 +378,14 @@ Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
 Line.automationExcludedWithChildren: ✅
 Line.background: ✅
-Line.focus: ✅
+Line.focus: cannot focus Line: it takes no keyboard focus here
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: not realized
-Line.isFocusedChanged: ✅
+Line.isFocusedChanged: cannot focus Line: it takes no keyboard focus here
 Line.isVisible: ✅
 Line.layoutDirection: not realized
 Line.maximumHeight: ✅
@@ -404,7 +404,7 @@ Line.scaleY: ✅
 Line.style: not realized
 Line.translationX: ✅
 Line.translationY: ✅
-Line.unfocus: ✅
+Line.unfocus: cannot focus Line: it takes no keyboard focus here
 Line.width: ✅
 Line.zIndex: not realized
 Map.accessibilityHeadingLevel: not realized
@@ -446,14 +446,14 @@ Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
 Path.automationExcludedWithChildren: ✅
 Path.background: ✅
-Path.focus: ✅
+Path.focus: cannot focus Path: it takes no keyboard focus here
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: not realized
-Path.isFocusedChanged: ✅
+Path.isFocusedChanged: cannot focus Path: it takes no keyboard focus here
 Path.isVisible: ✅
 Path.layoutDirection: not realized
 Path.maximumHeight: ✅
@@ -472,7 +472,7 @@ Path.scaleY: ✅
 Path.style: not realized
 Path.translationX: ✅
 Path.translationY: ✅
-Path.unfocus: ✅
+Path.unfocus: cannot focus Path: it takes no keyboard focus here
 Path.width: ✅
 Path.zIndex: not realized
 Picker.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -480,14 +480,14 @@ Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
 Picker.automationExcludedWithChildren: ✅
 Picker.background: ✅
-Picker.focus: ✅
+Picker.focus: cannot focus Picker: it takes no keyboard focus here
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
-Picker.isFocusedChanged: ✅
+Picker.isFocusedChanged: cannot focus Picker: it takes no keyboard focus here
 Picker.isVisible: ✅
 Picker.layoutDirection: not realized
 Picker.maximumHeight: ✅
@@ -506,7 +506,7 @@ Picker.scaleY: ✅
 Picker.style: not realized
 Picker.translationX: ✅
 Picker.translationY: ✅
-Picker.unfocus: ✅
+Picker.unfocus: cannot focus Picker: it takes no keyboard focus here
 Picker.width: ✅
 Picker.zIndex: not realized
 Polygon.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -514,14 +514,14 @@ Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
 Polygon.automationExcludedWithChildren: ✅
 Polygon.background: ✅
-Polygon.focus: ✅
+Polygon.focus: cannot focus Polygon: it takes no keyboard focus here
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: not realized
-Polygon.isFocusedChanged: ✅
+Polygon.isFocusedChanged: cannot focus Polygon: it takes no keyboard focus here
 Polygon.isVisible: ✅
 Polygon.layoutDirection: not realized
 Polygon.maximumHeight: ✅
@@ -540,7 +540,7 @@ Polygon.scaleY: ✅
 Polygon.style: not realized
 Polygon.translationX: ✅
 Polygon.translationY: ✅
-Polygon.unfocus: ✅
+Polygon.unfocus: cannot focus Polygon: it takes no keyboard focus here
 Polygon.width: ✅
 Polygon.zIndex: not realized
 Polyline.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -548,14 +548,14 @@ Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
 Polyline.automationExcludedWithChildren: ✅
 Polyline.background: ✅
-Polyline.focus: ✅
+Polyline.focus: cannot focus Polyline: it takes no keyboard focus here
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: not realized
-Polyline.isFocusedChanged: ✅
+Polyline.isFocusedChanged: cannot focus Polyline: it takes no keyboard focus here
 Polyline.isVisible: ✅
 Polyline.layoutDirection: not realized
 Polyline.maximumHeight: ✅
@@ -574,7 +574,7 @@ Polyline.scaleY: ✅
 Polyline.style: not realized
 Polyline.translationX: ✅
 Polyline.translationY: ✅
-Polyline.unfocus: ✅
+Polyline.unfocus: cannot focus Polyline: it takes no keyboard focus here
 Polyline.width: ✅
 Polyline.zIndex: not realized
 PositionIndicator.accessibilityHeadingLevel: not realized
@@ -616,14 +616,14 @@ ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: ✅
-ProgressBar.focus: ✅
+ProgressBar.focus: cannot focus ProgressBar: it takes no keyboard focus here
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: not realized
-ProgressBar.isFocusedChanged: ✅
+ProgressBar.isFocusedChanged: cannot focus ProgressBar: it takes no keyboard focus here
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: not realized
 ProgressBar.maximumHeight: ✅
@@ -642,7 +642,7 @@ ProgressBar.scaleY: ✅
 ProgressBar.style: not realized
 ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
-ProgressBar.unfocus: ✅
+ProgressBar.unfocus: cannot focus ProgressBar: it takes no keyboard focus here
 ProgressBar.width: ✅
 ProgressBar.zIndex: not realized
 RadioButton.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -650,14 +650,14 @@ RadioButton.accessibilityHint: ✅
 RadioButton.accessibilityLabel: ✅
 RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: ✅
-RadioButton.focus: ✅
+RadioButton.focus: cannot focus RadioButton: it takes no keyboard focus here
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
 RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
-RadioButton.isFocusedChanged: ✅
+RadioButton.isFocusedChanged: cannot focus RadioButton: it takes no keyboard focus here
 RadioButton.isVisible: ✅
 RadioButton.layoutDirection: not realized
 RadioButton.maximumHeight: ✅
@@ -676,7 +676,7 @@ RadioButton.scaleY: ✅
 RadioButton.style: not realized
 RadioButton.translationX: ✅
 RadioButton.translationY: ✅
-RadioButton.unfocus: ✅
+RadioButton.unfocus: cannot focus RadioButton: it takes no keyboard focus here
 RadioButton.width: ✅
 RadioButton.zIndex: not realized
 Rectangle.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -684,14 +684,14 @@ Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
 Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: ✅
-Rectangle.focus: ✅
+Rectangle.focus: cannot focus Rectangle: it takes no keyboard focus here
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: not realized
-Rectangle.isFocusedChanged: ✅
+Rectangle.isFocusedChanged: cannot focus Rectangle: it takes no keyboard focus here
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: not realized
 Rectangle.maximumHeight: ✅
@@ -710,7 +710,7 @@ Rectangle.scaleY: ✅
 Rectangle.style: not realized
 Rectangle.translationX: ✅
 Rectangle.translationY: ✅
-Rectangle.unfocus: ✅
+Rectangle.unfocus: cannot focus Rectangle: it takes no keyboard focus here
 Rectangle.width: ✅
 Rectangle.zIndex: not realized
 ScrollView.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -718,14 +718,14 @@ ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: ✅
-ScrollView.focus: ✅
+ScrollView.focus: cannot focus ScrollView: it takes no keyboard focus here
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: not realized
-ScrollView.isFocusedChanged: ✅
+ScrollView.isFocusedChanged: cannot focus ScrollView: it takes no keyboard focus here
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: not realized
 ScrollView.maximumHeight: ✅
@@ -744,7 +744,7 @@ ScrollView.scaleY: ✅
 ScrollView.style: not realized
 ScrollView.translationX: ✅
 ScrollView.translationY: ✅
-ScrollView.unfocus: ✅
+ScrollView.unfocus: cannot focus ScrollView: it takes no keyboard focus here
 ScrollView.width: ✅
 ScrollView.zIndex: not realized
 SearchField.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -786,14 +786,14 @@ Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
 Slider.automationExcludedWithChildren: ✅
 Slider.background: ✅
-Slider.focus: ✅
+Slider.focus: cannot focus Slider: it takes no keyboard focus here
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
-Slider.isFocusedChanged: ✅
+Slider.isFocusedChanged: cannot focus Slider: it takes no keyboard focus here
 Slider.isVisible: ✅
 Slider.layoutDirection: not realized
 Slider.maximumHeight: ✅
@@ -812,7 +812,7 @@ Slider.scaleY: ✅
 Slider.style: not realized
 Slider.translationX: ✅
 Slider.translationY: ✅
-Slider.unfocus: ✅
+Slider.unfocus: cannot focus Slider: it takes no keyboard focus here
 Slider.width: ✅
 Slider.zIndex: not realized
 Stepper.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -820,14 +820,14 @@ Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.automationExcludedWithChildren: ✅
 Stepper.background: ✅
-Stepper.focus: ✅
+Stepper.focus: cannot focus Stepper: it takes no keyboard focus here
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
-Stepper.isFocusedChanged: ✅
+Stepper.isFocusedChanged: cannot focus Stepper: it takes no keyboard focus here
 Stepper.isVisible: ✅
 Stepper.layoutDirection: not realized
 Stepper.maximumHeight: ✅
@@ -846,7 +846,7 @@ Stepper.scaleY: ✅
 Stepper.style: not realized
 Stepper.translationX: ✅
 Stepper.translationY: ✅
-Stepper.unfocus: ✅
+Stepper.unfocus: cannot focus Stepper: it takes no keyboard focus here
 Stepper.width: ✅
 Stepper.zIndex: not realized
 Switch.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -854,14 +854,14 @@ Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
 Switch.automationExcludedWithChildren: ✅
 Switch.background: ✅
-Switch.focus: ✅
+Switch.focus: cannot focus Switch: it takes no keyboard focus here
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
-Switch.isFocusedChanged: ✅
+Switch.isFocusedChanged: cannot focus Switch: it takes no keyboard focus here
 Switch.isVisible: ✅
 Switch.layoutDirection: not realized
 Switch.maximumHeight: ✅
@@ -880,7 +880,7 @@ Switch.scaleY: ✅
 Switch.style: not realized
 Switch.translationX: ✅
 Switch.translationY: ✅
-Switch.unfocus: ✅
+Switch.unfocus: cannot focus Switch: it takes no keyboard focus here
 Switch.width: ✅
 Switch.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -956,14 +956,14 @@ TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: ✅
-TimePicker.focus: ✅
+TimePicker.focus: cannot focus TimePicker: it takes no keyboard focus here
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
-TimePicker.isFocusedChanged: ✅
+TimePicker.isFocusedChanged: cannot focus TimePicker: it takes no keyboard focus here
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: not realized
 TimePicker.maximumHeight: ✅
@@ -982,7 +982,7 @@ TimePicker.scaleY: ✅
 TimePicker.style: not realized
 TimePicker.translationX: ✅
 TimePicker.translationY: ✅
-TimePicker.unfocus: ✅
+TimePicker.unfocus: cannot focus TimePicker: it takes no keyboard focus here
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
 TitleBar.accessibilityHeadingLevel: not realized
@@ -1024,14 +1024,14 @@ VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
 VStack.automationExcludedWithChildren: ✅
 VStack.background: ✅
-VStack.focus: ✅
+VStack.focus: cannot focus VStack: it takes no keyboard focus here
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: not realized
-VStack.isFocusedChanged: ✅
+VStack.isFocusedChanged: cannot focus VStack: it takes no keyboard focus here
 VStack.isVisible: ✅
 VStack.layoutDirection: not realized
 VStack.maximumHeight: ✅
@@ -1050,7 +1050,7 @@ VStack.scaleY: ✅
 VStack.style: not realized
 VStack.translationX: ✅
 VStack.translationY: ✅
-VStack.unfocus: ✅
+VStack.unfocus: cannot focus VStack: it takes no keyboard focus here
 VStack.width: ✅
 VStack.zIndex: not realized
 WebView.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -1058,14 +1058,14 @@ WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
 WebView.automationExcludedWithChildren: ✅
 WebView.background: ✅
-WebView.focus: ✅
+WebView.focus: cannot focus WebView: it takes no keyboard focus here
 WebView.frame: ✅
 WebView.frameChanged: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: not realized
-WebView.isFocusedChanged: ✅
+WebView.isFocusedChanged: cannot focus WebView: it takes no keyboard focus here
 WebView.isVisible: ✅
 WebView.layoutDirection: not realized
 WebView.maximumHeight: ✅
@@ -1084,7 +1084,7 @@ WebView.scaleY: ✅
 WebView.style: not realized
 WebView.translationX: ✅
 WebView.translationY: ✅
-WebView.unfocus: ✅
+WebView.unfocus: cannot focus WebView: it takes no keyboard focus here
 WebView.width: ✅
 WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet
@@ -1092,14 +1092,14 @@ ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.automationExcludedWithChildren: ✅
 ZStack.background: ✅
-ZStack.focus: ✅
+ZStack.focus: cannot focus ZStack: it takes no keyboard focus here
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: not realized
-ZStack.isFocusedChanged: ✅
+ZStack.isFocusedChanged: cannot focus ZStack: it takes no keyboard focus here
 ZStack.isVisible: ✅
 ZStack.layoutDirection: not realized
 ZStack.maximumHeight: ✅
@@ -1118,6 +1118,6 @@ ZStack.scaleY: ✅
 ZStack.style: not realized
 ZStack.translationX: ✅
 ZStack.translationY: ✅
-ZStack.unfocus: ✅
+ZStack.unfocus: cannot focus ZStack: it takes no keyboard focus here
 ZStack.width: ✅
 ZStack.zIndex: not realized

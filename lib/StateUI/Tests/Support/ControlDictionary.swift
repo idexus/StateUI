@@ -48,9 +48,11 @@ struct ControlDictionary {
     static let platforms = ["AppKit", "UIKit", "Android Views", "WinUI 3", "GTK 4", "Web"]
 
     /// What a mark means.
-    static let legend = "✅ proven on that host by its own passing test · ☑️ proven by its test, but the host "
-        + "records what is missing - the note says what · – never on that host's family, which meets the contract "
-        + "there - its register says why · empty: not proven on that host yet"
+    static let legend = "✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what "
+        + "is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ "
+        + "some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its "
+        + "test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources "
+        + "than these · empty: not realized, or no run - the note says which"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's "
@@ -67,7 +69,8 @@ struct ControlDictionary {
         let description: String
     }
 
-    /// One host's column: what its runs of the conformance families said, subject by subject.
+    /// One host's column: what its runs of the conformance families said, subject by subject, and which of it
+    /// was said of other sources than the ones the repository holds now.
     struct Column {
         /// The host, as its column is headed.
         let host: String
@@ -75,24 +78,42 @@ struct ControlDictionary {
         /// Each verdict its runs wrote, by what it is about: "Button.clicked", "Button".
         let verdicts: [String: HostVerdict]
 
+        /// The subjects a verdict of which came from a run of other sources - or of sources no run named.
+        let stale: Set<String>
+
         /// The mark and the note `member` of `element` has on this host - or `element` itself, where `member` is
-        /// nil: ✅, ☑️ with what is missing, – with why, or empty - with why, where the run said.
+        /// nil: what its runs said, ⌛ over what a run of other sources said.
+        /// Design: docs/design/contracts/dictionary.md#marks
         func mark(of member: String?, on element: String) -> (mark: String, note: String) {
-            switch verdicts[member.map { "\(element).\($0)" } ?? element]?.mark {
+            let subject = member.map { "\(element).\($0)" } ?? element
+            let (mark, note) = Self.shown(verdicts[subject]?.mark)
+            guard stale.contains(subject), verdicts[subject] != nil else { return (mark, note) }
+            let was = [mark.isEmpty ? nil : mark, note.isEmpty ? nil : note].compactMap { $0 }.joined(separator: " ")
+            return ("⌛", "a run of other sources said: " + (was.isEmpty ? "not realized" : was))
+        }
+
+        /// How a verdict is shown: its mark, and the note that says more.
+        private static func shown(_ mark: HostVerdict.Mark?) -> (mark: String, note: String) {
+            switch mark {
             case .proven?: ("✅", "")
             case .partial(let missing)?: ("☑️", missing)
             case .notPlanned(let reason)?: ("–", reason)
-            case .cannot(let why)?: ("", "cannot \(why)")
-            case .waiting(let gap)?: ("", "its test waits on \(gap), not realized yet")
-            case .notRealized?, nil: ("", "")
+            case .failed(let message)?: ("❌", message)
+            case .partly(let why)?: ("◐", why)
+            case .cannot(let why)?: ("·", "cannot \(why)")
+            case .waiting(let gap)?: ("⏸", "waits on \(gap), not realized yet")
+            case .notRealized?: ("", "not realized")
+            case nil: ("", "")
             }
         }
 
-        /// Whether the host's run judged `element` itself: made by the host, or never had by its family.
+        /// Whether the host's run of these sources judged `element` itself: made by the host, or never had by its
+        /// family.
         func judges(_ element: String) -> Bool {
+            guard !stale.contains(element) else { return false }
             switch verdicts[element]?.mark {
-            case .proven?, .partial?, .notPlanned?: true
-            case .notRealized?, .cannot?, .waiting?, nil: false
+            case .proven?, .partial?, .notPlanned?: return true
+            case .notRealized?, .cannot?, .waiting?, .failed?, .partly?, nil: return false
             }
         }
     }
@@ -248,7 +269,9 @@ struct ControlDictionary {
     /// Where an element stands on each host: whether its test proved the host makes it, how many of its `members`
     /// the host meets by mark, what it is there, and why a mark is empty.
     func hosts(of element: String, members: Int, marks: [String: Marks]) -> [String] {
-        var lines = [Self.row(["Host", "Created", "Members", "Realization", "Notes"]), "| --- | :---: | --- | --- | --- |"]
+        var lines = [
+            Self.row(["Host", "Created", "Members (\(members))", "Realization", "Notes"]), "| --- | :---: | --- | --- | --- |",
+        ]
 
         for platform in Self.platforms {
             let counted = Self.counted(marks[platform] ?? Marks())
@@ -256,14 +279,14 @@ struct ControlDictionary {
             if let column = column(of: platform) {
                 let own = column.mark(of: nil, on: element)
                 created = own.mark.isEmpty && own.note.isEmpty
-                    ? ("", column.verdicts[element] == nil ? "no test of it has run yet" : "not realized")
+                    ? ("", column.verdicts[element] == nil ? "no run of it on these sources" : "not realized")
                     : own
             } else {
                 created = ("", "no host yet")
             }
 
             lines.append(Self.row([
-                platform, created.mark, counted.isEmpty ? "" : "\(counted) of \(members)",
+                platform, created.mark, counted,
                 realization(of: element, on: platform), created.note,
             ]))
         }
@@ -644,32 +667,41 @@ struct ControlDictionary {
         "AppKit": "appkit", "UIKit": "uikit", "Android Views": "android", "WinUI 3": "winui", "GTK 4": "gtk",
     ]
 
-    /// Every host's column: what its runs' verdicts said, each subject once. A host none of whose runs wrote a
+    /// Every host's column: what its runs' verdicts said, each subject once, the worst its cases gave; stale where a
+    /// verdict came from a run of other sources than the repository holds now. A host none of whose runs wrote a
     /// verdict has an empty column.
     static func columns() throws -> [Column] {
         try folders.sorted { $0.key < $1.key }.map { host, folder in
+            let current = try? MarkInputs.digest(of: folder)
             var verdicts: [String: HostVerdict] = [:]
-            for verdict in HostVerdict.merged(try Self.verdicts(folder)) {
+            var stale: Set<String> = []
+            var all: [HostVerdict] = []
+            for (read, inputs) in try Self.verdicts(folder) {
+                all += read
+                if inputs == nil || inputs != current { stale.formUnion(read.map(\.subject)) }
+            }
+            for verdict in HostVerdict.merged(all) {
                 verdicts[verdict.subject] = verdict
             }
-            return Column(host: host, verdicts: verdicts)
+            return Column(host: host, verdicts: verdicts, stale: stale)
         }
     }
 
-    /// The verdicts the runs of the host whose folder is `folder` wrote, file by file.
-    static func verdicts(_ folder: String) throws -> [HostVerdict] {
+    /// The verdicts the runs of the host whose folder is `folder` wrote, file by file, each with the inputs its run
+    /// was made of.
+    static func verdicts(_ folder: String) throws -> [(verdicts: [HostVerdict], inputs: String?)] {
         let url = SourceTree.repository.appendingPathComponent("exports/marks/\(folder)")
         guard FileManager.default.fileExists(atPath: url.path) else { return [] }
-        var verdicts: [HostVerdict] = []
+        var files: [(verdicts: [HostVerdict], inputs: String?)] = []
         for file in try SourceTree.files(under: url, entering: { _ in false }).sorted() where file.hasSuffix(".txt") {
             let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
             guard let read = HostVerdict.read(text) else {
                 throw Unreadable(description: "exports/marks/\(folder)/\(file) holds a line that is no verdict. "
                     + "Write it again with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it.")
             }
-            verdicts += read
+            files.append((read, HostVerdict.inputs(of: text)))
         }
-        return verdicts
+        return files
     }
 
     /// The `on…` modifier each event is heard through, read from the sources

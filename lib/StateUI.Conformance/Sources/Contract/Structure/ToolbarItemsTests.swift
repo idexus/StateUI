@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("theVisiblePagesItemsStandOnItsBar", covers: [
+            ConformanceCase("theVisiblePagesItemsStandOnItsBar", proves: [
                 Covered(ToolbarItemsContract.self), Covered(MenuItemElementContract.clicked, on: "ToolbarItem"),
             ]) { s in
                 let path = State(wrappedValue: [Int]())

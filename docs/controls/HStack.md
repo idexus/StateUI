@@ -8,15 +8,15 @@ Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (74) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 56 ✅ · 1 ☑️ of 74 | custom `NSView` |  |
-| UIKit | ✅ | 56 ✅ of 74 | custom `UIView` |  |
-| Android Views | ✅ | 55 ✅ of 74 | custom `ViewGroup` |  |
-| WinUI 3 | ✅ | 58 ✅ of 74 | `StackPanel` |  |
-| GTK 4 | ✅ | 13 ✅ of 74 | `GtkBox` |  |
+| AppKit | ✅ | 49 ✅ · 1 ☑️ | custom `NSView` |  |
+| UIKit | ✅ | 49 ✅ | custom `UIView` |  |
+| Android Views | ✅ | 49 ✅ | custom `ViewGroup` |  |
+| WinUI 3 | ⌛ |  | `StackPanel` | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkBox` | no run of it on these sources |
 | Web |  |  | flexbox | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/HStackContract.swift`.
@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -39,39 +39,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `background` | property | `Background` | native | ✅ |  | ✅ | ✅ |  |  | UIKit: cannot read background of HStack - UIKit's driver has no path for it yet |
-| `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read what reaches HStack - Android's driver has no path for it yet |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | UIKit: cannot read isEnabled of HStack - UIKit's driver has no path for it yet |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `pivotY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `rotation` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `rotationX` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
-| `scale` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `scaleX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `scaleY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `translationY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `background` | property | `Background` | native | ✅ | · | ✅ | ⌛ |  |  | UIKit: cannot read background of HStack - UIKit's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `focus` | act | `() -> Bool` |  | · | · | · | ⌛ |  |  | cannot focus HStack: it takes no keyboard focus here; UIKit: cannot focus HStack: it takes no keyboard focus here; Android Views: cannot focus HStack: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
+| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `height` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read what reaches HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `isEnabled` | property | `Bool` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read isEnabled of HStack - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `isFocusedChanged` | event | `Bool` | native | · | · | · | ⌛ |  |  | cannot focus HStack: it takes no keyboard focus here; UIKit: cannot focus HStack: it takes no keyboard focus here; Android Views: cannot focus HStack: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `pivotX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `pivotY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `rotation` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `rotationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
+| `rotationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
+| `scale` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `scaleX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `scaleY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `translationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `translationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `unfocus` | act | `() -> Void` |  | · | · | · | ⌛ |  |  | cannot focus HStack: it takes no keyboard focus here; UIKit: cannot focus HStack: it takes no keyboard focus here; Android Views: cannot focus HStack: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
+| `width` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `zIndex` | property | `Int` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -79,38 +79,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
-| `dragStarting` | event |  | native |  |  |  |  |  |  |  |
-| `dragText` | property | `String` | native |  |  |  |  |  |  |  |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ | ✅ | ✅ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `panXChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `panYChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `tapCount` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `allowDrop` | property | `Bool` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `canDrag` | property | `Bool` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `dragStarting` | event |  | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `dragText` | property | `String` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ | ✅ | ⌛ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; WinUI 3: a run of other sources said: ✅ |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `panXChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `panYChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `tapCount` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 
 ## From [Layout](tiers/Layout.md)
 
@@ -118,9 +118,9 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  |  |
-| `clipsContent` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `letsInputThrough` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |
+| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `clipsContent` | property | `Bool` | native | ◐ | ◐ | ◐ | ⌛ |  |  | cannot read clipsContent of HStack - AppKit's driver has no path for it yet; UIKit: cannot read clipsContent of HStack - UIKit's driver has no path for it yet; Android Views: cannot read clipsContent of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  | ⌛ |  |  | cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [StackBase](tiers/StackBase.md)
 
@@ -128,7 +128,7 @@ What both stacks have: the space between their children.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `spacing` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `spacing` | property | `Double` | native | ◐ | ◐ | ◐ | ⌛ |  |  | cannot read spacing of HStack - AppKit's driver has no path for it yet; UIKit: cannot read spacing of HStack - UIKit's driver has no path for it yet; Android Views: cannot read spacing of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -136,7 +136,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `padding` | property | `Insets` | native | ◐ | ◐ | ◐ | ⌛ |  |  | cannot read padding of HStack - AppKit's driver has no path for it yet; UIKit: cannot read padding of HStack - UIKit's driver has no path for it yet; Android Views: cannot read padding of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -144,6 +144,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  | ✅ |  |  | cannot read shape of HStack - AppKit's driver has no path for it yet; UIKit: cannot read shape of HStack - UIKit's driver has no path for it yet; Android Views: cannot read shape of HStack - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ |  |  | UIKit: cannot read stroke of HStack - UIKit's driver has no path for it yet; Android Views: cannot read stroke of HStack - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ |  |  | cannot read strokeWidth of HStack - AppKit's driver has no path for it yet; UIKit: cannot read strokeWidth of HStack - UIKit's driver has no path for it yet; Android Views: cannot read strokeWidth of HStack - Android's driver has no path for it yet |
+| `shape` | property | `ContainerShape` | stateUI | · | · | · | ⌛ |  |  | cannot read shape of HStack - AppKit's driver has no path for it yet; UIKit: cannot read shape of HStack - UIKit's driver has no path for it yet; Android Views: cannot read shape of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `stroke` | property | `Brush` | stateUI |  | · | · | ⌛ |  |  | not realized; UIKit: cannot read stroke of HStack - UIKit's driver has no path for it yet; Android Views: cannot read stroke of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `strokeWidth` | property | `Double` | stateUI | · | · | · | ⌛ |  |  | cannot read strokeWidth of HStack - AppKit's driver has no path for it yet; UIKit: cannot read strokeWidth of HStack - UIKit's driver has no path for it yet; Android Views: cannot read strokeWidth of HStack - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

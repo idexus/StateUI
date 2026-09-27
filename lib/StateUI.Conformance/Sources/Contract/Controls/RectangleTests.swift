@@ -11,8 +11,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Rectangle"),
-            ConformanceCase("aRectangleFillsItsRoom", covers: [
-                Covered(RectangleContract.self), Covered(ShapeContract.fill, on: "Rectangle"),
+            ConformanceCase("aRectangleFillsItsRoom", proves: [
+                Covered(ShapeContract.fill, on: "Rectangle"),
             ]) { s in
                 s.start { VStack { Rectangle().fill(.red).width(100).height(60).id("shape") }.horizontalAlignment(.start) }
                 let shape = try s.element("shape")
@@ -21,9 +21,9 @@
                 s.expect(try s.color(of: shape, at: Point(1, 1)), .red, "to its corner")
                 s.expect(try s.color(of: shape, at: Point(99, 59)), .red, "to its other corner")
             },
-            ConformanceCase("itsCornersAreRoundedAwayAsTheTreeSays", covers: [
-                Covered(RectangleContract.cornerRadius), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("itsCornersAreRoundedAwayAsTheTreeSays", proves: [
+                Covered(RectangleContract.cornerRadius),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let square = State(wrappedValue: false)
                 s.start {
                     VStack {

@@ -15,8 +15,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Image"),
-            ConformanceCase("aPictureStandsAtItsOwnSize", covers: [
-                Covered(ImageContract.self), Covered(ImageContract.source),
+            ConformanceCase("aPictureStandsAtItsOwnSize", proves: [
+                Covered(ImageContract.source),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
@@ -29,7 +29,7 @@
                 s.expect(frames.values.last.map(FrameReport.place), [0, 0, 6, 4])
                 s.expect(try s.held(ImageContract.source, on: s.element("image")), "test_dot.png")
             },
-            ConformanceCase("aDrawingAskedForByABitmapsNameStandsAtItsDeclaredSize", covers: [
+            ConformanceCase("aDrawingAskedForByABitmapsNameStandsAtItsDeclaredSize", proves: [
                 Covered(ImageContract.source),
             ]) { s in
                 let frames = Received<[Double]>()
@@ -42,9 +42,9 @@
                 s.settle { frames.values.last.map(FrameReport.place) == [0, 0, 40, 20] }
                 s.expect(frames.values.last.map(FrameReport.place), [0, 0, 40, 20], "the drawing test_wide.svg")
             },
-            ConformanceCase("thePictureTheTreeChangesItToReplacesIt", covers: [
-                Covered(ImageContract.source), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("thePictureTheTreeChangesItToReplacesIt", proves: [
+                Covered(ImageContract.source),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let wide = State(wrappedValue: false)
                 let frames = Received<[Double]>()
                 s.start {
@@ -64,7 +64,7 @@
                 s.expect(frames.values.last.map(FrameReport.size), [40, 20])
                 s.expect(try s.held(ImageContract.source, on: s.element("image")), "test_wide.svg")
             },
-            ConformanceCase("aPictureTheApplicationDoesNotHaveShowsNothing", covers: [
+            ConformanceCase("aPictureTheApplicationDoesNotHaveShowsNothing", proves: [
                 Covered(ImageContract.source),
             ]) { s in
                 let frames = Received<[Double]>()

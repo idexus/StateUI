@@ -12,9 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("ColorBox"),
-            ConformanceCase("aBoxFillsItsRoomWithItsColour", covers: [
-                Covered(ColorBoxContract.self), Covered(ColorBoxContract.color), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aBoxFillsItsRoomWithItsColour", proves: [
+                Covered(ColorBoxContract.color),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let blue = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -31,9 +31,9 @@
                 try s.settle { try s.color(of: box, at: Point(20, 20)) == .blue }
                 s.expect(try s.color(of: box, at: Point(20, 20)), .blue, "the colour the tree changed it to")
             },
-            ConformanceCase("aBoxsRoundedCornersAreLeftEmpty", covers: [
-                Covered(ColorBoxContract.cornerRadius), Covered(ColorBoxContract.color), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aBoxsRoundedCornersAreLeftEmpty", proves: [
+                Covered(ColorBoxContract.cornerRadius), Covered(ColorBoxContract.color),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let square = State(wrappedValue: false)
                 s.start {
                     VStack {

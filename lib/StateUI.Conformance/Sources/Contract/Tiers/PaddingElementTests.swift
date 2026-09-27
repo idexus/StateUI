@@ -25,9 +25,9 @@
 
     /// A layout's child stands its padding in from the layout's corner, and the padding the tree changes it to.
     static func keepsItsChildIn(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).keepsItsChildItsPaddingIn", covers: [
-            Covered(PaddingElementContract.padding, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).keepsItsChildItsPaddingIn", proves: [
+            Covered(PaddingElementContract.padding, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let wide = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {

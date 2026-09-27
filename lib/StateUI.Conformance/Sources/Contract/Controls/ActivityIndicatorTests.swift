@@ -11,10 +11,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("ActivityIndicator"),
-            ConformanceCase("aSpinnerTurnsWhileItsWorkRuns", covers: [
-                Covered(ActivityIndicatorContract.self), Covered(ActivityIndicatorContract.isRunning),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aSpinnerTurnsWhileItsWorkRuns", proves: [
+                Covered(ActivityIndicatorContract.isRunning),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let running = State(wrappedValue: true)
                 s.start {
                     VStack {

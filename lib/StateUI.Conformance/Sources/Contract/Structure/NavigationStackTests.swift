@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("standsAloneShowingItsRoot", covers: [
+            ConformanceCase("standsAloneShowingItsRoot", proves: [
                 Covered(NavigationStackContract.self), Covered(ViewContract.frameChanged, on: "Label"),
             ]) { s in
                 let frames = Received<[Double]>()
@@ -23,8 +23,8 @@
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its root laid out in the window")
             },
-            ConformanceCase("theTopPageOfThePathShows", covers: [
-                Covered(NavigationStackContract.self), Covered(PageElementContract.title, on: "Page"),
+            ConformanceCase("theTopPageOfThePathShows", proves: [
+                Covered(PageElementContract.title, on: "Page"),
             ]) { s in
                 let path = State(wrappedValue: [Int]())
                 s.start {
@@ -40,7 +40,7 @@
                 try s.settle { try s.held(WindowContract.title, on: window) == "Detail 7" }
                 s.expect(try s.held(WindowContract.title, on: window), "Detail 7", "the pushed page names it")
             },
-            ConformanceCase("theUsersWayBackIsHeardAndShortensThePath", covers: [
+            ConformanceCase("theUsersWayBackIsHeardAndShortensThePath", proves: [
                 Covered(NavigationStackContract.popped),
             ]) { s in
                 let path = State(wrappedValue: [1, 2])

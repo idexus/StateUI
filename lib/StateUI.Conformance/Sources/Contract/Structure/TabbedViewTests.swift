@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("standsAloneShowingItsFirstTab", covers: [
+            ConformanceCase("standsAloneShowingItsFirstTab", proves: [
                 Covered(TabbedViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
             ]) { s in
                 let frames = Received<[Double]>()
@@ -23,8 +23,8 @@
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its first tab's page laid out in the window")
             },
-            ConformanceCase("theTabTheBindingNamesShows", covers: [
-                Covered(TabbedViewContract.self), Covered(TabbedViewContract.currentPage),
+            ConformanceCase("theTabTheBindingNamesShows", proves: [
+                Covered(TabbedViewContract.currentPage),
             ]) { s in
                 s.start {
                     TabbedView([0, 1]) { tab in Label("Tab \(tab)").id("tab\(tab)") }
@@ -36,7 +36,7 @@
                 s.expect(try s.held(TabbedViewContract.currentPage, on: tabs), 1)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("tab1")), true, "its page shown")
             },
-            ConformanceCase("theUsersChoiceLandsOnTheBinding", covers: [
+            ConformanceCase("theUsersChoiceLandsOnTheBinding", proves: [
                 Covered(TabbedViewContract.currentPage), Covered(TabbedViewContract.currentPageChanged),
             ]) { s in
                 let tab = State(wrappedValue: 0)
@@ -48,9 +48,9 @@
                 s.expect(tab.wrappedValue, 1)
                 s.expect(try s.held(TabbedViewContract.currentPage, on: tabs), 1)
             },
-            ConformanceCase("theProgramsChoiceIsShown", covers: [
-                Covered(TabbedViewContract.currentPage), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theProgramsChoiceIsShown", proves: [
+                Covered(TabbedViewContract.currentPage),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let tab = State(wrappedValue: 0)
                 s.start {
                     TabbedView([0, 1]) { number in

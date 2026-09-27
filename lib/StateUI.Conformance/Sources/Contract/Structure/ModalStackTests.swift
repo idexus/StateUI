@@ -12,9 +12,9 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aPresentedPageStandsOverTheWindow", covers: [
-                Covered(ModalStackContract.self), Covered(PageContract.disappearing), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPresentedPageStandsOverTheWindow", proves: [
+                Covered(ModalStackContract.self), Covered(PageContract.disappearing),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let log = Received<String>()
                 let sheets = State(wrappedValue: [Int]())
                 s.start { SheetsPage(sheets: sheets, log: log) }
@@ -28,7 +28,7 @@
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("sheet2")) == true }
                 s.expect(sheets.wrappedValue, [1, 2], "one over the other")
             },
-            ConformanceCase("theUsersWayBackTakesTheTopPageAway", covers: [
+            ConformanceCase("theUsersWayBackTakesTheTopPageAway", proves: [
                 Covered(ModalStackContract.self), Covered(WindowContract.modalPopped), Covered(PageContract.appearing),
             ]) { s in
                 let log = Received<String>()

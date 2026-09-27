@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Canvas"),
-            ConformanceCase("itsInstructionsAreDrawnInOrder", covers: [
-                Covered(CanvasContract.self), Covered(CanvasContract.drawable),
+            ConformanceCase("itsInstructionsAreDrawnInOrder", proves: [
+                Covered(CanvasContract.drawable),
             ]) { s in
                 s.start {
                     VStack {
@@ -35,9 +35,9 @@
                 s.expect(try s.color(of: canvas, at: Point(60, 20)), .blue, "the later fill over it")
                 s.expect(try s.color(of: canvas, at: Point(95, 20)), nil, "nothing past both")
             },
-            ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", covers: [
-                Covered(CanvasContract.drawable), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", proves: [
+                Covered(CanvasContract.drawable),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let blue = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -58,7 +58,7 @@
                 try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .blue }
                 s.expect(try s.color(of: canvas, at: Point(20, 20)), .blue)
             },
-            ConformanceCase("aPressIsHeardWhereItWent", covers: [
+            ConformanceCase("aPressIsHeardWhereItWent", proves: [
                 Covered(CanvasContract.pressed), Covered(CanvasContract.dragged), Covered(CanvasContract.released),
             ]) { s in
                 let heard = Received<String>()

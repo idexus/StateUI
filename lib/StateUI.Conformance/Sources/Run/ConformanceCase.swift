@@ -8,16 +8,24 @@
     /// The case's name, as a test's: what holds.
     public let name: String
 
-    /// The contract's members the case covers: it runs only on a host realizing all of them.
-    public let covers: [Covered]
+    /// The contract's members the case proves: its outcome is their verdict.
+    public let proves: [Covered]
+
+    /// What the case uses without proving it - a button whose click makes the change the case is about: the case
+    /// runs only on a host realizing it too, and says nothing of it.
+    public let needs: [Covered]
 
     /// The case, through a session on the host it runs on.
     public let body: @MainActor @Sendable (Session) throws -> Void
 
-    /// A case named `name`, covering `covers`.
-    public init(_ name: String, covers: [Covered], _ body: @escaping @MainActor @Sendable (Session) throws -> Void) {
+    /// A case named `name`, proving `proves` with the help of `needs`.
+    public init(
+        _ name: String, proves: [Covered], needs: [Covered] = [],
+        _ body: @escaping @MainActor @Sendable (Session) throws -> Void
+    ) {
         self.name = name
-        self.covers = covers
+        self.proves = proves
+        self.needs = needs
         self.body = body
     }
 }

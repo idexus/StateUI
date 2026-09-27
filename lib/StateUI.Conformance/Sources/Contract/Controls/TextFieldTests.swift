@@ -11,8 +11,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("TextField"),
-            ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", covers: [
-                Covered(TextFieldContract.self), Covered(TextElementContract.text, on: TextFieldContract.self),
+            ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", proves: [
+                Covered(TextElementContract.text, on: TextFieldContract.self),
                 Covered(TextElementContract.text, on: LabelContract.self),
             ]) { s in
                 let name = State(wrappedValue: "")
@@ -33,7 +33,7 @@
                 s.expect(try s.held(TextElementContract.text, on: field), "Ada")
                 s.expect(try s.held(TextElementContract.text, on: s.element("greeting")), "Hello, Ada!")
             },
-            ConformanceCase("enterSubmitsAFieldOnce", covers: [Covered(TextFieldContract.submitted)]) { s in
+            ConformanceCase("enterSubmitsAFieldOnce", proves: [Covered(TextFieldContract.submitted)]) { s in
                 let heard = Received<String>()
                 s.start { VStack { TextField("").onSubmitted { heard.values.append("submitted") }.id("field") } }
 
@@ -43,7 +43,7 @@
 
                 s.expect(heard.values, ["submitted"])
             },
-            ConformanceCase("aPasswordsWordsAreHeardAsTyped", covers: [
+            ConformanceCase("aPasswordsWordsAreHeardAsTyped", proves: [
                 Covered(TextFieldContract.isPassword), Covered(TextElementContract.text, on: "TextField"),
             ]) { s in
                 let secret = State(wrappedValue: "")

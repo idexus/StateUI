@@ -1,4 +1,4 @@
-Button.clicked: cannot read currentPage of TabbedView - Android's driver has no path for it yet
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Label.frameChanged: ✅
 TabbedView: ✅
 TabbedView.currentPage: cannot choose on TabbedView - Android's driver has no path for it yet

@@ -1,3 +1,4 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Application: ✅
 Application.alert: ✅
 Application.announce: cannot read what the screen reader said - Android's driver has no path for it yet
@@ -11,4 +12,3 @@ Application.persistSceneValue: not realized
 Application.persistValue: cannot read what is kept - Android's driver has no path for it yet
 Application.prompt: ✅
 Application.utcOffset: ✅
-Button.clicked: ✅

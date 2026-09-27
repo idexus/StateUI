@@ -19,6 +19,21 @@
     /// How many of the case's expectations did not hold.
     public private(set) var failures = 0
 
+    /// What the first expectation that did not hold said.
+    public private(set) var firstFailure: String?
+
+    /// What a case throws where it cannot prove what it proves on this host, whatever the host does: a view that
+    /// takes no keyboard focus proves nothing of focus. The case's members stay unproven there, and say why.
+    public struct Unprovable: Error, Equatable {
+        /// Why, in the words a verdict says it.
+        public let why: String
+    }
+
+    /// The error that ends a case which cannot prove what it proves here, saying `why`.
+    public func unprovable(_ why: String) -> Unprovable {
+        Unprovable(why: why)
+    }
+
     init(driver: any HostDriver, case named: String, report: @escaping (Failure) -> Void) {
         self.driver = driver
         self.named = named
@@ -173,6 +188,7 @@
     /// Reports a failure of the case at `file` and `line`.
     public func fail(_ message: String, file: StaticString = #filePath, line: UInt = #line) {
         failures += 1
+        if firstFailure == nil { firstFailure = message }
         report(Failure(message: "\(driver.host) · \(named): \(message)", file: file, line: line))
     }
 

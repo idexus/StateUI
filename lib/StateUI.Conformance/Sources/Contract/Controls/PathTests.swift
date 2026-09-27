@@ -12,9 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Path"),
-            ConformanceCase("aPathIsFilledInsideTheFigureItsDataDraws", covers: [
-                Covered(PathContract.self), Covered(PathContract.data), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPathIsFilledInsideTheFigureItsDataDraws", proves: [
+                Covered(PathContract.data),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let flipped = State(wrappedValue: false)
                 s.start {
                     VStack {

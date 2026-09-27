@@ -1,6 +1,6 @@
-Button.clicked: ✅
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Label: ✅
 Label.frameChanged: ✅
-Label.lineBreak: ✅
-Label.maximumLines: ✅
+Label.lineBreak: ◐ cannot read lineBreak of Label - Android's driver has no path for it yet
+Label.maximumLines: ◐ cannot read maximumLines of Label - Android's driver has no path for it yet
 Label.text: ✅

@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aPinStandsOnItsMapAsTheTreeSays", covers: [
+            ConformanceCase("aPinStandsOnItsMapAsTheTreeSays", proves: [
                 Covered(PinContract.self), Covered(PinContract.label), Covered(PinContract.address),
                 Covered(PinContract.type), Covered(PinContract.location),
             ]) { s in
@@ -29,7 +29,7 @@
                 s.expect(try s.held(PinContract.type, on: pin), .place)
                 s.expect(try s.held(PinContract.location, on: pin), Location(latitude: 52.23, longitude: 21.02))
             },
-            ConformanceCase("aClickOnAPinAndOnItsDetailsIsHeard", covers: [
+            ConformanceCase("aClickOnAPinAndOnItsDetailsIsHeard", proves: [
                 Covered(PinContract.pinClicked), Covered(PinContract.pinDetailsClicked),
             ]) { s in
                 let heard = Received<String>()

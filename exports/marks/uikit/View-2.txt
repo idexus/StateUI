@@ -1,3 +1,4 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.allowDrop: not realized
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
@@ -5,7 +6,6 @@ ActivityIndicator.drop: not realized
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.horizontalAlignment: ✅
 ActivityIndicator.verticalAlignment: ✅
-Button.clicked: ✅
 Button.pointerEntered: ✅
 Button.pointerExited: ✅
 Button.pointerMoved: ✅

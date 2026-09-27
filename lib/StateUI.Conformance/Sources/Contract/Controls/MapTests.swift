@@ -12,17 +12,17 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Map"),
-            ConformanceCase("aMapShowsTheRegionTheTreeGivesIt", covers: [
-                Covered(MapContract.self), Covered(MapContract.region),
+            ConformanceCase("aMapShowsTheRegionTheTreeGivesIt", proves: [
+                Covered(MapContract.region),
             ]) { s in
                 s.start { VStack { Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).height(300).id("map") } }
 
                 s.expect(try s.held(MapContract.region, on: s.element("map")),
                          MapRegion(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000))
             },
-            ConformanceCase("anActMovesTheMapToARegion", covers: [
-                Covered(MapContract.moveToRegion), Covered(MapContract.region), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anActMovesTheMapToARegion", proves: [
+                Covered(MapContract.moveToRegion), Covered(MapContract.region),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let map = Aim(Map.self)
                 let moved = Received<String>()
                 s.start {
@@ -45,7 +45,7 @@
                 s.expect(try s.held(MapContract.region, on: s.element("map")),
                          MapRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000))
             },
-            ConformanceCase("aClickOnTheMapIsHeardWhereItFell", covers: [Covered(MapContract.mapClicked)]) { s in
+            ConformanceCase("aClickOnTheMapIsHeardWhereItFell", proves: [Covered(MapContract.mapClicked)]) { s in
                 let heard = Received<Location>()
                 s.start {
                     VStack {

@@ -1,4 +1,4 @@
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
@@ -6,8 +6,8 @@ WebView.evaluateJavaScript: ✅
 WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
-WebView.navigated: ✅
-WebView.navigating: ✅
+WebView.navigated: cannot read source of WebView - UIKit's driver has no path for it yet
+WebView.navigating: ◐ cannot read source of WebView - UIKit's driver has no path for it yet
 WebView.processTerminated: ✅
 WebView.reload: ✅
 WebView.source: cannot read source of WebView - UIKit's driver has no path for it yet

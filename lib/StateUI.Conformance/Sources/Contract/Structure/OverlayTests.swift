@@ -11,9 +11,9 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("anOverlayStandsOverThePageAndLetsAPressBesideItThrough", covers: [
-                Covered(OverlayContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anOverlayStandsOverThePageAndLetsAPressBesideItThrough", proves: [
+                Covered(OverlayContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let notice = State(wrappedValue: false)
                 s.start { OverlaidPage(notice: notice) }
                 let beneath = try s.element("beneath")

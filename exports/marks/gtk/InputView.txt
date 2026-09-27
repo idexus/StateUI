@@ -1,5 +1,0 @@
-SearchField.textChanged: ✅
-TextEditor.maximumLength: ✅
-TextEditor.textChanged: ✅
-TextField.maximumLength: ✅
-TextField.textChanged: ✅

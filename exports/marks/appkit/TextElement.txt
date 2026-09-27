@@ -1,15 +1,15 @@
-Button.clicked: ✅
-Button.text: ✅
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+Button.text: ◐ waits on Button.textCase
 Button.textCase: not realized
 Label.text: ✅
 Label.textCase: ✅
 RadioButton.text: ✅
 RadioButton.textCase: ✅
-SearchField.text: ✅
+SearchField.text: ◐ waits on SearchField.textCase
 SearchField.textCase: not realized
 Span.text: cannot read text of Span - AppKit's driver has no path for it yet
 Span.textCase: cannot read text of Span - AppKit's driver has no path for it yet
-TextEditor.text: ✅
+TextEditor.text: ◐ waits on TextEditor.textCase
 TextEditor.textCase: not realized
-TextField.text: ✅
+TextField.text: ◐ waits on TextField.textCase
 TextField.textCase: not realized

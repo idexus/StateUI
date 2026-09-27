@@ -1,3 +1,3 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Button.aspect: cannot read aspect of Button - Android's driver has no path for it yet
-Button.clicked: cannot read aspect of Button - Android's driver has no path for it yet
-Image.aspect: ✅
+Image.aspect: ◐ cannot read aspect of Image - Android's driver has no path for it yet

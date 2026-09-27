@@ -1,5 +1,5 @@
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 Label.frameChanged: ✅
 SplitView: ✅
-SplitView.isSidebarVisible: ✅
+SplitView.isSidebarVisible: ◐ cannot toggle on SplitView - UIKit's driver has no path for it yet
 SplitView.isSidebarVisibleChanged: cannot toggle on SplitView - UIKit's driver has no path for it yet

@@ -10,7 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("anItemChosenRunsItsOwnHandler", covers: [
+            ConformanceCase("anItemChosenRunsItsOwnHandler", proves: [
                 Covered(MenuItemContract.self), Covered(MenuItemElementContract.clicked, on: "MenuItem"),
             ]) { s in
                 let heard = Received<String>()

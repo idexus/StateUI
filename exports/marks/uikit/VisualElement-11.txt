@@ -1,8 +1,8 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.accessibilityHint: ✅
-Button.clicked: ✅
-Button.focus: ✅
-Button.isFocusedChanged: ✅
-Button.unfocus: ✅
+Button.focus: cannot focus Button: it takes no keyboard focus here
+Button.isFocusedChanged: cannot focus Button: it takes no keyboard focus here
+Button.unfocus: cannot focus Button: it takes no keyboard focus here
 Canvas.frameChanged: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
@@ -15,9 +15,9 @@ DatePicker.rotationX: ✅
 Ellipse.pivotX: ✅
 Grid.automationExcludedWithChildren: ✅
 HStack.accessibilityHint: ✅
-Image.focus: ✅
-Image.isFocusedChanged: ✅
-Image.unfocus: ✅
+Image.focus: cannot focus Image: it takes no keyboard focus here
+Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
+Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Label.frameChanged: ✅
 Label.maximumHeight: ✅
 Label.maximumWidth: ✅
@@ -45,9 +45,9 @@ ScrollView.rotationX: ✅
 SearchField.pivotX: ✅
 Slider.automationExcludedWithChildren: ✅
 Stepper.accessibilityHint: ✅
-Switch.focus: ✅
-Switch.isFocusedChanged: ✅
-Switch.unfocus: ✅
+Switch.focus: cannot focus Switch: it takes no keyboard focus here
+Switch.isFocusedChanged: cannot focus Switch: it takes no keyboard focus here
+Switch.unfocus: cannot focus Switch: it takes no keyboard focus here
 TextEditor.frameChanged: ✅
 TextEditor.maximumHeight: ✅
 TextEditor.maximumWidth: ✅

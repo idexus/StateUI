@@ -31,7 +31,7 @@
 
     /// A field the tree makes read only keeps the words it holds, whatever the user types.
     static func readOnly(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aReadOnlyFieldKeepsItsWords", covers: [
+        ConformanceCase("\(element).aReadOnlyFieldKeepsItsWords", proves: [
             Covered(InputViewContract.isReadOnly, on: element), Covered(TextElementContract.text, on: element),
         ]) { s in
             let words = State(wrappedValue: "kept")
@@ -47,7 +47,7 @@
 
     /// Each keystroke's words reach the state, are heard once, and stay typed.
     static func typed(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).eachKeystrokeIsHeardAndStaysTyped", covers: [
+        ConformanceCase("\(element).eachKeystrokeIsHeardAndStaysTyped", proves: [
             Covered(InputViewContract.textChanged, on: element), Covered(TextElementContract.text, on: element),
         ]) { s in
             let words = State(wrappedValue: "")
@@ -68,7 +68,7 @@
 
     /// Typing stops at the most characters the tree allows.
     static func bounded(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).typingStopsAtTheMaximumLength", covers: [
+        ConformanceCase("\(element).typingStopsAtTheMaximumLength", proves: [
             Covered(InputViewContract.maximumLength, on: element), Covered(TextElementContract.text, on: element),
         ]) { s in
             let words = State(wrappedValue: "")
@@ -87,10 +87,9 @@
 
     /// The program's words are shown, and not heard as typing.
     static func written(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", covers: [
+        ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", proves: [
             Covered(InputViewContract.textChanged, on: element), Covered(TextElementContract.text, on: element),
-            Covered(ButtonContract.clicked),
-        ]) { s in
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let words = State(wrappedValue: "")
             let heard = Received<String>()
             s.start {

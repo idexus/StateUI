@@ -1,4 +1,4 @@
-Button.clicked: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ToolbarItem: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.placement: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet

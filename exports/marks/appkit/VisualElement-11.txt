@@ -1,5 +1,5 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.accessibilityHint: ✅
-Button.clicked: ✅
 Button.focus: ✅
 Button.isFocusedChanged: ✅
 Button.unfocus: ✅
@@ -15,9 +15,9 @@ DatePicker.rotationX: ✅
 Ellipse.pivotX: ✅
 Grid.automationExcludedWithChildren: ✅
 HStack.accessibilityHint: ✅
-Image.focus: ✅
-Image.isFocusedChanged: ✅
-Image.unfocus: ✅
+Image.focus: cannot focus Image: it takes no keyboard focus here
+Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
+Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Label.frameChanged: ✅
 Label.maximumHeight: ✅
 Label.maximumWidth: ✅

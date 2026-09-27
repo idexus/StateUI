@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | pass-through `NSView` above the page |  |
 | UIKit | ✅ |  | pass-through `UIView` above the page |  |
-| Android Views |  |  | top child of a `FrameLayout` | cannot read what reaches Label - Android's driver has no path for it yet |
-| WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
-| GTK 4 |  |  | `GtkOverlay` | no test of it has run yet |
+| Android Views | · |  | top child of a `FrameLayout` | cannot read what reaches Label - Android's driver has no path for it yet |
+| WinUI 3 | ⌛ |  | top layer of a root `Grid` | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkOverlay` | no run of it on these sources |
 | Web |  |  | positioned element above the page | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/OverlayContract.swift`.

@@ -1,3 +1,4 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Scene: ✅
 Scene.activated: ✅
 Scene.deactivated: ✅
@@ -5,4 +6,3 @@ Scene.destroying: ✅
 Scene.stopped: ✅
 Scene.windowClosed: not realized
 Scene.windowRestored: not realized
-Window.windowType: not realized

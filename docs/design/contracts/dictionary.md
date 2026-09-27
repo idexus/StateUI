@@ -61,6 +61,8 @@ a host writes by hand and what its runtime registers - and by the case:
   TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
   SplitView: waits on <member>     empty: realized, its case stopped by a member
                                    the host does not realize yet
+  Switch.toggled: ❌ <failure>      a case proving it failed, its first failure
+  Label.lineBreak: ◐ <why>         one case proved it, another could not run or read
 ```
 
 A case runs only where the host realizes every member it covers; a member
@@ -81,11 +83,38 @@ record naming what its owner does not declare, one written twice, a partial
 one saying nothing is missing, a never saying no reason.
 
 ```text
-  ✅   proven on that host by its own passing test
-  ☑️   proven by its test, but the host records what is missing
+  ✅   proven by every test of it that ran on that host
+  ☑️   proven, but the host records what is missing
   –    never on that host's family; its register says why
-       (empty) not proven on that host yet - the note says why, where its run said
+  ❌   a test of it failed; ◐ some tests proved it, another could not
+  ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
+  ⌛   said by a run of other sources than these (Fresh verdicts)
+       (empty) not realized, or no run - the note says which
 ```
+
+## Fresh verdicts
+
+A verdict is true of the sources it ran on. Each host's run writes, over each
+verdict file it writes, the digest of the sources its verdicts rest on: the git
+tree of the folders `.scripts/Marks/inputs.txt` names for every host and for
+this one - the core, the host layer, the conformance families, the host with
+its relay, its driver and the support its suite drives with - as they stood in
+the working tree before the build. The host's test script works it out
+(`.scripts/Marks/inputs.sh`, `Get-StateUIMarkInputs` on Windows) and hands it
+to the run in `STATEUI_MARKS_INPUTS`; Android's script writes it over the files
+it pulls from the device. The renderer works the digest out again the same way
+(`MarkInputs`), and a verdict whose file names another digest, or none, is
+shown ⌛ with what it said in the note. A run of the current sources makes it
+fresh again; nothing a person remembers does.
+
+A case's outcome is the verdict of what it proves, never of what it only
+needs: `needs:` holds the button whose click makes the change, and the case
+runs only where the host realizes it too. The verdicts of one subject from all
+its cases combine into the worst: a failure over everything, a proof beside a
+case that could not run or read into ◐, a proof whole only where every case
+proved it. A case that cannot prove its members on a host whatever the host
+does - a view that takes no keyboard focus - ends with `unprovable`, and its
+members stay unproven there with why.
 
 ## Rendering again
 

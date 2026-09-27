@@ -15,9 +15,9 @@
 
     /// An element shows the words the tree gives it, and the words the tree changes them to.
     static func words(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).showsTheWordsTheTreeGives", covers: [
-            Covered(TextElementContract.text, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).showsTheWordsTheTreeGives", proves: [
+            Covered(TextElementContract.text, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let words = State(wrappedValue: "Some words")
             s.start {
                 VStack {
@@ -36,7 +36,7 @@
 
     /// An element shows its words in the case the tree asks for.
     static func cased(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).showsItsWordsInTheirCase", covers: [
+        ConformanceCase("\(element).showsItsWordsInTheirCase", proves: [
             Covered(TextElementContract.text, on: element), Covered(TextElementContract.textCase, on: element),
         ]) { s in
             s.start {

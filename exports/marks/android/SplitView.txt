@@ -1,4 +1,4 @@
-Button.clicked: waits on SplitView.isSidebarVisible
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Label.frameChanged: ✅
 SplitView: ✅
 SplitView.isSidebarVisible: not realized

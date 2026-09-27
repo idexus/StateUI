@@ -1,4 +1,4 @@
-Button.clicked: ✅
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 Label.text: ✅
 Picker: ✅
 Picker.closed: cannot read isOpen of Picker - AppKit's driver has no path for it yet

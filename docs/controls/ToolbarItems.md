@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
 | UIKit | ✅ |  | `UIBarButtonItem` |  |
-| Android Views |  |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
-| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
+| Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.

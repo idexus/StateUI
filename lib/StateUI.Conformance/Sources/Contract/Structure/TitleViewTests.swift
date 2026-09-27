@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aPagesTitleViewStandsInItsBar", covers: [Covered(TitleViewContract.self)]) { s in
+            ConformanceCase("aPagesTitleViewStandsInItsBar", proves: [Covered(TitleViewContract.self)]) { s in
                 let query = State(wrappedValue: "")
                 let path = State(wrappedValue: [Int]())
                 s.start {

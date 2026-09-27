@@ -13,7 +13,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("anApplicationRunsItsSceneWindowAndPage", covers: [Covered(ApplicationContract.self)]) { s in
+            ConformanceCase("anApplicationRunsItsSceneWindowAndPage", proves: [Covered(ApplicationContract.self)]) { s in
                 s.start { VStack { Label("Running").id("label") } }
 
                 _ = try s.element(ofType: ApplicationContract.nodeType)
@@ -21,9 +21,9 @@
                 _ = try s.element(ofType: WindowContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true, "its page shown")
             },
-            ConformanceCase("anAlertIsShownAndDismissed", covers: [
-                Covered(ApplicationContract.alert), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anAlertIsShownAndDismissed", proves: [
+                Covered(ApplicationContract.alert),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -44,9 +44,9 @@
                 s.expect(said.values, ["dismissed"])
                 s.expect(try s.question(), nil, "and the question is gone")
             },
-            ConformanceCase("aConfirmationAnswersWhetherItWasAccepted", covers: [
-                Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aConfirmationAnswersWhetherItWasAccepted", proves: [
+                Covered(ApplicationContract.confirm),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     VStack {
@@ -71,9 +71,9 @@
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, [true, false], "accepted, then cancelled")
             },
-            ConformanceCase("aChoiceAnswersTheCaptionPressed", covers: [
-                Covered(ApplicationContract.chooseAction), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aChoiceAnswersTheCaptionPressed", proves: [
+                Covered(ApplicationContract.chooseAction),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -103,9 +103,9 @@
                 s.settle { said.values.count == 3 }
                 s.expect(said.values, ["Mail", "Delete", "Cancel"], "a choice, the dangerous one, and the cancel")
             },
-            ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", covers: [
-                Covered(ApplicationContract.prompt), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", proves: [
+                Covered(ApplicationContract.prompt),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -132,9 +132,9 @@
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["Ada", "nothing"], "the words typed, then nothing for the cancel")
             },
-            ConformanceCase("questionsWaitTheirTurn", covers: [
-                Covered(ApplicationContract.alert), Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("questionsWaitTheirTurn", proves: [
+                Covered(ApplicationContract.alert), Covered(ApplicationContract.confirm),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -161,9 +161,9 @@
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["first", "second true"])
             },
-            ConformanceCase("theScreenReaderIsToldAndTheCallerGoesOn", covers: [
-                Covered(ApplicationContract.announce), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theScreenReaderIsToldAndTheCallerGoesOn", proves: [
+                Covered(ApplicationContract.announce),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -179,9 +179,9 @@
                 s.expect(said.values, ["announced"])
                 s.expect(try s.announced(), ["Saved the draft"])
             },
-            ConformanceCase("theHostTellsTheTimeOfDay", covers: [
-                Covered(ApplicationContract.currentTime), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theHostTellsTheTimeOfDay", proves: [
+                Covered(ApplicationContract.currentTime),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<ClockTime>()
                 s.start { VStack { Button("Time").onClicked { said.values.append(try await ClockTime.now()) }.id("ask") } }
 
@@ -191,10 +191,9 @@
                 s.expect(time.map { (0..<24).contains($0.hour) && (0..<60).contains($0.minute) }, true, "a time of day")
                 s.expect(time.map { (0..<60).contains($0.second) && (0..<1000).contains($0.millisecond) }, true)
             },
-            ConformanceCase("theHostTellsItsZoneAndItsDistanceFromUTC", covers: [
+            ConformanceCase("theHostTellsItsZoneAndItsDistanceFromUTC", proves: [
                 Covered(ApplicationContract.currentTimeZone), Covered(ApplicationContract.utcOffset),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -211,9 +210,9 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["true true"], "a zone named, and its distance the host's own")
             },
-            ConformanceCase("aZonesDistanceFromUTCIsItsOwnOnTheDayAsked", covers: [
-                Covered(ApplicationContract.utcOffset), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aZonesDistanceFromUTCIsItsOwnOnTheDayAsked", proves: [
+                Covered(ApplicationContract.utcOffset),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<[Int64]>()
                 s.start {
                     VStack {
@@ -232,9 +231,9 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, [[540, 60, 120]], "Tokyo's, and Warsaw's in winter and in summer")
             },
-            ConformanceCase("aZoneNobodyKnowsIsRefused", covers: [
-                Covered(ApplicationContract.utcOffset), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aZoneNobodyKnowsIsRefused", proves: [
+                Covered(ApplicationContract.utcOffset),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
                     VStack {
@@ -253,9 +252,9 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["refused"])
             },
-            ConformanceCase("theKeyboardIsTakenDownFromTheViewHoldingIt", covers: [
-                Covered(ApplicationContract.hideOnScreenKeyboard), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theKeyboardIsTakenDownFromTheViewHoldingIt", proves: [
+                Covered(ApplicationContract.hideOnScreenKeyboard),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     VStack {
@@ -272,9 +271,9 @@
                 s.expect(said.values, [true], "a view held it")
                 s.expect(try s.focused(field), false, "and it holds it no more")
             },
-            ConformanceCase("aValueIsKeptForTheNextLaunch", covers: [
-                Covered(ApplicationContract.persistValue), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aValueIsKeptForTheNextLaunch", proves: [
+                Covered(ApplicationContract.persistValue),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let name = State(wrappedValue: "", persistentKey: PersistentKey("conformance.name", of: String.self))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
 
@@ -282,18 +281,18 @@
                 try s.settle { try s.kept("conformance.name") == .string("Ada") }
                 s.expect(try s.kept("conformance.name"), .string("Ada"))
             },
-            ConformanceCase("aScenesValueIsKeptForItsNextLaunch", covers: [
-                Covered(ApplicationContract.persistSceneValue), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aScenesValueIsKeptForItsNextLaunch", proves: [
+                Covered(ApplicationContract.persistSceneValue),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 s.start { SectionPage() }
 
                 try s.perform(.activate, on: s.element("write"))
                 try s.settle { try s.kept("conformance.section", inScene: true) == .number(2) }
                 s.expect(try s.kept("conformance.section", inScene: true), .number(2))
             },
-            ConformanceCase("aHandlersFailureIsReportedToTheHost", covers: [
-                Covered(ApplicationContract.handlerFailed), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aHandlersFailureIsReportedToTheHost", proves: [
+                Covered(ApplicationContract.handlerFailed),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 s.start {
                     VStack {
                         Button("Fail").onClicked { throw ConformanceFailure(message: "the draft could not be saved") }

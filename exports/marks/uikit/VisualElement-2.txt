@@ -1,14 +1,14 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.opacity: ✅
 ActivityIndicator.translationY: ✅
-Button.clicked: ✅
 Button.scaleX: ✅
 Canvas.rotationX: ✅
 CheckBox.pivotX: ✅
 ColorBox.automationExcludedWithChildren: ✅
 DatePicker.accessibilityHint: ✅
-Ellipse.focus: ✅
-Ellipse.isFocusedChanged: ✅
-Ellipse.unfocus: ✅
+Ellipse.focus: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.isFocusedChanged: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.unfocus: cannot focus Ellipse: it takes no keyboard focus here
 Grid.frameChanged: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
@@ -21,9 +21,9 @@ Label.rotationX: ✅
 Line.pivotX: ✅
 Map.automationExcludedWithChildren: not realized
 Path.accessibilityHint: ✅
-Picker.focus: ✅
-Picker.isFocusedChanged: ✅
-Picker.unfocus: ✅
+Picker.focus: cannot focus Picker: it takes no keyboard focus here
+Picker.isFocusedChanged: cannot focus Picker: it takes no keyboard focus here
+Picker.unfocus: cannot focus Picker: it takes no keyboard focus here
 Polygon.frameChanged: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
@@ -51,9 +51,9 @@ TextEditor.rotationX: ✅
 TextField.pivotX: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TitleBar.accessibilityHint: not realized
-VStack.focus: ✅
-VStack.isFocusedChanged: ✅
-VStack.unfocus: ✅
+VStack.focus: cannot focus VStack: it takes no keyboard focus here
+VStack.isFocusedChanged: cannot focus VStack: it takes no keyboard focus here
+VStack.unfocus: cannot focus VStack: it takes no keyboard focus here
 WebView.frameChanged: ✅
 WebView.maximumHeight: ✅
 WebView.maximumWidth: ✅

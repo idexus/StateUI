@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Button"),
-            ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", covers: [
-                Covered(ButtonContract.self), Covered(ButtonContract.clicked),
+            ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", proves: [
+                Covered(ButtonContract.clicked),
                 Covered(TextElementContract.text, on: LabelContract.self),
             ]) { s in
                 let count = State(wrappedValue: 0)
@@ -37,7 +37,7 @@
                 s.expect(heard.values, [1, 2], "each click heard once")
                 s.expect(try s.held(TextElementContract.text, on: s.element("label")), "count 2")
             },
-            ConformanceCase("aPressIsHeardAsItGoesDownAndAsItIsLetGo", covers: [
+            ConformanceCase("aPressIsHeardAsItGoesDownAndAsItIsLetGo", proves: [
                 Covered(ButtonContract.pressed), Covered(ButtonContract.released),
             ]) { s in
                 let heard = Received<String>()

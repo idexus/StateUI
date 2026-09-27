@@ -24,9 +24,9 @@
     /// What a layout holds drawn past its edge - moved there, which its arithmetic does not see - shows until the tree
     /// says it clips, and then shows no more.
     static func clipped(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).cutsWhatItHoldsToItsOutlineWhereItClips", covers: [
-            Covered(LayoutContract.clipsContent, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).cutsWhatItHoldsToItsOutlineWhereItClips", proves: [
+            Covered(LayoutContract.clipsContent, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let clips = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -55,9 +55,9 @@
 
     /// A press on a layout where it holds nothing reaches what stands beneath it once the tree lets input through.
     static func throughIt(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).letsAPressThroughWhereItHoldsNothing", covers: [
-            Covered(LayoutContract.letsInputThrough, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).letsAPressThroughWhereItHoldsNothing", proves: [
+            Covered(LayoutContract.letsInputThrough, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let through = State(wrappedValue: false)
             s.start {
                 VStack {

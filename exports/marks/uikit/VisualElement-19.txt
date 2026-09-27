@@ -1,5 +1,5 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.rotation: ✅
-Button.clicked: ✅
 Button.layoutDirection: not realized
 Canvas.isAccessibilityHidden: ✅
 CheckBox.accessibilityLabel: ✅

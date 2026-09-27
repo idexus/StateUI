@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("thePagesMenusStandOnItsWindowsBar", covers: [
+            ConformanceCase("thePagesMenusStandOnItsWindowsBar", proves: [
                 Covered(MenuBarContract.self), Covered(MenuContract.text), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenusPage(heard: Received()) }
@@ -20,7 +20,7 @@
                 try s.settle { try s.menu(of: window) == "File[New;-;Recent[a.txt]];Edit[!Undo]" }
                 s.expect(try s.menu(of: window), "File[New;-;Recent[a.txt]];Edit[!Undo]")
             },
-            ConformanceCase("anItemChosenFromTheBarRunsItsHandler", covers: [
+            ConformanceCase("anItemChosenFromTheBarRunsItsHandler", proves: [
                 Covered(MenuBarContract.self), Covered(MenuItemElementContract.clicked, on: "MenuItem"),
             ]) { s in
                 let heard = Received<String>()
@@ -32,9 +32,9 @@
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["open a.txt", "new"])
             },
-            ConformanceCase("theBarShowsTheMenusThePageWritesAgain", covers: [
-                Covered(MenuBarContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theBarShowsTheMenusThePageWritesAgain", proves: [
+                Covered(MenuBarContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 s.start { MenusPage(heard: Received()) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 
@@ -42,7 +42,7 @@
                 try s.settle { try s.menu(of: window) == "File[New;-;Recent[a.txt;b.txt]];Edit[!Undo]" }
                 s.expect(try s.menu(of: window), "File[New;-;Recent[a.txt;b.txt]];Edit[!Undo]")
             },
-            ConformanceCase("theBarFollowsTheVisiblePage", covers: [Covered(MenuBarContract.self)]) { s in
+            ConformanceCase("theBarFollowsTheVisiblePage", proves: [Covered(MenuBarContract.self)]) { s in
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {

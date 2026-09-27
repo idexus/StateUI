@@ -12,10 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("CheckBox"),
-            ConformanceCase("aUsersTickIsHeardAndTheProgramsIsNot", covers: [
-                Covered(CheckBoxContract.self), Covered(CheckBoxContract.isOn), Covered(CheckBoxContract.toggled),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aUsersTickIsHeardAndTheProgramsIsNot", proves: [
+                Covered(CheckBoxContract.isOn), Covered(CheckBoxContract.toggled),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let ticked = State(wrappedValue: false)
                 let heard = Received<Bool>()
                 s.start {
@@ -36,7 +35,7 @@
                 s.expect(try s.held(CheckBoxContract.isOn, on: box), false, "the state the button wrote reached the box")
                 s.expect(heard.values, [true], "and nobody heard it as the user's")
             },
-            ConformanceCase("aUsersSecondTickTakesItsTickAway", covers: [
+            ConformanceCase("aUsersSecondTickTakesItsTickAway", proves: [
                 Covered(CheckBoxContract.isOn), Covered(CheckBoxContract.toggled),
             ]) { s in
                 let ticked = State(wrappedValue: true)

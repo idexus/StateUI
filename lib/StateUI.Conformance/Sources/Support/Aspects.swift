@@ -14,9 +14,9 @@
         _ member: ElementProperty<Owner, Value>, on element: String, _ first: Value, then second: Value,
         with worn: [any Worn] = []
     ) -> ConformanceCase {
-        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", covers: [
-            Covered(member, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
+            Covered(member, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 Specimens.page(element, worn + [Write(member, value.wrappedValue)], beside: [
@@ -38,9 +38,9 @@
         _ member: ElementProperty<Owner, Double>, on element: String, _ first: Double, then second: Double,
         with worn: [any Worn] = []
     ) -> ConformanceCase {
-        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", covers: [
-            Covered(member, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
+            Covered(member, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 Specimens.page(element, worn + [Write(member, value.wrappedValue)], beside: [
@@ -59,7 +59,7 @@
     /// `element` made with nothing written on it, alone on a page: the host stands it in the window, laid out at a
     /// size. What says the host makes the element, whatever else of it the host realizes or its driver reads.
     public static func standsAlone(_ element: String) -> ConformanceCase {
-        ConformanceCase("standsAloneOnAPage", covers: [
+        ConformanceCase("standsAloneOnAPage", proves: [
             Covered(member: nil, element: element, tier: nil), Covered(ViewContract.frameChanged, on: element),
         ]) { s in
             let frames = Received<[Double]>()

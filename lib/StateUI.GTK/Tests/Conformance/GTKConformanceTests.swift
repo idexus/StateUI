@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @_spi(Host) import StateUIConformance
+import Foundation
 import XCTest
 
 /// The conformance suite on GTK: a family a contract, each one test, its verdicts GTK's column of the
@@ -92,6 +93,8 @@ final class GTKConformanceTests: XCTestCase {
             Conformance.run(
                 family, on: GTKDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         }
-        XCTAssertNoThrow(try GTKExports.hold(HostVerdict.text(verdicts), at: "marks/gtk/\(family.name).txt"))
+        XCTAssertNoThrow(try GTKExports.hold(
+            HostVerdict.text(verdicts, inputs: ProcessInfo.processInfo.environment["STATEUI_MARKS_INPUTS"]),
+            at: "marks/gtk/\(family.name).txt"))
     }
 }

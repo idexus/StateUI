@@ -23,7 +23,7 @@
 
     /// A view stands its margin in from its parent's corner.
     static func margined(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsInsideItsMargin", covers: [
+        ConformanceCase("\(element).standsInsideItsMargin", proves: [
             Covered(ViewContract.margin, on: element), Covered(ViewContract.frameChanged, on: element),
         ]) { s in
             let frames = Received<[Double]>()
@@ -45,7 +45,7 @@
 
     /// A view stands where its alignment puts it in the room its parent gives it.
     static func aligned(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsWhereItsAlignmentPutsIt", covers: [
+        ConformanceCase("\(element).standsWhereItsAlignmentPutsIt", proves: [
             Covered(ViewContract.horizontalAlignment, on: element), Covered(ViewContract.verticalAlignment, on: element),
             Covered(ViewContract.frameChanged, on: element),
         ]) { s in
@@ -80,10 +80,9 @@
 
     /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
     static func inArea(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsInItsArea", covers: [
+        ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-            Covered(ButtonContract.clicked),
-        ]) { s in
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let shared = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {
@@ -111,7 +110,7 @@
 
     /// A view in a grid stands in the cell its column and row name.
     static func inCell(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsInItsCell", covers: [
+        ConformanceCase("\(element).standsInItsCell", proves: [
             Covered(ViewContract.gridColumn, on: element), Covered(ViewContract.gridRow, on: element),
             Covered(ViewContract.frameChanged, on: element),
         ]) { s in
@@ -135,7 +134,7 @@
 
     /// A view in a grid spanning columns and rows stands across them.
     static func acrossCells(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).standsAcrossTheCellsItSpans", covers: [
+        ConformanceCase("\(element).standsAcrossTheCellsItSpans", proves: [
             Covered(ViewContract.gridColumnSpan, on: element), Covered(ViewContract.gridRowSpan, on: element),
             Covered(ViewContract.frameChanged, on: element),
         ]) { s in
@@ -159,7 +158,7 @@
 
     /// A quick run of taps is heard once it reaches the count the view asks for, and not before.
     static func tapped(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aRunOfTapsIsHeardAtItsCount", covers: [
+        ConformanceCase("\(element).aRunOfTapsIsHeardAtItsCount", proves: [
             Covered(ViewContract.tapped, on: element), Covered(ViewContract.tapCount, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -185,7 +184,7 @@
 
     /// A press dragged across a view is heard as it starts, runs and ends, carrying the state its pan across moves.
     static func panned(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", covers: [
+        ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
             Covered(ViewContract.panUpdated, on: element), Covered(ViewContract.panTouchCount, on: element),
             Covered(ViewContract.panXChannel, on: element),
         ]) { s in
@@ -215,7 +214,7 @@
 
     /// A press dragged down a view carries the state its pan down moves.
     static func pannedDown(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPanCarriesItsStateDown", covers: [Covered(ViewContract.panYChannel, on: element)]) { s in
+        ConformanceCase("\(element).aPanCarriesItsStateDown", proves: [Covered(ViewContract.panYChannel, on: element)]) { s in
             let y = State(wrappedValue: 5.0)
             s.start {
                 VStack {
@@ -234,7 +233,7 @@
 
     /// A pan far enough a way the view listens for ends as a swipe that way; a short one, or one another way, is none.
     static func swiped(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPanFarEnoughItsWayIsASwipe", covers: [
+        ConformanceCase("\(element).aPanFarEnoughItsWayIsASwipe", proves: [
             Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirection, on: element),
             Covered(ViewContract.swipeThreshold, on: element),
         ]) { s in
@@ -263,7 +262,7 @@
 
     /// Two fingers over a view are heard with their scale and where they are.
     static func pinched(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aPinchIsHeardWithItsScaleAndPlace", covers: [
+        ConformanceCase("\(element).aPinchIsHeardWithItsScaleAndPlace", proves: [
             Covered(ViewContract.pinchUpdated, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -287,7 +286,7 @@
 
     /// The pointer coming over a view, moving, pressing, letting go and leaving is heard, where it is.
     static func pointed(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).thePointerIsHeardComingMovingPressingAndGoing", covers: [
+        ConformanceCase("\(element).thePointerIsHeardComingMovingPressingAndGoing", proves: [
             Covered(ViewContract.pointerEntered, on: element), Covered(ViewContract.pointerMoved, on: element),
             Covered(ViewContract.pointerPressed, on: element), Covered(ViewContract.pointerReleased, on: element),
             Covered(ViewContract.pointerExited, on: element),
@@ -320,7 +319,7 @@
     /// A view that can be dragged, dragged across one that takes drops and onto another, carries its words there:
     /// its drag heard starting and ending, the one it crossed hearing it come and go, the one it landed on the words.
     static func dragged(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aDragFromItCarriesItsWords", covers: [
+        ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
             Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),
             Covered(ViewContract.dragStarting, on: element), Covered(ViewContract.dropCompleted, on: element),
         ]) { s in
@@ -347,7 +346,7 @@
 
     /// A view that takes drops hears a drag come over it and go, and the words of one dropped on it.
     static func droppedOn(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", covers: [
+        ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
             Covered(ViewContract.allowDrop, on: element), Covered(ViewContract.drop, on: element),
             Covered(ViewContract.dragOver, on: element), Covered(ViewContract.dragLeave, on: element),
         ]) { s in

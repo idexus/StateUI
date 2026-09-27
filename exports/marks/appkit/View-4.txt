@@ -1,8 +1,8 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumn: ✅
 ActivityIndicator.gridRow: ✅
 Button.allowDrop: not realized
-Button.clicked: ✅
 Button.dragLeave: not realized
 Button.dragOver: not realized
 Button.drop: not realized

@@ -13,10 +13,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("TimePicker"),
-            ConformanceCase("theUsersTimeIsHeardAndTheProgramsIsNot", covers: [
-                Covered(TimePickerContract.self), Covered(TimePickerContract.time), Covered(TimePickerContract.timeChanged),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theUsersTimeIsHeardAndTheProgramsIsNot", proves: [
+                Covered(TimePickerContract.time), Covered(TimePickerContract.timeChanged),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let alarm = State(wrappedValue: ClockTime(hour: 7, minute: 30))
                 let heard = Received<ClockTime>()
                 s.start {
@@ -38,7 +37,7 @@
                 s.expect(try s.held(TimePickerContract.time, on: picker), ClockTime(hour: 0, minute: 0))
                 s.expect(heard.values.count, 1, "the program's time heard by nobody")
             },
-            ConformanceCase("theClockTheUserOpensAndClosesIsHeard", covers: [
+            ConformanceCase("theClockTheUserOpensAndClosesIsHeard", proves: [
                 Covered(TimePickerContract.isOpen), Covered(TimePickerContract.opened), Covered(TimePickerContract.closed),
             ]) { s in
                 let heard = Received<String>()
@@ -61,9 +60,9 @@
                 s.expect(heard.values, ["opened", "closed"])
                 s.expect(try s.held(TimePickerContract.isOpen, on: picker), false)
             },
-            ConformanceCase("theClockTheProgramOpensIsHeardOnlyAsTheUserClosesIt", covers: [
-                Covered(TimePickerContract.isOpen), Covered(TimePickerContract.closed), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theClockTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
+                Covered(TimePickerContract.isOpen), Covered(TimePickerContract.closed),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 s.start {

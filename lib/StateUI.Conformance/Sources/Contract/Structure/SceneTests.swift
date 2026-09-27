@@ -12,13 +12,13 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aSceneHoldsItsWindow", covers: [Covered(SceneContract.self)]) { s in
+            ConformanceCase("aSceneHoldsItsWindow", proves: [Covered(SceneContract.self)]) { s in
                 s.start { VStack { Label("In a scene").id("label") } }
 
                 _ = try s.element(ofType: SceneContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
             },
-            ConformanceCase("aSceneHearsWhereItStands", covers: [
+            ConformanceCase("aSceneHearsWhereItStands", proves: [
                 Covered(SceneContract.activated), Covered(SceneContract.deactivated), Covered(SceneContract.stopped),
             ]) { s in
                 let log = Received<ScenePhase>()
@@ -38,7 +38,7 @@
                 try s.perform(.restore, on: window)
                 s.settle { log.values.last == .active }
             },
-            ConformanceCase("aSceneEndsWhenItsMainWindowCloses", covers: [Covered(SceneContract.destroying)]) { s in
+            ConformanceCase("aSceneEndsWhenItsMainWindowCloses", proves: [Covered(SceneContract.destroying)]) { s in
                 let sessions = Received<ApplicationSession>()
                 s.start { ApplicationPage(sessions: sessions) }
                 s.settle { !sessions.values.isEmpty }
@@ -48,9 +48,9 @@
                 s.settle { sessions.values.first?.scenes.isEmpty == true }
                 s.expect(sessions.values.first?.scenes.count, 0, "the scene ended")
             },
-            ConformanceCase("aWindowOfItsOwnTheUserClosesIsHeard", covers: [
-                Covered(SceneContract.windowClosed), Covered(WindowContract.windowType),
-            ]) { s in
+            ConformanceCase("aWindowOfItsOwnTheUserClosesIsHeard", proves: [
+                Covered(SceneContract.windowClosed),
+            ], needs: [Covered(WindowContract.windowType)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -60,7 +60,7 @@
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 1 }
                 s.expect(s.elements(ofType: WindowContract.nodeType).count, 1, "the scene let the note's window go")
             },
-            ConformanceCase("aWindowThePlatformRestoresComesBackForItsValue", covers: [
+            ConformanceCase("aWindowThePlatformRestoresComesBackForItsValue", proves: [
                 Covered(SceneContract.windowRestored),
             ]) { s in
                 try s.start(application: { NotesApplication() })

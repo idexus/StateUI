@@ -37,7 +37,7 @@
     static func placed(
         _ aspect: Aspect, in size: (Double, Double), filled: [(Double, Double)], empty: [(Double, Double)]
     ) -> ConformanceCase {
-        ConformanceCase("Image.\(aspect).placesItsPictureSo", covers: [Covered(ImageElementContract.aspect, on: "Image")]) { s in
+        ConformanceCase("Image.\(aspect).placesItsPictureSo", proves: [Covered(ImageElementContract.aspect, on: "Image")]) { s in
             s.start {
                 VStack {
                     Image("test_wide.svg").aspect(aspect).width(size.0).height(size.1).id("image")

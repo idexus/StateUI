@@ -1,6 +1,6 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityLabel: ✅
-Button.clicked: ✅
 Canvas.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅

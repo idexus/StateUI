@@ -24,7 +24,7 @@
 
     /// An item chosen runs its handler; out of reach, it runs nothing.
     static func chosen(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).anItemChosenRunsItsHandlerUnlessOutOfReach", covers: [
+        ConformanceCase("\(element).anItemChosenRunsItsHandlerUnlessOutOfReach", proves: [
             Covered(MenuItemElementContract.clicked, on: element), Covered(MenuItemElementContract.isEnabled, on: element),
         ]) { s in
             let heard = Received<String>()

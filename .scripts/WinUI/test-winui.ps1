@@ -26,7 +26,8 @@
 # request. A filter runs the tests it names, each in a process of its own.
 #
 # The tests are built, the Windows App SDK laid beside the runner, and the run
-# skips the build.
+# skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes over each verdict
+# file the digest of the sources its verdicts rest on, taken before the build.
 # ---------------------------------------------------------------------------
 param(
     [string]$Filter,
@@ -36,6 +37,7 @@ param(
 . (Join-Path $PSScriptRoot 'tools.ps1')
 
 Initialize-StateUIProjection
+$env:STATEUI_MARKS_INPUTS = Get-StateUIMarkInputs -For 'winui'
 $scratch = @()
 if ($ScratchPath) { $scratch = @('--scratch-path', $ScratchPath) }
 

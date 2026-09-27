@@ -1,6 +1,6 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.isEnabled: cannot read isEnabled of ActivityIndicator - UIKit's driver has no path for it yet
 ActivityIndicator.zIndex: not realized
-Button.clicked: ✅
 Button.scaleY: ✅
 Canvas.rotationY: ✅
 CheckBox.pivotY: ✅

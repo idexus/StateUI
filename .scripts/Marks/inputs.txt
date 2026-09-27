@@ -1,0 +1,10 @@
+# The folders each host's conformance verdicts rest on: every host's first,
+# then each host's own - its sources, its relay, its driver and the support
+# its suite drives with. A run writes the digest of them into each verdict
+# file it writes; a change in any of them after it shows its verdicts stale.
+every lib/StateUI/Sources lib/StateUI.Host/Sources lib/StateUI.Conformance/Sources
+appkit lib/StateUI.AppKit/Sources lib/StateUI.AppKit/Tests/Conformance lib/StateUI.AppKit/Tests/Support
+uikit lib/StateUI.UIKit/Sources lib/StateUI.UIKit/Tests/Sources/Conformance lib/StateUI.UIKit/Tests/Sources/Support
+android lib/StateUI.Android/Sources lib/StateUI.Android/Java lib/StateUI.Android/Tests/Sources/Conformance lib/StateUI.Android/Tests/Sources/Support lib/StateUI.Android/Tests/Platforms/Android/Java
+winui lib/StateUI.WinUI/Sources lib/StateUI.WinUI/Tests/Conformance lib/StateUI.WinUI/Tests/Support
+gtk lib/StateUI.GTK/Sources lib/StateUI.GTK/Tests/Conformance lib/StateUI.GTK/Tests/Support

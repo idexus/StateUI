@@ -11,8 +11,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("TextEditor"),
-            ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", covers: [
-                Covered(TextEditorContract.self), Covered(TextElementContract.text, on: TextEditorContract.self),
+            ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", proves: [
+                Covered(TextElementContract.text, on: TextEditorContract.self),
                 Covered(InputViewContract.textChanged, on: TextEditorContract.self),
                 Covered(InputViewContract.maximumLength, on: TextEditorContract.self),
             ]) { s in
@@ -34,9 +34,9 @@
                 s.expect(try s.held(TextElementContract.text, on: editor), "one\nt")
                 s.expect(heard.values, ["one\nt"], "heard once, as the bound left the words")
             },
-            ConformanceCase("anEditorGrowsWithItsWordsOnlyWhereItIsToldTo", covers: [
-                Covered(TextEditorContract.growsWithText), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anEditorGrowsWithItsWordsOnlyWhereItIsToldTo", proves: [
+                Covered(TextEditorContract.growsWithText),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let words = State(wrappedValue: "one")
                 let (growing, fixed) = (Received<[Double]>(), Received<[Double]>())
                 s.start {

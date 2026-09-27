@@ -13,10 +13,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("DatePicker"),
-            ConformanceCase("theUsersDayIsHeardAndTheProgramsIsNot", covers: [
-                Covered(DatePickerContract.self), Covered(DatePickerContract.date), Covered(DatePickerContract.dateChanged),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theUsersDayIsHeardAndTheProgramsIsNot", proves: [
+                Covered(DatePickerContract.date), Covered(DatePickerContract.dateChanged),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let due = State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 25))
                 let heard = Received<CalendarDate>()
                 s.start {
@@ -39,7 +38,7 @@
                 s.expect(try s.held(DatePickerContract.date, on: picker), CalendarDate(year: 2027, month: 1, day: 1))
                 s.expect(heard.values.count, 1, "the program's day heard by nobody")
             },
-            ConformanceCase("theCalendarTheUserOpensAndClosesIsHeard", covers: [
+            ConformanceCase("theCalendarTheUserOpensAndClosesIsHeard", proves: [
                 Covered(DatePickerContract.isOpen), Covered(DatePickerContract.opened), Covered(DatePickerContract.closed),
             ]) { s in
                 let heard = Received<String>()
@@ -62,9 +61,9 @@
                 s.expect(heard.values, ["opened", "closed"])
                 s.expect(try s.held(DatePickerContract.isOpen, on: picker), false)
             },
-            ConformanceCase("theCalendarTheProgramOpensIsHeardOnlyAsTheUserClosesIt", covers: [
-                Covered(DatePickerContract.isOpen), Covered(DatePickerContract.closed), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("theCalendarTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
+                Covered(DatePickerContract.isOpen), Covered(DatePickerContract.closed),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 s.start {

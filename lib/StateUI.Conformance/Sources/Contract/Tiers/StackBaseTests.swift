@@ -17,9 +17,9 @@
 
     /// A stack's children stand the spacing apart.
     static func spaced(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).keepsItsChildrenItsSpacingApart", covers: [
-            Covered(StackBaseContract.spacing, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).keepsItsChildrenItsSpacingApart", proves: [
+            Covered(StackBaseContract.spacing, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let wide = State(wrappedValue: false)
             let second = Received<[Double]>()
             s.start {

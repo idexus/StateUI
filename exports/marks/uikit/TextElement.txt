@@ -1,15 +1,15 @@
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 Button.text: ✅
 Button.textCase: ✅
 Label.text: ✅
 Label.textCase: ✅
 RadioButton.text: ✅
 RadioButton.textCase: ✅
-SearchField.text: ✅
+SearchField.text: ◐ waits on SearchField.textCase
 SearchField.textCase: not realized
 Span.text: cannot read text of Span - UIKit's driver has no path for it yet
 Span.textCase: cannot read text of Span - UIKit's driver has no path for it yet
-TextEditor.text: ✅
+TextEditor.text: ◐ waits on TextEditor.textCase
 TextEditor.textCase: not realized
-TextField.text: ✅
+TextField.text: ◐ waits on TextField.textCase
 TextField.textCase: not realized

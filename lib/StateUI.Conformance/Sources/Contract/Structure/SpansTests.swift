@@ -11,9 +11,9 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aLabelsSpansStandInPlaceOfItsOwnWords", covers: [
-                Covered(SpansContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aLabelsSpansStandInPlaceOfItsOwnWords", proves: [
+                Covered(SpansContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let spanned = State(wrappedValue: true)
                 s.start {
                     VStack {

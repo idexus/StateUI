@@ -11,8 +11,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("ProgressBar"),
-            ConformanceCase("aBarStandsAtItsShareOfTheWorkWithinItsEnds", covers: [
-                Covered(ProgressBarContract.self), Covered(ProgressBarContract.progress),
+            ConformanceCase("aBarStandsAtItsShareOfTheWorkWithinItsEnds", proves: [
+                Covered(ProgressBarContract.progress),
             ]) { s in
                 s.start {
                     VStack {

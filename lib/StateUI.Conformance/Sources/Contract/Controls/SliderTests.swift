@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Slider"),
-            ConformanceCase("aSliderShowsItsRangeAndItsValue", covers: [
-                Covered(SliderContract.self), Covered(SliderContract.value), Covered(SliderContract.minimum),
+            ConformanceCase("aSliderShowsItsRangeAndItsValue", proves: [
+                Covered(SliderContract.value), Covered(SliderContract.minimum),
                 Covered(SliderContract.maximum),
             ]) { s in
                 let level = State(wrappedValue: 2.5)
@@ -24,9 +24,9 @@
                 s.expect(try s.held(SliderContract.maximum, on: slider), 10)
                 s.expect(try s.held(SliderContract.value, on: slider), 2.5, within: 1e-9)
             },
-            ConformanceCase("aRangeTheTreeChangesKeepsTheThumbsValue", covers: [
-                Covered(SliderContract.value), Covered(SliderContract.maximum), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aRangeTheTreeChangesKeepsTheThumbsValue", proves: [
+                Covered(SliderContract.value), Covered(SliderContract.maximum),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 4.0)
                 s.start {
@@ -43,9 +43,9 @@
                 s.expect(try s.held(SliderContract.maximum, on: slider), 8)
                 s.expect(try s.held(SliderContract.value, on: slider), 4, within: 1e-9)
             },
-            ConformanceCase("aRangeWidenedOverItsValueShowsIt", covers: [
-                Covered(SliderContract.value), Covered(SliderContract.maximum), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aRangeWidenedOverItsValueShowsIt", proves: [
+                Covered(SliderContract.value), Covered(SliderContract.maximum),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 15.0)
                 s.start {
@@ -63,10 +63,10 @@
                 s.expect(try s.held(SliderContract.value, on: control), 15, "the value its state holds, no longer at an end")
                 s.expect(level.wrappedValue, 15)
             },
-            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", covers: [
+            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", proves: [
                 Covered(SliderContract.value), Covered(SliderContract.minimum), Covered(SliderContract.maximum),
-                Covered(SliderContract.valueChanged), Covered(ButtonContract.clicked),
-            ]) { s in
+                Covered(SliderContract.valueChanged),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let range = State(wrappedValue: 0.0...10.0)
                 let level = State(wrappedValue: 4.0)
                 let heard = Received<Double>()
@@ -99,9 +99,9 @@
                 s.expect(level.wrappedValue, -25)
                 s.expect(heard.values, [], "the program's writes are heard by nobody")
             },
-            ConformanceCase("aStateWriteTravelsToTheThumbUnheard", covers: [
-                Covered(SliderContract.value), Covered(SliderContract.valueChanged), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aStateWriteTravelsToTheThumbUnheard", proves: [
+                Covered(SliderContract.value), Covered(SliderContract.valueChanged),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let clock = TestClock()
                 let level = State(wrappedValue: 0.25)
                 let heard = Received<Double>()
@@ -122,7 +122,7 @@
                 s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb travelled to it")
                 s.expect(heard.values, [], "and no frame of its journey was heard as the user's")
             },
-            ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", covers: [
+            ConformanceCase("aUsersMoveTakesTheJourneyAndIsHeard", proves: [
                 Covered(SliderContract.value), Covered(SliderContract.valueChanged),
                 Covered(TextElementContract.text, on: LabelContract.self),
             ]) { s in
@@ -145,7 +145,7 @@
                 s.expect(try s.held(SliderContract.value, on: slider), 0.75, within: 1e-9,
                          "the render left the thumb where the hand put it")
             },
-            ConformanceCase("aDragIsHeardAsItStartsAndAsItEnds", covers: [
+            ConformanceCase("aDragIsHeardAsItStartsAndAsItEnds", proves: [
                 Covered(SliderContract.dragStarted), Covered(SliderContract.dragCompleted),
             ]) { s in
                 let heard = Received<String>()
@@ -168,7 +168,7 @@
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["started", "completed"])
             },
-            ConformanceCase("aValueOutsideItsRangeStandsAtTheNearestEnd", covers: [
+            ConformanceCase("aValueOutsideItsRangeStandsAtTheNearestEnd", proves: [
                 Covered(SliderContract.value), Covered(SliderContract.minimum), Covered(SliderContract.maximum),
             ]) { s in
                 s.start {

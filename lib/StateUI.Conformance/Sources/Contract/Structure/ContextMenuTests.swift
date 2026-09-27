@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", covers: [
+            ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", proves: [
                 Covered(ContextMenuContract.self), Covered(MenuContract.text), Covered(MenuSeparatorContract.self),
                 Covered(MenuItemElementContract.text, on: "MenuItem"), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
@@ -19,10 +19,9 @@
 
                 s.expect(try s.menu(of: s.element("row")), "Copy;-;!Paste;Share[Mail]")
             },
-            ConformanceCase("theMenuFollowsTheStatesItsEntriesRead", covers: [
+            ConformanceCase("theMenuFollowsTheStatesItsEntriesRead", proves: [
                 Covered(ContextMenuContract.self), Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 s.start { MenuPage(heard: Received()) }
                 let row = try s.element("row")
 
@@ -34,9 +33,9 @@
                 try s.settle { try s.menu(of: row) == "Copy;-;Paste;Share[Mail;Chat]" }
                 s.expect(try s.menu(of: row), "Copy;-;Paste;Share[Mail;Chat]", "an entry added to the submenu")
             },
-            ConformanceCase("aMenuWithNoEntriesIsNone", covers: [
-                Covered(ContextMenuContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aMenuWithNoEntriesIsNone", proves: [
+                Covered(ContextMenuContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let entries = State(wrappedValue: ["Open"])
                 s.start {
                     VStack {

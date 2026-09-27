@@ -1,13 +1,13 @@
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 Grid.avoidsSafeArea: not realized
-Grid.clipsContent: ✅
-Grid.letsInputThrough: ✅
+Grid.clipsContent: ◐ cannot read clipsContent of Grid - UIKit's driver has no path for it yet
+Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet
 HStack.avoidsSafeArea: not realized
-HStack.clipsContent: ✅
-HStack.letsInputThrough: ✅
+HStack.clipsContent: ◐ cannot read clipsContent of HStack - UIKit's driver has no path for it yet
+HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet
 VStack.avoidsSafeArea: not realized
-VStack.clipsContent: ✅
-VStack.letsInputThrough: ✅
+VStack.clipsContent: ◐ cannot read clipsContent of VStack - UIKit's driver has no path for it yet
+VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet
 ZStack.avoidsSafeArea: not realized
-ZStack.clipsContent: ✅
-ZStack.letsInputThrough: ✅
+ZStack.clipsContent: ◐ cannot read clipsContent of ZStack - UIKit's driver has no path for it yet
+ZStack.letsInputThrough: ◐ cannot read letsInputThrough of ZStack - UIKit's driver has no path for it yet

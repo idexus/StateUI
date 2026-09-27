@@ -1,9 +1,9 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
-Button.clicked: ✅
 Button.opacity: ✅
 Button.translationY: ✅
 Canvas.scaleX: ✅
@@ -11,9 +11,9 @@ CheckBox.rotationX: ✅
 ColorBox.pivotX: ✅
 DatePicker.automationExcludedWithChildren: ✅
 Ellipse.accessibilityHint: ✅
-Grid.focus: ✅
-Grid.isFocusedChanged: ✅
-Grid.unfocus: ✅
+Grid.focus: cannot focus Grid: it takes no keyboard focus here
+Grid.isFocusedChanged: cannot focus Grid: it takes no keyboard focus here
+Grid.unfocus: cannot focus Grid: it takes no keyboard focus here
 HStack.frameChanged: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
@@ -26,9 +26,9 @@ Line.rotationX: ✅
 Map.pivotX: not realized
 Path.automationExcludedWithChildren: ✅
 Picker.accessibilityHint: ✅
-Polygon.focus: ✅
-Polygon.isFocusedChanged: ✅
-Polygon.unfocus: ✅
+Polygon.focus: cannot focus Polygon: it takes no keyboard focus here
+Polygon.isFocusedChanged: cannot focus Polygon: it takes no keyboard focus here
+Polygon.unfocus: cannot focus Polygon: it takes no keyboard focus here
 Polyline.frameChanged: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅

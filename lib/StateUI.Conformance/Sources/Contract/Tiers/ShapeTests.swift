@@ -31,9 +31,9 @@
     /// A shape is filled in its colour inside its figure, and in the colour the tree changes it to; a line, which
     /// encloses nothing, shows no fill.
     static func filled(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isFilledInItsColour", covers: [
-            Covered(ShapeContract.fill, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).isFilledInItsColour", proves: [
+            Covered(ShapeContract.fill, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let blue = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, figure(element) + [
@@ -58,7 +58,7 @@
 
     /// A shape's outline is drawn in its colour, as wide as the tree says.
     static func outlined(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isOutlinedInItsColourAndWidth", covers: [
+        ConformanceCase("\(element).isOutlinedInItsColourAndWidth", proves: [
             Covered(ShapeContract.stroke, on: element), Covered(ShapeContract.strokeWidth, on: element),
         ]) { s in
             s.start {
@@ -77,9 +77,9 @@
     /// A figure drawn in its own small numbers is fitted whole into its room, keeping its proportions, or stretched
     /// across it as its aspect says; a rectangle and an ellipse fill their room either way.
     static func placedByItsAspect(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", covers: [
-            Covered(ShapeContract.aspect, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", proves: [
+            Covered(ShapeContract.aspect, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.strokeWidth, 4)]
@@ -108,9 +108,9 @@
 
     /// A shape's transform moves what it draws, as the tree changes it.
     static func movedByItsTransform(_ element: String) -> ConformanceCase {
-        ConformanceCase("\(element).isMovedByItsTransform", covers: [
-            Covered(ShapeContract.renderTransform, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).isMovedByItsTransform", proves: [
+            Covered(ShapeContract.renderTransform, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let moved = State(wrappedValue: false)
             let line = element == "Line"
             let paint: [any Worn] = line

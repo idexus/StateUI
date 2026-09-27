@@ -11,13 +11,13 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aWindowsPageShowsItsContent", covers: [Covered(PageContract.self)]) { s in
+            ConformanceCase("aWindowsPageShowsItsContent", proves: [Covered(PageContract.self)]) { s in
                 s.start { VStack { Label("On the page").id("label") } }
 
                 _ = try s.element(ofType: PageContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
             },
-            ConformanceCase("theRootAppearsAndIsNavigatedTo", covers: [
+            ConformanceCase("theRootAppearsAndIsNavigatedTo", proves: [
                 Covered(PageContract.appearing), Covered(PageContract.navigatedTo),
             ]) { s in
                 let log = Received<String>()
@@ -30,7 +30,7 @@
                 s.settle { log.values == ["Root appearing", "Root navigatedTo"] }
                 s.expect(log.values, ["Root appearing", "Root navigatedTo"])
             },
-            ConformanceCase("aPushIsHeardByThePagesInOrder", covers: [
+            ConformanceCase("aPushIsHeardByThePagesInOrder", proves: [
                 Covered(PageContract.appearing), Covered(PageContract.disappearing), Covered(PageContract.navigatedTo),
                 Covered(PageContract.navigatingFrom), Covered(PageContract.navigatedFrom),
             ]) { s in
@@ -51,7 +51,7 @@
                     "Pushed appearing", "Pushed navigatedTo",
                 ], "the root leaves before the pushed page comes")
             },
-            ConformanceCase("aPopBringsThePageBeneathBack", covers: [
+            ConformanceCase("aPopBringsThePageBeneathBack", proves: [
                 Covered(PageContract.appearing), Covered(PageContract.navigatedTo),
             ]) { s in
                 let path = State(wrappedValue: [1])
@@ -72,9 +72,9 @@
             pushedHolds(PageContract.backButtonTitle, "Notes", then: "All notes") { $0.backButtonTitle = $1 },
             pushedHolds(PageContract.hasNavigationBar, false, then: true) { $0.hasNavigationBar = $1 },
             pushedHolds(PageContract.background, .red, then: .blue) { $0.background = $1 },
-            ConformanceCase("aPagesPaddingKeepsItsContentIn", covers: [
-                Covered(PageContract.padding), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPagesPaddingKeepsItsContentIn", proves: [
+                Covered(PageContract.padding),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let wide = State(wrappedValue: false)
                 let frames = Received<[Double]>()
                 s.start {
@@ -103,9 +103,9 @@
         _ member: ElementProperty<PageContract, Value>, _ first: Value, then second: Value,
         _ write: @escaping @Sendable (PageSession, Value) -> Void
     ) -> ConformanceCase {
-        ConformanceCase("Page.\(member.name).holdsWhatItsSessionWritesAndChanges", covers: [
-            Covered(member), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("Page.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
+            Covered(member),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {

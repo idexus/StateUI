@@ -122,7 +122,7 @@ final class ControlDictionaryTests: XCTestCase {
     func testEveryVerdictNamesAMemberOfItsElement() throws {
         var read = 0
         for (host, folder) in ControlDictionary.folders.sorted(by: { $0.key < $1.key }) {
-            for verdict in try ControlDictionary.verdicts(folder) {
+            for verdict in try ControlDictionary.verdicts(folder).flatMap(\.verdicts) {
                 read += 1
                 let element = LibraryContracts.elements.first { $0.nodeType.name == verdict.element }
                 let declared = element.map { element in
@@ -138,27 +138,57 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertGreaterThan(read, 10, "the verdicts read almost nothing")
     }
 
-    /// A mark is the run's alone: a cell a run gave no verdict, or one it said is not realized, is empty; one the
-    /// driver could not reach is empty and says why.
+    /// A mark is the run's alone, each verdict its own sign: proven ✅, never –, failed ❌, partly ◐, the driver
+    /// unable ·, waiting ⏸, and nothing for a cell a run gave no verdict or said is not realized; a verdict a run of
+    /// other sources gave is ⌛, what it said kept in the note, and judges no element.
     func testAMarkIsTheRunsVerdictAlone() {
         let column = ControlDictionary.Column(host: "WinUI 3", verdicts: [
             "Button": HostVerdict(element: "Button", member: nil, mark: .proven),
             "Button.clicked": HostVerdict(element: "Button", member: "clicked", mark: .proven),
             "Button.icon": HostVerdict(element: "Button", member: "icon", mark: .notRealized),
+            "Button.pressed": HostVerdict(element: "Button", member: "pressed", mark: .failed("true expected")),
+            "Button.released": HostVerdict(element: "Button", member: "released", mark: .partly("cannot hold")),
             "TextField.submitted": HostVerdict(element: "TextField", member: "submitted", mark: .cannot("submit - Keys.")),
+            "TextField.text": HostVerdict(element: "TextField", member: "text", mark: .waiting(on: "TextField.x")),
             "Map": HostVerdict(element: "Map", member: nil, mark: .notPlanned(reason: "No maps.")),
-        ])
+            "Label": HostVerdict(element: "Label", member: nil, mark: .proven),
+        ], stale: ["Label"])
 
         XCTAssertEqual(column.mark(of: nil, on: "Button").mark, "✅")
         XCTAssertEqual(column.mark(of: "clicked", on: "Button").mark, "✅")
         XCTAssertEqual(column.mark(of: "icon", on: "Button").mark, "")
-        XCTAssertEqual(column.mark(of: "pressed", on: "Button").mark, "", "no verdict, no mark")
-        XCTAssertEqual(column.mark(of: "submitted", on: "TextField").mark, "")
+        XCTAssertEqual(column.mark(of: "icon", on: "Button").note, "not realized")
+        XCTAssertEqual(column.mark(of: "pressed", on: "Button").mark, "❌")
+        XCTAssertEqual(column.mark(of: "released", on: "Button").mark, "◐")
+        XCTAssertEqual(column.mark(of: "lineBreak", on: "Button").mark, "", "no verdict, no mark")
+        XCTAssertEqual(column.mark(of: "submitted", on: "TextField").mark, "·")
         XCTAssertEqual(column.mark(of: "submitted", on: "TextField").note, "cannot submit - Keys.")
+        XCTAssertEqual(column.mark(of: "text", on: "TextField").mark, "⏸")
         XCTAssertEqual(column.mark(of: nil, on: "Map").mark, "–")
+        XCTAssertEqual(column.mark(of: nil, on: "Label").mark, "⌛")
+        XCTAssertEqual(column.mark(of: nil, on: "Label").note, "a run of other sources said: ✅")
         XCTAssertTrue(column.judges("Button"))
         XCTAssertTrue(column.judges("Map"))
+        XCTAssertFalse(column.judges("Label"), "a run of other sources judges nothing")
         XCTAssertFalse(column.judges("TextField"), "a run that made no verdict of the element itself judged it not")
+    }
+
+    /// The renderer's digest of a host's sources is the one `.scripts/Marks/inputs.sh` prints, which every host's
+    /// run writes over its verdicts: the two ways of working it out are one.
+    func testTheDigestIsTheScriptsOwn() throws {
+        let bash = URL(fileURLWithPath: "/bin/bash")
+        guard FileManager.default.fileExists(atPath: bash.path) else { throw XCTSkip("no /bin/bash here") }
+        for host in ControlDictionary.folders.values.sorted() {
+            let process = Process()
+            process.executableURL = bash
+            process.arguments = [SourceTree.repository.appendingPathComponent(".scripts/Marks/inputs.sh").path, host]
+            let output = Pipe()
+            process.standardOutput = output
+            try process.run()
+            let printed = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+            process.waitUntilExit()
+            XCTAssertEqual(try MarkInputs.digest(of: host), printed.trimmingCharacters(in: .whitespacesAndNewlines), host)
+        }
     }
 
     /// A row whose members are all realized or not planned is met, one of which none is planned is –, and the

@@ -1,8 +1,8 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumnSpan: ✅
 ActivityIndicator.gridRowSpan: ✅
 Button.area: ✅
-Button.clicked: ✅
 Button.frameChanged: ✅
 Canvas.canDrag: not realized
 Canvas.dragStarting: not realized

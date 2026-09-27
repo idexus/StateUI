@@ -12,8 +12,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Line"),
-            ConformanceCase("aLineIsDrawnFromItsStartToItsEnd", covers: [
-                Covered(LineContract.self), Covered(LineContract.x1), Covered(LineContract.y1), Covered(LineContract.x2),
+            ConformanceCase("aLineIsDrawnFromItsStartToItsEnd", proves: [
+                Covered(LineContract.x1), Covered(LineContract.y1), Covered(LineContract.x2),
                 Covered(LineContract.y2),
             ]) { s in
                 s.start {
@@ -32,9 +32,9 @@
                 s.expect(try s.color(of: shape, at: Point(95, 20)), nil, "nothing past its end")
                 s.expect(try s.color(of: shape, at: Point(50, 30)), nil, "nothing beside it")
             },
-            ConformanceCase("anEndTheTreeMovesDrawsTheLineAnew", covers: [
-                Covered(LineContract.x2), Covered(LineContract.y2), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anEndTheTreeMovesDrawsTheLineAnew", proves: [
+                Covered(LineContract.x2), Covered(LineContract.y2),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let down = State(wrappedValue: false)
                 s.start {
                     VStack {

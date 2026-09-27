@@ -1,7 +1,7 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
 ActivityIndicator.panUpdated: ✅
 ActivityIndicator.panXChannel: ✅
-Button.clicked: ✅
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅

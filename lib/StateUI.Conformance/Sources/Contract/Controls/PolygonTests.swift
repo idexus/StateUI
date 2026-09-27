@@ -12,9 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Polygon"),
-            ConformanceCase("aPolygonIsFilledInsideItsPoints", covers: [
-                Covered(PolygonContract.self), Covered(PolygonContract.points), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPolygonIsFilledInsideItsPoints", proves: [
+                Covered(PolygonContract.points),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let moved = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -34,9 +34,9 @@
                 try s.settle { try s.color(of: shape, at: Point(32, 32)) == .blue }
                 s.expect(try s.color(of: shape, at: Point(8, 8)), nil, "the points the tree moved")
             },
-            ConformanceCase("aFigureCrossingItselfIsFilledByItsRule", covers: [
-                Covered(PolygonContract.fillRule), Covered(PolygonContract.points), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aFigureCrossingItselfIsFilledByItsRule", proves: [
+                Covered(PolygonContract.fillRule), Covered(PolygonContract.points),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let rule = State(wrappedValue: FillRule.evenOdd)
                 s.start {
                     VStack {

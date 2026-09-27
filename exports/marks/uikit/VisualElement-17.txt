@@ -1,10 +1,10 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.pivotX: ✅
 Button.automationExcludedWithChildren: ✅
-Button.clicked: ✅
 Canvas.accessibilityHint: ✅
-CheckBox.focus: ✅
-CheckBox.isFocusedChanged: ✅
-CheckBox.unfocus: ✅
+CheckBox.focus: cannot focus CheckBox: it takes no keyboard focus here
+CheckBox.isFocusedChanged: cannot focus CheckBox: it takes no keyboard focus here
+CheckBox.unfocus: cannot focus CheckBox: it takes no keyboard focus here
 ColorBox.frameChanged: ✅
 ColorBox.maximumHeight: ✅
 ColorBox.maximumWidth: ✅
@@ -17,9 +17,9 @@ Grid.rotationX: ✅
 HStack.pivotX: ✅
 Image.automationExcludedWithChildren: ✅
 Label.accessibilityHint: ✅
-Line.focus: ✅
-Line.isFocusedChanged: ✅
-Line.unfocus: ✅
+Line.focus: cannot focus Line: it takes no keyboard focus here
+Line.isFocusedChanged: cannot focus Line: it takes no keyboard focus here
+Line.unfocus: cannot focus Line: it takes no keyboard focus here
 Map.frameChanged: not realized
 Map.maximumHeight: not realized
 Map.maximumWidth: not realized
@@ -32,9 +32,9 @@ Polygon.rotationX: ✅
 Polyline.pivotX: ✅
 PositionIndicator.automationExcludedWithChildren: not realized
 ProgressBar.accessibilityHint: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.unfocus: ✅
+RadioButton.focus: cannot focus RadioButton: it takes no keyboard focus here
+RadioButton.isFocusedChanged: cannot focus RadioButton: it takes no keyboard focus here
+RadioButton.unfocus: cannot focus RadioButton: it takes no keyboard focus here
 Rectangle.frameChanged: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅

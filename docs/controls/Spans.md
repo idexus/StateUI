@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
 | UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
 | Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
-| WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
-| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
+| WinUI 3 | ⌛ |  | `TextBlock`; `Run` inlines | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpansContract.swift`.

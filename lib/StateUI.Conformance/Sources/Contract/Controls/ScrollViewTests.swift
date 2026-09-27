@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("ScrollView"),
-            ConformanceCase("scrollingDownItsContentTakesItsWidth", covers: [
-                Covered(ScrollViewContract.self), Covered(ScrollViewContract.orientation),
+            ConformanceCase("scrollingDownItsContentTakesItsWidth", proves: [
+                Covered(ScrollViewContract.orientation),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
@@ -32,7 +32,7 @@
                 s.settle { frames.values.last.map(FrameReport.size) == [200, 2000] }
                 s.expect(frames.values.last.map(FrameReport.size), [200, 2000], "the scroller's width, its own height")
             },
-            ConformanceCase("scrollingAcrossItsContentKeepsItsOwnWidth", covers: [
+            ConformanceCase("scrollingAcrossItsContentKeepsItsOwnWidth", proves: [
                 Covered(ScrollViewContract.orientation),
             ]) { s in
                 let frames = Received<[Double]>()
@@ -52,10 +52,9 @@
                 s.settle { frames.values.last.map(FrameReport.size)?.first == 3000 }
                 s.expect(frames.values.last.map(FrameReport.size)?.first, 3000, "its own width across")
             },
-            ConformanceCase("anOffsetTheTreeWritesMovesItWithinReachUnheard", covers: [
+            ConformanceCase("anOffsetTheTreeWritesMovesItWithinReachUnheard", proves: [
                 Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollYChanged),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let offset = State(wrappedValue: Point(0, 0))
                 let heard = Received<Double>()
                 s.start(reducesMotion: true) {
@@ -81,7 +80,7 @@
                 s.expect(try s.held(ScrollViewContract.scrollOffset, on: scroller), Point(0, 1500), "no further than its end")
                 s.expect(heard.values, [], "the program's move heard by nobody")
             },
-            ConformanceCase("theUsersScrollLandsOnTheFrameAndRestsOnce", covers: [
+            ConformanceCase("theUsersScrollLandsOnTheFrameAndRestsOnce", proves: [
                 Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.scrollYChanged),
                 Covered(ScrollViewContract.scrollStopped),
             ]) { s in
@@ -113,7 +112,7 @@
                 s.expect(offset.wrappedValue, Point(0, 200), "and on the state")
                 s.expect(rests.values, [1], "at rest once")
             },
-            ConformanceCase("theUsersScrollAcrossIsHeard", covers: [
+            ConformanceCase("theUsersScrollAcrossIsHeard", proves: [
                 Covered(ScrollViewContract.scrollXChanged), Covered(ScrollViewContract.orientation),
             ]) { s in
                 let clock = TestClock()

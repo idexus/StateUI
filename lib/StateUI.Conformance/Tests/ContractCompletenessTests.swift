@@ -50,12 +50,12 @@ final class ContractCompletenessTests: XCTestCase {
         for family in Families.all {
             let names = family.cases.map(\.name)
             XCTAssertEqual(Set(names).count, names.count, "\(family.name)Tests names two cases alike")
-            XCTAssertEqual(family.cases.filter { $0.covers.isEmpty }.map(\.name), [], "\(family.name)Tests")
+            XCTAssertEqual(family.cases.filter { $0.proves.isEmpty }.map(\.name), [], "\(family.name)Tests")
         }
     }
 
     /// What the cases of the family named `name` cover.
     private static func covers(of name: String) -> [Covered] {
-        Families.all.first { $0.name == name }?.cases.flatMap(\.covers) ?? []
+        Families.all.first { $0.name == name }?.cases.flatMap(\.proves) ?? []
     }
 }

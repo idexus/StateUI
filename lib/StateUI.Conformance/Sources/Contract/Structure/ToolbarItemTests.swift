@@ -11,7 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("anItemChosenRunsItsHandler", covers: [
+            ConformanceCase("anItemChosenRunsItsHandler", proves: [
                 Covered(ToolbarItemContract.self), Covered(MenuItemElementContract.clicked, on: "ToolbarItem"),
             ]) { s in
                 let heard = Received<String>()
@@ -30,9 +30,9 @@
                 s.settle { heard.values.count == 2 }
                 s.expect(heard.values, ["save", "delete"], "on the bar and in its overflow alike")
             },
-            ConformanceCase("anItemStandsWhereItsPlacementPutsIt", covers: [
-                Covered(ToolbarItemContract.placement), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("anItemStandsWhereItsPlacementPutsIt", proves: [
+                Covered(ToolbarItemContract.placement),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let away = State(wrappedValue: false)
                 s.start {
                     Self.page(beside: [Button("Away").onClicked { away.wrappedValue = true }.id("change")],
@@ -48,7 +48,7 @@
                 try s.settle { try s.held(ToolbarItemContract.placement, on: s.element("save")) == .overflow }
                 s.expect(try s.held(ToolbarItemContract.placement, on: s.element("save")), .overflow)
             },
-            ConformanceCase("itemsStandInTheirPrioritysOrder", covers: [Covered(ToolbarItemContract.priority)]) { s in
+            ConformanceCase("itemsStandInTheirPrioritysOrder", proves: [Covered(ToolbarItemContract.priority)]) { s in
                 s.start {
                     Self.page {
                         [

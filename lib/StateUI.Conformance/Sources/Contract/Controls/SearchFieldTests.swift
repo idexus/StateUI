@@ -12,11 +12,11 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("SearchField"),
-            ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", covers: [
-                Covered(SearchFieldContract.self), Covered(TextElementContract.text, on: SearchFieldContract.self),
+            ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", proves: [
+                Covered(TextElementContract.text, on: SearchFieldContract.self),
                 Covered(InputViewContract.textChanged, on: SearchFieldContract.self),
-                Covered(SearchFieldContract.submitted), Covered(ButtonContract.clicked),
-            ]) { s in
+                Covered(SearchFieldContract.submitted),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let query = State(wrappedValue: "")
                 let heard = Received<String>()
                 s.start {
@@ -40,7 +40,7 @@
                 s.expect(try s.held(TextElementContract.text, on: search), "tea")
                 s.expect(heard.values, ["coffee", "submitted"], "the program's words heard by nobody")
             },
-            ConformanceCase("eachSubmissionIsHeardOnce", covers: [Covered(SearchFieldContract.submitted)]) { s in
+            ConformanceCase("eachSubmissionIsHeardOnce", proves: [Covered(SearchFieldContract.submitted)]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack { SearchField(State(wrappedValue: "tea").projectedValue).onSubmitted { heard.values.append("s") }.id("search") }

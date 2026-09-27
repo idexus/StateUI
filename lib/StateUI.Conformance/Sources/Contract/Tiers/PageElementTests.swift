@@ -24,9 +24,9 @@
     static func inTab<Value: HostRepresentable & Sendable & Equatable>(
         _ member: ElementProperty<PageElementContract, Value>, of element: String, _ first: Value, then second: Value
     ) -> ConformanceCase {
-        ConformanceCase("\(element).\(member.name).standsOnItsTab", covers: [
-            Covered(member, on: element), Covered(ButtonContract.clicked),
-        ]) { s in
+        ConformanceCase("\(element).\(member.name).standsOnItsTab", proves: [
+            Covered(member, on: element),
+        ], needs: [Covered(ButtonContract.clicked)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 TabbedView([0, 1]) { tab -> any Page in
@@ -60,7 +60,7 @@
 
     /// The visible page's title names its window.
     static var titled: ConformanceCase {
-        ConformanceCase("Page.theVisiblePagesTitleNamesItsWindow", covers: [
+        ConformanceCase("Page.theVisiblePagesTitleNamesItsWindow", proves: [
             Covered(PageElementContract.title, on: "Page"),
         ]) { s in
             s.start { SessionPage { page, _ in page.title = "Notes" } }

@@ -12,9 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("HStack"),
-            ConformanceCase("itsChildrenStandSideBySideInTheirOrder", covers: [
-                Covered(HStackContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("itsChildrenStandSideBySideInTheirOrder", proves: [
+                Covered(HStackContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let both = State(wrappedValue: true)
                 let second = Received<[Double]>()
                 s.start {

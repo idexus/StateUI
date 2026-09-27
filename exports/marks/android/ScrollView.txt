@@ -1,8 +1,8 @@
-Button.clicked: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 ScrollView: ✅
 ScrollView.frameChanged: ✅
 ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet
-ScrollView.orientation: ✅
+ScrollView.orientation: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
 ScrollView.scrollOffset: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet
 ScrollView.scrollStopped: cannot scroll on ScrollView - Android's driver has no path for it yet
 ScrollView.scrollXChanged: cannot scroll on ScrollView - Android's driver has no path for it yet

@@ -1,7 +1,7 @@
-Button.clicked: ✅
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 TextEditor: ✅
 TextEditor.frameChanged: ✅
-TextEditor.growsWithText: ✅
+TextEditor.growsWithText: ◐ cannot read growsWithText of TextEditor - Android's driver has no path for it yet
 TextEditor.maximumLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅

@@ -8,15 +8,15 @@ Layer: `provider`. An optional provider supplies it: a package, or the applicati
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
-| WinUI 3 |  |  | `MapControl` (?) | not realized |
-| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no test of it has run yet |
+| WinUI 3 | ⌛ |  | `MapControl` (?) | a run of other sources said: not realized |
+| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no run of it on these sources |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider |  |  |  |  |  |  |  |
-| `label` | property | `String` | provider |  |  |  |  |  |  |  |
-| `location` | property | `Location` | provider |  |  |  |  |  |  |  |
-| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  |  |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  |  |
-| `type` | property | `PinType` | provider |  |  |  |  |  |  |  |
+| `address` | property | `String` | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `label` | property | `String` | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `location` | property | `Location` | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `type` | property | `PinType` | provider |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |

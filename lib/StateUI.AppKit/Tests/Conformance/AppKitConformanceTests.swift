@@ -6,6 +6,7 @@
 @_spi(Host) import StateUIHost
 @testable import StateUIAppKit
 @_spi(Host) import StateUIConformance
+import Foundation
 import XCTest
 
 /// The conformance suite on AppKit: a family a contract, each one test, its verdicts AppKit's column of the
@@ -132,7 +133,9 @@ final class AppKitConformanceTests: XCTestCase {
         let verdicts = Conformance.run(
             family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
-        XCTAssertNoThrow(try AppKitExports.hold(HostVerdict.text(verdicts), at: "marks/appkit/\(file).txt"))
+        XCTAssertNoThrow(try AppKitExports.hold(
+            HostVerdict.text(verdicts, inputs: ProcessInfo.processInfo.environment["STATEUI_MARKS_INPUTS"]),
+            at: "marks/appkit/\(file).txt"))
     }
 }
 #endif

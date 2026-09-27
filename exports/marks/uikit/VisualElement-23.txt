@@ -1,12 +1,12 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.scaleX: ✅
-Button.clicked: ✅
 Button.rotationX: ✅
 Canvas.pivotX: ✅
 CheckBox.automationExcludedWithChildren: ✅
 ColorBox.accessibilityHint: ✅
-DatePicker.focus: ✅
-DatePicker.isFocusedChanged: ✅
-DatePicker.unfocus: ✅
+DatePicker.focus: cannot focus DatePicker: it takes no keyboard focus here
+DatePicker.isFocusedChanged: cannot focus DatePicker: it takes no keyboard focus here
+DatePicker.unfocus: cannot focus DatePicker: it takes no keyboard focus here
 Ellipse.frameChanged: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -19,9 +19,9 @@ Image.rotationX: ✅
 Label.pivotX: ✅
 Line.automationExcludedWithChildren: ✅
 Map.accessibilityHint: not realized
-Path.focus: ✅
-Path.isFocusedChanged: ✅
-Path.unfocus: ✅
+Path.focus: cannot focus Path: it takes no keyboard focus here
+Path.isFocusedChanged: cannot focus Path: it takes no keyboard focus here
+Path.unfocus: cannot focus Path: it takes no keyboard focus here
 Picker.frameChanged: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
@@ -34,9 +34,9 @@ PositionIndicator.rotationX: not realized
 ProgressBar.pivotX: ✅
 RadioButton.automationExcludedWithChildren: ✅
 Rectangle.accessibilityHint: ✅
-ScrollView.focus: ✅
-ScrollView.isFocusedChanged: ✅
-ScrollView.unfocus: ✅
+ScrollView.focus: cannot focus ScrollView: it takes no keyboard focus here
+ScrollView.isFocusedChanged: cannot focus ScrollView: it takes no keyboard focus here
+ScrollView.unfocus: cannot focus ScrollView: it takes no keyboard focus here
 SearchField.frameChanged: ✅
 SearchField.maximumHeight: ✅
 SearchField.maximumWidth: ✅

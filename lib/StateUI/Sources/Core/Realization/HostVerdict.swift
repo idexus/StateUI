@@ -19,6 +19,10 @@
         case cannot(String)
         /// Empty: the host realizes it, and its case waits on another member the host does not realize yet; which.
         case waiting(on: String)
+        /// ❌: a case proving it failed on the host; what was expected and what came.
+        case failed(String)
+        /// ◐: some of its cases proved it, another could not run or read; why not.
+        case partly(String)
     }
 
     /// The element.
@@ -51,6 +55,8 @@
         case .notRealized: "\(subject): not realized"
         case .cannot(let why): "\(subject): cannot \(why)"
         case .waiting(let gap): "\(subject): waits on \(gap)"
+        case .failed(let message): "\(subject): ❌ \(message)"
+        case .partly(let why): "\(subject): ◐ \(why)"
         }
     }
 
@@ -80,6 +86,10 @@
             mark = .cannot(why)
         } else if let gap = text(after: "waits on"), !gap.isEmpty {
             mark = .waiting(on: gap)
+        } else if let message = text(after: "❌"), !message.isEmpty {
+            mark = .failed(message)
+        } else if let why = text(after: "◐"), !why.isEmpty {
+            mark = .partly(why)
         } else {
             return nil
         }
@@ -90,46 +100,90 @@
     public var meets: Bool {
         switch mark {
         case .proven, .notPlanned: true
-        case .partial, .notRealized, .cannot, .waiting: false
+        case .partial, .notRealized, .cannot, .waiting, .failed, .partly: false
         }
     }
 
-    /// How much a verdict says of a member other verdicts speak of too: a proof above the driver's word that it
-    /// could not and a case waiting on another member, and those above the host realizing nothing.
-    var weight: Int {
+    /// Whether a case proving the subject passed: proved whole or in part, or never had by the host's family.
+    private var passed: Bool {
         switch mark {
-        case .proven, .partial, .notPlanned: 3
-        case .cannot, .waiting: 2
-        case .notRealized: 1
+        case .proven, .partial, .notPlanned: true
+        case .notRealized, .cannot, .waiting, .failed, .partly: false
         }
     }
 
-    /// One verdict a subject, the weightiest where several speak of it - the first line of them where they weigh
-    /// alike - in the order a run writes them.
+    /// What the verdict says after the subject: the reason a case did not prove it.
+    private var said: String {
+        String(description.dropFirst(subject.count + 2))
+    }
+
+    /// The worst of two verdicts on one subject: a failure over everything; a proof beside a case that did not
+    /// prove it, partly proven; a proof in part over one whole; the host realizing nothing below any word of a case.
+    /// Design: docs/design/contracts/dictionary.md#marks
+    static func worse(_ one: HostVerdict, _ other: HostVerdict) -> HostVerdict {
+        let (first, second) = one.description <= other.description ? (one, other) : (other, one)
+        switch (first.mark, second.mark) {
+        case (.failed, _): return first
+        case (_, .failed): return second
+        case (.notRealized, _): return second
+        case (_, .notRealized): return first
+        case (.partly, _): return first
+        case (_, .partly): return second
+        default: break
+        }
+        switch (first.passed, second.passed) {
+        case (true, true):
+            if case .partial = first.mark { return first }
+            if case .partial = second.mark { return second }
+            if case .proven = second.mark { return second }
+            return first
+        case (true, false): return HostVerdict(element: first.element, member: first.member, mark: .partly(second.said))
+        case (false, true): return HostVerdict(element: first.element, member: first.member, mark: .partly(first.said))
+        case (false, false): return first
+        }
+    }
+
+    /// One verdict a subject, the worst its cases gave, in the order a run writes them.
     public static func merged(_ verdicts: some Sequence<HostVerdict>) -> [HostVerdict] {
         var chosen: [String: HostVerdict] = [:]
         for verdict in verdicts {
-            guard let held = chosen[verdict.subject] else {
-                chosen[verdict.subject] = verdict
-                continue
-            }
-            if verdict.weight > held.weight || (verdict.weight == held.weight && verdict.description < held.description) {
-                chosen[verdict.subject] = verdict
-            }
+            chosen[verdict.subject] = chosen[verdict.subject].map { worse($0, verdict) } ?? verdict
         }
         return chosen.values.sorted { $0.subject < $1.subject }
     }
 
-    /// The text a run writes: one verdict a subject, a line each, sorted.
-    public static func text(_ verdicts: some Sequence<HostVerdict>) -> String {
-        merged(verdicts).map(\.description).joined(separator: "\n") + "\n"
+    /// The line over a run's verdicts naming the inputs the run was made of.
+    static let inputsLine = "# inputs "
+
+    /// The text a run writes: the inputs it was made of where they are known, then one verdict a subject, a line
+    /// each, sorted.
+    public static func text(_ verdicts: some Sequence<HostVerdict>, inputs: String? = nil) -> String {
+        let lines = merged(verdicts).map(\.description)
+        return ((inputs.map { [inputsLine + $0] } ?? []) + lines).joined(separator: "\n") + "\n"
+    }
+
+    /// A run's text without the line naming its inputs: what two runs of other sources compare by.
+    public static func withoutInputs(_ text: String) -> String {
+        guard text.hasPrefix(inputsLine), let end = text.firstIndex(of: "\n") else {
+            return text.hasPrefix(inputsLine) ? "" : text
+        }
+        return String(text[text.index(after: end)...])
+    }
+
+    /// The inputs a run's text says it was made of; nil where it says none.
+    public static func inputs(of text: String) -> String? {
+        guard let first = text.split(separator: "\n").first, first.hasPrefix(inputsLine) else { return nil }
+        var inputs = String(first.dropFirst(inputsLine.count))
+        if inputs.hasSuffix("\r") { inputs.removeLast() }
+        return inputs.isEmpty ? nil : inputs
     }
 
     /// The verdicts a run's text holds; nil where a line says none.
     public static func read(_ text: String) -> [HostVerdict]? {
         var verdicts: [HostVerdict] = []
-        for line in text.split(separator: "\n") {
+        for (index, line) in text.split(separator: "\n").enumerated() {
             let line = line.hasSuffix("\r") ? String(line.dropLast()) : String(line)
+            if index == 0, line.hasPrefix(inputsLine) { continue }
             guard let verdict = HostVerdict(line: line) else { return nil }
             verdicts.append(verdict)
         }

@@ -3,6 +3,7 @@
 
 import Foundation
 import XCTest
+@_spi(Host) import StateUI
 
 /// What this host's runs write into the repository's `exports`: what its runtime realizes, and what its passing
 /// tests proved - held to the file, or written into it on a run with STATEUI_UPDATE_EXPORTS=1, then read in the
@@ -26,9 +27,10 @@ enum UIKitExports {
             try text.write(to: url, atomically: true, encoding: .utf8)
             return
         }
+        // The inputs a run was made of are the run's own: two runs of other sources compare by their verdicts.
         let held = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
         XCTAssertEqual(
-            text, held,
+            HostVerdict.withoutInputs(text), HostVerdict.withoutInputs(held),
             "exports/\(path) says otherwise: what this run says changed - run the suite again with "
                 + "STATEUI_UPDATE_EXPORTS=1 and read the diff - or something stopped working.",
             file: file, line: line)

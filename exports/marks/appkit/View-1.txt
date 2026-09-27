@@ -1,10 +1,10 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.canDrag: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
 ActivityIndicator.dropCompleted: not realized
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.margin: ✅
-Button.clicked: ✅
 Button.pinchUpdated: ✅
 Canvas.panYChannel: ✅
 CheckBox.tapCount: ✅

@@ -19,7 +19,7 @@ enum TitleBarSlots {
     static func stands<Slot: ElementContract>(
         _ slot: Slot.Type, _ fill: @escaping @Sendable (TitleBar, Button) -> TitleBar
     ) -> ConformanceCase {
-        ConformanceCase("theViewItHoldsStandsInTheTitleBar", covers: [Covered(Slot.self), Covered(ButtonContract.clicked)]) { s in
+        ConformanceCase("theViewItHoldsStandsInTheTitleBar", proves: [Covered(Slot.self),], needs: [Covered(ButtonContract.clicked)]) { s in
             let heard = Received<String>()
             s.start {
                 SessionPage { _, window in

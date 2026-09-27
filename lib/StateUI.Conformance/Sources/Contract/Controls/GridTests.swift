@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Grid"),
-            ConformanceCase("eachChildStandsInItsCell", covers: [
-                Covered(GridContract.self), Covered(GridContract.columns), Covered(GridContract.rows),
+            ConformanceCase("eachChildStandsInItsCell", proves: [
+                Covered(GridContract.columns), Covered(GridContract.rows),
                 Covered(GridContract.columnSpacing), Covered(GridContract.rowSpacing),
             ]) { s in
                 let (a, b, c) = (Received<[Double]>(), Received<[Double]>(), Received<[Double]>())
@@ -44,7 +44,7 @@
                 s.expect(b.values.last.map(FrameReport.place), [115, 10, 175, 20], "the rest, past the spacing")
                 s.expect(c.values.last.map(FrameReport.place), [260, 40, 30, 40], "across both, a row and its spacing down")
             },
-            ConformanceCase("aProportionalRowTakesWhatTheOthersLeave", covers: [
+            ConformanceCase("aProportionalRowTakesWhatTheOthersLeave", proves: [
                 Covered(GridContract.rows),
             ]) { s in
                 let box = Received<[Double]>()
@@ -66,7 +66,7 @@
                 s.settle { box.values.last.map(FrameReport.place) == [0, 30, 100, 150] }
                 s.expect(box.values.last.map(FrameReport.place), [0, 30, 100, 150])
             },
-            ConformanceCase("aChildSpanningRowsStandsAcrossThemAndTheirSpacing", covers: [
+            ConformanceCase("aChildSpanningRowsStandsAcrossThemAndTheirSpacing", proves: [
                 Covered(GridContract.rows), Covered(GridContract.rowSpacing), Covered(GridContract.columns),
             ]) { s in
                 let box = Received<[Double]>()
@@ -89,9 +89,9 @@
                 s.settle { box.values.last.map(FrameReport.place) == [0, 0, 20, 60] }
                 s.expect(box.values.last.map(FrameReport.place), [0, 0, 20, 60])
             },
-            ConformanceCase("aSpacingTheTreeChangesMovesTheCells", covers: [
-                Covered(GridContract.columnSpacing), Covered(GridContract.rowSpacing), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aSpacingTheTreeChangesMovesTheCells", proves: [
+                Covered(GridContract.columnSpacing), Covered(GridContract.rowSpacing),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let wide = State(wrappedValue: false)
                 let box = Received<[Double]>()
                 s.start {
@@ -116,9 +116,9 @@
                 s.settle { box.values.last.map(FrameReport.place) == [35, 45, 20, 20] }
                 s.expect(box.values.last.map(FrameReport.place), [35, 45, 20, 20])
             },
-            ConformanceCase("aTrackTheTreeChangesMovesTheCells", covers: [
-                Covered(GridContract.columns), Covered(GridContract.rows), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aTrackTheTreeChangesMovesTheCells", proves: [
+                Covered(GridContract.columns), Covered(GridContract.rows),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let wide = State(wrappedValue: false)
                 let box = Received<[Double]>()
                 s.start {

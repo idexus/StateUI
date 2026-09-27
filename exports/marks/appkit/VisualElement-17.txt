@@ -1,6 +1,6 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.pivotX: ✅
 Button.automationExcludedWithChildren: ✅
-Button.clicked: ✅
 Canvas.accessibilityHint: ✅
 CheckBox.focus: ✅
 CheckBox.isFocusedChanged: ✅
@@ -17,9 +17,9 @@ Grid.rotationX: ✅
 HStack.pivotX: ✅
 Image.automationExcludedWithChildren: ✅
 Label.accessibilityHint: ✅
-Line.focus: ✅
-Line.isFocusedChanged: ✅
-Line.unfocus: ✅
+Line.focus: cannot focus Line: it takes no keyboard focus here
+Line.isFocusedChanged: cannot focus Line: it takes no keyboard focus here
+Line.unfocus: cannot focus Line: it takes no keyboard focus here
 Map.frameChanged: not realized
 Map.maximumHeight: not realized
 Map.maximumWidth: not realized

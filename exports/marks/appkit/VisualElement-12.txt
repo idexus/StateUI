@@ -1,5 +1,5 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
-Button.clicked: ✅
 Button.style: not realized
 Canvas.ignoresInput: ✅
 CheckBox.isEnabled: ✅

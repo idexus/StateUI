@@ -11,8 +11,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("RadioButton"),
-            ConformanceCase("aUsersChoiceTakesTheGroupsOtherCheckAway", covers: [
-                Covered(RadioButtonContract.self), Covered(RadioButtonContract.isOn),
+            ConformanceCase("aUsersChoiceTakesTheGroupsOtherCheckAway", proves: [
+                Covered(RadioButtonContract.isOn),
                 Covered(RadioButtonContract.toggled), Covered(RadioButtonContract.groupName),
             ]) { s in
                 let choice = State(wrappedValue: "Small")
@@ -41,7 +41,7 @@
                 s.expect([try s.held(RadioButtonContract.isOn, on: small), try s.held(RadioButtonContract.isOn, on: large)],
                          [false, true])
             },
-            ConformanceCase("buttonsNamingNoSetAreOneWithTheirSiblings", covers: [
+            ConformanceCase("buttonsNamingNoSetAreOneWithTheirSiblings", proves: [
                 Covered(RadioButtonContract.isOn), Covered(RadioButtonContract.toggled),
             ]) { s in
                 let heard = Received<String>()
@@ -64,7 +64,7 @@
                 s.expect(try ["A", "B", "C"].map { try s.held(RadioButtonContract.isOn, on: s.element($0)) },
                          [false, true, true], "C, beside no other, keeps its check")
             },
-            ConformanceCase("setsOfDifferentNamesKeepTheirOwnChecks", covers: [
+            ConformanceCase("setsOfDifferentNamesKeepTheirOwnChecks", proves: [
                 Covered(RadioButtonContract.groupName), Covered(RadioButtonContract.isOn),
                 Covered(RadioButtonContract.toggled),
             ]) { s in

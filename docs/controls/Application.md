@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 12 ✅ of 12 | `NSApplication` / structure |  |
-| UIKit | ✅ | 11 ✅ of 12 | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ✅ | 7 ✅ of 12 | `Application` / structure |  |
-| WinUI 3 | ✅ | 12 ✅ of 12 | `Application` / structure |  |
-| GTK 4 |  |  | `GtkApplication` / structure | no test of it has run yet |
+| AppKit | ✅ | 12 ✅ | `NSApplication` / structure |  |
+| UIKit | ✅ | 11 ✅ | `UIApplication` / `UIWindowScene` |  |
+| Android Views | ✅ | 7 ✅ | `Application` / structure |  |
+| WinUI 3 | ⌛ |  | `Application` / structure | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
@@ -25,15 +25,15 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `announce` | act | `(String) -> Void` |  | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read what the screen reader said - Android's driver has no path for it yet |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `currentTime` | act | `() -> [Double]` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `currentTimeZone` | act | `() -> String` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read the log - Android's driver has no path for it yet |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot focus on TextField - Android's driver has no path for it yet |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ |  |  | ✅ |  |  |  |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read what is kept - Android's driver has no path for it yet |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `announce` | act | `(String) -> Void` |  | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read what the screen reader said - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `currentTime` | act | `() -> [Double]` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `currentTimeZone` | act | `() -> String` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `handlerFailed` | act | `(String) -> Void` |  | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read the log - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot focus on TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read what is kept - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |

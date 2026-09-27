@@ -1,10 +1,10 @@
-Button.clicked: ✅
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
 SearchField.inputPurpose: not realized
-SearchField.isReadOnly: ✅
+SearchField.isReadOnly: ◐ cannot read isReadOnly of SearchField - AppKit's driver has no path for it yet
 SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet
 SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet
-SearchField.maximumLength: ✅
+SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - AppKit's driver has no path for it yet
 SearchField.placeholder: cannot read placeholder of SearchField - AppKit's driver has no path for it yet
 SearchField.placeholderColor: cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet
 SearchField.selectionLength: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet
@@ -12,10 +12,10 @@ SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: cannot read cursorPosition of TextEditor - AppKit's driver has no path for it yet
 TextEditor.inputPurpose: not realized
-TextEditor.isReadOnly: ✅
+TextEditor.isReadOnly: ◐ cannot read isReadOnly of TextEditor - AppKit's driver has no path for it yet
 TextEditor.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet
 TextEditor.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet
-TextEditor.maximumLength: ✅
+TextEditor.maximumLength: ◐ cannot read maximumLength of TextEditor - AppKit's driver has no path for it yet
 TextEditor.placeholder: cannot read placeholder of TextEditor - AppKit's driver has no path for it yet
 TextEditor.placeholderColor: cannot read placeholderColor of TextEditor - AppKit's driver has no path for it yet
 TextEditor.selectionLength: cannot read selectionLength of TextEditor - AppKit's driver has no path for it yet
@@ -23,10 +23,10 @@ TextEditor.text: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: cannot read cursorPosition of TextField - AppKit's driver has no path for it yet
 TextField.inputPurpose: not realized
-TextField.isReadOnly: ✅
+TextField.isReadOnly: ◐ cannot read isReadOnly of TextField - AppKit's driver has no path for it yet
 TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet
 TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet
-TextField.maximumLength: ✅
+TextField.maximumLength: ◐ cannot read maximumLength of TextField - AppKit's driver has no path for it yet
 TextField.placeholder: cannot read placeholder of TextField - AppKit's driver has no path for it yet
 TextField.placeholderColor: cannot read placeholderColor of TextField - AppKit's driver has no path for it yet
 TextField.selectionLength: cannot read selectionLength of TextField - AppKit's driver has no path for it yet

@@ -51,47 +51,76 @@ final class ConformanceRunnerTests: XCTestCase {
             Handed.self, on: driver, report: { self.failures.append($0.message) }, log: { self.lines.append($0) })
     }
 
-    /// A case runs only where the host realizes every member it covers; the register says the rest.
+    /// A case runs only where the host realizes every member it proves and everything it needs; the register says
+    /// the rest.
     func testACaseRunsOnlyWhereEveryMemberItCoversIsRealized() {
         let register = HostRegister(
             records: [.complete("Switch", "isOn"), .partial("Switch", "toggled", missing: "A sound."),
                       .notPlanned("Stepper", "step", reason: "No steps here.")],
             unrealized: ["Map"], viewless: [], notPlanned: ["MenuBar": "No bar here."])
 
-        XCTAssertTrue(Outcome(covering: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)], on: register).runs)
-        let never = Outcome(covering: [Covered(StepperContract.step), Covered(SwitchContract.isOn)], on: register)
+        XCTAssertTrue(Outcome(proving: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)], on: register).runs)
+        let never = Outcome(proving: [Covered(StepperContract.step), Covered(SwitchContract.isOn)], on: register)
         XCTAssertFalse(never.runs)
         XCTAssertEqual(never.facts, [HostVerdict(element: "Stepper", member: "step", mark: .notPlanned(reason: "No steps here."))])
-        XCTAssertEqual(Outcome(covering: [Covered(StepperContract.value)], on: register).facts, [
+        XCTAssertEqual(Outcome(proving: [Covered(StepperContract.value)], on: register).facts, [
             HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
         ])
         XCTAssertEqual(
-            Outcome(covering: [Covered(SwitchContract.toggled), Covered(StepperContract.value), Covered(SwitchContract.isOn)],
+            Outcome(proving: [Covered(SwitchContract.toggled), Covered(StepperContract.value), Covered(SwitchContract.isOn)],
                     on: register).facts,
             [
                 HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
                 HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
                 HostVerdict(element: "Switch", member: "toggled", mark: .waiting(on: "Stepper.value")),
             ], "what the host realizes waits on what it does not")
-        XCTAssertEqual(Outcome(covering: [Covered(MapContract.self)], on: register).facts, [
+        XCTAssertEqual(Outcome(proving: [Covered(MapContract.self)], on: register).facts, [
             HostVerdict(element: "Map", member: nil, mark: .notRealized),
         ])
-        XCTAssertEqual(Outcome(covering: [Covered(MenuBarContract.self)], on: register).facts, [
+        XCTAssertEqual(Outcome(proving: [Covered(MenuBarContract.self)], on: register).facts, [
             HostVerdict(element: "MenuBar", member: nil, mark: .notPlanned(reason: "No bar here.")),
         ])
+        let needing = Outcome(proving: [Covered(SwitchContract.isOn)], needing: [Covered(StepperContract.value)], on: register)
+        XCTAssertFalse(needing.runs, "a case runs only where what it needs is realized too")
+        XCTAssertEqual(needing.facts, [
+            HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
+        ], "what it needs gets no verdict of its own")
     }
 
-    /// A passing case proves each member it covers: whole where the host realizes it whole, and with what the host
-    /// records as missing where it realizes it in part; a failing case proves nothing.
+    /// A case says nothing of what it only needs, a failing one fails what it proves with its first failure, and one
+    /// that cannot prove it here says why.
+    func testACaseJudgesWhatItProvesAlone() {
+        let verdicts = run([
+            ConformanceCase("passes", proves: [Covered(SwitchContract.isOn)], needs: [Covered(SwitchContract.toggled)]) { _ in },
+            ConformanceCase("fails", proves: [Covered(SwitchContract.toggled)]) { s in
+                s.fail("true expected, false came")
+                s.fail("a second")
+            },
+            ConformanceCase("unprovable", proves: [Covered(SwitchContract.self)]) { s in
+                throw s.unprovable("focus Switch: it takes no keyboard focus here")
+            },
+        ], on: RegisterOnly(realizing: [.complete("Switch", "isOn"), .complete("Switch", "toggled")]))
+
+        XCTAssertEqual(HostVerdict.text(verdicts), """
+            Switch: cannot focus Switch: it takes no keyboard focus here
+            Switch.isOn: ✅
+            Switch.toggled: ❌ true expected, false came
+
+            """)
+    }
+
+    /// A passing case proves each member it proves: whole where the host realizes it whole, and with what the host
+    /// records as missing where it realizes it in part; a failing case fails them.
     func testAPassingCaseProvesWhatItCoversAndAFailingOneNothing() {
         let verdicts = run([
-            ConformanceCase("passes", covers: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { _ in },
-            ConformanceCase("fails", covers: [Covered(SwitchContract.self)]) { s in s.expect(true, false) },
+            ConformanceCase("passes", proves: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { _ in },
+            ConformanceCase("fails", proves: [Covered(SwitchContract.self)]) { s in s.expect(true, false) },
         ], on: RegisterOnly(realizing: [
             .complete("Switch", "isOn"), .partial("Switch", "toggled", missing: "A sound."),
         ]))
 
-        XCTAssertEqual(HostVerdict.text(verdicts), "Switch.isOn: ✅\nSwitch.toggled: ☑️ A sound.\n")
+        XCTAssertTrue(HostVerdict.text(verdicts).hasPrefix("Switch: ❌ "), HostVerdict.text(verdicts))
+        XCTAssertTrue(HostVerdict.text(verdicts).hasSuffix("Switch.isOn: ✅\nSwitch.toggled: ☑️ A sound.\n"))
         XCTAssertEqual(lines, ["Conformance Nowhere · Handed/passes: passed", "Conformance Nowhere · Handed/fails: failed"])
     }
 
@@ -99,8 +128,8 @@ final class ConformanceRunnerTests: XCTestCase {
     /// never had, empty for one not realized; nothing fails.
     func testACaseTheRegisterStopsSaysWhy() {
         let verdicts = run([
-            ConformanceCase("never", covers: [Covered(StepperContract.step)]) { _ in },
-            ConformanceCase("gap", covers: [Covered(StepperContract.value)]) { _ in },
+            ConformanceCase("never", proves: [Covered(StepperContract.step)]) { _ in },
+            ConformanceCase("gap", proves: [Covered(StepperContract.value)]) { _ in },
         ], on: RegisterOnly(realizing: [.notPlanned("Stepper", "step", reason: "No steps here.")]))
 
         XCTAssertEqual(failures, [])
@@ -115,7 +144,7 @@ final class ConformanceRunnerTests: XCTestCase {
     func testAFamilysPartsRunEachCaseOnce() {
         let driver = RegisterOnly(realizing: [.complete("Switch", "isOn")])
         let names = (0..<5).map { "case\($0)" }
-        let cases = names.map { name in ConformanceCase(name, covers: [Covered(SwitchContract.isOn)]) { _ in } }
+        let cases = names.map { name in ConformanceCase(name, proves: [Covered(SwitchContract.isOn)]) { _ in } }
 
         for number in 1...2 {
             Handed.cases = cases
@@ -130,17 +159,17 @@ final class ConformanceRunnerTests: XCTestCase {
     /// A case that covers nothing fails: no verdict could ever say whether it runs.
     func testACaseThatCoversNothingFails() {
         run([
-            ConformanceCase("nothing", covers: []) { _ in },
-            ConformanceCase("something", covers: [Covered(SwitchContract.isOn)]) { _ in },
+            ConformanceCase("nothing", proves: []) { _ in },
+            ConformanceCase("something", proves: [Covered(SwitchContract.isOn)]) { _ in },
         ], on: RegisterOnly(realizing: [.complete("Switch", "isOn")]))
 
-        XCTAssertEqual(failures, ["Conformance Nowhere · Handed/nothing covers no member of the contract"])
+        XCTAssertEqual(failures, ["Conformance Nowhere · Handed/nothing proves no member of the contract"])
         XCTAssertEqual(lines, ["Conformance Nowhere · Handed/something: passed"])
     }
 
     /// An expectation that fails names the host and the case, and the case is reported failed.
     func testAFailureNamesTheHostAndTheCase() {
-        run([ConformanceCase("sums", covers: [Covered(SwitchContract.isOn)]) { s in s.expect(1 + 1, 3) }],
+        run([ConformanceCase("sums", proves: [Covered(SwitchContract.isOn)]) { s in s.expect(1 + 1, 3) }],
             on: RegisterOnly(realizing: [.complete("Switch", "isOn")]))
 
         XCTAssertEqual(failures, ["Nowhere · sums: 3 expected, 2 came"])
@@ -151,7 +180,7 @@ final class ConformanceRunnerTests: XCTestCase {
     /// empty with its words.
     func testADriverThatCannotSaysWhyOrFails() {
         let driver = RegisterOnly(realizing: [.complete("Switch", "isOn")])
-        let cannot = ConformanceCase("reads", covers: [Covered(SwitchContract.isOn)]) { _ in
+        let cannot = ConformanceCase("reads", proves: [Covered(SwitchContract.isOn)]) { _ in
             throw DriverCannot("read isOn of Switch")
         }
 
@@ -164,7 +193,7 @@ final class ConformanceRunnerTests: XCTestCase {
         let verdicts = run([cannot], on: driver)
         XCTAssertEqual(failures, [])
         XCTAssertEqual(lines, [
-            "Conformance Nowhere · Handed/reads: the driver cannot read isOn of Switch - The toolkit keeps it.",
+            "Conformance Nowhere · Handed/reads: cannot read isOn of Switch - The toolkit keeps it.",
         ])
         XCTAssertEqual(HostVerdict.text(verdicts), "Switch.isOn: cannot read isOn of Switch - The toolkit keeps it.\n")
     }
@@ -173,7 +202,7 @@ final class ConformanceRunnerTests: XCTestCase {
     func testADriverSaysWhyForWhatItHasNoPathFor() {
         let driver = RegisterOnly(realizing: [.complete("Switch", "isOn")])
         driver.otherwise = "No path yet."
-        let verdicts = run([ConformanceCase("reads", covers: [Covered(SwitchContract.isOn)]) { _ in
+        let verdicts = run([ConformanceCase("reads", proves: [Covered(SwitchContract.isOn)]) { _ in
             throw DriverCannot("read isOn of Switch")
         }], on: driver)
 

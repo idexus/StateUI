@@ -1,5 +1,5 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.tint: cannot read tint of ActivityIndicator - AppKit's driver has no path for it yet
-Button.clicked: cannot read tint of ActivityIndicator - AppKit's driver has no path for it yet
 CheckBox.tint: cannot read tint of CheckBox - AppKit's driver has no path for it yet
 Picker.tint: cannot read tint of Picker - AppKit's driver has no path for it yet
 ProgressBar.tint: cannot read tint of ProgressBar - AppKit's driver has no path for it yet

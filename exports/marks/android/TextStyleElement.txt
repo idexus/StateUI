@@ -1,5 +1,5 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 Button.characterSpacing: not realized
-Button.clicked: ✅
 Button.textColor: ✅
 DatePicker.characterSpacing: not realized
 DatePicker.textColor: ✅

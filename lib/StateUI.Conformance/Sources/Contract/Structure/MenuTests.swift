@@ -11,16 +11,16 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aSubmenuStandsUnderItsCaptionHoldingItsEntries", covers: [
+            ConformanceCase("aSubmenuStandsUnderItsCaptionHoldingItsEntries", proves: [
                 Covered(MenuContract.self), Covered(MenuContract.text),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
 
                 s.expect(try s.menu(of: s.element("row")).hasSuffix("Share[Mail]"), true)
             },
-            ConformanceCase("aSubmenusCaptionAndReachFollowTheTree", covers: [
-                Covered(MenuContract.text), Covered(MenuContract.isEnabled), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aSubmenusCaptionAndReachFollowTheTree", proves: [
+                Covered(MenuContract.text), Covered(MenuContract.isEnabled),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {

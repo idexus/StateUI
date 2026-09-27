@@ -5,6 +5,7 @@
 @_spi(Host) import StateUIHost
 @_spi(Host) import StateUIConformance
 import WinSDK
+import Foundation
 import XCTest
 
 /// The conformance suite on WinUI: a family a contract, each one test, its verdicts WinUI's column of the
@@ -102,7 +103,9 @@ final class WinUIConformanceTests: XCTestCase {
                 family, part: part, on: WinUIDriver(), report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         }
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
-        XCTAssertNoThrow(try WinUIExports.hold(HostVerdict.text(verdicts), at: "marks/winui/\(file).txt"))
+        XCTAssertNoThrow(try WinUIExports.hold(
+            HostVerdict.text(verdicts, inputs: ProcessInfo.processInfo.environment["STATEUI_MARKS_INPUTS"]),
+            at: "marks/winui/\(file).txt"))
         XCTAssertLessThan(GetGuiResources(GetCurrentProcess(), DWORD(GR_GDIOBJECTS)), 6_000,
                           "\(family.name) shows too many windows for one process: run it in more parts")
     }

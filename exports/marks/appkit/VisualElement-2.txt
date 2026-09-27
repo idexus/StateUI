@@ -1,14 +1,14 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.opacity: ✅
 ActivityIndicator.translationY: ✅
-Button.clicked: ✅
 Button.scaleX: ✅
 Canvas.rotationX: ✅
 CheckBox.pivotX: ✅
 ColorBox.automationExcludedWithChildren: ✅
 DatePicker.accessibilityHint: ✅
-Ellipse.focus: ✅
-Ellipse.isFocusedChanged: ✅
-Ellipse.unfocus: ✅
+Ellipse.focus: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.isFocusedChanged: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.unfocus: cannot focus Ellipse: it takes no keyboard focus here
 Grid.frameChanged: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
@@ -51,9 +51,9 @@ TextEditor.rotationX: ✅
 TextField.pivotX: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TitleBar.accessibilityHint: not realized
-VStack.focus: ✅
-VStack.isFocusedChanged: ✅
-VStack.unfocus: ✅
+VStack.focus: cannot focus VStack: it takes no keyboard focus here
+VStack.isFocusedChanged: cannot focus VStack: it takes no keyboard focus here
+VStack.unfocus: cannot focus VStack: it takes no keyboard focus here
 WebView.frameChanged: not realized
 WebView.maximumHeight: not realized
 WebView.maximumWidth: not realized

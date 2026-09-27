@@ -16,36 +16,48 @@
     /// What the register says of each member the case covers, where the host realizes it.
     public let realized: [Covered: HostRecord.Judgement]
 
-    /// Whether the case runs: every member it covers realized, in full or in part.
+    /// Whether the case runs: every member it proves realized, in full or in part, and everything it needs.
     public var runs: Bool {
-        notPlanned.isEmpty && notRealized.isEmpty
+        notPlanned.isEmpty && notRealized.isEmpty && gaps.isEmpty
     }
 
-    /// The outcome of a case covering `covers` on a host with `register`.
-    public init(covering covers: [Covered], on register: HostRegister) {
+    /// The outcome of a case proving `proves` with the help of `needs` on a host with `register`: what it proves is
+    /// judged, what it needs only stops it where the host lacks it.
+    public init(proving proves: [Covered], needing needs: [Covered] = [], on register: HostRegister) {
         var notPlanned: [Covered: String] = [:]
         var notRealized: [Covered] = []
         var realized: [Covered: HostRecord.Judgement] = [:]
-        for covered in covers {
+        var gaps: [Covered] = []
+        for covered in proves {
             switch covered.judgement(in: register) {
             case .notPlanned(let reason)?: notPlanned[covered] = reason
             case nil: notRealized.append(covered)
             case let judgement?: realized[covered] = judgement
             }
         }
+        for need in needs where !proves.contains(need) {
+            switch need.judgement(in: register) {
+            case .notPlanned?, nil: gaps.append(need)
+            default: break
+            }
+        }
         self.notPlanned = notPlanned
         self.notRealized = notRealized
         self.realized = realized
+        self.gaps = gaps
     }
+
+    /// What the case needs and the host does not realize, or never has.
+    public let gaps: [Covered]
 
     /// What the register alone says, whether or not the case runs: – for each member never had, empty for each not
     /// realized, and - where only a gap stops the case - each member realized waiting on the first gap.
     public var facts: [HostVerdict] {
         let never = notPlanned.map { $0.key.verdict(.notPlanned(reason: $0.value)) }
-        let gaps = notRealized.map { $0.verdict(.notRealized) }
-        guard notPlanned.isEmpty, let gap = notRealized.first else { return never + gaps }
+        let missing = notRealized.map { $0.verdict(.notRealized) }
+        guard notPlanned.isEmpty, let gap = notRealized.first ?? gaps.first else { return never + missing }
         let waiting = realized.keys.sorted { $0.description < $1.description }
-        return gaps + waiting.map { $0.verdict(.waiting(on: gap.description)) }
+        return missing + waiting.map { $0.verdict(.waiting(on: gap.description)) }
     }
 
     /// What a passing case proved: ✅ each member realized in full, ☑️ with what is missing each realized in part.
@@ -61,7 +73,7 @@
         if let (covered, reason) = notPlanned.min(by: { $0.key.description < $1.key.description }) {
             return "not planned - \(covered): \(reason)"
         }
-        if let covered = notRealized.first { return "a gap - \(covered) is not realized" }
+        if let covered = notRealized.first ?? gaps.first { return "a gap - \(covered) is not realized" }
         return nil
     }
 }

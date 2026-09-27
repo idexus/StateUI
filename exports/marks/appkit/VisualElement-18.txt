@@ -1,6 +1,6 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.pivotY: ✅
 Button.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-Button.clicked: ✅
 Canvas.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 CheckBox.style: not realized
 ColorBox.ignoresInput: ✅

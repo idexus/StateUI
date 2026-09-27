@@ -11,9 +11,9 @@
 
     public static var cases: [ConformanceCase] {
         [
-            ConformanceCase("aSeparatorPartsItsEntries", covers: [
-                Covered(MenuSeparatorContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aSeparatorPartsItsEntries", proves: [
+                Covered(MenuSeparatorContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let parted = State(wrappedValue: true)
                 s.start {
                     VStack {

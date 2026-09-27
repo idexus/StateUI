@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (8) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 2 ✅ of 8 | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
-| UIKit | ✅ | 5 ✅ of 8 | `UIBarButtonItem` |  |
-| Android Views |  |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ | 6 ✅ of 8 | `CommandBar` `AppBarButton` |  |
-| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
+| AppKit | ✅ | 1 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ | 5 ✅ | `UIBarButtonItem` |  |
+| Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  | ✅ |  |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet |
-| `priority` | property | `Int` | adaptive |  |  |  | ✅ |  |  | cannot read priority of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read priority of ToolbarItem - Android's driver has no path for it yet |
+| `placement` | property | `ToolbarItemPlacement` | adaptive | · | · | · | ⌛ |  |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `priority` | property | `Int` | adaptive | · | · | · | ⌛ |  |  | cannot read priority of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read priority of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | cannot read accessibilityIdentifier of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of ToolbarItem - Android's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native | · | · | · | ⌛ |  |  | cannot read accessibilityIdentifier of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -42,8 +42,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet |
-| `isDestructive` | property | `Bool` | adaptive |  | ✅ |  |  |  |  | Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| `text` | property | `String` | native |  | ✅ |  | ✅ |  |  | cannot read text of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read text of ToolbarItem - Android's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `isDestructive` | property | `Bool` | adaptive |  | ✅ | · | ⌛ |  |  | not realized; Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `isEnabled` | property | `Bool` | native | ◐ | ✅ | · | ⌛ |  |  | cannot read isEnabled of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `text` | property | `String` | native | · | ✅ | · | ⌛ |  |  | cannot read text of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read text of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

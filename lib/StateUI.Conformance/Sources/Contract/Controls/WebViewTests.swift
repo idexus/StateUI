@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("WebView"),
-            ConformanceCase("aPageIsHeardGoingAndArriving", covers: [
-                Covered(WebViewContract.self), Covered(WebViewContract.source), Covered(WebViewContract.navigating),
+            ConformanceCase("aPageIsHeardGoingAndArriving", proves: [
+                Covered(WebViewContract.source), Covered(WebViewContract.navigating),
                 Covered(WebViewContract.navigated),
             ]) { s in
                 let heard = Received<String>()
@@ -31,9 +31,9 @@
                 s.expect(heard.values.last, "navigated success")
                 s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseUrl: nil))
             },
-            ConformanceCase("aScriptsAnswerComesBack", covers: [
-                Covered(WebViewContract.evaluateJavaScript), Covered(WebViewContract.navigated), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aScriptsAnswerComesBack", proves: [
+                Covered(WebViewContract.evaluateJavaScript),
+            ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let said = Received<String>()
                 let arrived = Received<Bool>()
@@ -50,10 +50,9 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["2"])
             },
-            ConformanceCase("theAgentItNamesItselfByIsTheTrees", covers: [
+            ConformanceCase("theAgentItNamesItselfByIsTheTrees", proves: [
                 Covered(WebViewContract.userAgent), Covered(WebViewContract.evaluateJavaScript),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let said = Received<String>()
                 let arrived = Received<Bool>()
@@ -73,10 +72,10 @@
                 s.settle { !said.values.isEmpty }
                 s.expect(said.values, ["StateUI conformance"])
             },
-            ConformanceCase("theWayBackAndForwardOpenAndAreTaken", covers: [
+            ConformanceCase("theWayBackAndForwardOpenAndAreTaken", proves: [
                 Covered(WebViewContract.canGoBackChanged), Covered(WebViewContract.canGoForwardChanged),
-                Covered(WebViewContract.goBack), Covered(WebViewContract.goForward), Covered(ButtonContract.clicked),
-            ]) { s in
+                Covered(WebViewContract.goBack), Covered(WebViewContract.goForward),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let second = State(wrappedValue: false)
                 let heard = Received<String>()
@@ -110,9 +109,9 @@
                 s.settle { heard.values.last == "forward false" }
                 s.expect(heard.values.last, "forward false", "taken forward, the way forward closed")
             },
-            ConformanceCase("aPageLoadedAgainIsHeard", covers: [
-                Covered(WebViewContract.reload), Covered(WebViewContract.navigating), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aPageLoadedAgainIsHeard", proves: [
+                Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let heard = Received<WebNavigationEvent>()
                 s.start {
@@ -128,7 +127,7 @@
                 s.settle { heard.values.count >= 2 }
                 s.expect(heard.values.last, .refresh)
             },
-            ConformanceCase("theEndOfItsContentIsHeard", covers: [Covered(WebViewContract.processTerminated)]) { s in
+            ConformanceCase("theEndOfItsContentIsHeard", proves: [Covered(WebViewContract.processTerminated)]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {

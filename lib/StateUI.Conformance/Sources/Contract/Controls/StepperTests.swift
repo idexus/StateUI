@@ -12,11 +12,10 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Stepper"),
-            ConformanceCase("aUsersStepIsHeardAndTheProgramsIsNot", covers: [
-                Covered(StepperContract.self), Covered(StepperContract.value), Covered(StepperContract.valueChanged),
+            ConformanceCase("aUsersStepIsHeardAndTheProgramsIsNot", proves: [
+                Covered(StepperContract.value), Covered(StepperContract.valueChanged),
                 Covered(StepperContract.minimum), Covered(StepperContract.maximum), Covered(StepperContract.step),
-                Covered(ButtonContract.clicked),
-            ]) { s in
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let count = State(wrappedValue: 2.0)
                 let heard = Received<Double>()
                 s.start {
@@ -39,7 +38,7 @@
                 s.expect(try s.held(StepperContract.value, on: stepper), 10, "kept inside its range")
                 s.expect(heard.values, [3], "and nobody heard the program")
             },
-            ConformanceCase("typedWordsThatSayNoNumberLeaveTheNumber", covers: [
+            ConformanceCase("typedWordsThatSayNoNumberLeaveTheNumber", proves: [
                 Covered(StepperContract.value), Covered(StepperContract.valueChanged), Covered(StepperContract.maximum),
             ]) { s in
                 let count = State(wrappedValue: 4.0)
@@ -65,7 +64,7 @@
                 s.expect(count.wrappedValue, 10, "a number typed past an end stands at that end")
                 s.expect(heard.values, [10])
             },
-            ConformanceCase("aStepPastAnEndStaysThereUnheard", covers: [
+            ConformanceCase("aStepPastAnEndStaysThereUnheard", proves: [
                 Covered(StepperContract.value), Covered(StepperContract.minimum), Covered(StepperContract.valueChanged),
             ]) { s in
                 let count = State(wrappedValue: 0.0)
@@ -84,9 +83,9 @@
                 s.expect(try s.held(StepperContract.value, on: stepper), 0)
                 s.expect(heard.values, [], "a step that moved nothing heard by nobody")
             },
-            ConformanceCase("aRangeWidenedOverItsValueShowsIt", covers: [
-                Covered(StepperContract.value), Covered(StepperContract.maximum), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("aRangeWidenedOverItsValueShowsIt", proves: [
+                Covered(StepperContract.value), Covered(StepperContract.maximum),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 15.0)
                 s.start {
@@ -104,10 +103,10 @@
                 s.expect(try s.held(StepperContract.value, on: control), 15, "the value its state holds, no longer at an end")
                 s.expect(level.wrappedValue, 15)
             },
-            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", covers: [
+            ConformanceCase("aRangeMovedPastItsValueTakesTheValueWrittenWithIt", proves: [
                 Covered(StepperContract.value), Covered(StepperContract.minimum), Covered(StepperContract.maximum),
-                Covered(StepperContract.valueChanged), Covered(ButtonContract.clicked),
-            ]) { s in
+                Covered(StepperContract.valueChanged),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let range = State(wrappedValue: 0.0...10.0)
                 let count = State(wrappedValue: 4.0)
                 let heard = Received<Double>()
@@ -141,8 +140,8 @@
                 s.expect(count.wrappedValue, -25)
                 s.expect(heard.values, [], "the program's writes are heard by nobody")
             },
-            ConformanceCase("aStepIsAsLongAsTheTreeSays", covers: [
-                Covered(StepperContract.step), Covered(StepperContract.value), Covered(StepperContract.valueChanged),
+            ConformanceCase("aStepIsAsLongAsTheTreeSays", proves: [
+                Covered(StepperContract.step), Covered(StepperContract.value),
             ]) { s in
                 let count = State(wrappedValue: 1.0)
                 s.start { VStack { Stepper(count.projectedValue).minimum(0).maximum(10).step(2.5).id("stepper") } }

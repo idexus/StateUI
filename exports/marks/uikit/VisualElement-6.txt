@@ -1,5 +1,5 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.ignoresInput: not realized
-Button.clicked: ✅
 Button.isEnabled: ✅
 Button.zIndex: not realized
 Canvas.scaleY: ✅

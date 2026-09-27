@@ -1,7 +1,7 @@
-ActivityIndicator.focus: ✅
-ActivityIndicator.isFocusedChanged: ✅
-ActivityIndicator.unfocus: ✅
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+ActivityIndicator.focus: cannot focus ActivityIndicator: it takes no keyboard focus here
+ActivityIndicator.isFocusedChanged: cannot focus ActivityIndicator: it takes no keyboard focus here
+ActivityIndicator.unfocus: cannot focus ActivityIndicator: it takes no keyboard focus here
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
@@ -14,9 +14,9 @@ ColorBox.rotationX: ✅
 DatePicker.pivotX: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Grid.accessibilityHint: ✅
-HStack.focus: ✅
-HStack.isFocusedChanged: ✅
-HStack.unfocus: ✅
+HStack.focus: cannot focus HStack: it takes no keyboard focus here
+HStack.isFocusedChanged: cannot focus HStack: it takes no keyboard focus here
+HStack.unfocus: cannot focus HStack: it takes no keyboard focus here
 Image.frameChanged: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
@@ -29,9 +29,9 @@ Map.rotationX: not realized
 Path.pivotX: ✅
 Picker.automationExcludedWithChildren: ✅
 Polygon.accessibilityHint: ✅
-Polyline.focus: ✅
-Polyline.isFocusedChanged: ✅
-Polyline.unfocus: ✅
+Polyline.focus: cannot focus Polyline: it takes no keyboard focus here
+Polyline.isFocusedChanged: cannot focus Polyline: it takes no keyboard focus here
+Polyline.unfocus: cannot focus Polyline: it takes no keyboard focus here
 PositionIndicator.frameChanged: not realized
 PositionIndicator.maximumHeight: not realized
 PositionIndicator.maximumWidth: not realized
@@ -44,9 +44,9 @@ Rectangle.rotationX: ✅
 ScrollView.pivotX: ✅
 SearchField.automationExcludedWithChildren: ✅
 Slider.accessibilityHint: ✅
-Stepper.focus: ✅
-Stepper.isFocusedChanged: ✅
-Stepper.unfocus: ✅
+Stepper.focus: cannot focus Stepper: it takes no keyboard focus here
+Stepper.isFocusedChanged: cannot focus Stepper: it takes no keyboard focus here
+Stepper.unfocus: cannot focus Stepper: it takes no keyboard focus here
 Switch.frameChanged: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
@@ -59,6 +59,6 @@ TimePicker.rotationX: ✅
 TitleBar.pivotX: not realized
 VStack.automationExcludedWithChildren: ✅
 WebView.accessibilityHint: ✅
-ZStack.focus: ✅
-ZStack.isFocusedChanged: ✅
-ZStack.unfocus: ✅
+ZStack.focus: cannot focus ZStack: it takes no keyboard focus here
+ZStack.isFocusedChanged: cannot focus ZStack: it takes no keyboard focus here
+ZStack.unfocus: cannot focus ZStack: it takes no keyboard focus here

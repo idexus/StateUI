@@ -36,9 +36,9 @@
 
     /// Runs `family` - or `part` of it - on `driver`'s host, handing every failure to `report` and a line for each
     /// case to `log`, or, where none is given, saying each as it ends - its place in the run and how long it took
-    /// (`HostLog.note`); the verdict on each member its cases cover - ✅ or ☑️ where a passing case proved it, –
-    /// where the host's family never has it, and why it stays empty otherwise. A member of a failing case gets no
-    /// verdict from it.
+    /// (`HostLog.note`); the verdict on each member its cases prove - ✅ or ☑️ where a passing case proved it, –
+    /// where the host's family never has it, ❌ with the first failure where a case failed, and why it stays empty
+    /// otherwise - the worst its cases gave.
     @discardableResult
     public static func run(
         _ family: any ConformanceFamily.Type, part: Part = .whole, on driver: any HostDriver,
@@ -57,11 +57,11 @@
                 if let log { return log(line) }
                 progress.note("[\(place + 1)/\(held.count)] \(line) in \(Self.milliseconds(since: began)) ms")
             }
-            guard !each.covers.isEmpty else {
-                report(Failure(message: "\(title) covers no member of the contract", file: #filePath, line: #line))
+            guard !each.proves.isEmpty else {
+                report(Failure(message: "\(title) proves no member of the contract", file: #filePath, line: #line))
                 continue
             }
-            let outcome = Outcome(covering: each.covers, on: register)
+            let outcome = Outcome(proving: each.proves, needing: each.needs, on: register)
             verdicts += outcome.facts
             if let reason = outcome.reason {
                 tell("\(title): \(reason)")
@@ -71,11 +71,12 @@
             case .passed:
                 tell("\(title): passed")
                 verdicts += outcome.proofs
-            case .cannot(let cannot, let reason):
-                tell("\(title): the driver cannot \(cannot) - \(reason)")
-                verdicts += each.covers.map { $0.verdict(.cannot("\(cannot) - \(reason)")) }
-            case .failed:
+            case .cannot(let why):
+                tell("\(title): cannot \(why)")
+                verdicts += each.proves.map { $0.verdict(.cannot(why)) }
+            case .failed(let message):
                 tell("\(title): failed")
+                verdicts += each.proves.map { $0.verdict(.failed(message)) }
             }
         }
         return HostVerdict.merged(verdicts)
@@ -87,11 +88,12 @@
         return elapsed.seconds * 1_000 + elapsed.attoseconds / 1_000_000_000_000_000
     }
 
-    /// How one case came out.
+    /// How one case came out: passed; could not prove what it proves on this host, and why; or failed, with its
+    /// first failure.
     private enum Result {
         case passed
-        case cannot(DriverCannot, reason: String)
-        case failed
+        case cannot(String)
+        case failed(String)
     }
 
     /// Runs one case.
@@ -101,12 +103,14 @@
         let session = Session(driver: driver, case: "\(each.name)", report: report)
         do {
             try each.body(session)
-        } catch let cannot as DriverCannot {
-            if let reason = driver.reason(cannot: cannot.ability) { return .cannot(cannot, reason: reason) }
+        } catch let cannot as DriverCannot where session.failures == 0 {
+            if let reason = driver.reason(cannot: cannot.ability) { return .cannot("\(cannot) - \(reason)") }
             session.fail("the driver cannot \(cannot), and says nothing of why")
+        } catch let unprovable as Session.Unprovable where session.failures == 0 {
+            return .cannot(unprovable.why)
         } catch {
             session.fail("threw \(error)")
         }
-        return session.failures == 0 ? .passed : .failed
+        return session.firstFailure.map { .failed($0) } ?? .passed
     }
 }

@@ -1,9 +1,9 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
-Button.clicked: ✅
 Button.opacity: ✅
 Button.translationY: ✅
 Canvas.scaleX: ✅
@@ -11,9 +11,9 @@ CheckBox.rotationX: ✅
 ColorBox.pivotX: ✅
 DatePicker.automationExcludedWithChildren: ✅
 Ellipse.accessibilityHint: ✅
-Grid.focus: ✅
-Grid.isFocusedChanged: ✅
-Grid.unfocus: ✅
+Grid.focus: cannot focus Grid: it takes no keyboard focus here
+Grid.isFocusedChanged: cannot focus Grid: it takes no keyboard focus here
+Grid.unfocus: cannot focus Grid: it takes no keyboard focus here
 HStack.frameChanged: ✅
 HStack.maximumHeight: ✅
 HStack.maximumWidth: ✅
@@ -26,9 +26,9 @@ Line.rotationX: ✅
 Map.pivotX: not realized
 Path.automationExcludedWithChildren: ✅
 Picker.accessibilityHint: ✅
-Polygon.focus: ✅
-Polygon.isFocusedChanged: ✅
-Polygon.unfocus: ✅
+Polygon.focus: cannot focus Polygon: it takes no keyboard focus here
+Polygon.isFocusedChanged: cannot focus Polygon: it takes no keyboard focus here
+Polygon.unfocus: cannot focus Polygon: it takes no keyboard focus here
 Polyline.frameChanged: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
@@ -41,9 +41,9 @@ RadioButton.rotationX: ✅
 Rectangle.pivotX: ✅
 ScrollView.automationExcludedWithChildren: ✅
 SearchField.accessibilityHint: ✅
-Slider.focus: ✅
-Slider.isFocusedChanged: ✅
-Slider.unfocus: ✅
+Slider.focus: cannot focus Slider: it takes no keyboard focus here
+Slider.isFocusedChanged: cannot focus Slider: it takes no keyboard focus here
+Slider.unfocus: cannot focus Slider: it takes no keyboard focus here
 Stepper.frameChanged: ✅
 Stepper.maximumHeight: ✅
 Stepper.maximumWidth: ✅

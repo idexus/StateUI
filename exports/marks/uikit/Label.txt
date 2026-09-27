@@ -1,6 +1,6 @@
-Button.clicked: ✅
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 Label: ✅
 Label.frameChanged: ✅
-Label.lineBreak: ✅
-Label.maximumLines: ✅
+Label.lineBreak: ◐ cannot read lineBreak of Label - UIKit's driver has no path for it yet
+Label.maximumLines: ◐ cannot read maximumLines of Label - UIKit's driver has no path for it yet
 Label.text: ✅

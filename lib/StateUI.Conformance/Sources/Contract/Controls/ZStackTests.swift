@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("ZStack"),
-            ConformanceCase("itsChildrenStandOneOverAnotherInItsRoom", covers: [Covered(ZStackContract.self)]) { s in
+            ConformanceCase("itsChildrenStandOneOverAnotherInItsRoom", proves: [Covered(ZStackContract.self)]) { s in
                 let (back, front) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
@@ -31,7 +31,7 @@
                 s.expect(back.values.last.map(FrameReport.place), [0, 0, 60, 40], "the whole room")
                 s.expect(front.values.last.map(FrameReport.place), [0, 0, 20, 20], "over it, where its alignment puts it")
             },
-            ConformanceCase("aPressReachesTheChildInFront", covers: [Covered(ZStackContract.self)]) { s in
+            ConformanceCase("aPressReachesTheChildInFront", proves: [Covered(ZStackContract.self)]) { s in
                 s.start {
                     VStack {
                         ZStack {

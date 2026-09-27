@@ -12,16 +12,16 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Label"),
-            ConformanceCase("aLabelShowsItsWords", covers: [
-                Covered(LabelContract.self), Covered(TextElementContract.text, on: "Label"),
+            ConformanceCase("aLabelShowsItsWords", proves: [
+                Covered(TextElementContract.text, on: "Label"),
             ]) { s in
                 s.start { VStack { Label("Some words").id("label") } }
 
                 s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
             },
-            ConformanceCase("noMoreLinesStandThanItsMaximum", covers: [
-                Covered(LabelContract.maximumLines), Covered(LabelContract.lineBreak), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("noMoreLinesStandThanItsMaximum", proves: [
+                Covered(LabelContract.maximumLines), Covered(LabelContract.lineBreak),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let lines = State(wrappedValue: 1)
                 let frames = Received<[Double]>()
                 s.start {
@@ -41,9 +41,9 @@
                 s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true,
                          "three lines stand where one stood")
             },
-            ConformanceCase("wordsThatDoNotWrapStandOnOneLine", covers: [
-                Covered(LabelContract.lineBreak), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("wordsThatDoNotWrapStandOnOneLine", proves: [
+                Covered(LabelContract.lineBreak),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let wraps = State(wrappedValue: false)
                 let frames = Received<[Double]>()
                 s.start {

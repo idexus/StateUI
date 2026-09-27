@@ -1,7 +1,7 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized
-Button.clicked: ✅
 Button.dragStarting: not realized
 Button.dragText: not realized
 Button.dropCompleted: not realized

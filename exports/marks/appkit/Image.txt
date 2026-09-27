@@ -1,5 +1,5 @@
-Button.clicked: cannot read isAnimating of Image - AppKit's driver has no path for it yet
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 Image: ✅
 Image.frameChanged: ✅
 Image.isAnimating: cannot read isAnimating of Image - AppKit's driver has no path for it yet
-Image.source: ✅
+Image.source: ◐ cannot read source of Image - AppKit's driver has no path for it yet

@@ -1,6 +1,6 @@
+# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
 ActivityIndicator.pivotY: ✅
 Button.background: cannot read background of Button - UIKit's driver has no path for it yet
-Button.clicked: ✅
 Canvas.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 CheckBox.style: not realized
 ColorBox.ignoresInput: not realized

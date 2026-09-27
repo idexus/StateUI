@@ -8,15 +8,15 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
 
-Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
-| Host | Created | Members | Realization | Notes |
+| Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 1 ✅ of 12 | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ | 1 ✅ of 12 | `UILabel`; `NSAttributedString` runs |  |
-| Android Views | ✅ | 1 ✅ of 12 | `TextView`; `SpannableString` spans |  |
-| WinUI 3 | ✅ | 6 ✅ of 12 | `TextBlock`; `Run` inlines |  |
-| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
+| AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
+| Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
+| WinUI 3 | ⌛ |  | `TextBlock`; `Run` inlines | a run of other sources said: ✅ |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native |  |  |  | ✅ |  |  | UIKit: cannot read background of Span - UIKit's driver has no path for it yet |
+| `background` | property | `Color` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read background of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -33,7 +33,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -41,8 +41,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `textCase` | property | `TextCase` | native |  |  |  |  |  |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet |
+| `text` | property | `String` | native | ◐ | ◐ | ◐ | ⌛ |  |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet; Android Views: cannot read text of Span - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `textCase` | property | `TextCase` | native | · | · |  | ⌛ |  |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -50,8 +50,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native |  |  |  | ✅ |  |  | UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet |
+| `characterSpacing` | property | `Double` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `textColor` | property | `Color` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -59,10 +59,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ |  |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native |  |  |  |  |  |  | UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet |
-| `fontSize` | property | `Double` | native |  |  |  | ✅ |  |  | UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontSize of Span - Android's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | · | · |  | ⌛ |  |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `fontFamily` | property | `Name` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `fontSize` | property | `Double` | native |  | · | · | ⌛ |  |  | not realized; UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontSize of Span - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
@@ -70,7 +70,7 @@ How far apart the lines of text are.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineHeight` | property | `Double` | native |  |  |  |  |  |  |  |
+| `lineHeight` | property | `Double` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)
 
@@ -78,4 +78,4 @@ The lines drawn through or under text.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native |  |  |  | ✅ |  |  | UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet |
+| `textDecorations` | property | `TextDecorations` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |

@@ -12,9 +12,9 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("VStack"),
-            ConformanceCase("itsChildrenStandOneUnderAnotherInTheirOrder", covers: [
-                Covered(VStackContract.self), Covered(ButtonContract.clicked),
-            ]) { s in
+            ConformanceCase("itsChildrenStandOneUnderAnotherInTheirOrder", proves: [
+                Covered(VStackContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let swapped = State(wrappedValue: false)
                 let (first, second) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
@@ -42,7 +42,7 @@
                 s.expect(second.values.last.map(FrameReport.place), [0, 0, 40, 30], "in the order the tree changed")
                 s.expect(first.values.last.map(FrameReport.place), [0, 30, 40, 20])
             },
-            ConformanceCase("whatItHoldsIsMeasuredAtItsOwnWidth", covers: [Covered(VStackContract.self)]) { s in
+            ConformanceCase("whatItHoldsIsMeasuredAtItsOwnWidth", proves: [Covered(VStackContract.self)]) { s in
                 let (stack, line) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {

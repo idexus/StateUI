@@ -1,5 +1,5 @@
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 ActivityIndicator.tint: cannot read tint of ActivityIndicator - Android's driver has no path for it yet
-Button.clicked: cannot read tint of ActivityIndicator - Android's driver has no path for it yet
 CheckBox.tint: cannot read tint of CheckBox - Android's driver has no path for it yet
 Picker.tint: cannot read tint of Picker - Android's driver has no path for it yet
 ProgressBar.tint: cannot read tint of ProgressBar - Android's driver has no path for it yet

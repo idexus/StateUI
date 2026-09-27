@@ -1,13 +1,13 @@
-Button.clicked: ✅
+# inputs 862e78ae875a898aae78ac38abdaf4e977702f8b
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
-WebView.evaluateJavaScript: ✅
+WebView.evaluateJavaScript: ◐ cannot read userAgent of WebView - Android's driver has no path for it yet
 WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
-WebView.navigated: ✅
-WebView.navigating: ✅
+WebView.navigated: cannot read source of WebView - Android's driver has no path for it yet
+WebView.navigating: ◐ cannot read source of WebView - Android's driver has no path for it yet
 WebView.processTerminated: cannot endContent on WebView - Android's driver has no path for it yet
 WebView.reload: ✅
 WebView.source: cannot read source of WebView - Android's driver has no path for it yet

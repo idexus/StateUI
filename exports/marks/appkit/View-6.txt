@@ -1,6 +1,6 @@
+# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
 ActivityIndicator.tapCount: ✅
 ActivityIndicator.tapped: ✅
-Button.clicked: ✅
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
