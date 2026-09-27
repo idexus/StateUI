@@ -48,6 +48,22 @@ windows share one scene - the tests' host stands every window in the one
 scene the runner has - does not own that scene, so its windows only leave
 it.
 
+## The environment
+
+The device, the application and the main display are told as the runtime
+starts and the first scene connects. The theme, the user's locale, the
+battery and the network are told as the application starts - the theme once
+its first scene connects - and again whenever one changes, each change
+through the runtime's one step for it: the theme when the scene's traits
+turn it, the locale when the user or the time zone changes it, the battery
+when its level or state moves or Low Power Mode turns, the network when its
+path moves. The theme is the whole application's: every scene stands in the
+one the user chose, so the first scene's traits say it. A battery UIKit knows
+nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
+battery saver. The network is reachable when its path is satisfied, local
+when interfaces stand but no route leads out; each interface in use - Wi-Fi,
+wired, cellular - is a connection profile.
+
 ## Acts
 
 The acts every host performs are the host layer's performer's; UIKit's part

@@ -86,6 +86,7 @@ extension UIKitRenderer {
         roster.update(root: nil, make: { _ in fatalError("no window comes while finishing") }, close: { $0.hide() })
         runtime.tree.root?.leave()
         frameClock.stop()
+        TestScene.scene.map(environment.stopFollowingTheme(of:))
     }
 
     /// Every view of `type` in the mounted tree, depth first.

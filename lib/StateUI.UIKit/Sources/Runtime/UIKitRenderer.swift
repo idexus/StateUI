@@ -39,6 +39,9 @@ final class UIKitRenderer {
     /// Where kept values stand between launches.
     let preferences: UserDefaults
 
+    /// What the application stands on - the theme, the locale, the battery, the network - as UIKit tells it.
+    private(set) lazy var environment = UIKitEnvironment(core: runtime.core)
+
     /// UIKit's part of the acts every host performs, and the host layer's performer of them.
     private(set) lazy var actToolkit = UIKitActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
@@ -52,7 +55,6 @@ final class UIKitRenderer {
 
     /// The menu bar as it was last built.
     private var menuBarSaid = ""
-    private var reportedDisplay = false
 
     init(
         clock: (() -> Double)? = nil, preferences: UserDefaults = .standard,
@@ -84,6 +86,7 @@ final class UIKitRenderer {
         started = true
         runtime.core.setRealization(UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized)
         reportEnvironment()
+        environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
         hydratePersistentState()
         runtime.tree.followTheLanguagesDirection()
         let core = runtime.core
@@ -131,16 +134,11 @@ final class UIKitRenderer {
         runtime.userClosed(window)
     }
 
-    /// A scene iOS connected: a StateUI scene of its own, whose window stands in it. The first says what the
-    /// display is.
+    /// A scene iOS connected: a StateUI scene of its own, whose window stands in it, which says what the display
+    /// is and, the first, what theme the user chose.
     func connect(_ scene: UIWindowScene) {
-        if !reportedDisplay {
-            reportedDisplay = true
-            let screen = scene.screen
-            runtime.core.setDisplayInfo(HostDisplayInfo(
-                width: screen.nativeBounds.width, height: screen.nativeBounds.height, density: screen.nativeScale,
-                refreshRate: Double(screen.maximumFramesPerSecond)))
-        }
+        environment.followTheme(of: scene)
+        environment.reportDisplay(of: scene)
         // A window the tree already holds, waiting for a scene, stands in it.
         if let waiting = roster.windows.first(where: { $0.1.window == nil })?.1 {
             waiting.stand(in: scene)

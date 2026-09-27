@@ -59,6 +59,10 @@ final class UIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
         UIKitRenderer.shared.disconnect(scene)
     }
 
+    func windowScene(_ scene: UIWindowScene, didUpdateEffectiveGeometry previous: UIWindowScene.Geometry) {
+        UIKitRenderer.shared.environment.displayMoved(for: scene)
+    }
+
     func sceneDidBecomeActive(_ scene: UIScene) {
         (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .active) }
     }

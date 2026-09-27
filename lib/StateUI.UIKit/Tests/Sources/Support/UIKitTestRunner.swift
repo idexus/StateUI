@@ -49,7 +49,8 @@ enum UIKitTestRunner {
                 failed += test.testRun?.totalFailureCount ?? 0
                 let took = (ContinuousClock.now - began).components
                 let milliseconds = took.seconds * 1_000 + took.attoseconds / 1_000_000_000_000_000
-                let outcome = test.testRun?.hasSucceeded == true ? "passed" : "FAILED"
+                let outcome = test.testRun?.hasBeenSkipped == true ? "skipped"
+                    : test.testRun?.hasSucceeded == true ? "passed" : "FAILED"
                 progress.note("[\(count - planned.count)/\(count)] \(title) \(outcome) in \(milliseconds) ms")
                 next()
             }
