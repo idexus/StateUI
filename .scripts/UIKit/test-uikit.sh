@@ -26,6 +26,14 @@ identifier="com.stateui.uikit.tests"
 
 device="$(uikit_simulator "${1:-}")"
 
+# A macOS accessibility client reading the Simulator - the Accessibility
+# Inspector, an AX script - turns the simulator's application accessibility
+# on, and UIKit's accessibility bundles then answer for its controls in its
+# place: the suite runs with it off, as a simulator starts.
+for key in ApplicationAccessibilityEnabled AccessibilityEnabled; do
+  xcrun simctl spawn "$device" defaults write com.apple.Accessibility "$key" -bool false
+done
+
 # XCTest is the simulator platform's own, read where it stands.
 frameworks="$UIKIT_PLATFORM/Developer/Library/Frameworks"
 libraries="$UIKIT_PLATFORM/Developer/usr/lib"
