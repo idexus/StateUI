@@ -83,6 +83,7 @@ struct ControlDictionary {
             case .partial(let missing)?: ("☑️", missing)
             case .notPlanned(let reason)?: ("–", reason)
             case .cannot(let why)?: ("", "cannot \(why)")
+            case .waiting(let gap)?: ("", "its test waits on \(gap), not realized yet")
             case .notRealized?, nil: ("", "")
             }
         }
@@ -91,7 +92,7 @@ struct ControlDictionary {
         func judges(_ element: String) -> Bool {
             switch verdicts[element]?.mark {
             case .proven?, .partial?, .notPlanned?: true
-            case .notRealized?, .cannot?, nil: false
+            case .notRealized?, .cannot?, .waiting?, nil: false
             }
         }
     }

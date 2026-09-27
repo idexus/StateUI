@@ -39,9 +39,13 @@
     }
 
     /// What the register alone says, whether or not the case runs: – for each member never had, empty for each not
-    /// realized.
+    /// realized, and - where only a gap stops the case - each member realized waiting on the first gap.
     public var facts: [HostVerdict] {
-        notPlanned.map { $0.key.verdict(.notPlanned(reason: $0.value)) } + notRealized.map { $0.verdict(.notRealized) }
+        let never = notPlanned.map { $0.key.verdict(.notPlanned(reason: $0.value)) }
+        let gaps = notRealized.map { $0.verdict(.notRealized) }
+        guard notPlanned.isEmpty, let gap = notRealized.first else { return never + gaps }
+        let waiting = realized.keys.sorted { $0.description < $1.description }
+        return gaps + waiting.map { $0.verdict(.waiting(on: gap.description)) }
     }
 
     /// What a passing case proved: ✅ each member realized in full, ☑️ with what is missing each realized in part.

@@ -17,6 +17,8 @@
         case notRealized
         /// Empty: the host's driver cannot do or read what the case needs; what, and why.
         case cannot(String)
+        /// Empty: the host realizes it, and its case waits on another member the host does not realize yet; which.
+        case waiting(on: String)
     }
 
     /// The element.
@@ -48,6 +50,7 @@
         case .notPlanned(let reason): "\(subject): – \(reason)"
         case .notRealized: "\(subject): not realized"
         case .cannot(let why): "\(subject): cannot \(why)"
+        case .waiting(let gap): "\(subject): waits on \(gap)"
         }
     }
 
@@ -75,6 +78,8 @@
             mark = .notRealized
         } else if let why = text(after: "cannot"), !why.isEmpty {
             mark = .cannot(why)
+        } else if let gap = text(after: "waits on"), !gap.isEmpty {
+            mark = .waiting(on: gap)
         } else {
             return nil
         }
@@ -85,16 +90,16 @@
     public var meets: Bool {
         switch mark {
         case .proven, .notPlanned: true
-        case .partial, .notRealized, .cannot: false
+        case .partial, .notRealized, .cannot, .waiting: false
         }
     }
 
     /// How much a verdict says of a member other verdicts speak of too: a proof above the driver's word that it
-    /// could not, and that above the host realizing nothing.
+    /// could not and a case waiting on another member, and those above the host realizing nothing.
     var weight: Int {
         switch mark {
         case .proven, .partial, .notPlanned: 3
-        case .cannot: 2
+        case .cannot, .waiting: 2
         case .notRealized: 1
         }
     }

@@ -65,6 +65,14 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(Outcome(covering: [Covered(StepperContract.value)], on: register).facts, [
             HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
         ])
+        XCTAssertEqual(
+            Outcome(covering: [Covered(SwitchContract.toggled), Covered(StepperContract.value), Covered(SwitchContract.isOn)],
+                    on: register).facts,
+            [
+                HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
+                HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
+                HostVerdict(element: "Switch", member: "toggled", mark: .waiting(on: "Stepper.value")),
+            ], "what the host realizes waits on what it does not")
         XCTAssertEqual(Outcome(covering: [Covered(MapContract.self)], on: register).facts, [
             HostVerdict(element: "Map", member: nil, mark: .notRealized),
         ])
