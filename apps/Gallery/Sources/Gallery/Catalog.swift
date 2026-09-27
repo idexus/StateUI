@@ -191,11 +191,15 @@ final class Catalog {
 
             SampleGroup(
                 route: "collections",
-                title: "Cards",
-                summary: "Cards swiped through one at a time, and the dots that say which one shows.",
+                title: "Items and Cards",
+                summary: "The platform's own lists of items, cards swiped through one at a time, and the dots "
+                    + "that say which one shows.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
                 samples: [
+                    Sample(ItemsViewSample()),
+                    Sample(ChoosingItemsSample()),
+                    Sample(LoadingItemsSample()),
                     Sample(GalleryViewSample()),
                     Sample(PositionIndicatorSample()),
                 ]),
