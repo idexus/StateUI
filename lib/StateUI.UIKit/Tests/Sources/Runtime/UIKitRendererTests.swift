@@ -5,6 +5,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
+@_spi(Host) import StateUIConformance
 import XCTest
 
 /// A page that counts clicks and greets whoever types a name.
@@ -21,6 +22,12 @@ private struct Greeting: ContentView {
         }
         .onCreated { page.title = "Greeting" }
     }
+}
+
+/// The lines a log was handed.
+private final class Logged: @unchecked Sendable {
+    private(set) var lines: [String] = []
+    func append(_ line: String) { lines.append(line) }
 }
 
 /// The runtime over UIKit: a window stands in the scene iOS connected, and what the user does there reaches the
@@ -66,6 +73,26 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertNil(controller.window?.windowScene, "the window left the scene")
         XCTAssertTrue(UIApplication.shared.openSessions.contains(session), "the scene's session stays open")
         XCTAssertNotEqual(TestScene.scene?.activationState, .unattached, "the scene stays connected")
+    }
+
+    /// The window the tree holds as the application launches, before iOS connected a scene, stands in the scene iOS
+    /// connects then: it asks iOS for no other, which a phone refuses.
+    @MainActor
+    func testTheFirstWindowWaitsForTheSceneTheApplicationLaunchesIn() throws {
+        let logged = Logged()
+        let log = UIKitRenderer.log
+        UIKitRenderer.log = HostLog(host: "UIKit") { logged.append($0) }
+        defer { UIKitRenderer.log = log }
+        stateUIUseApp(OneWindowApplication { Greeting() })
+        let host = UIKitRenderer(preferences: TestScene.preferences, reducesMotion: { true })
+        defer { host.finish() }
+
+        host.runtime.pump.turn()
+        XCTAssertEqual(host.roster.windows.count, 1, "the window the application launches with")
+        host.connect(try XCTUnwrap(TestScene.scene))
+
+        XCTAssertTrue(host.roster.windows.first?.1.window?.windowScene === TestScene.scene)
+        XCTAssertEqual(logged.lines, [], "nothing asked of iOS")
     }
 
     /// A host that finished holds on to nothing it showed: its window, its pages' controllers and its views go.

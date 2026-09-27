@@ -51,6 +51,9 @@ final class UIKitRenderer {
     /// The scenes iOS connected that no StateUI window stands in yet, the first first.
     private var waitingScenes: [UIWindowScene] = []
 
+    /// Whether iOS connected the scene the application launched in: a window the tree holds before waits for it.
+    private var launched = false
+
     private var started = false
 
     /// The menu bar as it was last built.
@@ -139,9 +142,14 @@ final class UIKitRenderer {
     func connect(_ scene: UIWindowScene) {
         environment.followTheme(of: scene)
         environment.reportDisplay(of: scene)
-        // A window the tree already holds, waiting for a scene, stands in it.
+        let first = !launched
+        launched = true
+        // A window the tree already holds, waiting for a scene, stands in it; at launch, any other asks for its own.
         if let waiting = roster.windows.first(where: { $0.1.window == nil })?.1 {
             waiting.stand(in: scene)
+            if first, ownsScenes {
+                for _ in roster.windows.filter({ $0.1.window == nil }) { requestScene() }
+            }
             return synchronizeWindows()
         }
         waitingScenes.append(scene)
@@ -180,7 +188,7 @@ final class UIKitRenderer {
 
         roster.update(root: root, make: { [unowned self] element in
             let scene = waitingScenes.isEmpty ? nil : waitingScenes.removeFirst()
-            if scene == nil, ownsScenes { requestScene() }
+            if scene == nil, ownsScenes, launched { requestScene() }
             return UIKitWindowController(element, scene: scene)
         }, close: { [unowned self] closing in
             guard ownsScenes else { return closing.hide() }
