@@ -35,13 +35,13 @@ extension AndroidElement {
 }
 
 extension AndroidElement: FrameReporter {
-    /// Says where the element stands, where that changed (`MountedElement.reportFrame`): its place in its parent,
-    /// its corner in the window, and that corner from the page's.
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`): its place in its parent as
+    /// Android holds it, its corner in the window, and that corner from the page's.
     /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
     func reportFrame() {
         guard let host, let view, readsFrame else { return }
         element.reportFrame(
-            MountedElement.frameNumbers(place: view.placedFrame, corner: view.cornerInWindow, content: host.safeAreaOrigin),
+            MountedElement.frameNumbers(place: view.standingFrame, corner: view.cornerInWindow, content: host.safeAreaOrigin),
             in: host.runtime)
     }
 }

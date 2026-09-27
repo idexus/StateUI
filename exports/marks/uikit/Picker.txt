@@ -1,11 +1,11 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
 Label.text: ✅
 Picker: ✅
 Picker.closed: waits on Picker.isOpen
 Picker.frameChanged: ✅
 Picker.isOpen: not realized
 Picker.opened: waits on Picker.isOpen
-Picker.options: ✅
-Picker.selectedIndex: ✅
-Picker.selectedIndexChanged: ✅
-Picker.title: ✅
+Picker.options: 🪞 read options of Picker: the host's own choice, not the menu's
+Picker.selectedIndex: 🪞 choose on Picker: the host's choice called, not the menu's action
+Picker.selectedIndexChanged: 🪞 choose on Picker: the host's choice called, not the menu's action
+Picker.title: 🪞 choose on Picker: the host's choice called, not the menu's action

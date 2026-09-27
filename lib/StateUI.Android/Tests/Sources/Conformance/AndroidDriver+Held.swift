@@ -21,7 +21,9 @@ extension AndroidDriver {
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
-        case (.isRunning, let spinner as AndroidActivityIndicatorView): return spinner.isRunning.propValue
+        case (.isRunning, let spinner as AndroidActivityIndicatorView):
+            // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
+            return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
         case (.text, let text as AndroidTextView): return text.text.propValue
         case (.fontSize, let text as AndroidTextView):
             return Double(Java.callStaticFloat(Self.testText, Self.points, .object(text.reference))).rounded().propValue

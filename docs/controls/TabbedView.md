@@ -8,11 +8,11 @@ Layer: `adaptive`. Every base host presents it by its platform's conventions, ke
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 3 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
+| AppKit | ✅ | 2 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 6 ✅ | `UITabBarController` |  |
 | Android Views | ✅ | 1 ✅ | Material Components `BottomNavigationView` (?) |  |
 | WinUI 3 | ⌛ |  | `NavigationView` with a top pane | a run of other sources said: ✅ |
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `currentPage` | property | `Int` | structure | 🪞 | ✅ | · | ⌛ |  |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)

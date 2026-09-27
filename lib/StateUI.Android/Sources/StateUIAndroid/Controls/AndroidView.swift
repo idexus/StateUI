@@ -395,6 +395,17 @@ class AndroidView {
     }
 }
 
+extension AndroidView {
+    /// Where Android has the view in its parent, in points, read from the view itself: what a frame report says.
+    var standingFrame: Rect {
+        let (left, top) = (Java.callInt(reference, JavaAPI.getLeft), Java.callInt(reference, JavaAPI.getTop))
+        let (right, bottom) = (Java.callInt(reference, JavaAPI.getRight), Java.callInt(reference, JavaAPI.getBottom))
+        return Rect(
+            x: Double(left) / density, y: Double(top) / density,
+            width: Double(right - left) / density, height: Double(bottom - top) / density)
+    }
+}
+
 extension AndroidView: PlacedView {
     /// Where the view stands in its parent, in points - where the host last laid it out, or else where Android
     /// has it; set, it is measured and placed there.

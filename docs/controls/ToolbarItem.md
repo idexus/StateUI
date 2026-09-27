@@ -8,11 +8,11 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (8) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 1 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| AppKit | 🪞 |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | UIKit | ✅ | 5 ✅ | `UIBarButtonItem` |  |
 | Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` | a run of other sources said: ✅ |
@@ -42,7 +42,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `onClicked` (`clicked`) | event |  | native | 🪞 | ✅ | · | ⌛ |  |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
 | `isDestructive` | property | `Bool` | adaptive |  | ✅ | · | ⌛ |  |  | not realized; Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
 | `isEnabled` | property | `Bool` | native | ◐ | ✅ | · | ⌛ |  |  | cannot read isEnabled of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

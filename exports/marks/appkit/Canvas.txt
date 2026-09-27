@@ -1,7 +1,7 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 Canvas: ✅
-Canvas.dragged: ✅
+Canvas.dragged: 🪞 pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.drawable: ✅
 Canvas.frameChanged: ✅
-Canvas.pressed: ✅
-Canvas.released: ✅
+Canvas.pressed: 🪞 pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+Canvas.released: 🪞 pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent

@@ -8,13 +8,13 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (23) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 22 ✅ | `NSWindow` |  |
-| UIKit | ✅ | 6 ✅ | `UIWindow` |  |
-| Android Views | ✅ | 6 ✅ | `Activity` |  |
+| AppKit | ✅ | 15 ✅ | `NSWindow` |  |
+| UIKit | ✅ | 4 ✅ | `UIWindow` |  |
+| Android Views | ✅ | 2 ✅ | `Activity` |  |
 | WinUI 3 | ⌛ |  | `Window` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkApplicationWindow` | no run of it on these sources |
 | Web |  |  | browser `window` | no host yet |
@@ -27,9 +27,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `created` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `floatsOnTop` | property | `Bool` | adaptive | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `deactivated` | event |  | adaptive | 🪞 | 🪞 | 🪞 | ⌛ |  |  | only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved; WinUI 3: a run of other sources said: ✅ |
+| `destroying` | event |  | adaptive | ✅ | 🪞 | 🪞 | ⌛ |  |  | UIKit: only through the host's own: close on Window: the host told the scene's phase, no scene moved; Android Views: only through the host's own: close on Window: the host told the activity's phase, no activity moved; WinUI 3: a run of other sources said: ✅ |
+| `floatsOnTop` | property | `Bool` | adaptive | 🪞 |  |  | ⌛ |  |  | only through the host's own: bringToFront on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `height` | property | `Double` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `hidesWhenInactive` | property | `Bool` | adaptive | · |  |  | ⌛ |  |  | cannot read isVisible of Window - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `isMaximizable` | property | `Bool` | adaptive | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
@@ -39,12 +39,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `maximumWidth` | property | `Double` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `minimumHeight` | property | `Double` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `minimumWidth` | property | `Double` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `modalPopped` | event | `Int` | adaptive | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `resumed` | event |  | adaptive | ✅ |  | ✅ | ⌛ |  |  | UIKit: not realized; WinUI 3: a run of other sources said: ✅ |
-| `stopped` | event |  | adaptive | ✅ | ⏸ | ✅ | ⌛ |  |  | UIKit: waits on Window.resumed, not realized yet; WinUI 3: a run of other sources said: ✅ |
+| `modalPopped` | event | `Int` | adaptive | 🪞 | ✅ | · | ⌛ |  |  | only through the host's own: goBack on Window: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on Window - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `resumed` | event |  | adaptive | 🪞 |  | 🪞 | ⌛ |  |  | only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: not realized; Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved; WinUI 3: a run of other sources said: ✅ |
+| `stopped` | event |  | adaptive | 🪞 | ⏸ | 🪞 | ⌛ |  |  | only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: waits on Window.resumed, not realized yet; Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved; WinUI 3: a run of other sources said: ✅ |
 | `title` | property | `String` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read title of Window - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `width` | property | `Double` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `windowType` | property | `WindowType` | structure | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `windowValue` | property | `String` | structure | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `windowType` | property | `WindowType` | structure | 🪞 |  |  | ⌛ |  |  | only through the host's own: read windowType of Window: the host's restoration record; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `windowValue` | property | `String` | structure | 🪞 |  |  | ⌛ |  |  | only through the host's own: read windowValue of Window: the host's restoration record; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `x` | property | `Double` | structure | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `y` | property | `Double` | structure | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |

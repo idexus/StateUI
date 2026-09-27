@@ -1,4 +1,4 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
 WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
@@ -8,7 +8,7 @@ WebView.goBack: ✅
 WebView.goForward: ✅
 WebView.navigated: cannot read source of WebView - UIKit's driver has no path for it yet
 WebView.navigating: ◐ cannot read source of WebView - UIKit's driver has no path for it yet
-WebView.processTerminated: ✅
+WebView.processTerminated: 🪞 endContent on WebView: the navigation delegate told, no web process ended
 WebView.reload: ✅
 WebView.source: cannot read source of WebView - UIKit's driver has no path for it yet
 WebView.userAgent: ✅

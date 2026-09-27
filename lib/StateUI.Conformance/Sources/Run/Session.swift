@@ -22,6 +22,28 @@
     /// What the first expectation that did not hold said.
     public private(set) var firstFailure: String?
 
+    /// What the case reached only through the host's own entry or record: an act or a read the driver says goes
+    /// past the toolkit (`HostDriver.byHost`), on an element of which type and of which member - nil for every one.
+    struct ByHost: Equatable {
+        let element: String?
+        let member: String?
+        let why: String
+
+        /// Whether it bears on what `covered` names.
+        func bears(on covered: Covered) -> Bool {
+            (element == nil || element == covered.element) && (member == nil || member == covered.member)
+        }
+    }
+
+    /// Each act and read of the case that went past the toolkit, in order.
+    private(set) var byHost: [ByHost] = []
+
+    /// Notes `ability` where the driver says it goes past the toolkit.
+    func note(_ ability: String, element: String? = nil, member: String? = nil) {
+        guard let why = driver.byHost(ability) else { return }
+        byHost.append(ByHost(element: element, member: member, why: "\(ability): \(why)"))
+    }
+
     /// What a case throws where it cannot prove what it proves on this host, whatever the host does: a view that
     /// takes no keyboard focus proves nothing of focus. The case's members stay unproven there, and say why.
     public struct Unprovable: Error, Equatable {
@@ -84,17 +106,20 @@
 
     /// Does `act` to `element` as the user does.
     public func perform(_ act: UserAct, on element: MountedElement) throws {
+        note("\(act) on \(element.type.name)", element: element.type.name)
         try driver.perform(act, on: element)
     }
 
     /// What the native control of `element` holds of `property`.
     public func held<Owner, Value>(_ property: ElementProperty<Owner, Value>, on element: MountedElement) throws -> Value? {
-        try driver.held(property.token, on: element).flatMap { Value(propValue: $0) }
+        note("read \(property.name) of \(element.type.name)", element: element.type.name, member: property.name)
+        return try driver.held(property.token, on: element).flatMap { Value(propValue: $0) }
     }
 
     /// The menu `element` offers as the user meets it (`HostDriver.menu(of:)`).
     public func menu(of element: MountedElement) throws -> String {
-        try driver.menu(of: element)
+        note("read the menu of \(element.type.name)")
+        return try driver.menu(of: element)
     }
 
     /// Whether `element` holds the keyboard.
@@ -110,12 +135,14 @@
     /// The question the window shows now; nil where it shows none.
     public func question() throws -> Question? {
         guard let root = tree?.root else { return nil }
+        note("read a question")
         return try driver.question(over: root)
     }
 
     /// What the platform's screen reader was told to say, in order.
     public func announced() throws -> [String] {
-        try driver.announced()
+        note("read what the screen reader said")
+        return try driver.announced()
     }
 
     /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
@@ -125,13 +152,15 @@
 
     /// What the host wrote to its log.
     public func logged() throws -> [String] {
-        try driver.logged()
+        note("read the log")
+        return try driver.logged()
     }
 
     /// What the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next launch
     /// reads it.
     public func kept(_ key: String, inScene: Bool = false) throws -> HostValue? {
-        try driver.kept(key, inScene: inScene)
+        note("read what is kept")
+        return try driver.kept(key, inScene: inScene)
     }
 
     /// Every element of `type` in `element`'s subtree, `element` first.

@@ -1,38 +1,38 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
-ActivityIndicator.pivotY: ✅
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
+ActivityIndicator.pivotY: 🪞 read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Canvas.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 CheckBox.style: not realized
 ColorBox.ignoresInput: ✅
 DatePicker.isEnabled: ✅
 DatePicker.zIndex: not realized
-Ellipse.scaleY: ✅
-Grid.rotationY: ✅
-HStack.pivotY: ✅
+Ellipse.scaleY: 🪞 read scaleY of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.rotationY: 🪞 read rotationY of Grid: the host's own transform, checked against the layer it composed itself
+HStack.pivotY: 🪞 read pivotY of HStack: the host's own transform, checked against the layer it composed itself
 Image.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Label.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 Line.style: not realized
 Map.ignoresInput: not realized
 Path.isEnabled: not realized
 Path.zIndex: not realized
-Picker.scaleY: ✅
-Polygon.rotationY: ✅
-Polyline.pivotY: ✅
+Picker.scaleY: 🪞 read scaleY of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.rotationY: 🪞 read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.pivotY: 🪞 read pivotY of Polyline: the host's own transform, checked against the layer it composed itself
 PositionIndicator.background: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 RadioButton.style: not realized
 Rectangle.ignoresInput: ✅
 ScrollView.isEnabled: not realized
 ScrollView.zIndex: not realized
-SearchField.scaleY: ✅
-Slider.rotationY: ✅
-Stepper.pivotY: ✅
+SearchField.scaleY: 🪞 read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
+Slider.rotationY: 🪞 read rotationY of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.pivotY: 🪞 read pivotY of Stepper: the host's own transform, checked against the layer it composed itself
 Switch.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet
 TextField.style: not realized
 TimePicker.ignoresInput: ✅
 TitleBar.isEnabled: not realized
 TitleBar.zIndex: not realized
-VStack.scaleY: ✅
+VStack.scaleY: 🪞 read scaleY of VStack: the host's own transform, checked against the layer it composed itself
 WebView.rotationY: not realized
-ZStack.pivotY: ✅
+ZStack.pivotY: 🪞 read pivotY of ZStack: the host's own transform, checked against the layer it composed itself

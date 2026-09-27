@@ -26,6 +26,13 @@ private final class RegisterOnly: HostDriver {
         cannot[ability] ?? otherwise
     }
 
+    /// What this host reaches past its toolkit.
+    var own: [String: String] = [:]
+
+    func byHost(_ ability: String) -> String? {
+        own[ability]
+    }
+
     func step() {}
     func turn() {}
     func frame() {}
@@ -85,6 +92,32 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(needing.facts, [
             HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
         ], "what it needs gets no verdict of its own")
+    }
+
+    /// A member a passing case reached only through the host's own entry or record is proven by the host's own,
+    /// 🪞 with which and why - the member of the read alone, every member of the element acted on - and one the toolkit
+    /// served is ✅.
+    func testWhatACaseReachedOnlyThroughTheHostIsTheHostsOwn() {
+        let driver = RegisterOnly(realizing: [
+            .complete("Switch", "isOn"), .complete("Switch", "toggled"), .complete("Label", "text"),
+        ])
+        driver.own = ["read isOn of Switch": "a copy the host keeps", "tap on Label": "handed to the recognizer"]
+        let verdicts = run([
+            ConformanceCase("reads", proves: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { s in
+                s.note("read isOn of Switch", element: "Switch", member: "isOn")
+                s.note("read toggled of Switch", element: "Switch", member: "toggled")
+            },
+            ConformanceCase("taps", proves: [Covered(LabelContract.self)]) { s in
+                s.note("tap on Label", element: "Label")
+            },
+        ], on: driver)
+
+        XCTAssertEqual(HostVerdict.text(verdicts), """
+            Label: 🪞 tap on Label: handed to the recognizer
+            Switch.isOn: 🪞 read isOn of Switch: a copy the host keeps
+            Switch.toggled: ✅
+
+            """)
     }
 
     /// A case says nothing of what it only needs, a failing one fails what it proves with its first failure, and one

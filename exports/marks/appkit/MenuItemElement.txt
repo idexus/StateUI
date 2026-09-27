@@ -1,10 +1,10 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 MenuItem.clicked: ✅
 MenuItem.icon: cannot read icon of MenuItem - AppKit's driver has no path for it yet
 MenuItem.isDestructive: cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet
 MenuItem.isEnabled: ◐ cannot read isEnabled of MenuItem - AppKit's driver has no path for it yet
 MenuItem.text: cannot read text of MenuItem - AppKit's driver has no path for it yet
-ToolbarItem.clicked: ✅
+ToolbarItem.clicked: 🪞 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
 ToolbarItem.icon: cannot read icon of ToolbarItem - AppKit's driver has no path for it yet
 ToolbarItem.isDestructive: not realized
 ToolbarItem.isEnabled: ◐ cannot read isEnabled of ToolbarItem - AppKit's driver has no path for it yet

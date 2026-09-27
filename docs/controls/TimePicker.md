@@ -8,12 +8,12 @@ Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md)
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (78) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 57 ✅ · 2 ☑️ | `NSDatePicker` in time mode |  |
-| UIKit | ✅ | 54 ✅ | `UIDatePicker` in time mode |  |
+| AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSDatePicker` in time mode |  |
+| UIKit | ✅ | 29 ✅ | `UIDatePicker` in time mode |  |
 | Android Views | ✅ | 53 ✅ | `TimePickerDialog` |  |
 | WinUI 3 | ⌛ |  | `TimePicker` | a run of other sources said: ✅ |
 | GTK 4 |  |  | no honest native counterpart | no run of it on these sources |
@@ -29,8 +29,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/TimePickerContract.
 | `format` | property | `String` | native |  |  | · | ⌛ |  |  | not realized; UIKit: not realized; Android Views: cannot read format of TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: · cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock |
 | `isOpen` | property | `Bool` | native |  |  | · | ⌛ |  |  | not realized; UIKit: not realized; Android Views: cannot open on TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
 | `onOpened` (`opened`) | event |  | native |  |  | · | ⌛ |  |  | not realized; UIKit: not realized; Android Views: cannot open on TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `time` | property | `ClockTime` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read time of TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read time of TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `time` | property | `ClockTime` | native | 🪞 | ✅ | · | ⌛ |  |  | only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action; Android Views: cannot read time of TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | 🪞 | ✅ | · | ⌛ |  |  | only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action; Android Views: cannot read time of TimePicker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -65,17 +65,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `pivotX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `pivotY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `rotation` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `rotationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
-| `rotationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
-| `scale` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `scaleX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `scaleY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `pivotX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `pivotY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `rotation` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotation of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `rotationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
+| `rotationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
+| `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scale of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
-| `translationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `translationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationX of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationY of TimePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TimePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `unfocus` | act | `() -> Void` |  | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot focus TimePicker: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `zIndex` | property | `Int` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -102,21 +102,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ | ✅ | ⌛ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; WinUI 3: a run of other sources said: ✅ |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panXChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panYChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `tapCount` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `panTouchCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `panXChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `panYChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pinch on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerExited` (`pointerExited`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `swipeDirection` | property | `SwipeDirection` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `swipeThreshold` | property | `Double` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `tapCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onTapped` (`tapped`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: tap on TimePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on TimePicker: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
 | `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

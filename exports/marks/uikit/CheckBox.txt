@@ -1,5 +1,5 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
 CheckBox: ✅
 CheckBox.frameChanged: ✅
-CheckBox.isOn: ✅
+CheckBox.isOn: 🪞 read isOn of CheckBox: the host's own flag, not the button's state
 CheckBox.toggled: ✅

@@ -68,9 +68,9 @@
                 continue
             }
             switch run(each, as: title, on: driver, report: report) {
-            case .passed:
+            case .passed(let byHost):
                 tell("\(title): passed")
-                verdicts += outcome.proofs
+                verdicts += outcome.proofs(byHost: byHost)
             case .cannot(let why):
                 tell("\(title): cannot \(why)")
                 verdicts += each.proves.map { $0.verdict(.cannot(why)) }
@@ -88,10 +88,10 @@
         return elapsed.seconds * 1_000 + elapsed.attoseconds / 1_000_000_000_000_000
     }
 
-    /// How one case came out: passed; could not prove what it proves on this host, and why; or failed, with its
-    /// first failure.
+    /// How one case came out: passed, with what it reached only through the host's own; could not prove what it
+    /// proves on this host, and why; or failed, with its first failure.
     private enum Result {
-        case passed
+        case passed([Session.ByHost])
         case cannot(String)
         case failed(String)
     }
@@ -111,6 +111,6 @@
         } catch {
             session.fail("threw \(error)")
         }
-        return session.firstFailure.map { .failed($0) } ?? .passed
+        return session.firstFailure.map { .failed($0) } ?? .passed(session.byHost)
     }
 }

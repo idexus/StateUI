@@ -1,9 +1,9 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 TimePicker: ✅
 TimePicker.closed: not realized
 TimePicker.format: not realized
 TimePicker.frameChanged: ✅
 TimePicker.isOpen: not realized
 TimePicker.opened: not realized
-TimePicker.time: ✅
-TimePicker.timeChanged: ✅
+TimePicker.time: 🪞 pickTime on TimePicker: the host's change handler called, not the picker's action
+TimePicker.timeChanged: 🪞 pickTime on TimePicker: the host's change handler called, not the picker's action

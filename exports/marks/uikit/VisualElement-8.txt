@@ -1,4 +1,4 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
 ActivityIndicator.focus: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.isFocusedChanged: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.unfocus: cannot focus ActivityIndicator: it takes no keyboard focus here
@@ -8,10 +8,10 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Canvas.opacity: ✅
-Canvas.translationY: ✅
-CheckBox.scaleX: ✅
-ColorBox.rotationX: ✅
-DatePicker.pivotX: ✅
+Canvas.translationY: 🪞 read translationY of Canvas: the host's own transform, checked against the layer it composed itself
+CheckBox.scaleX: 🪞 read scaleX of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.rotationX: 🪞 read rotationX of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.pivotX: 🪞 read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.automationExcludedWithChildren: ✅
 Grid.accessibilityHint: ✅
 HStack.focus: cannot focus HStack: it takes no keyboard focus here
@@ -23,10 +23,10 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Label.opacity: ✅
-Label.translationY: ✅
-Line.scaleX: ✅
+Label.translationY: 🪞 read translationY of Label: the host's own transform, checked against the layer it composed itself
+Line.scaleX: 🪞 read scaleX of Line: the host's own transform, checked against the layer it composed itself
 Map.rotationX: not realized
-Path.pivotX: ✅
+Path.pivotX: 🪞 read pivotX of Path: the host's own transform, checked against the layer it composed itself
 Picker.automationExcludedWithChildren: ✅
 Polygon.accessibilityHint: ✅
 Polyline.focus: cannot focus Polyline: it takes no keyboard focus here
@@ -38,10 +38,10 @@ PositionIndicator.maximumWidth: not realized
 PositionIndicator.minimumHeight: not realized
 PositionIndicator.minimumWidth: not realized
 ProgressBar.opacity: ✅
-ProgressBar.translationY: ✅
-RadioButton.scaleX: ✅
-Rectangle.rotationX: ✅
-ScrollView.pivotX: ✅
+ProgressBar.translationY: 🪞 read translationY of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.scaleX: 🪞 read scaleX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.rotationX: 🪞 read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotX: 🪞 read pivotX of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.automationExcludedWithChildren: ✅
 Slider.accessibilityHint: ✅
 Stepper.focus: cannot focus Stepper: it takes no keyboard focus here
@@ -53,9 +53,9 @@ Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 TextEditor.opacity: ✅
-TextEditor.translationY: ✅
-TextField.scaleX: ✅
-TimePicker.rotationX: ✅
+TextEditor.translationY: 🪞 read translationY of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.scaleX: 🪞 read scaleX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.rotationX: 🪞 read rotationX of TimePicker: the host's own transform, checked against the layer it composed itself
 TitleBar.pivotX: not realized
 VStack.automationExcludedWithChildren: ✅
 WebView.accessibilityHint: ✅

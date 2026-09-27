@@ -61,3 +61,17 @@ displayed into a context of sRGB, which StateUI's colours are: a bitmap in
 the screen's own space holds the screen's numbers. A heading's level stays
 unread, with why: AppKit marks a heading, not its level. What the driver cannot read or do yet it says with why, and the
 case stays empty in AppKit's column rather than failing.
+
+## What goes past AppKit
+
+A window the driver never orders in takes no synthetic event, so the driver
+hands some acts to the host's own entry: the gestures and the pointer to the
+host's recognizers, a button's press and a canvas's to their handlers, a
+picker's menu, choice and date to the host's own change, a scroll to the
+host's movement, a question's answer, the toolbar's and a sheet's way back, and
+a window's phases as the notifications AppKit would post. A few reads are the
+host's own too: the tab it chose, a spinner's flag, a transform checked
+against the layer it composed, the restoration record, the menu bar's items as
+built at the read, the captions of a question and what it announced. The driver
+names each (`byHost`), and a member a case proves only through them is the
+host's own - 🪞 - never ✅.

@@ -1,5 +1,5 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
-Menu.text: ✅
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
+Menu.text: 🪞 read the menu of Window: the host's menu bar entries, not UIKit's main menu
 MenuBar: ✅
 MenuItem.clicked: ✅
-MenuItem.isEnabled: ✅
+MenuItem.isEnabled: 🪞 read the menu of Window: the host's menu bar entries, not UIKit's main menu

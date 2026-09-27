@@ -1,4 +1,4 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized
@@ -7,10 +7,10 @@ Button.dragText: not realized
 Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.margin: ✅
-Canvas.pinchUpdated: ✅
-CheckBox.panYChannel: ✅
-ColorBox.tapCount: ✅
-ColorBox.tapped: ✅
+Canvas.pinchUpdated: 🪞 pinch on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.panYChannel: 🪞 pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.tapCount: 🪞 tap on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorBox.tapped: 🪞 tap on ColorBox: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
@@ -21,17 +21,17 @@ Ellipse.drop: not realized
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.verticalAlignment: ✅
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
-Grid.pointerMoved: ✅
-Grid.pointerPressed: ✅
-Grid.pointerReleased: ✅
-HStack.swipeDirection: ✅
-HStack.swipeThreshold: ✅
-HStack.swiped: ✅
-Image.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
-Image.panUpdated: ✅
-Image.panXChannel: ✅
+Grid.pointerEntered: 🪞 hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerExited: 🪞 hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerMoved: 🪞 hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerPressed: 🪞 hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerReleased: 🪞 hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+HStack.swipeDirection: 🪞 pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.swipeThreshold: 🪞 pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.swiped: 🪞 pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
+Image.panTouchCount: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
+Image.panUpdated: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
+Image.panXChannel: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Label.frameChanged: ✅
 Label.gridColumnSpan: ✅
 Label.gridRowSpan: ✅
@@ -43,10 +43,10 @@ Map.dragText: not realized
 Map.dropCompleted: not realized
 Map.frameChanged: not realized
 Map.margin: not realized
-Path.pinchUpdated: ✅
-Picker.panYChannel: ✅
-Polygon.tapCount: ✅
-Polygon.tapped: ✅
+Path.pinchUpdated: 🪞 pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
+Picker.panYChannel: 🪞 pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.tapCount: 🪞 tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.tapped: 🪞 tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
@@ -57,17 +57,17 @@ PositionIndicator.drop: not realized
 PositionIndicator.frameChanged: not realized
 PositionIndicator.horizontalAlignment: not realized
 PositionIndicator.verticalAlignment: not realized
-ProgressBar.pointerEntered: ✅
-ProgressBar.pointerExited: ✅
-ProgressBar.pointerMoved: ✅
-ProgressBar.pointerPressed: ✅
-ProgressBar.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-Rectangle.panTouchCount: ☑️ AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
-Rectangle.panUpdated: ✅
-Rectangle.panXChannel: ✅
+ProgressBar.pointerEntered: 🪞 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerExited: 🪞 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerMoved: 🪞 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerPressed: 🪞 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerReleased: 🪞 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+RadioButton.swipeDirection: 🪞 pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
+RadioButton.swipeThreshold: 🪞 pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
+RadioButton.swiped: 🪞 pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.panTouchCount: 🪞 pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.panUpdated: 🪞 pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.panXChannel: 🪞 pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.frameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
@@ -79,10 +79,10 @@ Slider.dragText: not realized
 Slider.dropCompleted: not realized
 Slider.frameChanged: ✅
 Slider.margin: ✅
-Stepper.pinchUpdated: ✅
-Switch.panYChannel: ✅
-TextEditor.tapCount: ✅
-TextEditor.tapped: ✅
+Stepper.pinchUpdated: 🪞 pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Switch.panYChannel: 🪞 pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.tapCount: 🪞 tap on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.tapped: 🪞 tap on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridRow: ✅
@@ -98,9 +98,9 @@ TitleBar.pointerExited: not realized
 TitleBar.pointerMoved: not realized
 TitleBar.pointerPressed: not realized
 TitleBar.pointerReleased: not realized
-VStack.swipeDirection: ✅
-VStack.swipeThreshold: ✅
-VStack.swiped: ✅
+VStack.swipeDirection: 🪞 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.swipeThreshold: 🪞 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.swiped: 🪞 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.panTouchCount: not realized
 WebView.panUpdated: not realized
 WebView.panXChannel: not realized

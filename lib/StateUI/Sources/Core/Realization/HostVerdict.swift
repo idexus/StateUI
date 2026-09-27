@@ -23,6 +23,9 @@
         case failed(String)
         /// ◐: some of its cases proved it, another could not run or read; why not.
         case partly(String)
+        /// 🪞: its cases passed only through the host's own entry or record - an act handed past the toolkit's
+        /// input, a read of what the host keeps rather than what the toolkit holds; which, and why.
+        case byHost(String)
     }
 
     /// The element.
@@ -57,6 +60,7 @@
         case .waiting(let gap): "\(subject): waits on \(gap)"
         case .failed(let message): "\(subject): ❌ \(message)"
         case .partly(let why): "\(subject): ◐ \(why)"
+        case .byHost(let why): "\(subject): 🪞 \(why)"
         }
     }
 
@@ -90,6 +94,8 @@
             mark = .failed(message)
         } else if let why = text(after: "◐"), !why.isEmpty {
             mark = .partly(why)
+        } else if let why = text(after: "🪞"), !why.isEmpty {
+            mark = .byHost(why)
         } else {
             return nil
         }
@@ -100,14 +106,14 @@
     public var meets: Bool {
         switch mark {
         case .proven, .notPlanned: true
-        case .partial, .notRealized, .cannot, .waiting, .failed, .partly: false
+        case .partial, .notRealized, .cannot, .waiting, .failed, .partly, .byHost: false
         }
     }
 
     /// Whether a case proving the subject passed: proved whole or in part, or never had by the host's family.
     private var passed: Bool {
         switch mark {
-        case .proven, .partial, .notPlanned: true
+        case .proven, .partial, .notPlanned, .byHost: true
         case .notRealized, .cannot, .waiting, .failed, .partly: false
         }
     }
@@ -118,7 +124,8 @@
     }
 
     /// The worst of two verdicts on one subject: a failure over everything; a proof beside a case that did not
-    /// prove it, partly proven; a proof in part over one whole; the host realizing nothing below any word of a case.
+    /// prove it, partly proven; a proof in part over one whole, and one through the toolkit over one only through
+    /// the host's own entry; the host realizing nothing below any word of a case.
     /// Design: docs/design/contracts/dictionary.md#marks
     static func worse(_ one: HostVerdict, _ other: HostVerdict) -> HostVerdict {
         let (first, second) = one.description <= other.description ? (one, other) : (other, one)
@@ -133,15 +140,21 @@
         }
         switch (first.passed, second.passed) {
         case (true, true):
-            if case .partial = first.mark { return first }
-            if case .partial = second.mark { return second }
-            if case .proven = second.mark { return second }
+            // A gap recorded outweighs a proof; a proof through the toolkit outweighs one through the host's own.
+            for rank in [Self.isPartial, Self.isProven, Self.isByHost] {
+                if rank(first.mark) { return first }
+                if rank(second.mark) { return second }
+            }
             return first
         case (true, false): return HostVerdict(element: first.element, member: first.member, mark: .partly(second.said))
         case (false, true): return HostVerdict(element: first.element, member: first.member, mark: .partly(first.said))
         case (false, false): return first
         }
     }
+
+    private static func isPartial(_ mark: Mark) -> Bool { if case .partial = mark { true } else { false } }
+    private static func isProven(_ mark: Mark) -> Bool { if case .proven = mark { true } else { false } }
+    private static func isByHost(_ mark: Mark) -> Bool { if case .byHost = mark { true } else { false } }
 
     /// One verdict a subject, the worst its cases gave, in the order a run writes them.
     public static func merged(_ verdicts: some Sequence<HostVerdict>) -> [HostVerdict] {

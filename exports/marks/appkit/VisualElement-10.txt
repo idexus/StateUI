@@ -1,13 +1,13 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 ActivityIndicator.accessibilityLabel: ✅
 Button.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.width: ✅
 CheckBox.isVisible: ✅
-CheckBox.translationX: ✅
-ColorBox.scale: ✅
-DatePicker.rotation: ✅
+CheckBox.translationX: 🪞 read translationX of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorBox.scale: 🪞 read scale of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.rotation: 🪞 read rotation of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.layoutDirection: not realized
 Grid.isAccessibilityHidden: ✅
 HStack.accessibilityLabel: ✅
@@ -16,9 +16,9 @@ Label.frameChanged: ✅
 Label.height: ✅
 Label.width: ✅
 Line.isVisible: ✅
-Line.translationX: ✅
+Line.translationX: 🪞 read translationX of Line: the host's own transform, checked against the layer it composed itself
 Map.scale: not realized
-Path.rotation: ✅
+Path.rotation: 🪞 read rotation of Path: the host's own transform, checked against the layer it composed itself
 Picker.layoutDirection: not realized
 Polygon.isAccessibilityHidden: ✅
 Polyline.accessibilityLabel: ✅
@@ -27,9 +27,9 @@ ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.width: ✅
 RadioButton.isVisible: ✅
-RadioButton.translationX: ✅
-Rectangle.scale: ✅
-ScrollView.rotation: ✅
+RadioButton.translationX: 🪞 read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.scale: 🪞 read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotation: 🪞 read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.layoutDirection: not realized
 Slider.isAccessibilityHidden: ✅
 Stepper.accessibilityLabel: ✅
@@ -38,8 +38,8 @@ TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.width: ✅
 TextField.isVisible: ✅
-TextField.translationX: ✅
-TimePicker.scale: ✅
+TextField.translationX: 🪞 read translationX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.scale: 🪞 read scale of TimePicker: the host's own transform, checked against the layer it composed itself
 TitleBar.rotation: not realized
 VStack.layoutDirection: not realized
 WebView.isAccessibilityHidden: not realized

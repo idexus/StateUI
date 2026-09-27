@@ -1,4 +1,4 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 Button: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
@@ -6,6 +6,6 @@ Button.icon: cannot read icon of Button - AppKit's driver has no path for it yet
 Button.iconPosition: cannot read iconPosition of Button - AppKit's driver has no path for it yet
 Button.iconSpacing: not realized
 Button.lineBreak: cannot read lineBreak of Button - AppKit's driver has no path for it yet
-Button.pressed: ✅
-Button.released: ✅
+Button.pressed: 🪞 pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.released: 🪞 pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Label.text: ✅

@@ -18,6 +18,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "SplitView", member: nil, mark: .waiting(on: "SplitView.isSidebarVisible")),
             HostVerdict(element: "Switch", member: "toggled", mark: .failed("true expected, false came")),
             HostVerdict(element: "Label", member: "text", mark: .partly("cannot read text of Label - Hidden.")),
+            HostVerdict(element: "Label", member: "tapped", mark: .byHost("tap on Label: the recognizer is handed it")),
         ]
 
         for verdict in verdicts {
@@ -30,7 +31,7 @@ final class HostVerdictTests: XCTestCase {
     /// A line that says no verdict is refused: a mark nobody can read is no mark.
     func testALineThatSaysNoVerdictIsRefused() {
         for line in ["Button.clicked", "Button.clicked: yes", "Button.clicked: ☑️ ", "Button.clicked: – ",
-                     "Button..clicked: ✅", ": ✅", "Button clicked: ✅", "Button.clicked.twice: ✅", "Button: waits on ", "Button: ❌ ", "Button: ◐ "] {
+                     "Button..clicked: ✅", ": ✅", "Button clicked: ✅", "Button.clicked.twice: ✅", "Button: waits on ", "Button: ❌ ", "Button: ◐ ", "Button: 🪞 "] {
             XCTAssertNil(HostVerdict(line: line), line)
         }
         XCTAssertNil(HostVerdict.read("Button: ✅\nwhat?\n"))
@@ -56,12 +57,21 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Stepper", member: nil, mark: .waiting(on: "Stepper.step")),
             HostVerdict(element: "Label", member: nil, mark: .proven),
             HostVerdict(element: "Label", member: nil, mark: .proven),
+            HostVerdict(element: "Label", member: "tapped", mark: .byHost("tap on Label: handed")),
+            HostVerdict(element: "Label", member: "tapped", mark: .proven),
+            HostVerdict(element: "Label", member: "text", mark: .byHost("read text of Label: kept")),
+            HostVerdict(element: "Label", member: "text", mark: .byHost("read text of Label: kept")),
+            HostVerdict(element: "Label", member: "opacity", mark: .byHost("read opacity of Label: kept")),
+            HostVerdict(element: "Label", member: "opacity", mark: .cannot("read opacity of Label - No path.")),
         ])
 
         XCTAssertEqual(text, """
             Button.icon: cannot read icon of Button - Hidden.
             Button.text: ☑️ No wrap.
             Label: ✅
+            Label.opacity: ◐ cannot read opacity of Label - No path.
+            Label.tapped: ✅
+            Label.text: 🪞 read text of Label: kept
             SplitView: ◐ waits on SplitView.isSidebarVisible
             Stepper: waits on Stepper.step
             Switch.isOn: ◐ cannot read isOn of Switch - Hidden.
@@ -87,11 +97,11 @@ final class HostVerdictTests: XCTestCase {
     func testMetIsProvenOrNever() {
         let marks: [HostVerdict.Mark] = [
             .proven, .partial(missing: "m"), .notPlanned(reason: "r"), .notRealized, .cannot("c"), .waiting(on: "w"),
-            .failed("f"), .partly("p"),
+            .failed("f"), .partly("p"), .byHost("b"),
         ]
 
         XCTAssertEqual(
             marks.map { HostVerdict(element: "Label", member: "text", mark: $0).meets },
-            [true, false, true, false, false, false, false, false])
+            [true, false, true, false, false, false, false, false, false])
     }
 }

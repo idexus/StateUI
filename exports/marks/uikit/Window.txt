@@ -1,10 +1,10 @@
-# inputs e7b7fd25949656efd404b3e91298b56b6d486b87
+# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
 ModalStack: ✅
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
-Window.deactivated: ✅
-Window.destroying: ✅
+Window.deactivated: 🪞 switchAway on Window: the host told the scene's phase, no scene moved
+Window.destroying: 🪞 close on Window: the host told the scene's phase, no scene moved
 Window.floatsOnTop: not realized
 Window.height: not realized
 Window.hidesWhenInactive: not realized

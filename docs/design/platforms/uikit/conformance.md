@@ -52,3 +52,15 @@ VoiceOver meets, a control's font and colours - never from what the host last
 wrote. A colour at a point is read from the screen: the view drawn as the
 screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
 window's own hit testing at that point.
+
+## What goes past UIKit
+
+UIKit lets a test send no touch and moves no scene, so the driver hands some
+acts to the host's own entry: the gestures and the pointer to the view's
+listening as the recognizers' states, a picker's choice and a question's answer
+to the host, a scene's phases to the renderer, and a web view's end of content
+to its delegate. A few reads are the host's own too: a check's and a picker's
+state, the split view's flag, the menu bar's entries, a question's captions,
+what it announced, and a transform checked against the layer it composed. The
+driver names each (`byHost`), and a member a case proves only through them is
+the host's own - 🪞 - never ✅.

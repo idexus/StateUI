@@ -8,12 +8,12 @@ Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [ImageElement](tiers/ImageElement.md)
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 48 ✅ · 2 ☑️ | `NSImageView` |  |
-| UIKit | ✅ | 49 ✅ | `UIImageView` |  |
+| AppKit | ✅ | 24 ✅ · 1 ☑️ | `NSImageView` |  |
+| UIKit | ✅ | 24 ✅ | `UIImageView` |  |
 | Android Views | ✅ | 49 ✅ | `ImageView` |  |
 | WinUI 3 | ⌛ |  | `Image` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkPicture` | no run of it on these sources |
@@ -61,17 +61,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `pivotX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `pivotY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `rotation` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `rotationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
-| `rotationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
-| `scale` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `scaleX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `scaleY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `pivotX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read pivotX of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `pivotY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read pivotY of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `rotation` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotation of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `rotationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotationX of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
+| `rotationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read rotationY of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
+| `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scale of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleX of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleY of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
-| `translationX` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `translationY` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationX of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
+| `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationY of Image: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Image: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `unfocus` | act | `() -> Void` |  | · | · | · | ⌛ |  |  | cannot focus Image: it takes no keyboard focus here; UIKit: cannot focus Image: it takes no keyboard focus here; Android Views: cannot focus Image: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `zIndex` | property | `Int` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -98,21 +98,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ | ✅ | ⌛ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; WinUI 3: a run of other sources said: ✅ |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panXChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `panYChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `tapCount` | property | `Int` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `panTouchCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `panXChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `panYChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pinch on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerExited` (`pointerExited`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `swipeDirection` | property | `SwipeDirection` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `swipeThreshold` | property | `Double` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `tapCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: tap on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
+| `onTapped` (`tapped`) | event |  | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: tap on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on Image: the view's listening handed the recognizer's states, no touch sent; WinUI 3: a run of other sources said: ✅ |
 | `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 
 ## From [ImageElement](tiers/ImageElement.md)

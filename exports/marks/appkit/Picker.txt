@@ -1,4 +1,4 @@
-# inputs 5af5739263fd9801fa5f120dfc1917caec9e7697
+# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
 Label.text: ✅
 Picker: ✅
 Picker.closed: cannot read isOpen of Picker - AppKit's driver has no path for it yet
@@ -7,5 +7,5 @@ Picker.isOpen: cannot read isOpen of Picker - AppKit's driver has no path for it
 Picker.opened: cannot read isOpen of Picker - AppKit's driver has no path for it yet
 Picker.options: ✅
 Picker.selectedIndex: ✅
-Picker.selectedIndexChanged: ✅
+Picker.selectedIndexChanged: 🪞 choose on Picker: the host's action called, not the pop-up's
 Picker.title: ✅
