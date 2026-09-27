@@ -24,7 +24,9 @@ scratch="$package/.build"
 product="StateUIUIKitTests"
 identifier="com.stateui.uikit.tests"
 
-device="$(uikit_simulator "${1:-}")"
+read -r kind device _ <<< "$(uikit_destination "${1:-}")"
+[[ -n "$kind" ]] || exit 1
+[[ "$kind" == simulator ]] || { echo "ERROR: the host's suite runs on a simulator - $1 is a device"; exit 1; }
 
 # A macOS accessibility client reading the Simulator - the Accessibility
 # Inspector, an AX script - turns the simulator's application accessibility
@@ -42,7 +44,7 @@ binary_dir="$(uikit_build "$package" "$scratch" debug "$product" \
   -Xlinker -F -Xlinker "$frameworks" -Xlinker -L -Xlinker "$libraries" \
   -Xlinker -rpath -Xlinker "$frameworks" -Xlinker -rpath -Xlinker "$libraries")"
 bundle="$scratch/debug/$product.app"
-uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources/Images" "$bundle" "$scratch/tools"
+uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources" "$bundle" "$scratch/tools"
 
 xcrun simctl install "$device" "$bundle"
 output="$(mktemp)"
