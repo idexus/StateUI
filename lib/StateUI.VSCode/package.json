@@ -59,6 +59,12 @@
         "enablement": "stateui.hasCheckout"
       },
       {
+        "command": "stateui.reinstallExtension",
+        "title": "Reinstall VS Code Extension",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
         "command": "stateui.runTests",
         "title": "Run Tests",
         "category": "StateUI"
@@ -162,6 +168,10 @@
       "commandPalette": [
         {
           "command": "stateui.newApplicationInApps",
+          "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.reinstallExtension",
           "when": "stateui.hasCheckout"
         }
       ]

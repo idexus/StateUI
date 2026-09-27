@@ -134,6 +134,14 @@ host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
 
+## The extension itself
+
+In a StateUI checkout, **StateUI: Reinstall VS Code Extension** builds the
+extension from `lib/StateUI.VSCode` - compiled and packed into
+`artifacts/stateui-<version>.vsix` by `npm run package` - and installs it with
+`--force` through the command line of the VS Code that runs it, then offers to
+reload the window, where the new build runs.
+
 ## Launches
 
 Add them to `.vscode/launch.json`, or pick them from Run and Debug with no

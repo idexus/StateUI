@@ -17,6 +17,7 @@ import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDev
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
+import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -280,6 +281,29 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await selectApplication(name);
             await applyEditorMode(host(), roots());
             void vscode.window.showInformationMessage(`StateUI: apps/${name} is made and chosen - StateUI: Debug runs it.`);
+        }),
+        vscode.commands.registerCommand("stateui.reinstallExtension", async () => {
+            const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => hasExtensionSources(each.uri.fsPath));
+            if (!folder) {
+                void vscode.window.showErrorMessage("StateUI: the extension is built from a StateUI checkout's lib/StateUI.VSCode, which no folder here has.");
+                return;
+            }
+            for (const step of reinstallSteps(folder.uri.fsPath, editorCommandLine(vscode.env.appRoot))) {
+                const task = new vscode.Task({ type: "stateui", step: path.basename(step.command) }, folder,
+                    `Reinstall the extension: ${path.basename(step.command)} ${step.args[0]}`, "StateUI",
+                    new vscode.ShellExecution({ value: step.command, quoting: vscode.ShellQuoting.Strong },
+                        step.args.map((each) => ({ value: each, quoting: vscode.ShellQuoting.Strong })), { cwd: step.cwd }), []);
+                task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+                if ((await runTask(task)) !== 0) {
+                    void vscode.window.showErrorMessage(`StateUI: the extension was not reinstalled - the terminal says why.`);
+                    return;
+                }
+            }
+            const answer = await vscode.window.showInformationMessage(
+                "StateUI: the extension is built and installed - reload the window to run it.", "Reload Window");
+            if (answer) {
+                await vscode.commands.executeCommand("workbench.action.reloadWindow");
+            }
         }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
             await cleanIndex(roots());

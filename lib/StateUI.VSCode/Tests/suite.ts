@@ -21,6 +21,7 @@ import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { inAppsCommand, nameProblem } from "../Sources/newApplication";
+import { reinstallSteps } from "../Sources/reinstall";
 
 const started = Date.now();
 
@@ -477,6 +478,17 @@ export async function run(): Promise<void> {
             check("in apps/ it is the checkout's scaffolder: new-app.sh Notes, new-app.ps1 -Name Notes",
                 made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
                 && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
+        }
+        // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
+        {
+            const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8")).version;
+            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code");
+            check("Reinstall VS Code Extension packs it with npm in lib/StateUI.VSCode, then installs artifacts/stateui-<version>.vsix with --force",
+                commands.includes("stateui.reinstallExtension") && steps.length === 2
+                && `${steps[0].command} ${steps[0].args.join(" ")}` === "npm run package"
+                && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
+                && steps[1].command === "/Editor/bin/code"
+                && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
         }
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.
