@@ -80,6 +80,10 @@
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
 
+    /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
+    /// included.
+    func place(of element: MountedElement) throws -> Rect
+
     /// What the host wrote to its log, a line a message, since it started.
     func logged() throws -> [String]
 
@@ -125,6 +129,10 @@ extension HostDriver {
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         throw DriverCannot("read the colour of \(element.type.name)")
+    }
+
+    public func place(of element: MountedElement) throws -> Rect {
+        throw DriverCannot("read where \(element.type.name) stands")
     }
 
     public func logged() throws -> [String] {

@@ -35,6 +35,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testRadioButton", testRadioButton),
             ("testRectangle", testRectangle),
             ("testScrollView", testScrollView),
+            ("testItemsView", testItemsView),
             ("testSearchField", testSearchField),
             ("testSlider", testSlider),
             ("testStepper", testStepper),
@@ -114,6 +115,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testRadioButton() throws { try conform(RadioButtonTests.self) }
     func testRectangle() throws { try conform(RectangleTests.self) }
     func testScrollView() throws { try conform(ScrollViewTests.self) }
+    func testItemsView() throws { try conform(ItemsViewTests.self) }
     func testSearchField() throws { try conform(SearchFieldTests.self) }
     func testSlider() throws { try conform(SliderTests.self) }
     func testStepper() throws { try conform(StepperTests.self) }

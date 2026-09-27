@@ -29,6 +29,7 @@
         RadioButtonTests.self,
         RectangleTests.self,
         ScrollViewTests.self,
+        ItemsViewTests.self,
         SearchFieldTests.self,
         SliderTests.self,
         StepperTests.self,

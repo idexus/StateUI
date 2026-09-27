@@ -1,0 +1,70 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+/// One group of an `ItemsView`'s items, under a header and over a footer where
+/// it has them.
+///
+///     ItemsView(groups: shelves.map { shelf in
+///         ItemsGroup(shelf.items) { Label($0) }
+///             .id(shelf.name)
+///             .header(Label(shelf.name).fontAttributes(.bold))
+///     })
+///
+/// Each group names itself with `.id`, so two groups may hold equal items; a
+/// group given none is named by its place.
+public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
+    /// The items.
+    let items: Items
+
+    /// How an item names itself.
+    let identify: (Items.Element) -> Id
+
+    /// How an item looks.
+    let content: (Items.Element) -> any View
+
+    /// What the group names itself, where it was given a name.
+    private(set) var name: String?
+
+    /// Its header, where it has one.
+    private(set) var header: (any View)?
+
+    /// Its footer, where it has one.
+    private(set) var footer: (any View)?
+
+    /// A group of `items`, each its own identity, each looking as `content` says.
+    public init(_ items: Items, content: @escaping (Items.Element) -> any View)
+    where Items.Element: Hashable, Id == Items.Element {
+        self.items = items
+        identify = { $0 }
+        self.content = content
+    }
+
+    /// A group of `items`, each named by the property `id`, each looking as
+    /// `content` says.
+    public init(_ items: Items, id: KeyPath<Items.Element, Id>, content: @escaping (Items.Element) -> any View) {
+        self.items = items
+        identify = { $0[keyPath: id] }
+        self.content = content
+    }
+
+    /// The group's name, which sets its items apart from another group's.
+    public func id(_ value: some Hashable) -> Self {
+        var copy = self
+        copy.name = String(describing: value)
+        return copy
+    }
+
+    /// A view standing before the group's items.
+    public func header(_ view: any View) -> Self {
+        var copy = self
+        copy.header = view
+        return copy
+    }
+
+    /// A view standing after the group's items.
+    public func footer(_ view: any View) -> Self {
+        var copy = self
+        copy.footer = view
+        return copy
+    }
+}

@@ -33,6 +33,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testRadioButton() { conform(RadioButtonTests.self) }
     func testRectangle() { conform(RectangleTests.self) }
     func testScrollView() { conform(ScrollViewTests.self) }
+    func testItemsView() { conform(ItemsViewTests.self) }
     func testSearchField() { conform(SearchFieldTests.self) }
     func testSlider() { conform(SliderTests.self) }
     func testStepper() { conform(StepperTests.self) }

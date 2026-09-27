@@ -150,6 +150,11 @@
         try driver.color(of: element, at: point)
     }
 
+    /// Where `element` stands in its window, as the toolkit placed it.
+    public func place(of element: MountedElement) throws -> Rect {
+        try driver.place(of: element)
+    }
+
     /// What the host wrote to its log.
     public func logged() throws -> [String] {
         note("read the log")

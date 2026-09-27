@@ -39,6 +39,7 @@ extension NodeType {
     static let grid = GridContract.nodeType
     static let hStack = HStackContract.nodeType
     static let image = ImageContract.nodeType
+    static let itemsView = ItemsViewContract.nodeType
     static let positionIndicator = PositionIndicatorContract.nodeType
     static let label = LabelContract.nodeType
     static let leadingContent = LeadingContentContract.nodeType
@@ -89,8 +90,11 @@ extension NodeType {
     static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
     static let barForegroundColor = NavigationStackContract.barForegroundColor.token
+    static let endReachedWithin = ItemsViewContract.endReachedWithin.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
     static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
+    static let items = ItemsViewContract.items.token
+    static let itemsLayout = ItemsViewContract.itemsLayout.token
     static let pivotX = VisualElementContract.pivotX.token
     static let pivotY = VisualElementContract.pivotY.token
     static let aspect = ShapeContract.aspect.token
@@ -100,6 +104,8 @@ extension NodeType {
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token
     static let canDrag = ViewContract.canDrag.token
     static let characterSpacing = TextStyleElementContract.characterSpacing.token
+    static let selectedItems = ItemsViewContract.selectedItems.token
+    static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
     static let color = ColorBoxContract.color.token
@@ -262,8 +268,12 @@ extension NodeType {
     static let clicked = MenuItemElementContract.clicked.token
     static let closed = DatePickerContract.closed.token
     static let dateChanged = DatePickerContract.dateChanged.token
+    static let endReached = ItemsViewContract.endReached.token
+    static let itemActivated = ItemsViewContract.itemActivated.token
     static let pinClicked = PinContract.pinClicked.token
     static let pinDetailsClicked = PinContract.pinDetailsClicked.token
+    static let realizedChanged = ItemsViewContract.realizedChanged.token
+    static let selectionChanged = ItemsViewContract.selectionChanged.token
     static let submitted = SearchFieldContract.submitted.token
     static let created = WindowContract.created.token
     static let currentPageChanged = TabbedViewContract.currentPageChanged.token
@@ -318,6 +328,7 @@ extension NodeType {
 
 @_spi(Host) public extension Act {
     static let focus = VisualElementContract.focus.token
+    static let scrollTo = ItemsViewContract.scrollTo.token
     static let unfocus = VisualElementContract.unfocus.token
     static let goBack = WebViewContract.goBack.token
     static let goForward = WebViewContract.goForward.token

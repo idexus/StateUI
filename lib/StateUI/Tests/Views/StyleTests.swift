@@ -569,9 +569,13 @@ final class StyleTests: XCTestCase {
         let declared = try SourceTree.text(in: "StyleTarget.swift")
         var read = 0
 
+        // A style names its control by an initializer that sets nothing, which a
+        // generic composed view has not: an ItemsView is a list OF something.
+        let unnamed: Set<String> = ["ItemsView"]
+
         for source in try SourceTree.controlSources() {
             for type in try SourceTree.nodeTypes(in: source).sorted()
-            where !SourceTree.notViews.contains(type) {
+            where !SourceTree.notViews.contains(type) && !unnamed.contains(type) {
                 read += 1
                 XCTAssertTrue(declared.contains("extension \(type): StyleTarget {}"), """
                     \(source) describes \(type), which StyleTarget.swift does \

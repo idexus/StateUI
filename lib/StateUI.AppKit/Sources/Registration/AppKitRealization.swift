@@ -10,7 +10,7 @@
 enum AppKitRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Map", "Pin", "PositionIndicator", "WebView",
+        "ItemsView", "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its

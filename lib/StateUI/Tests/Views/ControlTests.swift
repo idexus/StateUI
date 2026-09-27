@@ -86,6 +86,7 @@ final class ControlTests: XCTestCase {
         let offset = State(wrappedValue: Point.zero)
         let hasBack = State(false)
         let hasForward = State(false)
+        let chosen = State<String?>(wrappedValue: "two")
 
         return [
             ControlCase("Label", source: "Label.swift",
@@ -309,6 +310,18 @@ final class ControlTests: XCTestCase {
                 // by the host on its own frames and walked by it on a write.
                 .scrollOffset(offset.projectedValue)
                 .onScrollStopped {}),
+
+            // The collection as its view writes it: every entry's identity, the
+            // layout, the choice, and what choosing, opening and scrolling to the
+            // end raise. A composed view, so the case is its body built.
+            ControlCase("ItemsView", source: "ItemsView.swift",
+                ItemsView(["one", "two"]) { Label($0) }
+                    .header(Label("Words"))
+                    .itemsLayout(.grid(minimumItemWidth: 120, spacing: 8))
+                    .selection(chosen.projectedValue)
+                    .onItemActivated { _ in }
+                    .onEndReached(within: 5) {}
+                    .body.built),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - it is a marker on the map - so this

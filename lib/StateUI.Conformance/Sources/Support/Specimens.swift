@@ -24,6 +24,7 @@
         case "Grid": return dressing.dress(Grid())
         case "HStack": return dressing.dress(HStack())
         case "Image": return dressing.dress(Image())
+        case "ItemsView": return dressing.dress(ItemsView(0..<20) { Label("Item \($0)") }.width(240).height(160))
         case "Label": return dressing.dress(Label())
         case "Line": return dressing.dress(Line())
         case "Map": return dressing.dress(Map())

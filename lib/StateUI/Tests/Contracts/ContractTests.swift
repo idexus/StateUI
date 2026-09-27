@@ -183,6 +183,9 @@ final class ContractTests: XCTestCase {
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
             WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
+            ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
+            SelectionMode.multiple, ScrollAnchor.center,
+            ItemsEntries(header: "h", sections: [ItemsEntries.Section(footer: "f", items: ["1", "2"])]),
         ]
 
         for sample in samples {

@@ -183,6 +183,17 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// A list scrolls to an identity - a group's name before an item's where the
+    /// list has groups - and says where it stands, after the view.
+    func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
+        try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
+            try await named("list", ItemsViewContract.self).scrollTo(500, anchor: .start)
+        }
+        try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
+            try await named("list", ItemsViewContract.self).scrollTo("Pear", inGroup: "Fruit")
+        }
+    }
+
     /// A map slides on three numbers after the view: latitude, longitude, and
     /// the radius in METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {

@@ -34,6 +34,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testRadioButton() { conform(RadioButtonTests.self) }
     @MainActor func testRectangle() { conform(RectangleTests.self) }
     @MainActor func testScrollView() { conform(ScrollViewTests.self) }
+    @MainActor func testItemsView() { conform(ItemsViewTests.self) }
     @MainActor func testSearchField() { conform(SearchFieldTests.self) }
     @MainActor func testSlider() { conform(SliderTests.self) }
     @MainActor func testStepper() { conform(StepperTests.self) }
