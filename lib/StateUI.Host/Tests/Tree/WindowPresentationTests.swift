@@ -95,6 +95,6 @@ final class WindowPresentationTests: XCTestCase {
         XCTAssertNil(mainOwner, "a main window belongs to none")
         XCTAssertTrue(toolPresentation.show(owned, in: runtime.lifecycle).owner??.id == .manual("main"),
                       "wherever it stands among the scene's windows")
-        XCTAssertNil(toolPresentation.show(owned, in: runtime.lifecycle).owner, "said once until it changes")
+        XCTAssertTrue(toolPresentation.show(owned, in: runtime.lifecycle).owner == nil, "said once until it changes")
     }
 }
