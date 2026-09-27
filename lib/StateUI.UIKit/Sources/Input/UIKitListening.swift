@@ -149,10 +149,29 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         return true
     }
 
+    /// Every recognizer hears with the others but a stack's swipe back from within its page, which a drag comes
+    /// before.
+    /// Design: docs/design/platforms/uikit/input.md#a-press-dragged
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
     ) -> Bool {
-        true
+        !isSwipeBack(other)
+    }
+
+    func gestureRecognizer(
+        _ recognizer: UIGestureRecognizer, shouldBeRequiredToFailBy other: UIGestureRecognizer
+    ) -> Bool {
+        recognizer is UIPanGestureRecognizer && isSwipeBack(other)
+    }
+
+    /// Whether `other` is the swipe back from within the page of the stack the view stands in.
+    private func isSwipeBack(_ other: UIGestureRecognizer) -> Bool {
+        var responder: UIResponder? = view
+        while let each = responder {
+            if let stack = each as? UINavigationController { return other === stack.interactiveContentPopGestureRecognizer }
+            responder = each.next
+        }
+        return false
     }
 
     /// Where the recognizer's touch is, in points of the view.
