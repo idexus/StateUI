@@ -341,8 +341,11 @@ a reply carrying its values, or a failure carrying the reason - a caller
 waiting on it throws that, and one nobody waits on goes to the host's log - so
 no caller waits on an act nobody performs. An act aimed at a view names it by
 its first argument, the element's own id or its number; one naming none, or
-none on screen, fails with that reason (`MountedTree.aimed`). A host performs
-the act in its toolkit's terms and nothing more.
+none on screen, fails with that reason (`MountedTree.aimed`). One performer
+does this for every host (`HostActPerformer`): it reads each act, keeps the
+questions in line, answers and fails; a host gives it its toolkit's part
+(`ActToolkit`) - the clock and the zones, a question shown, a word to the
+screen reader, the focus, a value kept - and nothing more.
 
 ## An application's own acts
 

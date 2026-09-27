@@ -114,6 +114,11 @@
         return (ticket, waiting.count == 1)
     }
 
+    /// The question showing now - the first waiting - with its ticket; nil where none waits.
+    public var first: (ticket: Int64, question: Question)? {
+        waiting.first
+    }
+
     /// The question under `ticket` was answered: it, and the next question to show now; nil where none waits under
     /// that ticket.
     public func answered(_ ticket: Int64) -> (question: Question, next: Question?)? {

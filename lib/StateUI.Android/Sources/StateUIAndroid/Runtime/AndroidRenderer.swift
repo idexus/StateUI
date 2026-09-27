@@ -101,13 +101,15 @@ final class AndroidRenderer {
     /// The pages the window presents over its page.
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
 
-    /// The acts the application calls, performed and answered.
-    private lazy var acts = AndroidActPerformer(core: runtime.core, context: context, root: root)
+    /// Android's part of the acts every host performs, and the host layer's performer of them.
+    private lazy var actToolkit = AndroidActToolkit(
+        core: runtime.core, context: context, root: root, tree: { [unowned self] in runtime.tree })
+    private lazy var acts = HostActPerformer(toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes, and what that
     /// writes runs.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        acts.answered(ticket: ticket, accepted: accepted, words: words)
+        actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
         runtime.pump.turn()
     }
 
@@ -258,7 +260,7 @@ extension AndroidRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        acts.perform(call, in: runtime.tree)
+        acts.perform(call)
     }
 }
 

@@ -33,8 +33,8 @@ enum AppKitRegistrations {
     }()
 
     /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), and
-    /// the scene's kept values, which a Mac keeps in the window it restores. `AppKitActPerformer` answers exactly
-    /// these and the application's own; every other act it refuses by name.
+    /// the scene's kept values, which a Mac keeps in the window it restores. The host layer's performer
+    /// (`HostActPerformer`) answers exactly these and the application's own; every other act it refuses by name.
     static let acts: [any ContractMember] = HostActs.performed + [ApplicationContract.persistSceneValue]
 
     static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {

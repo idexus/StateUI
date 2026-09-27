@@ -10,7 +10,7 @@ import XCTest
 
 /// The acts the application calls on the host are performed and answered: a
 /// caller never waits on an act nobody performs.
-final class AppKitActPerformerTests: XCTestCase {
+final class AppKitActsTests: XCTestCase {
     /// Pumps until `done` holds - an act's answer resumes its handler, and the
     /// handler's write renders on the next pump.
     @MainActor

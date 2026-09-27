@@ -30,8 +30,8 @@ enum AndroidRegistrations {
         return registry
     }()
 
-    /// The acts this host performs, whichever element each is aimed at; `AndroidActPerformer` answers
-    /// exactly these, and refuses every other by name.
+    /// The acts this host performs, whichever element each is aimed at; the host layer's performer
+    /// (`HostActPerformer`) answers exactly these, and refuses every other by name.
     static let acts: [any ContractMember] = [
         VisualElementContract.focus, VisualElementContract.unfocus,
         ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,

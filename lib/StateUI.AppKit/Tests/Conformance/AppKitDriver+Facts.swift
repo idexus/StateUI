@@ -62,13 +62,13 @@ extension AppKitDriver {
 
     /// The question AppKit's alert shows now, as it shows it.
     func question(over element: MountedElement) throws -> Question? {
-        guard let shown = renderer?.actPerformer.showing?.shownForTesting else { return nil }
+        guard let shown = renderer?.actToolkit.showing?.shownForTesting else { return nil }
         return Question(title: shown.title, message: shown.message, buttons: shown.buttons, field: shown.field)
     }
 
     /// What the host told the screen reader, in order, as it posted it.
     func announced() throws -> [String] {
-        renderer?.actPerformer.announcedForTesting ?? []
+        renderer?.actToolkit.announcedForTesting ?? []
     }
 
     /// What the host wrote to its log since it started.

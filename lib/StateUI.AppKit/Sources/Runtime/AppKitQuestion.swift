@@ -11,14 +11,8 @@ import AppKit
 /// Design: docs/design/platforms/appkit/runtime.md#questions-for-the-user
 @MainActor
 final class AppKitQuestion {
-    /// The act asking it, which the answer replies to.
-    let call: HostActCall
-
     /// The question as the host layer reads it.
     let question: HostQuestion
-
-    /// The ticket its answer comes back under.
-    var ticket: Int64 = 0
 
     /// The window it is asked in.
     weak var window: NSWindow?
@@ -30,8 +24,7 @@ final class AppKitQuestion {
     /// Each button's caption and what pressing it answers, in the order AppKit shows them.
     private var buttons: [(caption: String, accepts: Bool)] = []
 
-    init(_ call: HostActCall, _ question: HostQuestion, in window: NSWindow) {
-        self.call = call
+    init(_ question: HostQuestion, in window: NSWindow) {
         self.question = question
         self.window = window
         alert.messageText = question.title ?? ""

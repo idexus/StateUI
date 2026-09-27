@@ -30,7 +30,10 @@ final class AppKitRenderer: @unchecked Sendable {
         log: { AppKitRenderer.log.error($0) })
 
     private(set) lazy var environment = AppKitEnvironment(core: runtime.core)
-    lazy var actPerformer = AppKitActPerformer(renderer: self)
+    /// AppKit's part of the acts every host performs, and the host layer's performer of them.
+    lazy var actToolkit = AppKitActToolkit(renderer: self)
+    lazy var acts = HostActPerformer(
+        toolkit: actToolkit, tree: { [unowned self] in runtime.tree }, answered: { [unowned self] in runtime.pump.turn() })
     var focusReportQueued = false
 
     /// The windows the tree holds, each with its controller, in the tree's order.
@@ -215,7 +218,7 @@ extension AppKitRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        actPerformer.perform(call)
+        acts.perform(call)
     }
 }
 
