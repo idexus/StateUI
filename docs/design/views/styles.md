@@ -164,8 +164,17 @@ properties of every node in the tree, styled or not.
 
 ## What can be styled
 
-Every control in `Views/` is a `StyleTarget`, the list kept in one place -
-`StyleTarget.swift` - so it can be read at a glance and a test can insist on
-it. A style target is any control that can be made with nothing set, and each
-of them can: the initializer taking the value that gives a control its purpose
-is one of several, never the only one.
+Every control in `Views/` but the ItemsView is a `StyleTarget`, the list
+kept in one place - `StyleTarget.swift` - so it can be read at a glance and a
+test can insist on it. A style target is any control that can be made with
+nothing set, and each of them can: the initializer taking the value that
+gives a control its purpose is one of several, never the only one.
+
+An ItemsView is none. It exists only with its items, and it is generic: a
+style would have to name one kind of list while it styled every list, and
+its own layout is a method of the list rather than a property a style can
+carry. A list's look is its own modifiers', shared across an application as
+any Swift is - an extension or a composed view - and every host records its
+`style` member unrealized, with that reason. Were lists ever styled, the one
+spelling that keeps every control alike is a style naming a contract
+(`Style<ItemsViewContract>`) rather than a view.
