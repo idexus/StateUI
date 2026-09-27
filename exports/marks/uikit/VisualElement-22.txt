@@ -2,7 +2,7 @@ ActivityIndicator.scale: ✅
 Button.clicked: ✅
 Button.rotation: ✅
 Canvas.layoutDirection: not realized
-CheckBox.isAccessibilityHidden: not realized
+CheckBox.isAccessibilityHidden: ✅
 ColorBox.accessibilityLabel: ✅
 DatePicker.frame: not realized
 Ellipse.frameChanged: not realized
@@ -11,7 +11,7 @@ Grid.translationX: ✅
 HStack.scale: ✅
 Image.rotation: ✅
 Label.layoutDirection: not realized
-Line.isAccessibilityHidden: not realized
+Line.isAccessibilityHidden: ✅
 Map.accessibilityLabel: not realized
 Path.frame: not realized
 Picker.frameChanged: not realized
@@ -20,7 +20,7 @@ Polygon.translationX: ✅
 Polyline.scale: ✅
 PositionIndicator.rotation: not realized
 ProgressBar.layoutDirection: not realized
-RadioButton.isAccessibilityHidden: not realized
+RadioButton.isAccessibilityHidden: ✅
 Rectangle.accessibilityLabel: ✅
 ScrollView.frame: not realized
 SearchField.frameChanged: not realized
@@ -29,7 +29,7 @@ Slider.translationX: ✅
 Stepper.scale: ✅
 Switch.rotation: ✅
 TextEditor.layoutDirection: not realized
-TextField.isAccessibilityHidden: not realized
+TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅
 TitleBar.frame: not realized
 VStack.frameChanged: not realized

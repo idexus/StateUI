@@ -24,6 +24,9 @@ final class UIKitDriver: HostDriver {
     /// The host the driver started last.
     private(set) var renderer: UIKitRenderer?
 
+    /// The press a finger holds down between the acts that put it down, drag it and lift it.
+    var press: (pan: DrivenPan, dragging: Bool)?
+
     var register: HostRegister { UIKitRealization.register }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
@@ -98,6 +101,15 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
+        case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
+        case (.pinch(let scale, let share), _):
+            try touch(element) { listening, view in Self.pinch(listening, on: view, by: scale, at: share) }
+        case (.pressDown(let point), _): try touch(element) { listening, view in pressDown(listening, on: view, at: point) }
+        case (.drag(let point), _): try touch(element) { listening, _ in drag(listening, to: point) }
+        case (.lift(let point), _): try touch(element) { listening, _ in lift(listening, at: point) }
+        case (.hover(let point), _): try touch(element) { listening, view in Self.hover(listening, on: view, at: point) }
+        case (.leave, _): try touch(element) { listening, view in Self.leave(listening, on: view) }
         case (.pickDate(let day), let picker as UIKitDateTimePickerView):
             picker.apply(value: day.propValue.numbers, minimum: nil, maximum: nil)
             picker.sendActions(for: .valueChanged)
@@ -164,6 +176,7 @@ final class UIKitDriver: HostDriver {
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)

@@ -22,6 +22,9 @@ extension UIKitDriver {
         case .accessibilityLabel: return view.accessibilityLabel.propValue
         case .accessibilityHint: return view.accessibilityHint.propValue
         case .accessibilityIdentifier: return view.accessibilityIdentifier.propValue
+        case .isAccessibilityHidden: return (!view.isAccessibilityElement).propValue
+        case .automationExcludedWithChildren:
+            return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeadingLevel:
             throw DriverCannot("read a heading's level: UIKit marks a heading, not its level")
         case .fontSize, .fontAttributes, .fontFamily, .textColor:

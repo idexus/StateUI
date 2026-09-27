@@ -19,6 +19,9 @@ final class UIKitElement: NativeElement {
 
     weak var host: UIKitRenderer?
 
+    /// What the view listens for of the user's input, while it listens for anything.
+    var listening: UIKitListening?
+
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host
@@ -50,6 +53,7 @@ final class UIKitElement: NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
+        configureGestures()
         arrangeChildren()
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
@@ -67,6 +71,8 @@ final class UIKitElement: NativeElement {
 
     func leave() {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
+        listening?.detach()
+        listening = nil
     }
 
     var chosenTab: Int? { nil }

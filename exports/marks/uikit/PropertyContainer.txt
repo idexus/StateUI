@@ -1,39 +1,40 @@
-ActivityIndicator.accessibilityIdentifier: not realized
-Button.accessibilityIdentifier: not realized
+ActivityIndicator.accessibilityIdentifier: ✅
+Button.accessibilityIdentifier: ✅
+Button.clicked: ✅
 Canvas.accessibilityIdentifier: not realized
-CheckBox.accessibilityIdentifier: not realized
-ColorBox.accessibilityIdentifier: not realized
-DatePicker.accessibilityIdentifier: not realized
-Ellipse.accessibilityIdentifier: not realized
-Grid.accessibilityIdentifier: not realized
-HStack.accessibilityIdentifier: not realized
-Image.accessibilityIdentifier: not realized
-Label.accessibilityIdentifier: not realized
-Line.accessibilityIdentifier: not realized
+CheckBox.accessibilityIdentifier: ✅
+ColorBox.accessibilityIdentifier: ✅
+DatePicker.accessibilityIdentifier: ✅
+Ellipse.accessibilityIdentifier: ✅
+Grid.accessibilityIdentifier: ✅
+HStack.accessibilityIdentifier: ✅
+Image.accessibilityIdentifier: ✅
+Label.accessibilityIdentifier: ✅
+Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: not realized
 NavigationStack.accessibilityIdentifier: not realized
-Path.accessibilityIdentifier: not realized
-Picker.accessibilityIdentifier: not realized
-Polygon.accessibilityIdentifier: not realized
-Polyline.accessibilityIdentifier: not realized
+Path.accessibilityIdentifier: ✅
+Picker.accessibilityIdentifier: ✅
+Polygon.accessibilityIdentifier: ✅
+Polyline.accessibilityIdentifier: ✅
 PositionIndicator.accessibilityIdentifier: not realized
-ProgressBar.accessibilityIdentifier: not realized
-RadioButton.accessibilityIdentifier: not realized
-Rectangle.accessibilityIdentifier: not realized
-ScrollView.accessibilityIdentifier: not realized
-SearchField.accessibilityIdentifier: not realized
-Slider.accessibilityIdentifier: not realized
+ProgressBar.accessibilityIdentifier: ✅
+RadioButton.accessibilityIdentifier: ✅
+Rectangle.accessibilityIdentifier: ✅
+ScrollView.accessibilityIdentifier: ✅
+SearchField.accessibilityIdentifier: ✅
+Slider.accessibilityIdentifier: ✅
 Span.accessibilityIdentifier: not realized
 SplitView.accessibilityIdentifier: not realized
-Stepper.accessibilityIdentifier: not realized
-Switch.accessibilityIdentifier: not realized
+Stepper.accessibilityIdentifier: ✅
+Switch.accessibilityIdentifier: ✅
 TabbedView.accessibilityIdentifier: not realized
-TextEditor.accessibilityIdentifier: not realized
-TextField.accessibilityIdentifier: not realized
-TimePicker.accessibilityIdentifier: not realized
+TextEditor.accessibilityIdentifier: ✅
+TextField.accessibilityIdentifier: ✅
+TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: not realized
-VStack.accessibilityIdentifier: not realized
+VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: not realized
-ZStack.accessibilityIdentifier: not realized
+ZStack.accessibilityIdentifier: ✅

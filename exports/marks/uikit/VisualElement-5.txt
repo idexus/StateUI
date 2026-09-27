@@ -5,7 +5,7 @@ Button.translationY: ✅
 Canvas.scaleX: not realized
 CheckBox.rotationX: ✅
 ColorBox.pivotX: ✅
-DatePicker.automationExcludedWithChildren: not realized
+DatePicker.automationExcludedWithChildren: ✅
 Ellipse.accessibilityHint: ✅
 Grid.focus: not realized
 Grid.isFocusedChanged: not realized
@@ -16,7 +16,7 @@ Image.translationY: ✅
 Label.scaleX: ✅
 Line.rotationX: ✅
 Map.pivotX: not realized
-Path.automationExcludedWithChildren: not realized
+Path.automationExcludedWithChildren: ✅
 Picker.accessibilityHint: ✅
 Polygon.focus: not realized
 Polygon.isFocusedChanged: not realized
@@ -27,7 +27,7 @@ PositionIndicator.translationY: not realized
 ProgressBar.scaleX: ✅
 RadioButton.rotationX: ✅
 Rectangle.pivotX: ✅
-ScrollView.automationExcludedWithChildren: not realized
+ScrollView.automationExcludedWithChildren: ✅
 SearchField.accessibilityHint: ✅
 Slider.focus: not realized
 Slider.isFocusedChanged: not realized

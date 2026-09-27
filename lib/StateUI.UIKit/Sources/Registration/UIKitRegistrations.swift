@@ -26,16 +26,16 @@ enum UIKitRegistrations {
         return registry
     }()
 
-    /// What every view takes the same way: whether it shows, how opaque it is, whether it takes input, its words
-    /// for VoiceOver, its place, and how it is drawn over it.
+    /// What every view takes the same way: whether it shows, how opaque it is, whether it takes input, what
+    /// VoiceOver meets of it, its place, and how it is drawn over it.
     static func shared(_ registry: Registry<UIView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
-        registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
-        registry.everyElementRealizes(VisualElementContract.accessibilityHint)
+        registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
+        registry.everyElementHearsTheUser()
     }
 }
 #endif

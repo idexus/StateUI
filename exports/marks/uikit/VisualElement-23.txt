@@ -2,7 +2,7 @@ ActivityIndicator.scaleX: ✅
 Button.clicked: ✅
 Button.rotationX: ✅
 Canvas.pivotX: not realized
-CheckBox.automationExcludedWithChildren: not realized
+CheckBox.automationExcludedWithChildren: ✅
 ColorBox.accessibilityHint: ✅
 DatePicker.focus: not realized
 DatePicker.isFocusedChanged: not realized
@@ -13,7 +13,7 @@ Grid.translationY: ✅
 HStack.scaleX: ✅
 Image.rotationX: ✅
 Label.pivotX: ✅
-Line.automationExcludedWithChildren: not realized
+Line.automationExcludedWithChildren: ✅
 Map.accessibilityHint: not realized
 Path.focus: not realized
 Path.isFocusedChanged: not realized
@@ -24,7 +24,7 @@ Polygon.translationY: ✅
 Polyline.scaleX: ✅
 PositionIndicator.rotationX: not realized
 ProgressBar.pivotX: ✅
-RadioButton.automationExcludedWithChildren: not realized
+RadioButton.automationExcludedWithChildren: ✅
 Rectangle.accessibilityHint: ✅
 ScrollView.focus: not realized
 ScrollView.isFocusedChanged: not realized
@@ -35,7 +35,7 @@ Slider.translationY: ✅
 Stepper.scaleX: ✅
 Switch.rotationX: ✅
 TextEditor.pivotX: ✅
-TextField.automationExcludedWithChildren: not realized
+TextField.automationExcludedWithChildren: ✅
 TimePicker.accessibilityHint: ✅
 TitleBar.focus: not realized
 TitleBar.isFocusedChanged: not realized

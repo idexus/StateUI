@@ -4,7 +4,7 @@ Button.clicked: ✅
 Button.scale: ✅
 Canvas.rotation: not realized
 CheckBox.layoutDirection: not realized
-ColorBox.isAccessibilityHidden: not realized
+ColorBox.isAccessibilityHidden: ✅
 DatePicker.accessibilityLabel: ✅
 Ellipse.frame: not realized
 Grid.frameChanged: not realized
@@ -22,7 +22,7 @@ Polyline.translationX: ✅
 PositionIndicator.scale: not realized
 ProgressBar.rotation: ✅
 RadioButton.layoutDirection: not realized
-Rectangle.isAccessibilityHidden: not realized
+Rectangle.isAccessibilityHidden: ✅
 ScrollView.accessibilityLabel: ✅
 SearchField.frame: not realized
 Slider.frameChanged: not realized
@@ -31,7 +31,7 @@ Stepper.translationX: ✅
 Switch.scale: ✅
 TextEditor.rotation: ✅
 TextField.layoutDirection: not realized
-TimePicker.isAccessibilityHidden: not realized
+TimePicker.isAccessibilityHidden: ✅
 TitleBar.accessibilityLabel: not realized
 VStack.frame: not realized
 WebView.frameChanged: not realized

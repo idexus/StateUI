@@ -47,7 +47,10 @@ extension UIKitElement {
                 case .opacity: drawing?.ownOpacity = element.number(.opacity) ?? 1
                 case .isVisible: view.isHidden = !element.standsShown
                 case .background: view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
-                case .isEnabled: (view as? UIControl)?.isEnabled = element.bool(.isEnabled) ?? true
+                case .isEnabled:
+                    let enabled = element.bool(.isEnabled) ?? true
+                    (view as? UIControl)?.isEnabled = enabled
+                    (view as? UILabel)?.isEnabled = enabled
                 case .padding where type == .page:
                     let sides = value(.padding)?.numbers ?? []
                     (view as? UIKitSingleChildView)?.padding =
@@ -78,16 +81,17 @@ extension UIKitElement {
 }
 
 extension UIView {
-    /// The element's words for assistive technology, as VoiceOver reads a view's.
+    /// The element's words for assistive technology, as VoiceOver reads a view's: what the tree no longer says
+    /// falls back to the view's own.
     func accessibility(_ words: AccessibilityWords) {
         accessibilityIdentifier = words.identifier
-        if let label = words.label { accessibilityLabel = label }
-        if let hint = words.hint { accessibilityHint = hint }
+        accessibilityLabel = words.label
+        accessibilityHint = words.hint
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
+        accessibilityElementsHidden = words.presence == .hiddenWithChildren
         switch words.presence {
         case .met?: isAccessibilityElement = true
-        case .hidden?: isAccessibilityElement = false
-        case .hiddenWithChildren?: accessibilityElementsHidden = true
+        case .hidden?, .hiddenWithChildren?: isAccessibilityElement = false
         case nil: break
         }
     }

@@ -13,7 +13,7 @@ CheckBox.translationY: ✅
 ColorBox.scaleX: ✅
 DatePicker.rotationX: ✅
 Ellipse.pivotX: ✅
-Grid.automationExcludedWithChildren: not realized
+Grid.automationExcludedWithChildren: ✅
 HStack.accessibilityHint: ✅
 Image.focus: not realized
 Image.isFocusedChanged: not realized
@@ -24,7 +24,7 @@ Line.translationY: ✅
 Map.scaleX: not realized
 Path.rotationX: ✅
 Picker.pivotX: ✅
-Polygon.automationExcludedWithChildren: not realized
+Polygon.automationExcludedWithChildren: ✅
 Polyline.accessibilityHint: ✅
 PositionIndicator.focus: not realized
 PositionIndicator.isFocusedChanged: not realized
@@ -35,7 +35,7 @@ RadioButton.translationY: ✅
 Rectangle.scaleX: ✅
 ScrollView.rotationX: ✅
 SearchField.pivotX: ✅
-Slider.automationExcludedWithChildren: not realized
+Slider.automationExcludedWithChildren: ✅
 Stepper.accessibilityHint: ✅
 Switch.focus: not realized
 Switch.isFocusedChanged: not realized

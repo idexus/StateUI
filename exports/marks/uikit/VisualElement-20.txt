@@ -12,7 +12,7 @@ Ellipse.translationY: ✅
 Grid.scaleX: ✅
 HStack.rotationX: ✅
 Image.pivotX: ✅
-Label.automationExcludedWithChildren: not realized
+Label.automationExcludedWithChildren: ✅
 Line.accessibilityHint: ✅
 Map.focus: not realized
 Map.isFocusedChanged: not realized
@@ -23,7 +23,7 @@ Picker.translationY: ✅
 Polygon.scaleX: ✅
 Polyline.rotationX: ✅
 PositionIndicator.pivotX: not realized
-ProgressBar.automationExcludedWithChildren: not realized
+ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.accessibilityHint: ✅
 Rectangle.focus: not realized
 Rectangle.isFocusedChanged: not realized
@@ -34,7 +34,7 @@ SearchField.translationY: ✅
 Slider.scaleX: ✅
 Stepper.rotationX: ✅
 Switch.pivotX: ✅
-TextEditor.automationExcludedWithChildren: not realized
+TextEditor.automationExcludedWithChildren: ✅
 TextField.accessibilityHint: ✅
 TimePicker.focus: not realized
 TimePicker.isFocusedChanged: not realized

@@ -9,7 +9,7 @@ CheckBox.translationX: ✅
 ColorBox.scale: ✅
 DatePicker.rotation: ✅
 Ellipse.layoutDirection: not realized
-Grid.isAccessibilityHidden: not realized
+Grid.isAccessibilityHidden: ✅
 HStack.accessibilityLabel: ✅
 Image.frame: not realized
 Label.frameChanged: not realized
@@ -18,7 +18,7 @@ Line.translationX: ✅
 Map.scale: not realized
 Path.rotation: ✅
 Picker.layoutDirection: not realized
-Polygon.isAccessibilityHidden: not realized
+Polygon.isAccessibilityHidden: ✅
 Polyline.accessibilityLabel: ✅
 PositionIndicator.frame: not realized
 ProgressBar.frameChanged: not realized
@@ -27,7 +27,7 @@ RadioButton.translationX: ✅
 Rectangle.scale: ✅
 ScrollView.rotation: ✅
 SearchField.layoutDirection: not realized
-Slider.isAccessibilityHidden: not realized
+Slider.isAccessibilityHidden: ✅
 Stepper.accessibilityLabel: ✅
 Switch.frame: not realized
 TextEditor.frameChanged: not realized

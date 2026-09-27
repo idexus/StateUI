@@ -34,6 +34,14 @@ nothing; a menu's choice; a date or a time picked. Typed words first ask the
 view's delegate, as a key does, then replace the words and send the change;
 the return key asks the field's delegate.
 
+UIKit makes no touch a test can send. A finger's and a pointer's acts are
+handed to the view's listening as its recognizers hand them to their target:
+a recognizer of the kind UIKit makes, in the state the act puts it in, its
+touch at the act's point - a run of taps, a pan from the middle in two moves,
+a pinch, a press put down, dragged and lifted, the pointer over the view and
+leaving it. A view that does not listen hears nothing, as UIKit sends it
+nothing.
+
 ## What the driver reads
 
 A member's value is read from the view UIKit holds - a label's and a field's

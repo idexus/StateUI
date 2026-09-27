@@ -1,5 +1,5 @@
 ActivityIndicator.pivotX: ✅
-Button.automationExcludedWithChildren: not realized
+Button.automationExcludedWithChildren: ✅
 Button.clicked: ✅
 Canvas.accessibilityHint: not realized
 CheckBox.focus: not realized
@@ -11,7 +11,7 @@ DatePicker.translationY: ✅
 Ellipse.scaleX: ✅
 Grid.rotationX: ✅
 HStack.pivotX: ✅
-Image.automationExcludedWithChildren: not realized
+Image.automationExcludedWithChildren: ✅
 Label.accessibilityHint: ✅
 Line.focus: not realized
 Line.isFocusedChanged: not realized
@@ -37,7 +37,7 @@ ScrollView.translationY: ✅
 SearchField.scaleX: ✅
 Slider.rotationX: ✅
 Stepper.pivotX: ✅
-Switch.automationExcludedWithChildren: not realized
+Switch.automationExcludedWithChildren: ✅
 TextEditor.accessibilityHint: ✅
 TextField.focus: not realized
 TextField.isFocusedChanged: not realized

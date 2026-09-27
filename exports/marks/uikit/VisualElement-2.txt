@@ -4,7 +4,7 @@ Button.clicked: ✅
 Button.scaleX: ✅
 Canvas.rotationX: not realized
 CheckBox.pivotX: ✅
-ColorBox.automationExcludedWithChildren: not realized
+ColorBox.automationExcludedWithChildren: ✅
 DatePicker.accessibilityHint: ✅
 Ellipse.focus: not realized
 Ellipse.isFocusedChanged: not realized
@@ -26,7 +26,7 @@ Polyline.translationY: ✅
 PositionIndicator.scaleX: not realized
 ProgressBar.rotationX: ✅
 RadioButton.pivotX: ✅
-Rectangle.automationExcludedWithChildren: not realized
+Rectangle.automationExcludedWithChildren: ✅
 ScrollView.accessibilityHint: ✅
 SearchField.focus: not realized
 SearchField.isFocusedChanged: not realized
@@ -37,7 +37,7 @@ Stepper.translationY: ✅
 Switch.scaleX: ✅
 TextEditor.rotationX: ✅
 TextField.pivotX: ✅
-TimePicker.automationExcludedWithChildren: not realized
+TimePicker.automationExcludedWithChildren: ✅
 TitleBar.accessibilityHint: not realized
 VStack.focus: not realized
 VStack.isFocusedChanged: not realized

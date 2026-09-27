@@ -3,7 +3,7 @@ Button.clicked: ✅
 Button.rotationY: ✅
 Canvas.pivotY: not realized
 CheckBox.background: not realized
-ColorBox.accessibilityHeadingLevel: not realized
+ColorBox.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 DatePicker.style: not realized
 Ellipse.ignoresInput: not realized
 Grid.isEnabled: cannot read isEnabled of Grid - UIKit's driver has no path for it yet
@@ -21,7 +21,7 @@ Polyline.scaleY: ✅
 PositionIndicator.rotationY: not realized
 ProgressBar.pivotY: ✅
 RadioButton.background: not realized
-Rectangle.accessibilityHeadingLevel: not realized
+Rectangle.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 ScrollView.style: not realized
 SearchField.ignoresInput: not realized
 Slider.isEnabled: ✅
@@ -30,7 +30,7 @@ Stepper.scaleY: ✅
 Switch.rotationY: ✅
 TextEditor.pivotY: ✅
 TextField.background: not realized
-TimePicker.accessibilityHeadingLevel: not realized
+TimePicker.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 TitleBar.style: not realized
 VStack.ignoresInput: ✅
 WebView.isEnabled: not realized

@@ -10,7 +10,7 @@ Ellipse.translationX: ✅
 Grid.scale: ✅
 HStack.rotation: ✅
 Image.layoutDirection: not realized
-Label.isAccessibilityHidden: not realized
+Label.isAccessibilityHidden: ✅
 Line.accessibilityLabel: ✅
 Map.frame: not realized
 Path.frameChanged: not realized
@@ -19,7 +19,7 @@ Picker.translationX: ✅
 Polygon.scale: ✅
 Polyline.rotation: ✅
 PositionIndicator.layoutDirection: not realized
-ProgressBar.isAccessibilityHidden: not realized
+ProgressBar.isAccessibilityHidden: ✅
 RadioButton.accessibilityLabel: ✅
 Rectangle.frame: not realized
 ScrollView.frameChanged: not realized
@@ -28,7 +28,7 @@ SearchField.translationX: ✅
 Slider.scale: ✅
 Stepper.rotation: ✅
 Switch.layoutDirection: not realized
-TextEditor.isAccessibilityHidden: not realized
+TextEditor.isAccessibilityHidden: ✅
 TextField.accessibilityLabel: ✅
 TimePicker.frame: not realized
 TitleBar.frameChanged: not realized
