@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
-| Android Views | ⌛ |  | `PopupMenu` / `MenuItem`; no menu bar | a run of other sources said: not realized |
+| AppKit | ⌛ |  | `NSMenu` / `NSMenuItem` | a run of other sources said: ✅ |
+| UIKit | ⌛ |  | `UIMenu` / `UIAction` | a run of other sources said: ✅ |
+| Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | not realized |
 | WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |

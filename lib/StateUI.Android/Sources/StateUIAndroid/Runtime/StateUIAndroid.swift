@@ -213,6 +213,53 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidWebView)?.onProcessGone?()
             }
         }
+        let itemCell: @convention(c) (Environment, jclass?, jlong, jint) -> jobject? = { _, _, number, kind in
+            nonisolated(unsafe) var made: jobject?
+            MainActor.assumeIsolated {
+                guard let list = AndroidView.find(number) as? AndroidItemsView else { return }
+                made = Java.jni.NewLocalRef(Java.env, list.makeCell(item: kind == 0).reference)
+            }
+            return made
+        }
+        let itemHeld: @convention(c) (Environment, jclass?, jlong, jlong, jstring?) -> Void = {
+            _, _, number, cell, identity in
+            nonisolated(unsafe) let identity = identity
+            MainActor.assumeIsolated {
+                guard let list = AndroidView.find(number) as? AndroidItemsView,
+                      let cell = AndroidView.find(cell) as? AndroidItemCell else { return }
+                list.held(Java.text(identity), in: cell)
+            }
+        }
+        let itemShown: @convention(c) (Environment, jclass?, jlong, jlong, jstring?) -> Void = {
+            _, _, number, cell, identity in
+            nonisolated(unsafe) let identity = identity
+            MainActor.assumeIsolated {
+                guard let list = AndroidView.find(number) as? AndroidItemsView,
+                      let cell = AndroidView.find(cell) as? AndroidItemCell else { return }
+                list.shown(Java.text(identity), in: cell)
+            }
+        }
+        let itemLetGo: @convention(c) (Environment, jclass?, jlong, jlong) -> Void = { _, _, number, cell in
+            MainActor.assumeIsolated {
+                guard let list = AndroidView.find(number) as? AndroidItemsView,
+                      let cell = AndroidView.find(cell) as? AndroidItemCell else { return }
+                list.letGo(cell)
+            }
+        }
+        let itemsShowing: @convention(c) (Environment, jclass?, jlong, jobjectArray?) -> Void = {
+            _, _, number, identities in
+            nonisolated(unsafe) let identities = identities
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidItemsView)?.showing(Java.texts(identities))
+            }
+        }
+        let itemsDistance: @convention(c) (Environment, jclass?, jlong, jint, jint, jint, jint, jint) -> jint = {
+            _, _, number, anchor, start, end, boxStart, boxEnd in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidItemsView)?.distance(
+                    anchor: anchor, start: start, end: end, boxStart: boxStart, boxEnd: boxEnd) ?? 0
+            }
+        }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.runtime.frames.laidOut()
@@ -266,6 +313,12 @@ enum JavaNatives {
             ("webNavigated", "(JIILjava/lang/String;)V", unsafeBitCast(webNavigated, to: UnsafeMutableRawPointer.self)),
             ("webHistory", "(JZZ)V", unsafeBitCast(webHistory, to: UnsafeMutableRawPointer.self)),
             ("webProcessGone", "(J)V", unsafeBitCast(webProcessGone, to: UnsafeMutableRawPointer.self)),
+            ("itemCell", "(JI)Landroid/view/View;", unsafeBitCast(itemCell, to: UnsafeMutableRawPointer.self)),
+            ("itemHeld", "(JJLjava/lang/String;)V", unsafeBitCast(itemHeld, to: UnsafeMutableRawPointer.self)),
+            ("itemShown", "(JJLjava/lang/String;)V", unsafeBitCast(itemShown, to: UnsafeMutableRawPointer.self)),
+            ("itemLetGo", "(JJ)V", unsafeBitCast(itemLetGo, to: UnsafeMutableRawPointer.self)),
+            ("itemsShowing", "(J[Ljava/lang/String;)V", unsafeBitCast(itemsShowing, to: UnsafeMutableRawPointer.self)),
+            ("itemsDistance", "(JIIIII)I", unsafeBitCast(itemsDistance, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),

@@ -123,6 +123,16 @@ final class AndroidDriver: HostDriver {
         return Self.color(argb | 0xFF00_0000)
     }
 
+    /// Where the element's view stands in its window, as Android placed it.
+    func place(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? AndroidElement)?.layoutItem?.view else {
+            throw DriverCannot("read where \(element.type.name) stands")
+        }
+        let (corner, size) = (view.cornerInWindow, view.frame)
+        return Rect(
+            x: corner.x, y: corner.y, width: Double(size.width) / view.density, height: Double(size.height) / view.density)
+    }
+
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? AndroidElement)?.view else {
             throw DriverCannot("read the focus of \(element.type.name)")

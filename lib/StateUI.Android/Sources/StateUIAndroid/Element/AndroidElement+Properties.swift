@@ -7,6 +7,11 @@
 /// The native view: made, and given the element's properties.
 extension AndroidElement {
     func makeView() -> AndroidView? {
+        if type == .itemsView, let host {
+            return AndroidItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+        }
         if let registered = AndroidRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -87,6 +92,11 @@ extension AndroidElement {
     func invalidateMeasurements() {
         var element: AndroidElement? = self
         while let each = element {
+            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
+            if let items = each.parent?.view as? AndroidItemsView {
+                items.remeasure(each.element)
+                break
+            }
             (each.view as? AndroidLayoutView)?.forgetMeasurements()
             element = each.parent
         }

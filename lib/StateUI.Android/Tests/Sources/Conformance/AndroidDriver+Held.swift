@@ -22,6 +22,8 @@ extension AndroidDriver {
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
         case (.isSidebarVisible, let split as AndroidSplitView): return split.isPresented.propValue
+        case (.selectedItems, let items as AndroidItemsView): return .strings(items.selectedForTesting)
+        case (.selectionMode, let items as AndroidItemsView): return items.modeForTesting.propValue
         case (.isRunning, let spinner as AndroidActivityIndicatorView):
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue

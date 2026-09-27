@@ -5,6 +5,7 @@ package stateui.android;
 
 import android.app.Activity;
 import android.view.Menu;
+import android.view.View;
 import android.widget.FrameLayout;
 
 /** The Swift host: every method is registered by the head's JNI_OnLoad. */
@@ -112,6 +113,24 @@ final class StateUIHost {
 
     /** A web view's web process died, and the view was made again, blank. */
     static native void webProcessGone(long view);
+
+    /** An ItemsView's recycler needs a new cell - an item's, 0, or a header's or a footer's, 1 - which it answers. */
+    static native View itemCell(long view, int kind);
+
+    /** An ItemsView's recycler bound a cell, by its number, to the entry of an identity. */
+    static native void itemHeld(long view, long cell, String identity);
+
+    /** A cell of an ItemsView came on screen showing the entry of an identity. */
+    static native void itemShown(long view, long cell, String identity);
+
+    /** An ItemsView's recycler let a cell go into its pool. */
+    static native void itemLetGo(long view, long cell);
+
+    /** The entries in an ItemsView's view, once a scroll or a layout is over. */
+    static native void itemsShowing(long view, String[] identities);
+
+    /** How far an item of an ItemsView moves, in pixels, to stand where an anchor says in the room given. */
+    static native int itemsDistance(long view, int anchor, int start, int end, int boxStart, int boxEnd);
 
     /** A finger went down on a canvas - 0 - moved on it - 1 - or was lifted - 2 - at a point in points. */
     static native void canvasTouched(long view, int phase, float x, float y);

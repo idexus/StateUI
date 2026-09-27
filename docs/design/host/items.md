@@ -76,6 +76,18 @@ so a list waiting for more is not asked for more on every frame.
 narrowest width, `spacing` apart, and one at least; the columns share what
 is left of the width.
 
+## A collection without groups
+
+A recycler and a grid view know no groups, and share a grid's width equally
+among their columns. `ItemsPlacement` stands the entries in one run for
+them: in a list or a row the items of a group stand `spacing` apart and a
+header or a footer keeps no room; in a grid each entry keeps room beside it
+that makes it a column's width, `spacing` from the next, and a row after the
+first keeps `spacing` above it. Where the collection lets an entry span
+columns, a header or a footer spans them all and a group's last item what
+its row has left, so every group starts a row; where it does not, every
+entry takes the next cell.
+
 ## A tap
 
 A collection that holds no choice of its own - a recycler - hears a tap and

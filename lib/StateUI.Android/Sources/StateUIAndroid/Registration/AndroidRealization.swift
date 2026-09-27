@@ -10,7 +10,7 @@
 enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ItemsView", "LeadingContent", "Map", "MenuBar", "Pin", "PositionIndicator", "TitleBar",
+        "Content", "LeadingContent", "Map", "MenuBar", "Pin", "PositionIndicator", "TitleBar",
         "TrailingContent",
     ]
 
@@ -35,6 +35,8 @@ enum AndroidRealization {
 
         // MARK: Entries - a control's or a part's own
         .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .notPlanned("MenuItem", "accessibilityIdentifier",

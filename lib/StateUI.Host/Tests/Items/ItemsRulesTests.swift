@@ -67,6 +67,45 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(ScrollAnchor.nearest.place(of: 100, length: 40, in: 300, at: 400), 100, "above: to the start")
     }
 
+    /// In a list the items of a group stand `spacing` apart, a header or a footer keeps no room, and a row spaces
+    /// its items across.
+    func testAListSpacesTheItemsOfAGroup() {
+        let entries = ItemsEntries(sections: [
+            .init(header: "h", items: ["a", "b"]), .init(items: ["c", "d"]),
+        ])
+        let list = ItemsPlacement(entries, layout: .list(spacing: 6), width: 300, spanning: true)
+        XCTAssertEqual(list.edges, [true, false, false, false, false])
+        XCTAssertEqual(list.rooms.map(\.top), [0, 0, 6, 0, 6])
+        XCTAssertEqual(list.spans, [1, 1, 1, 1, 1])
+        let row = ItemsPlacement(entries, layout: .row(spacing: 8), width: 300, spanning: true)
+        XCTAssertEqual(row.rooms.map(\.leading), [0, 0, 8, 0, 8])
+    }
+
+    /// Spanning, a grid's header spans every column and a group's last item what its row has left; each item is a
+    /// column's width, `spacing` from the next.
+    func testAGridGroupStartsARowWhereEntriesSpan() {
+        let entries = ItemsEntries(sections: [.init(items: ["a", "b", "c", "d"]), .init(header: "h", items: ["e"])])
+        let grid = ItemsPlacement(entries, layout: .grid(minimumItemWidth: 90, spacing: 10), width: 300, spanning: true)
+        XCTAssertEqual(grid.columns, 3)
+        XCTAssertEqual(grid.spans, [1, 1, 1, 3, 3, 3], "the fourth fills its row; the header all; the last its row")
+        let itemWidth = (300.0 - 20) / 3
+        for (place, room) in grid.rooms.enumerated() where !grid.edges[place] {
+            let width = Double(grid.spans[place]) * 100 - room.leading - room.trailing
+            XCTAssertEqual(width, itemWidth, accuracy: 0.001, "entry \(place) a column's width")
+        }
+        XCTAssertEqual(grid.rooms[1].leading, 10.0 / 3, accuracy: 0.001, "ten from the first")
+        XCTAssertEqual(grid.rooms.map(\.top), [0, 0, 0, 10, 0, 0])
+    }
+
+    /// Without spanning, every entry takes the next cell, a header too.
+    func testAGridWithoutSpanningTakesTheNextCell() {
+        let entries = ItemsEntries(sections: [.init(header: "h", items: ["a", "b", "c"])])
+        let grid = ItemsPlacement(entries, layout: .grid(minimumItemWidth: 90, spacing: 10), width: 300, spanning: false)
+        XCTAssertEqual(grid.spans, [1, 1, 1, 1])
+        XCTAssertEqual(grid.rooms.map(\.top), [0, 0, 0, 10])
+        XCTAssertEqual(grid.rooms[3].leading, 0, "the fourth cell starts the second row")
+    }
+
     /// The end is told once as the last item in view comes within reach of the last of all; again only after the
     /// user scrolled away, or once the list gained items.
     func testTheEndIsToldOnceUntilTheUserLeavesItOrMoreArrive() {

@@ -44,6 +44,11 @@ class AndroidLayoutView: AndroidView {
         }
     }
 
+    /// A layout over the relay's view group `make` makes - a `StateUIViewGroup` of its own kind - handed the number.
+    init(making make: (_ number: Int64) -> JavaObject) {
+        super.init(make)
+    }
+
     /// Puts `items` in the group, in order, where they differ from the children it holds; whether they did.
     @discardableResult
     func setItems(_ items: [AndroidLayoutItem]) -> Bool {

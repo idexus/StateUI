@@ -1,4 +1,4 @@
-# inputs 8df967acbc3298b8222711bd547c6a8ad0a94135
+# inputs edb85124f8b59e97adcc3919f07c0fb0b35a43b0
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -339,39 +339,39 @@ Image.translationY: ✅
 Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Image.width: ✅
 Image.zIndex: not realized
-ItemsView.accessibilityHeadingLevel: not realized
-ItemsView.accessibilityHint: not realized
-ItemsView.accessibilityLabel: not realized
-ItemsView.automationExcludedWithChildren: not realized
-ItemsView.background: not realized
-ItemsView.focus: not realized
-ItemsView.frame: not realized
-ItemsView.frameChanged: not realized
-ItemsView.height: not realized
+ItemsView.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
+ItemsView.accessibilityHint: ✅
+ItemsView.accessibilityLabel: ✅
+ItemsView.automationExcludedWithChildren: ✅
+ItemsView.background: ✅
+ItemsView.focus: ✅
+ItemsView.frame: ✅
+ItemsView.frameChanged: ✅
+ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
-ItemsView.isAccessibilityHidden: not realized
+ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: not realized
-ItemsView.isFocusedChanged: not realized
-ItemsView.isVisible: not realized
+ItemsView.isFocusedChanged: ✅
+ItemsView.isVisible: ✅
 ItemsView.layoutDirection: not realized
-ItemsView.maximumHeight: not realized
-ItemsView.maximumWidth: not realized
-ItemsView.minimumHeight: not realized
-ItemsView.minimumWidth: not realized
-ItemsView.opacity: not realized
-ItemsView.pivotX: not realized
-ItemsView.pivotY: not realized
-ItemsView.rotation: not realized
-ItemsView.rotationX: not realized
-ItemsView.rotationY: not realized
-ItemsView.scale: not realized
-ItemsView.scaleX: not realized
-ItemsView.scaleY: not realized
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
+ItemsView.opacity: ✅
+ItemsView.pivotX: ✅
+ItemsView.pivotY: ✅
+ItemsView.rotation: ✅
+ItemsView.rotationX: ✅
+ItemsView.rotationY: ✅
+ItemsView.scale: ✅
+ItemsView.scaleX: ✅
+ItemsView.scaleY: ✅
 ItemsView.style: not realized
-ItemsView.translationX: not realized
-ItemsView.translationY: not realized
-ItemsView.unfocus: not realized
-ItemsView.width: not realized
+ItemsView.translationX: ✅
+ItemsView.translationY: ✅
+ItemsView.unfocus: ✅
+ItemsView.width: ✅
 ItemsView.zIndex: not realized
 Label.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 Label.accessibilityHint: ✅

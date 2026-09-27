@@ -74,16 +74,18 @@ and says which call raised it.
 
 The Java layer declares the host's native methods on `StateUIHost`: the
 activity's start and its lifecycle, the display's frame, what the user does
-to a control - a
-click, a turn, a slider's move and drag, words typed, a Return, a menu asked
-for and its item chosen - and a layout's measure and arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
-library exports no other symbol, and a native Java declares that Swift does
-not register fails at load rather than at the first call.
+to a control - a click, a turn, a slider's move and drag, words typed, a
+Return, a menu asked for and its item chosen - a layout's measure and
+arrangement, and what an ItemsView's recycler does with its cells
+([items](items.md)). The head's `JNI_OnLoad` registers them by name, so the
+host's library exports no other symbol, and a native Java declares that
+Swift does not register fails at load rather than at the first call.
 `NativeProjectTests` holds the two lists equal.
 
 The Java layer exists only where Android wants a subclass or an interface:
-the activity, the layout `ViewGroup`, the frame callback, and one listener
-for what the user does to a view ([controls](controls.md)). Each method forwards to a registered
+the activity, the layout `ViewGroup`, the frame callback, the recycler an
+ItemsView stands on and its cell, and one listener for what the user does
+to a view ([controls](controls.md)). Each method forwards to a registered
 Swift function.
 
 ## What a frame writes

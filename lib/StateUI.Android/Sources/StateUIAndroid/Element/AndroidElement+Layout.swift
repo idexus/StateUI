@@ -8,6 +8,7 @@
 extension AndroidElement {
     /// Hands a layout its children's items, in order, and a label the runs of its spans.
     func arrangeChildren() {
+        if let items = view as? AndroidItemsView { return items.childrenChanged() }
         if let label = view as? AndroidLabelView {
             return arrangeRuns(of: label)
         }

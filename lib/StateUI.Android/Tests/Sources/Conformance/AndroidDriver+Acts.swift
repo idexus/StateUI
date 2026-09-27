@@ -16,6 +16,19 @@ extension AndroidDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         let view = (element.native as? AndroidElement)?.view
         switch (act, view) {
+        case (.activate, _) where element.parent?.type == .itemsView:
+            // A tap on the cell showing the item: its click, as the recycler's cell takes it.
+            guard let items = (element.parent?.native as? AndroidElement)?.view as? AndroidItemsView,
+                  case .manual(let identity) = element.id, let cell = items.cellForTesting(identity)
+            else { throw DriverCannot(act, on: element) }
+            _ = Java.callBool(cell.reference, JavaAPI.performClick)
+        case (.choose(let place), let items as AndroidItemsView):
+            let identities = items.cells.entries.sections.flatMap(\.items)
+            guard identities.indices.contains(place), let cell = items.cellForTesting(identities[place]) else {
+                throw DriverCannot(act, on: element)
+            }
+            _ = Java.callBool(cell.reference, JavaAPI.performClick)
+        case (.scroll(let target), let items as AndroidItemsView): items.scrollForTesting(to: target)
         case (.activate, let button as AndroidButtonView): button.click()
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
         case (.toggle, let split as AndroidSplitView):

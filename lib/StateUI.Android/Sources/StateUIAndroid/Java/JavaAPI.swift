@@ -364,6 +364,21 @@ enum JavaAPI {
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
     static let setIgnoresInput = Java.method(viewGroupHost, "setIgnoresInput", "(Z)V")
 
+    static let itemCell = Java.findClass("stateui/android/StateUIItemCell")
+    static let newItemCell = Java.method(itemCell, "<init>", "(Landroid/content/Context;JZ)V")
+
+    static let itemsView = Java.findClass("stateui/android/StateUIItemsView")
+    static let newItemsView = Java.method(itemsView, "<init>", "(Landroid/content/Context;J)V")
+    static let setItemsEntries = Java.method(itemsView, "setEntries", "([Ljava/lang/String;[I[I[I[I[IZ)V")
+    static let setItemsPlacement = Java.method(itemsView, "setPlacement", "(II[I[I)V")
+    static let setItemsChoice = Java.method(itemsView, "setChoice", "([Ljava/lang/String;IZ)V")
+    static let scrollToItem = Java.method(itemsView, "scrollToItem", "(Ljava/lang/String;IZ)V")
+    static let releaseItems = Java.method(itemsView, "release", "()V")
+    static let scrollItemsAlong = Java.method(itemsView, "scrollAlong", "(I)V")
+    static let itemsScrolled = Java.method(itemsView, "scrolled", "()I")
+    static let itemsChosen = Java.method(itemsView, "chosen", "()[Ljava/lang/String;")
+    static let itemsMode = Java.method(itemsView, "mode", "()I")
+
     static let frameCallback = Java.findClass("stateui/android/StateUIFrameCallback")
     static let newFrameCallback = Java.method(frameCallback, "<init>", "()V")
 

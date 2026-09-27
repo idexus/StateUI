@@ -1,13 +1,13 @@
-# inputs 8df967acbc3298b8222711bd547c6a8ad0a94135
-ItemsView: not realized
-ItemsView.endReached: not realized
-ItemsView.endReachedWithin: not realized
-ItemsView.frameChanged: not realized
-ItemsView.itemActivated: not realized
-ItemsView.items: not realized
-ItemsView.itemsLayout: not realized
-ItemsView.realizedChanged: not realized
-ItemsView.scrollTo: not realized
-ItemsView.selectedItems: not realized
-ItemsView.selectionChanged: not realized
-ItemsView.selectionMode: not realized
+# inputs edb85124f8b59e97adcc3919f07c0fb0b35a43b0
+ItemsView: ✅
+ItemsView.endReached: ✅
+ItemsView.endReachedWithin: ✅
+ItemsView.frameChanged: ✅
+ItemsView.itemActivated: ✅
+ItemsView.items: ✅
+ItemsView.itemsLayout: ✅
+ItemsView.realizedChanged: ✅
+ItemsView.scrollTo: ✅
+ItemsView.selectedItems: ✅
+ItemsView.selectionChanged: ✅
+ItemsView.selectionMode: 🪞 read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack

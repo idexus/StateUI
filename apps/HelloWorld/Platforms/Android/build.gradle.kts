@@ -54,3 +54,8 @@ android {
         jniLibs.keepDebugSymbols += "**/*.so"
     }
 }
+
+// The recycler an ItemsView stands on.
+dependencies {
+    implementation("androidx.recyclerview:recyclerview:1.4.0")
+}
