@@ -1,4 +1,4 @@
-# inputs 2309ac83359f7c4536bb0452f77f1d4e705f7acc
+# inputs 8efde1986cbcc17113ec964ce8d5f3b936231df0
 ActivityIndicator.tint: cannot read tint of ActivityIndicator - Android's driver has no path for it yet
 CheckBox.tint: cannot read tint of CheckBox - Android's driver has no path for it yet
 Picker.tint: cannot read tint of Picker - Android's driver has no path for it yet

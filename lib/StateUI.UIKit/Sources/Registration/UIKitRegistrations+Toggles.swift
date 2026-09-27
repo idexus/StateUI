@@ -36,6 +36,9 @@ extension UIKitRegistrations {
             radio.applies(TextMembers.members) { view, values in
                 if let words = TextMembers.words(values) { view.setText(words) }
                 if let look = TextMembers.look(values) { view.setLook(look) }
+                if values.changed(PaddingElementContract.padding) {
+                    view.setPadding(values[PaddingElementContract.padding])
+                }
             }
             radio.property(RadioButtonContract.isOn) { view, on in view.setOn(on ?? false) }
             radio.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }

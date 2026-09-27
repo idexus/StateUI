@@ -49,6 +49,7 @@ enum UIKitMenus {
         if !entry.isEnabled || !inReach { attributes.insert(.disabled) }
         if entry.isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
+        action.accessibilityIdentifier = entry.identifier
         element?.menuAction = action
         return action
     }

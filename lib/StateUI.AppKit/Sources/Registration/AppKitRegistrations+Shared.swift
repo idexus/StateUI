@@ -12,7 +12,6 @@ extension AppKitRegistrations {
     /// Design: docs/design/platforms/appkit/registrations.md#shared-members
     static func shared(_ registry: Registry<NSView>) {
         registry.everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
-        registry.everyElementRealizes(TintElementContract.tint)
 
         registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
         registry.everyElementRealizes(VisualElementContract.accessibilityHint)

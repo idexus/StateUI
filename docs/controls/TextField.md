@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 30 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
+| AppKit | ✅ | 32 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 42 ✅ | `UITextField` |  |
-| Android Views | ✅ | 59 ✅ | `EditText` |  |
+| Android Views | ✅ | 58 ✅ | `EditText` |  |
 | WinUI 3 | ⌛ |  | `TextBox` / `PasswordBox` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkEntry` / `GtkPasswordEntry` | no run of it on these sources |
 | Web |  |  | `<input>` | no host yet |
@@ -54,7 +54,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | · | ✅ | ✅ | ⌛ |  |  | cannot read isEnabled of TextField - AppKit's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ⌛ |  |  | Android Views: waits on TextField.isReadOnly; WinUI 3: a run of other sources said: ✅ |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -125,7 +125,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | · | ⌛ |  |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `inputPurpose` | property | `InputPurpose` | adaptive |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read inputPurpose of TextField - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isReadOnly` | property | `Bool` | native | ◐ | ✅ |  | ⌛ |  |  | cannot read isReadOnly of TextField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ⌛ |  |  | Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `maximumLength` | property | `Int` | native | ◐ | ✅ | ◐ | ⌛ |  |  | cannot read maximumLength of TextField - AppKit's driver has no path for it yet; Android Views: cannot read maximumLength of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

@@ -74,13 +74,13 @@
     public func realizes(_ member: String, on element: String, from tier: String?) -> Bool {
         switch judgement(of: member, on: element, from: tier) {
         case .complete?, .partial?: true
-        case .notPlanned?, nil: false
+        case .notPlanned?, .unrealized?, nil: false
         }
     }
 
     /// What is wrong with the records a host wrote: one naming a member no contract of its owner declares, one
-    /// written twice, a partial one saying nothing is missing, a never saying no reason - and an element called
-    /// both unrealized and never. Empty where nothing is.
+    /// written twice, a partial one saying nothing is missing, a never or an unrealized one saying no reason, an
+    /// unrealized one on a tier - and an element called both unrealized and never. Empty where nothing is.
     public var problems: [String] {
         var problems: [String] = []
         var seen: Set<String> = []
@@ -93,6 +93,11 @@
             switch record.judgement {
             case .partial(let missing) where missing.isEmpty: problems.append("\(named) is partial and says nothing is missing")
             case .notPlanned(let reason) where reason.isEmpty: problems.append("\(named) is never and says no reason")
+            case .unrealized(let why):
+                if why.isEmpty { problems.append("\(named) is unrealized and says no reason") }
+                if !LibraryContracts.elements.contains(where: { $0.nodeType.name == record.owner }) {
+                    problems.append("\(named) is unrealized on a tier, which only an element's record says")
+                }
             default: break
             }
         }

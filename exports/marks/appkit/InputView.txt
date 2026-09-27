@@ -1,7 +1,8 @@
-# inputs 31fe5616e35075a08f7f87131713ce0716405691
+# inputs 505bb7b06bbf3f277e066845545b97a58c9cc375
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
 SearchField.inputPurpose: not realized
-SearchField.isReadOnly: ◐ cannot read isReadOnly of SearchField - AppKit's driver has no path for it yet
+SearchField.isEnabled: ✅
+SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet
 SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet
 SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - AppKit's driver has no path for it yet
@@ -12,7 +13,8 @@ SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: cannot read cursorPosition of TextEditor - AppKit's driver has no path for it yet
 TextEditor.inputPurpose: not realized
-TextEditor.isReadOnly: ◐ cannot read isReadOnly of TextEditor - AppKit's driver has no path for it yet
+TextEditor.isEnabled: ✅
+TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet
 TextEditor.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet
 TextEditor.maximumLength: ◐ cannot read maximumLength of TextEditor - AppKit's driver has no path for it yet
@@ -23,7 +25,8 @@ TextEditor.text: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: cannot read cursorPosition of TextField - AppKit's driver has no path for it yet
 TextField.inputPurpose: not realized
-TextField.isReadOnly: ◐ cannot read isReadOnly of TextField - AppKit's driver has no path for it yet
+TextField.isEnabled: ✅
+TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet
 TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet
 TextField.maximumLength: ◐ cannot read maximumLength of TextField - AppKit's driver has no path for it yet

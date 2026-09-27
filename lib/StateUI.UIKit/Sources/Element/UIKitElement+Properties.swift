@@ -51,10 +51,6 @@ extension UIKitElement {
                 case .opacity: drawing?.ownOpacity = element.number(.opacity) ?? 1
                 case .isVisible: view.isHidden = !element.standsShown
                 case .background: view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
-                case .isEnabled:
-                    let enabled = element.bool(.isEnabled) ?? true
-                    (view as? UIControl)?.isEnabled = enabled
-                    (view as? UILabel)?.isEnabled = enabled
                 case .padding where type == .page:
                     let sides = value(.padding)?.numbers ?? []
                     (view as? UIKitSingleChildView)?.padding =

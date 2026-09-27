@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (87) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 29 ✅ · 1 ☑️ | `NSTextView` in an `NSScrollView` |  |
-| UIKit | ✅ | 35 ✅ | `UITextView` |  |
-| Android Views | ✅ | 58 ✅ | multi-line `EditText` |  |
+| AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSTextView` in an `NSScrollView` |  |
+| UIKit | ✅ | 36 ✅ | `UITextView` |  |
+| Android Views | ✅ | 57 ✅ | multi-line `EditText` |  |
 | WinUI 3 | ⌛ |  | multi-line `TextBox` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkTextView` | no run of it on these sources |
 | Web |  |  | `<textarea>` | no host yet |
@@ -51,7 +51,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | · | · | ✅ | ⌛ |  |  | cannot read isEnabled of TextEditor - AppKit's driver has no path for it yet; UIKit: cannot read isEnabled of TextEditor - UIKit's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ⌛ |  |  | Android Views: waits on TextEditor.isReadOnly; WinUI 3: a run of other sources said: ✅ |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -122,7 +122,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | · | ⌛ |  |  | cannot read cursorPosition of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of TextEditor - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `inputPurpose` | property | `InputPurpose` | adaptive |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read inputPurpose of TextEditor - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isReadOnly` | property | `Bool` | native | ◐ | ✅ |  | ⌛ |  |  | cannot read isReadOnly of TextEditor - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ⌛ |  |  | Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
 | `maximumLength` | property | `Int` | native | ◐ | ✅ | ◐ | ⌛ |  |  | cannot read maximumLength of TextEditor - AppKit's driver has no path for it yet; Android Views: cannot read maximumLength of TextEditor - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

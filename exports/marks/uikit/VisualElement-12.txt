@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Button.style: ✅
 Canvas.ignoresInput: not realized
@@ -11,7 +11,7 @@ Grid.background: cannot read background of Grid - UIKit's driver has no path for
 HStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Image.style: ✅
 Label.ignoresInput: not realized
-Line.isEnabled: cannot read isEnabled of Line - UIKit's driver has no path for it yet
+Line.isEnabled: not realized
 Line.zIndex: not realized
 Map.scaleY: not realized
 Path.rotationY: 🪞 read rotationY of Path: the host's own transform, checked against the layer it composed itself

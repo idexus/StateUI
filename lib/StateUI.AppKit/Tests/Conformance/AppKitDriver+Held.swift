@@ -94,6 +94,28 @@ extension AppKitDriver {
         }
     }
 
+    /// What a menu's entry or a toolbar's item holds, as its NSMenuItem or NSToolbarItem holds it.
+    func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem {
+            switch property {
+            case .text: return item.title.propValue
+            case .isEnabled: return item.isEnabled.propValue
+            case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
+            default: break
+            }
+        }
+        if element.type == .toolbarItem,
+           let item = try controller(of: element).toolbarForTesting
+               .itemForTesting(NSToolbarItem.Identifier("StateUI.action.\(element.mount)")) {
+            switch property {
+            case .text: return item.label.propValue
+            case .isEnabled: return item.isEnabled.propValue
+            default: break
+            }
+        }
+        throw DriverCannot(reading: property, of: element)
+    }
+
     /// A colour AppKit holds, in sRGB, as StateUI's.
     static func color(_ native: NSColor) -> Color {
         let rgb = native.usingColorSpace(.sRGB) ?? native

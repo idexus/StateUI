@@ -31,13 +31,13 @@
         for covered in proves {
             switch covered.judgement(in: register) {
             case .notPlanned(let reason)?: notPlanned[covered] = reason
-            case nil: notRealized.append(covered)
+            case .unrealized?, nil: notRealized.append(covered)
             case let judgement?: realized[covered] = judgement
             }
         }
         for need in needs where !proves.contains(need) {
             switch need.judgement(in: register) {
-            case .notPlanned?, nil: gaps.append(need)
+            case .notPlanned?, .unrealized?, nil: gaps.append(need)
             default: break
             }
         }

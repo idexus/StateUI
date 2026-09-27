@@ -31,6 +31,7 @@ extension UIKitDriver {
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
             case .isDestructive: return action.attributes.contains(.destructive).propValue
+            case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
             default: break
             }
         }

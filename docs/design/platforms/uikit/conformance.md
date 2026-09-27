@@ -47,9 +47,11 @@ nothing.
 A member's value is read from the view UIKit holds - a label's and a field's
 words, caret and selection, a button's title, a toggle's state, a slider's
 and a stepper's value and range, a picker's choices, a view's hiding, alpha
-and a control's enabled state, its transform as its layer holds it, what
-VoiceOver meets, a control's font and colours - never from what the host last
-wrote. A colour at a point is read from the screen: the view drawn as the
+and a control's enabled state, a button's and a label's padding, its
+transform as its layer holds it, what VoiceOver meets, a control's font and
+colours, a menu entry's and a bar item's action - never from what the host
+last wrote. A text view takes input while the user can edit or select it,
+and is read only while they can select it and not edit it. A colour at a point is read from the screen: the view drawn as the
 screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
 window's own hit testing at that point.
 

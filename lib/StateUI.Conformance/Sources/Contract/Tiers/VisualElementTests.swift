@@ -80,18 +80,22 @@
         }
     }
 
-    /// A view takes input or not as the tree says, and stops when the tree says so.
+    /// A view takes input or not as the tree says: made taking none, then taking it, then stopping again.
     static func enabled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesInputAsTheTreeSays", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let enabled = State(wrappedValue: true)
+            let enabled = State(wrappedValue: false)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.isEnabled, enabled.wrappedValue)], beside: [
-                    Button("Disable").onClicked { enabled.wrappedValue = false }.id("change"),
+                    Button("Change").onClicked { enabled.wrappedValue.toggle() }.id("change"),
                 ])
             }
             let view = try s.specimen(element)
+            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false, "made taking no input")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.held(VisualElementContract.isEnabled, on: view) == true }
             s.expect(try s.held(VisualElementContract.isEnabled, on: view), true)
 
             try s.perform(.activate, on: s.element("change"))

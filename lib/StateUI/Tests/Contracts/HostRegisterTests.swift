@@ -60,6 +60,23 @@ final class HostRegisterTests: XCTestCase {
         XCTAssertTrue(register.realizes("opacity", on: "Button", from: "VisualElement"))
     }
 
+    /// An element's unrealized record stands over its tier's: the tier's record still reaches every other wearer, and
+    /// the element's member neither runs nor counts as realized.
+    func testAnElementsUnrealizedRecordStandsOverItsTiers() {
+        let register = HostRegister(
+            records: [
+                .complete("PropertyContainer", "accessibilityIdentifier"),
+                .unrealized("ToolbarItem", "accessibilityIdentifier", why: "The toolbar item holds none."),
+            ],
+            unrealized: [], viewless: [])
+
+        XCTAssertEqual(
+            register.judgement(of: "accessibilityIdentifier", on: "ToolbarItem", from: "PropertyContainer"),
+            .unrealized(why: "The toolbar item holds none."))
+        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarItem", from: "PropertyContainer"))
+        XCTAssertTrue(register.realizes("accessibilityIdentifier", on: "Button", from: "PropertyContainer"))
+    }
+
     /// A tier's mark promises every wearer: a member a host realizes on only some of its elements wearing the
     /// tier declaring it is recorded on those alone, and one it realizes on all of them on the tier.
     func testAMemberRealizedOnSomeWearersIsRecordedOnThoseAlone() {
@@ -75,14 +92,15 @@ final class HostRegisterTests: XCTestCase {
     }
 
     /// What a host wrote by hand is checked against the contracts: a record naming what its owner does not
-    /// declare, one written twice, a partial one saying nothing is missing, a never saying no reason, and an element
-    /// both unrealized and never.
+    /// declare, one written twice, a partial one saying nothing is missing, a never or an unrealized one saying no
+    /// reason, an unrealized one on a tier, and an element both unrealized and never.
     func testTheProblemsOfWhatAHostWroteAreNamed() {
         let register = HostRegister(
             records: [
                 .complete("Button", "text"), .complete("Button", "text"), .complete("Button", "wings"),
                 .complete("TextElement", "textCase"), .partial("Label", "maximumLines", missing: ""),
-                .notPlanned("Label", "lineBreak", reason: ""),
+                .notPlanned("Label", "lineBreak", reason: ""), .unrealized("Label", "textCase", why: ""),
+                .unrealized("TextElement", "text", why: "Not here."),
             ],
             unrealized: ["Map"], viewless: [], notPlanned: ["Map": "No maps.", "MenuBar": ""])
 
@@ -91,6 +109,8 @@ final class HostRegisterTests: XCTestCase {
             "Button.wings names what no contract of Button declares",
             "Label.maximumLines is partial and says nothing is missing",
             "Label.lineBreak is never and says no reason",
+            "Label.textCase is unrealized and says no reason",
+            "TextElement.text is unrealized on a tier, which only an element's record says",
             "Map is both unrealized and never",
             "MenuBar is never and says no reason",
         ])

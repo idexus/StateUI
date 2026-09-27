@@ -29,6 +29,7 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
+            button.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             button.property(TextStyleElementContract.characterSpacing) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }

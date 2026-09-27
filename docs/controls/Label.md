@@ -13,7 +13,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (81) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ✅ | 34 ✅ | `UILabel`; `NSAttributedString` runs |  |
+| UIKit | ✅ | 35 ✅ | `UILabel`; `NSAttributedString` runs |  |
 | Android Views | ✅ | 54 ✅ | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ⌛ |  | `TextBlock`; `Run` inlines | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
@@ -175,4 +175,4 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | · | · | · | ⌛ |  |  | cannot read padding of Label - AppKit's driver has no path for it yet; UIKit: cannot read padding of Label - UIKit's driver has no path for it yet; Android Views: cannot read padding of Label - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `padding` | property | `Insets` | native | · | ✅ | · | ⌛ |  |  | cannot read padding of Label - AppKit's driver has no path for it yet; Android Views: cannot read padding of Label - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.scaleY: 🪞 read scaleY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotationY: 🪞 read rotationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotY: 🪞 read pivotY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -6,7 +6,7 @@ CheckBox.background: not realized
 ColorBox.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 DatePicker.style: ✅
 Ellipse.ignoresInput: not realized
-Grid.isEnabled: cannot read isEnabled of Grid - UIKit's driver has no path for it yet
+Grid.isEnabled: not realized
 Grid.zIndex: not realized
 HStack.scaleY: 🪞 read scaleY of HStack: the host's own transform, checked against the layer it composed itself
 Image.rotationY: 🪞 read rotationY of Image: the host's own transform, checked against the layer it composed itself
@@ -15,7 +15,7 @@ Line.background: not realized
 Map.accessibilityHeadingLevel: not realized
 Path.style: ✅
 Picker.ignoresInput: not realized
-Polygon.isEnabled: cannot read isEnabled of Polygon - UIKit's driver has no path for it yet
+Polygon.isEnabled: not realized
 Polygon.zIndex: not realized
 Polyline.scaleY: 🪞 read scaleY of Polyline: the host's own transform, checked against the layer it composed itself
 PositionIndicator.rotationY: not realized
@@ -33,6 +33,6 @@ TextField.background: not realized
 TimePicker.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 TitleBar.style: not realized
 VStack.ignoresInput: ✅
-WebView.isEnabled: cannot read isEnabled of WebView - UIKit's driver has no path for it yet
+WebView.isEnabled: not realized
 WebView.zIndex: not realized
 ZStack.scaleY: 🪞 read scaleY of ZStack: the host's own transform, checked against the layer it composed itself

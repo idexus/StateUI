@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.ignoresInput: not realized
 Button.isEnabled: ✅
 Button.zIndex: not realized
@@ -9,7 +9,7 @@ DatePicker.background: not realized
 Ellipse.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Grid.style: ✅
 HStack.ignoresInput: ✅
-Image.isEnabled: cannot read isEnabled of Image - UIKit's driver has no path for it yet
+Image.isEnabled: not realized
 Image.zIndex: not realized
 Label.scaleY: 🪞 read scaleY of Label: the host's own transform, checked against the layer it composed itself
 Line.rotationY: 🪞 read rotationY of Line: the host's own transform, checked against the layer it composed itself

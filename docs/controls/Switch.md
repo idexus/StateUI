@@ -121,4 +121,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | · |  |  | ⌛ |  |  | cannot read tint of Switch - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `tint` | property | `Color` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |

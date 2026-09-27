@@ -26,6 +26,7 @@ Canvas
 CheckBox
   isEnabled
   isOn
+  tint
   toggled()
 ColorBox
   background
@@ -104,6 +105,7 @@ Picker
   options
   selectedIndex
   textColor
+  tint
   title
   closed()
   opened()
@@ -190,6 +192,7 @@ Slider
   isEnabled
   maximum
   minimum
+  tint
   value
   dragCompleted()
   dragStarted()
@@ -294,7 +297,6 @@ VStack
   swipeDirection
   swipeThreshold
   tapCount
-  tint
   translationX
   translationY
   verticalAlignment

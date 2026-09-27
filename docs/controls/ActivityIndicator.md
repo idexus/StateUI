@@ -51,7 +51,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read isEnabled of ActivityIndicator - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isFocusedChanged` | event | `Bool` | native | · | · | · | ⌛ |  |  | cannot focus ActivityIndicator: it takes no keyboard focus here; UIKit: cannot focus ActivityIndicator: it takes no keyboard focus here; Android Views: cannot focus ActivityIndicator: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -120,4 +120,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read tint of ActivityIndicator - AppKit's driver has no path for it yet; Android Views: cannot read tint of ActivityIndicator - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `tint` | property | `Color` | adaptive |  | ✅ | · | ⌛ |  |  | not realized; Android Views: cannot read tint of ActivityIndicator - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

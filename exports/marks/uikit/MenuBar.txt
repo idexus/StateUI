@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 Menu.text: 🪞 read the menu of Window: the host's menu bar entries, not UIKit's main menu
 MenuBar: ✅
 MenuItem.clicked: ✅

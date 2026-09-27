@@ -12,7 +12,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (73) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 33 ✅ · 1 ☑️ | `NSSlider` |  |
+| AppKit | ✅ | 34 ✅ · 1 ☑️ | `NSSlider` |  |
 | UIKit | ✅ | 30 ✅ | `UISlider` |  |
 | Android Views | ✅ | 55 ✅ | `SeekBar` |  |
 | WinUI 3 | ⌛ |  | `Slider` | a run of other sources said: ✅ |
@@ -125,4 +125,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read tint of Slider - AppKit's driver has no path for it yet; Android Views: cannot read tint of Slider - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `tint` | property | `Color` | adaptive | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read tint of Slider - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

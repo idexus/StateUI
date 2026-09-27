@@ -1,6 +1,7 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 SearchField.cursorPosition: ✅
 SearchField.inputPurpose: cannot read inputPurpose of SearchField - UIKit's driver has no path for it yet
+SearchField.isEnabled: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
@@ -12,6 +13,7 @@ SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
 TextEditor.inputPurpose: cannot read inputPurpose of TextEditor - UIKit's driver has no path for it yet
+TextEditor.isEnabled: ✅
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
@@ -23,6 +25,7 @@ TextEditor.text: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: ✅
 TextField.inputPurpose: cannot read inputPurpose of TextField - UIKit's driver has no path for it yet
+TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅

@@ -23,8 +23,9 @@ protocol UIKitInputView: UIView, UITextInput {
     /// The words shown while there are none, in `color` where one is given.
     func setPlaceholder(_ placeholder: String?, color: UIColor?)
 
-    /// Whether the user can change the words, and what the keyboard is told of them.
-    func setBehaviour(readOnly: Bool, keyboard: UIKitKeyboard)
+    /// Whether the view takes input at all, whether the user can change the words, and what the keyboard is told of
+    /// them.
+    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard)
 
     /// The words' look: the view's own where it says nothing.
     func setLook(_ look: TextLook)
@@ -78,7 +79,8 @@ extension UIKitInputView where Self: UITextField {
             string: placeholder, attributes: color.map { [.foregroundColor: $0] } ?? [:])
     }
 
-    func setBehaviour(readOnly: Bool, keyboard: UIKitKeyboard) {
+    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
+        isEnabled = enabled
         typing.isReadOnly = readOnly
         keyboard.apply(to: self)
     }

@@ -1,8 +1,8 @@
-# inputs 31fe5616e35075a08f7f87131713ce0716405691
-ActivityIndicator.tint: cannot read tint of ActivityIndicator - AppKit's driver has no path for it yet
-CheckBox.tint: cannot read tint of CheckBox - AppKit's driver has no path for it yet
-Picker.tint: cannot read tint of Picker - AppKit's driver has no path for it yet
-ProgressBar.tint: cannot read tint of ProgressBar - AppKit's driver has no path for it yet
-SearchField.tint: cannot read tint of SearchField - AppKit's driver has no path for it yet
-Slider.tint: cannot read tint of Slider - AppKit's driver has no path for it yet
-Switch.tint: cannot read tint of Switch - AppKit's driver has no path for it yet
+# inputs 505bb7b06bbf3f277e066845545b97a58c9cc375
+ActivityIndicator.tint: not realized
+CheckBox.tint: ✅
+Picker.tint: ✅
+ProgressBar.tint: not realized
+SearchField.tint: not realized
+Slider.tint: ✅
+Switch.tint: not realized

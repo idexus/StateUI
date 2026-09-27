@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(InputViewContract.self).flatMap { element in
             [
-                typed(element), bounded(element), written(element), readOnly(element),
+                typed(element), bounded(element), written(element), readOnly(element), closed(element),
                 Aspects.holds(InputViewContract.maximumLength, on: element, 10, then: 3),
                 Aspects.holds(InputViewContract.placeholder, on: element, "Name", then: "E-mail"),
                 Aspects.holds(InputViewContract.placeholderColor, on: element, .red, then: .blue),
@@ -42,6 +42,31 @@
             s.turn()
             s.expect(words.wrappedValue, "kept", "the state keeps its words")
             s.expect(try s.held(TextElementContract.text, on: view), "kept", "and so does the field")
+        }
+    }
+
+    /// A field the tree closes to input stays closed whatever else of its behaviour the tree writes.
+    static func closed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviourChanges", proves: [
+            Covered(VisualElementContract.isEnabled, on: element),
+        ], needs: [Covered(InputViewContract.isReadOnly, on: element), Covered(ButtonContract.clicked)]) { s in
+            let words = State(wrappedValue: "kept")
+            let readOnly = State(wrappedValue: true)
+            s.start {
+                VStack {
+                    field(element, words, [
+                        Write(VisualElementContract.isEnabled, false),
+                        Write(InputViewContract.isReadOnly, readOnly.wrappedValue),
+                    ])
+                    Button("Open").onClicked { readOnly.wrappedValue = false }.id("open")
+                }
+            }
+            let view = try s.element("field")
+            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false)
+
+            try s.perform(.activate, on: s.element("open"))
+            s.turn()
+            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false, "no longer read only, still closed")
         }
     }
 

@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.pivotY: 🪞 read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: cannot read background of Button - UIKit's driver has no path for it yet
 Canvas.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
@@ -13,7 +13,7 @@ Image.background: not realized
 Label.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Line.style: ✅
 Map.ignoresInput: not realized
-Path.isEnabled: cannot read isEnabled of Path - UIKit's driver has no path for it yet
+Path.isEnabled: not realized
 Path.zIndex: not realized
 Picker.scaleY: 🪞 read scaleY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotationY: 🪞 read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
@@ -22,7 +22,7 @@ PositionIndicator.background: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 RadioButton.style: ✅
 Rectangle.ignoresInput: not realized
-ScrollView.isEnabled: cannot read isEnabled of ScrollView - UIKit's driver has no path for it yet
+ScrollView.isEnabled: not realized
 ScrollView.zIndex: not realized
 SearchField.scaleY: 🪞 read scaleY of SearchField: the host's own transform, checked against the layer it composed itself
 Slider.rotationY: 🪞 read rotationY of Slider: the host's own transform, checked against the layer it composed itself

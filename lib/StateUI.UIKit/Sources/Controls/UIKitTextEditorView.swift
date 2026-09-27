@@ -58,8 +58,10 @@ final class UIKitTextEditorView: UITextView, UIKitInputView {
         setNeedsLayout()
     }
 
-    func setBehaviour(readOnly: Bool, keyboard: UIKitKeyboard) {
-        isEditable = !readOnly
+    /// Editable only while it takes input, as a text view made editable is made selectable too.
+    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
+        isEditable = enabled && !readOnly
+        isSelectable = enabled
         keyboard.apply(to: self)
     }
 

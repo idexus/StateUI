@@ -1,9 +1,9 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.background: not realized
 Button.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Canvas.style: ✅
 CheckBox.ignoresInput: not realized
-ColorBox.isEnabled: cannot read isEnabled of ColorBox - UIKit's driver has no path for it yet
+ColorBox.isEnabled: not realized
 ColorBox.zIndex: not realized
 DatePicker.scaleY: 🪞 read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself
 Ellipse.rotationY: 🪞 read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
@@ -21,7 +21,7 @@ Polyline.background: not realized
 PositionIndicator.accessibilityHeadingLevel: not realized
 ProgressBar.style: ✅
 RadioButton.ignoresInput: not realized
-Rectangle.isEnabled: cannot read isEnabled of Rectangle - UIKit's driver has no path for it yet
+Rectangle.isEnabled: not realized
 Rectangle.zIndex: not realized
 ScrollView.scaleY: 🪞 read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
 SearchField.rotationY: 🪞 read rotationY of SearchField: the host's own transform, checked against the layer it composed itself

@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (89) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 35 ✅ · 1 ☑️ | `NSSearchField` |  |
+| AppKit | ✅ | 36 ✅ · 1 ☑️ | `NSSearchField` |  |
 | UIKit | ✅ | 41 ✅ | `UISearchBar` |  |
-| Android Views | ✅ | 59 ✅ | `SearchView` |  |
+| Android Views | ✅ | 58 ✅ | `SearchView` |  |
 | WinUI 3 | ⌛ |  | `AutoSuggestBox` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkSearchEntry` | no run of it on these sources |
 | Web |  |  | `<input type=search>` | no host yet |
@@ -52,7 +52,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ⌛ |  |  | Android Views: waits on SearchField.isReadOnly; WinUI 3: a run of other sources said: ✅ |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
@@ -123,7 +123,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | · | ⌛ |  |  | cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read cursorPosition of SearchField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
 | `inputPurpose` | property | `InputPurpose` | adaptive |  | · |  | ⌛ |  |  | not realized; UIKit: cannot read inputPurpose of SearchField - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
-| `isReadOnly` | property | `Bool` | native | ◐ | ✅ |  | ⌛ |  |  | cannot read isReadOnly of SearchField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ⌛ |  |  | Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ |  | ⌛ |  |  | cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
 | `maximumLength` | property | `Int` | native | ◐ | ✅ | ◐ | ⌛ |  |  | cannot read maximumLength of SearchField - AppKit's driver has no path for it yet; Android Views: cannot read maximumLength of SearchField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
@@ -176,4 +176,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | · |  |  | ⌛ |  |  | cannot read tint of SearchField - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `tint` | property | `Color` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |

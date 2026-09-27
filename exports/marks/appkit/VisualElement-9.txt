@@ -1,4 +1,4 @@
-# inputs 31fe5616e35075a08f7f87131713ce0716405691
+# inputs 505bb7b06bbf3f277e066845545b97a58c9cc375
 ActivityIndicator.style: ✅
 Button.ignoresInput: ✅
 Canvas.isEnabled: not realized
@@ -28,7 +28,7 @@ SearchField.background: ☑️ AppKit paints a colour on this view; a brush is d
 Slider.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Stepper.style: ✅
 Switch.ignoresInput: ✅
-TextEditor.isEnabled: cannot read isEnabled of TextEditor - AppKit's driver has no path for it yet
+TextEditor.isEnabled: ✅
 TextEditor.zIndex: not realized
 TextField.scaleY: 🪞 read scaleY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotationY: 🪞 read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself

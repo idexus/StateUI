@@ -12,6 +12,8 @@
         case partial(missing: String)
         /// Not planned for the host's family, which meets the contract there; why.
         case notPlanned(reason: String)
+        /// Not realized on this element, though a tier's record reaches it; why.
+        case unrealized(why: String)
     }
 
     /// The element, or the tier, the member is judged on.
@@ -43,5 +45,10 @@
     /// `member` of `owner`, not planned for the host's family: `reason` says why.
     public static func notPlanned(_ owner: String, _ member: String, reason: String) -> HostRecord {
         HostRecord(owner: owner, member: member, judgement: .notPlanned(reason: reason))
+    }
+
+    /// `member` of the element `owner`, not realized there though a tier's record reaches it: `why` says why.
+    public static func unrealized(_ owner: String, _ member: String, why: String) -> HostRecord {
+        HostRecord(owner: owner, member: member, judgement: .unrealized(why: why))
     }
 }

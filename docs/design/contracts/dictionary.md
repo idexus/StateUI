@@ -78,9 +78,18 @@ host does not realize, or its driver cannot read, never hides that the host
 makes the element. A tier's row groups the elements wearing the tier
 that the host's run judged - made, or never had.
 
+A tier's record reaches every element wearing the tier, and what the
+host's shared machinery realizes becomes one: it serves each view the host
+makes. Where an element wearing the tier does not take such a member - a
+toolbar item AppKit holds as no view - the element's own record says so,
+`.unrealized("ToolbarItem", "accessibilityIdentifier", why:)`, and stands
+over the tier's: the member's case does not run there and its cell stays
+empty. An element's record is the only one that says unrealized.
+
 A host checks its own register in its suite (`HostRegister.problems`): a
 record naming what its owner does not declare, one written twice, a partial
-one saying nothing is missing, a never saying no reason.
+one saying nothing is missing, a never or an unrealized one saying no
+reason, an unrealized one on a tier.
 
 ```text
   ✅   proven by every test of it that ran on that host

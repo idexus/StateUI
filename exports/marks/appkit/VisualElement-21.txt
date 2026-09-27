@@ -1,4 +1,4 @@
-# inputs 31fe5616e35075a08f7f87131713ce0716405691
+# inputs 505bb7b06bbf3f277e066845545b97a58c9cc375
 ActivityIndicator.rotationY: 🪞 read rotationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotY: 🪞 read pivotY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.

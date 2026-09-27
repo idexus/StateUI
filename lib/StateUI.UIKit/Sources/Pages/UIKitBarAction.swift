@@ -6,14 +6,15 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// One of a page's actions: its words, its picture, whether it can be taken or destroys something, and what taking
-/// it does.
+/// One of a page's actions: its words, its picture, whether it can be taken or destroys something, the identifier
+/// automation finds it by, and what taking it does.
 @MainActor
 struct UIKitBarAction {
     let title: String
     let icon: String?
     let isEnabled: Bool
     let isDestructive: Bool
+    let identifier: String?
     let perform: () -> Void
 
     /// The element of the item, which keeps the action UIKit was last handed.
@@ -28,6 +29,7 @@ struct UIKitBarAction {
     var barItem: UIBarButtonItem {
         let item = UIBarButtonItem(primaryAction: menuAction)
         item.isEnabled = isEnabled
+        item.accessibilityIdentifier = identifier
         if isDestructive { item.tintColor = .systemRed }
         return item
     }
@@ -39,6 +41,7 @@ struct UIKitBarAction {
         if !isEnabled { attributes.insert(.disabled) }
         if isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
+        action.accessibilityIdentifier = identifier
         element?.menuAction = action
         return action
     }

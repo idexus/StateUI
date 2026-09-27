@@ -1,4 +1,4 @@
-# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
+# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
@@ -12,7 +12,7 @@ Image.accessibilityIdentifier: ✅
 Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
-MenuItem.accessibilityIdentifier: cannot read accessibilityIdentifier of MenuItem - UIKit's driver has no path for it yet
+MenuItem.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
@@ -34,7 +34,7 @@ TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
-ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - UIKit's driver has no path for it yet
+ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

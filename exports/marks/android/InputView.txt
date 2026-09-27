@@ -1,6 +1,7 @@
-# inputs 2309ac83359f7c4536bb0452f77f1d4e705f7acc
+# inputs 8efde1986cbcc17113ec964ce8d5f3b936231df0
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - Android's driver has no path for it yet
 SearchField.inputPurpose: not realized
+SearchField.isEnabled: waits on SearchField.isReadOnly
 SearchField.isReadOnly: not realized
 SearchField.isSpellCheckEnabled: not realized
 SearchField.isTextPredictionEnabled: not realized
@@ -12,6 +13,7 @@ SearchField.text: ◐ waits on SearchField.isReadOnly
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: cannot read cursorPosition of TextEditor - Android's driver has no path for it yet
 TextEditor.inputPurpose: not realized
+TextEditor.isEnabled: waits on TextEditor.isReadOnly
 TextEditor.isReadOnly: not realized
 TextEditor.isSpellCheckEnabled: not realized
 TextEditor.isTextPredictionEnabled: not realized
@@ -23,6 +25,7 @@ TextEditor.text: ◐ waits on TextEditor.isReadOnly
 TextEditor.textChanged: ✅
 TextField.cursorPosition: cannot read cursorPosition of TextField - Android's driver has no path for it yet
 TextField.inputPurpose: not realized
+TextField.isEnabled: waits on TextField.isReadOnly
 TextField.isReadOnly: not realized
 TextField.isSpellCheckEnabled: not realized
 TextField.isTextPredictionEnabled: not realized

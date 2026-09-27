@@ -122,6 +122,7 @@ final class AppKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue
@@ -147,6 +148,9 @@ final class AppKitDriver: HostDriver {
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
         case (.options, let picker as AppKitPickerView): return picker.itemTitles.propValue
         case (.title, let picker as AppKitPickerView): return picker.title.propValue
+        case (.tint, let picker as AppKitPickerView): return picker.contentTintForTesting.map { Self.color($0).propValue }
+        case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }
+        case (.tint, let slider as AppKitSliderView): return slider.trackFillColor.map { Self.color($0).propValue }
         case (.date, let picker as AppKitDateTimePickerView): return Self.day(picker.valueLanesForTesting)?.propValue
         case (.minimumDate, let picker as AppKitDateTimePickerView):
             return picker.minimumLanesForTesting.flatMap(Self.day)?.propValue
@@ -160,6 +164,14 @@ final class AppKitDriver: HostDriver {
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue
+        case (.isEnabled, let field as AppKitTextFieldView): return field.textField.isEnabled.propValue
+        case (.isReadOnly, let field as AppKitTextFieldView): return (!field.textField.isEditable).propValue
+        case (.isReadOnly, let search as AppKitSearchFieldView): return (!search.isEditable).propValue
+        // A text view takes input while the user can edit or select it, and is read only while they can only select.
+        case (.isEnabled, let editor as AppKitTextEditorView):
+            return (editor.textView.isEditable || editor.textView.isSelectable).propValue
+        case (.isReadOnly, let editor as AppKitTextEditorView):
+            return (!editor.textView.isEditable && editor.textView.isSelectable).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
         case (_, let view?):

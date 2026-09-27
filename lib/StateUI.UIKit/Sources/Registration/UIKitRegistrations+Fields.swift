@@ -72,13 +72,12 @@ extension UIKitRegistrations {
                 values[InputViewContract.placeholder],
                 color: values[InputViewContract.placeholderColor].flatMap { UIColor(stateUI: $0.propValue) })
         }
-        if values.changed(VisualElementContract.isEnabled) {
-            (view as? UIControl)?.isEnabled = values[VisualElementContract.isEnabled] ?? true
-            (view as? UITextView)?.isSelectable = values[VisualElementContract.isEnabled] ?? true
-        }
-        if values.changed(InputViewContract.isReadOnly) || values.changed(InputViewContract.isSpellCheckEnabled)
-            || values.changed(InputViewContract.isTextPredictionEnabled) || values.changed(InputViewContract.inputPurpose) {
+        if values.changed(VisualElementContract.isEnabled) || values.changed(InputViewContract.isReadOnly)
+            || values.changed(InputViewContract.isSpellCheckEnabled)
+            || values.changed(InputViewContract.isTextPredictionEnabled)
+            || values.changed(InputViewContract.inputPurpose) {
             view.setBehaviour(
+                enabled: values[VisualElementContract.isEnabled] ?? true,
                 readOnly: values[InputViewContract.isReadOnly] ?? false,
                 keyboard: UIKitKeyboard(
                     spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,

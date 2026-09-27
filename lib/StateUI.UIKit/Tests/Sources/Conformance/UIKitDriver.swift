@@ -233,7 +233,7 @@ final class UIKitDriver: HostDriver {
         case (.isSpellCheckEnabled, let editor as UITextView): return (editor.spellCheckingType != .no).propValue
         case (.isTextPredictionEnabled, let field as UITextField): return (field.autocorrectionType != .no).propValue
         case (.isTextPredictionEnabled, let editor as UITextView): return (editor.autocorrectionType != .no).propValue
-        case (.isReadOnly, let editor as UIKitTextEditorView): return (!editor.isEditable).propValue
+        case (.isReadOnly, let editor as UIKitTextEditorView): return (!editor.isEditable && editor.isSelectable).propValue
         case (.isReadOnly, let field as any UIKitInputView): return field.typing.isReadOnly.propValue
         case (.maximumLength, let field as any UIKitInputView): return field.typing.maximumLength.map(\.propValue)
         case (.isPassword, let field as UITextField): return field.isSecureTextEntry.propValue
@@ -273,6 +273,12 @@ final class UIKitDriver: HostDriver {
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue
+        case (.isEnabled, let editor as UITextView): return (editor.isEditable || editor.isSelectable).propValue
+        case (.padding, let button as UIButton):
+            guard let insets = button.configuration?.contentInsets else { return nil }
+            return Insets(insets.leading, insets.top, insets.trailing, insets.bottom).propValue
+        case (.padding, let label as UIKitLabelView):
+            return Insets(label.padding.left, label.padding.top, label.padding.right, label.padding.bottom).propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)
