@@ -101,9 +101,9 @@ TitleBar.pointerReleased: not realized
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
-WebView.panTouchCount: not realized
-WebView.panUpdated: not realized
-WebView.panXChannel: not realized
+WebView.panTouchCount: ✅
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
 ZStack.frameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅

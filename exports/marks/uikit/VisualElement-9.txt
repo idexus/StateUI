@@ -34,5 +34,5 @@ TextField.scaleY: ✅
 TimePicker.rotationY: ✅
 TitleBar.pivotY: not realized
 VStack.background: cannot read background of VStack - UIKit's driver has no path for it yet
-WebView.accessibilityHeadingLevel: not realized
+WebView.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 ZStack.style: not realized

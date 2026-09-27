@@ -102,8 +102,8 @@ TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
 TitleBar.pinchUpdated: not realized
 VStack.panYChannel: ✅
-WebView.tapCount: not realized
-WebView.tapped: not realized
+WebView.tapCount: ✅
+WebView.tapped: ✅
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅

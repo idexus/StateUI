@@ -320,10 +320,10 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | `prompt` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
 | `utcOffset` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
 | `moveToRegion` | [Map](controls/Map.md) |  |  |  |  |  |  |
-| `evaluateJavaScript` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
-| `goBack` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
-| `goForward` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
-| `reload` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
+| `evaluateJavaScript` | [WebView](controls/WebView.md) |  | ✅ |  | ✅ |  |  |
+| `goBack` | [WebView](controls/WebView.md) |  | ✅ |  | ✅ |  |  |
+| `goForward` | [WebView](controls/WebView.md) |  | ✅ |  | ✅ |  |  |
+| `reload` | [WebView](controls/WebView.md) |  | ✅ |  | ✅ |  |  |
 <!-- acts:end -->
 
 ## Shared view members
@@ -453,9 +453,9 @@ Every control, and every part an application, its windows and its pages are made
 | [TimePicker](controls/TimePicker.md) | 78 | 57 ✅ · 2 ☑️ | 54 ✅ |  | 56 ✅ | 57 ✅ |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
-| [WebView](controls/WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
+| [WebView](controls/WebView.md) | 77 |  | 61 ✅ |  | 60 ✅ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1610 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1671 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 

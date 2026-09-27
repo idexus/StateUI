@@ -42,7 +42,7 @@ TextField.rotation: ✅
 TimePicker.layoutDirection: not realized
 TitleBar.isAccessibilityHidden: not realized
 VStack.accessibilityLabel: ✅
-WebView.frame: not realized
+WebView.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.width: ✅

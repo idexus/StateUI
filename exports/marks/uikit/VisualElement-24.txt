@@ -33,6 +33,6 @@ TextField.background: not realized
 TimePicker.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 TitleBar.style: not realized
 VStack.ignoresInput: ✅
-WebView.isEnabled: not realized
+WebView.isEnabled: cannot read isEnabled of WebView - UIKit's driver has no path for it yet
 WebView.zIndex: not realized
 ZStack.scaleY: ✅

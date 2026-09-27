@@ -34,5 +34,5 @@ TimePicker.style: not realized
 TitleBar.ignoresInput: not realized
 VStack.isEnabled: cannot read isEnabled of VStack - UIKit's driver has no path for it yet
 VStack.zIndex: not realized
-WebView.scaleY: not realized
+WebView.scaleY: ✅
 ZStack.rotationY: ✅

@@ -40,8 +40,8 @@ TextField.layoutDirection: not realized
 TimePicker.isAccessibilityHidden: ✅
 TitleBar.accessibilityLabel: not realized
 VStack.frame: ✅
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.width: not realized
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.width: ✅
 ZStack.isVisible: ✅
 ZStack.translationX: ✅

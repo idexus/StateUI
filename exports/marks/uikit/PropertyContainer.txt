@@ -36,5 +36,5 @@ TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - UIKit's driver has no path for it yet
 VStack.accessibilityIdentifier: ✅
-WebView.accessibilityIdentifier: not realized
+WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

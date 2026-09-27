@@ -58,5 +58,5 @@ TitleBar.minimumHeight: not realized
 TitleBar.minimumWidth: not realized
 VStack.opacity: ✅
 VStack.translationY: ✅
-WebView.scaleX: not realized
+WebView.scaleX: ✅
 ZStack.rotationX: ✅

@@ -58,5 +58,5 @@ TimePicker.minimumWidth: ✅
 TitleBar.opacity: not realized
 TitleBar.translationY: not realized
 VStack.scaleX: ✅
-WebView.rotationX: not realized
+WebView.rotationX: ✅
 ZStack.pivotX: ✅

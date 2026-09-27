@@ -42,5 +42,5 @@ TitleBar.height: not realized
 TitleBar.width: not realized
 VStack.isVisible: ✅
 VStack.translationX: ✅
-WebView.scale: not realized
+WebView.scale: ✅
 ZStack.rotation: ✅

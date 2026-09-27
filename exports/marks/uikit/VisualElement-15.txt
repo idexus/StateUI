@@ -34,5 +34,5 @@ TimePicker.isEnabled: ✅
 TimePicker.zIndex: not realized
 TitleBar.scaleY: not realized
 VStack.rotationY: ✅
-WebView.pivotY: not realized
+WebView.pivotY: ✅
 ZStack.background: cannot read background of ZStack - UIKit's driver has no path for it yet

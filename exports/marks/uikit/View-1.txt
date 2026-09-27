@@ -102,8 +102,8 @@ TitleBar.swiped: not realized
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
-WebView.frameChanged: not realized
-WebView.gridColumnSpan: not realized
-WebView.gridRowSpan: not realized
+WebView.frameChanged: ✅
+WebView.gridColumnSpan: ✅
+WebView.gridRowSpan: ✅
 ZStack.area: ✅
 ZStack.frameChanged: ✅

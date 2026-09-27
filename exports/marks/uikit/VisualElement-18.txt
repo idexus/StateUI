@@ -34,5 +34,5 @@ TimePicker.ignoresInput: not realized
 TitleBar.isEnabled: not realized
 TitleBar.zIndex: not realized
 VStack.scaleY: ✅
-WebView.rotationY: not realized
+WebView.rotationY: ✅
 ZStack.pivotY: ✅

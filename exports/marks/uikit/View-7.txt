@@ -99,11 +99,11 @@ VStack.drop: not realized
 VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.verticalAlignment: ✅
-WebView.pointerEntered: not realized
-WebView.pointerExited: not realized
-WebView.pointerMoved: not realized
-WebView.pointerPressed: not realized
-WebView.pointerReleased: not realized
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
 ZStack.swipeDirection: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

@@ -105,5 +105,5 @@ VStack.dragText: not realized
 VStack.dropCompleted: not realized
 VStack.frameChanged: ✅
 VStack.margin: ✅
-WebView.pinchUpdated: not realized
+WebView.pinchUpdated: ✅
 ZStack.panYChannel: ✅

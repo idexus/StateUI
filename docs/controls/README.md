@@ -46,9 +46,9 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TimePicker](TimePicker.md) | 78 | 57 ✅ · 2 ☑️ | 54 ✅ |  | 56 ✅ | 57 ✅ |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
-| [WebView](WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
+| [WebView](WebView.md) | 77 |  | 61 ✅ |  | 60 ✅ |  |  |
 | [ZStack](ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1610 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1671 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure

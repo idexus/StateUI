@@ -149,6 +149,9 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.endContent, let web as UIKitWebView):
+            // As WebKit tells it when the page's process dies.
+            web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
         case (.focus, let view?):
             // A finger in a field: it takes the keyboard.
             guard let focusable = Self.focusable(in: view) else { throw DriverCannot(act, on: element) }
@@ -242,6 +245,7 @@ final class UIKitDriver: HostDriver {
             return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
+        case (.userAgent, let web as UIKitWebView): return web.customUserAgent.propValue
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue

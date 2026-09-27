@@ -22,6 +22,7 @@ enum UIKitRegistrations {
         shapes(registry)
         layouts(registry)
         scrolling(registry)
+        web(registry)
         shared(registry)
         return registry
     }()

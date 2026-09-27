@@ -56,9 +56,9 @@ TextField.rotationX: ✅
 TimePicker.pivotX: ✅
 TitleBar.automationExcludedWithChildren: not realized
 VStack.accessibilityHint: ✅
-WebView.focus: not realized
-WebView.isFocusedChanged: not realized
-WebView.unfocus: not realized
+WebView.focus: ✅
+WebView.isFocusedChanged: ✅
+WebView.unfocus: ✅
 ZStack.frameChanged: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅

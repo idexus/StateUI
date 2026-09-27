@@ -42,5 +42,5 @@ TextField.translationX: ✅
 TimePicker.scale: ✅
 TitleBar.rotation: not realized
 VStack.layoutDirection: not realized
-WebView.isAccessibilityHidden: not realized
+WebView.isAccessibilityHidden: ✅
 ZStack.accessibilityLabel: ✅

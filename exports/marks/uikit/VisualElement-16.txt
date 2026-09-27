@@ -42,5 +42,5 @@ TimePicker.width: ✅
 TitleBar.isVisible: not realized
 TitleBar.translationX: not realized
 VStack.scale: ✅
-WebView.rotation: not realized
+WebView.rotation: ✅
 ZStack.layoutDirection: not realized

@@ -101,9 +101,9 @@ VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
-WebView.swipeDirection: not realized
-WebView.swipeThreshold: not realized
-WebView.swiped: not realized
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅

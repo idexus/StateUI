@@ -14,7 +14,7 @@ enum UIKitRealization {
         "Canvas", "Content", "LeadingContent", "Map",
         "Pin", "PositionIndicator",
         "TitleBar", "TrailingContent",
-        "WebView",
+       
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -71,7 +71,8 @@ enum UIKitRealization {
     @MainActor static var declaration: HostDeclaration {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
-            realization: registry.realization, shared: registry.sharedNames, acts: HostActs.performed.map(\.name))
+            realization: registry.realization, shared: registry.sharedNames,
+            acts: (HostActs.performed + UIKitRegistrations.webActs).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

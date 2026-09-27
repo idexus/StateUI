@@ -57,6 +57,6 @@ VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
-WebView.opacity: not realized
-WebView.translationY: not realized
+WebView.opacity: ✅
+WebView.translationY: ✅
 ZStack.scaleX: ✅

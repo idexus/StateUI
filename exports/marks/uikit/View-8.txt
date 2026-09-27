@@ -104,6 +104,6 @@ WebView.canDrag: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
 WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.margin: not realized
+WebView.frameChanged: ✅
+WebView.margin: ✅
 ZStack.pinchUpdated: ✅

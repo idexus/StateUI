@@ -99,9 +99,9 @@ WebView.allowDrop: not realized
 WebView.dragLeave: not realized
 WebView.dragOver: not realized
 WebView.drop: not realized
-WebView.frameChanged: not realized
-WebView.horizontalAlignment: not realized
-WebView.verticalAlignment: not realized
+WebView.frameChanged: ✅
+WebView.horizontalAlignment: ✅
+WebView.verticalAlignment: ✅
 ZStack.pointerEntered: ✅
 ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅

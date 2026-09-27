@@ -89,8 +89,35 @@ final class UIKitActToolkit: ActToolkit {
         return true
     }
 
+    /// A web view's own acts: stepping back or forward, loading again, running a script - which answers once the
+    /// page has run it.
     func performOwn(_ call: HostActCall) -> Bool {
-        false
+        guard [.goBack, .goForward, .reload, .evaluateJavaScript].contains(call.act) else { return false }
+        let core = CoreLink()
+        let element: MountedElement
+        do {
+            element = try renderer.runtime.tree.aimed(call)
+        } catch {
+            core.fail(call, error.reason, log: { UIKitRenderer.log.error($0) })
+            return true
+        }
+        guard let web = (element.native as? UIKitElement)?.view as? UIKitWebView else {
+            core.fail(call, "\(call.act.name) is an act of a web view", log: { UIKitRenderer.log.error($0) })
+            return true
+        }
+        switch call.act {
+        case .goBack: web.step(.back)
+        case .goForward: web.step(.forward)
+        case .reload: web.step(.refresh)
+        default:
+            web.evaluate(call.arguments.value(1)?.string ?? "") { [weak renderer] answer in
+                core.reply(call, [answer.propValue])
+                renderer?.runtime.pump.turn()
+            }
+            return true
+        }
+        core.reply(call, [])
+        return true
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

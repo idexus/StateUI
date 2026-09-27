@@ -97,9 +97,9 @@ TimePicker.pinchUpdated: ✅
 TitleBar.panYChannel: not realized
 VStack.tapCount: ✅
 VStack.tapped: ✅
-WebView.frameChanged: not realized
-WebView.gridColumn: not realized
-WebView.gridRow: not realized
+WebView.frameChanged: ✅
+WebView.gridColumn: ✅
+WebView.gridRow: ✅
 ZStack.allowDrop: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized

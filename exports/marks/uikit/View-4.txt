@@ -104,6 +104,6 @@ TitleBar.dropCompleted: not realized
 TitleBar.frameChanged: not realized
 TitleBar.margin: not realized
 VStack.pinchUpdated: ✅
-WebView.panYChannel: not realized
+WebView.panYChannel: ✅
 ZStack.tapCount: ✅
 ZStack.tapped: ✅

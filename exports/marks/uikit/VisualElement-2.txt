@@ -54,10 +54,10 @@ TitleBar.accessibilityHint: not realized
 VStack.focus: ✅
 VStack.isFocusedChanged: ✅
 VStack.unfocus: ✅
-WebView.frameChanged: not realized
-WebView.maximumHeight: not realized
-WebView.maximumWidth: not realized
-WebView.minimumHeight: not realized
-WebView.minimumWidth: not realized
+WebView.frameChanged: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
 ZStack.opacity: ✅
 ZStack.translationY: ✅

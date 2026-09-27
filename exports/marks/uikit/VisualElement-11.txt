@@ -58,5 +58,5 @@ TextField.translationY: ✅
 TimePicker.scaleX: ✅
 TitleBar.rotationX: not realized
 VStack.pivotX: ✅
-WebView.automationExcludedWithChildren: not realized
+WebView.automationExcludedWithChildren: ✅
 ZStack.accessibilityHint: ✅

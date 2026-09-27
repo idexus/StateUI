@@ -58,5 +58,5 @@ TimePicker.opacity: ✅
 TimePicker.translationY: ✅
 TitleBar.scaleX: not realized
 VStack.rotationX: ✅
-WebView.pivotX: not realized
+WebView.pivotX: ✅
 ZStack.automationExcludedWithChildren: ✅
