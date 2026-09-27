@@ -34,7 +34,7 @@ final class UIKitViewDrawing {
     /// How opaque the view stands, as the element says.
     var opacity: Double { ownOpacity }
 
-    private weak var view: UIView?
+    private(set) weak var view: UIView?
 
     init(_ view: UIView) {
         self.view = view

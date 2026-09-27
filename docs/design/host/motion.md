@@ -46,6 +46,18 @@ same - a gradient moves its geometry, stops and colours, never its kind or
 stop count. A brush property moves only between two colours or two well-formed
 brushes of one shape; anything else snaps. A themed value never moves.
 
+## What travels
+
+A host moves frame by frame only what its views present and whose values
+travel: `TransitionSurface` names them, element type by element type - a
+view's opacity, background, size and transform; a colour box's colour and
+corners; a label's size and colour of type; a layout's padding and spacing;
+a shape's fill and stroke; a window's place. A backend answers
+`animates(_:)` from it, and the host layer then walks the value and hands
+the backend each frame's. Every other pair arrives at once, rather than
+keeping a motion alive that nothing shows: a host that answers no pair
+animates nothing, however the tree asks.
+
 ## Layout motion
 
 A layout works out where each child goes; `LayoutMotion` decides where the

@@ -12,8 +12,8 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UIBarButtonItem` | a run of other sources said: ✅ |
+| AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ |  | `UIBarButtonItem` |  |
 | Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |

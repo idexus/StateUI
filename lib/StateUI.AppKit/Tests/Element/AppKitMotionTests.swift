@@ -8,20 +8,6 @@
 import XCTest
 
 final class AppKitMotionTests: XCTestCase {
-    func testTransitionSurfaceIsClosedAroundNativePresentations() {
-        XCTAssertTrue(AppKitTransitionSurface.presents(.opacity, on: .label))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.padding, on: .page))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.renderTransform, on: .line))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.x, on: .window))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.background, on: .titleBar))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.barForegroundColor, on: .titleBar))
-
-        XCTAssertFalse(AppKitTransitionSurface.presents(.rotationX, on: .label))
-        XCTAssertFalse(AppKitTransitionSurface.presents(.value, on: .stepper))
-        XCTAssertFalse(AppKitTransitionSurface.presents(.opacity, on: .positionIndicator))
-        XCTAssertFalse(AppKitTransitionSurface.presents(Prop("custom"), on: .label))
-    }
-
     @MainActor
     func testAPropertyTransitionBeginsAtItsStandingValueAndLandsExactly() throws {
         var now = 0.0

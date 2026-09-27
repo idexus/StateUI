@@ -1,4 +1,4 @@
-# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
+# inputs 4743f7a0442396c73d979658f725a5cee6451a87
 Label.text: ✅
 Slider: ✅
 Slider.dragCompleted: cannot drag on Slider - AppKit's driver has no path for it yet

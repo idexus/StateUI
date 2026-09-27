@@ -12,8 +12,8 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (76) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSCollectionView` / `NSTableView` | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UICollectionView` | a run of other sources said: ✅ |
+| AppKit | ✅ | 30 ✅ · 1 ☑️ | `NSCollectionView` / `NSTableView` |  |
+| UIKit | ✅ | 29 ✅ | `UICollectionView` |  |
 | Android Views | ✅ | 61 ✅ | AndroidX `RecyclerView` |  |
 | WinUI 3 |  |  | `ItemsView` | no run of it on these sources |
 | GTK 4 |  |  | `GtkListView` / `GtkGridView` | no run of it on these sources |
@@ -25,16 +25,16 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `items` | property | `ItemsEntries` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `itemsLayout` | property | `ItemsLayout` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `selectionMode` | property | `SelectionMode` | native | ⌛ | ⌛ | 🪞 |  |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack |
-| `selectedItems` | property | `[String]` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
-| `selectionChanged` | event | `[String]` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
-| `itemActivated` | event | `String` | adaptive | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no touch |
-| `endReachedWithin` | property | `Int` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `endReached` | event |  | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `realizedChanged` | event | `[String]` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
+| `items` | property | `ItemsEntries` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `itemsLayout` | property | `ItemsLayout` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `selectionMode` | property | `SelectionMode` | native | 🪞 | 🪞 | 🪞 |  |  |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack |
+| `selectedItems` | property | `[String]` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
+| `selectionChanged` | event | `[String]` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
+| `itemActivated` | event | `String` | adaptive | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: activate on an item of ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: activate on an item of ItemsView: the collection's delegate told, no touch |
+| `endReachedWithin` | property | `Int` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `endReached` | event |  | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `realizedChanged` | event | `[String]` | structure | ✅ | ✅ | ✅ |  |  |  |  |
+| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ✅ | ✅ | ✅ |  |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -42,7 +42,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ |  |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -50,39 +50,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | · |  |  |  | a run of other sources said: · cannot read a heading's level - AppKit marks a heading, not its level; UIKit: a run of other sources said: · cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
-| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `background` | property | `Background` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: a run of other sources said: not realized |
-| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here |
-| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `height` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here |
-| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `opacity` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `rotation` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read rotation of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read rotation of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `scale` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read scale of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read scale of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `style` | property | `Name` | structure | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `translationX` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read translationX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read translationX of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `translationY` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: read translationY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read translationY of ItemsView: the host's own transform, checked against the layer it composed itself |
-| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus ItemsView: it takes no keyboard focus here |
-| `width` | property | `Double` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `zIndex` | property | `Int` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · |  |  |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized |
+| `focus` | act | `() -> Bool` |  | · | · | ✅ |  |  |  | cannot focus ItemsView: it takes no keyboard focus here; UIKit: cannot focus ItemsView: it takes no keyboard focus here |
+| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ |  |  |  |  |
+| `height` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `isFocusedChanged` | event | `Bool` | native | · | · | ✅ |  |  |  | cannot focus ItemsView: it takes no keyboard focus here; UIKit: cannot focus ItemsView: it takes no keyboard focus here |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `pivotX` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `pivotY` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `rotation` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read rotation of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `rotationX` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `rotationY` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read scale of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `style` | property | `Name` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read translationX of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: read translationY of ItemsView: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of ItemsView: the host's own transform, checked against the layer it composed itself |
+| `unfocus` | act | `() -> Void` |  | · | · | ✅ |  |  |  | cannot focus ItemsView: it takes no keyboard focus here; UIKit: cannot focus ItemsView: it takes no keyboard focus here |
+| `width` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -90,35 +90,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `area` | property | `Area` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `canDrag` | property | `Bool` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `dragStarting` | event |  | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `dragText` | property | `String` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ |  |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `margin` | property | `Insets` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
-| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pinch on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: tap on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: 🪞 only through the host's own: tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: tap on ItemsView: the view's listening handed the recognizer's states, no touch sent |
-| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ✅ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅ |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `area` | property | `Area` | structure | ✅ | ✅ | ✅ |  |  |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ |  |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ |  |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ |  |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ |  |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `panTouchCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `panXChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `panYChannel` | property | `Int` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPointerExited` (`pointerExited`) | event |  | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `swipeDirection` | property | `SwipeDirection` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `swipeThreshold` | property | `Double` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `tapCount` | property | `Int` | structure | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `onTapped` (`tapped`) | event |  | native | 🪞 | 🪞 | ✅ |  |  |  | only through the host's own: tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on ItemsView: the view's listening handed the recognizer's states, no touch sent |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ |  |  |  |  |

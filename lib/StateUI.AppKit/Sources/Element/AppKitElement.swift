@@ -98,7 +98,7 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func animates(_ property: Prop) -> Bool {
-        AppKitTransitionSurface.presents(property, on: type)
+        TransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
@@ -246,7 +246,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// view presents its opacity, and no state owns that opacity.
     var fadesIn: Bool {
         view != nil && driven[.opacity] == nil
-            && AppKitTransitionSurface.presents(.opacity, on: type)
+            && TransitionSurface.presents(.opacity, on: type)
     }
 
     /// Fades this element in as it joins a layout that was already standing:

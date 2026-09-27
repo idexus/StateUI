@@ -1,4 +1,4 @@
-# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
+# inputs 4743f7a0442396c73d979658f725a5cee6451a87
 ActivityIndicator.pinchUpdated: 🪞 pinch on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.panYChannel: 🪞 pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.tapCount: 🪞 tap on Canvas: handed to the host's recognizer or handler, no NSEvent sent

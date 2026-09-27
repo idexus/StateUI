@@ -64,13 +64,15 @@ final class UIKitElement: NativeElement {
     }
 
     func animates(_ property: Prop) -> Bool {
-        false
+        TransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         configureGestures()
         configureContextMenu()
+        configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
@@ -84,8 +86,16 @@ final class UIKitElement: NativeElement {
         if view == nil || !arranged.isDisjoint(with: MountedElement.arrangedProperties) {
             impact.arrangement = true
         }
+        // A bar's colours are the window's chrome, which its controller shows again; a tab bar takes them itself.
+        if !changed.isDisjoint(with: Self.barColors) {
+            let colors = element.barColors
+            (controller as? UIKitTabBarController)?.showColors(background: colors.background, foreground: colors.foreground)
+            impact.windowChrome = true
+        }
         return impact
     }
+
+    private static let barColors: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
 
     func leave() {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)

@@ -1,18 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(macOS)
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
 
-/// The closed set of property presentations the AppKit host can move.
-///
-/// StateUI's property vocabulary is open, while a native host can interpolate
-/// only values it actually presents. Unknown control/property pairs therefore
-/// snap to their committed target instead of keeping an invisible display
-/// channel alive.
-enum AppKitTransitionSurface {
-    static func presents(_ property: Prop, on type: NodeType) -> Bool {
+/// The properties a host moves frame by frame, element by element: those its views present and whose values travel.
+/// Every other pair arrives at once, rather than keeping a motion alive that nothing shows.
+/// Design: docs/design/host/motion.md#what-travels
+@_spi(Host) public enum TransitionSurface {
+    /// Whether a host moves `property` of an element of `type` frame by frame.
+    public static func presents(_ property: Prop, on type: NodeType) -> Bool {
         if nativeViewTypes.contains(type), sharedViewProperties.contains(property) {
             return true
         }
@@ -176,5 +172,3 @@ enum AppKitTransitionSurface {
 
     private static let windowProperties: Set<Prop> = [.x, .y, .width, .height]
 }
-
-#endif
