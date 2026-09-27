@@ -78,13 +78,16 @@ struct MenuPage: ContentView {
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens
-    /// with, so the menu and the page behind it are plainly one application.
+    /// with, so the menu and the page behind it are plainly one application. A
+    /// phone leaves the mark out: its rows need the room to scroll.
     private var header: any View {
         VStack {
-            Image("stateui_mark.png")
-                .width(51)
-                .height(51)
-                .horizontalAlignment(.start)
+            if device.formFactor != .phone {
+                Image("stateui_mark.png")
+                    .width(51)
+                    .height(51)
+                    .horizontalAlignment(.start)
+            }
 
             Label("StateUI")
                 .fontSize(24)
