@@ -10,13 +10,13 @@ enum CodeLanguage {
     /// Every example's own code, and a host's half written in Swift.
     case swift
 
-    /// A relay beneath the Android host.
+    /// A relay a host calls, written in Java.
     case java
 
-    /// A relay beneath the WinUI host: C++/WinRT behind C functions.
+    /// A relay a host calls, written in C++ behind C functions.
     case cpp
 
-    /// Shaders an Apple host compiles for Metal.
+    /// Shaders for Metal.
     case metal
 
     /// Shaders for OpenGL and OpenGL ES.
