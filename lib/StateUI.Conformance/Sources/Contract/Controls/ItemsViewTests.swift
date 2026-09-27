@@ -136,6 +136,34 @@
                 s.turn()
                 s.expect(count.wrappedValue, 60, "thirty more, asked for once")
             },
+            ConformanceCase("theEndIsHeardAgainWhenTheListLosesItemsWithItsEndInView", proves: [
+                Covered(ItemsViewContract.endReached),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let count = State(wrappedValue: 30)
+                let heard = Received<Int>()
+                s.start {
+                    VStack {
+                        Button("Start over").onClicked { count.wrappedValue = 30 }.id("again")
+                        ItemsView(0..<count.wrappedValue) { Label("Item \($0)").padding(12) }
+                            .onEndReached(within: 5) {
+                                heard.values.append(count.wrappedValue)
+                                count.wrappedValue += 30
+                            }
+                            .width(300).height(300).id("list")
+                    }
+                }
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                for more in [60, 90, 120, 150] {
+                    try s.perform(.scroll(to: Point(0, 100_000)), on: try s.element("list"))
+                    s.settle { count.wrappedValue == more }
+                }
+
+                // Thirty again, the view far past their end brought back to it; what the thirty more bring into view
+                // is the toolkit's, which may keep the view where it stood.
+                try s.perform(.activate, on: s.element("again"))
+                s.settle { heard.values.count >= 5 }
+                s.expect(Array(heard.values.prefix(5)), [30, 60, 90, 120, 30], "the end in view once more, heard once more")
+            },
             ConformanceCase("theListScrollsToAnItem", proves: [
                 Covered(ItemsViewContract.scrollTo),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
@@ -148,10 +176,11 @@
                 }
                 s.settle { (try? s.item("0", of: s.element("list"))) != nil }
 
-                try s.perform(.activate, on: s.element("go"))
-                s.settle { (try? s.item("80", of: s.element("list"))) != nil }
-                let item = try s.place(of: s.item("80", of: s.element("list")))
                 let list = try s.place(of: s.element("list"))
+                try s.perform(.activate, on: s.element("go"))
+                // A toolkit may build the item a moment before it has brought it there.
+                s.settle { (try? s.place(of: s.item("80", of: s.element("list")))).map { abs($0.y - list.y) < 1 } ?? false }
+                let item = try s.place(of: s.item("80", of: s.element("list")))
                 s.expect(item.y, list.y, within: 1, "at the list's start")
             },
         ]

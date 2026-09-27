@@ -126,7 +126,7 @@ enum WinUICallbacks {
                 nonisolated(unsafe) let cell = cell
                 nonisolated(unsafe) var panel: StateUIObjectRef?
                 MainActor.assumeIsolated {
-                    guard let made = WinUIItemsList.find(view)?.makeCell(item: kind == 0) else { return }
+                    guard let made = WinUIItemsList.owner(of: view)?.makeCell(item: kind == 0) else { return }
                     cell?.pointee = made.number
                     panel = made.handle
                 }
@@ -134,23 +134,23 @@ enum WinUICallbacks {
             },
             itemHeld: { view, cell, utf8 in
                 let identity = utf8.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { WinUIItemsList.find(view)?.held(identity, in: cell) }
+                MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.held(identity, in: cell) }
             },
             itemLetGo: { view, cell in
-                MainActor.assumeIsolated { WinUIItemsList.find(view)?.letGo(cell) }
+                MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.letGo(cell) }
             },
             itemsChose: { view, utf8 in
                 let joined = utf8.map { String(cString: $0) } ?? ""
                 MainActor.assumeIsolated {
-                    WinUIItemsList.find(view)?.chose(joined.split(separator: "\n").map(String.init))
+                    WinUIItemsList.owner(of: view)?.chose(joined.split(separator: "\n").map(String.init))
                 }
             },
             itemInvoked: { view, utf8 in
                 let identity = utf8.map { String(cString: $0) } ?? ""
-                MainActor.assumeIsolated { WinUIItemsList.find(view)?.invoked(identity) }
+                MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.invoked(identity) }
             },
             itemsShowing: { view, first, last in
-                MainActor.assumeIsolated { WinUIItemsList.find(view)?.showing(Int(first)...Int(last)) }
+                MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.showing(Int(first)...Int(last)) }
             })
     }
 }

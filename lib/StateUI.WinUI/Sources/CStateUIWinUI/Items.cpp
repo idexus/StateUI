@@ -10,6 +10,8 @@
 #include "Relay.h"
 
 #include <winrt/Microsoft.UI.Dispatching.h>
+#include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
+#include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
 
 #include <algorithm>
 #include <cstring>
@@ -17,16 +19,26 @@
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 using namespace stateui;
 
+namespace peers = winrt::Microsoft::UI::Xaml::Automation::Peers;
+namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
+
 namespace {
+    void tellShowing(controls::ItemsView const &list, int64_t view);
+
     /// What the relay keeps of one ItemsView, and the factory its cells come from.
     struct Cells : winrt::implements<Cells, xaml::IElementFactory> {
         explicit Cells(int64_t view) : view(view) {}
 
         int64_t view;
+
+        /// The list the cells stand in.
+        winrt::weak_ref<controls::ItemsView> list;
+
         winrt::Windows::Foundation::Collections::IObservableVector<IInspectable> source =
             winrt::single_threaded_observable_vector<IInspectable>();
 
@@ -53,6 +65,9 @@ namespace {
         bool draining = false;
         bool released = false;
 
+        /// The wait for the layout of cells just asked for or put aside, after which what stands in view is told.
+        winrt::event_token laidOut{};
+
         xaml::UIElement GetElement(xaml::ElementFactoryGetArgs const &args) {
             try {
                 auto identity = winrt::unbox_value_or<winrt::hstring>(args.Data(), L"");
@@ -71,6 +86,7 @@ namespace {
                 }
                 --laying;
                 drainLater();
+                tellWhenLaidOut();
                 return container;
             } catch (...) {
                 --laying;
@@ -82,7 +98,7 @@ namespace {
         void RecycleElement(xaml::ElementFactoryRecycleArgs const &args) {
             try {
                 auto container = args.Element().try_as<controls::ItemContainer>();
-                if (!container) return;
+                if (!container || released) return;
                 auto found = made.find(winrt::get_abi(container));
                 if (found == made.end()) return;
                 ++laying;
@@ -90,23 +106,37 @@ namespace {
                 --laying;
                 aside[found->second.kind].push_back(container);
                 drainLater();
+                tellWhenLaidOut();
             } catch (...) {
                 report("putting an ItemsView's cell aside");
             }
         }
 
-        /// A container around a new panel of the host's; a header's or a footer's is neither chosen nor invoked.
+        /// A container around a new panel of the host's.
         controls::ItemContainer make(int32_t kind) {
             int64_t number = 0;
             auto panel = callbacks.itemCell(view, kind, &number);
             controls::ItemContainer container;
             if (panel) container.Child(as<xaml::UIElement>(panel));
-            if (kind == 1) {
-                container.CanUserSelect(controls::ItemContainerUserSelectMode::UserCannotSelect);
-                container.CanUserInvoke(controls::ItemContainerUserInvokeMode::UserCannotInvoke);
-            }
             made[winrt::get_abi(container)] = {number, kind};
             return container;
+        }
+
+        /// Tells what stands in view once the list has laid out the cells it asked for or put aside: what the view
+        /// shows changed, where its scroller may say nothing - a view brought back within an extent cut short.
+        void tellWhenLaidOut() {
+            if (laidOut || released) return;
+            auto owner = list.get();
+            if (!owner) return;
+            laidOut = owner.LayoutUpdated([weak = get_weak()](IInspectable const &, IInspectable const &) {
+                auto self = weak.get();
+                if (!self) return;
+                auto owner = self->list.get();
+                auto token = std::exchange(self->laidOut, {});
+                if (!owner) return;
+                owner.LayoutUpdated(token);
+                if (!self->released) tellShowing(owner, self->view);
+            });
         }
 
         /// Runs `apply` now, or once the list is done asking for cells, after everything waiting before it.
@@ -144,7 +174,7 @@ namespace {
         return std::wstring(winrt::unbox_value_or<winrt::hstring>(item, L""));
     }
 
-    /// Tells the host the places of the first and the last entry in view.
+    /// Tells the host the places of the first and the last entry in view, where WinUI has laid them out.
     void tellShowing(controls::ItemsView const &list, int64_t view) {
         int32_t first = -1;
         int32_t last = -1;
@@ -165,6 +195,7 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
     try {
         controls::ItemsView list;
         auto cells = winrt::make_self<Cells>(view);
+        cells->list = list;
         list.ItemTemplate(cells.as<xaml::IElementFactory>());
         list.ItemsSource(cells->source);
         list.SelectionMode(controls::ItemsViewSelectionMode::None);
@@ -186,6 +217,10 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
             if (auto scroller = list.ScrollView()) {
                 winrt::weak_ref<controls::ItemsView> weak = list;
                 scroller.ViewChanged([weak, view](controls::ScrollView const &, IInspectable const &) {
+                    if (auto list = weak.get()) tellShowing(list, view);
+                });
+                // Entries changed stand in view once laid out, where the view may not move at all.
+                scroller.ExtentChanged([weak, view](controls::ScrollView const &, IInspectable const &) {
                     if (auto list = weak.get()) tellShowing(list, view);
                 });
             }
@@ -210,8 +245,7 @@ extern "C" void stateui_winui_items_set_entries(
         for (int32_t index = 0; index < count; ++index) names.push_back(text(identities[index]));
         std::vector<int32_t> removals(removed, removed + removedCount);
         std::vector<int32_t> insertions(inserted, inserted + insertedCount);
-        winrt::weak_ref<controls::ItemsView> weak = list;
-        cells->change([cells, weak, names, sorts, removals, insertions] {
+        cells->change([cells, names, sorts, removals, insertions] {
             cells->kinds.clear();
             for (size_t index = 0; index < names.size(); ++index) cells->kinds[std::wstring(names[index])] = sorts[index];
             for (size_t run = 0; run + 1 < removals.size(); run += 2) {
@@ -223,7 +257,6 @@ extern "C" void stateui_winui_items_set_entries(
                     cells->source.InsertAt(place, winrt::box_value(names[place]));
                 }
             }
-            if (auto list = weak.get()) tellShowing(list, cells->view);
         });
     } catch (...) {
         report("setting an ItemsView's entries");
@@ -321,10 +354,8 @@ extern "C" void stateui_winui_items_release(StateUIObjectRef handle) {
         cells->released = true;
         cells->waiting.clear();
         list.ItemsSource(nullptr);
-        for (auto &kind : cells->aside) {
-            for (auto &container : kind) container.Child(nullptr);
-            kind.clear();
-        }
+        // A container refuses to hold nothing: each is let go of whole, and its panel with it.
+        for (auto &kind : cells->aside) kind.clear();
         cells->made.clear();
     } catch (...) {
         report("releasing an ItemsView");
@@ -361,5 +392,45 @@ extern "C" int32_t stateui_winui_items_mode(StateUIObjectRef handle) {
     } catch (...) {
         report("reading an ItemsView's mode");
         return 0;
+    }
+}
+
+extern "C" void stateui_winui_items_choose_as_user(StateUIObjectRef handle, int32_t index) {
+    try {
+        auto list = borrow<controls::ItemsView>(handle);
+        if (list.SelectionMode() == controls::ItemsViewSelectionMode::Multiple && list.IsSelected(index)) {
+            list.Deselect(index);
+        } else {
+            list.Select(index);
+        }
+    } catch (...) {
+        report("choosing an item as the user");
+    }
+}
+
+extern "C" bool stateui_winui_items_invoke_as_user(StateUIObjectRef cell) {
+    try {
+        xaml::DependencyObject step = as<xaml::UIElement>(cell);
+        while (step && !step.try_as<controls::ItemContainer>()) step = xaml::Media::VisualTreeHelper::GetParent(step);
+        if (!step) return false;
+        auto peer = peers::FrameworkElementAutomationPeer::CreatePeerForElement(step.as<xaml::UIElement>());
+        auto pattern = peer ? peer.GetPattern(peers::PatternInterface::Invoke) : nullptr;
+        auto invoke = pattern ? pattern.try_as<provider::IInvokeProvider>() : nullptr;
+        if (!invoke) return false;
+        invoke.Invoke();
+        return true;
+    } catch (...) {
+        report("opening an item as the user");
+        return false;
+    }
+}
+
+extern "C" void stateui_winui_items_scroll_as_user(StateUIObjectRef handle, double x, double y) {
+    try {
+        auto scroller = borrow<controls::ItemsView>(handle).ScrollView();
+        if (!scroller) return;
+        scroller.ScrollTo(x, y, controls::ScrollingScrollOptions(controls::ScrollingAnimationMode::Disabled));
+    } catch (...) {
+        report("scrolling an ItemsView as the user");
     }
 }

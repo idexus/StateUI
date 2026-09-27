@@ -65,6 +65,33 @@ final class WinUILeaveTests: XCTestCase {
         }
     }
 
+    /// A list that leaves lets go of every cell WinUI asked it for and every item they held: Swift holds as many views
+    /// as before the list came.
+    func testAListThatLeavesLetsGoOfItsCells() throws {
+        try onUIThread {
+            let shown = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                VStack {
+                    if shown.wrappedValue {
+                        ItemsView(0..<1_000) { Label("Item \($0)") }.height(300)
+                    }
+                    Button("Toggle").onClicked { shown.wrappedValue.toggle() }
+                }
+            }
+            let toggle = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            let before = WinUIView.liveCount
+
+            toggle.invoke()
+            host.settle(until: { host.views(WinUILabelView.self).count > 5 })
+            XCTAssertGreaterThan(host.views(WinUILabelView.self).count, 5, "the list shows its first items")
+            toggle.invoke()
+            host.settle(until: { host.views(WinUIItemsView.self).isEmpty })
+            _ = host.runtime.core.runJobs()
+
+            XCTAssertEqual(WinUIView.liveCount, before, "the list's cells outlived it")
+        }
+    }
+
     /// A window the tree drops lets go of its chrome - its title bar, its menu bar, its row of tabs - and its page.
     func testAWindowTheTreeDropsLetsGoOfItsChrome() throws {
         try onUIThread {

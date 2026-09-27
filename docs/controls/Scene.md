@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 6 ✅ | `NSApplication` / structure |  |
-| UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ✅ | 4 ✅ | `Application` / structure |  |
+| AppKit | ⌛ |  | `NSApplication` / structure | a run of other sources said: ✅ |
+| UIKit | ⌛ |  | `UIApplication` / `UIWindowScene` | a run of other sources said: ✅ |
+| Android Views | ⌛ |  | `Application` / structure | a run of other sources said: ✅ |
 | WinUI 3 | ⌛ |  | `Application` / structure | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
 | Web |  |  | `document` / structure | no host yet |
@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
-| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ⌛ |  |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ⌛ |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
+| `activated` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `deactivated` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `destroying` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `stopped` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `windowClosed` | event | `String` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ⏸ waits on Window.windowType, not realized yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
+| `windowRestored` | event | `(String, String?)` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |

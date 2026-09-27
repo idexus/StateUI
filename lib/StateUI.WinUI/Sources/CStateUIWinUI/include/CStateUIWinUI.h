@@ -626,6 +626,17 @@ int32_t stateui_winui_items_chosen(StateUIObjectRef items, char *utf8, int32_t c
 /// What a test reads: how many items the user may choose, as `set_choice` numbers it.
 int32_t stateui_winui_items_mode(StateUIObjectRef items);
 
+/// What a test does as the user's click on the entry at `index`: where many may be chosen it takes the item or lets it
+/// go, else it takes it alone; the choice is told as the user's.
+void stateui_winui_items_choose_as_user(StateUIObjectRef items, int32_t index);
+
+/// What a test does as the user opens the item a cell holds: its container's Invoke, as Narrator's; false where there
+/// is none.
+bool stateui_winui_items_invoke_as_user(StateUIObjectRef cell);
+
+/// What a test does as the user scrolls the list to `x`, `y` DIPs, at once.
+void stateui_winui_items_scroll_as_user(StateUIObjectRef items, double x, double y);
+
 /// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions on it or
 /// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.

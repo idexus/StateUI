@@ -80,6 +80,12 @@ final class WinUIDriver: HostDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         let view = (element.native as? WinUIElement)?.view
         switch (act, view) {
+        case (.activate, _) where element.parent?.type == .itemsView:
+            guard let items = (element.parent?.native as? WinUIElement)?.view as? WinUIItemsView,
+                  case .manual(let identity) = element.id, items.activateForTesting(identity)
+            else { throw DriverCannot(act, on: element) }
+        case (.choose(let place), let items as WinUIItemsView): items.chooseForTesting(place)
+        case (.scroll(let target), let items as WinUIItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
         case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
@@ -146,6 +152,15 @@ final class WinUIDriver: HostDriver {
         case (.answer(let caption, let words), _): try answer(caption, typing: words)
         default: throw DriverCannot(act, on: element)
         }
+    }
+
+    /// Where the element's view stands in its window's content, as WinUI laid it out - an item in its cell included.
+    func place(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? WinUIElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) stands")
+        }
+        let (corner, size) = (view.origin, view.laidOutFrame)
+        return Rect(x: corner.x, y: corner.y, width: size.width, height: size.height)
     }
 
     /// The window the host shows its page in.

@@ -1,0 +1,13 @@
+# inputs 96980adec4fb248a2f8b78e130b211555649cd8e
+ItemsView: ✅
+ItemsView.endReached: ✅
+ItemsView.endReachedWithin: ✅
+ItemsView.frameChanged: ✅
+ItemsView.itemActivated: ✅
+ItemsView.items: ✅
+ItemsView.itemsLayout: ✅
+ItemsView.realizedChanged: ✅
+ItemsView.scrollTo: ✅
+ItemsView.selectedItems: ✅
+ItemsView.selectionChanged: ✅
+ItemsView.selectionMode: ✅

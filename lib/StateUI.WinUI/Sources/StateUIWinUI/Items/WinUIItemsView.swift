@@ -58,9 +58,12 @@ final class WinUIItemsView: WinUILayoutView {
             stateui_winui_items_set_layout(list.handle, kind, spacing, minimum)
             invalidateMeasurements()
         }
-        let choice = Choice(
-            chosen: cells.selected, mode: mode, invokable: cells.element?.handler(.itemActivated) != nil)
-        guard choice != self.choice else { return }
+        write(Choice(chosen: cells.selected, mode: mode, invokable: cells.element?.handler(.itemActivated) != nil))
+    }
+
+    /// Shows `choice` where it differs from what WinUI was last given, or always when `again`.
+    private func write(_ choice: Choice, again: Bool = false) {
+        guard again || choice != self.choice else { return }
         self.choice = choice
         WinUIStrings.withCStrings(choice.chosen) { chosen in
             stateui_winui_items_set_choice(
@@ -102,17 +105,16 @@ final class WinUIItemsView: WinUILayoutView {
         LayoutSize(width: width ?? 0, height: 0)
     }
 
-    /// Measures WinUI's list with no room the way it scrolls: its viewport is the place it is given, never the
-    /// length of all its items.
-    /// Design: docs/design/platforms/winui/layout.md#scrolling
+    /// Measures WinUI's list in the room it stands in, none before it stands anywhere: its scroller's viewport is the
+    /// room it is measured in.
+    /// Design: docs/design/platforms/winui/items.md#its-room
     override func measure(width: Double, height: Double) -> LayoutSize {
-        let across = shape.isAcross
-        _ = list.measure(
-            width: across ? 0 : (width.isFinite ? width : nil), height: across ? (height.isFinite ? height : nil) : 0)
+        _ = list.measure(width: list.placed?.width ?? 0, height: list.placed?.height ?? 0)
         return super.measure(width: width, height: height)
     }
 
     override func arrange(in bounds: Rect) {
+        _ = list.measure(width: bounds.width, height: bounds.height)
         list.layout(bounds)
     }
 
@@ -137,8 +139,15 @@ final class WinUIItemsView: WinUILayoutView {
         cells.endShowing(in: cell)
     }
 
+    /// What the user chose. WinUI's container cannot refuse a header's or a footer's choosing, so a choice holding one
+    /// is not the user's: WinUI shows the tree's choice again.
     func chose(_ identities: [String]) {
         guard !released else { return }
+        guard identities.allSatisfy(cells.isItem) else {
+            guard let choice else { return }
+            write(Choice(chosen: cells.selected, mode: choice.mode, invokable: choice.invokable), again: true)
+            return
+        }
         cells.userChose(identities)
     }
 
@@ -184,6 +193,24 @@ final class WinUIItemsView: WinUILayoutView {
     var modeForTesting: SelectionMode {
         SelectionMode(rawValue: stateui_winui_items_mode(list.handle)) ?? .none
     }
+
+    /// The item at `place` among all the items chosen, or let go where it was chosen and many may be - as a click does.
+    func chooseForTesting(_ place: Int) {
+        let items = cells.entries.sections.flatMap(\.items)
+        guard items.indices.contains(place), let index = cells.identities.firstIndex(of: items[place]) else { return }
+        stateui_winui_items_choose_as_user(list.handle, Int32(index))
+    }
+
+    /// Opens the item of `identity` as Narrator does; false where no cell holds it.
+    func activateForTesting(_ identity: String) -> Bool {
+        guard let cell = cells.holding(of: identity) as? WinUIItemCell else { return false }
+        return stateui_winui_items_invoke_as_user(cell.handle)
+    }
+
+    /// Scrolls to `target`, as far as the list reaches.
+    func scrollForTesting(to target: Point) {
+        stateui_winui_items_scroll_as_user(list.handle, target.x, target.y)
+    }
 }
 
 /// WinUI's own ItemsView, which the relay's callbacks name by its number and which hands them to its list.
@@ -195,8 +222,8 @@ final class WinUIItemsList: WinUIView {
         super.init { number in stateui_winui_items_make(number) }
     }
 
-    /// The list a callback names; nil once it has left.
-    static func find(_ number: Int64) -> WinUIItemsView? {
+    /// The ItemsView holding the list a callback names; nil once it has left.
+    static func owner(of number: Int64) -> WinUIItemsView? {
         (WinUIView.find(number) as? WinUIItemsList)?.owner
     }
 }

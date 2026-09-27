@@ -32,6 +32,13 @@ final class WinUIItemCell: WinUISingleChildView, ItemsHolding {
         setItems([])
     }
 
+    /// In a row a cell is as tall as the row: WinUI's stack stands each cell at the height it asks.
+    override func measure(width: Double, height: Double) -> LayoutSize {
+        let size = super.measure(width: width, height: height)
+        guard across, height.isFinite else { return size }
+        return LayoutSize(width: size.width, height: height)
+    }
+
     /// A cell whose entry is still on its way keeps the room of a row: measured of nothing, every cell would fit in
     /// view at once, and the list would ask for every entry.
     override func contentSize(width: Double?) -> LayoutSize {
