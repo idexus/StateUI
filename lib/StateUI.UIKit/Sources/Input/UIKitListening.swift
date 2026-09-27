@@ -84,7 +84,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     // MARK: - The pointer
 
     @objc func hovered(_ recognizer: UIHoverGestureRecognizer) {
-        let point = where(recognizer)
+        let point = location(of: recognizer)
         switch recognizer.state {
         case .began: tell(.pointer(.pointerEntered, point))
         case .changed: tell(.pointer(.pointerMoved, point))
@@ -95,8 +95,8 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     @objc func pressed(_ recognizer: UILongPressGestureRecognizer) {
         switch recognizer.state {
-        case .began: tell(.pointer(.pointerPressed, where(recognizer)))
-        case .ended, .cancelled: tell(.pointer(.pointerReleased, where(recognizer)))
+        case .began: tell(.pointer(.pointerPressed, location(of: recognizer)))
+        case .ended, .cancelled: tell(.pointer(.pointerReleased, location(of: recognizer)))
         default: break
         }
     }
@@ -138,7 +138,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         }
         let step = pinch.step(phase, scale: phase == .running ? recognizer.scale : 1)
         let size = view?.bounds.size ?? .zero
-        let at = PinchStep.share(of: where(recognizer), width: size.width, height: size.height)
+        let at = PinchStep.share(of: location(of: recognizer), width: size.width, height: size.height)
         tell(.pinch(phase, scale: step, at: at))
     }
 
@@ -156,7 +156,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     }
 
     /// Where the recognizer's touch is, in points of the view.
-    private func where(_ recognizer: UIGestureRecognizer) -> Point {
+    private func location(of recognizer: UIGestureRecognizer) -> Point {
         let point = recognizer.location(in: view)
         return Point(x: point.x, y: point.y)
     }

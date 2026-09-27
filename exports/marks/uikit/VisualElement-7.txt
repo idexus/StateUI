@@ -1,6 +1,8 @@
-ActivityIndicator.frame: not realized
+ActivityIndicator.frame: ✅
 Button.clicked: ✅
-Button.frameChanged: not realized
+Button.frameChanged: ✅
+Button.height: ✅
+Button.width: ✅
 Canvas.isVisible: not realized
 Canvas.translationX: not realized
 CheckBox.scale: ✅
@@ -8,8 +10,10 @@ ColorBox.rotation: ✅
 DatePicker.layoutDirection: not realized
 Ellipse.isAccessibilityHidden: ✅
 Grid.accessibilityLabel: ✅
-HStack.frame: not realized
-Image.frameChanged: not realized
+HStack.frame: ✅
+Image.frameChanged: ✅
+Image.height: ✅
+Image.width: ✅
 Label.isVisible: ✅
 Label.translationX: ✅
 Line.scale: ✅
@@ -17,7 +21,7 @@ Map.rotation: not realized
 Path.layoutDirection: not realized
 Picker.isAccessibilityHidden: ✅
 Polygon.accessibilityLabel: ✅
-Polyline.frame: not realized
+Polyline.frame: ✅
 PositionIndicator.frameChanged: not realized
 PositionIndicator.height: not realized
 PositionIndicator.width: not realized
@@ -28,8 +32,10 @@ Rectangle.rotation: ✅
 ScrollView.layoutDirection: not realized
 SearchField.isAccessibilityHidden: ✅
 Slider.accessibilityLabel: ✅
-Stepper.frame: not realized
-Switch.frameChanged: not realized
+Stepper.frame: ✅
+Switch.frameChanged: ✅
+Switch.height: ✅
+Switch.width: ✅
 TextEditor.isVisible: ✅
 TextEditor.translationX: ✅
 TextField.scale: ✅
@@ -37,4 +43,4 @@ TimePicker.rotation: ✅
 TitleBar.layoutDirection: not realized
 VStack.isAccessibilityHidden: ✅
 WebView.accessibilityLabel: not realized
-ZStack.frame: not realized
+ZStack.frame: ✅

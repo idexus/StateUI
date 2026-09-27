@@ -1,4 +1,8 @@
-ActivityIndicator.frameChanged: not realized
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.maximumHeight: ✅
+ActivityIndicator.maximumWidth: ✅
+ActivityIndicator.minimumHeight: ✅
+ActivityIndicator.minimumWidth: ✅
 Button.clicked: ✅
 Button.opacity: ✅
 Button.translationY: ✅
@@ -10,7 +14,11 @@ Ellipse.accessibilityHint: ✅
 Grid.focus: not realized
 Grid.isFocusedChanged: not realized
 Grid.unfocus: not realized
-HStack.frameChanged: not realized
+HStack.frameChanged: ✅
+HStack.maximumHeight: ✅
+HStack.maximumWidth: ✅
+HStack.minimumHeight: ✅
+HStack.minimumWidth: ✅
 Image.opacity: ✅
 Image.translationY: ✅
 Label.scaleX: ✅
@@ -21,7 +29,11 @@ Picker.accessibilityHint: ✅
 Polygon.focus: not realized
 Polygon.isFocusedChanged: not realized
 Polygon.unfocus: not realized
-Polyline.frameChanged: not realized
+Polyline.frameChanged: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
 PositionIndicator.opacity: not realized
 PositionIndicator.translationY: not realized
 ProgressBar.scaleX: ✅
@@ -32,7 +44,11 @@ SearchField.accessibilityHint: ✅
 Slider.focus: not realized
 Slider.isFocusedChanged: not realized
 Slider.unfocus: not realized
-Stepper.frameChanged: not realized
+Stepper.frameChanged: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
 Switch.opacity: ✅
 Switch.translationY: ✅
 TextEditor.scaleX: ✅
@@ -43,4 +59,8 @@ VStack.accessibilityHint: ✅
 WebView.focus: not realized
 WebView.isFocusedChanged: not realized
 WebView.unfocus: not realized
-ZStack.frameChanged: not realized
+ZStack.frameChanged: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅

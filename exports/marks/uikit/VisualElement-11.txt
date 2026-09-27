@@ -18,7 +18,11 @@ HStack.accessibilityHint: ✅
 Image.focus: not realized
 Image.isFocusedChanged: not realized
 Image.unfocus: not realized
-Label.frameChanged: not realized
+Label.frameChanged: ✅
+Label.maximumHeight: ✅
+Label.maximumWidth: ✅
+Label.minimumHeight: ✅
+Label.minimumWidth: ✅
 Line.opacity: ✅
 Line.translationY: ✅
 Map.scaleX: not realized
@@ -29,7 +33,11 @@ Polyline.accessibilityHint: ✅
 PositionIndicator.focus: not realized
 PositionIndicator.isFocusedChanged: not realized
 PositionIndicator.unfocus: not realized
-ProgressBar.frameChanged: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.maximumHeight: ✅
+ProgressBar.maximumWidth: ✅
+ProgressBar.minimumHeight: ✅
+ProgressBar.minimumWidth: ✅
 RadioButton.opacity: ✅
 RadioButton.translationY: ✅
 Rectangle.scaleX: ✅
@@ -40,7 +48,11 @@ Stepper.accessibilityHint: ✅
 Switch.focus: not realized
 Switch.isFocusedChanged: not realized
 Switch.unfocus: not realized
-TextEditor.frameChanged: not realized
+TextEditor.frameChanged: ✅
+TextEditor.maximumHeight: ✅
+TextEditor.maximumWidth: ✅
+TextEditor.minimumHeight: ✅
+TextEditor.minimumWidth: ✅
 TextField.opacity: ✅
 TextField.translationY: ✅
 TimePicker.scaleX: ✅

@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | ✅ |  |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
-| `currentPageChanged` | event | `Int` | adaptive | ✅ |  |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPage` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 
 Realization:
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -42,7 +42,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | cannot read barBackgroundColor of TabbedView - AppKit's driver has no path for it yet |
+| `barBackgroundColor` | property | `Color` | adaptive |  | ✅ |  |  |  |  | cannot read barBackgroundColor of TabbedView - AppKit's driver has no path for it yet |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -50,5 +50,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet |
-| `title` | property | `String` | native |  |  |  |  | ✅ |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read title of TabbedView - Android's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet |
+| `title` | property | `String` | native |  | ✅ |  |  | ✅ |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read title of TabbedView - Android's driver has no path for it yet |

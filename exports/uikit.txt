@@ -269,6 +269,7 @@ ZStack
   accessibilityLabel
   area
   automationExcludedWithChildren
+  frame
   gridColumn
   gridColumnSpan
   gridRow
@@ -284,6 +285,9 @@ ZStack
   minimumHeight
   minimumWidth
   opacity
+  panTouchCount
+  panXChannel
+  panYChannel
   pivotX
   pivotY
   rotation
@@ -292,8 +296,21 @@ ZStack
   scale
   scaleX
   scaleY
+  swipeDirection
+  swipeThreshold
+  tapCount
   translationX
   translationY
   verticalAlignment
   width
+  frameChanged()
+  panUpdated()
+  pinchUpdated()
+  pointerEntered()
+  pointerExited()
+  pointerMoved()
+  pointerPressed()
+  pointerReleased()
+  swiped()
+  tapped()
 (acts)

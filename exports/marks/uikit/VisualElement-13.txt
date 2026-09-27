@@ -2,7 +2,9 @@ ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityLabel: ✅
 Button.clicked: ✅
 Canvas.frame: not realized
-CheckBox.frameChanged: not realized
+CheckBox.frameChanged: ✅
+CheckBox.height: ✅
+CheckBox.width: ✅
 ColorBox.isVisible: ✅
 ColorBox.translationX: ✅
 DatePicker.scale: ✅
@@ -10,8 +12,10 @@ Ellipse.rotation: ✅
 Grid.layoutDirection: not realized
 HStack.isAccessibilityHidden: ✅
 Image.accessibilityLabel: ✅
-Label.frame: not realized
-Line.frameChanged: not realized
+Label.frame: ✅
+Line.frameChanged: ✅
+Line.height: ✅
+Line.width: ✅
 Map.isVisible: not realized
 Map.translationX: not realized
 Path.scale: ✅
@@ -19,8 +23,10 @@ Picker.rotation: ✅
 Polygon.layoutDirection: not realized
 Polyline.isAccessibilityHidden: ✅
 PositionIndicator.accessibilityLabel: not realized
-ProgressBar.frame: not realized
-RadioButton.frameChanged: not realized
+ProgressBar.frame: ✅
+RadioButton.frameChanged: ✅
+RadioButton.height: ✅
+RadioButton.width: ✅
 Rectangle.isVisible: ✅
 Rectangle.translationX: ✅
 ScrollView.scale: ✅
@@ -28,8 +34,10 @@ SearchField.rotation: ✅
 Slider.layoutDirection: not realized
 Stepper.isAccessibilityHidden: ✅
 Switch.accessibilityLabel: ✅
-TextEditor.frame: not realized
-TextField.frameChanged: not realized
+TextEditor.frame: ✅
+TextField.frameChanged: ✅
+TextField.height: ✅
+TextField.width: ✅
 TimePicker.isVisible: ✅
 TimePicker.translationX: ✅
 TitleBar.scale: not realized

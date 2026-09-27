@@ -2,7 +2,11 @@ ActivityIndicator.focus: not realized
 ActivityIndicator.isFocusedChanged: not realized
 ActivityIndicator.unfocus: not realized
 Button.clicked: ✅
-Button.frameChanged: not realized
+Button.frameChanged: ✅
+Button.maximumHeight: ✅
+Button.maximumWidth: ✅
+Button.minimumHeight: ✅
+Button.minimumWidth: ✅
 Canvas.opacity: not realized
 Canvas.translationY: not realized
 CheckBox.scaleX: ✅
@@ -13,7 +17,11 @@ Grid.accessibilityHint: ✅
 HStack.focus: not realized
 HStack.isFocusedChanged: not realized
 HStack.unfocus: not realized
-Image.frameChanged: not realized
+Image.frameChanged: ✅
+Image.maximumHeight: ✅
+Image.maximumWidth: ✅
+Image.minimumHeight: ✅
+Image.minimumWidth: ✅
 Label.opacity: ✅
 Label.translationY: ✅
 Line.scaleX: ✅
@@ -39,7 +47,11 @@ Slider.accessibilityHint: ✅
 Stepper.focus: not realized
 Stepper.isFocusedChanged: not realized
 Stepper.unfocus: not realized
-Switch.frameChanged: not realized
+Switch.frameChanged: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
 TextEditor.opacity: ✅
 TextEditor.translationY: ✅
 TextField.scaleX: ✅

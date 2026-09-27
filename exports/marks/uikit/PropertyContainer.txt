@@ -13,7 +13,7 @@ Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: not realized
-NavigationStack.accessibilityIdentifier: not realized
+NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
@@ -26,15 +26,15 @@ ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
 Span.accessibilityIdentifier: not realized
-SplitView.accessibilityIdentifier: not realized
+SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
-TabbedView.accessibilityIdentifier: not realized
+TabbedView.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
-ToolbarItem.accessibilityIdentifier: not realized
+ToolbarItem.accessibilityIdentifier: cannot read accessibilityIdentifier of ToolbarItem - UIKit's driver has no path for it yet
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: not realized
 ZStack.accessibilityIdentifier: ✅

@@ -33,8 +33,9 @@ final class UIKitWindowController {
     func present(_ element: MountedElement, in runtime: HostRuntime) {
         let changes = presentation.show(element, in: runtime.lifecycle)
         if let (_, arrangement) = changes.arrangement {
-            root.show(arrangement?.uiKit.view)
+            root.show(arrangement?.uiKit.controller)
         }
+        presentation.arrangement?.uiKit.composeChrome()
         let title = presentation.arrangement?.visiblePage?.value(.title)?.string
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
     }
@@ -54,28 +55,32 @@ final class UIKitWindowController {
     }
 }
 
-/// The view a scene's window shows: the window's arrangement of pages within the safe area.
+/// What a scene's window shows: the controller of the window's arrangement of pages, over the whole window - each
+/// page stands within the safe area its bars leave.
 @MainActor
 final class UIKitRootViewController: UIViewController {
-    private var page: UIView?
+    private var shown: UIViewController?
 
     override func loadView() {
         view = UIView()
         view.backgroundColor = .systemBackground
     }
 
-    /// Shows `page` in place of the one before.
-    func show(_ page: UIView?) {
-        guard page !== self.page else { return }
-        self.page?.removeFromSuperview()
-        self.page = page
-        if let page { view.addSubview(page) }
-        view.setNeedsLayout()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        page?.frame = view.bounds.inset(by: view.safeAreaInsets)
+    /// Shows `arrangement` in place of the one before.
+    func show(_ arrangement: UIViewController?) {
+        guard arrangement !== shown else { return }
+        if let shown {
+            shown.willMove(toParent: nil)
+            shown.view.removeFromSuperview()
+            shown.removeFromParent()
+        }
+        shown = arrangement
+        guard let arrangement else { return }
+        addChild(arrangement)
+        arrangement.view.frame = view.bounds
+        arrangement.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(arrangement.view)
+        arrangement.didMove(toParent: self)
     }
 }
 #endif

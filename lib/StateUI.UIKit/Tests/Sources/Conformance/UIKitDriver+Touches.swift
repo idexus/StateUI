@@ -7,8 +7,9 @@ import UIKit
 @testable import StateUIUIKit
 @_spi(Host) import StateUIConformance
 
-/// A finger's and a pointer's acts, handed to the view's listening as its recognizers would hand them: a recognizer
-/// the view does not listen with hears nothing, as UIKit sends it nothing.
+/// A finger's and a pointer's acts, handed to the view's listening as its recognizers would hand them - a recognizer
+/// the view does not listen with hears nothing, as UIKit sends it nothing - and to a control as its own tracking
+/// of the touch sends its events.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-does
 extension UIKitDriver {
     /// Runs `body` with the element's view and its listening, where it listens; the view must be one.
@@ -55,6 +56,7 @@ extension UIKitDriver {
     }
 
     func pressDown(_ listening: UIKitListening?, on view: UIView, at point: Point) {
+        (view as? UIControl)?.sendActions(for: .touchDown)
         let pan = DrivenPan(on: view)
         pan.start = CGPoint(x: point.x, y: point.y)
         pan.point = pan.start
@@ -67,6 +69,7 @@ extension UIKitDriver {
 
     func drag(_ listening: UIKitListening?, to point: Point) {
         guard let (pan, dragging) = press else { return }
+        Self.track(pan.on, to: point)
         pan.point = CGPoint(x: point.x, y: point.y)
         pan.driven = dragging ? .changed : .began
         press = (pan, true)
@@ -77,6 +80,8 @@ extension UIKitDriver {
     func lift(_ listening: UIKitListening?, at point: Point) {
         guard let (pan, dragging) = press else { return }
         press = nil
+        Self.track(pan.on, to: point)
+        (pan.on as? UIControl)?.sendActions(for: .touchUpInside)
         pan.point = CGPoint(x: point.x, y: point.y)
         if dragging, let listening, listening.hearing.contains(.drags) {
             pan.driven = .ended
@@ -87,6 +92,17 @@ extension UIKitDriver {
         up.driven = .ended
         up.point = pan.point
         listening.pressed(up)
+    }
+
+    /// A control following a finger held on it, as its own tracking does: a slider's thumb under the finger.
+    private static func track(_ view: UIView, to point: Point) {
+        guard let slider = view as? UIKitSliderView, slider.bounds.width > 0 else {
+            (view as? UIControl)?.sendActions(for: .touchDragInside)
+            return
+        }
+        let share = min(max(point.x / slider.bounds.width, 0), 1)
+        slider.value = slider.minimumValue + Float(share) * (slider.maximumValue - slider.minimumValue)
+        slider.sendActions(for: .valueChanged)
     }
 
     static func hover(_ listening: UIKitListening?, on view: UIView, at point: Point) {

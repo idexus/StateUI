@@ -3,8 +3,10 @@ Button.clicked: ✅
 Button.layoutDirection: not realized
 Canvas.isAccessibilityHidden: not realized
 CheckBox.accessibilityLabel: ✅
-ColorBox.frame: not realized
-DatePicker.frameChanged: not realized
+ColorBox.frame: ✅
+DatePicker.frameChanged: ✅
+DatePicker.height: ✅
+DatePicker.width: ✅
 Ellipse.isVisible: ✅
 Ellipse.translationX: ✅
 Grid.scale: ✅
@@ -13,7 +15,9 @@ Image.layoutDirection: not realized
 Label.isAccessibilityHidden: ✅
 Line.accessibilityLabel: ✅
 Map.frame: not realized
-Path.frameChanged: not realized
+Path.frameChanged: ✅
+Path.height: ✅
+Path.width: ✅
 Picker.isVisible: ✅
 Picker.translationX: ✅
 Polygon.scale: ✅
@@ -21,8 +25,10 @@ Polyline.rotation: ✅
 PositionIndicator.layoutDirection: not realized
 ProgressBar.isAccessibilityHidden: ✅
 RadioButton.accessibilityLabel: ✅
-Rectangle.frame: not realized
-ScrollView.frameChanged: not realized
+Rectangle.frame: ✅
+ScrollView.frameChanged: ✅
+ScrollView.height: ✅
+ScrollView.width: ✅
 SearchField.isVisible: ✅
 SearchField.translationX: ✅
 Slider.scale: ✅
@@ -30,7 +36,7 @@ Stepper.rotation: ✅
 Switch.layoutDirection: not realized
 TextEditor.isAccessibilityHidden: ✅
 TextField.accessibilityLabel: ✅
-TimePicker.frame: not realized
+TimePicker.frame: ✅
 TitleBar.frameChanged: not realized
 TitleBar.height: not realized
 TitleBar.width: not realized

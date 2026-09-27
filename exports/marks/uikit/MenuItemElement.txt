@@ -1,10 +1,11 @@
+Button.clicked: cannot read icon of ToolbarItem - UIKit's driver has no path for it yet
 MenuItem.clicked: not realized
 MenuItem.icon: not realized
 MenuItem.isDestructive: not realized
 MenuItem.isEnabled: not realized
 MenuItem.text: not realized
-ToolbarItem.clicked: not realized
-ToolbarItem.icon: not realized
+ToolbarItem.clicked: ✅
+ToolbarItem.icon: cannot read icon of ToolbarItem - UIKit's driver has no path for it yet
 ToolbarItem.isDestructive: not realized
-ToolbarItem.isEnabled: not realized
-ToolbarItem.text: not realized
+ToolbarItem.isEnabled: ✅
+ToolbarItem.text: cannot read text of ToolbarItem - UIKit's driver has no path for it yet

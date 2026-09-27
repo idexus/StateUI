@@ -10,7 +10,7 @@ Ellipse.background: not realized
 Grid.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 HStack.style: not realized
 Image.ignoresInput: not realized
-Label.isEnabled: cannot read isEnabled of Label - UIKit's driver has no path for it yet
+Label.isEnabled: ✅
 Label.zIndex: not realized
 Line.scaleY: ✅
 Map.rotationY: not realized

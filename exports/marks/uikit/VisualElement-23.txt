@@ -7,7 +7,11 @@ ColorBox.accessibilityHint: ✅
 DatePicker.focus: not realized
 DatePicker.isFocusedChanged: not realized
 DatePicker.unfocus: not realized
-Ellipse.frameChanged: not realized
+Ellipse.frameChanged: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
 Grid.opacity: ✅
 Grid.translationY: ✅
 HStack.scaleX: ✅
@@ -18,7 +22,11 @@ Map.accessibilityHint: not realized
 Path.focus: not realized
 Path.isFocusedChanged: not realized
 Path.unfocus: not realized
-Picker.frameChanged: not realized
+Picker.frameChanged: ✅
+Picker.maximumHeight: ✅
+Picker.maximumWidth: ✅
+Picker.minimumHeight: ✅
+Picker.minimumWidth: ✅
 Polygon.opacity: ✅
 Polygon.translationY: ✅
 Polyline.scaleX: ✅
@@ -29,7 +37,11 @@ Rectangle.accessibilityHint: ✅
 ScrollView.focus: not realized
 ScrollView.isFocusedChanged: not realized
 ScrollView.unfocus: not realized
-SearchField.frameChanged: not realized
+SearchField.frameChanged: ✅
+SearchField.maximumHeight: ✅
+SearchField.maximumWidth: ✅
+SearchField.minimumHeight: ✅
+SearchField.minimumWidth: ✅
 Slider.opacity: ✅
 Slider.translationY: ✅
 Stepper.scaleX: ✅
@@ -40,7 +52,11 @@ TimePicker.accessibilityHint: ✅
 TitleBar.focus: not realized
 TitleBar.isFocusedChanged: not realized
 TitleBar.unfocus: not realized
-VStack.frameChanged: not realized
+VStack.frameChanged: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
 WebView.opacity: not realized
 WebView.translationY: not realized
 ZStack.scaleX: ✅

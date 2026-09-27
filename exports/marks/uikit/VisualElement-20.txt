@@ -6,7 +6,11 @@ CheckBox.accessibilityHint: ✅
 ColorBox.focus: not realized
 ColorBox.isFocusedChanged: not realized
 ColorBox.unfocus: not realized
-DatePicker.frameChanged: not realized
+DatePicker.frameChanged: ✅
+DatePicker.maximumHeight: ✅
+DatePicker.maximumWidth: ✅
+DatePicker.minimumHeight: ✅
+DatePicker.minimumWidth: ✅
 Ellipse.opacity: ✅
 Ellipse.translationY: ✅
 Grid.scaleX: ✅
@@ -17,7 +21,11 @@ Line.accessibilityHint: ✅
 Map.focus: not realized
 Map.isFocusedChanged: not realized
 Map.unfocus: not realized
-Path.frameChanged: not realized
+Path.frameChanged: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
 Picker.opacity: ✅
 Picker.translationY: ✅
 Polygon.scaleX: ✅
@@ -28,7 +36,11 @@ RadioButton.accessibilityHint: ✅
 Rectangle.focus: not realized
 Rectangle.isFocusedChanged: not realized
 Rectangle.unfocus: not realized
-ScrollView.frameChanged: not realized
+ScrollView.frameChanged: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.minimumHeight: ✅
+ScrollView.minimumWidth: ✅
 SearchField.opacity: ✅
 SearchField.translationY: ✅
 Slider.scaleX: ✅

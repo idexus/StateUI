@@ -4,7 +4,11 @@ Button.clicked: ✅
 Canvas.focus: not realized
 Canvas.isFocusedChanged: not realized
 Canvas.unfocus: not realized
-CheckBox.frameChanged: not realized
+CheckBox.frameChanged: ✅
+CheckBox.maximumHeight: ✅
+CheckBox.maximumWidth: ✅
+CheckBox.minimumHeight: ✅
+CheckBox.minimumWidth: ✅
 ColorBox.opacity: ✅
 ColorBox.translationY: ✅
 DatePicker.scaleX: ✅
@@ -15,7 +19,11 @@ Image.accessibilityHint: ✅
 Label.focus: not realized
 Label.isFocusedChanged: not realized
 Label.unfocus: not realized
-Line.frameChanged: not realized
+Line.frameChanged: ✅
+Line.maximumHeight: ✅
+Line.maximumWidth: ✅
+Line.minimumHeight: ✅
+Line.minimumWidth: ✅
 Map.opacity: not realized
 Map.translationY: not realized
 Path.scaleX: ✅
@@ -26,7 +34,11 @@ PositionIndicator.accessibilityHint: not realized
 ProgressBar.focus: not realized
 ProgressBar.isFocusedChanged: not realized
 ProgressBar.unfocus: not realized
-RadioButton.frameChanged: not realized
+RadioButton.frameChanged: ✅
+RadioButton.maximumHeight: ✅
+RadioButton.maximumWidth: ✅
+RadioButton.minimumHeight: ✅
+RadioButton.minimumWidth: ✅
 Rectangle.opacity: ✅
 Rectangle.translationY: ✅
 ScrollView.scaleX: ✅
@@ -37,7 +49,11 @@ Switch.accessibilityHint: ✅
 TextEditor.focus: not realized
 TextEditor.isFocusedChanged: not realized
 TextEditor.unfocus: not realized
-TextField.frameChanged: not realized
+TextField.frameChanged: ✅
+TextField.maximumHeight: ✅
+TextField.maximumWidth: ✅
+TextField.minimumHeight: ✅
+TextField.minimumWidth: ✅
 TimePicker.opacity: ✅
 TimePicker.translationY: ✅
 TitleBar.scaleX: not realized

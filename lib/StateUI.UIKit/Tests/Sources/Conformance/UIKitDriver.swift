@@ -101,6 +101,9 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.goBack, _), (.choose, _) where NodeType.pageTypes.contains(element.type):
+            try performOnPages(act, on: element)
+        case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
         case (.pinch(let scale, let share), _):
@@ -129,6 +132,8 @@ final class UIKitDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        if element.type == .window { return try windowHolds(property, element) }
+        if let held = try pageHolds(property, element) { return held }
         let view = (element.native as? UIKitElement)?.view
         switch (property, view) {
         case (.text, let label as UIKitLabelView): return (label.text ?? "").propValue
@@ -156,9 +161,9 @@ final class UIKitDriver: HostDriver {
         case (.minimum, let stepper as UIKitStepperView): return stepper.minimumValue.propValue
         case (.maximum, let stepper as UIKitStepperView): return stepper.maximumValue.propValue
         case (.step, let stepper as UIKitStepperView): return stepper.stepValue.propValue
-        case (.progress, let bar as UIKitProgressBarView): return Double(bar.progress).propValue
+        case (.progress, let bar as UIKitProgressBarView): return Double(bar.bar.progress).propValue
         case (.isRunning, let spinner as UIKitActivityIndicatorView): return spinner.isAnimating.propValue
-        case (.tint, let bar as UIKitProgressBarView): return bar.progressTintColor.map { Self.color($0).propValue }
+        case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
         case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
         case (.selectedIndex, let picker as UIKitPickerView): return picker.chosen.map(\.propValue)
@@ -173,6 +178,7 @@ final class UIKitDriver: HostDriver {
         case (.scrollOffset, let scroll as UIKitScrollView):
             return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
+        case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.isVisible, let view?): return (!view.isHidden).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue

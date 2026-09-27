@@ -12,15 +12,43 @@ enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator",
-        "ModalStack", "NavigationStack", "Overlay", "Pin", "PositionIndicator", "Span", "Spans",
-        "SplitView", "TabbedView", "TitleBar", "TitleView", "ToolbarItem", "ToolbarItems", "TrailingContent",
+        "ModalStack", "Overlay", "Pin", "PositionIndicator", "Span", "Spans",
+        "TitleBar", "TrailingContent",
         "WebView",
     ]
 
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
+        // MARK: Tiers - a member every wearer realizes alike
+        .complete("BarElement", "barBackgroundColor"),
+        .complete("MenuItemElement", "clicked"),
+        .complete("MenuItemElement", "icon"),
+        .complete("MenuItemElement", "isEnabled"),
+        .complete("MenuItemElement", "text"),
+        .complete("PageElement", "icon"),
+        .complete("PageElement", "title"),
+
         // MARK: Entries - a control's or a part's own
+        .complete("NavigationStack", "barForegroundColor"),
+        .complete("NavigationStack", "popped"),
+        .complete("Page", "appearing"),
+        .complete("Page", "background"),
+        .complete("Page", "disappearing"),
+        .complete("Page", "hasBackButton"),
+        .complete("Page", "hasNavigationBar"),
+        .complete("Page", "icon"),
+        .complete("Page", "navigatedFrom"),
+        .complete("Page", "navigatedTo"),
+        .complete("Page", "navigatingFrom"),
+        .complete("Page", "padding"),
+        .complete("Page", "title"),
         .complete("RadioButton", "groupName"),
+        .complete("SplitView", "isSidebarVisible"),
+        .complete("SplitView", "isSidebarVisibleChanged"),
+        .complete("TabbedView", "currentPage"),
+        .complete("TabbedView", "currentPageChanged"),
+        .complete("ToolbarItem", "placement"),
+        .complete("ToolbarItem", "priority"),
     ]
 
     /// What UIKit's registry says it realizes: the export's content.

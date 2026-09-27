@@ -1,2 +1,3 @@
-NavigationStack.barBackgroundColor: not realized
-TabbedView.barBackgroundColor: not realized
+Button.clicked: ✅
+NavigationStack.barBackgroundColor: ✅
+TabbedView.barBackgroundColor: ✅

@@ -5,7 +5,11 @@ Canvas.accessibilityHint: not realized
 CheckBox.focus: not realized
 CheckBox.isFocusedChanged: not realized
 CheckBox.unfocus: not realized
-ColorBox.frameChanged: not realized
+ColorBox.frameChanged: ✅
+ColorBox.maximumHeight: ✅
+ColorBox.maximumWidth: ✅
+ColorBox.minimumHeight: ✅
+ColorBox.minimumWidth: ✅
 DatePicker.opacity: ✅
 DatePicker.translationY: ✅
 Ellipse.scaleX: ✅
@@ -31,7 +35,11 @@ ProgressBar.accessibilityHint: ✅
 RadioButton.focus: not realized
 RadioButton.isFocusedChanged: not realized
 RadioButton.unfocus: not realized
-Rectangle.frameChanged: not realized
+Rectangle.frameChanged: ✅
+Rectangle.maximumHeight: ✅
+Rectangle.maximumWidth: ✅
+Rectangle.minimumHeight: ✅
+Rectangle.minimumWidth: ✅
 ScrollView.opacity: ✅
 ScrollView.translationY: ✅
 SearchField.scaleX: ✅
@@ -42,7 +50,11 @@ TextEditor.accessibilityHint: ✅
 TextField.focus: not realized
 TextField.isFocusedChanged: not realized
 TextField.unfocus: not realized
-TimePicker.frameChanged: not realized
+TimePicker.frameChanged: ✅
+TimePicker.maximumHeight: ✅
+TimePicker.maximumWidth: ✅
+TimePicker.minimumHeight: ✅
+TimePicker.minimumWidth: ✅
 TitleBar.opacity: not realized
 TitleBar.translationY: not realized
 VStack.scaleX: ✅

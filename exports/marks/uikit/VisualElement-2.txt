@@ -9,7 +9,11 @@ DatePicker.accessibilityHint: ✅
 Ellipse.focus: not realized
 Ellipse.isFocusedChanged: not realized
 Ellipse.unfocus: not realized
-Grid.frameChanged: not realized
+Grid.frameChanged: ✅
+Grid.maximumHeight: ✅
+Grid.maximumWidth: ✅
+Grid.minimumHeight: ✅
+Grid.minimumWidth: ✅
 HStack.opacity: ✅
 HStack.translationY: ✅
 Image.scaleX: ✅
@@ -20,7 +24,11 @@ Path.accessibilityHint: ✅
 Picker.focus: not realized
 Picker.isFocusedChanged: not realized
 Picker.unfocus: not realized
-Polygon.frameChanged: not realized
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
 Polyline.opacity: ✅
 Polyline.translationY: ✅
 PositionIndicator.scaleX: not realized
@@ -31,7 +39,11 @@ ScrollView.accessibilityHint: ✅
 SearchField.focus: not realized
 SearchField.isFocusedChanged: not realized
 SearchField.unfocus: not realized
-Slider.frameChanged: not realized
+Slider.frameChanged: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
 Stepper.opacity: ✅
 Stepper.translationY: ✅
 Switch.scaleX: ✅

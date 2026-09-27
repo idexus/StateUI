@@ -10,9 +10,9 @@ extension UIKitRegistrations {
     /// A ProgressBar and an ActivityIndicator: how far the work went, whether it runs, and the tint it shows in.
     static func indicators(_ registry: Registry<UIView>) {
         registry.add(ProgressBarContract.self, create: { _ in UIKitProgressBarView() }) { bar in
-            bar.property(ProgressBarContract.progress) { view, progress in view.progress = Float(progress ?? 0) }
+            bar.property(ProgressBarContract.progress) { view, progress in view.bar.progress = Float(progress ?? 0) }
             bar.property(TintElementContract.tint) { view, tint in
-                view.progressTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
+                view.bar.progressTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }
         }
         registry.add(ActivityIndicatorContract.self, create: { _ in UIKitActivityIndicatorView() }) { activity in

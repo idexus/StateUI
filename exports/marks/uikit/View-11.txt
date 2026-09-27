@@ -1,81 +1,102 @@
-ActivityIndicator.pointerEntered: not realized
-ActivityIndicator.pointerExited: not realized
-ActivityIndicator.pointerMoved: not realized
-ActivityIndicator.pointerPressed: not realized
-ActivityIndicator.pointerReleased: not realized
-Button.swipeDirection: not realized
-Button.swipeThreshold: not realized
-Button.swiped: not realized
+ActivityIndicator.pointerEntered: ✅
+ActivityIndicator.pointerExited: ✅
+ActivityIndicator.pointerMoved: ✅
+ActivityIndicator.pointerPressed: ✅
+ActivityIndicator.pointerReleased: ✅
+Button.clicked: ✅
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
 Canvas.panTouchCount: not realized
 Canvas.panUpdated: not realized
 Canvas.panXChannel: not realized
-CheckBox.frameChanged: not realized
-ColorBox.frameChanged: not realized
+CheckBox.frameChanged: ✅
+CheckBox.gridColumnSpan: ✅
+CheckBox.gridRowSpan: ✅
+ColorBox.area: ✅
+ColorBox.frameChanged: ✅
 DatePicker.canDrag: not realized
 DatePicker.dragStarting: not realized
 DatePicker.dragText: not realized
 DatePicker.dropCompleted: not realized
-DatePicker.frameChanged: not realized
-Ellipse.pinchUpdated: not realized
-Grid.panYChannel: not realized
-HStack.tapCount: not realized
-HStack.tapped: not realized
-Image.frameChanged: not realized
+DatePicker.frameChanged: ✅
+DatePicker.margin: ✅
+Ellipse.pinchUpdated: ✅
+Grid.panYChannel: ✅
+HStack.tapCount: ✅
+HStack.tapped: ✅
+Image.frameChanged: ✅
+Image.gridColumn: ✅
+Image.gridRow: ✅
 Label.allowDrop: not realized
 Label.dragLeave: not realized
 Label.dragOver: not realized
 Label.drop: not realized
-Label.frameChanged: not realized
-Line.pointerEntered: not realized
-Line.pointerExited: not realized
-Line.pointerMoved: not realized
-Line.pointerPressed: not realized
-Line.pointerReleased: not realized
+Label.frameChanged: ✅
+Label.horizontalAlignment: ✅
+Label.verticalAlignment: ✅
+Line.pointerEntered: ✅
+Line.pointerExited: ✅
+Line.pointerMoved: ✅
+Line.pointerPressed: ✅
+Line.pointerReleased: ✅
 Map.swipeDirection: not realized
 Map.swipeThreshold: not realized
 Map.swiped: not realized
-Path.panTouchCount: not realized
-Path.panUpdated: not realized
-Path.panXChannel: not realized
-Picker.frameChanged: not realized
-Polygon.frameChanged: not realized
+Path.panTouchCount: ✅
+Path.panUpdated: ✅
+Path.panXChannel: ✅
+Picker.frameChanged: ✅
+Picker.gridColumnSpan: ✅
+Picker.gridRowSpan: ✅
+Polygon.area: ✅
+Polygon.frameChanged: ✅
 Polyline.canDrag: not realized
 Polyline.dragStarting: not realized
 Polyline.dragText: not realized
 Polyline.dropCompleted: not realized
-Polyline.frameChanged: not realized
+Polyline.frameChanged: ✅
+Polyline.margin: ✅
 PositionIndicator.pinchUpdated: not realized
-ProgressBar.panYChannel: not realized
-RadioButton.tapCount: not realized
-RadioButton.tapped: not realized
-Rectangle.frameChanged: not realized
+ProgressBar.panYChannel: ✅
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
+Rectangle.frameChanged: ✅
+Rectangle.gridColumn: ✅
+Rectangle.gridRow: ✅
 ScrollView.allowDrop: not realized
 ScrollView.dragLeave: not realized
 ScrollView.dragOver: not realized
 ScrollView.drop: not realized
-ScrollView.frameChanged: not realized
-SearchField.pointerEntered: not realized
-SearchField.pointerExited: not realized
-SearchField.pointerMoved: not realized
-SearchField.pointerPressed: not realized
-SearchField.pointerReleased: not realized
-Slider.swipeDirection: not realized
-Slider.swipeThreshold: not realized
-Slider.swiped: not realized
-Stepper.panTouchCount: not realized
-Stepper.panUpdated: not realized
-Stepper.panXChannel: not realized
-Switch.frameChanged: not realized
-TextEditor.frameChanged: not realized
+ScrollView.frameChanged: ✅
+ScrollView.horizontalAlignment: ✅
+ScrollView.verticalAlignment: ✅
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+SearchField.pointerMoved: ✅
+SearchField.pointerPressed: ✅
+SearchField.pointerReleased: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Stepper.panTouchCount: ✅
+Stepper.panUpdated: ✅
+Stepper.panXChannel: ✅
+Switch.frameChanged: ✅
+Switch.gridColumnSpan: ✅
+Switch.gridRowSpan: ✅
+TextEditor.area: ✅
+TextEditor.frameChanged: ✅
 TextField.canDrag: not realized
 TextField.dragStarting: not realized
 TextField.dragText: not realized
 TextField.dropCompleted: not realized
-TextField.frameChanged: not realized
-TimePicker.pinchUpdated: not realized
+TextField.frameChanged: ✅
+TextField.margin: ✅
+TimePicker.pinchUpdated: ✅
 TitleBar.panYChannel: not realized
-VStack.tapCount: not realized
-VStack.tapped: not realized
+VStack.tapCount: ✅
+VStack.tapped: ✅
 WebView.frameChanged: not realized
 WebView.gridColumn: not realized
 WebView.gridRow: not realized
@@ -83,4 +104,6 @@ ZStack.allowDrop: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized
 ZStack.drop: not realized
-ZStack.frameChanged: not realized
+ZStack.frameChanged: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.verticalAlignment: ✅

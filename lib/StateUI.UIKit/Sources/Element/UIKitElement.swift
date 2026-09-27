@@ -14,6 +14,9 @@ final class UIKitElement: NativeElement {
 
     private(set) var view: UIView?
 
+    /// The controller UIKit holds a page or an arrangement of pages by; nil for every other element.
+    private(set) var controller: UIViewController?
+
     /// How the view is moved, turned and scaled over its place, and how opaque it is drawn.
     private(set) var drawing: UIKitViewDrawing?
 
@@ -25,7 +28,9 @@ final class UIKitElement: NativeElement {
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host
-        view = makeView()
+        controller = makeController()
+        view = controller.map(\.view) ?? makeView()
+        if type == .page { controller = UIKitPageController(page: self) }
         drawing = view.map(UIKitViewDrawing.init)
     }
 
@@ -55,6 +60,7 @@ final class UIKitElement: NativeElement {
         applyProperties(changed: changed)
         configureGestures()
         arrangeChildren()
+        arrangePages(changed: changed)
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 
@@ -75,9 +81,6 @@ final class UIKitElement: NativeElement {
         listening = nil
     }
 
-    var chosenTab: Int? { nil }
-
-    var showsSidebar: Bool? { nil }
 }
 
 extension UIKitElement: PlacedView {

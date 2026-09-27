@@ -1,4 +1,5 @@
-ToolbarItem: not realized
-ToolbarItem.clicked: not realized
-ToolbarItem.placement: not realized
-ToolbarItem.priority: not realized
+Button.clicked: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet
+ToolbarItem: ✅
+ToolbarItem.clicked: ✅
+ToolbarItem.placement: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet
+ToolbarItem.priority: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet

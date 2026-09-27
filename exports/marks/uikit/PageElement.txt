@@ -1,8 +1,9 @@
-NavigationStack.icon: not realized
-NavigationStack.title: not realized
-Page.icon: not realized
-Page.title: not realized
-SplitView.icon: not realized
-SplitView.title: not realized
-TabbedView.icon: not realized
-TabbedView.title: not realized
+Button.clicked: ✅
+NavigationStack.icon: ✅
+NavigationStack.title: ✅
+Page.icon: ✅
+Page.title: ✅
+SplitView.icon: ✅
+SplitView.title: ✅
+TabbedView.icon: ✅
+TabbedView.title: ✅

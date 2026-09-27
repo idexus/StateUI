@@ -1,43 +1,55 @@
-ActivityIndicator.frameChanged: not realized
+ActivityIndicator.area: ✅
+ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized
+Button.clicked: ✅
 Button.dragStarting: not realized
 Button.dragText: not realized
 Button.dropCompleted: not realized
-Button.frameChanged: not realized
+Button.frameChanged: ✅
+Button.margin: ✅
 Canvas.pinchUpdated: not realized
-CheckBox.panYChannel: not realized
-ColorBox.tapCount: not realized
-ColorBox.tapped: not realized
-DatePicker.frameChanged: not realized
+CheckBox.panYChannel: ✅
+ColorBox.tapCount: ✅
+ColorBox.tapped: ✅
+DatePicker.frameChanged: ✅
+DatePicker.gridColumn: ✅
+DatePicker.gridRow: ✅
 Ellipse.allowDrop: not realized
 Ellipse.dragLeave: not realized
 Ellipse.dragOver: not realized
 Ellipse.drop: not realized
-Ellipse.frameChanged: not realized
-Grid.pointerEntered: not realized
-Grid.pointerExited: not realized
-Grid.pointerMoved: not realized
-Grid.pointerPressed: not realized
-Grid.pointerReleased: not realized
-HStack.swipeDirection: not realized
-HStack.swipeThreshold: not realized
-HStack.swiped: not realized
-Image.panTouchCount: not realized
-Image.panUpdated: not realized
-Image.panXChannel: not realized
-Label.frameChanged: not realized
-Line.frameChanged: not realized
+Ellipse.frameChanged: ✅
+Ellipse.horizontalAlignment: ✅
+Ellipse.verticalAlignment: ✅
+Grid.pointerEntered: ✅
+Grid.pointerExited: ✅
+Grid.pointerMoved: ✅
+Grid.pointerPressed: ✅
+Grid.pointerReleased: ✅
+HStack.swipeDirection: ✅
+HStack.swipeThreshold: ✅
+HStack.swiped: ✅
+Image.panTouchCount: ✅
+Image.panUpdated: ✅
+Image.panXChannel: ✅
+Label.frameChanged: ✅
+Label.gridColumnSpan: ✅
+Label.gridRowSpan: ✅
+Line.area: ✅
+Line.frameChanged: ✅
 Map.canDrag: not realized
 Map.dragStarting: not realized
 Map.dragText: not realized
 Map.dropCompleted: not realized
 Map.frameChanged: not realized
 Map.margin: not realized
-Path.pinchUpdated: not realized
-Picker.panYChannel: not realized
-Polygon.tapCount: not realized
-Polygon.tapped: not realized
-Polyline.frameChanged: not realized
+Path.pinchUpdated: ✅
+Picker.panYChannel: ✅
+Polygon.tapCount: ✅
+Polygon.tapped: ✅
+Polyline.frameChanged: ✅
+Polyline.gridColumn: ✅
+Polyline.gridRow: ✅
 PositionIndicator.allowDrop: not realized
 PositionIndicator.dragLeave: not realized
 PositionIndicator.dragOver: not realized
@@ -45,43 +57,53 @@ PositionIndicator.drop: not realized
 PositionIndicator.frameChanged: not realized
 PositionIndicator.horizontalAlignment: not realized
 PositionIndicator.verticalAlignment: not realized
-ProgressBar.pointerEntered: not realized
-ProgressBar.pointerExited: not realized
-ProgressBar.pointerMoved: not realized
-ProgressBar.pointerPressed: not realized
-ProgressBar.pointerReleased: not realized
-RadioButton.swipeDirection: not realized
-RadioButton.swipeThreshold: not realized
-RadioButton.swiped: not realized
-Rectangle.panTouchCount: not realized
-Rectangle.panUpdated: not realized
-Rectangle.panXChannel: not realized
-ScrollView.frameChanged: not realized
-SearchField.frameChanged: not realized
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
+RadioButton.swipeDirection: ✅
+RadioButton.swipeThreshold: ✅
+RadioButton.swiped: ✅
+Rectangle.panTouchCount: ✅
+Rectangle.panUpdated: ✅
+Rectangle.panXChannel: ✅
+ScrollView.frameChanged: ✅
+ScrollView.gridColumnSpan: ✅
+ScrollView.gridRowSpan: ✅
+SearchField.area: ✅
+SearchField.frameChanged: ✅
 Slider.canDrag: not realized
 Slider.dragStarting: not realized
 Slider.dragText: not realized
 Slider.dropCompleted: not realized
-Slider.frameChanged: not realized
-Stepper.pinchUpdated: not realized
-Switch.panYChannel: not realized
-TextEditor.tapCount: not realized
-TextEditor.tapped: not realized
-TextField.frameChanged: not realized
+Slider.frameChanged: ✅
+Slider.margin: ✅
+Stepper.pinchUpdated: ✅
+Switch.panYChannel: ✅
+TextEditor.tapCount: ✅
+TextEditor.tapped: ✅
+TextField.frameChanged: ✅
+TextField.gridColumn: ✅
+TextField.gridRow: ✅
 TimePicker.allowDrop: not realized
 TimePicker.dragLeave: not realized
 TimePicker.dragOver: not realized
 TimePicker.drop: not realized
-TimePicker.frameChanged: not realized
+TimePicker.frameChanged: ✅
+TimePicker.horizontalAlignment: ✅
+TimePicker.verticalAlignment: ✅
 TitleBar.pointerEntered: not realized
 TitleBar.pointerExited: not realized
 TitleBar.pointerMoved: not realized
 TitleBar.pointerPressed: not realized
 TitleBar.pointerReleased: not realized
-VStack.swipeDirection: not realized
-VStack.swipeThreshold: not realized
-VStack.swiped: not realized
+VStack.swipeDirection: ✅
+VStack.swipeThreshold: ✅
+VStack.swiped: ✅
 WebView.panTouchCount: not realized
 WebView.panUpdated: not realized
 WebView.panXChannel: not realized
-ZStack.frameChanged: not realized
+ZStack.frameChanged: ✅
+ZStack.gridColumnSpan: ✅
+ZStack.gridRowSpan: ✅

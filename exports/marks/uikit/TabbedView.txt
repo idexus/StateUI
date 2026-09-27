@@ -1,3 +1,4 @@
-TabbedView: not realized
-TabbedView.currentPage: not realized
-TabbedView.currentPageChanged: not realized
+Button.clicked: ✅
+TabbedView: ✅
+TabbedView.currentPage: ✅
+TabbedView.currentPageChanged: ✅

@@ -1,11 +1,12 @@
+Button.clicked: ✅
 Page: ✅
-Page.appearing: not realized
+Page.appearing: ✅
 Page.backButtonTitle: not realized
-Page.background: not realized
-Page.disappearing: not realized
-Page.hasBackButton: not realized
-Page.hasNavigationBar: not realized
-Page.navigatedFrom: not realized
-Page.navigatedTo: not realized
-Page.navigatingFrom: not realized
-Page.padding: not realized
+Page.background: ✅
+Page.disappearing: ✅
+Page.hasBackButton: ✅
+Page.hasNavigationBar: ✅
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.padding: ✅

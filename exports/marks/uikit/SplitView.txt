@@ -1,3 +1,4 @@
-SplitView: not realized
-SplitView.isSidebarVisible: not realized
-SplitView.isSidebarVisibleChanged: not realized
+Button.clicked: ✅
+SplitView: ✅
+SplitView.isSidebarVisible: ✅
+SplitView.isSidebarVisibleChanged: cannot toggle on SplitView - UIKit's driver has no path for it yet

@@ -20,7 +20,9 @@ final class UIKitRenderer {
     static var resourceDirectory: URL?
 
     let frameClock: UIKitFrameClock
-    private let reducesMotion: () -> Bool
+
+    /// Whether the user asked for less motion.
+    let reducesMotion: () -> Bool
 
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
@@ -119,6 +121,8 @@ final class UIKitRenderer {
                   let data = FileManager.default.contents(atPath: path),
                   let image = UIImage(data: data, scale: CGFloat(drawn.scale))
             else { continue }
+            // Named by the name it was asked for, which reads it back.
+            image.accessibilityIdentifier = name
             return image
         }
         log.error("no picture named \(name) in the application's images")
