@@ -7,8 +7,8 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// A SplitView: UIKit's own split view controller, its sidebar the first column and its detail the second - a page
-/// standing alone in a column gets the column's own bar. The sidebar showing or hiding on screen is told, whoever
-/// moved it.
+/// standing alone in a column gets the column's own bar. In a narrow room, as on a phone, the sidebar slides over the
+/// detail; in a wide one it stands beside it. The sidebar showing or hiding on screen is told, whoever moved it.
 /// Design: docs/design/platforms/uikit/pages.md#a-split-view
 @MainActor
 final class UIKitSplitViewController: UISplitViewController, UISplitViewControllerDelegate {
@@ -20,13 +20,17 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
 
     private var shown: (sidebar: UIViewController?, detail: UIViewController?)
 
+    /// Whether the room the split view stands in is narrow, as its presentation last took it; nil before a room.
+    private var narrow: Bool?
+
     /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
-    private var replacingDetail = false
+    private var movingItself = false
 
     init() {
         super.init(style: .doubleColumn)
         delegate = self
-        preferredDisplayMode = .oneBesideSecondary
+        // Never one column: in a narrow room the sidebar slides over the detail instead.
+        traitOverrides.horizontalSizeClass = .regular
     }
 
     @available(*, unavailable)
@@ -37,53 +41,81 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// The sidebar's controller and the detail's.
     func show(sidebar: UIViewController?, detail: UIViewController?) {
         if sidebar !== shown.sidebar { setViewController(sidebar, for: .primary) }
-        if detail !== shown.detail { replace(detail: detail) }
+        if detail !== shown.detail { setViewController(detail, for: .secondary) }
         shown = (sidebar, detail)
-    }
-
-    /// Collapsed into one column, UIKit keeps the detail it collapsed on the sidebar's stack whatever the detail
-    /// becomes: the host takes it off first, and shows the new one where the detail showed.
-    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
-    private func replace(detail: UIViewController?) {
-        guard isCollapsed else { return setViewController(detail, for: .secondary) }
-        replacingDetail = true
-        defer { replacingDetail = false }
-        viewController(for: .primary)?.navigationController?.popToRootViewController(animated: false)
-        setViewController(detail, for: .secondary)
-        if isPresented != true { UIView.performWithoutAnimation { show(.secondary) } }
+        giveTheColumnsTheRoomsWidth()
     }
 
     /// Shows the sidebar, or hides it, as the tree says - the program's move, which UIKit's telling of it does not
-    /// report back. Collapsed into one column, as on a phone, the sidebar shows by being the column shown.
+    /// report back.
     func present(_ presented: Bool) {
         guard presented != isPresented else { return }
         isPresented = presented
-        if isCollapsed {
-            show(presented ? .primary : .secondary)
-        } else if presented {
-            show(.primary)
-        } else {
-            hide(.primary)
+        // Before a room the columns wait for it: adapting to it lays them as asked.
+        guard narrow != nil else { return }
+        movingItself = true
+        defer { movingItself = false }
+        UIView.animate(withDuration: 0.3) { self.preferredDisplayMode = self.askedDisplayMode }
+    }
+
+    /// How the columns stand for the sidebar the tree asks for: over the detail in a narrow room, beside it in a
+    /// wide one, or not at all.
+    private var askedDisplayMode: DisplayMode {
+        guard isPresented == true else { return .secondaryOnly }
+        return narrow == true ? .oneOverSecondary : .oneBesideSecondary
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        adaptToTheRoom()
+    }
+
+    /// The room's width class: the split view's own always says wide.
+    private var roomIsNarrow: Bool? {
+        guard let room = parent?.traitCollection ?? view.window?.windowScene?.traitCollection,
+              room.horizontalSizeClass != .unspecified
+        else { return nil }
+        return room.horizontalSizeClass == .compact
+    }
+
+    /// Lays the sidebar over the detail in a narrow room and beside it in a wide one, where the room changed; the
+    /// sidebar keeps showing or hiding as it did.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    private func adaptToTheRoom() {
+        guard let narrow = roomIsNarrow, narrow != self.narrow else { return }
+        self.narrow = narrow
+        movingItself = true
+        defer { movingItself = false }
+        preferredSplitBehavior = narrow ? .overlay : .tile
+        preferredDisplayMode = askedDisplayMode
+        giveTheColumnsTheRoomsWidth()
+    }
+
+    /// Each column is as narrow as the room: a tab bar, a sheet and a bar in it stand as the room's own.
+    private func giveTheColumnsTheRoomsWidth() {
+        for column in children {
+            // An override never written is no value to read: reading it throws.
+            let overridden = column.traitOverrides.contains(UITraitHorizontalSizeClass.self)
+            if narrow == true {
+                if !overridden || column.traitOverrides.horizontalSizeClass != .compact {
+                    column.traitOverrides.horizontalSizeClass = .compact
+                }
+            } else if overridden {
+                column.traitOverrides.remove(UITraitHorizontalSizeClass.self)
+            }
         }
     }
 
-    func splitViewController(_ split: UISplitViewController, willShow column: UISplitViewController.Column) {
-        guard column == .primary, isPresented != true, !replacingDetail else { return }
-        isPresented = true
-        onPresentationChanged?(true)
-    }
-
-    func splitViewController(_ split: UISplitViewController, willHide column: UISplitViewController.Column) {
-        guard column == .primary, isPresented != false, !replacingDetail else { return }
-        isPresented = false
-        onPresentationChanged?(false)
-    }
-
+    /// The sidebar showing or hiding on screen is heard as the display mode changes: UIKit tells no column shown or
+    /// hidden when the sidebar slides over the detail.
     func splitViewController(
-        _ split: UISplitViewController,
-        topColumnForCollapsingToProposedTopColumn proposed: UISplitViewController.Column
-    ) -> UISplitViewController.Column {
-        .secondary
+        _ split: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode
+    ) {
+        let presented = displayMode != .secondaryOnly
+        // What UIKit settles on before the room is known is its own start, not the user's.
+        guard presented != isPresented, !movingItself, narrow != nil else { return }
+        isPresented = presented
+        onPresentationChanged?(presented)
     }
 }
 #endif

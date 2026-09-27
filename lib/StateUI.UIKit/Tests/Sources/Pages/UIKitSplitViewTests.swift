@@ -7,8 +7,37 @@ import UIKit
 @testable import StateUIUIKit
 import XCTest
 
-/// A split view's columns as UIKit shows them, collapsed into one on a phone and side by side on an iPad.
+/// A split view's columns as UIKit shows them: the sidebar over the detail in a narrow room, as on a phone, and
+/// beside it in a wide one, as on an iPad.
 final class UIKitSplitViewTests: XCTestCase {
+    /// In a narrow room the split view stays two columns - the sidebar sliding over the detail, never one column
+    /// standing in for the other - and each column is as narrow as the room: its tabs and sheets are a phone's.
+    @MainActor
+    func testTheSidebarSlidesOverTheDetailInANarrowRoom() throws {
+        let menuOpen = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(menuOpen.projectedValue) { Label("Sidebar") } detail: { Label("Detail") }
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
+        host.settle { split.view.window != nil }
+        let room = try XCTUnwrap(split.view.window?.windowScene?.traitCollection.horizontalSizeClass)
+
+        XCTAssertFalse(split.isCollapsed, "two columns, never one")
+        if room == .compact {
+            XCTAssertEqual(split.preferredSplitBehavior, .overlay, "the sidebar over the detail")
+            for column in split.children {
+                XCTAssertEqual(column.traitCollection.horizontalSizeClass, .compact, "a column as narrow as the room")
+            }
+        }
+
+        menuOpen.wrappedValue = true
+        host.runtime.pump.turn()
+        host.settle { split.displayMode != .secondaryOnly }
+        XCTAssertEqual(split.displayMode, room == .compact ? .oneOverSecondary : .oneBesideSecondary)
+        XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
+    }
+
     /// A detail the tree replaces - a stack with pages pushed on it by tabs, the stack emptied in the same move, once
     /// the sidebar showed and hid - stands in the window in place of the one before.
     @MainActor

@@ -186,6 +186,8 @@ final class UIKitDriver: HostDriver {
             try performOnPages(act, on: element)
         case (.choose, _) where NodeType.pageTypes.contains(element.type):
             try performOnPages(act, on: element)
+        case (.toggle, _) where element.type == .splitView:
+            try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
         case (.activate, _) where element.type == .menuItem:
             // The item as the menu UIKit is handed shows it, taken where it can be.

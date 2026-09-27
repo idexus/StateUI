@@ -50,8 +50,8 @@ extension UIKitDriver {
             guard let tabs = controller as? UIKitTabBarController else { return nil }
             return tabs.selectedIndex.propValue
         case .isSidebarVisible:
-            guard let split = controller as? UIKitSplitViewController else { return nil }
-            return (split.isPresented ?? (split.displayMode != .secondaryOnly)).propValue
+            guard let split = controller as? UISplitViewController else { return nil }
+            return (split.displayMode != .secondaryOnly).propValue
         case .barBackgroundColor:
             let appearance = (controller as? UINavigationController)?.topViewController?.navigationItem.standardAppearance
                 ?? (controller as? UITabBarController).map { $0.tabBar.standardAppearance as UIBarAppearance }
@@ -84,6 +84,11 @@ extension UIKitDriver {
             guard tabs.delegate?.tabBarController?(tabs, shouldSelect: shown[place]) ?? true else { return }
             tabs.selectedIndex = place
             tabs.delegate?.tabBarController?(tabs, didSelect: shown[place])
+        case .toggle:
+            // As the sidebar button UIKit puts on the detail's bar does - an item of UIKit's own, which the split view
+            // hands out bare: the column shown where it is hidden, and hidden where it shows.
+            guard let split = native?.controller as? UISplitViewController else { throw DriverCannot(act, on: element) }
+            split.displayMode == .secondaryOnly ? split.show(.primary) : split.hide(.primary)
         case .activate:
             let title = element.value(.text)?.string ?? ""
             guard let (action, enabled) = barActions().first(where: { $0.action.title == title }) else {

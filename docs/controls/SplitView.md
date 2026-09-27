@@ -13,7 +13,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (5) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ | `NSSplitViewController` |  |
-| UIKit | ✅ | 3 ✅ | `UISplitViewController` |  |
+| UIKit | ✅ | 5 ✅ | `UISplitViewController` |  |
 | Android Views | ✅ | 1 ✅ | AndroidX `DrawerLayout` |  |
 | WinUI 3 | ⌛ |  | `SplitView` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no run of it on these sources |
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ◐ | 🪞 | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; WinUI 3: a run of other sources said: ✅ |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | · | 🪞 | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ | 🪞 | ⌛ |  |  | Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🪞 | ⌛ |  |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

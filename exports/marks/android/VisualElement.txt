@@ -1,4 +1,4 @@
-# inputs 8efde1986cbcc17113ec964ce8d5f3b936231df0
+# inputs 12cf702e5bc98016b61d73333eb778ff7e734138
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅

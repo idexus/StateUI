@@ -107,6 +107,9 @@ window's toolbar; a window wide enough for both panes opens with the sidebar
 shown, and after that the user and the binding decide. On Windows the
 sidebar opens over the detail from the navigation button beside the back
 button in the title bar, and the same button or a click outside it closes it.
+On a phone - iOS and Android alike - the sidebar slides over the detail from
+the leading edge, the detail shaded behind it, and a tap on the shade closes
+it; on an iPad or a wide tablet it stands beside the detail.
 
 ## Modal pages
 

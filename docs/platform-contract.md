@@ -496,14 +496,14 @@ Every control, and every part an application, its windows and its pages are made
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ |  |  |  |
 | [Span](controls/Span.md) | 12 |  |  |  |  |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 3 ✅ | 1 ✅ |  |  |  |
+| [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ |  |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – |  |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ |  |  |  |
-| **Met** - ✅ and – | 104 | 48 of 104 met | 53 of 104 met | 20 of 104 met |  |  |  |
+| **Met** - ✅ and – | 104 | 48 of 104 met | 55 of 104 met | 20 of 104 met |  |  |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -567,7 +567,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ | 4 ✅ |  |  |  |
 | [Span](controls/Span.md) | `background` | 1 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 | 2 ✅ |  |  |  |  |  |
+| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 | 2 ✅ | 2 ✅ |  |  |  |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 2 ✅ | 2 ✅ |  |  |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ |  |  |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ | 2 ✅ |  |  |  |  |

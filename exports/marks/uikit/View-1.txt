@@ -1,4 +1,4 @@
-# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
+# inputs b0bd60ef70c1f8684eca8f3cb77c10fd9147005e
 ActivityIndicator.canDrag: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized

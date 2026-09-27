@@ -74,14 +74,14 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ |  |  |  |
 | [Span](Span.md) | 12 |  |  |  |  |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 5 | 3 ✅ | 3 ✅ | 1 ✅ |  |  |  |
+| [SplitView](SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ |  |  |  |
 | [TabbedView](TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ |  |  |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – |  |  |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ |  |  |  |
-| **Met** - ✅ and – | 104 | 48 of 104 met | 53 of 104 met | 20 of 104 met |  |  |  |
+| **Met** - ✅ and – | 104 | 48 of 104 met | 55 of 104 met | 20 of 104 met |  |  |  |
 <!-- structure:end -->
 
 ## Tiers

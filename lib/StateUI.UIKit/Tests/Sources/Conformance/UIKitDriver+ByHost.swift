@@ -28,7 +28,6 @@ extension UIKitDriver {
             return "the host's own flag, not the button's state"
         case "read selectedIndex of Picker", "read options of Picker", "read title of Picker":
             return "the host's own choice, not the menu's"
-        case "read isSidebarVisible of SplitView": return "the host's own flag, where it holds one"
         case "read the menu of Window": return "the host's menu bar entries, not UIKit's main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the buttons' captions the host keeps"

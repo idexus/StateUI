@@ -51,17 +51,24 @@ told as the tab before and the tab now; one the program makes is not.
 
 A SplitView is UIKit's split view controller: its sidebar the first column,
 its detail the second, a page standing alone in a column under the column's
-own bar. The sidebar showing or hiding is told as UIKit shows or hides it,
-whoever moved it; the program's own move is not told back. Collapsed into one
-column, as on a phone, the detail shows first, and the sidebar shows by being
-the column shown.
+own bar. It is never one column. In a narrow room - a phone, upright or on
+its side - the sidebar slides over the detail from the leading edge, the
+detail shaded behind it, opened by the sidebar button UIKit puts on the
+detail's bar or a swipe from the edge and closed by a tap on the shade; in a
+wide room it stands beside the detail. The split view says it is wide
+whatever the room (`traitOverrides`), so UIKit never folds it into one
+column, and each column says the room's own width, so the tabs, sheets and
+bars inside stand as a phone's.
 
-The trap: collapsed, UIKit keeps the detail on the sidebar's navigation stack
-once the sidebar has shown, and a detail the tree replaces then never takes
-its place - the old one stays on screen. The host takes the old detail off
-that stack itself, sets the new one and shows it where the detail showed,
-without motion; UIKit's telling of that move is not the user's and is not
-reported back.
+Whether the sidebar shows is the display mode the host prefers: over or
+beside the detail while the tree asks for it, the detail alone while not.
+The sidebar showing or hiding on screen is heard as the display mode
+changes, whoever moved it; the program's own move and the host's adapting
+to a new room are not told back. The traps: sliding over the detail, UIKit
+tells no column shown or hidden (`willShow`/`willHide` stay silent for the
+sidebar); entering its window it settles a display mode of its own before
+the first layout, which is no user's move; and its sidebar button item is
+handed out bare - the one on the bar is UIKit's own.
 
 ## Sheets
 

@@ -1,4 +1,4 @@
-# inputs 486f882cbb0b9ed968edaa98211c6b98a4211363
+# inputs b0bd60ef70c1f8684eca8f3cb77c10fd9147005e
 ActivityIndicator.scale: 🪞 read scale of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotation: 🪞 read rotation of Button: the host's own transform, checked against the layer it composed itself
 Canvas.layoutDirection: not realized
