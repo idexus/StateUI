@@ -55,7 +55,8 @@ enum UIKitRealization {
     /// What UIKit's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {
         let registry = UIKitRegistrations.registry
-        return HostDeclaration(realization: registry.realization, shared: registry.sharedNames, acts: [])
+        return HostDeclaration(
+            realization: registry.realization, shared: registry.sharedNames, acts: HostActs.performed.map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

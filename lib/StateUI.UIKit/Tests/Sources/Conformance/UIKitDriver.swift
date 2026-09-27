@@ -24,6 +24,9 @@ final class UIKitDriver: HostDriver {
     /// The host the driver started last.
     private(set) var renderer: UIKitRenderer?
 
+    /// What the hosts wrote to their log since the last started.
+    private let written = UIKitLogLines()
+
     /// The press a finger holds down between the acts that put it down, drag it and lift it.
     var press: (pan: DrivenPan, dragging: Bool)?
 
@@ -31,9 +34,44 @@ final class UIKitDriver: HostDriver {
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         finish()
+        forgetWhatIsKept()
+        written.listen()
         let renderer = UIKitRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
+    }
+
+    /// Runs `application` on a new host, as the next launch does: what the last kept stands.
+    func start(clock: TestClock?, application: @escaping @Sendable () -> any Application) throws -> MountedTree {
+        finish()
+        written.listen()
+        let renderer = UIKitRenderer.running(clock: clock, application: application)
+        self.renderer = renderer
+        return renderer.runtime.tree
+    }
+
+    func forgetWhatIsKept() {
+        TestScene.forgetWhatIsKept()
+    }
+
+    /// What the hosts wrote to their log since the driver last started one.
+    func logged() throws -> [String] {
+        written.lines
+    }
+
+    /// Whether the element's view, or a view in it, holds the focus.
+    func focused(_ element: MountedElement) throws -> Bool {
+        guard let view = (element.native as? UIKitElement)?.view else {
+            throw DriverCannot("read the focus of \(element.type.name)")
+        }
+        return UIKitElement.holdsFocus(view)
+    }
+
+    /// The view that takes the focus for `view`: it, or the first view in it that can.
+    private static func focusable(in view: UIView) -> UIView? {
+        if view.canBecomeFirstResponder { return view }
+        for child in view.subviews { if let found = focusable(in: child) { return found } }
+        return nil
     }
 
     /// Ends the host the driver started last.
@@ -101,6 +139,15 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
+        case (.focus, let view?):
+            // A finger in a field: it takes the keyboard.
+            guard let focusable = Self.focusable(in: view) else { throw DriverCannot(act, on: element) }
+            focusable.becomeFirstResponder()
+            renderer?.focusMoved()
+        case (.answer(let caption, let words), _):
+            guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
+                throw DriverCannot("press \(caption): no question shows it")
+            }
         case (.goBack, _) where element.type == .window || NodeType.pageTypes.contains(element.type):
             try performOnPages(act, on: element)
         case (.choose, _) where NodeType.pageTypes.contains(element.type):
@@ -189,6 +236,20 @@ final class UIKitDriver: HostDriver {
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)
         default: throw DriverCannot(reading: property, of: element)
+        }
+    }
+}
+
+/// The host's log, line by line, as the driver hears it.
+final class UIKitLogLines: @unchecked Sendable {
+    private(set) var lines: [String] = []
+
+    /// Listens to the host's log from now on.
+    @MainActor func listen() {
+        lines = []
+        UIKitRenderer.log = HostLog(host: "UIKit") { [self] line in
+            lines.append(line)
+            UIKitTestRunner.say(line.hasSuffix("\n") ? String(line.dropLast()) : line)
         }
     }
 }

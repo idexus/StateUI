@@ -42,6 +42,30 @@ extension UIKitDriver {
         return Color(red: channel(0), green: channel(1), blue: channel(2))
     }
 
+    /// The question UIKit's alert shows now, as it shows it.
+    func question(over element: MountedElement) throws -> Question? {
+        guard let shown = renderer?.actToolkit.showing else { return nil }
+        let field = shown.question.kind == .prompt ? shown.alert.textFields?.first?.text ?? "" : nil
+        return Question(
+            title: shown.alert.title ?? "", message: shown.alert.message ?? "", buttons: shown.buttons.map(\.caption),
+            field: field)
+    }
+
+    /// What the host told VoiceOver, in order.
+    func announced() throws -> [String] {
+        renderer?.actToolkit.announcedForTesting ?? []
+    }
+
+    /// What the host keeps under `key` for the next launch, as it reads it back.
+    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+        guard !inScene else { throw DriverCannot("read a scene's kept value: UIKit keeps none yet") }
+        guard let word = TestScene.preferences.string(forKey: key) else { return nil }
+        let kinds = [
+            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
+        ]
+        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+    }
+
     /// Whether a touch at `point` of the element's view lands on it or on something inside it, as the window's
     /// hit testing finds it.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool {

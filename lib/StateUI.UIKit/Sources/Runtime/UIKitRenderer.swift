@@ -11,7 +11,7 @@ import UIKit
 /// Design: docs/design/platforms/uikit/runtime.md
 @MainActor
 final class UIKitRenderer {
-    static let log = HostLog(host: "UIKit")
+    static var log = HostLog(host: "UIKit")
 
     /// The one runtime of the process, which every scene iOS connects shows a window of.
     static let shared = UIKitRenderer()
@@ -32,17 +32,42 @@ final class UIKitRenderer {
     /// Every StateUI window with the controller showing it.
     let roster = WindowRoster<UIKitWindowController>()
 
+    /// Where kept values stand between launches.
+    let preferences: UserDefaults
+
+    /// UIKit's part of the acts every host performs, and the host layer's performer of them.
+    private(set) lazy var actToolkit = UIKitActToolkit(renderer: self)
+    private(set) lazy var acts = HostActPerformer(
+        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        answered: { [unowned self] in runtime.pump.turn() })
+
     /// The scenes iOS connected that no StateUI window stands in yet, the first first.
     private var waitingScenes: [UIWindowScene] = []
 
     private var started = false
     private var reportedDisplay = false
 
-    init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { UIAccessibility.isReduceMotionEnabled }) {
+    init(
+        clock: (() -> Double)? = nil, preferences: UserDefaults = .standard,
+        reducesMotion: @escaping () -> Bool = { UIAccessibility.isReduceMotionEnabled }
+    ) {
         frameClock = clock.map { UIKitFrameClock(now: $0, ticksWithTheDisplay: false) } ?? UIKitFrameClock()
+        self.preferences = preferences
         self.reducesMotion = reducesMotion
         runtime.displayCycle.presenter = self
         runtime.pump.presenter = self
+        // On iOS the focus moves between the fields and editors the user types in, which say so.
+        for name in [
+            UITextField.textDidBeginEditingNotification, UITextField.textDidEndEditingNotification,
+            UITextView.textDidBeginEditingNotification, UITextView.textDidEndEditingNotification,
+        ] {
+            NotificationCenter.default.addObserver(self, selector: #selector(focusMoved), name: name, object: nil)
+        }
+    }
+
+    /// The focus moved: every element following it hears where it is.
+    @objc func focusMoved() {
+        runtime.tree.root?.uiKit.reportFocus()
     }
 
     /// Starts the runtime as the application launches: what the host realizes and what the device is, then the core
@@ -52,6 +77,7 @@ final class UIKitRenderer {
         started = true
         runtime.core.setRealization(UIKitRegistrations.registry.realization, unrealized: UIKitRealization.unrealized)
         reportEnvironment()
+        hydratePersistentState()
         runtime.tree.followTheLanguagesDirection()
         let core = runtime.core
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
@@ -112,6 +138,11 @@ final class UIKitRenderer {
         runtime.displayCycle.hold()
     }
 
+    /// The window the user is looking at: the key one, else the first.
+    var userWindow: UIWindow? {
+        roster.windows.first { $0.1.window?.isKeyWindow == true }?.1.window ?? roster.windows.first?.1.window
+    }
+
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
     /// each at the pixels a point it holds - read from exactly that file, as UIKit's own reading of a path would take
     /// a `@3x` file beside it for it.
@@ -136,7 +167,7 @@ extension UIKitRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        runtime.core.fail(call, "the UIKit host does not perform the act '\(call.act.name)' yet", log: { Self.log.error($0) })
+        acts.perform(call)
     }
 }
 

@@ -1,6 +1,6 @@
-ActivityIndicator.focus: not realized
-ActivityIndicator.isFocusedChanged: not realized
-ActivityIndicator.unfocus: not realized
+ActivityIndicator.focus: ✅
+ActivityIndicator.isFocusedChanged: ✅
+ActivityIndicator.unfocus: ✅
 Button.clicked: ✅
 Button.frameChanged: ✅
 Button.maximumHeight: ✅
@@ -14,9 +14,9 @@ ColorBox.rotationX: ✅
 DatePicker.pivotX: ✅
 Ellipse.automationExcludedWithChildren: ✅
 Grid.accessibilityHint: ✅
-HStack.focus: not realized
-HStack.isFocusedChanged: not realized
-HStack.unfocus: not realized
+HStack.focus: ✅
+HStack.isFocusedChanged: ✅
+HStack.unfocus: ✅
 Image.frameChanged: ✅
 Image.maximumHeight: ✅
 Image.maximumWidth: ✅
@@ -29,9 +29,9 @@ Map.rotationX: not realized
 Path.pivotX: ✅
 Picker.automationExcludedWithChildren: ✅
 Polygon.accessibilityHint: ✅
-Polyline.focus: not realized
-Polyline.isFocusedChanged: not realized
-Polyline.unfocus: not realized
+Polyline.focus: ✅
+Polyline.isFocusedChanged: ✅
+Polyline.unfocus: ✅
 PositionIndicator.frameChanged: not realized
 PositionIndicator.maximumHeight: not realized
 PositionIndicator.maximumWidth: not realized
@@ -44,9 +44,9 @@ Rectangle.rotationX: ✅
 ScrollView.pivotX: ✅
 SearchField.automationExcludedWithChildren: ✅
 Slider.accessibilityHint: ✅
-Stepper.focus: not realized
-Stepper.isFocusedChanged: not realized
-Stepper.unfocus: not realized
+Stepper.focus: ✅
+Stepper.isFocusedChanged: ✅
+Stepper.unfocus: ✅
 Switch.frameChanged: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
@@ -59,6 +59,6 @@ TimePicker.rotationX: ✅
 TitleBar.pivotX: not realized
 VStack.automationExcludedWithChildren: ✅
 WebView.accessibilityHint: not realized
-ZStack.focus: not realized
-ZStack.isFocusedChanged: not realized
-ZStack.unfocus: not realized
+ZStack.focus: ✅
+ZStack.isFocusedChanged: ✅
+ZStack.unfocus: ✅

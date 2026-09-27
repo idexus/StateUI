@@ -28,3 +28,26 @@ arrangement of pages within the safe area, the title of the page the user
 sees the scene's title. A window the tree lets go of lets its scene go with
 it. The application's `Info.plist` says it supports many scenes, so an iPad
 opens as many as the user asks for.
+
+## Acts
+
+The acts every host performs are the host layer's performer's; UIKit's part
+is its toolkit's. The clock and the zones are the device's. A word to the
+screen reader is VoiceOver's announcement. On iOS only a field or an editor
+takes the focus: an act focusing a view gives it to the view, or the first
+view in it that takes it, and answers whether one did; taking the keyboard
+down ends the editing in the window the user is looking at. Where the focus
+is, each element following it hears as it moves - a field and an editor say
+so as their editing begins and ends, and every focus act says so too, as not
+every view taking the focus does. Kept values stand in the preferences, read
+before the first render.
+
+## Questions for the user
+
+A question is UIKit's alert, presented over what the user's window shows -
+its top sheet, else its pages: a confirmation and a prompt with their cancel
+first, as iOS orders them, a prompt's field ready with its words, a choice as
+an action sheet - on an iPad standing in the middle of the window - its
+dangerous caption marked. Pressing a button takes the alert away and answers
+the question, once; the next question in line then shows.
+

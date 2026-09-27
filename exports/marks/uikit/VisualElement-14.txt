@@ -16,9 +16,9 @@ Ellipse.rotationX: ✅
 Grid.pivotX: ✅
 HStack.automationExcludedWithChildren: ✅
 Image.accessibilityHint: ✅
-Label.focus: not realized
-Label.isFocusedChanged: not realized
-Label.unfocus: not realized
+Label.focus: ✅
+Label.isFocusedChanged: ✅
+Label.unfocus: ✅
 Line.frameChanged: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
@@ -31,9 +31,9 @@ Picker.rotationX: ✅
 Polygon.pivotX: ✅
 Polyline.automationExcludedWithChildren: ✅
 PositionIndicator.accessibilityHint: not realized
-ProgressBar.focus: not realized
-ProgressBar.isFocusedChanged: not realized
-ProgressBar.unfocus: not realized
+ProgressBar.focus: ✅
+ProgressBar.isFocusedChanged: ✅
+ProgressBar.unfocus: ✅
 RadioButton.frameChanged: ✅
 RadioButton.maximumHeight: ✅
 RadioButton.maximumWidth: ✅
@@ -46,9 +46,9 @@ SearchField.rotationX: ✅
 Slider.pivotX: ✅
 Stepper.automationExcludedWithChildren: ✅
 Switch.accessibilityHint: ✅
-TextEditor.focus: not realized
-TextEditor.isFocusedChanged: not realized
-TextEditor.unfocus: not realized
+TextEditor.focus: ✅
+TextEditor.isFocusedChanged: ✅
+TextEditor.unfocus: ✅
 TextField.frameChanged: ✅
 TextField.maximumHeight: ✅
 TextField.maximumWidth: ✅

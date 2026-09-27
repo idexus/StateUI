@@ -3,9 +3,9 @@ Button.clicked: ✅
 Button.pivotX: ✅
 Canvas.automationExcludedWithChildren: not realized
 CheckBox.accessibilityHint: ✅
-ColorBox.focus: not realized
-ColorBox.isFocusedChanged: not realized
-ColorBox.unfocus: not realized
+ColorBox.focus: ✅
+ColorBox.isFocusedChanged: ✅
+ColorBox.unfocus: ✅
 DatePicker.frameChanged: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
@@ -33,9 +33,9 @@ Polyline.rotationX: ✅
 PositionIndicator.pivotX: not realized
 ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.accessibilityHint: ✅
-Rectangle.focus: not realized
-Rectangle.isFocusedChanged: not realized
-Rectangle.unfocus: not realized
+Rectangle.focus: ✅
+Rectangle.isFocusedChanged: ✅
+Rectangle.unfocus: ✅
 ScrollView.frameChanged: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
@@ -48,9 +48,9 @@ Stepper.rotationX: ✅
 Switch.pivotX: ✅
 TextEditor.automationExcludedWithChildren: ✅
 TextField.accessibilityHint: ✅
-TimePicker.focus: not realized
-TimePicker.isFocusedChanged: not realized
-TimePicker.unfocus: not realized
+TimePicker.focus: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.unfocus: ✅
 TitleBar.frameChanged: not realized
 TitleBar.maximumHeight: not realized
 TitleBar.maximumWidth: not realized

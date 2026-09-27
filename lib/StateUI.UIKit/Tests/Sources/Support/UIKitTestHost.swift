@@ -12,17 +12,39 @@ import XCTest
 @MainActor
 enum TestScene {
     static var scene: UIWindowScene?
+
+    /// Where the tests' hosts keep values, apart from the application's own.
+    static let preferences = UserDefaults(suiteName: "StateUI.UIKitTests")!
+
+    /// Forgets every value the tests' hosts kept.
+    static func forgetWhatIsKept() {
+        preferences.removePersistentDomain(forName: "StateUI.UIKitTests")
+    }
 }
 
 extension UIKitRenderer {
     /// A host running the application whose only window shows what `page` builds, in the tests' scene, laid out;
     /// on `clock` where one is given.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+        clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
+        _ page: @escaping @Sendable () -> any Page
     ) -> UIKitRenderer {
-        stateUIUseApp(OneWindowApplication(page: page))
+        running(clock: clock, reducesMotion: reducesMotion, preferences: preferences) {
+            OneWindowApplication(page: page)
+        }
+    }
+
+    /// A host running `application` in the tests' scene, laid out, its kept values read from `preferences` first,
+    /// as a launch reads them.
+    static func running(
+        clock: TestClock? = nil, reducesMotion: Bool = false, preferences: UserDefaults = TestScene.preferences,
+        application: @escaping @Sendable () -> any Application
+    ) -> UIKitRenderer {
+        stateUIUseApp(application())
         UIKitRenderer.resourceDirectory = Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
-        let renderer = UIKitRenderer(clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })
+        let renderer = UIKitRenderer(
+            clock: clock.map { clock in { clock.now } }, preferences: preferences, reducesMotion: { reducesMotion })
+        renderer.hydratePersistentState()
         renderer.connect(TestScene.scene!)
         renderer.layOut()
         return renderer

@@ -25,6 +25,9 @@ final class UIKitElement: NativeElement {
     /// What the view listens for of the user's input, while it listens for anything.
     var listening: UIKitListening?
 
+    /// Whether the view held the focus when the element last said so.
+    var reportedFocus: Bool?
+
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host

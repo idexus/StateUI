@@ -1,8 +1,8 @@
 ActivityIndicator.accessibilityHint: ✅
 Button.clicked: ✅
-Button.focus: not realized
-Button.isFocusedChanged: not realized
-Button.unfocus: not realized
+Button.focus: ✅
+Button.isFocusedChanged: ✅
+Button.unfocus: ✅
 Canvas.frameChanged: not realized
 Canvas.maximumHeight: not realized
 Canvas.maximumWidth: not realized
@@ -15,9 +15,9 @@ DatePicker.rotationX: ✅
 Ellipse.pivotX: ✅
 Grid.automationExcludedWithChildren: ✅
 HStack.accessibilityHint: ✅
-Image.focus: not realized
-Image.isFocusedChanged: not realized
-Image.unfocus: not realized
+Image.focus: ✅
+Image.isFocusedChanged: ✅
+Image.unfocus: ✅
 Label.frameChanged: ✅
 Label.maximumHeight: ✅
 Label.maximumWidth: ✅
@@ -45,9 +45,9 @@ ScrollView.rotationX: ✅
 SearchField.pivotX: ✅
 Slider.automationExcludedWithChildren: ✅
 Stepper.accessibilityHint: ✅
-Switch.focus: not realized
-Switch.isFocusedChanged: not realized
-Switch.unfocus: not realized
+Switch.focus: ✅
+Switch.isFocusedChanged: ✅
+Switch.unfocus: ✅
 TextEditor.frameChanged: ✅
 TextEditor.maximumHeight: ✅
 TextEditor.maximumWidth: ✅

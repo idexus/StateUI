@@ -46,13 +46,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
-| `focus` | act | `() -> Bool` |  | ✅ |  |  | ✅ | ✅ |  |  |
+| `focus` | act | `() -> Bool` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native |  |  | ✅ |  |  |  | UIKit: cannot read isEnabled of ProgressBar - UIKit's driver has no path for it yet |
-| `isFocusedChanged` | event | `Bool` | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `unfocus` | act | `() -> Void` |  | ✅ |  |  | ✅ | ✅ |  |  |
+| `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 

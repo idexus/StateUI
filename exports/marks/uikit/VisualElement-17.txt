@@ -2,9 +2,9 @@ ActivityIndicator.pivotX: ✅
 Button.automationExcludedWithChildren: ✅
 Button.clicked: ✅
 Canvas.accessibilityHint: not realized
-CheckBox.focus: not realized
-CheckBox.isFocusedChanged: not realized
-CheckBox.unfocus: not realized
+CheckBox.focus: ✅
+CheckBox.isFocusedChanged: ✅
+CheckBox.unfocus: ✅
 ColorBox.frameChanged: ✅
 ColorBox.maximumHeight: ✅
 ColorBox.maximumWidth: ✅
@@ -17,9 +17,9 @@ Grid.rotationX: ✅
 HStack.pivotX: ✅
 Image.automationExcludedWithChildren: ✅
 Label.accessibilityHint: ✅
-Line.focus: not realized
-Line.isFocusedChanged: not realized
-Line.unfocus: not realized
+Line.focus: ✅
+Line.isFocusedChanged: ✅
+Line.unfocus: ✅
 Map.frameChanged: not realized
 Map.maximumHeight: not realized
 Map.maximumWidth: not realized
@@ -32,9 +32,9 @@ Polygon.rotationX: ✅
 Polyline.pivotX: ✅
 PositionIndicator.automationExcludedWithChildren: not realized
 ProgressBar.accessibilityHint: ✅
-RadioButton.focus: not realized
-RadioButton.isFocusedChanged: not realized
-RadioButton.unfocus: not realized
+RadioButton.focus: ✅
+RadioButton.isFocusedChanged: ✅
+RadioButton.unfocus: ✅
 Rectangle.frameChanged: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
@@ -47,9 +47,9 @@ Slider.rotationX: ✅
 Stepper.pivotX: ✅
 Switch.automationExcludedWithChildren: ✅
 TextEditor.accessibilityHint: ✅
-TextField.focus: not realized
-TextField.isFocusedChanged: not realized
-TextField.unfocus: not realized
+TextField.focus: ✅
+TextField.isFocusedChanged: ✅
+TextField.unfocus: ✅
 TimePicker.frameChanged: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅

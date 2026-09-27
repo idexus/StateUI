@@ -305,20 +305,20 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 <!-- acts:begin -->
 | Act | Contract | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `focus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ |  |  | ✅ | ✅ |  |
-| `unfocus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ |  |  | ✅ | ✅ |  |
-| `alert` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `announce` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `chooseAction` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `confirm` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `currentTime` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `currentTimeZone` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `handlerFailed` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `hideOnScreenKeyboard` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
+| `focus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `unfocus` | [VisualElement](controls/tiers/VisualElement.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `alert` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `announce` | [Application](controls/Application.md) | ✅ | ✅ |  |  | ✅ |  |
+| `chooseAction` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `confirm` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `currentTime` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `currentTimeZone` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `handlerFailed` | [Application](controls/Application.md) | ✅ | ✅ |  |  | ✅ |  |
+| `hideOnScreenKeyboard` | [Application](controls/Application.md) | ✅ | ✅ |  |  | ✅ |  |
 | `persistSceneValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `persistValue` | [Application](controls/Application.md) | ✅ |  |  |  | ✅ |  |
-| `prompt` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
-| `utcOffset` | [Application](controls/Application.md) | ✅ |  |  | ✅ | ✅ |  |
+| `persistValue` | [Application](controls/Application.md) | ✅ | ✅ |  |  | ✅ |  |
+| `prompt` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
+| `utcOffset` | [Application](controls/Application.md) | ✅ | ✅ |  | ✅ | ✅ |  |
 | `moveToRegion` | [Map](controls/Map.md) |  |  |  |  |  |  |
 | `evaluateJavaScript` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
 | `goBack` | [WebView](controls/WebView.md) |  |  |  | ✅ |  |  |
@@ -358,7 +358,7 @@ which a host serves without a member of its own.
 | `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ |  |  |  |  |  |
 | `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ |  | ✅ | ✅ |  |
 | `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  | ✅ |  |  |  |
-| `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event | ✅ |  |  | ✅ | ✅ |  |
+| `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event | ✅ | ✅ |  | ✅ | ✅ |  |
 | `isVisible` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `layoutDirection` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
 | `maximumHeight` | [VisualElement](controls/tiers/VisualElement.md) | property | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -422,46 +422,46 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 50 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
-| [Button](controls/Button.md) | 86 | 60 ✅ · 2 ☑️ | 56 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
+| [Button](controls/Button.md) | 86 | 60 ✅ · 2 ☑️ | 59 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
 | [Canvas](controls/Canvas.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 56 ✅ | 54 ✅ |  |
-| [CheckBox](controls/CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 51 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
-| [ColorBox](controls/ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 50 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
-| [DatePicker](controls/DatePicker.md) | 80 | 59 ✅ · 2 ☑️ | 53 ✅ |  | 56 ✅ | 62 ✅ · 1 ☑️ |  |
-| [Ellipse](controls/Ellipse.md) | 76 | 56 ✅ · 2 ☑️ | 53 ✅ | 13 ✅ | 57 ✅ | 60 ✅ |  |
-| [Grid](controls/Grid.md) | 77 | 59 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [HStack](controls/HStack.md) | 74 | 56 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
-| [Image](controls/Image.md) | 69 | 53 ✅ · 2 ☑️ | 50 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
-| [Label](controls/Label.md) | 81 | 59 ✅ · 2 ☑️ | 57 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
-| [Line](controls/Line.md) | 80 | 60 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 61 ✅ | 64 ✅ |  |
+| [CheckBox](controls/CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
+| [ColorBox](controls/ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
+| [DatePicker](controls/DatePicker.md) | 80 | 59 ✅ · 2 ☑️ | 56 ✅ |  | 56 ✅ | 62 ✅ · 1 ☑️ |  |
+| [Ellipse](controls/Ellipse.md) | 76 | 56 ✅ · 2 ☑️ | 56 ✅ | 13 ✅ | 57 ✅ | 60 ✅ |  |
+| [Grid](controls/Grid.md) | 77 | 59 ✅ · 1 ☑️ | 59 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
+| [HStack](controls/HStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
+| [Image](controls/Image.md) | 69 | 53 ✅ · 2 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
+| [Label](controls/Label.md) | 81 | 59 ✅ · 2 ☑️ | 60 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
+| [Line](controls/Line.md) | 80 | 60 ✅ · 2 ☑️ | 60 ✅ | 13 ✅ | 61 ✅ | 64 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 | 57 ✅ · 2 ☑️ | 54 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [Picker](controls/Picker.md) | 82 | 56 ✅ · 2 ☑️ | 53 ✅ | 16 ✅ | 57 ✅ | 64 ✅ |  |
-| [Polygon](controls/Polygon.md) | 78 | 58 ✅ · 2 ☑️ | 55 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
-| [Polyline](controls/Polyline.md) | 78 | 58 ✅ · 2 ☑️ | 55 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
+| [Path](controls/Path.md) | 77 | 57 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
+| [Picker](controls/Picker.md) | 82 | 56 ✅ · 2 ☑️ | 56 ✅ | 16 ✅ | 57 ✅ | 64 ✅ |  |
+| [Polygon](controls/Polygon.md) | 78 | 58 ✅ · 2 ☑️ | 58 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
+| [Polyline](controls/Polyline.md) | 78 | 58 ✅ · 2 ☑️ | 58 ✅ | 13 ✅ | 59 ✅ | 62 ✅ |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 | 52 ✅ · 2 ☑️ | 50 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
-| [RadioButton](controls/RadioButton.md) | 81 | 61 ✅ · 2 ☑️ | 58 ✅ | 18 ✅ | 61 ✅ | 62 ✅ |  |
-| [Rectangle](controls/Rectangle.md) | 77 | 57 ✅ · 2 ☑️ | 54 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
-| [ScrollView](controls/ScrollView.md) | 77 | 57 ✅ · 2 ☑️ | 54 ✅ | 13 ✅ | 54 ✅ | 62 ✅ |  |
-| [SearchField](controls/SearchField.md) | 89 | 61 ✅ · 2 ☑️ | 63 ✅ | 16 ✅ | 60 ✅ | 60 ✅ |  |
-| [Slider](controls/Slider.md) | 73 | 56 ✅ · 2 ☑️ | 56 ✅ | 17 ✅ | 59 ✅ | 56 ✅ |  |
-| [Stepper](controls/Stepper.md) | 71 | 57 ✅ · 2 ☑️ | 54 ✅ | 18 ✅ | 53 ✅ | 56 ✅ |  |
-| [Switch](controls/Switch.md) | 69 | 54 ✅ · 2 ☑️ | 51 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
-| [TextEditor](controls/TextEditor.md) | 87 | 56 ✅ · 2 ☑️ | 58 ✅ | 16 ✅ | 60 ✅ | 68 ✅ |  |
-| [TextField](controls/TextField.md) | 90 | 56 ✅ · 2 ☑️ | 64 ✅ | 17 ✅ | 60 ✅ | 67 ✅ |  |
-| [TimePicker](controls/TimePicker.md) | 78 | 57 ✅ · 2 ☑️ | 51 ✅ |  | 56 ✅ | 57 ✅ |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
+| [RadioButton](controls/RadioButton.md) | 81 | 61 ✅ · 2 ☑️ | 61 ✅ | 18 ✅ | 61 ✅ | 62 ✅ |  |
+| [Rectangle](controls/Rectangle.md) | 77 | 57 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
+| [ScrollView](controls/ScrollView.md) | 77 | 57 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 54 ✅ | 62 ✅ |  |
+| [SearchField](controls/SearchField.md) | 89 | 61 ✅ · 2 ☑️ | 66 ✅ | 16 ✅ | 60 ✅ | 60 ✅ |  |
+| [Slider](controls/Slider.md) | 73 | 56 ✅ · 2 ☑️ | 59 ✅ | 17 ✅ | 59 ✅ | 56 ✅ |  |
+| [Stepper](controls/Stepper.md) | 71 | 57 ✅ · 2 ☑️ | 57 ✅ | 18 ✅ | 53 ✅ | 56 ✅ |  |
+| [Switch](controls/Switch.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | 87 | 56 ✅ · 2 ☑️ | 61 ✅ | 16 ✅ | 60 ✅ | 68 ✅ |  |
+| [TextField](controls/TextField.md) | 90 | 56 ✅ · 2 ☑️ | 67 ✅ | 17 ✅ | 60 ✅ | 67 ✅ |  |
+| [TimePicker](controls/TimePicker.md) | 78 | 57 ✅ · 2 ☑️ | 54 ✅ |  | 56 ✅ | 57 ✅ |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
+| [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
-| [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 52 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1521 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1605 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 | 12 ✅ |  |  | 7 ✅ | 12 ✅ |  |
+| [Application](controls/Application.md) | 12 | 12 ✅ | 11 ✅ |  | 7 ✅ | 12 ✅ |  |
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -484,7 +484,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 30 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 41 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

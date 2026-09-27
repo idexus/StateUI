@@ -4,9 +4,9 @@ Button.rotationX: ✅
 Canvas.pivotX: not realized
 CheckBox.automationExcludedWithChildren: ✅
 ColorBox.accessibilityHint: ✅
-DatePicker.focus: not realized
-DatePicker.isFocusedChanged: not realized
-DatePicker.unfocus: not realized
+DatePicker.focus: ✅
+DatePicker.isFocusedChanged: ✅
+DatePicker.unfocus: ✅
 Ellipse.frameChanged: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -19,9 +19,9 @@ Image.rotationX: ✅
 Label.pivotX: ✅
 Line.automationExcludedWithChildren: ✅
 Map.accessibilityHint: not realized
-Path.focus: not realized
-Path.isFocusedChanged: not realized
-Path.unfocus: not realized
+Path.focus: ✅
+Path.isFocusedChanged: ✅
+Path.unfocus: ✅
 Picker.frameChanged: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
@@ -34,9 +34,9 @@ PositionIndicator.rotationX: not realized
 ProgressBar.pivotX: ✅
 RadioButton.automationExcludedWithChildren: ✅
 Rectangle.accessibilityHint: ✅
-ScrollView.focus: not realized
-ScrollView.isFocusedChanged: not realized
-ScrollView.unfocus: not realized
+ScrollView.focus: ✅
+ScrollView.isFocusedChanged: ✅
+ScrollView.unfocus: ✅
 SearchField.frameChanged: ✅
 SearchField.maximumHeight: ✅
 SearchField.maximumWidth: ✅

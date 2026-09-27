@@ -6,9 +6,9 @@ Canvas.rotationX: not realized
 CheckBox.pivotX: ✅
 ColorBox.automationExcludedWithChildren: ✅
 DatePicker.accessibilityHint: ✅
-Ellipse.focus: not realized
-Ellipse.isFocusedChanged: not realized
-Ellipse.unfocus: not realized
+Ellipse.focus: ✅
+Ellipse.isFocusedChanged: ✅
+Ellipse.unfocus: ✅
 Grid.frameChanged: ✅
 Grid.maximumHeight: ✅
 Grid.maximumWidth: ✅
@@ -21,9 +21,9 @@ Label.rotationX: ✅
 Line.pivotX: ✅
 Map.automationExcludedWithChildren: not realized
 Path.accessibilityHint: ✅
-Picker.focus: not realized
-Picker.isFocusedChanged: not realized
-Picker.unfocus: not realized
+Picker.focus: ✅
+Picker.isFocusedChanged: ✅
+Picker.unfocus: ✅
 Polygon.frameChanged: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅
@@ -36,9 +36,9 @@ ProgressBar.rotationX: ✅
 RadioButton.pivotX: ✅
 Rectangle.automationExcludedWithChildren: ✅
 ScrollView.accessibilityHint: ✅
-SearchField.focus: not realized
-SearchField.isFocusedChanged: not realized
-SearchField.unfocus: not realized
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
 Slider.frameChanged: ✅
 Slider.maximumHeight: ✅
 Slider.maximumWidth: ✅
@@ -51,9 +51,9 @@ TextEditor.rotationX: ✅
 TextField.pivotX: ✅
 TimePicker.automationExcludedWithChildren: ✅
 TitleBar.accessibilityHint: not realized
-VStack.focus: not realized
-VStack.isFocusedChanged: not realized
-VStack.unfocus: not realized
+VStack.focus: ✅
+VStack.isFocusedChanged: ✅
+VStack.unfocus: ✅
 WebView.frameChanged: not realized
 WebView.maximumHeight: not realized
 WebView.maximumWidth: not realized
