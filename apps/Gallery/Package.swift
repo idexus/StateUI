@@ -46,6 +46,10 @@ let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
 // STATEUI_GTK.
 let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
 
+// And for Platforms/UIKit, the UIKit head on iOS and iPadOS:
+// .scripts/UIKit/build-app.sh sets STATEUI_UIKIT.
+let hasUIKitHead = ProcessInfo.processInfo.environment["STATEUI_UIKIT"] == "1"
+
 // What every module of the application is compiled with. In an AppKit build
 // that includes APPKIT, the condition Swift written for that host alone stands
 // under - defined HERE rather than by a compiler flag, so the one variable
@@ -54,6 +58,7 @@ let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasUIKitHead ? [.define("UIKIT")] : [])
     + (hasAndroidHead ? [.define("ANDROID")] : [])
     + (hasWinUIHead ? [.define("WINUI")] : [])
     + (hasGTKHead ? [.define("GTK")] : [])
@@ -129,6 +134,30 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasUIKitHead {
+    // The same gallery module, an executable its UIKit host runs on iOS and
+    // iPadOS; the script makes it an application bundle.
+    products.append(
+        .executable(
+            name: "GalleryUIKit",
+            targets: ["GalleryUIKit"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIUIKit", path: "../../lib/StateUI.UIKit"))
+
+    targets.append(
+        .executableTarget(
+            name: "GalleryUIKit",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIUIKit", package: "StateUIUIKit"),
+            ],
+            path: "Platforms/UIKit",
             swiftSettings: settings
         ))
 }
