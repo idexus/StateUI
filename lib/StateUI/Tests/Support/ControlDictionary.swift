@@ -45,7 +45,7 @@ extension ElementAct: ActShape {
 /// docs/controls as the contracts and the hosts' declarations say it is.
 struct ControlDictionary {
     /// Every host the matrix has a column for, in the columns' order.
-    static let platforms = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
+    static let platforms = ["AppKit", "UIKit", "Android Views", "WinUI 3", "GTK 4", "Web"]
 
     /// What a mark means.
     static let legend = "✅ proven on that host by its own passing test · ☑️ proven by its test, but the host "

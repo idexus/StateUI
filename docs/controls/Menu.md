@@ -14,16 +14,16 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 2 ✅ of 2 | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ | 1 ✅ · 1 ☑️ of 2 | `UIMenu` / `UIAction` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | cannot read the menu of Label - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 2 ✅ of 2 | `MenuFlyout` / `MenuBar` |  |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 ## Menu's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native | ✅ | ☑️ |  |  | ✅ |  | UIKit: UIKit holds no menu out of reach itself: each of its entries is.; Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
-| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native | ✅ | ☑️ |  | ✅ |  |  | UIKit: UIKit holds no menu out of reach itself: each of its entries is.; Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read the menu of Label - Android's driver has no path for it yet |

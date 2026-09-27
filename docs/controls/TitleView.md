@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | structure | cannot type into a field with no editor - AppKit's driver has no path for it yet |
 | UIKit | ✅ |  | structure |  |
-| GTK 4 |  |  | structure | no test of it has run yet |
 | Android Views | ✅ |  | structure |  |
 | WinUI 3 | ✅ |  | structure |  |
+| GTK 4 |  |  | structure | no test of it has run yet |
 | Web |  |  | structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/TitleViewContract.swift`.

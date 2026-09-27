@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
 | UIKit | ✅ |  | `UIBarButtonItem` |  |
-| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
 | Android Views |  |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
+| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.

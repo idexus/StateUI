@@ -14,19 +14,19 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 56 ✅ · 2 ☑️ of 73 | `NSSlider` |  |
 | UIKit | ✅ | 59 ✅ of 73 | `UISlider` |  |
-| GTK 4 | ✅ | 17 ✅ of 73 | `GtkScale` |  |
 | Android Views | ✅ | 59 ✅ of 73 | `SeekBar` |  |
 | WinUI 3 | ✅ | 56 ✅ of 73 | `Slider` |  |
+| GTK 4 | ✅ | 17 ✅ of 73 | `GtkScale` |  |
 | Web |  |  | `<input type=range>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SliderContract.swift`.
 
 ## Slider's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onDragCompleted` (`dragCompleted`) | event |  | native |  | ✅ |  | ✅ |  |  | cannot drag on Slider - AppKit's driver has no path for it yet |
-| `onDragStarted` (`dragStarted`) | event |  | native |  | ✅ |  | ✅ |  |  | cannot drag on Slider - AppKit's driver has no path for it yet |
+| `onDragCompleted` (`dragCompleted`) | event |  | native |  | ✅ | ✅ |  |  |  | cannot drag on Slider - AppKit's driver has no path for it yet |
+| `onDragStarted` (`dragStarted`) | event |  | native |  | ✅ | ✅ |  |  |  | cannot drag on Slider - AppKit's driver has no path for it yet |
 | `maximum` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimum` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `value` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -36,28 +36,28 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SliderContract.swif
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  | ✅ |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `background` | property | `Background` | native | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
-| `focus` | act | `() -> Bool` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `frame` | property | `Rect` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout. |
+| `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  |  |
 | `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -65,18 +65,18 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `pivotY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `rotation` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `rotationX` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ | ✅ |  | ✅ |  |  |  |
-| `scale` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `scaleX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `scaleY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ | ✅ |  |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `translationY` | property | `Double` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  |  |
 
@@ -84,10 +84,10 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
-| `area` | property | `Area` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |
@@ -96,33 +96,33 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  |  |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ |  | ✅ | ✅ |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `panXChannel` | property | `Int` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `panYChannel` | property | `Int` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `tapCount` | property | `Int` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure | ☑️ | ✅ | ✅ | ✅ |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `panXChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `tapCount` | property | `Int` | structure | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TintElement](tiers/TintElement.md)
 
 A control's one accent colour.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive |  | ✅ |  |  | ✅ |  | cannot read tint of Slider - AppKit's driver has no path for it yet; Android Views: cannot read tint of Slider - Android's driver has no path for it yet |
+| `tint` | property | `Color` | adaptive |  | ✅ |  | ✅ |  |  | cannot read tint of Slider - AppKit's driver has no path for it yet; Android Views: cannot read tint of Slider - Android's driver has no path for it yet |

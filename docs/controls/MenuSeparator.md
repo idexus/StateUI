@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | cannot read the menu of Label - Android's driver has no path for it yet |
 | WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuSeparatorContract.swift`.

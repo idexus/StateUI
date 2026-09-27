@@ -14,33 +14,33 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 2 ✅ of 6 | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
 | UIKit | ✅ | 6 ✅ of 6 | `UINavigationController` |  |
-| GTK 4 |  |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | no test of it has run yet |
 | Android Views | ✅ | 1 ✅ of 6 | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 3 ✅ of 6 | `Frame` |  |
+| GTK 4 |  |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | no test of it has run yet |
 | Web |  |  | History API | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
 
 ## NavigationStack's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barForegroundColor` | property | `Color` | adaptive |  | ✅ |  |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet |
-| `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
+| `popped` | event | `Int` | adaptive | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 
 The bar a page arrangement draws: its colour.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barBackgroundColor` | property | `Color` | adaptive |  | ✅ |  |  |  |  | cannot read barBackgroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet |
 
@@ -48,7 +48,7 @@ The bar a page arrangement draws: its colour.
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read icon of NavigationStack - Android's driver has no path for it yet |
-| `title` | property | `String` | native |  | ✅ |  |  | ✅ |  | cannot read title of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read title of NavigationStack - Android's driver has no path for it yet |
+| `title` | property | `String` | native |  | ✅ |  | ✅ |  |  | cannot read title of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read title of NavigationStack - Android's driver has no path for it yet |

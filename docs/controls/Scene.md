@@ -14,20 +14,20 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 6 ✅ of 6 | `NSApplication` / structure |  |
 | UIKit | ✅ | 4 ✅ of 6 | `UIApplication` / `UIWindowScene` |  |
-| GTK 4 |  |  | `GtkApplication` / structure | no test of it has run yet |
 | Android Views | ✅ | 4 ✅ of 6 | `Application` / structure |  |
 | WinUI 3 | ✅ | 6 ✅ of 6 | `Application` / structure |  |
+| GTK 4 |  |  | `GtkApplication` / structure | no test of it has run yet |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
 
 ## Scene's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `deactivated` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `destroying` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `stopped` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  | UIKit: its test waits on Window.windowType, not realized yet |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `windowClosed` | event | `String` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: its test waits on Window.windowType, not realized yet |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ |  |  |  |

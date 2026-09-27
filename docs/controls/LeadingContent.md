@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | structure |  |
 | UIKit |  |  | structure | not realized |
-| GTK 4 |  |  | structure | no test of it has run yet |
 | Android Views |  |  | structure | not realized |
 | WinUI 3 |  |  | structure | not realized |
+| GTK 4 |  |  | structure | no test of it has run yet |
 | Web |  |  | structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/LeadingContentContract.swift`.

@@ -14,16 +14,16 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet |
 | UIKit |  |  | no honest native counterpart | not realized |
-| GTK 4 |  |  | `GtkHeaderBar` | no test of it has run yet |
 | Android Views |  |  | no honest native counterpart | not realized |
 | WinUI 3 |  |  | `TitleBar` | not realized |
+| GTK 4 |  |  | `GtkHeaderBar` | no test of it has run yet |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.swift`.
 
 ## TitleBar's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | cannot read barForegroundColor of TitleBar - AppKit's driver has no path for it yet |
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of TitleBar - AppKit's driver has no path for it yet |
@@ -34,7 +34,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.s
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
@@ -42,7 +42,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  |  |
 | `accessibilityHint` | property | `String` | native |  |  |  |  |  |  |  |
@@ -82,7 +82,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `area` | property | `Area` | structure |  |  |  |  |  |  |  |

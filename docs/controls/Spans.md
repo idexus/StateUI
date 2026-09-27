@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
 | UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
-| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
 | Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpansContract.swift`.

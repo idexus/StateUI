@@ -14,9 +14,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ of 6 | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ | 5 ✅ of 6 | `UIMenu` / `UIAction` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | cannot activate on MenuItem - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 4 ✅ of 6 | `MenuFlyout` / `MenuBar` |  |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
@@ -29,18 +29,18 @@ MenuItem declares no members of its own.
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  | ✅ |  | cannot read accessibilityIdentifier of MenuItem - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of MenuItem - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of MenuItem - Android's driver has no path for it yet |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | cannot read accessibilityIdentifier of MenuItem - AppKit's driver has no path for it yet; UIKit: cannot read accessibilityIdentifier of MenuItem - UIKit's driver has no path for it yet; Android Views: cannot read accessibilityIdentifier of MenuItem - Android's driver has no path for it yet |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
 | `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive |  | ✅ |  |  |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read isDestructive of MenuItem - Android's driver has no path for it yet |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
-| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read text of MenuItem - Android's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read text of MenuItem - Android's driver has no path for it yet |

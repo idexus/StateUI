@@ -14,16 +14,16 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no test of it has run yet |
 | Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
 | WinUI 3 |  |  | `MapControl` (?) | not realized |
+| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no test of it has run yet |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 ## Pin's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `address` | property | `String` | provider |  |  |  |  |  |  |  |
 | `label` | property | `String` | provider |  |  |  |  |  |  |  |

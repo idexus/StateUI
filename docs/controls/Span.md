@@ -14,24 +14,24 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 1 ✅ of 12 | `NSTextField` label; `NSAttributedString` runs |  |
 | UIKit | ✅ | 1 ✅ of 12 | `UILabel`; `NSAttributedString` runs |  |
-| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
 | Android Views | ✅ | 1 ✅ of 12 | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ | 6 ✅ of 12 | `TextBlock`; `Run` inlines |  |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 ## Span's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native |  |  |  |  | ✅ |  | UIKit: cannot read background of Span - UIKit's driver has no path for it yet |
+| `background` | property | `Color` | native |  |  |  | ✅ |  |  | UIKit: cannot read background of Span - UIKit's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
@@ -39,36 +39,36 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 What every element showing words has: the words, and the case they are drawn in.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `textCase` | property | `TextCase` | native |  |  |  |  |  |  | cannot read text of Span - AppKit's driver has no path for it yet; UIKit: cannot read text of Span - UIKit's driver has no path for it yet |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
 How text looks wherever it is drawn: its colour and the space between its letters.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native |  |  |  |  | ✅ |  | UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet |
+| `textColor` | property | `Color` | native |  |  |  | ✅ |  |  | UIKit: cannot read textColor of Span - UIKit's driver has no path for it yet |
 
 ## From [FontElement](tiers/FontElement.md)
 
 The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  |  | ✅ |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ |  |  | cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: cannot read fontAttributes of Span - UIKit's driver has no path for it yet |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `fontFamily` | property | `Name` | native |  |  |  |  |  |  | UIKit: cannot read fontFamily of Span - UIKit's driver has no path for it yet |
-| `fontSize` | property | `Double` | native |  |  |  |  | ✅ |  | UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontSize of Span - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native |  |  |  | ✅ |  |  | UIKit: cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: cannot read fontSize of Span - Android's driver has no path for it yet |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
 How far apart the lines of text are.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `lineHeight` | property | `Double` | native |  |  |  |  |  |  |  |
 
@@ -76,6 +76,6 @@ How far apart the lines of text are.
 
 The lines drawn through or under text.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native |  |  |  |  | ✅ |  | UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet |
+| `textDecorations` | property | `TextDecorations` | native |  |  |  | ✅ |  |  | UIKit: cannot read textDecorations of Span - UIKit's driver has no path for it yet |

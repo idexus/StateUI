@@ -14,33 +14,33 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 8 ✅ of 12 | custom `NSView` |  |
 | UIKit | ✅ | 11 ✅ of 12 | `UIViewController` |  |
-| GTK 4 |  |  | custom `GtkWidget` | no test of it has run yet |
 | Android Views | ✅ | 7 ✅ of 12 | custom `ViewGroup` |  |
 | WinUI 3 | ✅ | 9 ✅ of 12 | `Page` |  |
+| GTK 4 |  |  | custom `GtkWidget` | no test of it has run yet |
 | Web |  |  | `<section>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
 
 ## Page's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `backButtonTitle` | property | `String` | adaptive |  |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet |
-| `background` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `disappearing` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
 | `hasBackButton` | property | `Bool` | adaptive |  | ✅ |  |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet |
-| `hasNavigationBar` | property | `Bool` | adaptive |  | ✅ |  |  | ✅ |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet |
-| `navigatedFrom` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `hasNavigationBar` | property | `Bool` | adaptive |  | ✅ |  | ✅ |  |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet |
+| `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `navigatedTo` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `navigatingFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive |  | ✅ |  |  |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet |
-| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read title of Page - Android's driver has no path for it yet |
+| `title` | property | `String` | native | ✅ | ✅ |  | ✅ |  |  | Android Views: cannot read title of Page - Android's driver has no path for it yet |

@@ -14,16 +14,16 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | composed by StateUI | not realized |
 | UIKit |  |  | composed by StateUI | not realized |
-| GTK 4 |  |  | composed by StateUI | no test of it has run yet |
 | Android Views |  |  | composed by StateUI | not realized |
 | WinUI 3 |  |  | composed by StateUI | not realized |
+| GTK 4 |  |  | composed by StateUI | no test of it has run yet |
 | Web |  |  | composed by StateUI | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/PositionIndicatorContract.swift`.
 
 ## PositionIndicator's own members
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `count` | property | `Int` | stateUI |  |  |  |  |  |  |  |
 | `hideSingle` | property | `Bool` | stateUI |  |  |  |  |  |  |  |
@@ -38,7 +38,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/PositionIndicato
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  |  |
 
@@ -46,7 +46,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  |  |
 | `accessibilityHint` | property | `String` | native |  |  |  |  |  |  |  |
@@ -86,7 +86,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-| Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `area` | property | `Area` | structure |  |  |  |  |  |  |  |
