@@ -3,8 +3,8 @@ Button.clicked: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.width: ✅
-Canvas.isVisible: not realized
-Canvas.translationX: not realized
+Canvas.isVisible: ✅
+Canvas.translationX: ✅
 CheckBox.scale: ✅
 ColorBox.rotation: ✅
 DatePicker.layoutDirection: not realized

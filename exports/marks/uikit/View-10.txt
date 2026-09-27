@@ -1,8 +1,8 @@
 ActivityIndicator.pinchUpdated: ✅
 Button.clicked: ✅
 Button.panYChannel: ✅
-Canvas.tapCount: not realized
-Canvas.tapped: not realized
+Canvas.tapCount: ✅
+Canvas.tapped: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅

@@ -1,7 +1,7 @@
 ActivityIndicator.style: not realized
 Button.clicked: ✅
 Button.ignoresInput: not realized
-Canvas.isEnabled: not realized
+Canvas.isEnabled: cannot read isEnabled of Canvas - UIKit's driver has no path for it yet
 Canvas.zIndex: not realized
 CheckBox.scaleY: ✅
 ColorBox.rotationY: ✅

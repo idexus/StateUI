@@ -1,7 +1,7 @@
 ActivityIndicator.rotationX: ✅
 Button.clicked: ✅
 Button.pivotX: ✅
-Canvas.automationExcludedWithChildren: not realized
+Canvas.automationExcludedWithChildren: ✅
 CheckBox.accessibilityHint: ✅
 ColorBox.focus: ✅
 ColorBox.isFocusedChanged: ✅

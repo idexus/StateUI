@@ -1,9 +1,9 @@
 ActivityIndicator.automationExcludedWithChildren: ✅
 Button.accessibilityHint: ✅
 Button.clicked: ✅
-Canvas.focus: not realized
-Canvas.isFocusedChanged: not realized
-Canvas.unfocus: not realized
+Canvas.focus: ✅
+Canvas.isFocusedChanged: ✅
+Canvas.unfocus: ✅
 CheckBox.frameChanged: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅

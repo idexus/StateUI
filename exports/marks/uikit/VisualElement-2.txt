@@ -2,7 +2,7 @@ ActivityIndicator.opacity: ✅
 ActivityIndicator.translationY: ✅
 Button.clicked: ✅
 Button.scaleX: ✅
-Canvas.rotationX: not realized
+Canvas.rotationX: ✅
 CheckBox.pivotX: ✅
 ColorBox.automationExcludedWithChildren: ✅
 DatePicker.accessibilityHint: ✅

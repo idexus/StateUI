@@ -8,8 +8,8 @@ Canvas.canDrag: not realized
 Canvas.dragStarting: not realized
 Canvas.dragText: not realized
 Canvas.dropCompleted: not realized
-Canvas.frameChanged: not realized
-Canvas.margin: not realized
+Canvas.frameChanged: ✅
+Canvas.margin: ✅
 CheckBox.pinchUpdated: ✅
 ColorBox.panYChannel: ✅
 DatePicker.tapCount: ✅

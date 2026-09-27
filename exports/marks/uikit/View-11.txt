@@ -7,9 +7,9 @@ Button.clicked: ✅
 Button.swipeDirection: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
-Canvas.panTouchCount: not realized
-Canvas.panUpdated: not realized
-Canvas.panXChannel: not realized
+Canvas.panTouchCount: ✅
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅

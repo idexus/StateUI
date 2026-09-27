@@ -7,7 +7,7 @@ Button.dragText: not realized
 Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.margin: ✅
-Canvas.pinchUpdated: not realized
+Canvas.pinchUpdated: ✅
 CheckBox.panYChannel: ✅
 ColorBox.tapCount: ✅
 ColorBox.tapped: ✅

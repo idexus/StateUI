@@ -11,9 +11,9 @@ Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
-Canvas.swipeDirection: not realized
-Canvas.swipeThreshold: not realized
-Canvas.swiped: not realized
+Canvas.swipeDirection: ✅
+Canvas.swipeThreshold: ✅
+Canvas.swiped: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅

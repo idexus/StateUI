@@ -2,9 +2,9 @@ ActivityIndicator.panYChannel: ✅
 Button.clicked: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
-Canvas.frameChanged: not realized
-Canvas.gridColumn: not realized
-Canvas.gridRow: not realized
+Canvas.frameChanged: ✅
+Canvas.gridColumn: ✅
+Canvas.gridRow: ✅
 CheckBox.allowDrop: not realized
 CheckBox.dragLeave: not realized
 CheckBox.dragOver: not realized

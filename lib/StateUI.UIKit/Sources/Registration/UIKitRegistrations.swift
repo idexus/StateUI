@@ -20,6 +20,7 @@ enum UIKitRegistrations {
         indicators(registry)
         pickers(registry)
         shapes(registry)
+        canvas(registry)
         layouts(registry)
         scrolling(registry)
         web(registry)

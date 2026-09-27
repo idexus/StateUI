@@ -3,11 +3,11 @@ Button.clicked: ✅
 Button.focus: ✅
 Button.isFocusedChanged: ✅
 Button.unfocus: ✅
-Canvas.frameChanged: not realized
-Canvas.maximumHeight: not realized
-Canvas.maximumWidth: not realized
-Canvas.minimumHeight: not realized
-Canvas.minimumWidth: not realized
+Canvas.frameChanged: ✅
+Canvas.maximumHeight: ✅
+Canvas.maximumWidth: ✅
+Canvas.minimumHeight: ✅
+Canvas.minimumWidth: ✅
 CheckBox.opacity: ✅
 CheckBox.translationY: ✅
 ColorBox.scaleX: ✅

@@ -11,7 +11,7 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "Canvas", "Content", "LeadingContent", "Map",
+        "Content", "LeadingContent", "Map",
         "Pin", "PositionIndicator",
         "TitleBar", "TrailingContent",
        

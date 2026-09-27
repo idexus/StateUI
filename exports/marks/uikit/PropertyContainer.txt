@@ -1,7 +1,7 @@
 ActivityIndicator.accessibilityIdentifier: ✅
 Button.accessibilityIdentifier: ✅
 Button.clicked: ✅
-Canvas.accessibilityIdentifier: not realized
+Canvas.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
 ColorBox.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅

@@ -1,7 +1,7 @@
 ActivityIndicator.rotation: ✅
 Button.clicked: ✅
 Button.layoutDirection: not realized
-Canvas.isAccessibilityHidden: not realized
+Canvas.isAccessibilityHidden: ✅
 CheckBox.accessibilityLabel: ✅
 ColorBox.frame: ✅
 DatePicker.frameChanged: ✅

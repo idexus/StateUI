@@ -1,7 +1,7 @@
 ActivityIndicator.scaleY: ✅
 Button.clicked: ✅
 Button.rotationY: ✅
-Canvas.pivotY: not realized
+Canvas.pivotY: ✅
 CheckBox.background: not realized
 ColorBox.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
 DatePicker.style: not realized

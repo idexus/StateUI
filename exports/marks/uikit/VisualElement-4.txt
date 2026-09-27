@@ -4,7 +4,7 @@ ActivityIndicator.width: ✅
 Button.clicked: ✅
 Button.isVisible: ✅
 Button.translationX: ✅
-Canvas.scale: not realized
+Canvas.scale: ✅
 CheckBox.rotation: ✅
 ColorBox.layoutDirection: not realized
 DatePicker.isAccessibilityHidden: ✅

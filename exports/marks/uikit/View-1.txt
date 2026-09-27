@@ -6,7 +6,7 @@ ActivityIndicator.frameChanged: ✅
 ActivityIndicator.margin: ✅
 Button.clicked: ✅
 Button.pinchUpdated: ✅
-Canvas.panYChannel: not realized
+Canvas.panYChannel: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 ColorBox.frameChanged: ✅

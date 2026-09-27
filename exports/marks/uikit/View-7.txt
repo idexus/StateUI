@@ -5,8 +5,8 @@ Button.clicked: ✅
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
-Canvas.area: not realized
-Canvas.frameChanged: not realized
+Canvas.area: ✅
+Canvas.frameChanged: ✅
 CheckBox.canDrag: not realized
 CheckBox.dragStarting: not realized
 CheckBox.dragText: not realized

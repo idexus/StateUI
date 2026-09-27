@@ -17,7 +17,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
 | [Button](Button.md) | 86 | 60 ✅ · 2 ☑️ | 61 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
-| [Canvas](Canvas.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 56 ✅ | 54 ✅ |  |
+| [Canvas](Canvas.md) | 70 | 55 ✅ · 2 ☑️ | 55 ✅ |  | 56 ✅ | 54 ✅ |  |
 | [CheckBox](CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
 | [ColorBox](ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
 | [DatePicker](DatePicker.md) | 80 | 59 ✅ · 2 ☑️ | 56 ✅ |  | 56 ✅ | 62 ✅ · 1 ☑️ |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](WebView.md) | 77 |  | 61 ✅ |  | 60 ✅ |  |  |
 | [ZStack](ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1671 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1726 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure

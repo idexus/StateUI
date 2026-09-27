@@ -1,5 +1,6 @@
-Canvas: not realized
-Canvas.dragged: not realized
-Canvas.drawable: not realized
-Canvas.pressed: not realized
-Canvas.released: not realized
+Button.clicked: ✅
+Canvas: ✅
+Canvas.dragged: ✅
+Canvas.drawable: ✅
+Canvas.pressed: ✅
+Canvas.released: ✅

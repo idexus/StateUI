@@ -84,7 +84,7 @@ host whose passing test proved one of its members.
 | `ActivityIndicator` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Application` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | `Button` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| `Canvas` | native | ✅ |  |  | ✅ | ✅ |  |
+| `Canvas` | native | ✅ | ✅ |  | ✅ | ✅ |  |
 | `CheckBox` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `ColorBox` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Content` | structure | ✅ |  |  |  |  |  |
@@ -424,7 +424,7 @@ Every control, and every part an application, its windows and its pages are made
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
 | [Button](controls/Button.md) | 86 | 60 ✅ · 2 ☑️ | 61 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
-| [Canvas](controls/Canvas.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 56 ✅ | 54 ✅ |  |
+| [Canvas](controls/Canvas.md) | 70 | 55 ✅ · 2 ☑️ | 55 ✅ |  | 56 ✅ | 54 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
 | [DatePicker](controls/DatePicker.md) | 80 | 59 ✅ · 2 ☑️ | 56 ✅ |  | 56 ✅ | 62 ✅ · 1 ☑️ |  |
@@ -455,7 +455,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  | 61 ✅ |  | 60 ✅ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1671 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1726 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 
@@ -520,7 +520,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` |  | ✅ |  |  |  |  |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) |  |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ | ✅ |  |
+| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | ✅ |  | ✅ | ✅ |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | ✅ | ✅ |  | ✅ | ✅ |  |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) |  |  |  |  | ☑️ |  |

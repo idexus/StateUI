@@ -9,11 +9,11 @@ Button.drop: not realized
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.verticalAlignment: ✅
-Canvas.pointerEntered: not realized
-Canvas.pointerExited: not realized
-Canvas.pointerMoved: not realized
-Canvas.pointerPressed: not realized
-Canvas.pointerReleased: not realized
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Canvas.pointerMoved: ✅
+Canvas.pointerPressed: ✅
+Canvas.pointerReleased: ✅
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅

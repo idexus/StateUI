@@ -6,7 +6,7 @@ ActivityIndicator.minimumWidth: ✅
 Button.clicked: ✅
 Button.opacity: ✅
 Button.translationY: ✅
-Canvas.scaleX: not realized
+Canvas.scaleX: ✅
 CheckBox.rotationX: ✅
 ColorBox.pivotX: ✅
 DatePicker.automationExcludedWithChildren: ✅

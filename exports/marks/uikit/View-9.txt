@@ -5,9 +5,9 @@ Button.clicked: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
-Canvas.frameChanged: not realized
-Canvas.gridColumnSpan: not realized
-Canvas.gridRowSpan: not realized
+Canvas.frameChanged: ✅
+Canvas.gridColumnSpan: ✅
+Canvas.gridRowSpan: ✅
 CheckBox.area: ✅
 CheckBox.frameChanged: ✅
 ColorBox.canDrag: not realized

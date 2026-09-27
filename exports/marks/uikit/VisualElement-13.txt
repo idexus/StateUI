@@ -1,7 +1,7 @@
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityLabel: ✅
 Button.clicked: ✅
-Canvas.frame: not realized
+Canvas.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.width: ✅

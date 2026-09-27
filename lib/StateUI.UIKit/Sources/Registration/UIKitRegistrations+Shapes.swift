@@ -56,6 +56,22 @@ extension UIKitRegistrations {
         }
     }
 
+    /// A Canvas: its drawing, and a finger on it as it goes down, moves and lifts.
+    static func canvas(_ registry: Registry<UIView>) {
+        registry.add(CanvasContract.self, create: { reports in
+            let canvas = UIKitCanvasView()
+            canvas.onPressed = { point in reports.raise(CanvasContract.pressed, Point(x: point.x, y: point.y)) }
+            canvas.onDragged = { point in reports.raise(CanvasContract.dragged, Point(x: point.x, y: point.y)) }
+            canvas.onReleased = { point in reports.raise(CanvasContract.released, Point(x: point.x, y: point.y)) }
+            return canvas
+        }, members: { canvas in
+            canvas.property(CanvasContract.drawable) { view, drawing in view.apply(drawing) }
+            canvas.raises(CanvasContract.pressed)
+            canvas.raises(CanvasContract.dragged)
+            canvas.raises(CanvasContract.released)
+        })
+    }
+
     /// What every shape takes whole.
     private static let shapeMembers: [any ContractMember] = [
         ShapeContract.fill, ShapeContract.stroke, ShapeContract.strokeWidth,

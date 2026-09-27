@@ -8,9 +8,9 @@ Canvas.allowDrop: not realized
 Canvas.dragLeave: not realized
 Canvas.dragOver: not realized
 Canvas.drop: not realized
-Canvas.frameChanged: not realized
-Canvas.horizontalAlignment: not realized
-Canvas.verticalAlignment: not realized
+Canvas.frameChanged: ✅
+Canvas.horizontalAlignment: ✅
+Canvas.verticalAlignment: ✅
 CheckBox.pointerEntered: ✅
 CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅

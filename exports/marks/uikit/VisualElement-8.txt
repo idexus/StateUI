@@ -7,8 +7,8 @@ Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
-Canvas.opacity: not realized
-Canvas.translationY: not realized
+Canvas.opacity: ✅
+Canvas.translationY: ✅
 CheckBox.scaleX: ✅
 ColorBox.rotationX: ✅
 DatePicker.pivotX: ✅

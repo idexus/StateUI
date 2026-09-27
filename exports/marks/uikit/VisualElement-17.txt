@@ -1,7 +1,7 @@
 ActivityIndicator.pivotX: ✅
 Button.automationExcludedWithChildren: ✅
 Button.clicked: ✅
-Canvas.accessibilityHint: not realized
+Canvas.accessibilityHint: ✅
 CheckBox.focus: ✅
 CheckBox.isFocusedChanged: ✅
 CheckBox.unfocus: ✅

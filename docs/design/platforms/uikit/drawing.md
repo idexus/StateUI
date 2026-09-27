@@ -44,6 +44,14 @@ brush - a colour, or a gradient over the room - the stroke with its dashes,
 ends, joins and miter limit, its dashes and gaps in stroke widths. A shape
 asks for no room of its own.
 
+## A canvas
+
+A Canvas replays its drawing in order on Core Graphics within its own
+bounds: the instructions and the pen the host layer reads, a saved state
+saving the context's too, its arcs the host layer's curves, its text in its
+box by the box's two alignments. It asks for no room of its own; a finger on
+it is heard as it goes down, moves and lifts, where it is.
+
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and

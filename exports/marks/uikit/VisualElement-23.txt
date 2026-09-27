@@ -1,7 +1,7 @@
 ActivityIndicator.scaleX: ✅
 Button.clicked: ✅
 Button.rotationX: ✅
-Canvas.pivotX: not realized
+Canvas.pivotX: ✅
 CheckBox.automationExcludedWithChildren: ✅
 ColorBox.accessibilityHint: ✅
 DatePicker.focus: ✅

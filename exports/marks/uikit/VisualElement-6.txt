@@ -2,7 +2,7 @@ ActivityIndicator.ignoresInput: not realized
 Button.clicked: ✅
 Button.isEnabled: ✅
 Button.zIndex: not realized
-Canvas.scaleY: not realized
+Canvas.scaleY: ✅
 CheckBox.rotationY: ✅
 ColorBox.pivotY: ✅
 DatePicker.background: not realized

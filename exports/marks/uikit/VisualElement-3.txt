@@ -2,7 +2,7 @@ ActivityIndicator.isEnabled: cannot read isEnabled of ActivityIndicator - UIKit'
 ActivityIndicator.zIndex: not realized
 Button.clicked: ✅
 Button.scaleY: ✅
-Canvas.rotationY: not realized
+Canvas.rotationY: ✅
 CheckBox.pivotY: ✅
 ColorBox.background: not realized
 DatePicker.accessibilityHeadingLevel: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet
