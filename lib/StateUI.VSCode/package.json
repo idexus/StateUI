@@ -48,8 +48,8 @@
         "category": "StateUI"
       },
       {
-        "command": "stateui.selectSimulator",
-        "title": "Select Simulator",
+        "command": "stateui.selectUIKitDevice",
+        "title": "Select UIKit Device",
         "category": "StateUI"
       },
       {
@@ -168,7 +168,7 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p .",
+    "compile": "node -e \"require('fs').rmSync('out', { recursive: true, force: true })\" && tsc -p .",
     "test": "npm run compile && node out/Tests/run.js",
     "package": "npm run compile && node out/Build/package.js"
   },

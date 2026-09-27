@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The extension: a host and an application chosen once - and for Android a
-// device, for UIKit a simulator - the editor working as that host, one Debug and
+// device, for UIKit an iPhone, an iPad or a simulator - the editor working as that host, one Debug and
 // one Release that run the application on it, and the suites run as it.
 
 import * as fs from "fs";
@@ -13,7 +13,7 @@ import { configurations, noHost, StateUIDebugConfigurationProvider } from "./deb
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
 import { availableHosts, describe, Host } from "./hosts";
-import { askForSimulator, chosenSimulator, chooseSimulator, simulatorToRunOn } from "./simulators";
+import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
@@ -24,7 +24,8 @@ export interface StateUIApi {
     selectHost(host: Host): Promise<void>;
     application(): string | undefined;
     selectApplication(name: string): Promise<void>;
-    selectSimulator(udid: string, name: string): Promise<void>;
+    /** Chooses the iPhone, iPad or simulator listed by `wanted` - its id or its name - and answers its name. */
+    selectUIKitDevice(wanted: string): Promise<string | undefined>;
 }
 
 const hostKey = "stateui.host";
@@ -105,10 +106,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         candidates.length > 0 ? applicationItem.show() : applicationItem.hide();
 
         if (described.id === "uikit") {
-            const simulator = chosenSimulator(state);
-            deviceItem.command = "stateui.selectSimulator";
-            deviceItem.text = `$(device-mobile) ${simulator?.name ?? "Select Simulator"}`;
-            deviceItem.tooltip = `The simulator StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${simulator ? ` - ${simulator.udid}` : ""}. Click to change.`;
+            const device = chosenUIKitDevice(state);
+            deviceItem.command = "stateui.selectUIKitDevice";
+            deviceItem.text = `$(device-mobile) ${device?.name ?? "Select UIKit Device"}`;
+            deviceItem.tooltip = `The iPhone, iPad or simulator StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${device ? ` - ${device.id}` : ""}. Click to change.`;
         } else {
             const device = chosenDevice(state);
             deviceItem.command = "stateui.selectAndroidDevice";
@@ -164,11 +165,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return serial;
     };
 
-    /** The simulator a UIKit launch or suite runs on - asked for where none chosen is available. */
-    const simulator = async (): Promise<string | undefined> => {
-        const udid = await simulatorToRunOn(state);
+    /** The iPhone, iPad or simulator a UIKit launch or suite runs on - asked for where none chosen is listed. */
+    const uiKitDevice = async (): Promise<string | undefined> => {
+        const id = await uiKitDeviceToRunOn(state);
         refresh();
-        return udid;
+        return id;
     };
 
     context.subscriptions.push(
@@ -208,8 +209,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await askForDevice(root, state);
             refresh();
         }),
-        vscode.commands.registerCommand("stateui.selectSimulator", async () => {
-            await askForSimulator(state);
+        vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
+            await askForUIKitDevice(state);
             refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
@@ -229,7 +230,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
 
             let chosenSuites = picked.map((each) => each.suite);
             if (chosenSuites.some((each) => each.onDevice)) {
-                const serial = host() === "uikit" ? await simulator() : await androidDevice(folder.uri.fsPath);
+                const serial = host() === "uikit" ? await uiKitDevice() : await androidDevice(folder.uri.fsPath);
                 if (!serial) {
                     return;
                 }
@@ -291,7 +292,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         start: startTask,
         ready: (file, task) => readyWhen(file, task),
         device: (folder) => androidDevice(folder.uri.fsPath),
-        simulator,
+        uiKitDevice,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
 
@@ -348,12 +349,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     refresh();
     await applyEditorMode(host(), roots());
 
-    const selectSimulator = async (udid: string, name: string): Promise<void> => {
-        await chooseSimulator(state, { udid, name });
+    const selectUIKitDevice = async (wanted: string): Promise<string | undefined> => {
+        const name = await chooseListedUIKitDevice(state, wanted);
         refresh();
+        return name;
     };
 
-    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectSimulator };
+    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice };
 }
 
 export function deactivate(): void {}

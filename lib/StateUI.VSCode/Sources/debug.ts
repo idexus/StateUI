@@ -16,11 +16,12 @@
 // .build-android/debugger.json. A Release build cannot be debugged, and
 // resolves to no session.
 //
-// A UIKit head is run by .scripts/UIKit/run-app.sh on the simulator chosen, in
-// a task whose terminal follows what it prints. A Debug launch starts it held
-// until a debugger attaches, and the script writes its process - one of this
-// Mac's - to .build-uikit/debugger.json; lldb-dap attaches to it, which lets it
-// run. A Release launch has no session.
+// A UIKit head is run by .scripts/UIKit/run-app.sh on the iPhone, iPad or
+// simulator chosen, in a task whose terminal follows what it prints. A Debug
+// launch starts it held until a debugger attaches, and the script writes where
+// to .build-uikit/debugger.json: a simulator's process is one of this Mac's, a
+// device's is reached through the device. lldb-dap attaches, which lets it run.
+// A Release launch has no session.
 //
 // A GTK head is built by .scripts/GTK/run-app.sh --build-only, as a task, and
 // launched by lldb-dap: the debugger is the application's parent, which is what
@@ -35,7 +36,7 @@ import * as vscode from "vscode";
 import { Application, appKitProgram, gtkProgram } from "./applications";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
-import { uiKitScript } from "./simulators";
+import { uiKitScript } from "./uiKitDevices";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
@@ -70,10 +71,10 @@ export interface Choices {
     device(folder: vscode.WorkspaceFolder): Promise<string | undefined>;
 
     /**
-     * The UDID of the simulator a launch runs on - the one chosen while it is
-     * available, else asked for - or nothing, where none is picked.
+     * The iPhone, iPad or simulator a UIKit launch runs on - the one chosen
+     * while it is listed, else asked for - or nothing, where none is picked.
      */
-    simulator(): Promise<string | undefined>;
+    uiKitDevice(): Promise<string | undefined>;
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
@@ -209,9 +210,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A UIKit head, started by run-app.sh on the simulator chosen in a task
-     * that follows what it prints; a Debug build started held and attached to
-     * by lldb-dap - a Release build has no session.
+     * A UIKit head, started by run-app.sh on the device chosen in a task that
+     * follows what it prints; a Debug build started held and attached to by
+     * lldb-dap - a Release build has no session.
      */
     private async uiKit(
         root: vscode.WorkspaceFolder,
@@ -226,8 +227,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        const simulator = await this.choices.simulator();
-        if (!simulator) {
+        const device = await this.choices.uiKitDevice();
+        if (!device) {
             return undefined;
         }
 
@@ -235,10 +236,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const facts = path.join(application.directory, ".build-uikit", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
-            { type: "stateui", application: application.name, configuration, device: simulator }, root,
+            { type: "stateui", application: application.name, configuration, device }, root,
             `Run ${application.name} (UIKit, ${configuration})`, "StateUI",
             new vscode.ShellExecution("bash",
-                [script, application.directory, configuration, simulator, ...(debug ? ["--debugger"] : [])],
+                [script, application.directory, configuration, device, ...(debug ? ["--debugger"] : [])],
                 { cwd: root.uri.fsPath }), []);
         task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
         await this.choices.start(task);
@@ -248,7 +249,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
         if (!(await this.choices.ready(facts, task))) {
             void vscode.window.showErrorMessage(
-                `StateUI: ${application.name} did not start for the debugger on the simulator - the terminal says why.`);
+                `StateUI: ${application.name} did not start for the debugger on ${device} - the terminal says why.`);
             return undefined;
         }
         return uiKitAttach(name, JSON.parse(fs.readFileSync(facts, "utf8")));
@@ -360,17 +361,36 @@ export function androidAttach(name: string, serial: string, server: AndroidDebug
     };
 }
 
-/** Where run-app.sh --debugger left a UIKit head: its process, held until a debugger attaches. */
+/**
+ * Where run-app.sh --debugger left a UIKit head: its process, held until a
+ * debugger attaches, and on a device the device and the bundle built.
+ */
 export interface UIKitDebugger {
     process: number;
+    device?: string;
+    symbols?: string;
 }
 
 /**
- * lldb-dap attached to a UIKit head's process on the simulator - a process of
- * this Mac, found by its number - which lets it run.
+ * lldb-dap attached to a UIKit head's process, which lets it run: on a
+ * simulator a process of this Mac, found by its number; on a device through
+ * the device, its symbols read from the bundle built rather than copied back.
  */
 export function uiKitAttach(name: string, facts: UIKitDebugger): vscode.DebugConfiguration {
-    return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false };
+    if (!facts.device) {
+        return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false };
+    }
+    return {
+        type: "lldb-dap",
+        request: "attach",
+        name,
+        stopOnEntry: false,
+        initCommands: facts.symbols
+            ? [`settings append target.exec-search-paths ${facts.symbols}`,
+                `settings append target.exec-search-paths ${facts.symbols}/Frameworks`]
+            : [],
+        attachCommands: [`device select ${facts.device}`, `device process attach --pid ${facts.process}`],
+    };
 }
 
 /**

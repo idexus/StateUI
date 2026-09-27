@@ -13,9 +13,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications, hasHead } from "../Sources/applications";
-import { StateUIDebugConfigurationProvider } from "../Sources/debug";
+import { StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
-import { parseSimulators } from "../Sources/simulators";
+import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
 import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts } from "../Sources/hosts";
@@ -128,7 +128,7 @@ export async function run(): Promise<void> {
                 start: async (task) => { ran.push(task.name); },
                 ready: async () => false,
                 device: async () => undefined,
-                simulator: async () => undefined,
+                uiKitDevice: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -220,7 +220,7 @@ export async function run(): Promise<void> {
                     },
                     ready: async (file) => fs.existsSync(file),
                     device: async () => serial,
-                    simulator: async () => undefined,
+                    uiKitDevice: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -302,10 +302,32 @@ export async function run(): Promise<void> {
                 "com.apple.CoreSimulator.SimRuntime.watchOS-12-0": [{ udid: "W", name: "Apple Watch", state: "Shutdown" }],
             } })))
             === JSON.stringify([
-                { udid: "B", name: "iPhone 18 Pro", runtime: "27.0", booted: true },
-                { udid: "C", name: "iPad Air 13-inch (M4)", runtime: "27.0", booted: false },
-                { udid: "A", name: "iPhone 17", runtime: "26.0", booted: false },
+                { id: "B", name: "iPhone 18 Pro", kind: "simulator", os: "27.0", state: "booted" },
+                { id: "C", name: "iPad Air 13-inch (M4)", kind: "simulator", os: "27.0", state: "" },
+                { id: "A", name: "iPhone 17", kind: "simulator", os: "26.0", state: "" },
             ]) && parseSimulators("not json").length === 0);
+        {
+            const device = (name: string, os: string, transport: string, reality = "physical", pairing = "paired") => ({
+                identifier: `${name}-ID`, connectionProperties: { pairingState: pairing, transportType: transport },
+                deviceProperties: { name, osVersionNumber: os }, hardwareProperties: { platform: "iOS", reality },
+            });
+            check("devicectl's list reads as the iPhones and iPads paired with this Mac, of an iOS a head installs on",
+                JSON.stringify(parseUIKitDevices(JSON.stringify({ result: { devices: [
+                    device("Phone", "26.6.2", "wired"), device("Tablet", "26.6.1", "localNetwork"),
+                    device("Old Phone", "18.4", "wired"), device("iPhone 17", "26.0", "sameMachine", "virtual"),
+                    device("Stranger", "26.1", "wired", "physical", "unpaired"),
+                ] } })))
+                === JSON.stringify([
+                    { id: "Phone-ID", name: "Phone", kind: "device", os: "26.6.2", state: "USB" },
+                    { id: "Tablet-ID", name: "Tablet", kind: "device", os: "26.6.1", state: "Wi-Fi" },
+                ]) && parseUIKitDevices("not json").length === 0);
+            const onDevice = uiKitAttach("StateUI: Debug", { process: 37779, device: "PHONE", symbols: "/b/App.app" });
+            check("on a device lldb-dap selects the device, attaches to the process through it, and reads symbols from the bundle built",
+                onDevice.request === "attach" && onDevice.pid === undefined
+                && JSON.stringify(onDevice.attachCommands) === JSON.stringify(["device select PHONE", "device process attach --pid 37779"])
+                && JSON.stringify(onDevice.initCommands) === JSON.stringify([
+                    "settings append target.exec-search-paths /b/App.app", "settings append target.exec-search-paths /b/App.app/Frameworks"]));
+        }
         {
             const helloWorldHere = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
             check("HelloWorld and the Gallery have UIKit heads", hasHead(helloWorldHere, "uikit") && hasHead(gallery_, "uikit"));
@@ -324,7 +346,7 @@ export async function run(): Promise<void> {
                     },
                     ready: async (file) => fs.existsSync(file),
                     device: async () => undefined,
-                    simulator: async () => udid,
+                    uiKitDevice: async () => udid,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -344,7 +366,7 @@ export async function run(): Promise<void> {
                 && released.started[0].definition.device === "SIM-1");
 
             const declined = await launchOnUIKit(undefined);
-            check("UIKit with no simulator picked starts nothing", declined.resolved === undefined && declined.started.length === 0);
+            check("UIKit with no device picked starts nothing", declined.resolved === undefined && declined.started.length === 0);
 
             const debugged = await launchOnUIKit("SIM-1", "debug");
             say(`     uikit debugged: ${JSON.stringify(debugged.resolved)}`);
@@ -379,7 +401,7 @@ export async function run(): Promise<void> {
                 start: async (task) => { started.push(task); },
                 ready: async () => false,
                 device: async () => undefined,
-                simulator: async () => undefined,
+                uiKitDevice: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
@@ -413,7 +435,7 @@ export async function run(): Promise<void> {
                 start: async () => {},
                 ready: async () => false,
                 device: async () => undefined,
-                simulator: async () => undefined,
+                uiKitDevice: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -437,9 +459,9 @@ export async function run(): Promise<void> {
         }
 
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device and Select Simulator, and no Select Debugger",
-            palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectSimulator")
-            && !palette.includes("stateui.selectDebugger"));
+        check("the palette has Select Android Device and Select UIKit Device, and no Select Debugger",
+            palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectUIKitDevice")
+            && !palette.includes("stateui.selectDebugger") && !palette.includes("stateui.selectSimulator"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,
         //    by the checkout's scaffolder - the only starter.
@@ -462,8 +484,13 @@ export async function run(): Promise<void> {
             const extension = path.join(root.uri.fsPath, "lib", "StateUI.VSCode");
             const vsce = path.join(extension, "node_modules", ".bin", process.platform === "win32" ? "vsce.cmd" : "vsce");
             const packed = execSync(`"${vsce}" ls`, { cwd: extension }).toString().split(/\r?\n/).filter((line) => line.length > 0);
-            const stray = packed.filter((file) => !/^(package\.json|README\.md|icon\.png|LICENSE|out\/Sources\/[A-Za-z]+\.js)$/.test(file));
-            check(`the package holds the manifest, the readme, the icon and out/Sources alone${stray.length > 0 ? ` - not ${stray.slice(0, 3).join(", ")}` : ""}`,
+            // A compiled file whose source is gone is left in out/ by tsc, and would be packed.
+            const stray = packed.filter((file) => {
+                const compiled = file.match(/^out\/Sources\/([A-Za-z]+)\.js$/);
+                return compiled ? !fs.existsSync(path.join(extension, "Sources", `${compiled[1]}.ts`))
+                    : !/^(package\.json|README\.md|icon\.png|LICENSE)$/.test(file);
+            });
+            check(`the package holds the manifest, the readme, the icon and what Sources compile to alone${stray.length > 0 ? ` - not ${stray.slice(0, 3).join(", ")}` : ""}`,
                 stray.length === 0 && packed.includes("out/Sources/extension.js"));
         }
         // 9. StateUI: Debug runs the REMEMBERED application - no question asked - on this machine's host: AppKit
@@ -496,7 +523,8 @@ export async function run(): Promise<void> {
             check("an iPhone simulator is available", iPhone !== undefined);
             await api.selectHost("uikit");
             await api.selectApplication("HelloWorld");
-            await api.selectSimulator(iPhone!.udid, iPhone!.name);
+            check("a simulator chosen by its UDID is named in the status bar by its name",
+                (await api.selectUIKitDevice(iPhone!.id)) === iPhone!.name);
             const attached = new Promise<vscode.DebugSession>((resolve) => {
                 const listener = vscode.debug.onDidStartDebugSession((each) => {
                     if (each.type === "lldb-dap") {
@@ -510,10 +538,36 @@ export async function run(): Promise<void> {
             const onSimulator = await Promise.race([attached, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session attaches to HelloWorldUIKit's process", typeof onSimulator?.configuration.pid === "number");
             await new Promise((resume) => setTimeout(resume, 4000));
-            const onDevice = (() => { try { return execSync(`pgrep -f ${iPhone!.udid}.*HelloWorldUIKit`).toString().trim().length > 0; } catch { return false; } })();
+            const onDevice = (() => { try { return execSync(`pgrep -f ${iPhone!.id}.*HelloWorldUIKit`).toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldUIKit process runs on the simulator", onDevice);
             await vscode.debug.stopDebugging(onSimulator);
-            execSync(`xcrun simctl terminate ${iPhone!.udid} com.stateui.helloworld || true`);
+            execSync(`xcrun simctl terminate ${iPhone!.id} com.stateui.helloworld || true`);
+
+            // And on a real iPhone or iPad, where STATEUI_UIKIT_DEVICE names one connected: signed, installed, started
+            // held, and attached to through the device.
+            const real = process.env.STATEUI_UIKIT_DEVICE;
+            if (real) {
+                const named = await api.selectUIKitDevice(real);
+                check("the device chosen by its identifier is named by its name", named !== undefined && named !== real);
+                const attachedOnDevice = new Promise<vscode.DebugSession>((resolve) => {
+                    const listener = vscode.debug.onDidStartDebugSession((each) => {
+                        if (each.type === "lldb-dap") {
+                            listener.dispose();
+                            resolve(each);
+                        }
+                    });
+                });
+                check("StateUI: Debug starts on the device", await vscode.debug.startDebugging(root,
+                    { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+                const session = await Promise.race([attachedOnDevice, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
+                check("an lldb-dap session attaches through the device", JSON.stringify(session?.configuration.attachCommands ?? []).includes(`device select ${real}`));
+                await new Promise((resume) => setTimeout(resume, 8000));
+                const running = (() => { try { return execSync(`xcrun devicectl device info processes --device ${real}`).toString().includes("HelloWorldUIKit"); } catch { return false; } })();
+                check("the HelloWorldUIKit process runs on the device", running);
+                await vscode.debug.stopDebugging(session);
+            } else {
+                say("skip a real device: STATEUI_UIKIT_DEVICE names none");
+            }
         } else if (process.platform === "win32") {
             await api.selectHost("winui");
             await api.selectApplication("HelloWorld");

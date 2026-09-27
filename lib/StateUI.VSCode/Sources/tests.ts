@@ -10,7 +10,7 @@ import * as vscode from "vscode";
 import { findApplications } from "./applications";
 import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
-import { uiKitScript } from "./simulators";
+import { uiKitScript } from "./uiKitDevices";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */

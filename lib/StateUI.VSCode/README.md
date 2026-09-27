@@ -62,10 +62,11 @@ says **no host**, a launch says why it runs nothing, and the editor and
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run
   Without Debugging, run it without a debugger. A second launch stops the first
   one's log before it starts again. On UIKit `.scripts/UIKit/run-app.sh`
-  builds the head, installs it on the simulator chosen below - booted first -
-  and starts it, and its terminal follows what the application prints. StateUI:
-  Debug starts it held until `lldb-dap` attaches to its process, one of this
-  Mac's: a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
+  builds the head, installs it on the iPhone, iPad or simulator chosen below -
+  a simulator booted first, a device's build signed for it - and starts it, and
+  its terminal follows what the application prints. StateUI: Debug starts it
+  held until `lldb-dap` attaches - to a simulator's process, one of this Mac's,
+  or through the device - and a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
   builds the head, lays the Windows App SDK beside it and starts it, its
   terminal passing on what the application writes; no debugger attaches yet.
   On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
@@ -79,13 +80,17 @@ the emulators set up; picking an emulator starts it and waits until it has
 booted. The device is remembered for the workspace, so a launch or a run of the
 tests asks only when none is chosen or the one chosen is no longer attached.
 
-## The simulator
+## The UIKit device
 
-While the host is UIKit, the third status bar item shows the simulator - click
-it, or run **StateUI: Select Simulator**. It offers the iPhones and iPads of the
-iOS runtimes a head installs on, the newest first. The simulator is remembered
-for the workspace, so a launch or a run of the tests asks only when none is
-chosen or the one chosen is gone.
+While the host is UIKit, the third status bar item shows the iPhone or iPad a
+launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
+the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
+of iOS 26 or later, the newest runtime first. It is remembered for the
+workspace, so a launch or a run of the tests asks only when none is chosen or
+the one chosen is gone. A device runs with Developer Mode on, and its build is
+signed with a development profile of this Mac's that provisions it - Xcode
+makes one for a team once the device is added. The host's own tests run on a
+simulator.
 
 ## The application
 
@@ -143,9 +148,10 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
 - For AppKit: macOS 26 or newer and the `lldb-dap` extension.
-- For UIKit: macOS with Xcode and an iOS 26 or newer simulator, a StateUI
-  checkout, whose `.scripts/UIKit` builds and runs the head, and the `lldb-dap`
-  extension.
+- For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
+  builds and runs the head, the `lldb-dap` extension, and an iOS 26 or newer
+  simulator or device - a device with Developer Mode on and a development
+  profile of this Mac's that provisions it.
 - For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds
   and runs the head; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
