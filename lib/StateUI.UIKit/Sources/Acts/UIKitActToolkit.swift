@@ -120,8 +120,11 @@ final class UIKitActToolkit: ActToolkit {
         return true
     }
 
+    /// The application's own acts, registered through `StateUIActs`.
     func performRegistered(_ call: HostActCall) -> Bool {
-        false
+        UIKitInterop.acts.perform(
+            call, in: renderer.runtime.tree, core: CoreLink(), view: { ($0.native as? UIKitElement)?.view },
+            log: { UIKitRenderer.log.error($0) })
     }
 
     func log(_ message: String) {
