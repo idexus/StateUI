@@ -400,7 +400,7 @@ struct ControlDictionary {
             guard !described.isEmpty else { continue }
 
             let marks = Self.platforms.map { platform in
-                Self.grouped(described.map { mark(of: $0, declaredIn: contract, on: platform) })
+                Self.tallied(described.map { mark(of: $0, declaredIn: contract, on: platform) })
             }
 
             lines.append(Self.row(
@@ -512,6 +512,19 @@ struct ControlDictionary {
 
         if marks.allSatisfy({ $0 == "–" }) { return "–" }
         return marks.contains("☑️") ? "☑️" : "✅"
+    }
+
+    /// Marks counted, each kind the legend's order, of how many there are: "28 ✅ · 1 ☑️ of 31"; nothing where none
+    /// is proven or planned.
+    static func tallied(_ marks: [String]) -> String {
+        var counts = Marks()
+        for mark in marks {
+            if mark == "✅" { counts.done += 1 }
+            if mark == "☑️" { counts.partial += 1 }
+            if mark == "–" { counts.notPlanned += 1 }
+        }
+        let counted = Self.counted(counts)
+        return counted.isEmpty ? "" : "\(counted) of \(marks.count)"
     }
 
     /// A contract's properties and events: every member but its acts.
