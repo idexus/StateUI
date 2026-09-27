@@ -31,7 +31,7 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
-    /// A menu item's action in the menu UIKit was last handed.
+    /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
 
     init(_ element: MountedElement, host: UIKitRenderer) {

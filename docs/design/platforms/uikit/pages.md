@@ -16,8 +16,9 @@ the whole window.
 A page's bar is its navigation item: its title - or the view standing in for
 it - its actions as the host layer orders them, those beyond the bar in a
 menu behind its last button, whether it offers the way back, and its colours
-where the tree gives them. A tabbed view's bar is its chosen tab's page's.
-Every bar in the window is written again as the window is shown, so a bar
+where the tree gives them. An action that destroys something is marked
+destructive in the menu and tinted red on the bar. A tabbed view's bar is its
+chosen tab's page's. Every bar in the window is written again as the window is shown, so a bar
 always says what its page says now.
 
 ## A navigation stack

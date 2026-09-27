@@ -5,7 +5,7 @@ MenuItem.isDestructive: ✅
 MenuItem.isEnabled: ✅
 MenuItem.text: ✅
 ToolbarItem.clicked: ✅
-ToolbarItem.icon: cannot read icon of ToolbarItem - UIKit's driver has no path for it yet
-ToolbarItem.isDestructive: not realized
+ToolbarItem.icon: ✅
+ToolbarItem.isDestructive: ✅
 ToolbarItem.isEnabled: ✅
-ToolbarItem.text: cannot read text of ToolbarItem - UIKit's driver has no path for it yet
+ToolbarItem.text: ✅

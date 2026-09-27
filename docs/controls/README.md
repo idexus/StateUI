@@ -77,11 +77,11 @@ The scene, the window and the page an application is made of, the arrangements a
 | [SplitView](SplitView.md) | 5 | 3 ✅ | 4 ✅ |  | 1 ✅ | 4 ✅ |  |
 | [TabbedView](TabbedView.md) | 6 | 3 ✅ | 6 ✅ |  | 1 ✅ | 4 ✅ |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 2 ✅ |  |  | 6 ✅ |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 5 ✅ |  |  | 6 ✅ |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 22 ✅ | 6 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 57 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 60 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

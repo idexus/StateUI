@@ -54,8 +54,8 @@ extension UIKitElement {
     private static func action(_ item: MountedElement) -> UIKitBarAction {
         UIKitBarAction(
             title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
-            isEnabled: item.value(.isEnabled)?.bool ?? true,
-            perform: { [weak item] in item?.uiKit.send(.clicked, []) })
+            isEnabled: item.value(.isEnabled)?.bool ?? true, isDestructive: item.value(.isDestructive)?.bool == true,
+            perform: { [weak item] in item?.uiKit.send(.clicked, []) }, element: item.uiKit)
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.

@@ -67,6 +67,7 @@ enum UIKitRealization {
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
+        .complete("ToolbarItem", "isDestructive"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),
