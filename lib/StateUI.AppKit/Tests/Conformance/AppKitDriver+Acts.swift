@@ -16,6 +16,13 @@ extension AppKitDriver {
         let native = element.native as? AppKitElement
         let view = native?.view
         switch (act, view) {
+        case (.activate, _) where element.parent?.type == .itemsView:
+            guard let items = (element.parent?.native as? AppKitElement)?.view as? AppKitItemsView,
+                  case .manual(let identity) = element.id
+            else { throw DriverCannot(act, on: element) }
+            items.activateForTesting(identity)
+        case (.choose(let place), let items as AppKitItemsView): items.chooseForTesting(place)
+        case (.scroll(let target), let items as AppKitItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
         case (.toggle, let toggle as AppKitSwitchView): _ = toggle.accessibilityPerformPress()
         case (.toggle, let check as AppKitCheckBoxView): check.performClick(nil)

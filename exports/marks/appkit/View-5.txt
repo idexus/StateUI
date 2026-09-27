@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.gridColumnSpan: ✅
 ActivityIndicator.gridRowSpan: ✅
@@ -32,9 +32,9 @@ HStack.pointerReleased: 🪞 hover on HStack: handed to the host's recognizer or
 Image.swipeDirection: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeThreshold: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swiped: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.panTouchCount: not realized
-ItemsView.panUpdated: not realized
-ItemsView.panXChannel: not realized
+ItemsView.panTouchCount: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.panUpdated: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.panXChannel: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Label.frameChanged: ✅
 Label.gridColumnSpan: ✅
 Label.gridRowSpan: ✅

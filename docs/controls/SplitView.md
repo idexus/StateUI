@@ -13,8 +13,8 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (5) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ | `NSSplitViewController` |  |
-| UIKit | ✅ | 5 ✅ | `UISplitViewController` |  |
-| Android Views | ✅ | 1 ✅ | AndroidX `DrawerLayout` |  |
+| UIKit | ⌛ |  | `UISplitViewController` | a run of other sources said: ✅ |
+| Android Views | ⌛ |  | AndroidX `DrawerLayout` | a run of other sources said: ✅ |
 | WinUI 3 | ⌛ |  | `SplitView` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no run of it on these sources |
 | Web |  |  | `<aside>` | no host yet |
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ | 🪞 | ⌛ |  |  | Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; WinUI 3: a run of other sources said: ✅ |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🪞 | ⌛ |  |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: 🪞 only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: 🪞 only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `title` | property | `String` | native | · | ✅ | · | ⌛ |  |  | cannot read title of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read title of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `icon` | property | `ImageSource` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read icon of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `title` | property | `String` | native | · | ⌛ | ⌛ | ⌛ |  |  | cannot read title of SplitView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read title of SplitView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

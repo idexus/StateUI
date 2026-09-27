@@ -1,13 +1,13 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
-ItemsView: not realized
-ItemsView.endReached: not realized
-ItemsView.endReachedWithin: not realized
-ItemsView.frameChanged: not realized
-ItemsView.itemActivated: not realized
-ItemsView.items: not realized
-ItemsView.itemsLayout: not realized
-ItemsView.realizedChanged: not realized
-ItemsView.scrollTo: not realized
-ItemsView.selectedItems: not realized
-ItemsView.selectionChanged: not realized
-ItemsView.selectionMode: not realized
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
+ItemsView: ✅
+ItemsView.endReached: ✅
+ItemsView.endReachedWithin: ✅
+ItemsView.frameChanged: ✅
+ItemsView.itemActivated: 🪞 activate on an item of ItemsView: the collection's delegate told, no click
+ItemsView.items: ✅
+ItemsView.itemsLayout: ✅
+ItemsView.realizedChanged: ✅
+ItemsView.scrollTo: ✅
+ItemsView.selectedItems: 🪞 choose on ItemsView: the collection's delegate told, no click
+ItemsView.selectionChanged: 🪞 choose on ItemsView: the collection's delegate told, no click
+ItemsView.selectionMode: 🪞 choose on ItemsView: the collection's delegate told, no click

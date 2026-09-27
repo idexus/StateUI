@@ -66,6 +66,16 @@ Image
   aspect
   isAnimating
   source
+ItemsView
+  endReachedWithin
+  items
+  itemsLayout
+  selectedItems
+  selectionMode
+  endReached()
+  itemActivated()
+  realizedChanged()
+  selectionChanged()
 Line
   aspect
   fill
@@ -325,5 +335,6 @@ VStack
   persistSceneValue()
   persistValue()
   prompt()
+  scrollTo()
   unfocus()
   utcOffset()

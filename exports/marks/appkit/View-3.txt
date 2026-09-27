@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.area: ✅
 ActivityIndicator.frameChanged: ✅
 Button.canDrag: not realized
@@ -32,9 +32,9 @@ HStack.swiped: 🪞 pan on HStack: handed to the host's recognizer or handler, n
 Image.panTouchCount: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.panUpdated: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.panXChannel: 🪞 pan on Image: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.frameChanged: not realized
-ItemsView.gridColumnSpan: not realized
-ItemsView.gridRowSpan: not realized
+ItemsView.frameChanged: ✅
+ItemsView.gridColumnSpan: ✅
+ItemsView.gridRowSpan: ✅
 Label.area: ✅
 Label.frameChanged: ✅
 Line.canDrag: not realized

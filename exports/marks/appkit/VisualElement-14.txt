@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.automationExcludedWithChildren: ✅
 Button.accessibilityHint: ✅
 Canvas.focus: cannot focus Canvas: it takes no keyboard focus here
@@ -16,9 +16,9 @@ Ellipse.rotationX: 🪞 read rotationX of Ellipse: the host's own transform, che
 Grid.pivotX: 🪞 read pivotX of Grid: the host's own transform, checked against the layer it composed itself
 HStack.automationExcludedWithChildren: ✅
 Image.accessibilityHint: ✅
-ItemsView.focus: not realized
-ItemsView.isFocusedChanged: not realized
-ItemsView.unfocus: not realized
+ItemsView.focus: cannot focus ItemsView: it takes no keyboard focus here
+ItemsView.isFocusedChanged: cannot focus ItemsView: it takes no keyboard focus here
+ItemsView.unfocus: cannot focus ItemsView: it takes no keyboard focus here
 Label.frameChanged: ✅
 Label.maximumHeight: ✅
 Label.maximumWidth: ✅

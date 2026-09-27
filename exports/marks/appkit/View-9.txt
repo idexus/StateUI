@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.swipeDirection: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swipeThreshold: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.swiped: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -30,11 +30,11 @@ Image.drop: not realized
 Image.frameChanged: ✅
 Image.horizontalAlignment: ✅
 Image.verticalAlignment: ✅
-ItemsView.pointerEntered: not realized
-ItemsView.pointerExited: not realized
-ItemsView.pointerMoved: not realized
-ItemsView.pointerPressed: not realized
-ItemsView.pointerReleased: not realized
+ItemsView.pointerEntered: 🪞 hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerExited: 🪞 hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerMoved: 🪞 hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerPressed: 🪞 hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerReleased: 🪞 hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Label.swipeDirection: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.swipeThreshold: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.swiped: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent

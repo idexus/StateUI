@@ -10,7 +10,7 @@
 enum AppKitRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "ItemsView", "Map", "Pin", "PositionIndicator", "WebView",
+        "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its
@@ -39,6 +39,8 @@ enum AppKitRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
         .partial("Button", "aspect", missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete("Button", "padding"),
         .partial("Button", "shape", missing: "AppKit rounds an oval button into a capsule: a layer's corners draw no oval."),

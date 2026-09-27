@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.opacity: ✅
 ActivityIndicator.translationY: 🪞 read translationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.scaleX: 🪞 read scaleX of Button: the host's own transform, checked against the layer it composed itself
@@ -17,7 +17,7 @@ Grid.minimumWidth: ✅
 HStack.opacity: ✅
 HStack.translationY: 🪞 read translationY of HStack: the host's own transform, checked against the layer it composed itself
 Image.scaleX: 🪞 read scaleX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.rotationX: not realized
+ItemsView.rotationX: 🪞 read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.pivotX: 🪞 read pivotX of Label: the host's own transform, checked against the layer it composed itself
 Line.automationExcludedWithChildren: ✅
 Map.accessibilityHint: not realized

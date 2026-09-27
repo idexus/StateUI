@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.isEnabled: not realized
 ActivityIndicator.zIndex: not realized
 Button.scaleY: 🪞 read scaleY of Button: the host's own transform, checked against the layer it composed itself
@@ -11,7 +11,7 @@ Grid.ignoresInput: ✅
 HStack.isEnabled: not realized
 HStack.zIndex: not realized
 Image.scaleY: 🪞 read scaleY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.rotationY: not realized
+ItemsView.rotationY: 🪞 read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.pivotY: 🪞 read pivotY of Label: the host's own transform, checked against the layer it composed itself
 Line.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Map.accessibilityHeadingLevel: not realized

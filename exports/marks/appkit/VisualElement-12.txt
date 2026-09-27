@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Button.style: ✅
 Canvas.ignoresInput: ✅
@@ -10,7 +10,7 @@ Ellipse.pivotY: 🪞 read pivotY of Ellipse: the host's own transform, checked a
 Grid.background: ✅
 HStack.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Image.style: ✅
-ItemsView.ignoresInput: not realized
+ItemsView.ignoresInput: ✅
 Label.isEnabled: not realized
 Label.zIndex: not realized
 Line.scaleY: 🪞 read scaleY of Line: the host's own transform, checked against the layer it composed itself

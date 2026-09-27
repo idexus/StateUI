@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.accessibilityHint: ✅
 Button.focus: ✅
 Button.isFocusedChanged: ✅
@@ -18,11 +18,11 @@ HStack.accessibilityHint: ✅
 Image.focus: cannot focus Image: it takes no keyboard focus here
 Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
 Image.unfocus: cannot focus Image: it takes no keyboard focus here
-ItemsView.frameChanged: not realized
-ItemsView.maximumHeight: not realized
-ItemsView.maximumWidth: not realized
-ItemsView.minimumHeight: not realized
-ItemsView.minimumWidth: not realized
+ItemsView.frameChanged: ✅
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
 Label.opacity: ✅
 Label.translationY: 🪞 read translationY of Label: the host's own transform, checked against the layer it composed itself
 Line.scaleX: 🪞 read scaleX of Line: the host's own transform, checked against the layer it composed itself

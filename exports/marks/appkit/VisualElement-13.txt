@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.isAccessibilityHidden: ✅
 Button.accessibilityLabel: ✅
 Canvas.frame: ✅
@@ -12,7 +12,7 @@ Ellipse.rotation: 🪞 read rotation of Ellipse: the host's own transform, check
 Grid.layoutDirection: not realized
 HStack.isAccessibilityHidden: ✅
 Image.accessibilityLabel: ✅
-ItemsView.frame: not realized
+ItemsView.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.width: ✅

@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.pointerEntered: 🪞 hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerExited: 🪞 hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.pointerMoved: 🪞 hover on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -32,9 +32,9 @@ ItemsView.allowDrop: not realized
 ItemsView.dragLeave: not realized
 ItemsView.dragOver: not realized
 ItemsView.drop: not realized
-ItemsView.frameChanged: not realized
-ItemsView.horizontalAlignment: not realized
-ItemsView.verticalAlignment: not realized
+ItemsView.frameChanged: ✅
+ItemsView.horizontalAlignment: ✅
+ItemsView.verticalAlignment: ✅
 Label.pointerEntered: 🪞 hover on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.pointerExited: 🪞 hover on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.pointerMoved: 🪞 hover on Label: handed to the host's recognizer or handler, no NSEvent sent

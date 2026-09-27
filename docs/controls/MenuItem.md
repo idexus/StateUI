@@ -13,8 +13,8 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ · 1 ☑️ | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ✅ | 6 ✅ | `UIMenu` / `UIAction` |  |
-| Android Views | · | 1 – | `PopupMenu` / `MenuItem`; no menu bar | cannot activate on MenuItem - Android's driver has no path for it yet |
+| UIKit | ⌛ |  | `UIMenu` / `UIAction` | a run of other sources said: ✅ |
+| Android Views | ⌛ |  | `PopupMenu` / `MenuItem`; no menu bar | a run of other sources said: · cannot activate on MenuItem - Android's driver has no path for it yet |
 | WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ☑️ | ✅ | – | ⌛ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.; Android Views: An Android menu entry holds no identifier: automation finds it by its title.; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ☑️ | ⌛ | ⌛ | ⌛ |  |  | Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: – An Android menu entry holds no identifier: automation finds it by its title.; WinUI 3: a run of other sources said: ✅ |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ |  | ⌛ |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
-| `isDestructive` | property | `Bool` | adaptive | · | ✅ | · | ⌛ |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read isDestructive of MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `text` | property | `String` | native | ✅ | ✅ | · | ⌛ |  |  | Android Views: cannot read text of MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot activate on MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `icon` | property | `ImageSource` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `isDestructive` | property | `Bool` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read isDestructive of MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `isEnabled` | property | `Bool` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot activate on MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `text` | property | `String` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read text of MenuItem - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

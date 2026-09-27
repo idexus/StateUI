@@ -100,8 +100,24 @@ final class AppKitActToolkit: ActToolkit {
         return true
     }
 
+    /// An ItemsView's scroll to an item.
     func performOwn(_ call: HostActCall) -> Bool {
-        false
+        guard call.act == .scrollTo else { return false }
+        let core = CoreLink()
+        do {
+            let element = try renderer.runtime.tree.aimed(call)
+            guard let items = (element.native as? AppKitElement)?.view as? AppKitItemsView else {
+                core.fail(call, "scrollTo is an act of an ItemsView", log: { AppKitRenderer.log.error($0) })
+                return true
+            }
+            items.scroll(
+                to: call.arguments.value(1)?.string ?? "",
+                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            core.reply(call, [])
+        } catch {
+            core.fail(call, error.reason, log: { AppKitRenderer.log.error($0) })
+        }
+        return true
     }
 
     func performRegistered(_ call: HostActCall) -> Bool {

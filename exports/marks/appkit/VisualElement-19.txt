@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.rotation: 🪞 read rotation of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.layoutDirection: not realized
 Canvas.isAccessibilityHidden: ✅
@@ -12,7 +12,7 @@ Ellipse.translationX: 🪞 read translationX of Ellipse: the host's own transfor
 Grid.scale: 🪞 read scale of Grid: the host's own transform, checked against the layer it composed itself
 HStack.rotation: 🪞 read rotation of HStack: the host's own transform, checked against the layer it composed itself
 Image.layoutDirection: not realized
-ItemsView.isAccessibilityHidden: not realized
+ItemsView.isAccessibilityHidden: ✅
 Label.accessibilityLabel: ✅
 Line.frame: ✅
 Map.frameChanged: not realized

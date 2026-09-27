@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.tapCount: 🪞 tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.tapped: 🪞 tap on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.frameChanged: ✅
@@ -34,7 +34,7 @@ HStack.dropCompleted: not realized
 HStack.frameChanged: ✅
 HStack.margin: ✅
 Image.pinchUpdated: 🪞 pinch on Image: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.panYChannel: not realized
+ItemsView.panYChannel: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Label.tapCount: 🪞 tap on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.tapped: 🪞 tap on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.frameChanged: ✅

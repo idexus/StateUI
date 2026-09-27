@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.focus: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.isFocusedChanged: cannot focus ActivityIndicator: it takes no keyboard focus here
 ActivityIndicator.unfocus: cannot focus ActivityIndicator: it takes no keyboard focus here
@@ -22,8 +22,8 @@ Image.maximumHeight: ✅
 Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
-ItemsView.opacity: not realized
-ItemsView.translationY: not realized
+ItemsView.opacity: ✅
+ItemsView.translationY: 🪞 read translationY of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.scaleX: 🪞 read scaleX of Label: the host's own transform, checked against the layer it composed itself
 Line.rotationX: 🪞 read rotationX of Line: the host's own transform, checked against the layer it composed itself
 Map.pivotX: not realized

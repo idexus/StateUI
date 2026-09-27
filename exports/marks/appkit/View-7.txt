@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.panTouchCount: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.panUpdated: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 ActivityIndicator.panXChannel: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
@@ -32,9 +32,9 @@ Image.pointerExited: 🪞 hover on Image: handed to the host's recognizer or han
 Image.pointerMoved: 🪞 hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerPressed: 🪞 hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerReleased: 🪞 hover on Image: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.swipeDirection: not realized
-ItemsView.swipeThreshold: not realized
-ItemsView.swiped: not realized
+ItemsView.swipeDirection: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.swipeThreshold: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.swiped: 🪞 pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Label.panTouchCount: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.panUpdated: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Label.panXChannel: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent

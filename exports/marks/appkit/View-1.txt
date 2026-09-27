@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.canDrag: not realized
 ActivityIndicator.dragStarting: not realized
 ActivityIndicator.dragText: not realized
@@ -33,8 +33,8 @@ HStack.panXChannel: 🪞 pan on HStack: handed to the host's recognizer or handl
 Image.frameChanged: ✅
 Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
-ItemsView.area: not realized
-ItemsView.frameChanged: not realized
+ItemsView.area: ✅
+ItemsView.frameChanged: ✅
 Label.canDrag: not realized
 Label.dragStarting: not realized
 Label.dragText: not realized

@@ -59,6 +59,12 @@ extension AppKitElement {
         case .splitView:
             return AppKitSplitView()
 
+        case .itemsView:
+            guard let host else { return nil }
+            return AppKitItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+
         case .zStack:
             return AppKitZStackView()
 

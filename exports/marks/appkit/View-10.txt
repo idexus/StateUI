@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.pinchUpdated: 🪞 pinch on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.panYChannel: 🪞 pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.tapCount: 🪞 tap on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -33,8 +33,8 @@ ItemsView.canDrag: not realized
 ItemsView.dragStarting: not realized
 ItemsView.dragText: not realized
 ItemsView.dropCompleted: not realized
-ItemsView.frameChanged: not realized
-ItemsView.margin: not realized
+ItemsView.frameChanged: ✅
+ItemsView.margin: ✅
 Label.pinchUpdated: 🪞 pinch on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.panYChannel: 🪞 pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapCount: not realized

@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.width: ✅
@@ -15,7 +15,7 @@ HStack.height: ✅
 HStack.width: ✅
 Image.isVisible: ✅
 Image.translationX: 🪞 read translationX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.scale: not realized
+ItemsView.scale: 🪞 read scale of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.rotation: 🪞 read rotation of Label: the host's own transform, checked against the layer it composed itself
 Line.layoutDirection: not realized
 Map.isAccessibilityHidden: not realized

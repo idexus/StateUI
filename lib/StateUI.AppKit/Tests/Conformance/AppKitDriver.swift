@@ -120,11 +120,23 @@ final class AppKitDriver: HostDriver {
         renderer?.displayFrameForTesting()
     }
 
+    /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.
+    func place(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? AppKitElement)?.view, let window = view.window,
+              let content = window.contentView
+        else { throw DriverCannot("read where \(element.type.name) stands") }
+        let frame = view.convert(view.bounds, to: nil)
+        return Rect(
+            x: frame.minX, y: content.bounds.height - frame.maxY, width: frame.width, height: frame.height)
+    }
+
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
+        case (.selectedItems, let items as AppKitItemsView): return .strings(items.selectedForTesting)
+        case (.selectionMode, let items as AppKitItemsView): return items.modeForTesting.propValue
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue
         case (.isOn, let check as AppKitCheckBoxView): return (check.state == .on).propValue
         case (.isOn, let radio as AppKitRadioButtonView): return (radio.state == .on).propValue

@@ -1,4 +1,4 @@
-# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
+# inputs 4bef6298c2a392f55a2271c52844dc2a82e543c0
 ActivityIndicator.allowDrop: not realized
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized
@@ -32,9 +32,9 @@ Grid.pinchUpdated: 🪞 pinch on Grid: handed to the host's recognizer or handle
 HStack.panYChannel: 🪞 pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.tapCount: 🪞 tap on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.tapped: 🪞 tap on Image: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.frameChanged: not realized
-ItemsView.gridColumn: not realized
-ItemsView.gridRow: not realized
+ItemsView.frameChanged: ✅
+ItemsView.gridColumn: ✅
+ItemsView.gridRow: ✅
 Label.allowDrop: not realized
 Label.dragLeave: not realized
 Label.dragOver: not realized

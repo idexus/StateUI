@@ -10,6 +10,7 @@ import AppKit
 extension AppKitElement {
     func arrangeChildren() {
         guard let view else { return }
+        if let items = view as? AppKitItemsView { return items.childrenChanged() }
         let items = children.compactMap(\.layoutItem)
         (view as? AppKitDirectedLayout)?.direction = element.layoutDirection
 

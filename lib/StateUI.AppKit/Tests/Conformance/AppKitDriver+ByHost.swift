@@ -18,8 +18,12 @@ extension AppKitDriver {
             return "the host's action called, not the pop-up's"
         case "pickDate", "pickTime":
             return "the host's change handler called, not the picker's action"
+        case "scroll" where element == "ItemsView":
+            return nil
         case "scroll":
             return "the host's movement moved, not the clip view"
+        case "choose" where element == "ItemsView", "activate" where element == "an item of ItemsView":
+            return "the collection's delegate told, no click"
         case "answer":
             return "the host's response called, no alert shown"
         case "goBack":
