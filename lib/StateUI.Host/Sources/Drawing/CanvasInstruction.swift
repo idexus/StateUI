@@ -7,28 +7,52 @@
 /// the same on every such host; a record that does not read whole is left out.
 /// Design: docs/design/types/drawing.md#a-drawing-is-a-list-of-records
 @_spi(Host) public enum CanvasInstruction: Equatable, Sendable {
+    /// The colour fills are drawn in from here.
     case fillColor(HostValue)
+    /// The colour outlines are drawn in from here.
     case strokeColor(HostValue)
+    /// The colour text is drawn in from here.
     case textColor(HostValue)
+    /// An outline's width from here.
     case strokeWidth(Double)
+    /// The text's size in points from here.
     case fontSize(Double)
+    /// How opaque everything is drawn from here, from nothing to whole.
     case alpha(Double)
+    /// Outlines a line between two points.
     case drawLine(from: Point, to: Point)
+    /// Outlines a rectangle.
     case drawRectangle(Rect)
+    /// Outlines a rectangle with its corners rounded by the radius.
     case drawRoundedRectangle(Rect, radius: Double)
+    /// Outlines the ellipse a rectangle holds.
     case drawEllipse(Rect)
+    /// Outlines an arc of the ellipse a rectangle holds, from one angle to another in degrees - closed back to its
+    /// start where it says so.
     case drawArc(Rect, start: Double, end: Double, clockwise: Bool, closed: Bool)
+    /// Outlines a path.
     case drawPath([HostCurveCommand])
+    /// Fills a rectangle.
     case fillRectangle(Rect)
+    /// Fills a rectangle with its corners rounded by the radius.
     case fillRoundedRectangle(Rect, radius: Double)
+    /// Fills the ellipse a rectangle holds.
     case fillEllipse(Rect)
+    /// Fills the slice of the ellipse a rectangle holds between two angles in degrees.
     case fillArc(Rect, start: Double, end: Double, clockwise: Bool)
+    /// Fills a path.
     case fillPath([HostCurveCommand])
+    /// Writes text in a rectangle, placed across and down it as the alignments say.
     case drawText(String, in: Rect, horizontal: TextAlignment, vertical: TextAlignment)
+    /// Moves what is drawn from here by a distance.
     case translate(x: Double, y: Double)
+    /// Turns what is drawn from here by degrees.
     case rotate(degrees: Double)
+    /// Scales what is drawn from here along each axis.
     case scale(x: Double, y: Double)
+    /// Remembers the settings and the movement as they are.
     case saveState
+    /// Puts back the settings and the movement remembered last.
     case restoreState
 
     /// The instructions of `drawing`, in order.

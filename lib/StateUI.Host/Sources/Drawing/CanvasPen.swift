@@ -7,9 +7,13 @@
 /// `restoreState` puts them back - the same on every host drawing in Swift.
 /// Design: docs/design/types/drawing.md#settings-hold-until-changed
 @_spi(Host) public struct CanvasPen: Equatable, Sendable {
-    /// The colours fills, outlines and text are drawn in: black until set.
+    /// The colour fills are drawn in: black until set.
     public var fill: HostValue = .color(red: 0, green: 0, blue: 0, alpha: 255)
+
+    /// The colour outlines are drawn in: black until set.
     public var stroke: HostValue = .color(red: 0, green: 0, blue: 0, alpha: 255)
+
+    /// The colour text is drawn in: black until set.
     public var text: HostValue = .color(red: 0, green: 0, blue: 0, alpha: 255)
 
     /// An outline's width, never below nothing: one until set.
