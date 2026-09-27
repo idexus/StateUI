@@ -104,23 +104,15 @@ final class AppKitEnvironment {
     }
 
     func reportBattery() {
-        let saver: EnergySaverStatus = ProcessInfo.processInfo.isLowPowerModeEnabled ? .on : .off
-        guard let battery = Self.internalBattery() else {
-            return core.setBatteryInfo(HostBatteryInfo(
-                chargeLevel: 1, state: .notPresent, powerSource: .ac, energySaverStatus: saver))
-        }
-
-        let current = battery[kIOPSCurrentCapacityKey] as? Double ?? 0
-        let maximum = battery[kIOPSMaxCapacityKey] as? Double ?? 0
-        let onMains = battery[kIOPSPowerSourceStateKey] as? String == kIOPSACPowerValue
-        let charging = battery[kIOPSIsChargingKey] as? Bool ?? false
-        let charged = battery[kIOPSIsChargedKey] as? Bool ?? false
-        let state: BatteryState = charging ? .charging : !onMains ? .discharging : charged ? .full : .notCharging
+        let saving = ProcessInfo.processInfo.isLowPowerModeEnabled
+        let battery = Self.internalBattery()
+        let current = battery?[kIOPSCurrentCapacityKey] as? Double ?? 0
+        let maximum = battery?[kIOPSMaxCapacityKey] as? Double ?? 0
         core.setBatteryInfo(HostBatteryInfo(
-            chargeLevel: maximum > 0 ? min(max(current / maximum, 0), 1) : 0,
-            state: state,
-            powerSource: onMains ? .ac : .battery,
-            energySaverStatus: saver))
+            present: battery != nil, level: maximum > 0 ? current / maximum : 0,
+            charging: battery?[kIOPSIsChargingKey] as? Bool ?? false,
+            onMains: battery.map { $0[kIOPSPowerSourceStateKey] as? String == kIOPSACPowerValue } ?? true,
+            full: battery?[kIOPSIsChargedKey] as? Bool ?? false, saving: saving))
     }
 
     private func report(_ path: NWPath) {
