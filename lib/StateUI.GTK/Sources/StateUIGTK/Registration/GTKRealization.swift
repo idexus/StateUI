@@ -29,6 +29,7 @@ enum GTKRealization {
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "title"),
+        .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
         .complete("Page", "appearing"),

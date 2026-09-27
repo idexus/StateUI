@@ -31,6 +31,7 @@ enum AndroidRealization {
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .partial("VisualElement", "accessibilityHeadingLevel", missing: "Android marks a heading, not its level: every level is a heading."),
+        .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
         .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
@@ -56,6 +57,7 @@ enum AndroidRealization {
         .complete("Scene", "stopped"),
         .complete("Span", "fontSize"),
         .complete("Span", "text"),
+        .complete("SplitView", "isSidebarVisible"),
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),

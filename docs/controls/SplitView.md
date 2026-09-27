@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ◐ |  | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | · | ⏸ | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: waits on SplitView.isSidebarVisible, not realized yet; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ◐ | 🪞 | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; WinUI 3: a run of other sources said: ✅ |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | · | 🪞 | ⌛ |  |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

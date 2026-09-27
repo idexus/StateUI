@@ -31,6 +31,7 @@ enum UIKitRealization {
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
+        .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
@@ -75,6 +76,7 @@ enum UIKitRealization {
         .complete("Window", "deactivated"),
         .complete("Window", "destroying"),
         .complete("Window", "modalPopped"),
+        .complete("Window", "resumed"),
         .complete("Window", "stopped"),
         .complete("Window", "title"),
     ]

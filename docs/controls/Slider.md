@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (73) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 32 ✅ · 1 ☑️ | `NSSlider` |  |
-| UIKit | ✅ | 29 ✅ | `UISlider` |  |
-| Android Views | ✅ | 54 ✅ | `SeekBar` |  |
+| AppKit | ✅ | 33 ✅ · 1 ☑️ | `NSSlider` |  |
+| UIKit | ✅ | 30 ✅ | `UISlider` |  |
+| Android Views | ✅ | 55 ✅ | `SeekBar` |  |
 | WinUI 3 | ⌛ |  | `Slider` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkScale` | no run of it on these sources |
 | Web |  |  | `<input type=range>` | no host yet |
@@ -46,7 +46,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: ✅ |
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
@@ -73,7 +73,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scale of Slider: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Slider: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleX of Slider: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Slider: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleY of Slider: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Slider: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
-| `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
 | `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationX of Slider: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Slider: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationY of Slider: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Slider: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `unfocus` | act | `() -> Void` |  | ✅ | · | · | ⌛ |  |  | UIKit: cannot focus Slider: it takes no keyboard focus here; Android Views: cannot focus Slider: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |

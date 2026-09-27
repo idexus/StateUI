@@ -157,7 +157,8 @@ final class AppKitDriver: HostDriver {
             return lanes.count >= 2 ? ClockTime(hour: Int(lanes[0]), minute: Int(lanes[1])).propValue : nil
         case (.currentPage, let tabs as AppKitTabbedView): return tabs.selectedIndexForTesting.propValue
         case (.isSidebarVisible, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
-        case (.isVisible, let view?): return (!view.isHidden).propValue
+        // Shown: in a window, and neither it nor any view it stands in hidden.
+        case (.isVisible, let view?): return (view.window != nil && !view.isHiddenOrHasHiddenAncestor).propValue
         case (.opacity, let view?): return Double(view.alphaValue).propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue

@@ -18,6 +18,9 @@ extension AndroidDriver {
         switch (act, view) {
         case (.activate, let button as AndroidButtonView): button.click()
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
+        case (.toggle, let split as AndroidSplitView):
+            // The scrim's tap hides the sidebar, the bar's button shows it: both the host's own entry.
+            (element.native as? AndroidElement)?.changeSidebarVisibility(to: !split.isPresented)
         case (.type(let words), let field as AndroidTextFieldView): Self.type(words, into: field)
         case (.submit, let field as AndroidTextFieldView):
             // The keyboard's own action, as the field's return key says it: done, or search for a search field.

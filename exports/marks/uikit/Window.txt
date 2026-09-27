@@ -1,4 +1,4 @@
-# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
+# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
 ModalStack: ✅
 Window: ✅
 Window.activated: ✅
@@ -16,8 +16,8 @@ Window.maximumWidth: not realized
 Window.minimumHeight: not realized
 Window.minimumWidth: not realized
 Window.modalPopped: ✅
-Window.resumed: not realized
-Window.stopped: waits on Window.resumed
+Window.resumed: 🪞 minimize on Window: the host told the scene's phase, no scene moved
+Window.stopped: 🪞 minimize on Window: the host told the scene's phase, no scene moved
 Window.title: ✅
 Window.width: not realized
 Window.windowType: not realized

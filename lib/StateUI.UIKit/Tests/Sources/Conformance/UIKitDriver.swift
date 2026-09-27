@@ -267,7 +267,9 @@ final class UIKitDriver: HostDriver {
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as UIKitWebView): return web.customUserAgent.propValue
-        case (.isVisible, let view?): return (!view.isHidden).propValue
+        // Shown: in a window, and neither it nor any view it stands in hidden.
+        case (.isVisible, let view?):
+            return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
         case (.isEnabled, let label as UILabel): return label.isEnabled.propValue

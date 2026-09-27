@@ -21,6 +21,7 @@ extension AndroidDriver {
         case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
         case (.progress, let bar as AndroidProgressBarView): return bar.progress.propValue
+        case (.isSidebarVisible, let split as AndroidSplitView): return split.isPresented.propValue
         case (.isRunning, let spinner as AndroidActivityIndicatorView):
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
@@ -42,7 +43,7 @@ extension AndroidDriver {
             // The title's row stands first: it is no choice.
             return (Int(Java.callInt(picker.reference, Self.getSelectedItemPosition)) - 1).propValue
         case (.fontFamily, _ as AndroidTextView):
-            throw DriverCannot("read a family: Android's typeface keeps no family's name")
+            throw DriverCannot("read a family", because: "Android's typeface keeps no family's name")
         case (_, let view?):
             if let held = try Self.viewHolds(property, view) { return held }
             throw DriverCannot(reading: property, of: element)
@@ -56,7 +57,8 @@ extension AndroidDriver {
         let reference = view.reference
         let float = { (method: jmethodID) in Double(Java.callFloat(reference, method)) }
         switch property {
-        case .isVisible: return (Java.callInt(reference, JavaAPI.getVisibility) == 0).propValue
+        // Shown: attached to a window, and neither it nor any view it stands in hidden.
+        case .isVisible: return Java.callBool(reference, isShown).propValue
         case .opacity: return float(getAlpha).propValue
         case .isEnabled: return Java.callBool(reference, isEnabled).propValue
         case .translationX: return (float(getTranslationX) / 2).propValue
@@ -85,12 +87,13 @@ extension AndroidDriver {
         case .automationExcludedWithChildren:
             return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
         case .accessibilityHeadingLevel:
-            throw DriverCannot("read a heading's level: Android marks a heading, not its level")
+            throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
         default: return nil
         }
     }
 
 
+    static let isShown = Java.method(JavaAPI.view, "isShown", "()Z")
     static let getTranslationX = Java.method(JavaAPI.view, "getTranslationX", "()F")
     static let getTranslationY = Java.method(JavaAPI.view, "getTranslationY", "()F")
     static let getRotation = Java.method(JavaAPI.view, "getRotation", "()F")

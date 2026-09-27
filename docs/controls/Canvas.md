@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (70) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 25 ✅ · 1 ☑️ | custom `NSView` drawing |  |
-| UIKit | ✅ | 24 ✅ | `UIView` `draw(_:)` |  |
-| Android Views | ✅ | 53 ✅ | `View` `onDraw(Canvas)` |  |
+| AppKit | ✅ | 26 ✅ · 1 ☑️ | custom `NSView` drawing |  |
+| UIKit | ✅ | 25 ✅ | `UIView` `draw(_:)` |  |
+| Android Views | ✅ | 54 ✅ | `View` `onDraw(Canvas)` |  |
 | WinUI 3 | ⌛ |  | Direct2D in a `SurfaceImageSource` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkDrawingArea` | no run of it on these sources |
 | Web |  |  | `<canvas>` | no host yet |
@@ -44,7 +44,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: ✅ |
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scale of Canvas: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Canvas: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleX of Canvas: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Canvas: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleY of Canvas: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Canvas: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
-| `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
 | `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationX of Canvas: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Canvas: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationY of Canvas: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Canvas: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `unfocus` | act | `() -> Void` |  | · | · | · | ⌛ |  |  | cannot focus Canvas: it takes no keyboard focus here; UIKit: cannot focus Canvas: it takes no keyboard focus here; Android Views: cannot focus Canvas: it takes no keyboard focus here; WinUI 3: a run of other sources said: ✅ |

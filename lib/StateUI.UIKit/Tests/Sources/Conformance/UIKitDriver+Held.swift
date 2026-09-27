@@ -26,7 +26,7 @@ extension UIKitDriver {
         case .automationExcludedWithChildren:
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeadingLevel:
-            throw DriverCannot("read a heading's level: UIKit marks a heading, not its level")
+            throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .fontSize, .fontAttributes, .fontFamily, .textColor, .characterSpacing, .lineHeight, .textDecorations:
             return try words(property, view)
         case .background:

@@ -12,7 +12,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | · |  | structure | cannot type into a field with no editor - AppKit's driver has no path for it yet |
+| AppKit | ✅ |  | structure |  |
 | UIKit | ✅ |  | structure |  |
 | Android Views | ✅ |  | structure |  |
 | WinUI 3 | ⌛ |  | structure | a run of other sources said: ✅ |

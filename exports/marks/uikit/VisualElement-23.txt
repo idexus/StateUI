@@ -1,4 +1,4 @@
-# inputs f57dc3f9a101ea2537b598c47b5d9af7f90f3dda
+# inputs e226b5a6f56f6af6cc0b3d28d31231ec6ff888ac
 ActivityIndicator.scaleX: 🪞 read scaleX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.rotationX: 🪞 read rotationX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotX: 🪞 read pivotX of Canvas: the host's own transform, checked against the layer it composed itself

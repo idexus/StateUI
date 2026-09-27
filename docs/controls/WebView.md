@@ -13,8 +13,8 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (77) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
-| UIKit | ✅ | 33 ✅ | `WKWebView` |  |
-| Android Views | ✅ | 54 ✅ | `WebView` |  |
+| UIKit | ✅ | 34 ✅ | `WKWebView` |  |
+| Android Views | ✅ | 55 ✅ | `WebView` |  |
 | WinUI 3 | ⌛ |  | `WebView2` | a run of other sources said: not realized |
 | GTK 4 |  |  | WebKitGTK `WebKitWebView` | no run of it on these sources |
 | Web |  |  | `<iframe>` (?) | no host yet |
@@ -51,7 +51,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  | · | · | ⌛ |  |  | not realized; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  | · | · | ⌛ |  |  | not realized; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: not realized |
 | `accessibilityHint` | property | `String` | native |  | ✅ | ✅ | ⌛ |  |  | not realized; WinUI 3: a run of other sources said: not realized |
 | `accessibilityLabel` | property | `String` | native |  | ✅ | ✅ | ⌛ |  |  | not realized; WinUI 3: a run of other sources said: not realized |
 | `automationExcludedWithChildren` | property | `Bool` | native |  | ✅ | ✅ | ⌛ |  |  | not realized; WinUI 3: a run of other sources said: not realized |
@@ -78,7 +78,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `scale` | property | `Double` | native |  | 🪞 | ✅ | ⌛ |  |  | not realized; UIKit: only through the host's own: read scale of WebView: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
 | `scaleX` | property | `Double` | native |  | 🪞 | ✅ | ⌛ |  |  | not realized; UIKit: only through the host's own: read scaleX of WebView: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
 | `scaleY` | property | `Double` | native |  | 🪞 | ✅ | ⌛ |  |  | not realized; UIKit: only through the host's own: read scaleY of WebView: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
-| `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `style` | property | `Name` | structure |  | ✅ | ✅ | ⌛ |  |  | not realized; WinUI 3: a run of other sources said: not realized |
 | `translationX` | property | `Double` | native |  | 🪞 | ✅ | ⌛ |  |  | not realized; UIKit: only through the host's own: read translationX of WebView: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
 | `translationY` | property | `Double` | native |  | 🪞 | ✅ | ⌛ |  |  | not realized; UIKit: only through the host's own: read translationY of WebView: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: not realized |
 | `unfocus` | act | `() -> Void` |  |  | ✅ | · | ⌛ |  |  | not realized; Android Views: cannot focus WebView: it takes no keyboard focus here; WinUI 3: a run of other sources said: not realized |

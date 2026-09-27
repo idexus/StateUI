@@ -1,4 +1,4 @@
-# inputs 8c0b0b2b47e05dff0599d4426183f7dc733f62c9
+# inputs 31fe5616e35075a08f7f87131713ce0716405691
 ActivityIndicator.rotationX: 🪞 read rotationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.pivotX: 🪞 read pivotX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.automationExcludedWithChildren: ✅

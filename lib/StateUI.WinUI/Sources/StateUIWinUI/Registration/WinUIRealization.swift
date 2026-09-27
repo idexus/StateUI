@@ -28,6 +28,7 @@ enum WinUIRealization {
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "title"),
+        .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),

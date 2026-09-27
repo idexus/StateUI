@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 29 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
-| UIKit | ✅ | 41 ✅ | `UITextField` |  |
-| Android Views | ✅ | 58 ✅ | `EditText` |  |
+| AppKit | ✅ | 30 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
+| UIKit | ✅ | 42 ✅ | `UITextField` |  |
+| Android Views | ✅ | 59 ✅ | `EditText` |  |
 | WinUI 3 | ⌛ |  | `TextBox` / `PasswordBox` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkEntry` / `GtkPasswordEntry` | no run of it on these sources |
 | Web |  |  | `<input>` | no host yet |
@@ -44,7 +44,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level: AppKit marks a heading, not its level - AppKit's driver has no path for it yet; UIKit: cannot read a heading's level: UIKit marks a heading, not its level - UIKit's driver has no path for it yet; Android Views: cannot read a heading's level: Android marks a heading, not its level - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ⌛ |  |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: ✅ |
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
@@ -71,7 +71,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `scale` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scale of TextField: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of TextField: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of TextField: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `scaleY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read scaleY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of TextField: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
-| `style` | property | `Name` | structure |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
+| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: not realized |
 | `translationX` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TextField: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `translationY` | property | `Double` | native | 🪞 | 🪞 | ✅ | ⌛ |  |  | only through the host's own: read translationY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TextField: the host's own transform, checked against the layer it composed itself; WinUI 3: a run of other sources said: ✅ |
 | `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ⌛ |  |  | WinUI 3: a run of other sources said: ✅ |
@@ -160,7 +160,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | · | ✅ | ✅ | ⌛ |  |  | cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | · | ✅ | · | ⌛ |  |  | cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; Android Views: cannot read a family: Android's typeface keeps no family's name - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `fontFamily` | property | `Name` | native | · | ✅ | · | ⌛ |  |  | cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; Android Views: cannot read a family - Android's typeface keeps no family's name; WinUI 3: a run of other sources said: ✅ |
 | `fontSize` | property | `Double` | native | · | ✅ | ✅ | ⌛ |  |  | cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)

@@ -104,6 +104,7 @@
         do {
             try each.body(session)
         } catch let cannot as DriverCannot where session.failures == 0 {
+            if let because = cannot.because { return .cannot("\(cannot) - \(because)") }
             if let reason = driver.reason(cannot: cannot.ability) { return .cannot("\(cannot) - \(reason)") }
             session.fail("the driver cannot \(cannot), and says nothing of why")
         } catch let unprovable as Session.Unprovable where session.failures == 0 {
