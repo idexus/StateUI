@@ -95,6 +95,7 @@
                 // A page arrives before the next is asked for: one asked for while the first still loads takes its
                 // place, as in any browser, and leaves no way back to it.
                 s.settle { !arrived.values.isEmpty }
+                s.expect(arrived.values.isEmpty, false, "the first page arrived")
 
                 try s.perform(.activate, on: s.element("second"))
                 s.settle { heard.values.contains("back true") }

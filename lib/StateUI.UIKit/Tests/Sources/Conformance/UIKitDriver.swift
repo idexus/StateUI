@@ -90,9 +90,11 @@ final class UIKitDriver: HostDriver {
         renderer = nil
     }
 
+    /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
+    /// process of its own takes on a busy Mac.
     func step() {
         guard let renderer else { return }
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
         _ = renderer.runtime.core.runJobs()
         renderer.runtime.pump.turn()
         renderer.layOut()
