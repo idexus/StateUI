@@ -18,6 +18,9 @@ export interface Application {
 
     readonly hasAppKitHead: boolean;
 
+    /** Whether it has a UIKit head: `Platforms/UIKit/main.swift`. */
+    readonly hasUIKitHead: boolean;
+
     /** Whether it has an Android head: the Gradle build in `Platforms/Android`. */
     readonly hasAndroidHead: boolean;
 
@@ -58,11 +61,12 @@ function describeApplication(root: string, directory: string): Application | und
     }
 
     const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
+    const hasUIKitHead = fs.existsSync(path.join(directory, "Platforms", "UIKit", "main.swift"));
     const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
     const hasWinUIHead = fs.existsSync(path.join(directory, "Platforms", "WinUI", "main.swift"));
     const hasGTKHead = fs.existsSync(path.join(directory, "Platforms", "GTK", "main.swift"));
 
-    if (!hasAppKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead) {
+    if (!hasAppKitHead && !hasUIKitHead && !hasAndroidHead && !hasWinUIHead && !hasGTKHead) {
         return undefined;
     }
 
@@ -73,6 +77,7 @@ function describeApplication(root: string, directory: string): Application | und
         name,
         directory,
         hasAppKitHead,
+        hasUIKitHead,
         hasAndroidHead,
         hasWinUIHead,
         hasGTKHead,
@@ -84,6 +89,7 @@ function describeApplication(root: string, directory: string): Application | und
 export function hasHead(application: Application, host: Host): boolean {
     switch (host) {
     case "appkit": return application.hasAppKitHead;
+    case "uikit": return application.hasUIKitHead;
     case "android": return application.hasAndroidHead;
     case "winui": return application.hasWinUIHead;
     case "gtk": return application.hasGTKHead;

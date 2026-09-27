@@ -33,10 +33,10 @@ directory, the process, the package identifier and the Swift module
 
 ## The host
 
-The status bar shows the host - **AppKit**, **Android**, **WinUI** or **GTK**.
-Click it, or run **StateUI: Select Host**. AppKit and Android are offered on
-macOS, Android where an application has an Android head (`Platforms/Android`);
-WinUI on Windows; GTK on Linux. On a machine that runs no host the status bar
+The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI** or
+**GTK**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
+offered on macOS, UIKit and Android where an application has their head
+(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux. On a machine that runs no host the status bar
 says **no host**, a launch says why it runs nothing, and the editor and
 **StateUI: Run Tests** work as plain Swift.
 
@@ -47,7 +47,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
   Android the server compiles for Android - the Swift SDK for Android of the
   toolchain's release, `aarch64-unknown-linux-android28` - so code under
   `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
-  installed it compiles for this Mac, and a warning says so.
+  installed it compiles for this Mac, and a warning says so. As UIKit it
+  compiles for the iOS simulator - `arm64-apple-ios26.0-simulator` against
+  Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
+  resolve.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the application's
   head is built - with its bundling script where it has one, with SwiftPM
   otherwise - and started under `lldb-dap`. On Android
@@ -58,7 +61,11 @@ says **no host**, a launch says why it runs nothing, and the editor and
   `lldb-server`, which the script starts in the application's sandbox: a
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run
   Without Debugging, run it without a debugger. A second launch stops the first
-  one's log before it starts again. On WinUI `.scripts/WinUI/run-app.ps1`
+  one's log before it starts again. On UIKit `.scripts/UIKit/run-app.sh`
+  builds the head, installs it on the simulator chosen below - booted first -
+  and starts it, and its terminal follows what the application prints. StateUI:
+  Debug starts it held until `lldb-dap` attaches to its process, one of this
+  Mac's: a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
   builds the head, lays the Windows App SDK beside it and starts it, its
   terminal passing on what the application writes; no debugger attaches yet.
   On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
@@ -71,6 +78,14 @@ or run **StateUI: Select Android Device**. It offers the devices attached and
 the emulators set up; picking an emulator starts it and waits until it has
 booted. The device is remembered for the workspace, so a launch or a run of the
 tests asks only when none is chosen or the one chosen is no longer attached.
+
+## The simulator
+
+While the host is UIKit, the third status bar item shows the simulator - click
+it, or run **StateUI: Select Simulator**. It offers the iPhones and iPads of the
+iOS runtimes a head installs on, the newest first. The simulator is remembered
+for the workspace, so a launch or a run of the tests asks only when none is
+chosen or the one chosen is gone.
 
 ## The application
 
@@ -87,6 +102,9 @@ them AS THE HOST, one after another, each in a terminal of its own:
 
 - **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_APPKIT=1`, on `.build-appkit`).
+- **UIKit**: the library and each application as plain Swift, and the UIKit
+  host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
+  on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
 - **Android**: the library and each application as plain Swift - an Android
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI.Android/Tests`, built into a test APK and run on the device
@@ -105,7 +123,7 @@ failed.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build`, `.build-android/index-build`,
+own, `.build-appkit/index-build`, `.build-uikit/index-build`, `.build-android/index-build`,
 `.build-winui/index-build` or `.build-gtk/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
@@ -125,6 +143,9 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
 - For AppKit: macOS 26 or newer and the `lldb-dap` extension.
+- For UIKit: macOS with Xcode and an iOS 26 or newer simulator, a StateUI
+  checkout, whose `.scripts/UIKit` builds and runs the head, and the `lldb-dap`
+  extension.
 - For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds
   and runs the head; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)

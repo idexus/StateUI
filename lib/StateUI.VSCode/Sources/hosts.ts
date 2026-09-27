@@ -5,7 +5,7 @@
 // editor - one host's.
 
 /** A host an application is built for and run on. */
-export type Host = "appkit" | "android" | "winui" | "gtk";
+export type Host = "appkit" | "uikit" | "android" | "winui" | "gtk";
 
 /** What the extension knows about one host. */
 export interface HostDescription {
@@ -36,10 +36,13 @@ export interface HostDescription {
         readonly triple: string;
 
         /** What names the Swift SDK in its id: `android` in `swift-6.4.0-RELEASE_android`. */
-        readonly swiftSDK: string;
+        readonly swiftSDK?: string;
 
         /** Where that Swift SDK is installed from. */
-        readonly swiftSDKGuide: string;
+        readonly swiftSDKGuide?: string;
+
+        /** Or the SDK Xcode ships for the platform, by its name for `xcrun --sdk`: `iphonesimulator`. */
+        readonly xcodeSDK?: string;
     };
 
     /** The machines that build and run this host's heads. */
@@ -49,6 +52,11 @@ export interface HostDescription {
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
     { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build-appkit/index-build", platforms: ["darwin"] },
+    {
+        id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process", variable: "STATEUI_UIKIT",
+        indexPath: ".build-uikit/index-build", platforms: ["darwin"],
+        target: { triple: "arm64-apple-ios26.0-simulator", xcodeSDK: "iphonesimulator" },
+    },
     {
         id: "android", label: "Android", detail: "Android Views, in the application's own process", variable: "STATEUI_ANDROID",
         indexPath: ".build-android/index-build", platforms: ["darwin"],
@@ -67,7 +75,7 @@ export const hosts: readonly HostDescription[] = [
  */
 export const plainIndexPath = ".build/index-build";
 
-/** The hosts this machine builds and runs - AppKit and Android on macOS, WinUI on Windows, GTK on Linux. */
+/** The hosts this machine builds and runs - AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux. */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
     return hosts.filter((each) => each.platforms.includes(platform));
 }

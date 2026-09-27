@@ -10,6 +10,7 @@ import * as vscode from "vscode";
 import { findApplications } from "./applications";
 import { androidScript } from "./devices";
 import { describe, environment, Host } from "./hosts";
+import { uiKitScript } from "./simulators";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */
@@ -20,7 +21,10 @@ export interface Suite {
     readonly args: readonly string[];
     readonly env: Record<string, string>;
 
-    /** Whether it runs on an Android device, whose serial ends its arguments once one is chosen. */
+    /**
+     * Whether it runs on the host's device - an Android device, a simulator for UIKit - whose serial or UDID ends
+     * its arguments once one is chosen.
+     */
     readonly onDevice?: boolean;
 }
 
@@ -35,6 +39,9 @@ export interface Suite {
  *   running only on a device, and the host's own tests -
  *   `lib/StateUI.Android/Tests` - run on the device chosen, by
  *   `.scripts/Android/test-android.sh`.
+ * - For the UIKit host an application runs as plain Swift, and the host's own
+ *   tests - an application, `lib/StateUI.UIKit/Tests` - run on the simulator
+ *   chosen, by `.scripts/UIKit/test-uikit.sh`.
  * - For the WinUI host an application runs as plain Swift, and the host's own
  *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
  *   App SDK beside its test runner first.
@@ -58,7 +65,7 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
 
         // A label reads the same on every platform: a path written with forward slashes.
         const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
-        const hostPackage = path.basename(directory).match(/\.(AppKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
+        const hostPackage = path.basename(directory).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
@@ -90,10 +97,18 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
         });
     }
 
+    const uiKitTests = uiKitScript(root, "test-uikit.sh");
+    if (host === "uikit" && fs.existsSync(uiKitTests)) {
+        suites.push({
+            label: "lib/StateUI.UIKit/Tests", detail: "test-uikit.sh - the UIKit host's own tests, on the simulator chosen",
+            command: "bash", args: [uiKitTests], env: {}, onDevice: true,
+        });
+    }
+
     return suites;
 }
 
-/** `suite` run on the Android device `serial`, where it runs on one. */
+/** `suite` run on the device `serial` - an Android device's serial, a simulator's UDID - where it runs on one. */
 export function forDevice(suite: Suite, serial: string): Suite {
     return suite.onDevice ? { ...suite, args: [...suite.args, serial] } : suite;
 }

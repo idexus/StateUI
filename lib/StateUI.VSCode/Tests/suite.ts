@@ -15,6 +15,7 @@ import * as vscode from "vscode";
 import { findApplications, hasHead } from "../Sources/applications";
 import { StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
+import { parseSimulators } from "../Sources/simulators";
 import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts } from "../Sources/hosts";
@@ -70,8 +71,14 @@ export async function run(): Promise<void> {
         const root = vscode.workspace.workspaceFolders![0];
         const gallery = path.join(root.uri.fsPath, "apps", "Gallery");
         const plain = path.join(gallery, "Sources", "Samples", "BasicInput", "SliderSample.swift");
-        const conditional = path.join(gallery, "Sources", "Samples", "Interop", "Cube3DSample.swift");
+        // A head's own view exists only while the editor works as that host: its target is declared for it alone. A
+        // member under an inactive `#if` resolves all the same - the server reads it through its type.
+        const appKitOnly = (): Promise<boolean> =>
+            resolves(path.join(gallery, "Platforms", "AppKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
+        const uiKitOnly = (): Promise<boolean> =>
+            resolves(path.join(gallery, "Platforms", "UIKit", "Host", "GalleryControls.swift"), "MetalCube3DView.register");
         const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCube3DView.swift");
+        const uiKitHead = path.join(gallery, "Platforms", "UIKit", "Host", "MetalCube3DView.swift");
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
@@ -81,22 +88,24 @@ export async function run(): Promise<void> {
             // 1. Android: the plain symbol resolves, the AppKit one does not.
             await api.selectHost("android");
             await until("android: a symbol under no condition resolves", () => resolves(plain, "Palette.accent"), 900);
-            check("android: Cube3D under #if APPKIT || GTK does not resolve",
-                !(await resolves(conditional, "Cube3D()", "var content: any View")));
+            await until("android: neither head's own view resolves", async () => !(await appKitOnly()) && !(await uiKitOnly()), 900);
 
             // 2. AppKit, with no reload: the conditional symbol and the head resolve.
             await api.selectHost("appkit");
-            await until("appkit: Cube3D under #if APPKIT || GTK resolves",
-                () => resolves(conditional, "Cube3D()", "var content: any View"), 900);
+            await until("appkit: its head's own view resolves", appKitOnly, 900);
             // A target the package did not have a moment ago: the server has to
             // load it, so this is waited for rather than asked once.
             await until("appkit: Cube3DContract in Platforms/AppKit resolves", () => resolves(head, "Cube3DContract.self"), 900);
 
+            // 2b. UIKit, compiled for the iOS simulator by the triple alone: its head resolves, the AppKit symbol not.
+            await api.selectHost("uikit");
+            await until("uikit: Cube3DContract in Platforms/UIKit resolves", () => resolves(uiKitHead, "Cube3DContract.self"), 900);
+            await until("uikit: its head's own view resolves, and AppKit's does not", async () => (await uiKitOnly()) && !(await appKitOnly()), 900);
+
             // 3. And back, still with no reload.
             await api.selectHost("android");
-            await until("android again: Cube3D stops resolving while the plain symbol does", async () =>
-                (await resolves(plain, "Palette.accent"))
-                && !(await resolves(conditional, "Cube3D()", "var content: any View")), 900);
+            await until("android again: the heads' views stop resolving while the plain symbol does", async () =>
+                (await resolves(plain, "Palette.accent")) && !(await appKitOnly()) && !(await uiKitOnly()), 900);
         } else {
             say("skip the language server as AppKit and Android: only macOS builds those hosts");
         }
@@ -105,8 +114,8 @@ export async function run(): Promise<void> {
         //    on Windows, GTK on Linux, and no .NET MAUI. A launch on a machine
         //    that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "android"])
+        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and never .NET MAUI",
+            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
             && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk"])
             && availableHosts("freebsd").length === 0
@@ -119,6 +128,7 @@ export async function run(): Promise<void> {
                 start: async (task) => { ran.push(task.name); },
                 ready: async () => false,
                 device: async () => undefined,
+                simulator: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -145,7 +155,8 @@ export async function run(): Promise<void> {
             hosts.every((host) => {
                 const values = environment(host.id);
                 const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
-                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_GTK", "STATEUI_WINUI"])
+                return JSON.stringify(Object.keys(values).sort())
+                    === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_GTK", "STATEUI_UIKIT", "STATEUI_WINUI"])
                     && JSON.stringify(set) === JSON.stringify([[host.variable, "1"]]);
             }) && environment("android").STATEUI_ANDROID === "1"
             && Object.values(environment(undefined)).every((value) => value === undefined));
@@ -209,6 +220,7 @@ export async function run(): Promise<void> {
                     },
                     ready: async (file) => fs.existsSync(file),
                     device: async () => serial,
+                    simulator: async () => undefined,
                 });
                 const resolved = await provider.resolveDebugConfiguration(root, {
                     name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
@@ -268,6 +280,92 @@ export async function run(): Promise<void> {
                 && [onDevice[0].command, ...onDevice[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "test-android.sh")} emulator-5554`
                 && !appkitSuites.includes("lib/StateUI.Android/Tests"));
         }
+        // 6a. UIKit: the language server's file, the simulators, and the
+        //     commands a launch and a suite run - captured, not run.
+        {
+            const simulatorSDK = "/Xcode/SDKs/iPhoneSimulator.sdk";
+            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build-appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
+            const back = serverConfig(uiKit, serverSettings("appkit", undefined));
+            check("as UIKit the language server indexes in .build-uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
+                uiKit.swiftPM?.scratchPath === ".build-uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
+                && uiKit.swiftPM?.sdk === simulatorSDK && !("swiftSDK" in uiKit.swiftPM!)
+                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
+            check("with no simulator SDK found UIKit indexes for this Mac",
+                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build-uikit/index-build" }));
+        }
+        check("simctl's list reads as the iOS simulators a head installs on, the newest runtime first",
+            JSON.stringify(parseSimulators(JSON.stringify({ devices: {
+                "com.apple.CoreSimulator.SimRuntime.iOS-18-2": [{ udid: "OLD", name: "iPhone 16", state: "Shutdown" }],
+                "com.apple.CoreSimulator.SimRuntime.iOS-26-0": [{ udid: "A", name: "iPhone 17", state: "Shutdown" }],
+                "com.apple.CoreSimulator.SimRuntime.iOS-27-0": [
+                    { udid: "B", name: "iPhone 18 Pro", state: "Booted" }, { udid: "C", name: "iPad Air 13-inch (M4)", state: "Shutdown" }],
+                "com.apple.CoreSimulator.SimRuntime.watchOS-12-0": [{ udid: "W", name: "Apple Watch", state: "Shutdown" }],
+            } })))
+            === JSON.stringify([
+                { udid: "B", name: "iPhone 18 Pro", runtime: "27.0", booted: true },
+                { udid: "C", name: "iPad Air 13-inch (M4)", runtime: "27.0", booted: false },
+                { udid: "A", name: "iPhone 17", runtime: "26.0", booted: false },
+            ]) && parseSimulators("not json").length === 0);
+        {
+            const helloWorldHere = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
+            check("HelloWorld and the Gallery have UIKit heads", hasHead(helloWorldHere, "uikit") && hasHead(gallery_, "uikit"));
+            const facts = path.join(helloWorldHere.directory, ".build-uikit", "debugger.json");
+            const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
+                const started: vscode.Task[] = [];
+                const provider = new StateUIDebugConfigurationProvider({
+                    host: () => "uikit", application: async () => helloWorldHere,
+                    run: async () => 0,
+                    start: async (task) => {
+                        started.push(task);
+                        if (configuration === "debug" && starts) {
+                            fs.mkdirSync(path.dirname(facts), { recursive: true });
+                            fs.writeFileSync(facts, JSON.stringify({ process: 4343 }));
+                        }
+                    },
+                    ready: async (file) => fs.existsSync(file),
+                    device: async () => undefined,
+                    simulator: async () => udid,
+                });
+                const resolved = await provider.resolveDebugConfiguration(root, {
+                    name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
+                    request: "launch", configuration,
+                });
+                fs.rmSync(facts, { force: true });
+                const shell = started[0]?.execution as vscode.ShellExecution | undefined;
+                return { resolved, started, line: shell ? [shell.command, ...(shell.args ?? [])].map(String).join(" ") : "" };
+            };
+            const script = path.join(root.uri.fsPath, ".scripts", "UIKit", "run-app.sh");
+
+            const released = await launchOnUIKit("SIM-1");
+            say(`     uikit started: ${released.line}`);
+            check("UIKit: run-app.sh <HelloWorld> release <udid> started as a task on that simulator, and no session",
+                released.resolved === undefined && released.started.length === 1
+                && released.line === `bash ${script} ${helloWorldHere.directory} release SIM-1`
+                && released.started[0].definition.device === "SIM-1");
+
+            const declined = await launchOnUIKit(undefined);
+            check("UIKit with no simulator picked starts nothing", declined.resolved === undefined && declined.started.length === 0);
+
+            const debugged = await launchOnUIKit("SIM-1", "debug");
+            say(`     uikit debugged: ${JSON.stringify(debugged.resolved)}`);
+            check("UIKit Debug: run-app.sh ... debug <udid> --debugger, then lldb-dap attached to the process it started",
+                debugged.line === `bash ${script} ${helloWorldHere.directory} debug SIM-1 --debugger`
+                && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach" && debugged.resolved.pid === 4343);
+
+            const failed = await launchOnUIKit("SIM-1", "debug", false);
+            check("UIKit Debug whose application never starts opens no session", failed.resolved === undefined && failed.started.length === 1);
+        }
+        {
+            const uiKitSuites = findSuites(root.uri.fsPath, "uikit");
+            say(`uikit suites: ${uiKitSuites.map((each) => each.label).join(", ")}`);
+            const onSimulator = uiKitSuites.filter((each) => each.onDevice).map((each) => forDevice(each, "SIM-1"));
+            check("uikit runs the core and the Gallery as plain Swift, and test-uikit.sh <udid> on the simulator",
+                uiKitSuites.some((each) => each.label === "StateUI")
+                && onSimulator.length === 1 && onSimulator[0].label === "lib/StateUI.UIKit/Tests"
+                && [onSimulator[0].command, ...onSimulator[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "UIKit", "test-uikit.sh")} SIM-1`
+                && !uiKitSuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+        }
+
         // 6b. WinUI: HelloWorld's head, a launch through run-app.ps1 with no
         //     session yet, and the host's own package through test-winui.ps1.
         check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build-winui/index-build",
@@ -281,6 +379,7 @@ export async function run(): Promise<void> {
                 start: async (task) => { started.push(task); },
                 ready: async () => false,
                 device: async () => undefined,
+                simulator: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
@@ -314,6 +413,7 @@ export async function run(): Promise<void> {
                 start: async () => {},
                 ready: async () => false,
                 device: async () => undefined,
+                simulator: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
@@ -337,8 +437,9 @@ export async function run(): Promise<void> {
         }
 
         const palette = await vscode.commands.getCommands(true);
-        check("the palette has Select Android Device, and no Select Debugger",
-            palette.includes("stateui.selectAndroidDevice") && !palette.includes("stateui.selectDebugger"));
+        check("the palette has Select Android Device and Select Simulator, and no Select Debugger",
+            palette.includes("stateui.selectAndroidDevice") && palette.includes("stateui.selectSimulator")
+            && !palette.includes("stateui.selectDebugger"));
 
         // 7. A new application is HelloWorld renamed in a checkout's apps/,
         //    by the checkout's scaffolder - the only starter.
@@ -388,6 +489,31 @@ export async function run(): Promise<void> {
             const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
             await vscode.debug.stopDebugging(running);
+
+            // And on the iOS simulator: run-app.sh starts HelloWorld held, and lldb-dap attaches and lets it run.
+            const iPhone = parseSimulators(execSync("xcrun simctl list devices available -j").toString())
+                .find((each) => each.name.startsWith("iPhone"));
+            check("an iPhone simulator is available", iPhone !== undefined);
+            await api.selectHost("uikit");
+            await api.selectApplication("HelloWorld");
+            await api.selectSimulator(iPhone!.udid, iPhone!.name);
+            const attached = new Promise<vscode.DebugSession>((resolve) => {
+                const listener = vscode.debug.onDidStartDebugSession((each) => {
+                    if (each.type === "lldb-dap") {
+                        listener.dispose();
+                        resolve(each);
+                    }
+                });
+            });
+            check("StateUI: Debug starts on UIKit", await vscode.debug.startDebugging(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+            const onSimulator = await Promise.race([attached, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
+            check("an lldb-dap session attaches to HelloWorldUIKit's process", typeof onSimulator?.configuration.pid === "number");
+            await new Promise((resume) => setTimeout(resume, 4000));
+            const onDevice = (() => { try { return execSync(`pgrep -f ${iPhone!.udid}.*HelloWorldUIKit`).toString().trim().length > 0; } catch { return false; } })();
+            check("the HelloWorldUIKit process runs on the simulator", onDevice);
+            await vscode.debug.stopDebugging(onSimulator);
+            execSync(`xcrun simctl terminate ${iPhone!.udid} com.stateui.helloworld || true`);
         } else if (process.platform === "win32") {
             await api.selectHost("winui");
             await api.selectApplication("HelloWorld");
