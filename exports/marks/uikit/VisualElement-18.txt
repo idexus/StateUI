@@ -1,4 +1,4 @@
-# inputs b639ee46ae1c7b0b03519b4e7383dc959c16e43a
+# inputs 7152bcac8d51d8a1439a54b09e719e11d52033c6
 ActivityIndicator.pivotY: 🪞 read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: cannot read background of Button - UIKit's driver has no path for it yet
 Canvas.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level

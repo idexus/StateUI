@@ -13,7 +13,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 7 ✅ | custom `NSView` |  |
-| UIKit | ⌛ |  | `UIViewController` | a run of other sources said: ✅ |
+| UIKit | ✅ | 11 ✅ | `UIViewController` |  |
 | Android Views | ⌛ |  | custom `ViewGroup` | a run of other sources said: ✅ |
 | WinUI 3 | ⌛ |  | `Page` | a run of other sources said: ✅ |
 | GTK 4 |  |  | custom `GtkWidget` | no run of it on these sources |
@@ -25,16 +25,16 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot goBack on Window - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `backButtonTitle` | property | `String` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `background` | property | `Color` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `disappearing` | event |  | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `hasBackButton` | property | `Bool` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `hasNavigationBar` | property | `Bool` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read hasNavigationBar of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `navigatedFrom` | event |  | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `navigatedTo` | event |  | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `navigatingFrom` | event |  | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `padding` | property | `Insets` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `appearing` | event |  | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ◐ cannot goBack on Window - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `backButtonTitle` | property | `String` | adaptive | · |  | ⌛ | ⌛ |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `background` | property | `Color` | native | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `disappearing` | event |  | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `hasBackButton` | property | `Bool` | adaptive | · | ✅ | ⌛ | ⌛ |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | ⌛ | ⌛ |  |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read hasNavigationBar of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `navigatedTo` | event |  | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `navigatingFrom` | event |  | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `padding` | property | `Insets` | native | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read icon of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `title` | property | `String` | native | ◐ | ⌛ | ⌛ | ⌛ |  |  | cannot read title of Page - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read title of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | ⌛ | ⌛ |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read icon of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `title` | property | `String` | native | ◐ | ✅ | ⌛ | ⌛ |  |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read title of Page - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

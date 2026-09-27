@@ -13,7 +13,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 2 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
-| UIKit | ⌛ |  | `UITabBarController` | a run of other sources said: ✅ |
+| UIKit | ✅ | 6 ✅ | `UITabBarController` |  |
 | Android Views | ⌛ |  | Material Components `BottomNavigationView` (?) | a run of other sources said: ✅ |
 | WinUI 3 | ⌛ |  | `NavigationView` with a top pane | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | no run of it on these sources |
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | 🪞 | ⌛ | ⌛ | ⌛ |  |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `currentPageChanged` | event | `Int` | adaptive | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `currentPage` | property | `Int` | structure | 🪞 | ✅ | ⌛ | ⌛ |  |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: a run of other sources said: · cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: · cannot choose on TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ⌛ | ⌛ | ⌛ |  |  | UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ⌛ | ⌛ |  |  | Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -42,7 +42,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read barBackgroundColor of TabbedView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `barBackgroundColor` | property | `Color` | adaptive | · | ✅ | ⌛ | ⌛ |  |  | cannot read barBackgroundColor of TabbedView - AppKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -50,5 +50,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ⌛ | ⌛ | ⌛ |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read icon of TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `title` | property | `String` | native | · | ⌛ | ⌛ | ⌛ |  |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read title of TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | ⌛ | ⌛ |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read icon of TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
+| `title` | property | `String` | native | · | ✅ | ⌛ | ⌛ |  |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read title of TabbedView - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |

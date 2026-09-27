@@ -1,4 +1,4 @@
-# inputs b639ee46ae1c7b0b03519b4e7383dc959c16e43a
+# inputs 7152bcac8d51d8a1439a54b09e719e11d52033c6
 ActivityIndicator.swipeDirection: 🪞 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swipeThreshold: 🪞 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.swiped: 🪞 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent

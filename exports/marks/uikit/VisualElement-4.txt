@@ -1,4 +1,4 @@
-# inputs b639ee46ae1c7b0b03519b4e7383dc959c16e43a
+# inputs 7152bcac8d51d8a1439a54b09e719e11d52033c6
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.width: ✅
