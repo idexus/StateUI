@@ -15,7 +15,7 @@ final class UIKitWindowController {
     let window: UIWindow?
 
     private let root = UIKitRootViewController()
-    private let presentation = WindowPresentation()
+    let presentation = WindowPresentation()
 
     init(_ element: MountedElement, scene: UIWindowScene?) {
         guard let scene else {
@@ -35,7 +35,18 @@ final class UIKitWindowController {
         if let (_, arrangement) = changes.arrangement {
             root.show(arrangement?.uiKit.controller)
         }
+        if let overlay = changes.overlay {
+            root.lay(overlay?.uiKit.view)
+        }
+        if let sheets = changes.sheets {
+            root.onSheetDismissed = { [weak runtime, weak element] remaining in
+                guard let runtime, let element else { return }
+                runtime.goBack(.dismissSheet(remaining: remaining), in: element)
+            }
+            root.present(sheets.compactMap(\.uiKit.controller), animated: !runtime.reducesMotion())
+        }
         presentation.arrangement?.uiKit.composeChrome()
+        presentation.sheets.forEach { $0.uiKit.composeChrome() }
         let title = presentation.arrangement?.visiblePage?.value(.title)?.string
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
     }
@@ -48,18 +59,33 @@ final class UIKitWindowController {
         UIApplication.shared.requestSceneSessionDestruction(session, options: nil)
     }
 
-    /// Takes the window out of its scene, which stays.
+    /// Takes the window out of its scene, which stays: its sheets go first, heard by nobody - the tree that asked for
+    /// them is gone.
     func hide() {
+        root.letGo()
         window?.isHidden = true
         window?.windowScene = nil
     }
 }
 
 /// What a scene's window shows: the controller of the window's arrangement of pages, over the whole window - each
-/// page stands within the safe area its bars leave.
+/// page stands within the safe area its bars leave - an overlay laid over it, and the pages presented over it as
+/// sheets, each over the one before.
+/// Design: docs/design/platforms/uikit/pages.md#sheets
 @MainActor
-final class UIKitRootViewController: UIViewController {
+final class UIKitRootViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     private var shown: UIViewController?
+    private var overlay: UIView?
+
+    /// The sheets shown, the first presented by this controller, each next by the one before.
+    private var sheets: [UIViewController] = []
+
+    /// What the window does when the user took the top sheet away, handed how many stay.
+    var onSheetDismissed: ((Int) -> Void)?
+
+    /// The sheets asked for before the window stood on screen, which UIKit presents over it only once it does.
+    private var waiting: (sheets: [UIViewController], animated: Bool)?
+    private var appeared = false
 
     override func loadView() {
         view = UIView()
@@ -79,8 +105,71 @@ final class UIKitRootViewController: UIViewController {
         addChild(arrangement)
         arrangement.view.frame = view.bounds
         arrangement.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(arrangement.view)
+        view.insertSubview(arrangement.view, at: 0)
         arrangement.didMove(toParent: self)
+    }
+
+    /// Lays `overlay` over the arrangement, within the safe area, in place of the one before.
+    func lay(_ overlay: UIView?) {
+        guard overlay !== self.overlay else { return }
+        self.overlay?.removeFromSuperview()
+        self.overlay = overlay
+        if let overlay { view.addSubview(overlay) }
+        view.setNeedsLayout()
+    }
+
+    /// Presents `sheets` over the arrangement: those shown and still asked for stay, the rest go from the top, and
+    /// each new one comes over the one before once that one stands - UIKit presents over a controller only then.
+    func present(_ sheets: [UIViewController], animated: Bool) {
+        guard appeared else { return waiting = (sheets, animated) }
+        var common = 0
+        while common < self.sheets.count, common < sheets.count, self.sheets[common] === sheets[common] { common += 1 }
+        let coming = Array(sheets[common...])
+        guard common < self.sheets.count else { return presentEach(coming, animated: animated) }
+        let presenter = common == 0 ? self : self.sheets[common - 1]
+        self.sheets = Array(self.sheets.prefix(common))
+        presenter.dismiss(animated: animated && coming.isEmpty) { [weak self] in
+            self?.presentEach(coming, animated: animated)
+        }
+    }
+
+    private func presentEach(_ coming: [UIViewController], animated: Bool) {
+        guard let sheet = coming.first else { return }
+        let presenter = sheets.last ?? self
+        sheet.modalPresentationStyle = .pageSheet
+        sheet.presentationController?.delegate = self
+        sheets.append(sheet)
+        presenter.present(sheet, animated: animated && coming.count == 1) { [weak self] in
+            self?.presentEach(Array(coming.dropFirst()), animated: animated)
+        }
+    }
+
+    /// Tells nobody of its sheets any more: they leave with the window.
+    func letGo() {
+        onSheetDismissed = nil
+        sheets = []
+        waiting = nil
+    }
+
+    /// The user took the top sheet away - swiped it down: the window hears how many stay.
+    func presentationControllerDidDismiss(_ presentation: UIPresentationController) {
+        guard let index = sheets.firstIndex(where: { $0 === presentation.presentedViewController }) else { return }
+        sheets.removeSubrange(index...)
+        onSheetDismissed?(index)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appeared = true
+        if let (sheets, animated) = waiting {
+            waiting = nil
+            present(sheets, animated: animated)
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        overlay?.frame = view.bounds.inset(by: view.safeAreaInsets)
     }
 }
 #endif

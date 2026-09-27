@@ -106,6 +106,13 @@ extension UIKitElement {
         }
     }
 
+    /// Lets the arrangement's controller say nothing more, as the element leaves the tree.
+    func releasePages() {
+        (controller as? UIKitNavigationController)?.onPopped = nil
+        (controller as? UIKitTabBarController)?.onSelection = nil
+        (controller as? UIKitSplitViewController)?.onPresentationChanged = nil
+    }
+
     /// The user took the stack's top pages away: the stack is told how many stay, as the index of its top.
     private func userPopped(staying: Int) {
         guard let handler = element.handler(.popped) else { return }

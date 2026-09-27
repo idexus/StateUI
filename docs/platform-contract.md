@@ -102,9 +102,9 @@ host whose passing test proved one of its members.
 | `MenuBar` | structure | ✅ |  |  |  | ✅ |  |
 | `MenuItem` | structure | ✅ |  |  |  | ✅ |  |
 | `MenuSeparator` | structure | ✅ |  |  |  | ✅ |  |
-| `ModalStack` | structure | ✅ |  |  | ✅ | ✅ |  |
+| `ModalStack` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | `NavigationStack` | adaptive | ✅ | ✅ |  |  | ✅ |  |
-| `Overlay` | structure | ✅ |  |  |  | ✅ |  |
+| `Overlay` | structure | ✅ | ✅ |  |  | ✅ |  |
 | `Page` | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |
 | `Path` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Picker` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 2 ✅ |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 | 22 ✅ |  |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 29 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| [Window](controls/Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 30 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

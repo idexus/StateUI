@@ -31,6 +31,8 @@ final class UIKitElement: NativeElement {
         controller = makeController()
         view = controller.map(\.view) ?? makeView()
         if type == .page { controller = UIKitPageController(page: self) }
+        // What StateUI shows takes a press, as a label and a picture of UIKit's do not of themselves.
+        view?.isUserInteractionEnabled = true
         drawing = view.map(UIKitViewDrawing.init)
     }
 
@@ -79,6 +81,7 @@ final class UIKitElement: NativeElement {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: false)
         listening?.detach()
         listening = nil
+        releasePages()
     }
 
 }

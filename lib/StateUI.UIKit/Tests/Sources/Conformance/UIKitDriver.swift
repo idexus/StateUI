@@ -101,7 +101,9 @@ final class UIKitDriver: HostDriver {
             scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as UIKitPickerView): picker.userChose(place)
-        case (.goBack, _), (.choose, _) where NodeType.pageTypes.contains(element.type):
+        case (.goBack, _) where element.type == .window || NodeType.pageTypes.contains(element.type):
+            try performOnPages(act, on: element)
+        case (.choose, _) where NodeType.pageTypes.contains(element.type):
             try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }

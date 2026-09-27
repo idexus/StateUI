@@ -1,2 +1,5 @@
-ModalStack: not realized
-Window.modalPopped: not realized
+Button.clicked: ✅
+ModalStack: ✅
+Page.appearing: ✅
+Page.disappearing: ✅
+Window.modalPopped: ✅

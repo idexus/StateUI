@@ -60,6 +60,8 @@ extension UIKitDriver {
     func performOnPages(_ act: UserAct, on element: MountedElement) throws {
         let native = element.native as? UIKitElement
         switch act {
+        case .goBack where element.type == .window:
+            try goBack(in: element)
         case .goBack:
             guard let navigation = native?.controller as? UIKitNavigationController, navigation.viewControllers.count > 1
             else { throw DriverCannot(act, on: element) }
@@ -82,6 +84,51 @@ extension UIKitDriver {
         default:
             throw DriverCannot(act, on: element)
         }
+    }
+
+    /// The window's way back, as the user takes it: the top sheet swiped down, else the stack's back button.
+    private func goBack(in window: MountedElement) throws {
+        guard let controller = renderer?.roster.windows.first(where: { $0.0 === window })?.1 else {
+            throw DriverCannot("go back in a window the host does not show")
+        }
+        guard let way = controller.presentation.wayBack else {
+            throw DriverCannot("go back in a window offering no way back")
+        }
+        switch way {
+        case .dismissSheet:
+            // A user swipes a sheet down once UIKit shows it.
+            let asked = controller.presentation.sheets.count
+            if let root = controller.window?.rootViewController {
+                for _ in 0..<150 where Self.presented(over: root) < asked || root.transitionCoordinator != nil {
+                    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+                }
+            }
+            guard let root = controller.window?.rootViewController, let top = Self.topSheet(over: root),
+                  let presentation = top.presentationController
+            else { throw DriverCannot("go back from a sheet UIKit does not present") }
+            top.presentingViewController?.dismiss(animated: false)
+            presentation.delegate?.presentationControllerDidDismiss?(presentation)
+        case .pop(let stack):
+            try performOnPages(.goBack, on: stack)
+        }
+    }
+
+    /// How many controllers stand presented over `root`, each over the one before.
+    private static func presented(over root: UIViewController) -> Int {
+        var count = 0
+        var top = root.presentedViewController
+        while let each = top {
+            count += 1
+            top = each.presentedViewController
+        }
+        return count
+    }
+
+    /// The controller presented last over `root`.
+    private static func topSheet(over root: UIViewController) -> UIViewController? {
+        var top = root.presentedViewController
+        while let next = top?.presentedViewController { top = next }
+        return top
     }
 
     /// Every action on the bars the window shows - its buttons', and its overflow menus' entries - and whether the

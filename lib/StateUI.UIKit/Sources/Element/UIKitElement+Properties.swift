@@ -19,7 +19,11 @@ extension UIKitElement {
             return registered
         }
         guard !NodeType.viewlessTypes.contains(type) else { return nil }
-        return Self.showsUnsupported(type) ? UIKitUnsupportedView(type) : UIKitSingleChildView()
+        guard !Self.showsUnsupported(type) else { return UIKitUnsupportedView(type) }
+        let single = UIKitSingleChildView()
+        // An overlay lets a touch beside what it holds through to the page under it.
+        single.passesBeside = type == .overlay
+        return single
     }
 
     /// Whether the host shows an entry as unsupported: no registration makes it, and it is no page or arrangement of

@@ -12,7 +12,7 @@ enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator",
-        "ModalStack", "Overlay", "Pin", "PositionIndicator", "Span", "Spans",
+        "Pin", "PositionIndicator", "Span", "Spans",
         "TitleBar", "TrailingContent",
         "WebView",
     ]
@@ -49,6 +49,7 @@ enum UIKitRealization {
         .complete("TabbedView", "currentPageChanged"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
+        .complete("Window", "modalPopped"),
     ]
 
     /// What UIKit's registry says it realizes: the export's content.

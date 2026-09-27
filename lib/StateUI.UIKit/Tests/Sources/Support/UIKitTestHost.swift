@@ -49,8 +49,17 @@ extension UIKitRenderer {
         }
     }
 
-    /// Ends the host: its windows leave the tests' scene, which stays for the next, and its tree leaves.
+    /// Ends the host: its windows leave the tests' scene, which stays for the next, and its tree leaves. A sheet still
+    /// moving in the scene would stop the next window's own from coming: every sheet goes first, and UIKit is let
+    /// finish.
     func finish() {
+        for (_, controller) in roster.windows {
+            guard let root = controller.window?.rootViewController, root.presentedViewController != nil else { continue }
+            root.dismiss(animated: false)
+            for _ in 0..<100 where root.presentedViewController != nil || root.transitionCoordinator != nil {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            }
+        }
         roster.update(root: nil, make: { _ in fatalError("no window comes while finishing") }, close: { $0.hide() })
         runtime.tree.root?.leave()
         frameClock.stop()

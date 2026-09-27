@@ -1,4 +1,4 @@
-ModalStack: not realized
+ModalStack: ✅
 Window.activated: not realized
 Window.created: not realized
 Window.deactivated: not realized
@@ -13,7 +13,7 @@ Window.maximumHeight: not realized
 Window.maximumWidth: not realized
 Window.minimumHeight: not realized
 Window.minimumWidth: not realized
-Window.modalPopped: not realized
+Window.modalPopped: ✅
 Window.resumed: not realized
 Window.stopped: not realized
 Window.title: not realized

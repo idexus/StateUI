@@ -30,7 +30,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `maximumWidth` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |
 | `minimumHeight` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |
-| `modalPopped` | event | `Int` | adaptive | ✅ |  |  |  | ✅ |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet |
+| `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet |
 | `resumed` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `title` | property | `String` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read title of Window - Android's driver has no path for it yet |
