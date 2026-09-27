@@ -17,6 +17,16 @@
     /// Whether nothing changes.
     public var isEmpty: Bool { removed.isEmpty && inserted.isEmpty }
 
+    /// The removals as runs of neighbours, last first: each run is removed in one.
+    public var removedRuns: [Range<Int>] {
+        Self.runs(of: removed.reversed()).reversed()
+    }
+
+    /// The insertions as runs of neighbours, first first: each run is inserted in one.
+    public var insertedRuns: [Range<Int>] {
+        Self.runs(of: inserted)
+    }
+
     /// The changes from `old` to `new`.
     public init(from old: [String], to new: [String]) {
         let newPositions = Dictionary(new.enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
@@ -31,6 +41,19 @@
         removed = old.indices.filter { !staying.contains($0) }.reversed()
         let stayingNew = Set(staying.map { newPositions[old[$0]]! })
         inserted = new.indices.filter { !stayingNew.contains($0) }
+    }
+
+    /// Rising `positions` as runs of neighbours, in order.
+    private static func runs(of positions: some Sequence<Int>) -> [Range<Int>] {
+        var runs: [Range<Int>] = []
+        for position in positions {
+            if let last = runs.last, last.upperBound == position {
+                runs[runs.count - 1] = last.lowerBound..<position + 1
+            } else {
+                runs.append(position..<position + 1)
+            }
+        }
+        return runs
     }
 
     /// The indices of a longest strictly rising run of `values`, in order.

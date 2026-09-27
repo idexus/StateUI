@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
@@ -34,6 +35,36 @@ final class ItemsRulesTests: XCTestCase {
         let moved = ItemsChanges(from: ["a", "b", "c", "d"], to: ["d", "a", "b", "c"])
         XCTAssertEqual(moved.removed, [3])
         XCTAssertEqual(moved.inserted, [0])
+    }
+
+    /// Removals and insertions come as runs of neighbours, in the order they are told.
+    func testChangesComeInRunsOfNeighbours() {
+        let changes = ItemsChanges(from: ["a", "b", "c", "d", "e", "f"], to: ["a", "x", "y", "d", "z"])
+        XCTAssertEqual(changes.removed, [5, 4, 2, 1])
+        XCTAssertEqual(changes.removedRuns, [4..<6, 1..<3], "last first")
+        XCTAssertEqual(changes.inserted, [1, 2, 4])
+        XCTAssertEqual(changes.insertedRuns, [1..<3, 4..<5], "first first")
+    }
+
+    /// A tap chooses the item as the list's mode says, and opens it unless it changes a choice of many.
+    func testATapChoosesAndOpensAsTheModeSays() {
+        let taps = [
+            ItemsTap(on: "b", mode: .none, chosen: []), ItemsTap(on: "b", mode: .single, chosen: ["a"]),
+            ItemsTap(on: "b", mode: .multiple, chosen: ["a"]), ItemsTap(on: "a", mode: .multiple, chosen: ["a", "b"]),
+        ]
+        XCTAssertEqual(taps.map(\.chosen), [nil, ["b"], ["a", "b"], ["b"]])
+        XCTAssertEqual(taps.map(\.opens), [true, true, false, false])
+    }
+
+    /// An item stands at the start, the centre or the end of the room; nearest moves it only where it is not wholly
+    /// in view, the shorter way.
+    func testAnAnchorPlacesTheItem() {
+        XCTAssertEqual(ScrollAnchor.start.place(of: 500, length: 40, in: 300, at: 0), 500)
+        XCTAssertEqual(ScrollAnchor.center.place(of: 500, length: 40, in: 300, at: 0), 370)
+        XCTAssertEqual(ScrollAnchor.end.place(of: 500, length: 40, in: 300, at: 0), 240)
+        XCTAssertNil(ScrollAnchor.nearest.place(of: 100, length: 40, in: 300, at: 0), "wholly in view")
+        XCTAssertEqual(ScrollAnchor.nearest.place(of: 500, length: 40, in: 300, at: 0), 240, "below: to the end")
+        XCTAssertEqual(ScrollAnchor.nearest.place(of: 100, length: 40, in: 300, at: 400), 100, "above: to the start")
     }
 
     /// The end is told once as the last item in view comes within reach of the last of all; again only after the

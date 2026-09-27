@@ -10,9 +10,12 @@ import UIKit
 /// for across the cell's fixed side.
 /// Design: docs/design/platforms/uikit/items.md#a-cell
 @MainActor
-final class UIKitItemHolding {
+final class UIKitItemHolding: ItemsHolding {
     /// The identity held, where the cell holds one.
     private(set) var identity: String?
+
+    /// The entry whose subtree the cell shows, where it shows one.
+    private(set) weak var shown: MountedElement?
 
     /// Whether the cell is as tall as the list, and asks for its width - in a row.
     var across = false
@@ -22,9 +25,6 @@ final class UIKitItemHolding {
     /// The cell, which UIKit measures again when told its size may have changed.
     private weak var cell: UIView?
 
-    /// The view of the subtree the cell shows, where it shows one.
-    var shown: UIView? { holder.items.first?.view }
-
     init(in content: UIView, of cell: UIView) {
         self.cell = cell
         holder.frame = content.bounds
@@ -33,17 +33,18 @@ final class UIKitItemHolding {
     }
 
     /// Holds the entry of `identity`: its subtree where it is built, and nothing until it is.
-    func hold(_ identity: String, _ item: UIKitElement?) {
+    func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
-        let view = item?.view
-        guard view !== shown else { return }
-        holder.setItems(item?.layoutItem.map { [$0] } ?? [])
-        if view != nil { forget() }
+        guard item !== shown || holder.items.isEmpty != (item == nil) else { return }
+        shown = item
+        holder.setItems(item?.uiKit.layoutItem.map { [$0] } ?? [])
+        if item != nil { forget() }
     }
 
     /// Lets the entry go: its view leaves the cell.
     func letGo() {
         identity = nil
+        shown = nil
         holder.setItems([])
     }
 
@@ -59,7 +60,7 @@ final class UIKitItemHolding {
     /// height in a row. A cell whose entry is still on its way keeps the size UIKit estimated: a size measured of
     /// nothing would fold its whole row away.
     func fitting(_ attributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        guard shown != nil, let fitted = attributes.copy() as? UICollectionViewLayoutAttributes else {
+        guard shown != nil, !holder.items.isEmpty, let fitted = attributes.copy() as? UICollectionViewLayoutAttributes else {
             return attributes
         }
         if across {

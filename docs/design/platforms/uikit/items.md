@@ -46,16 +46,9 @@ layout gives it - a height, or a row of a grid that fills.
 
 ## One cell an entry
 
-UIKit may ask a second cell for an item before the first has ended showing
-it - a row of a grid measured again, an item fetched ahead. A subtree stands
-in one cell at a time, so the host keeps the one cell holding each entry: a
-cell asked for an entry takes it from the cell before, which shows nothing
-until UIKit reuses it, and a cell ending showing an entry lets the tree
-release it only while it is still that entry's cell. Released by the cell
-it left, the entry would leave the tree under the cell now showing it - a
-hole in the list.
-
-The moment a cell comes on screen decides what it holds. Scrolled back, UIKit
-shows again a cell that ended showing its item a moment before - and so let
-its entry go - without asking the data source for it: the cell takes its
-entry again as it is shown, as a header or a footer does.
+The cell provider, `willDisplay` and `didEndDisplaying` - of an item and of a
+header or a footer - are the host layer's three moments, `hold`, `show` and
+`endShowing` ([one cell an entry](../../host/items.md#one-cell-an-entry)).
+Scrolled back, UIKit shows again a cell that ended showing its item a moment
+before without asking the data source for it; its `willDisplay` is what
+gives it its entry back.

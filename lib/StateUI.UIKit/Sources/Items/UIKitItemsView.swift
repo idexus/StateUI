@@ -21,10 +21,6 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     /// Whether the layout stands the list's own header and footer - which UIKit fixes as the layout is made.
     private var framed = (header: false, footer: false)
 
-    /// The one cell holding each entry: UIKit may ask a second cell for an item before the first ends showing it,
-    /// and a subtree stands in one cell at a time.
-    /// Design: docs/design/platforms/uikit/items.md#one-cell-an-entry
-    private var holders: [String: UIKitItemHolding] = [:]
 
     /// Whether the motion of a scroll the tree asks for is left out.
     private let reducesMotion: () -> Bool
@@ -103,24 +99,17 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         }
     }
 
-    /// The tree's entries changed: every cell shows the subtree its entry has now - one built with the turn under
-    /// way, or built again after the tree let the one before go - and is measured again where it changed.
-    /// Design: docs/design/platforms/uikit/items.md#one-cell-an-entry
+    /// The tree's entries changed: every cell shows the subtree its entry has now (`ItemsCells.childrenChanged`).
     func childrenChanged() {
-        for (identity, holding) in holders where holding.identity == identity {
-            let item = cells.item(identity)
-            guard holding.shown !== item?.uiKit.view else { continue }
-            holding.hold(identity, item?.uiKit)
-        }
+        cells.childrenChanged()
     }
 
     /// An entry's size would change: the cell holding it is measured again - none, for an entry still on its way
     /// into a cell, which measures it as it takes it.
     /// Design: docs/design/platforms/uikit/items.md#a-cell
     func remeasure(_ item: MountedElement) {
-        guard let identity = cells.identity(of: item), let holding = holders[identity], holding.identity == identity
-        else { return }
-        holding.forget()
+        guard let identity = cells.identity(of: item) else { return }
+        (cells.holding(of: identity) as? UIKitItemHolding)?.forget()
     }
 
     // MARK: - The cells
@@ -137,7 +126,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
                      UIKitItemsLayout.listFooter]
         let registrations = kinds.map { kind in
             UICollectionView.SupplementaryRegistration<UIKitItemSupplement>(elementKind: kind) { [weak self] view, kind, indexPath in
-                guard let self, let identity = self.supplement(kind, at: indexPath) else { return view.holding.letGo() }
+                guard let self, let identity = self.supplement(kind, at: indexPath) else { return self?.cells.endShowing(in: view.holding) ?? () }
                 self.hold(identity, in: view.holding)
             }
         }
@@ -148,21 +137,10 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         return source
     }
 
-    /// Holds the entry of `identity` in a cell: built now where the tree can, else once the turn under way builds it.
+    /// Holds the entry of `identity` in a cell, as the host layer keeps one cell an entry.
     private func hold(_ identity: String, in holding: UIKitItemHolding) {
         holding.across = layout.isAcross
-        if let previous = holding.identity, previous != identity { letGo(previous, from: holding) }
-        if let other = holders[identity], other !== holding { other.letGo() }
-        holders[identity] = holding
-        holding.hold(identity, cells.realize(identity)?.uiKit)
-    }
-
-    /// The cell `holding` lets the entry of `identity` go; the tree lets it go only where no other cell took it since.
-    private func letGo(_ identity: String, from holding: UIKitItemHolding) {
-        if holding.identity == identity { holding.letGo() }
-        guard holders[identity] === holding else { return }
-        holders[identity] = nil
-        cells.release(identity)
+        cells.hold(identity, in: holding)
     }
 
     /// The identity of the header or footer of `kind` at `indexPath`.
@@ -192,8 +170,9 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         _ collection: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath
     ) {
         guard let identity = source.itemIdentifier(for: indexPath) else { return }
-        if let holding = (cell as? UIKitItemCell)?.holding, holding.identity != identity || holding.shown == nil {
-            hold(identity, in: holding)
+        if let holding = (cell as? UIKitItemCell)?.holding {
+            holding.across = layout.isAcross
+            cells.show(identity, in: holding)
         }
         cells.showing(shownIdentities + [identity])
     }
@@ -202,25 +181,25 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         _ collection: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView,
         forElementKind kind: String, at indexPath: IndexPath
     ) {
-        guard let holding = (view as? UIKitItemSupplement)?.holding, let identity = supplement(kind, at: indexPath),
-              holding.identity != identity || holding.shown == nil
+        guard let holding = (view as? UIKitItemSupplement)?.holding, let identity = supplement(kind, at: indexPath)
         else { return }
-        hold(identity, in: holding)
+        holding.across = layout.isAcross
+        cells.show(identity, in: holding)
     }
 
     func collectionView(
         _ collection: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath
     ) {
-        guard let holding = (cell as? UIKitItemCell)?.holding, let identity = holding.identity else { return }
-        letGo(identity, from: holding)
+        guard let holding = (cell as? UIKitItemCell)?.holding else { return }
+        cells.endShowing(in: holding)
     }
 
     func collectionView(
         _ collection: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView,
         forElementOfKind kind: String, at indexPath: IndexPath
     ) {
-        guard let holding = (view as? UIKitItemSupplement)?.holding, let identity = holding.identity else { return }
-        letGo(identity, from: holding)
+        guard let holding = (view as? UIKitItemSupplement)?.holding else { return }
+        cells.endShowing(in: holding)
     }
 
     func collectionView(_ collection: UICollectionView, didSelectItemAt indexPath: IndexPath) {
