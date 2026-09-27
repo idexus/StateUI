@@ -12,12 +12,14 @@ UIKIT_TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # uikit_build <package-dir> <scratch> <configuration> <product> [swift build arguments...]
 # Builds <product> for the simulator; prints the directory its binaries are in.
+# A failed build fails the call: a caller's command substitution runs without
+# `set -e`, and would go on to the binary an earlier build left.
 uikit_build () {
   local package="$1" scratch="$2" configuration="$3" product="$4"
   shift 4
   local build=(xcrun swift build --package-path "$package" --scratch-path "$scratch" --configuration "$configuration"
     --triple "$UIKIT_TRIPLE" --sdk "$UIKIT_SDK" "$@")
-  "${build[@]}" --product "$product" >&2
+  "${build[@]}" --product "$product" >&2 || { echo "ERROR: the build of $product failed" >&2; return 1; }
   "${build[@]}" --show-bin-path
 }
 
