@@ -492,74 +492,74 @@ Every control, and every part an application, its windows and its pages are made
 
 A row per contract with properties or events - the tiers, then the elements -
 naming them: a property by its modifier's name, an event with the `on…`
-modifier it is heard through beside it. Each host's cell counts the row's
-members by mark, of how many it names; a tier's member counts only where
-every element wearing it that the host makes has it. A contract's acts are under [Host
+modifier it is heard through beside it. "Count" is how many members the row
+names, and each host's cell counts them by mark; a tier's member counts only
+where every element wearing it that the host makes has it. A contract's acts are under [Host
 acts](#host-acts); each member's own mark, its value and its layer are on the
 contract's page in [the control dictionary](controls/README.md).
 
 <!-- members:begin -->
-| Contract | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` |  |  |  |  |  |  |
-| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 25 ✅ of 31 | 24 ✅ of 31 | 24 ✅ of 31 | 23 ✅ of 31 | 9 ✅ of 31 |  |
-| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 23 ✅ · 1 ☑️ of 32 | 24 ✅ of 32 | 24 ✅ of 32 | 24 ✅ of 32 | 4 ✅ of 32 |  |
-| [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 2 ✅ of 3 | 2 ✅ of 3 | 1 ✅ of 3 | 1 ✅ of 3 |  |  |
-| [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |  |
-| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 3 ✅ of 10 | 8 ✅ of 10 | 2 ✅ of 10 | 3 ✅ of 10 | 1 ✅ of 10 |  |
-| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 5 ✅ of 10 | 5 ✅ of 10 | 5 ✅ of 10 | 10 ✅ of 10 |  |  |
-| [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 |  |
-| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` |  |  |  | 1 ✅ of 2 |  |  |
-| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` |  |  |  | 2 ✅ of 4 |  |  |
-| [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` |  |  |  |  |  |  |
-| [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` |  |  |  |  |  |  |
-| [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` |  |  |  | 1 ✅ of 1 |  |  |
-| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` |  |  |  | 1 ✅ of 1 |  |  |
-| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` |  |  |  |  |  |  |
-| [ImageElement](controls/tiers/ImageElement.md) | `aspect` |  |  |  |  |  |  |
-| [TintElement](controls/tiers/TintElement.md) | `tint` |  |  |  |  |  |  |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` |  | 1 ✅ of 1 |  |  |  |  |
-| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` | 2 ✅ of 5 | 5 ✅ of 5 |  | 3 ✅ of 5 |  |  |
-| [PageElement](controls/tiers/PageElement.md) | `icon`, `title` |  | 2 ✅ of 2 |  | 1 ✅ of 2 |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 3 ✅ of 7 | 3 ✅ of 7 | 3 ✅ of 7 | 3 ✅ of 7 | 1 ✅ of 7 |  |
-| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 |  |  |
-| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |
-| [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 4 ✅ of 8 | 4 ✅ of 8 |  | 7 ✅ · 1 ☑️ of 8 |  |  |
-| [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 |  |  |
-| [Image](controls/Image.md) | `isAnimating`, `source` | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 |  |  |
-| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |  |
-| [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 | 4 ✅ of 4 |  |  |
-| [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 ✅ of 2 | 1 ✅ · 1 ☑️ of 2 |  | 2 ✅ of 2 |  |  |
-| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 1 ✅ of 2 | 2 ✅ of 2 |  | 1 ✅ of 2 |  |  |
-| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 7 ✅ of 10 | 9 ✅ of 10 | 7 ✅ of 10 | 8 ✅ of 10 |  |  |
-| [Path](controls/Path.md) | `data` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |  |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 4 ✅ of 7 | 4 ✅ of 7 | 4 ✅ of 7 | 7 ✅ of 7 | 3 ✅ of 7 |  |
-| [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` |  |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |  |
-| [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |  |
-| [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | `progress` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |
-| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 ✅ of 3 | 3 ✅ of 3 | 3 ✅ of 3 | 3 ✅ of 3 | 3 ✅ of 3 |  |
-| [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |  |
-| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 ✅ of 6 | 4 ✅ of 6 | 4 ✅ of 6 | 6 ✅ of 6 |  |  |
-| [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 5 ✅ of 7 | 5 ✅ of 7 | 1 ✅ of 7 | 7 ✅ of 7 |  |  |
-| [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 | 1 ✅ of 2 |  |
-| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 4 ✅ of 6 | 6 ✅ of 6 | 6 ✅ of 6 | 4 ✅ of 6 | 4 ✅ of 6 |  |
-| [Span](controls/Span.md) | `background` |  |  |  | 1 ✅ of 1 |  |  |
-| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 ✅ of 2 | 1 ✅ of 2 |  | 2 ✅ of 2 |  |  |
-| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 ✅ of 5 | 5 ✅ of 5 |  | 5 ✅ of 5 | 5 ✅ of 5 |  |
-| [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 | 2 ✅ of 2 |  |
-| [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 ✅ of 2 | 2 ✅ of 2 |  | 2 ✅ of 2 |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 | 1 ✅ of 1 |  |  |
-| [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 1 ✅ of 4 | 2 ✅ of 4 | 1 ✅ of 4 |  | 1 ✅ of 4 |  |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 2 ✅ of 6 | 2 ✅ of 6 |  | 2 ✅ of 6 |  |  |
-| [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` |  |  |  | 2 ✅ of 2 |  |  |
-| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` |  | 6 ✅ of 7 | 4 ✅ of 7 |  |  |  |
-| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 ✅ of 23 | 6 ✅ of 23 | 6 ✅ of 23 | 23 ✅ of 23 |  |  |
+| Contract | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
+| --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |  |  |  |  |  |  |
+| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 | 25 ✅ | 24 ✅ | 24 ✅ | 23 ✅ | 9 ✅ |  |
+| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 | 23 ✅ · 1 ☑️ | 24 ✅ | 24 ✅ | 24 ✅ | 4 ✅ |  |
+| [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 | 2 ✅ | 2 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 | 3 ✅ | 8 ✅ | 2 ✅ | 3 ✅ | 1 ✅ |  |
+| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 10 | 5 ✅ | 5 ✅ | 5 ✅ | 10 ✅ |  |  |
+| [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
+| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |  |  |  | 1 ✅ |  |  |
+| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |  |  |  | 2 ✅ |  |  |
+| [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |  |  |  |  |  |  |
+| [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |  |  |  |  |  |  |
+| [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | 1 |  |  |  | 1 ✅ |  |  |
+| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | 1 |  |  |  | 1 ✅ |  |  |
+| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` | 3 |  |  |  |  |  |  |
+| [ImageElement](controls/tiers/ImageElement.md) | `aspect` | 1 |  |  |  |  |  |  |
+| [TintElement](controls/tiers/TintElement.md) | `tint` | 1 |  |  |  |  |  |  |
+| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | 1 |  | 1 ✅ |  |  |  |  |
+| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` | 5 | 2 ✅ | 5 ✅ |  | 3 ✅ |  |  |
+| [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |  | 2 ✅ |  | 1 ✅ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 1 ✅ |  |
+| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
+| [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 4 ✅ | 4 ✅ |  | 7 ✅ · 1 ☑️ |  |  |
+| [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |  |
+| [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |  |
+| [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |  |
+| [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
+| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  | 2 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 | 1 ✅ | 2 ✅ |  | 1 ✅ |  |  |
+| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 7 ✅ | 8 ✅ |  |  |
+| [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 | 4 ✅ | 4 ✅ | 4 ✅ | 7 ✅ | 3 ✅ |  |
+| [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |  |
+| [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |  |
+| [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` | 8 |  |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
+| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |  |
+| [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 | 5 ✅ | 5 ✅ | 1 ✅ | 7 ✅ |  |  |
+| [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
+| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 6 ✅ | 6 ✅ | 4 ✅ | 4 ✅ |  |
+| [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ |  |  |
+| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 | 2 ✅ | 1 ✅ |  | 2 ✅ |  |  |
+| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 | 5 ✅ | 5 ✅ |  | 5 ✅ | 5 ✅ |  |
+| [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
+| [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 2 ✅ | 2 ✅ |  | 2 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
+| [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 1 ✅ | 2 ✅ | 1 ✅ |  | 1 ✅ |  |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 2 ✅ | 2 ✅ |  | 2 ✅ |  |  |
+| [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  | 2 ✅ |  |  |
+| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 6 ✅ | 4 ✅ |  |  |  |
+| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 22 ✅ | 6 ✅ | 6 ✅ | 23 ✅ |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

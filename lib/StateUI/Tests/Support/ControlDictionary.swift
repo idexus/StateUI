@@ -392,7 +392,7 @@ struct ControlDictionary {
     /// elements - naming them, marked by the rule for a row naming several.
     /// Its acts are the act table's.
     func memberTable() -> String {
-        var lines = [Self.header("Contract", "Members"), Self.rule(leading: 2)]
+        var lines = [Self.header("Contract", "Members", "Count"), Self.rule(leading: 3)]
 
         for contract in contracts {
             let described = Self.described(by: contract)
@@ -405,7 +405,7 @@ struct ControlDictionary {
 
             lines.append(Self.row(
                 ["[\(contract.name)](\(Self.page(of: contract)))",
-                 described.map { describe($0)[0] }.joined(separator: ", ")] + marks))
+                 described.map { describe($0)[0] }.joined(separator: ", "), "\(described.count)"] + marks))
         }
 
         return lines.joined(separator: "\n")
@@ -514,8 +514,7 @@ struct ControlDictionary {
         return marks.contains("☑️") ? "☑️" : "✅"
     }
 
-    /// Marks counted, each kind the legend's order, of how many there are: "28 ✅ · 1 ☑️ of 31"; nothing where none
-    /// is proven or planned.
+    /// Marks counted, each kind in the legend's order: "28 ✅ · 1 ☑️"; nothing where none is proven or planned.
     static func tallied(_ marks: [String]) -> String {
         var counts = Marks()
         for mark in marks {
@@ -523,8 +522,7 @@ struct ControlDictionary {
             if mark == "☑️" { counts.partial += 1 }
             if mark == "–" { counts.notPlanned += 1 }
         }
-        let counted = Self.counted(counts)
-        return counted.isEmpty ? "" : "\(counted) of \(marks.count)"
+        return Self.counted(counts)
     }
 
     /// A contract's properties and events: every member but its acts.
