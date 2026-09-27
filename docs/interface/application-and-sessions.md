@@ -149,7 +149,7 @@ after neither cause keeps the window hidden.
 Both policies are adaptive: a host implements them with its native window
 relationships when that platform exposes the capability. A declaration is not
 evidence that a particular host implements the policy; the
-[platform matrix](platform-contract.md#contract-members) is the
+[platform matrix](../platform-contract.md#contract-members) is the
 support authority.
 
 ## Application and scene phases
@@ -202,7 +202,7 @@ final class SelectionModel {
 
 Two scenes using the same key do not share one value. Each scene restores its
 own. Process-wide preferences use `@State(persistentKey:)` instead; see
-[State and reactivity](state-and-reactivity.md).
+[State and reactivity](../concepts/state-and-reactivity.md).
 
 ## Opening and closing
 
@@ -465,7 +465,7 @@ updates.
 
 Set the title bar through the window session. A platform without an authored
 native title area may ignore it; the
-[TitleBar matrix row](platform-contract.md#contract-members)
+[TitleBar matrix row](../platform-contract.md#contract-members)
 must carry a check before an application relies on it.
 
 ## Reading support status
@@ -488,4 +488,4 @@ checked. This prevents a working lifecycle from being mistaken for working
 geometry, chrome, or presentation policy.
 
 Current native evidence for sessions, lifecycle, geometry, and restoration is
-tracked in [Platform contract](platform-contract.md).
+tracked in [Platform contract](../platform-contract.md).

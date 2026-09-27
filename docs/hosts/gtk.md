@@ -3,7 +3,7 @@
 The GTK host renders a StateUI application with GTK 4 and libadwaita on
 Linux. It is Swift, in the application's own process, beside the application
 module and the library: it applies the typed sparse patches of the
-[host contract](host-contract.md) directly and calls GTK and libadwaita
+[host contract](../internals/host-contract.md) directly and calls GTK and libadwaita
 through their C API, with nothing beneath it in another language.
 
 It presents its first controls - `Label`, `Button`, `Switch`, `Slider`,

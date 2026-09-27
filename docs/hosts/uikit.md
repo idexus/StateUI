@@ -3,7 +3,7 @@
 The UIKit host renders a StateUI application with UIKit controls on iOS and
 iPadOS. It is Swift, in the application's own process, beside the application
 module and the library: it applies the typed sparse patches of the
-[host contract](host-contract.md) directly, over the runtime every host
+[host contract](../internals/host-contract.md) directly, over the runtime every host
 shares.
 
 ```text
@@ -169,7 +169,7 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 A performer runs on the main thread, takes the act's own types and answers
 its own. A thrown error, an aim at nothing, and an act nobody registered each
 fail the call with the reason, named. The Swift half is under
-[Host-extension actions](interaction-and-actions.md#host-extension-actions).
+[Host-extension actions](../interface/interaction-and-actions.md#host-extension-actions).
 
 ### An event without a control
 
@@ -190,7 +190,7 @@ NotificationCenter.default.addObserver(
 `raise` is safe from any thread and answers how many subscriptions heard it; a
 raise nobody hears is an ordinary zero. The Swift side subscribes with
 `HostEvents.on`; see
-[Host-extension events](interaction-and-actions.md#host-extension-events).
+[Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 ## Running
 

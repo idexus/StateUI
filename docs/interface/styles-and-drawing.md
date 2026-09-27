@@ -286,4 +286,4 @@ Use accepted controls whenever native input, focus, selection, or accessibility
 semantics already exist.
 
 Verified shape, brush, visual-state, and drawing coverage is recorded in
-[Platform contract](platform-contract.md).
+[Platform contract](../platform-contract.md).

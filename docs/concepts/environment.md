@@ -148,7 +148,7 @@ The closed vocabulary used by these fields is:
 | `Theme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
-The [Platform contract](platform-contract.md) is the implementation-status
+The [Platform contract](../platform-contract.md) is the implementation-status
 authority. A public provider describes the StateUI schema; it does not imply
 that every host can produce every fact. Where no checked host integration
 proves a capability, rely on the documented fallback.
@@ -176,7 +176,7 @@ struct RuntimeSummary: ContentView {
 Use `DeviceInfo.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
 room a view is given - `.onFrameChanged` and `FrameReader`
-([layout](layout.md)) - and read display points (`pixels / density`) for the
+([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
 screen itself, handling zero density before the first host report. Use `AppInfo.requestedTheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
@@ -321,7 +321,7 @@ semantics it needs.
   bindings, persistence, journeys, conversions, samples, and engines.
 - [Architecture](architecture.md) defines session ownership and the complete
   two-path model.
-- [Host contract](host-contract.md) defines typed state channels and host
+- [Host contract](../internals/host-contract.md) defines typed state channels and host
   reconciliation.
-- [Platform contract](platform-contract.md) is the checked implementation
+- [Platform contract](../platform-contract.md) is the checked implementation
   matrix for standard facts, controls, properties, and events.

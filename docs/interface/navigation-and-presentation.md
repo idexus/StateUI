@@ -299,4 +299,4 @@ Label(document.title)
 Menu and toolbar structures are reconciled by identity like other ordered
 children. A platform without that surface may omit its presentation; never put
 the only route to an essential action behind a context menu. Consult
-[Platform contract](platform-contract.md) for verified support.
+[Platform contract](../platform-contract.md) for verified support.

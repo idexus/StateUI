@@ -290,7 +290,7 @@ facts current, or lacks direct tests remains unmarked for that domain.
 | `ApplicationSession` | `phase` | ✅ |  |  |  |  |  |
 
 The public provider and its fallback values exist independently of a check
-mark. [Environment](environment.md) defines that schema; this table says which
+mark. [Environment](concepts/environment.md) defines that schema; this table says which
 host supplies and maintains it completely.
 
 ## Host acts

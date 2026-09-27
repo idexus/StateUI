@@ -93,7 +93,7 @@ about its center.
 Transforms are visual, not layout. They do not produce frame reports; changing
 an animated layout property such as `width` does because it changes the
 settled rectangle. Host support for transform member groups remains explicit
-in the [platform matrix](platform-contract.md#shared-view-members).
+in the [platform matrix](../platform-contract.md#shared-view-members).
 
 ## Stacks
 
@@ -156,7 +156,7 @@ occupy the same cell; they overlap and `zIndex` decides drawing order.
 Grid definitions are data. Changing a definition keeps child identities and
 rearranges the existing controls, and each child rectangle travels to its new
 place under the grid's layout motion rather than being described frame by
-frame - see [Motion and journeys](motion-and-journeys.md).
+frame - see [Motion and journeys](../concepts/motion-and-journeys.md).
 
 ## Layers
 
@@ -447,5 +447,5 @@ contract, sparse property motion, and layout motion.
 Do not mark either composition supported merely because its Swift declaration
 compiles. A host must first have checks for every primitive it depends on, and
 the Gallery must exercise the visible behavior on that platform. Until then,
-use [Platform contract](platform-contract.md) as the support authority and
+use [Platform contract](../platform-contract.md) as the support authority and
 treat `PlacedLayout` and `GalleryView` as deferred surfaces.

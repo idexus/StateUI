@@ -101,7 +101,7 @@ Treat one control, property, event, or host action as one vertical change:
 3. Declare the member in its element's contract - its name, its value's type
    and its layer; its host-SPI token follows from the member.
 4. Decide what of it every host shares and write that part in the host layer
-   first, with its pure tests ([host layer](host-layer.md)); then implement
+   first, with its pure tests ([host layer](internals/host-layer.md)); then implement
    every host claimed by the change, keeping native adapters thin.
 5. Add focused core tests and direct native-host tests, and a conformance case
    where executing the contract shows the effect.
@@ -153,7 +153,7 @@ built, installed and started on a device by one script:
 .scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
 ```
 
-[Android Views host](android-host.md) lists what it needs and what it builds.
+[Android Views host](hosts/android.md) lists what it needs and what it builds.
 
 The WinUI host builds on Windows with the swift.org toolchain and Visual
 Studio's C++ tools; its script fetches C++/WinRT and the Windows App SDK
@@ -163,7 +163,7 @@ itself. An application's WinUI head is built and started by one script:
 .scripts\WinUI\run-app.ps1 -App apps\HelloWorld
 ```
 
-[WinUI host](winui-host.md) lists what it needs and what it builds.
+[WinUI host](hosts/winui.md) lists what it needs and what it builds.
 
 The GTK host builds on Linux with the swift.org toolchain, GTK 4 and
 libadwaita. An application's GTK head is built and started by one script:
@@ -172,7 +172,7 @@ libadwaita. An application's GTK head is built and started by one script:
 .scripts/GTK/run-app.sh apps/HelloWorld
 ```
 
-[GTK host](gtk-host.md) lists what it needs and what it builds.
+[GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
 ## Test
 

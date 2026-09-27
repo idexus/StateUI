@@ -70,7 +70,11 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     func testEveryDocumentationExampleCompiles() throws {
-        let examples = try Self.documents().flatMap { document, url in
+        let documents = try Self.documents()
+        for topic in ["concepts", "interface", "internals", "hosts"] {
+            XCTAssertTrue(documents.contains { $0.0.hasPrefix("docs/\(topic)/") }, "docs/\(topic) was not read")
+        }
+        let examples = try documents.flatMap { document, url in
             Self.swiftBlocks(
                 in: try String(contentsOf: url, encoding: .utf8),
                 document: document)
@@ -152,14 +156,28 @@ final class DocumentationExamplesTests: XCTestCase {
         return examples
     }
 
-    /// README followed by every Markdown document in name order.
+    /// README followed by every handbook document in path order: docs and each
+    /// of its topics' folders - not the design notes or the rendered control
+    /// dictionary, which hold no application code.
     private static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
         let directory = repository.appendingPathComponent("docs")
-        let names = try FileManager.default.contentsOfDirectory(atPath: directory.path)
-            .filter { $0.hasSuffix(".md") }
-            .sorted()
-        found += names.map { ("docs/\($0)", directory.appendingPathComponent($0)) }
+        var pending = [""]
+        var names: [String] = []
+        while let folder = pending.popLast() {
+            let url = folder.isEmpty ? directory : directory.appendingPathComponent(folder)
+            for name in try FileManager.default.contentsOfDirectory(atPath: url.path) {
+                let relative = folder.isEmpty ? name : "\(folder)/\(name)"
+                var isFolder: ObjCBool = false
+                FileManager.default.fileExists(atPath: url.appendingPathComponent(name).path, isDirectory: &isFolder)
+                if isFolder.boolValue {
+                    if !["design", "controls", "assets"].contains(relative) { pending.append(relative) }
+                } else if name.hasSuffix(".md") {
+                    names.append(relative)
+                }
+            }
+        }
+        found += names.sorted().map { ("docs/\($0)", directory.appendingPathComponent($0)) }
         return found
     }
 

@@ -3,7 +3,7 @@
 The WinUI host renders a StateUI application with WinUI 3 on Windows. It is
 Swift, in the application's own process, beside the application module and the
 library: it applies the typed sparse patches of the
-[host contract](host-contract.md) directly and calls WinUI through a C++/WinRT
+[host contract](../internals/host-contract.md) directly and calls WinUI through a C++/WinRT
 relay behind plain C functions.
 
 A window stands as a Windows application's does: its content under WinUI's

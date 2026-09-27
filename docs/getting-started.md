@@ -16,10 +16,10 @@ the repository root. Neither host has a published package route yet.
 - a checkout of this repository;
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
-[UIKit host](uikit-host.md#requirements) lists what the UIKit host needs for
-the iOS simulator, [Android Views host](android-host.md#requirements) what the
-Android Views host needs as well, [WinUI host](winui-host.md#requirements) what the
-WinUI host needs on Windows, and [GTK host](gtk-host.md#requirements) what
+[UIKit host](hosts/uikit.md#requirements) lists what the UIKit host needs for
+the iOS simulator, [Android Views host](hosts/android.md#requirements) what the
+Android Views host needs as well, [WinUI host](hosts/winui.md#requirements) what the
+WinUI host needs on Windows, and [GTK host](hosts/gtk.md#requirements) what
 the GTK host needs on Linux.
 
 ## Working in VS Code
@@ -165,7 +165,7 @@ struct NotesPage: ContentView {
 `Application`, `Scene` and `Window` are declarations, not native objects, and
 so is the view a window shows as its page. Their sessions carry the identity
 and mutable runtime state.
-[Applications and sessions](application-and-sessions.md) describes that model
+[Applications and sessions](interface/application-and-sessions.md) describes that model
 in full.
 
 ## Two modules and one registration point
@@ -226,7 +226,7 @@ StateUIAppKit.run(
 
 The head finds its artwork from its own source file, so it runs from any
 directory. Its icon is drawn on macOS's icon grid; see
-[AppKit host](appkit-host.md).
+[AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then
 belong to one application tree, renderer generation, and native host. Opening a
@@ -234,8 +234,8 @@ new scene does not start another host; it asks that host to materialize another
 native scene session.
 
 The UIKit head calls the same `stateui_app_register` before `StateUIUIKit.run`;
-[UIKit host](uikit-host.md) describes that head. The Android head calls it
-when Android loads its library; [Android Views host](android-host.md)
+[UIKit host](hosts/uikit.md) describes that head. The Android head calls it
+when Android loads its library; [Android Views host](hosts/android.md)
 describes that head.
 
 The repository examples use this directory shape:
@@ -262,7 +262,7 @@ apps/Notes/
 
 The application target depends only on the `StateUI` product. The executable
 target depends on the application target and `StateUIAppKit`. Both targets
-enable `NonisolatedNonsendingByDefault`; [Concurrency](concurrency.md) explains
+enable `NonisolatedNonsendingByDefault`; [Concurrency](interface/concurrency.md) explains
 why that module-wide setting is part of the application contract.
 
 ## Controls and modifiers
@@ -317,7 +317,7 @@ choose a platform image class.
 
 ## Next steps
 
-Read [State and reactivity](state-and-reactivity.md) before building data flow,
-then [Applications and sessions](application-and-sessions.md) for navigation
+Read [State and reactivity](concepts/state-and-reactivity.md) before building data flow,
+then [Applications and sessions](interface/application-and-sessions.md) for navigation
 and multiple windows. Run the Gallery whenever a feature's behavior is easier
 to understand by using it than by reading about it.

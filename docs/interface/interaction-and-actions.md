@@ -119,7 +119,7 @@ react to the drag but cannot asynchronously replace what the current drag
 carries.
 
 Gesture availability and host tests are tracked in
-[Platform contract](platform-contract.md).
+[Platform contract](../platform-contract.md).
 
 ## Aims and control methods
 

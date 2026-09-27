@@ -65,19 +65,19 @@ that is usable now.
 
 - [StateUI handbook](docs/README.md) — the complete guide to applications,
   state, layout, controls, interaction, concurrency, and native hosts.
-- [Architecture](docs/architecture.md) — state, reactivity, Journey, motion,
+- [Architecture](docs/concepts/architecture.md) — state, reactivity, Journey, motion,
   and application sessions.
-- [Host contract](docs/host-contract.md) — `HostPatch`, ownership, identity,
+- [Host contract](docs/internals/host-contract.md) — `HostPatch`, ownership, identity,
   lifetime, and native adapter rules.
 - [Platform contract](docs/platform-contract.md) — the control, property, and
   event inventory with verified host coverage.
 - [Control dictionary](docs/controls/README.md) — every control and part of an
   application's structure, member by member, with a mark per platform.
-- [StateUI core](docs/core.md) — the library every application and host
+- [StateUI core](docs/internals/core.md) — the library every application and host
   links, folder by folder, and the typed boundary a host reads.
-- [Host layer](docs/host-layer.md) — the Swift every host runs on, module by
+- [Host layer](docs/internals/host-layer.md) — the Swift every host runs on, module by
   module, and what each host provides.
-- [AppKit host](docs/appkit-host.md), [UIKit host](docs/uikit-host.md), [Android Views host](docs/android-host.md), [WinUI host](docs/winui-host.md) and [GTK host](docs/gtk-host.md)
+- [AppKit host](docs/hosts/appkit.md), [UIKit host](docs/hosts/uikit.md), [Android Views host](docs/hosts/android.md), [WinUI host](docs/hosts/winui.md) and [GTK host](docs/hosts/gtk.md)
   — each host's heads, builds, debugging, and registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.

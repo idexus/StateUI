@@ -310,4 +310,4 @@ every effective field once. It still reconciles against the retained tree, so
 the same identities and current state reconcile the complete native hierarchy
 without creating or destroying continuing elements. Application code does not
 maintain a second recovery path. The exact update semantics are defined in
-[Host contract](host-contract.md).
+[Host contract](../internals/host-contract.md).

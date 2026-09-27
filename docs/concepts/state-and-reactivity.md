@@ -582,7 +582,7 @@ motion laws remain the host's responsibility and need no custom engine.
   interruption, visibility, and layout motion.
 - [Environment](environment.md) covers provided objects, standard host facts,
   sessions, dates, clocks, and time zones.
-- [Host contract](host-contract.md) defines the sparse typed patch and state
+- [Host contract](../internals/host-contract.md) defines the sparse typed patch and state
   channel semantics.
-- [Platform contract](platform-contract.md) records which native hosts have
+- [Platform contract](../platform-contract.md) records which native hosts have
   implemented and tested each public surface.

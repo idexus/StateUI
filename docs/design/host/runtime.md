@@ -6,7 +6,7 @@ the same elements, one job each, named alike in every language. The
 toolkit-neutral elements are the host layer, `lib/StateUI.Host` - the module
 `StateUIHost`, which reaches the core through `@_spi(Host)` - and every host,
 Swift in the application's process, uses them as they are. Its folders are
-its parts; [the host layer](../../host-layer.md) maps them.
+its parts; [the host layer](../../internals/host-layer.md) maps them.
 
 ## The layers
 
@@ -185,7 +185,7 @@ mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
 write, a scroller's movement, the patch intake and the line to the core - and
 the windows, the pages, the layout, drawing, text and input rules, the acts
-and the environment's words, which [the host layer](../../host-layer.md) maps
+and the environment's words, which [the host layer](../../internals/host-layer.md) maps
 part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter` and a turn through

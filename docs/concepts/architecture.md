@@ -336,5 +336,5 @@ The invariant across every host is one concept with one owner:
 - `HostPatch` is the only reconciliation result a host applies.
 
 The concrete control/property/event surface and its implementation status are
-defined in [Platform contract](platform-contract.md). The typed boundary is
-defined in [Host contract](host-contract.md).
+defined in [Platform contract](../platform-contract.md). The typed boundary is
+defined in [Host contract](../internals/host-contract.md).

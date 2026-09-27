@@ -3,7 +3,7 @@
 How the Android Views host shows a window's pages: a stack under its bar,
 a sidebar that slides over the detail, tabs along the bottom, the phases each
 page hears, and the way back. The arrangements are the application's state,
-as [navigation](../../../navigation-and-presentation.md) says; the host shows
+as [navigation](../../../interface/navigation-and-presentation.md) says; the host shows
 what the tree says and reports what the user does into the same bindings.
 
 ## A navigation stack

@@ -2,7 +2,7 @@
 
 The AppKit host renders a StateUI application with AppKit controls on macOS. It
 runs in the same process as the application module and the library, and applies
-the typed sparse patches of the [host contract](host-contract.md) directly.
+the typed sparse patches of the [host contract](../internals/host-contract.md) directly.
 
 ```text
 lib/StateUI.AppKit/
@@ -42,7 +42,7 @@ it.
 
 Every AppKit build of an application defines the `APPKIT` compilation
 condition; Swift written for this host alone stands under `#if APPKIT`. See
-[Project structure and development](development.md).
+[Project structure and development](../development.md).
 
 ## Controls, acts, and events registered in Swift
 
@@ -137,7 +137,7 @@ A Swift `Style` can target the control once its Swift struct conforms to
 the style's values already among its own; the registration needs nothing for
 it. A value handed over as a state - `.rating($stars)` over
 `setValue(_:on:mode:kind:)` - reaches the same applier on the host's own
-frames; see [Motion and journeys](motion-and-journeys.md).
+frames; see [Motion and journeys](../concepts/motion-and-journeys.md).
 
 **A registered view draws however it likes, the GPU included.** An `MTKView` is
 an `NSView`, so its registration says no more than any other one: the Gallery's
@@ -201,7 +201,7 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 - **Scope.** An act nobody registered fails with that reason, named.
 
 The Swift half is under
-[Host-extension actions](interaction-and-actions.md#host-extension-actions).
+[Host-extension actions](../interface/interaction-and-actions.md#host-extension-actions).
 
 ### An event without a control
 
@@ -228,7 +228,7 @@ NotificationCenter.default.addObserver(
 reports it. It answers how many subscriptions heard it: a raise nobody hears is
 an ordinary zero rather than a failure, so an application wires its sources
 unconditionally. The Swift side subscribes with `HostEvents.on`; see
-[Host-extension events](interaction-and-actions.md#host-extension-events).
+[Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 The head declares each event it raises where it wires the source, before
 `StateUIAppKit.run(resourceDirectory:applicationIcon:)`:

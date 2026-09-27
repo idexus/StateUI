@@ -35,11 +35,11 @@ lib/StateUI.Host/Sources/
   Environment/   the machine a host stands on, in the core's terms
 ```
 
-The design notes give each part's reasons: [the runtime](design/host/runtime.md),
-[the mounted tree](design/host/tree.md), [pages](design/host/pages.md),
-[layout](design/host/layout.md), [motion](design/host/motion.md),
-[patches](design/host/patches.md) and [conformance](design/host/conformance.md).
-The [glossary](design/glossary.md) maps StateUI's words to the common ones.
+The design notes give each part's reasons: [the runtime](../design/host/runtime.md),
+[the mounted tree](../design/host/tree.md), [pages](../design/host/pages.md),
+[layout](../design/host/layout.md), [motion](../design/host/motion.md),
+[patches](../design/host/patches.md) and [conformance](../design/host/conformance.md).
+The [glossary](../design/glossary.md) maps StateUI's words to the common ones.
 
 ## What a host provides
 
@@ -62,18 +62,18 @@ only its toolkit has:
 | a `Registry` | one registration per element contract it realizes, handed to the core by `CoreLink.setRealization` |
 
 Both presenters are held weakly; the host keeps them.
-[The runtime's parts](design/host/runtime.md#the-runtimes-parts) and
-[the host layer](design/host/runtime.md#the-host-layer) draw the seams.
+[The runtime's parts](../design/host/runtime.md#the-runtimes-parts) and
+[the host layer](../design/host/runtime.md#the-host-layer) draw the seams.
 
 The registry is the core's
-([realizations](design/core/contracts.md#realizations)): each registration
+([realizations](../design/core/contracts.md#realizations)): each registration
 makes an element's view, puts the members the view takes, and raises its
 events through `Reports`. What every element realizes by the layer's rules -
 its place, its drawing, what assistive technology meets, the user's input - a
 host names in one line each: `everyElementTakesItsPlace`,
 `everyElementIsDrawnOverItsPlace`, `everyElementMeetsAssistiveTechnology` and
 `everyElementHearsTheUser`
-([what every element realizes](design/host/tree.md#what-every-element-realizes)).
+([what every element realizes](../design/host/tree.md#what-every-element-realizes)).
 
 Where the toolkit speaks another language, a relay stands beneath the host -
 Java through JNI, C++ behind a C ABI. It receives native pointers, never
@@ -116,7 +116,7 @@ every host:
 The element's roads call `HostRuntime.report`, `take` and `takeGestureValue` -
 a value through a bound state, a journey the user took, a gesture's state - so
 a host reaches them through the roads above.
-[A user's change](design/host/runtime.md#a-users-change) draws the path.
+[A user's change](../design/host/runtime.md#a-users-change) draws the path.
 
 ### What a host never does
 
@@ -136,7 +136,7 @@ A host never:
 
 `RuntimeArchitectureTests` reads every host's sources and refuses each of
 these that the text shows, and a type named for an engine or a channel
-([names](design/host/runtime.md#names)).
+([names](../design/host/runtime.md#names)).
 
 ## The runtime
 
@@ -146,52 +146,52 @@ these that the text shows, and a type named for an engine or a channel
   once: the line to the core, the patch intake, the animator, the state
   channels, the described and layout motion, the display cycle on the host's
   clock, the mounted tree, the pump and the frame followers.
-  ([The runtime's parts](design/host/runtime.md#the-runtimes-parts))
+  ([The runtime's parts](../design/host/runtime.md#the-runtimes-parts))
 - **`CoreLink`** is the one line to the running core: a render, a cycle, an
   event, a user's report, an act's answer, the application's and the scene's
   reports, the kept values and the doorbell's wait (`ringForever`). The host
   calls it for what it tells the core; nothing else in a host calls the core.
-  ([Core link](design/host/runtime.md#core-link))
+  ([Core link](../design/host/runtime.md#core-link))
 - **`Pump`** is one turn, in one order: the jobs a resumed handler left, a
   pending cycle, a render when the core needs one, the handlers it raised,
   then the acts, so an act lands on the interface its handler changed. A turn
   asked for during another runs when that one ends. The host calls `turn()`
   and presents through its `TurnPresenter`.
-  ([One turn](design/host/runtime.md#one-turn))
+  ([One turn](../design/host/runtime.md#one-turn))
 - **`PatchIntake`** takes the core's message whole, against the generation of
   the last message applied in full; a drift - a sparse message about a tree
   the host does not hold - is refused, and the whole tree is asked for once.
   The pump drives it; the host adds nothing.
-  ([Patch intake](design/host/patches.md#patch-intake))
+  ([Patch intake](../design/host/patches.md#patch-intake))
 - **`HandlerDispatch`** raises the application's handlers in the order the
   user caused them: one raised while a patch applies, or inside the user's
   transaction, waits until that is over. A page's, a window's or a scene's
   phase is queued (`enqueuePhase`) and rendered before whatever follows it.
-  ([The handlers' order](design/host/runtime.md#the-handlers-order))
+  ([The handlers' order](../design/host/runtime.md#the-handlers-order))
 - **`ProgramWrite`** is the one mark that the program, not the user, writes a
   native control; a native callback inside it reports nothing. The intake
   marks every patch and the tree every frame's walk; the host marks every
   other write it makes - a control it moves, a pop-up it opens - with
   `ProgramWrite.perform`.
-  ([Program write](design/host/patches.md#program-write))
+  ([Program write](../design/host/patches.md#program-write))
 - **`DisplayCycle`** is one display frame, in one order: the user's reports,
   the animations, the core's cycle, one walk of the tree, a render, and the
   clock's hold, which lets go only when nothing moves. The host's
   `FrameClock` ticks it, and its `FramePresenter` hands each step back to the
-  layer. ([One frame](design/host/runtime.md#one-frame))
+  layer. ([One frame](../design/host/runtime.md#one-frame))
 - **`FrameFollowers`** keeps the frames coming while a scroller moves or a
   frame the tree reads may have moved, and on each frame lets the scrollers,
   then the elements, say where they stand, as one user's transaction. The
   host hands it each `FramedScroller` (`serve`) and `FrameReporter`
   (`follow`), and calls `laidOut()` after it lays anything out.
-  ([Where a view stands](design/host/runtime.md#where-a-view-stands))
+  ([Where a view stands](../design/host/runtime.md#where-a-view-stands))
 - **`ApplicationLifecycle`** settles what the toolkit tells of each window -
   minimized, activated - into the phases of the application, its scenes and
   its windows, a turn later, so one window deactivated as another is
   activated is one move. It keeps the scene in front, which hides the windows
   that hide while another scene is, and says whether a floating window floats
   now. The host tells `HostRuntime.windowStateChanged`.
-  ([The application's phase](design/host/runtime.md#the-applications-phase))
+  ([The application's phase](../design/host/runtime.md#the-applications-phase))
 
 ## The tree and the native half
 
@@ -203,14 +203,14 @@ per described node, each with a native half its toolkit writes.
   line to the core, the intake, the state channels and the two motions. It
   presents a frame's batch in one walk (`present`) and lays the tree out again
   where the language's direction turned (`followTheLanguagesDirection`).
-  ([The mounted tree](design/host/tree.md#the-mounted-tree))
+  ([The mounted tree](../design/host/tree.md#the-mounted-tree))
 - **`MountedElement`** is one live element: its key, type, described
   properties, bound states, handlers and children in order. It applies a patch
   in one fixed order, refuses a drift, and leaves by every road out of the
   tree, letting go of its states and its animations. The host reads every
   value through it - `value`, `string`, `number`, `bool`, `handler`,
   `layoutValues`, `layoutDirection` - and keeps no copy.
-  ([Leaving](design/host/tree.md#leaving))
+  ([Leaving](../design/host/tree.md#leaving))
 - **`NativeElement`** is the native half's whole contract with the tree: it
   hears a patch about to apply and applied, presents a frame's changed
   properties and says what the frame asks around it (`FrameImpact`), arranges
@@ -221,27 +221,27 @@ per described node, each with a native half its toolkit writes.
   leaves. The element owns its half; the half refers back without owning, and
   whatever keeps an element beyond the tree - a window's page, a sheet - holds
   the element, never the half.
-  ([The native half](design/host/tree.md#the-native-half),
-  [standing values](design/host/tree.md#standing-values))
+  ([The native half](../design/host/tree.md#the-native-half),
+  [standing values](../design/host/tree.md#standing-values))
 
 What a mounted element decides for every host, which the host turns into its
 toolkit's calls:
 
 | Member | What it decides | Reason |
 | --- | --- | --- |
-| `radioPeers` | the radio buttons a check takes away: those of its group in its window, else its siblings | [A radio group](design/host/tree.md#a-radio-group) |
-| `drawingTransform`, `placement` | how a view is moved, turned and scaled over its place, and a placing run's places | [Drawn over its place](design/host/tree.md#drawn-over-its-place) |
-| `accessibilityWords` | its identifier, label, hint and heading level, and whether assistive technology meets it | [What assistive technology meets](design/host/tree.md#what-assistive-technology-meets) |
-| `arrangedProperties`, `unmeasuredProperties` | which change arranges the parent again, and which measures nothing | [Measured once](design/host/layout.md#measured-once) |
-| `readsOwnFrame`, `reportFrame`, `frameNumbers` | whether the tree reads where the element stands, and the report it is told | [Where a view stands](design/host/runtime.md#where-a-view-stands) |
-| `hearing`, `hear` | what input a view listens for, and the events each input raises | [What the user does with a finger](design/host/runtime.md#what-the-user-does-with-a-finger) |
+| `radioPeers` | the radio buttons a check takes away: those of its group in its window, else its siblings | [A radio group](../design/host/tree.md#a-radio-group) |
+| `drawingTransform`, `placement` | how a view is moved, turned and scaled over its place, and a placing run's places | [Drawn over its place](../design/host/tree.md#drawn-over-its-place) |
+| `accessibilityWords` | its identifier, label, hint and heading level, and whether assistive technology meets it | [What assistive technology meets](../design/host/tree.md#what-assistive-technology-meets) |
+| `arrangedProperties`, `unmeasuredProperties` | which change arranges the parent again, and which measures nothing | [Measured once](../design/host/layout.md#measured-once) |
+| `readsOwnFrame`, `reportFrame`, `frameNumbers` | whether the tree reads where the element stands, and the report it is told | [Where a view stands](../design/host/runtime.md#where-a-view-stands) |
+| `hearing`, `hear` | what input a view listens for, and the events each input raises | [What the user does with a finger](../design/host/runtime.md#what-the-user-does-with-a-finger) |
 
 - **`NodeType.pageTypes`**, **`viewlessTypes`** and **`slotTypes`** say which
   elements are the arrangements of pages a window shows, which have no view of
   their own, and which furnish a page's chrome rather than stand in its room.
 - **`LiveViews`** holds a host's views weakly by the number each was made
   under: a callback crossing C names a view by its number and finds nothing
-  once it has gone. ([Views by number](design/host/tree.md#views-by-number))
+  once it has gone. ([Views by number](../design/host/tree.md#views-by-number))
 - **`ElementId.hostValue`** is a key as an event carries it: an author's name
   as its text, a counted key as its number.
 
@@ -255,7 +255,7 @@ toolkit's calls:
   first, so a window closes before the one it belongs to - a new one has
   one made, and the first window's coming is said. The host hands it `make`
   and `close`.
-  ([The windows a tree holds](design/host/tree.md#the-windows-a-tree-holds))
+  ([The windows a tree holds](../design/host/tree.md#the-windows-a-tree-holds))
 - **`WindowPresentation`** says what a window shows, where it changed: its
   arrangement of pages, the pages its modal stack presents as sheets, what it
   lays over them, its frame, bounds and traits, whether its scene hides it,
@@ -264,17 +264,17 @@ toolkit's calls:
   that it is shown, and a new window that it was made, each in its turn,
   before the host first shows the window; `wayBack` is the way back the window
   offers. The host shows each in its toolkit's window.
-  ([A window shown](design/host/tree.md#a-window-shown))
+  ([A window shown](../design/host/tree.md#a-window-shown))
 - **`WindowFrame`**, **`WindowBounds`** and **`WindowTraits`** read a window's
   place and size as four requests in DIPs, each alone; its least and greatest
   size; and whether the user may maximize and minimize it, whether the desktop
   shows through it, and whether it floats now. The host turns each into its
-  toolkit's units and calls. ([A window's frame](design/host/tree.md#a-windows-frame),
-  [a window's traits](design/host/tree.md#a-windows-traits))
+  toolkit's units and calls. ([A window's frame](../design/host/tree.md#a-windows-frame),
+  [a window's traits](../design/host/tree.md#a-windows-traits))
 - **`HostRuntime.userClosed`** tells what the user closing a window means: the
   window hears that it is going, then its scene hears what that means for it
   (`toldOnClosing`). A window the tree closes tells nothing.
-  ([A window the user closes](design/host/runtime.md#a-window-the-user-closes))
+  ([A window the user closes](../design/host/runtime.md#a-window-the-user-closes))
 
 ## Pages
 
@@ -284,37 +284,37 @@ toolkit's calls:
   **`sidebarIsVisible`**, **`visibleBackStack`** and **`tabsStandInWindow`**
   (on `MountedElement`) walk the page path: a stack's top page, the chosen
   tab, a split view's detail and its shown sidebar, and where a tabbed view's
-  tabs stand. ([The page path](design/host/pages.md#the-page-path))
+  tabs stand. ([The page path](../design/host/pages.md#the-page-path))
 - **`setPagePresented`**, **`reconcilePresentation`** and
   **`PagePresentationReason`** give the phases a page hears as it is shown and
   hidden, each rendered before the next. The tree tells them after each patch
   of an arrangement shown, and `HostRuntime.tabChosen` and `sidebarShown`
   after the user's own choices.
-  ([A page's phases](design/host/pages.md#a-pages-phases))
+  ([A page's phases](../design/host/pages.md#a-pages-phases))
 - **`TabChoice`** is which tab a tabbed view shows: a tab the tree asks for
   anew is chosen, and the user's choice stands.
-  ([Tabs](design/host/pages.md#tabs))
+  ([Tabs](../design/host/pages.md#tabs))
 - **`SidebarAdaptation`** decides once, on a split view's first room, whether
   its sidebar shows; the breakpoint is the platform's, which the host hands
   it.
-  ([A sidebar on the first room](design/host/pages.md#a-sidebar-on-the-first-room))
+  ([A sidebar on the first room](../design/host/pages.md#a-sidebar-on-the-first-room))
 - **`WayBack`** is the way back a window offers - a stack's top page going, or
   the top sheet - which `HostRuntime.goBack` takes.
-  ([The way back](design/host/pages.md#the-way-back))
+  ([The way back](../design/host/pages.md#the-way-back))
 - **`slotContent`**, **`presentingElement`** and **`arrangedChildren`** say
   what stands in a slot, which element's view shows an element, and which
   children a layout places - a page's slots stand in none of its room.
-  ([Slots](design/host/pages.md#slots))
+  ([Slots](../design/host/pages.md#slots))
 - **`MenuEntry`** walks a menu - its items, separators and submenus in order,
   each with its caption, whether it can be chosen and its identifier - and a
   menu bar's menus. The host builds its toolkit's menu from the walk.
-  ([Menus](design/host/pages.md#menus))
+  ([Menus](../design/host/pages.md#menus))
 - **`WindowChrome`**, **`chromeActions`** and **`barColors`** compose a
   window's one chrome from what it shows: its title, the way back, the visible
   page's actions, the title's place and what stands beside it, the bars'
   colours, the menu bar and the sidebar's toggle. The host lays these out in
   its toolkit's chrome.
-  ([The window's chrome](design/host/pages.md#the-windows-chrome))
+  ([The window's chrome](../design/host/pages.md#the-windows-chrome))
 
 ## Layout
 
@@ -327,46 +327,46 @@ measures only its native views.
   arithmetic sees it; `offer` and `sized` measure a child at its stated width
   within its bounds. The host's child measures its own view at the width
   offered, its margin already taken out.
-  ([The layout arithmetic](design/host/layout.md#the-layout-arithmetic),
-  [a child measured](design/host/layout.md#a-child-measured))
+  ([The layout arithmetic](../design/host/layout.md#the-layout-arithmetic),
+  [a child measured](../design/host/layout.md#a-child-measured))
 - **`Extent`** is one axis of a child's slot: a stated size wins, a filling
   child takes the slot and any other its natural size, and the least size wins
   a contradiction.
-  ([One axis of a slot](design/host/layout.md#one-axis-of-a-slot))
+  ([One axis of a slot](../design/host/layout.md#one-axis-of-a-slot))
 - **`MeasurementCache`** keeps the sizes one view measured, by the width
   offered, four at most. The host forgets them upward from a change to the
   nearest room, as `arrangedProperties` and `unmeasuredProperties` say.
-  ([Measured once](design/host/layout.md#measured-once))
+  ([Measured once](../design/host/layout.md#measured-once))
 - **`StackArithmetic`**, **`GridArithmetic`**, **`ZStackArithmetic`** and
   **`SingleChildArithmetic`** give each layout's `size` for an offered width
   and the `places` of its children, nil for a hidden one.
-  ([Stacks](design/host/layout.md#stacks), [grids](design/host/layout.md#grids),
-  [tracks](design/host/layout.md#tracks), [layers](design/host/layout.md#layers),
-  [one child](design/host/layout.md#one-child))
+  ([Stacks](../design/host/layout.md#stacks), [grids](../design/host/layout.md#grids),
+  [tracks](../design/host/layout.md#tracks), [layers](../design/host/layout.md#layers),
+  [one child](../design/host/layout.md#one-child))
 - **`ZStackArithmetic.drawingOrder`** and **`HostPlacement`**'s `place`,
   `drawnOpacity` and `drawnShade` say where a placing run stands a ZStack's
   children, how opaque it draws them, and in what order.
-  ([A placing run](design/host/layout.md#a-placing-run))
+  ([A placing run](../design/host/layout.md#a-placing-run))
 - **`RowEdge`** stands an arrangement's own row - a tabbed view's tabs -
   across the top or the bottom of its room, the page taking the rest.
-  ([A row beside a page](design/host/layout.md#a-row-beside-a-page))
+  ([A row beside a page](../design/host/layout.md#a-row-beside-a-page))
 - **`ScrollArithmetic`** gives a scroller's content size and the document the
   content stands in; `offsetWritten`, `kept` and `differs` say where an offset
   the tree writes moves it, and `WrittenScrollOffset` keeps one written before
   the scroller's first layout for it.
-  ([Scrolling](design/host/layout.md#scrolling),
-  [an offset the tree writes](design/host/layout.md#an-offset-the-tree-writes))
+  ([Scrolling](../design/host/layout.md#scrolling),
+  [an offset the tree writes](../design/host/layout.md#an-offset-the-tree-writes))
 - **`ShapeArithmetic`** stands a line's, a path's, a polygon's or a polyline's
   geometry in its room (`placement`), and gives its points as flat commands,
   its stroke's width and its dashes.
-  ([A shape's own geometry](design/host/layout.md#a-shapes-own-geometry))
+  ([A shape's own geometry](../design/host/layout.md#a-shapes-own-geometry))
 
 Every call takes the element's `layoutDirection`: places are worked out left
 to right and turned about the room's middle for a language written right to
-left ([right to left](design/host/layout.md#right-to-left)). A grid's and a
+left ([right to left](../design/host/layout.md#right-to-left)). A grid's and a
 ZStack's `children` stand in drawing order, by `zIndex`, so a host hands its
 toolkit the children in that order
-([drawing order](design/host/layout.md#drawing-order)).
+([drawing order](../design/host/layout.md#drawing-order)).
 
 ## Drawing
 
@@ -376,18 +376,18 @@ host that draws them.
 - **`BoxArithmetic`** gives a box's corners clockwise from the top left, each
   rounding no more than half its side; its outline's shape; and its outline's
   width - one where the tree gives a colour and no width, none without a
-  colour. ([A box](design/host/layout.md#a-box))
+  colour. ([A box](../design/host/layout.md#a-box))
 - **`HostBrush`** reads a fill as the tree sends it: nothing, one colour, or a
   gradient's stops between 0 and 1 over its geometry; `firstColor` is what a
   line of one colour draws with. The host turns its colours into its
   toolkit's.
-  ([As a host is handed it](design/types/brushes.md#as-a-host-is-handed-it))
+  ([As a host is handed it](../design/types/brushes.md#as-a-host-is-handed-it))
 - **`PressedFill`** keeps nine tenths of a control's own fill under the
   pointer and eight tenths pressed, where the host draws that fill itself.
-  ([A box](design/host/layout.md#a-box))
+  ([A box](../design/host/layout.md#a-box))
 - **`PictureArithmetic`** gives the files a picture's name stands for, in the
   order a host looks for them, and where the picture stands in its room by its
-  aspect. ([A picture](design/host/layout.md#a-picture))
+  aspect. ([A picture](../design/host/layout.md#a-picture))
 - **`PropValue.argb`** is a colour as one ARGB number, for a relay.
 
 ## Text
@@ -407,7 +407,7 @@ host that draws them.
 - **`TextCase.applied`** writes words in the case the tree asks for.
 
 The host turns a finished look into its toolkit's attributes and nothing more.
-([Runs of words](design/host/tree.md#runs-of-words))
+([Runs of words](../design/host/tree.md#runs-of-words))
 
 ## Input
 
@@ -419,37 +419,37 @@ host.
   then its event; a radio button checked turns its peers off first, in one
   user's transaction; what the program writes reports nothing. The host's
   native callback hands the value on, and turns a peer's control off in its
-  toolkit's terms. ([A user's change](design/host/runtime.md#a-users-change))
+  toolkit's terms. ([A user's change](../design/host/runtime.md#a-users-change))
 - **`HeardInput`**, **`Hearing`** and **`PinchStep`** are the input a view
   heard, in the contract's terms: a tap in its run, the pointer, a press
   dragged, a pinch's step. The host listens for what
   `MountedElement.hearing` asks and hands each input to `hear`. ([What the
-  user does with a finger](design/host/runtime.md#what-the-user-does-with-a-finger))
+  user does with a finger](../design/host/runtime.md#what-the-user-does-with-a-finger))
 - **`DragRecognition`** makes a press a drag, for a toolkit that tells a press
   and its moves and no drag of its own: past the platform's distance - along
   either axis, or by a radius - it starts, each move after is measured from
   where the press went down, and it completes or is cancelled with the press.
   The host tells it the press and holds the pointer as it becomes a drag.
-  ([A press dragged](design/host/runtime.md#a-press-dragged))
+  ([A press dragged](../design/host/runtime.md#a-press-dragged))
 - **`SwipeDirection.swiped`** tells a swipe from a press and how far it moved:
   the way it moved most, far enough, where the view listens for that way.
-  ([A swipe](design/host/runtime.md#a-swipe))
+  ([A swipe](../design/host/runtime.md#a-swipe))
 - **`ScrollMovement`** is one scroller's movement: where it went, frame by
   frame, and when it rests, timed on the frame clock. The host tells it the
   user's moves and holds; the scrolling itself is the toolkit's.
-  ([A scroller's movement](design/host/runtime.md#a-scrollers-movement))
+  ([A scroller's movement](../design/host/runtime.md#a-scrollers-movement))
 - **`InputWords`** cuts words to a field's bound in characters (`cut`) and
   gives a caret or a selection in the UTF-16 units a toolkit counts
-  (`utf16Selection`). ([Typed words](design/host/runtime.md#typed-words))
+  (`utf16Selection`). ([Typed words](../design/host/runtime.md#typed-words))
 - **`PickerChoices`** writes a picker's choices where they changed, and its
   choice only where the tree changed it or the choices.
-  ([Typed words](design/host/runtime.md#typed-words))
+  ([Typed words](../design/host/runtime.md#typed-words))
 - **`ValueArithmetic`** is a value inside a range: its ends in order, a step
   that moves, a share of work within 0 and 1, a slider's key and page steps,
   and a stepped number's decimals. **`ElementValues.written`** is the number
   a slider or a stepper is written as its value and ends apply: the tree's
   where it changed either, else the one the control shows.
-  ([A value in a range](design/host/runtime.md#a-value-in-a-range))
+  ([A value in a range](../design/host/runtime.md#a-value-in-a-range))
 
 ## Motion
 
@@ -460,26 +460,26 @@ host.
   **`AnimationStep`** are the one animator: every animation advanced together
   in target order - states, then described properties, then layout places -
   each pure in the time handed to it. With less motion every animation arrives
-  at once. ([One animator](design/host/motion.md#one-animator))
+  at once. ([One animator](../design/host/motion.md#one-animator))
 - **`StateChannels`** holds one channel per host-carried state, shared by every
   control bound to it. It lives while any control wears it, and the user's hold
   stops its animation where the user holds the value.
-  ([State channels](design/host/motion.md#state-channels))
+  ([State channels](../design/host/motion.md#state-channels))
 - **`DescribedMotion`** is a property's transition a patch describes, keyed by
   element and property; a new one starts where the running one stands, at its
-  speed. ([Described motion](design/host/motion.md#described-motion))
+  speed. ([Described motion](../design/host/motion.md#described-motion))
 - **`MountedElement.fadeIn`**, **`crossVisibility`** and **`standsShown`**
   are an element's showing: a child joining a standing layout fades in, a
   hidden one fades out still standing shown and then hides as its layout
   closes over it, one shown again mid-fade comes back from where it stands.
   The host hands the view (`FadingView`) and what closes its layout.
-  ([Showing and hiding](design/host/motion.md#showing-and-hiding))
+  ([Showing and hiding](../design/host/motion.md#showing-and-hiding))
 - **`LayoutMotion`**, **`TravellingPlaces`** and **`PlacedView`** move a
   layout's children to their places: what a patch changed travels, a room that
   moves is followed exactly, and the first arrangement arrives. A host's layout
   holds one `TravellingPlaces`, begins each arrangement with its width
   (`begin`) and stands each child through it (`place`).
-  ([Layout motion](design/host/motion.md#layout-motion))
+  ([Layout motion](../design/host/motion.md#layout-motion))
 
 The display cycle drives all of it. The host says only whether its toolkit
 animates a property (`NativeElement.animates`) and where the property stands
@@ -493,7 +493,7 @@ on every host.
 - **`CoreLink.reply`**, **`CoreLink.fail`**, **`ActFailure`** and
   **`MountedTree.aimed`** answer an act with its values or fail it with a
   reason, so no caller waits on an act nobody performs; an act aimed at a view
-  names it by its first argument. ([Acts](design/host/runtime.md#acts))
+  names it by its first argument. ([Acts](../design/host/runtime.md#acts))
 - **`HostActs`** lists the acts every host performs itself (`performed`): the
   focus, the questions for the user, a word to a screen reader, the time and
   the zones, the on-screen keyboard, a kept value and a handler's failure; and
@@ -501,11 +501,11 @@ on every host.
 - **`HostQuestion`** and **`QuestionQueue`** read a question for the user
   from its act - an alert, a confirmation, a choice, a prompt - and its answer;
   questions show one at a time, each under a ticket of its own.
-  ([Questions for the user](design/host/runtime.md#questions-for-the-user))
+  ([Questions for the user](../design/host/runtime.md#questions-for-the-user))
 - **`InteropActs`** performs the acts an application registers on its host,
   each handed the values its contract declares, an aimed one also the control
   of the element it names.
-  ([An application's own acts](design/host/runtime.md#an-applications-own-acts))
+  ([An application's own acts](../design/host/runtime.md#an-applications-own-acts))
 
 The host performs an act in its toolkit's terms in `TurnPresenter.perform`,
 and nothing more.
@@ -520,31 +520,31 @@ and nothing more.
   where it is at least as wide as it is tall. The host reports them through
   `CoreLink`'s setters. A change goes through `HostRuntime.environmentChanged`,
   which tells the core, follows the language's direction and renders in one
-  turn. ([The environment](design/host/runtime.md#the-environment))
+  turn. ([The environment](../design/host/runtime.md#the-environment))
 - **`KeptValuesText`** is the codec of the host's own file of kept values, for
   a platform with no store an application can use: a line a key, the keys in
   order, so the same values write the same file. Where the file stands and how
   it is read and written is the host's.
-  ([Kept values](design/host/runtime.md#kept-values))
+  ([Kept values](../design/host/runtime.md#kept-values))
 - **`KeptScenes`** and **`SceneKeeper`** keep the application's scenes for its
   next start, on a platform that restores no windows: each scene's kept
   values and the windows of a kind of its own it had open. At the start each
   scene comes back with its values and is offered its windows; the scenes are
   kept again as they change, but not once the last one ended. The host reads
   and writes the text, and performs `persistSceneValue` through `keep`.
-  ([Kept scenes](design/host/runtime.md#kept-scenes))
+  ([Kept scenes](../design/host/runtime.md#kept-scenes))
 
 ## Diagnostics
 
 - **`HostLog`** writes one line a message, begun by `StateUI` and the host's
   name, to standard error, which nothing buffers; a platform whose log is its
-  own is handed the lines. ([The log](design/host/runtime.md#the-log))
+  own is handed the lines. ([The log](../design/host/runtime.md#the-log))
 - **`DiagnosticText`** and **`RenderTally`** write the running tally
   (`STATEUI_TALLY=1`) and every inspected pass (`STATEUI_INSPECT=1`) as text,
   and count what applying one message costs. The mounted tree keeps them; the
   host adds nothing.
-  ([What a message costs](design/host/patches.md#what-a-message-costs),
-  [what a runtime writes out](design/host/patches.md#what-a-runtime-writes-out))
+  ([What a message costs](../design/host/patches.md#what-a-message-costs),
+  [what a runtime writes out](../design/host/patches.md#what-a-runtime-writes-out))
 
 ## Testing
 
@@ -556,11 +556,11 @@ and nothing more.
   contract's effects on each real toolkit: a case is written once, and every
   host's suite runs it through the host's driver. It asserts effects - a
   state written, a handler heard, what is shown or let go - never a look, and
-  its verdicts are the marks of the [platform contract](platform-contract.md)
-  and the [control dictionary](controls/README.md).
-  ([Conformance](design/host/conformance.md),
-  [the driver](design/host/conformance.md#the-driver),
-  [marks](design/contracts/dictionary.md#marks))
+  its verdicts are the marks of the [platform contract](../platform-contract.md)
+  and the [control dictionary](../controls/README.md).
+  ([Conformance](../design/host/conformance.md),
+  [the driver](../design/host/conformance.md#the-driver),
+  [marks](../design/contracts/dictionary.md#marks))
 - A host's own tests prove its look, the native API behind a member and its
   toolkit's traps. They mark nothing.
 
@@ -584,5 +584,5 @@ Something new reaches the hosts in one order:
 
 One concept has one owner and one spelling. An element's name is its stem -
 `Animator`, `StateChannels` - and a host prefixes its toolkit's name to what
-only it has. [Names](design/host/runtime.md#names) gives the words the
+only it has. [Names](../design/host/runtime.md#names) gives the words the
 runtime reserves.

@@ -9,7 +9,7 @@ tree.
 This chapter defines the semantic motion contract, not blanket platform
 availability. An unverified host or unsupported `(NodeType, Prop)` pair must
 still apply the final destination, normally by snapping. Only checked rows in
-[Platform contract](platform-contract.md) authorize reliance on the journey.
+[Platform contract](../platform-contract.md) authorize reliance on the journey.
 
 ## Motion laws
 
@@ -199,7 +199,7 @@ joins a layout already standing fades in under the same law, unless a state
 owns its opacity.
 
 Visibility motion and layout motion are part of the cross-platform contract,
-but an application relies on them only where [Platform contract](platform-contract.md)
+but an application relies on them only where [Platform contract](../platform-contract.md)
 shows verified host support.
 
 ## Custom engines
@@ -211,5 +211,5 @@ another frame or `.wait` until a followed state changes. An engine's own write
 does not wake it.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
-and engine composition, and [Host contract](host-contract.md) for the native
+and engine composition, and [Host contract](../internals/host-contract.md) for the native
 display-cycle obligations.

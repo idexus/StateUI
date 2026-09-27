@@ -3,7 +3,7 @@
 StateUI exposes a cross-platform semantic control vocabulary. A host maps each
 accepted control to native behavior; it does not make the platform class part
 of application code. The complete member inventory and verified coverage are
-in [Platform contract](platform-contract.md).
+in [Platform contract](../platform-contract.md).
 
 ## API shape
 
@@ -206,7 +206,7 @@ VStack {
 
 `CalendarDate` is a calendar day and `ClockTime` is a wall-clock time. Neither
 pretends to be an instant. Conversion to Foundation or another date library
-belongs in the application boundary; see [Environment](environment.md).
+belongs in the application boundary; see [Environment](../concepts/environment.md).
 
 ## Images and media providers
 
