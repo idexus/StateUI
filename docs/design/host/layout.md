@@ -66,10 +66,18 @@ nothing.
 ## A child measured
 
 A layout measures a child the same way on every host: at its stated width,
-within its bounds, so its words wrap to it - else at the smaller of the width
-offered and its most width; and its size is its stated width and height
-before what it measured, each within its bounds (`LayoutValues.offer`,
-`sized`). A host measures its native view at that width and nothing more.
+within its bounds and the width offered - the width the layout places it at,
+so its words wrap to it - else at the smaller of the width offered and its
+most width; and its size is its stated width and height before what it
+measured, each within its bounds (`LayoutValues.offer`, `sized`). A host
+measures its native view at that width and nothing more.
+
+The trap is a child measured at one width and placed at another: a stated
+width wider than its room - a `FrameReader`'s width a frame late as a
+window is resized - wraps its words for the stated width while it stands
+in the room. Most toolkits show the words cut; WinUI, which measures until
+its layout settles, finds the words' size changing at every pass and ends
+the application (`0xc000027b`, a layout cycle).
 
 ## Stacks
 
