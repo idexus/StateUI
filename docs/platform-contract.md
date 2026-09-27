@@ -257,41 +257,41 @@ These surfaces lack an honest native counterpart on at least one target:
 
 ## Shared state, patch, and motion capabilities
 
-| Capability | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| sparse `HostRender` / `HostPatch` application | ✅ |  |  |  |  |  |
-| stable element identity and arranged children | ✅ |  |  |  |  |  |
-| driven state modes and typed channel kinds | ✅ |  |  |  |  |  |
-| native input committed before handler dispatch | ✅ |  |  |  |  |  |
-| silent application writes | ✅ |  |  |  |  |  |
-| host-driven Journey interpolation with eased and spring motion | ✅ |  |  |  |  |  |
-| host-driven Journey retargeting with standing velocity | ✅ |  |  |  |  |  |
-| sparse property transitions through `HostPatch.transitions` | ✅ |  |  |  |  |  |
-| layout motion through `HostPatch.motion` and `MotionLanes` | ✅ |  |  |  |  |  |
-| Journey completion and interruption | ✅ |  |  |  |  |  |
-| Journey stop and snap |  |  |  |  |  |  |
-| StateUI display-cycle engines |  |  |  |  |  |  |
-| element teardown releases external native attachments | ✅ |  |  |  |  |  |
+What every host does with the renderer's patch and the motion it carries.
+These carry no mark: no conformance case gives a verdict for a capability
+as such, so none is claimed for any host.
+
+- sparse `HostRender` / `HostPatch` application
+- stable element identity and arranged children
+- driven state modes and typed channel kinds
+- native input committed before handler dispatch
+- silent application writes
+- host-driven Journey interpolation with eased and spring motion
+- host-driven Journey retargeting with standing velocity
+- sparse property transitions through `HostPatch.transitions`
+- layout motion through `HostPatch.motion` and `MotionLanes`
+- Journey completion and interruption
+- Journey stop and snap
+- StateUI display-cycle engines
+- element teardown releases external native attachments
 
 ## Standard environment
 
-These rows record complete, live host mappings for StateUI's seven standard
-environment domains. A host that only seeds some fields, does not keep changing
-facts current, or lacks direct tests remains unmarked for that domain.
+StateUI's seven standard environment domains, each a set of facts a host
+supplies and keeps current. These carry no mark: no conformance case gives a
+verdict for a domain as a whole, so none is claimed for any host.
 
-| Surface | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` |  |  |  |  |  |  |
-| `Connectivity` | `networkAccess`, `connectionProfiles` |  |  |  |  |  |  |
-| `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` |  |  |  |  |  |  |
-| `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` |  |  |  |  |  |  |
-| `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` |  |  |  |  |  |  |
-| `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` |  |  |  |  |  |  |
-| `ApplicationSession` | `phase` | ✅ |  |  |  |  |  |
+- `Battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
+- `Connectivity`: `networkAccess`, `connectionProfiles`
+- `DeviceDisplay`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
+- `LocaleInfo`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`
+- `DeviceInfo`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType`
+- `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `requestedTheme`
+- `ApplicationSession`: `phase`
 
-The public provider and its fallback values exist independently of a check
-mark. [Environment](concepts/environment.md) defines that schema; this table says which
-host supplies and maintains it completely.
+The public provider and its fallback values exist whatever a host supplies.
+[Environment](concepts/environment.md) defines that schema; the hosts' pages
+say what each host supplies.
 
 ## Host acts
 
@@ -335,16 +335,15 @@ A property or event of the three tiers every view wears -
 [VisualElement](controls/tiers/VisualElement.md) and
 [View](controls/tiers/View.md) - is marked for a host only when every view
 that host realizes with a view of its own has it, even where one control
-already realizes it. The core view members come first: StateUI's own API,
-which a host serves without a member of its own.
+already realizes it. The core view members are StateUI's own API, which a
+host serves without a member of its own; no case gives them a verdict of
+their own, so they carry no mark:
 
-| Core view member | StateUI API | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| identity | `id` | ✅ |  |  |  |  |  |
-| aimed control methods | `aim` |  |  |  |  |  |  |
-| core reactions | `onCreated`, `onDestroying`, `onChanged`, `samples`, `engine` |  |  |  |  |  |  |
-| motion selection | `motion`, `MotionValues`, `MotionLanes` |  |  |  |  |  |  |
-| focus feed | `isFocused` | ✅ |  |  |  |  |  |
+- identity: `id`
+- aimed control methods: `aim`
+- core reactions: `onCreated`, `onDestroying`, `onChanged`, `samples`, `engine`
+- motion selection: `motion`, `MotionValues`, `MotionLanes`
+- focus feed: `isFocused`
 
 <!-- shared:begin -->
 | Member | Tier | Kind | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
