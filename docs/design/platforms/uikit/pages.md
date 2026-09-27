@@ -21,6 +21,15 @@ destructive in the menu and tinted red on the bar. A tabbed view's bar is its
 chosen tab's page's. Every bar in the window is written again as the window is shown, so a bar
 always says what its page says now.
 
+## Pictures on the bars
+
+A picture on a bar - an action's - stands 24 points tall and a tab's 25,
+UIKit's own icon sizes, each as wide as its shape makes it
+(`PictureArithmetic.glyph`); on a phone on its side, whose bars stand
+lower, both stand 18 points tall (`landscapeImagePhone`). The picture keeps
+its pixels and is drawn smaller: at its file's size it stands far taller
+than the system's own pictures beside it.
+
 ## A navigation stack
 
 A NavigationStack is UIKit's navigation controller over its pages, the top

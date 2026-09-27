@@ -180,7 +180,10 @@ same name, which a host drawing vector pictures reads in its place. A host
 drawing the picture itself stands it in its room by its aspect
 (`PictureArithmetic.place`): fitted in or covering the room with its
 proportions kept, or at its own size - each in the room's middle - or
-stretched over the whole of it.
+stretched over the whole of it. A picture on a bar or a tab stands at the
+platform's icon height, as wide as its shape makes it, whatever size it is
+drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
+pictures there at that size, and one at its file's size stands far taller.
 
 ## A shape's own geometry
 

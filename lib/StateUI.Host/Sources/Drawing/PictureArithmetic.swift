@@ -23,6 +23,13 @@
         }
     }
 
+    /// A picture `size` across as a bar or a tab shows it: `height` tall - the platform's icon size - and as wide as
+    /// its shape makes it, whatever size it is drawn at elsewhere. A picture of no height stays as it is.
+    public static func glyph(_ size: LayoutSize, height: Double) -> LayoutSize {
+        guard size.height > 0 else { return size }
+        return LayoutSize(width: size.width * height / size.height, height: height)
+    }
+
     /// Where a picture `size` across stands in a room at the origin, as `aspect` says: fitted in or covering it,
     /// its proportions kept, or at its own size, in its middle; stretched over the whole of it. A picture of no
     /// size stands nowhere.

@@ -254,6 +254,21 @@ final class UIKitRenderer {
         log.error("no picture named \(name) in the application's images")
         return nil
     }
+
+    /// The picture `name` as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
+    /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller.
+    /// Design: docs/design/platforms/uikit/pages.md#pictures-on-the-bars
+    static func glyph(named name: String, height: Double) -> UIImage? {
+        guard let image = image(named: name) else { return nil }
+        guard let pixels = image.cgImage, image.size.height > 0 else { return image }
+        let size = PictureArithmetic.glyph(
+            LayoutSize(width: image.size.width, height: image.size.height), height: height)
+        let glyph = UIImage(
+            cgImage: pixels, scale: image.scale * image.size.height / size.height, orientation: image.imageOrientation)
+            .withRenderingMode(image.renderingMode)
+        glyph.accessibilityIdentifier = name
+        return glyph
+    }
 }
 
 extension UIKitRenderer: TurnPresenter {

@@ -20,14 +20,19 @@ struct UIKitBarAction {
     /// The element of the item, which keeps the action UIKit was last handed.
     let element: UIKitElement?
 
-    /// Its picture: one of the application's, else none.
+    /// How tall a picture stands on a bar - UIKit's icon size - and on a bar made low by a phone on its side.
+    static let glyphHeight = 24.0
+    static let lowGlyphHeight = 18.0
+
+    /// Its picture: one of the application's at a bar's icon size, else none.
     private var image: UIImage? {
-        icon.flatMap(UIKitRenderer.image(named:))
+        icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.glyphHeight) }
     }
 
     /// A button of the bar.
     var barItem: UIBarButtonItem {
         let item = UIBarButtonItem(primaryAction: menuAction)
+        item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
         if isDestructive { item.tintColor = .systemRed }

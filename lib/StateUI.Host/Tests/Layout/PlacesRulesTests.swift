@@ -33,6 +33,17 @@ final class PlacesRulesTests: XCTestCase {
             Rect(x: 50, y: 50, width: 0, height: 0))
     }
 
+    /// A bar's or a tab's picture stands at the platform's icon height, as wide as its shape makes it, whatever size
+    /// it is drawn at; one of no height stays as it is.
+    func testABarsPictureStandsAtTheIconsHeight() {
+        XCTAssertEqual(
+            PictureArithmetic.glyph(LayoutSize(width: 96, height: 64), height: 24), LayoutSize(width: 36, height: 24))
+        XCTAssertEqual(
+            PictureArithmetic.glyph(LayoutSize(width: 10, height: 20), height: 24), LayoutSize(width: 12, height: 24))
+        XCTAssertEqual(
+            PictureArithmetic.glyph(LayoutSize(width: 5, height: 0), height: 24), LayoutSize(width: 5, height: 0))
+    }
+
     /// A layout with no motion places its children at once; its first arrangement places them at once too; the
     /// arrangement after a patch sends them on their way.
     func testALayoutsChildrenTravelOnlyWhereAPatchSentThem() {

@@ -11,6 +11,11 @@ import UIKit
 /// Design: docs/design/platforms/uikit/pages.md#tabs
 @MainActor
 final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate {
+    /// How tall a tab's picture stands - UIKit's icon size for a tab - and on a tab bar made low by a phone on its
+    /// side.
+    static let glyphHeight = 25.0
+    static let lowGlyphHeight = 18.0
+
     /// Which tab the controller shows.
     private(set) var choice = TabChoice()
 
@@ -68,7 +73,10 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             let item = tab.controller.tabBarItem!
             if item.title != tab.title { item.title = tab.title }
             let icon = tab.icon.flatMap { $0.isEmpty ? nil : $0 }
-            if item.image?.accessibilityIdentifier != icon { item.image = icon.flatMap(UIKitRenderer.image(named:)) }
+            if item.image?.accessibilityIdentifier != icon {
+                item.image = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.glyphHeight) }
+                item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph(named: $0, height: Self.lowGlyphHeight) }
+            }
         }
         _ = choice.request(requested)
         let shown = min(choice.shown, max(0, controllers.count - 1))

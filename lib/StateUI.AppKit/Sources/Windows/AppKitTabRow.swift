@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUIHost
 
 /// The tabs a window shows beneath its toolbar for the tabbed view it serves.
 @MainActor
@@ -129,11 +130,9 @@ final class AppKitTabRow: NSView {
     private static func glyph(_ image: NSImage) -> NSImage {
         guard let copy = image.copy() as? NSImage else { return image }
         copy.isTemplate = true
-        if image.size.height > 0 {
-            copy.size = NSSize(
-                width: image.size.width * glyphHeight / image.size.height,
-                height: glyphHeight)
-        }
+        let size = PictureArithmetic.glyph(
+            LayoutSize(width: image.size.width, height: image.size.height), height: glyphHeight)
+        copy.size = NSSize(width: size.width, height: size.height)
         return copy
     }
 
