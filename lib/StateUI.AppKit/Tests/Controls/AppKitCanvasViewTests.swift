@@ -43,9 +43,10 @@ final class AppKitCanvasViewTests: XCTestCase {
         let value = try XCTUnwrap(element.node.props[.drawable])
         let view = AppKitCanvasView()
 
-        view.apply(value)
+        view.apply(Self.drawing(value))
 
-        XCTAssertEqual(view.commandKindsForTesting, Array(0...22).map(Int32.init))
+        XCTAssertEqual(view.instructionsForTesting.count, 23, "every kind read")
+        XCTAssertEqual(view.instructionsForTesting.last, .restoreState)
     }
 
     @MainActor
@@ -56,7 +57,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         }
         let view = AppKitCanvasView()
         view.frame = NSRect(x: 0, y: 0, width: 40, height: 40)
-        view.apply(try XCTUnwrap(element.node.props[.drawable]))
+        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawable])))
 
         let image = try bitmap(of: view)
 
@@ -75,7 +76,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         }
         let view = AppKitCanvasView()
         view.frame = NSRect(x: 0, y: 0, width: 20, height: 20)
-        view.apply(try XCTUnwrap(element.node.props[.drawable]))
+        view.apply(Self.drawing(try XCTUnwrap(element.node.props[.drawable])))
 
         let image = try bitmap(of: view, width: 80)
 
@@ -127,7 +128,13 @@ final class AppKitCanvasViewTests: XCTestCase {
         native.dragForTesting(at: NSPoint(x: 5, y: 6))
         native.releaseForTesting(at: NSPoint(x: 7, y: 8))
 
-        XCTAssertEqual(native.commandKindsForTesting, [0, 14])
+        XCTAssertEqual(native.instructionsForTesting.count, 2)
+        XCTAssertEqual(native.instructionsForTesting.last, .fillEllipse(Rect(x: 0, y: 0, width: 20, height: 20)))
+    }
+
+    /// A drawing as the tree holds it, as its contract declares it.
+    private static func drawing(_ value: HostValue) -> [DrawCommand] {
+        value.values?.compactMap(DrawCommand.init(propValue:)) ?? []
     }
 }
 

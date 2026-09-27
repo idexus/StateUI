@@ -60,6 +60,11 @@ ends.
 
 ## Settings hold until changed
 
+A host drawing in Swift reads the records into instructions the same way on
+every such host (`CanvasInstruction`), keeps what they set by one pen
+(`CanvasPen`), and draws an arc as the curves the host layer makes of it
+(`CanvasArithmetic`) - an arc of a whole turn the ellipse whole.
+
 The instructions run in the order they are written, and a setting holds
 until the next of its kind: a `fillColor` paints every fill after it until
 another `fillColor`. `saveState` remembers the colours, sizes and transforms

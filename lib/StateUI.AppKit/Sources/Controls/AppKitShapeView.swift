@@ -209,47 +209,6 @@ final class AppKitShapeView: AppKitHitTestView {
         }
     }
 
-    static func ellipseArcPath(
-        in rect: NSRect,
-        startAngle: CGFloat,
-        endAngle: CGFloat,
-        clockwise: Bool,
-        closed: Bool,
-        wedge: Bool
-    ) -> NSBezierPath {
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let radiusX = abs(rect.width) / 2
-        let radiusY = abs(rect.height) / 2
-        let startRadians = startAngle * .pi / 180
-        var endRadians = endAngle * .pi / 180
-        if clockwise {
-            while endRadians < startRadians { endRadians += 2 * .pi }
-        } else {
-            while endRadians > startRadians { endRadians -= 2 * .pi }
-        }
-        let delta = endRadians - startRadians
-        let start = CGPoint(
-            x: center.x + radiusX * cos(startRadians),
-            y: center.y + radiusY * sin(startRadians))
-        let end = CGPoint(
-            x: center.x + radiusX * cos(endRadians),
-            y: center.y + radiusY * sin(endRadians))
-        let path = CGMutablePath()
-        if wedge {
-            path.move(to: center)
-            path.addLine(to: start)
-        } else {
-            path.move(to: start)
-        }
-        append(
-            HostPath.arc(
-                from: Point(start.x, start.y), to: Point(end.x, end.y), radiusX: radiusX, radiusY: radiusY,
-                rotation: 0, largeArc: abs(delta) > .pi, sweep: clockwise),
-            to: path)
-        if closed || wedge { path.closeSubpath() }
-        return NSBezierPath(cgPath: path)
-    }
-
     private static func cgPoint(_ point: Point) -> CGPoint {
         CGPoint(x: point.x, y: point.y)
     }
