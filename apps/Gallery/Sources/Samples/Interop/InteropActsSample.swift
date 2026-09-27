@@ -1,4 +1,4 @@
-#if APPKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID
 import StateUI
 
 /// Functions the application registers with its host, called like the acts the
@@ -140,6 +140,50 @@ struct InteropActsSample: SampleContent, ExampleContent {
             }
 
             // And in main.swift, before StateUIAppKit.run(...):
+            GalleryControls.register()   // RatingBarView.register(), and the rest
+            GalleryActs.register()
+            """)
+    #elseif UIKIT
+    static let hostCode = HostCode(
+        heading: "In UIKit",
+        language: .swift,
+        code: """
+            // Platforms/UIKit/Host/GalleryActs.swift, said before the
+            // application runs. A performer is handed the arguments the
+            // contract declares and answers the values it declares.
+            enum GalleryActs {
+                @MainActor
+                static func register() {
+                    StateUIActs.add(GalleryContract.setClipboard) { text in
+                        UIPasteboard.general.string = text
+                    }
+
+                    StateUIActs.add(GalleryContract.readClipboard) {
+                        UIPasteboard.general.string ?? ""
+                    }
+
+                    StateUIActs.add(GalleryContract.batteryLevel) {
+                        battery()
+                    }
+                }
+            }
+
+            // An act aimed at a control is its view's, registered at the end of
+            // Platforms/UIKit/Host/RatingBarView.swift. The identity the aim
+            // sent is turned back into the view this host made, and the
+            // performer is handed that view.
+            extension RatingBarView {
+                @MainActor
+                static func register() {
+                    // … StateUIControls.add(RatingBarContract.self, …)
+
+                    StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+                        bar.flash()
+                    }
+                }
+            }
+
+            // And in main.swift, before StateUIUIKit.run():
             GalleryControls.register()   // RatingBarView.register(), and the rest
             GalleryActs.register()
             """)

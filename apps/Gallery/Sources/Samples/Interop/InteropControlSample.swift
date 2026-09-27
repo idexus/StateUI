@@ -1,4 +1,4 @@
-#if APPKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID
 import StateUI
 
 /// A control the application registers with its host, described here like any
@@ -105,6 +105,79 @@ struct InteropControlSample: SampleContent, ExampleContent {
                         lamp.layer?.backgroundColor = Int32(index) == signal
                             ? colour.cgColor
                             : colour.withAlphaComponent(0.18).cgColor
+                    }
+                }
+            }
+
+            // And its registration, at the end of the same file. `create`
+            // runs once per element and wires what it reports; each `property`
+            // puts a described value on the view.
+            extension TrafficLightView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                        let light = TrafficLightView()
+                        light.onLampTapped = { index in
+                            reports.raise(TrafficLightContract.lampTapped, index)
+                        }
+                        return light
+                    }) { light in
+                        light.property(TrafficLightContract.signal) { view, signal in
+                            view.signal = (signal ?? .stop).rawValue
+                        }
+                        light.raises(TrafficLightContract.lampTapped)
+                    }
+                }
+            }
+
+            // GalleryControls.register(), called from main.swift, lists it:
+            TrafficLightView.register()
+            """)
+    #elseif UIKIT
+    static let hostCode = HostCode(
+        heading: "In UIKit",
+        language: .swift,
+        code: """
+            // Platforms/UIKit/Host/TrafficLightView.swift - an ordinary
+            // UIView that knows nothing of StateUI.
+            final class TrafficLightView: UIView {
+                var onLampTapped: ((Int) -> Void)?
+
+                // A number, because a closed vocabulary crosses as its
+                // member: stop 0, caution 1, go 2.
+                var signal: Int32 = -1 {
+                    didSet { if signal != oldValue { repaint() } }
+                }
+
+                init() {
+                    super.init(frame: .zero)
+
+                    for _ in 0..<3 {
+                        let lamp = UIView()
+                        lamp.layer.cornerRadius = Self.lampSide / 2
+                        lamp.isUserInteractionEnabled = false
+                        addSubview(lamp)
+                        lamps.append(lamp)
+                    }
+
+                    // ONE recognizer on the housing, the lamp read from the
+                    // tap's position - nothing to keep in step with layout.
+                    addGestureRecognizer(UITapGestureRecognizer(
+                        target: self, action: #selector(tapped(_:))))
+                    repaint()
+                }
+
+                // UIKit asks a view how big it is as it lays it out.
+                override func sizeThatFits(_ size: CGSize) -> CGSize {
+                    CGSize(
+                        width: Self.padding * 2 + Self.lampSide,
+                        height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
+                }
+
+                private func repaint() {
+                    for (index, lamp) in lamps.enumerated() {
+                        let colour = Self.lampColors[index]
+                        lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
                     }
                 }
             }

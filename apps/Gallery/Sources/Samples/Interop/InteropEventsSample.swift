@@ -1,4 +1,4 @@
-#if APPKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID
 import StateUI
 
 /// Events the host raises on its own, heard with no control behind them.
@@ -99,6 +99,49 @@ struct InteropEventsSample: SampleContent, ExampleContent {
             }
 
             // And in main.swift, before StateUIAppKit.run(...):
+            GalleryEventSources.start()
+            """)
+    #elseif UIKIT
+    static let hostCode = HostCode(
+        heading: "In UIKit",
+        language: .swift,
+        code: """
+            // Platforms/UIKit/Host/GalleryEventSources.swift. Raising is safe
+            // from any thread, and a raise nobody hears is an ordinary answer,
+            // so the source is wired unconditionally.
+            @MainActor
+            enum GalleryEventSources {
+                static func start() {
+                    // What the host raises, declared where its source is
+                    // wired: a handler listening for anything else is told.
+                    StateUIEvents.raises(GalleryContract.batteryChanged)
+
+                    // UIKit says nothing of the battery until asked to watch it.
+                    UIDevice.current.isBatteryMonitoringEnabled = true
+                    for name in [UIDevice.batteryLevelDidChangeNotification,
+                                 UIDevice.batteryStateDidChangeNotification] {
+                        observers.append(NotificationCenter.default.addObserver(
+                            forName: name, object: nil, queue: .main) { _ in
+                            MainActor.assumeIsolated { report() }
+                        })
+                    }
+                    report()
+                }
+
+                private static func report() {
+                    let (level, charging) = GalleryActs.battery()
+
+                    // A simulator has no battery, so it raises nothing; an
+                    // unchanged reading raises nothing either.
+                    guard level > 0 else { return }
+                    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+                    lastSaid = (level, charging)
+                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+                }
+            }
+
+            // And in main.swift, before StateUIUIKit.run():
             GalleryEventSources.start()
             """)
     #elseif GTK

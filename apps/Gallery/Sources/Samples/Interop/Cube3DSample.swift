@@ -1,9 +1,8 @@
-#if APPKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID
 import StateUI
 
-/// A cube the host draws on the GPU - Metal on AppKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI, OpenGL ES 3.0 on
-/// Android - with
-/// everything about it described from this side.
+/// A cube the host draws on the GPU - Metal on AppKit and UIKit, OpenGL 3.3 on GTK, Direct3D 11.1 on WinUI,
+/// OpenGL ES 3.0 on Android - with everything about it described from this side.
 struct Cube3DSample: SampleContent, ExampleContent {
     @State private var size = 0.6
     @State private var color = 0
@@ -11,6 +10,10 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
     #if APPKIT
     static let id = "appKitMetal"
+    static let title = "A Metal view"
+    static let summary = "A cube drawn on the GPU by the host, sized and coloured from StateUI."
+    #elseif UIKIT
+    static let id = "uiKitMetal"
     static let title = "A Metal view"
     static let summary = "A cube drawn on the GPU by the host, sized and coloured from StateUI."
     #elseif GTK
@@ -185,6 +188,143 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 // with the window that showed it.
                 override func viewDidMoveToWindow() {
                     super.viewDidMoveToWindow()
+
+                    lastTime = CACurrentMediaTime()
+                    resumeOrStop()
+                }
+
+                private func resumeOrStop() {
+                    isPaused = window == nil || !isSpinning
+                }
+            }
+
+            // The shaders, compiled FROM SOURCE as the view is made - so the
+            // application ships no .metal file and its build needs nothing
+            // added to it. A vertex is one float4: the corner in xyz and the
+            // face's brightness in w, so no struct's padding can be measured
+            // differently by the two languages.
+            #include <metal_stdlib>
+            using namespace metal;
+
+            struct Uniforms {
+                float4x4 transform;
+                float4 color;
+            };
+
+            struct Painted {
+                float4 position [[position]];
+                float4 color;
+            };
+
+            vertex Painted cube_vertex(const device float4 *corners [[buffer(0)]],
+                                       constant Uniforms &uniforms [[buffer(1)]],
+                                       uint id [[vertex_id]]) {
+                float4 corner = corners[id];
+
+                Painted out;
+                out.position = uniforms.transform * float4(corner.xyz, 1.0);
+                out.color = float4(uniforms.color.rgb * corner.w, 1.0);
+                return out;
+            }
+
+            fragment float4 cube_fragment(Painted in [[stage_in]]) {
+                return in.color;
+            }
+
+            // And its registration, at the end of MetalCube3DView.swift. The
+            // cube reports nothing, so `create` only makes the view: every
+            // member here goes one way, from the description to the frames.
+            extension MetalCube3DView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+                        MetalCube3DView()
+                    }) { cube in
+                        cube.property(Cube3DContract.size) { view, size in
+                            view.cubeSize = size ?? 0.6
+                        }
+                        cube.property(Cube3DContract.color) { view, color in
+                            view.color = (color ?? .teal).rawValue
+                        }
+                        cube.property(Cube3DContract.isSpinning) { view, spinning in
+                            view.isSpinning = spinning ?? true
+                        }
+                    }
+                }
+            }
+            """)
+    #elseif UIKIT
+    static let hostCode = HostCode(
+        heading: "In UIKit",
+        language: .swift,
+        code: """
+            // Platforms/UIKit/Host/MetalCube3DView.swift - an ordinary MTKView
+            // that knows nothing of StateUI. It draws in `draw(_:)`, so it
+            // needs no delegate beside it.
+            final class MetalCube3DView: MTKView {
+                var cubeSize: Double = 0.6 {
+                    didSet { if cubeSize != oldValue { drawIfStill() } }
+                }
+
+                // A number, because a closed vocabulary crosses as its
+                // member: teal 0, amber 1, violet 2.
+                var color: Int32 = 0 {
+                    didSet { if color != oldValue { drawIfStill() } }
+                }
+
+                var isSpinning: Bool = true {
+                    didSet {
+                        guard isSpinning != oldValue else { return }
+
+                        // The clock restarts with the motion, or the time
+                        // spent stopped would arrive as one jump.
+                        lastTime = CACurrentMediaTime()
+                        resumeOrStop()
+                    }
+                }
+
+                init() {
+                    let device = MTLCreateSystemDefaultDevice()
+                    queue = device?.makeCommandQueue()
+
+                    super.init(frame: .zero, device: device)
+
+                    colorPixelFormat = .bgra8Unorm
+                    depthStencilPixelFormat = .depth32Float
+                    preferredFramesPerSecond = 60
+
+                    guard let device else { return }
+
+                    mesh = device.makeBuffer(bytes: Self.corners, length: ...)
+                    pipeline = Self.pipeline(on: device, colorFormat: colorPixelFormat)
+                }
+
+                override func draw(_ rect: CGRect) {
+                    let now = CACurrentMediaTime()
+
+                    // Only a turning cube moves with the clock. Stopped, the
+                    // frame drawn for a changed size or colour finds the angle
+                    // where it was left.
+                    if isSpinning { angle += now - lastTime }
+                    lastTime = now
+
+                    var uniforms = Uniforms(
+                        transform: transform(aspect: ...),
+                        color: Self.paint(color))
+
+                    encoder.setRenderPipelineState(pipeline)
+                    encoder.setDepthStencilState(depth)
+                    encoder.setVertexBuffer(mesh, offset: 0, index: 0)
+                    encoder.setVertexBytes(
+                        &uniforms, length: MemoryLayout<Uniforms>.stride, index: 1)
+                    encoder.drawPrimitives(
+                        type: .triangle, vertexStart: 0, vertexCount: 36)
+                }
+
+                // Nothing is left turning behind the view: the loop stops
+                // with the window that showed it.
+                override func didMoveToWindow() {
+                    super.didMoveToWindow()
 
                     lastTime = CACurrentMediaTime()
                     resumeOrStop()
@@ -480,6 +620,13 @@ struct Cube3DSample: SampleContent, ExampleContent {
     private static let drawnBy = "The cube is an `MTKView` the gallery registers with "
         + "`StateUIControls.add`, exactly as it registers a view that draws with a layer. A "
         + "view that draws on the GPU is still an `NSView`, so the registration has nothing "
+        + "extra to say."
+    private static let stopsWith = "The loop also stops with the window, so nothing is "
+        + "left turning behind a page you have left."
+    #elseif UIKIT
+    private static let drawnBy = "The cube is an `MTKView` the gallery registers with "
+        + "`StateUIControls.add`, exactly as it registers a view that draws with a layer. A "
+        + "view that draws on the GPU is still a `UIView`, so the registration has nothing "
         + "extra to say."
     private static let stopsWith = "The loop also stops with the window, so nothing is "
         + "left turning behind a page you have left."

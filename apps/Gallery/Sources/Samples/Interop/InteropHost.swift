@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if APPKIT || GTK || WINUI || ANDROID
+#if APPKIT || UIKIT || GTK || WINUI || ANDROID
 /// The host this build of the gallery runs on, as its interop group names it: the one place the group's samples
 /// differ by host, beside each sample's host half.
 enum InteropHost {
@@ -11,6 +11,16 @@ enum InteropHost {
     static let control = "An AppKit control"
     static let controlSummary = "An NSView the app registers with its host, described like any other control."
     static let lamps = "The lamps are an `NSView` the gallery registers with `StateUIControls.add`, under the "
+        + "members `TrafficLightContract` declares with the type of each value."
+    static let made = "view"
+    static let awaiting = ""
+    static let cubeDrawn = "by Metal"
+    #elseif UIKIT
+    static let name = "UIKit"
+    static let key = "uiKit"
+    static let control = "A UIKit control"
+    static let controlSummary = "A UIView the app registers with its host, described like any other control."
+    static let lamps = "The lamps are a `UIView` the gallery registers with `StateUIControls.add`, under the "
         + "members `TrafficLightContract` declares with the type of each value."
     static let made = "view"
     static let awaiting = ""
