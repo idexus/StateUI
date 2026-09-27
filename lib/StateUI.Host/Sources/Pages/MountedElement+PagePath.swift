@@ -28,6 +28,13 @@ extension MountedElement {
         }
     }
 
+    /// Whether the stack this element stands on shows its bar over it: over a page that keeps its bar, and over an
+    /// arrangement only where the page it shows stands in no stack of its own - that stack's bar is the one.
+    public var showsTheStacksBar: Bool {
+        guard let page = visiblePage, page.value(.hasNavigationBar)?.bool != false else { return false }
+        return type == .page || visibleNavigationStack == nil
+    }
+
     /// The first tabbed view on the visible page path.
     public var visibleTabbedView: MountedElement? {
         switch type {

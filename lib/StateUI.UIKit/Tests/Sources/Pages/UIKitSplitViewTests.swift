@@ -44,6 +44,37 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertFalse(menuOpen.wrappedValue, "the host's own move is not the user's: the sidebar stays hidden")
     }
 
+    /// Tabs whose chosen tab is a stack stand under that stack's bar alone: the bar of the stack UIKit stands them on
+    /// hides over them, and shows again over the sidebar.
+    @MainActor
+    func testTabsOfStacksStandUnderOneBar() throws {
+        let menuOpen = State(wrappedValue: true)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView(menuOpen.projectedValue) { Label("Sidebar") } detail: {
+                TabbedView([0, 1]) { tab -> any Page in
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Label("Tab \(tab)") }
+                        destination: { number in Label("Pushed \(number)") }
+                }
+            }
+        }
+        defer { host.finish() }
+        host.settle { false }
+        menuOpen.wrappedValue = false
+        host.runtime.pump.turn()
+        let tabs = try XCTUnwrap(Self.controller(of: .tabbedView, in: host))
+        host.settle { tabs.view.window != nil && tabs.navigationController?.isNavigationBarHidden != false }
+
+        XCTAssertNotNil(tabs.view.window)
+        XCTAssertNotEqual(tabs.navigationController?.isNavigationBarHidden, false, "no bar laid over the tabs")
+
+        let sidebar = try XCTUnwrap((Self.controller(of: .splitView, in: host) as? UISplitViewController)?
+            .viewController(for: .primary))
+        menuOpen.wrappedValue = true
+        host.runtime.pump.turn()
+        host.settle { sidebar.view.window != nil && sidebar.navigationController?.isNavigationBarHidden == false }
+        XCTAssertEqual(sidebar.navigationController?.isNavigationBarHidden, false, "the sidebar's bar shows")
+    }
+
     /// The controller of the first element of `type` in the host's tree.
     @MainActor
     private static func controller(of type: NodeType, in host: UIKitRenderer) -> UIViewController? {

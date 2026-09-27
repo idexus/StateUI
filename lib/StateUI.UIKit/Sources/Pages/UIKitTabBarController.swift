@@ -17,6 +17,13 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
     /// What the controller does when the user chooses a tab, handed the one it showed and the one it shows.
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
+    /// Whether the stack the tabs stand on shows its bar over them, as the host layer says (`showsTheStacksBar`) -
+    /// laid here on a stack of UIKit's own, a collapsed split view's, where no StateUI stack lays it.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    var showsTheStacksBar = true {
+        didSet { if showsTheStacksBar != oldValue { layTheStacksBar(animated: false) } }
+    }
+
     init() {
         super.init(nibName: nil, bundle: nil)
         delegate = self
@@ -25,6 +32,29 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("UIKitTabBarController is made in code")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        layTheStacksBar(animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard let stack = uiKitsOwnStack, stack.topViewController !== self else { return }
+        stack.setNavigationBarHidden(false, animated: animated)
+    }
+
+    /// The stack the tabs stand on where it is UIKit's own.
+    private var uiKitsOwnStack: UINavigationController? {
+        navigationController.flatMap { $0 is UIKitNavigationController ? nil : $0 }
+    }
+
+    private func layTheStacksBar(animated: Bool) {
+        guard let stack = uiKitsOwnStack, stack.topViewController === self,
+              stack.isNavigationBarHidden == showsTheStacksBar
+        else { return }
+        stack.setNavigationBarHidden(!showsTheStacksBar, animated: animated)
     }
 
     /// The tabs, each its controller, its title and its picture, and the tab the tree asks for, where the user has

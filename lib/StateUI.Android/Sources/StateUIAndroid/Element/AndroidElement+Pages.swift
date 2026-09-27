@@ -129,7 +129,7 @@ extension AndroidElement {
             content.navigation = .sidebar(sidebar.value(.icon)?.string)
         }
 
-        navigation.setShowsBar(page?.value(.hasNavigationBar)?.bool != false)
+        navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)
         navigation.bar.show(content)
         navigation.bar.showTitleView(page?.slotContent(.titleView)?.android.layoutItem?.view)
         navigation.bar.onMenuChose = { index in

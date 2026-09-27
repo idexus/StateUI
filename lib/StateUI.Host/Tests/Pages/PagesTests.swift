@@ -82,6 +82,25 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(stands("sheet"), false, "a sheet keeps its own row")
     }
 
+    /// A stack shows its bar over a page that keeps one, and over tabs only where the chosen tab stands in no stack of
+    /// its own, whose bar is the one.
+    func testAStacksBarShowsOnlyWhereNoStackBelowHasOne() throws {
+        let hidden = [Prop.hasNavigationBar: HostValue.bool(false)]
+        let runtime = runtime(node("window", .window, children: [node("stack", .navigationStack, children: [
+            node("page", .page),
+            node("bare", .page, hidden),
+            node("pages", .tabbedView, children: [node("tab", .page)]),
+            node("stacks", .tabbedView, children: [node("inner", .navigationStack, children: [node("top", .page)])]),
+        ])])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let shows = { (id: String) in root.first(id: .manual(id))?.showsTheStacksBar }
+
+        XCTAssertEqual(shows("page"), true)
+        XCTAssertEqual(shows("bare"), false, "a page hiding its bar")
+        XCTAssertEqual(shows("pages"), true, "tabs of pages wear the bar of the stack they stand on")
+        XCTAssertEqual(shows("stacks"), false, "a tab that is a stack has a bar of its own")
+    }
+
     /// Where a tabbed view's tabs stand is already right as it is applied, while the tree that holds it is made.
     func testTabsStandRightWhileTheirTreeIsMade() {
         var read: [String: Bool] = [:]

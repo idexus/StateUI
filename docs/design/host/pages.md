@@ -94,6 +94,11 @@ in its own chrome. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`)
 and its bar's colours.
 
+A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
+a page that keeps its bar, and over tabs or a split view only where the page
+they show stands in no stack of their own - that stack's bar is the one, so
+tabs of stacks never stand under two bars.
+
 ## Menus
 
 A menu is walked the same way on every host (`MenuEntry`): its items, its

@@ -65,6 +65,7 @@ extension UIKitElement {
             if let controller { chrome.show(on: controller.navigationItem) }
         case .tabbedView:
             if let controller { chrome.show(on: controller.navigationItem) }
+            (controller as? UIKitTabBarController)?.showsTheStacksBar = element.showsTheStacksBar
             children.forEach { $0.composeChrome() }
         case .navigationStack, .splitView:
             children.forEach { $0.composeChrome() }
@@ -83,8 +84,7 @@ extension UIKitElement {
             guard let navigation = controller as? UIKitNavigationController else { return }
             navigation.onPopped = { [weak self] staying in self?.userPopped(staying: staying) }
             navigation.showsBar = { [weak self] shown in
-                self?.children.first { $0.controller === shown }?.element.visiblePage?.value(.hasNavigationBar)?.bool
-                    != false
+                self?.children.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
             navigation.setPages(children.compactMap(\.controller), animated: !(host?.reducesMotion() ?? true))
         case .tabbedView:

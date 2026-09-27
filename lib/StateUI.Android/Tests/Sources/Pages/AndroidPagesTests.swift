@@ -18,6 +18,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
+            ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
             ("testATabsAndAnActionsPicturesStandAtTheIconSize", testATabsAndAnActionsPicturesStandAtTheIconSize),
             ("testAModalStackPresentsOverThePageAndBackTakesItDown", testAModalStackPresentsOverThePageAndBackTakesItDown),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
@@ -266,6 +267,33 @@ extension AndroidPagesTests {
             XCTAssertTrue(host.goBack(), "the system's back takes a page hiding its bar back")
             host.runtime.pump.turn()
             XCTAssertEqual(path.wrappedValue, [1])
+        }
+    }
+
+    /// Tabs whose chosen tab is a stack, pushed on a stack, stand under that tab's bar alone: the outer stack's bar
+    /// hides over them and shows again over its own page.
+    func testTabsOfStacksOnAStackStandUnderOneBar() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [1])
+            let host = AndroidRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in
+                    TabbedView([0, 1]) { tab -> any Page in
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) { TitledPage(title: "Tab \(tab)") }
+                            destination: { number in TitledPage(title: "Pushed \(number)") }
+                    }
+                }
+            }
+            host.layOut()
+            let stacks = host.views(AndroidNavigationView.self)
+            let (outer, tab) = (try XCTUnwrap(stacks.first), try XCTUnwrap(stacks.dropFirst().first))
+            XCTAssertFalse(outer.showsBar, "no bar laid over the tabs")
+            XCTAssertTrue(tab.showsBar, "the tab's own")
+
+            path.wrappedValue = []
+            host.runtime.pump.turn()
+            XCTAssertTrue(outer.showsBar, "the root's bar")
         }
     }
 
