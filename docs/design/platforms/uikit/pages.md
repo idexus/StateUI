@@ -46,6 +46,13 @@ whoever moved it; the program's own move is not told back. Collapsed into one
 column, as on a phone, the detail shows first, and the sidebar shows by being
 the column shown.
 
+The trap: collapsed, UIKit keeps the detail on the sidebar's navigation stack
+once the sidebar has shown, and a detail the tree replaces then never takes
+its place - the old one stays on screen. The host takes the old detail off
+that stack itself, sets the new one and shows it where the detail showed,
+without motion; UIKit's telling of that move is not the user's and is not
+reported back.
+
 ## Sheets
 
 A window's modal stack is UIKit's page sheets, each presented over the one

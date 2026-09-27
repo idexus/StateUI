@@ -20,6 +20,9 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
 
     private var shown: (sidebar: UIViewController?, detail: UIViewController?)
 
+    /// Whether the host is moving the columns itself, which UIKit's telling of it does not report back.
+    private var replacingDetail = false
+
     init() {
         super.init(style: .doubleColumn)
         delegate = self
@@ -34,8 +37,20 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// The sidebar's controller and the detail's.
     func show(sidebar: UIViewController?, detail: UIViewController?) {
         if sidebar !== shown.sidebar { setViewController(sidebar, for: .primary) }
-        if detail !== shown.detail { setViewController(detail, for: .secondary) }
+        if detail !== shown.detail { replace(detail: detail) }
         shown = (sidebar, detail)
+    }
+
+    /// Collapsed into one column, UIKit keeps the detail it collapsed on the sidebar's stack whatever the detail
+    /// becomes: the host takes it off first, and shows the new one where the detail showed.
+    /// Design: docs/design/platforms/uikit/pages.md#a-split-view
+    private func replace(detail: UIViewController?) {
+        guard isCollapsed else { return setViewController(detail, for: .secondary) }
+        replacingDetail = true
+        defer { replacingDetail = false }
+        viewController(for: .primary)?.navigationController?.popToRootViewController(animated: false)
+        setViewController(detail, for: .secondary)
+        if isPresented != true { UIView.performWithoutAnimation { show(.secondary) } }
     }
 
     /// Shows the sidebar, or hides it, as the tree says - the program's move, which UIKit's telling of it does not
@@ -53,13 +68,13 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     }
 
     func splitViewController(_ split: UISplitViewController, willShow column: UISplitViewController.Column) {
-        guard column == .primary, isPresented != true else { return }
+        guard column == .primary, isPresented != true, !replacingDetail else { return }
         isPresented = true
         onPresentationChanged?(true)
     }
 
     func splitViewController(_ split: UISplitViewController, willHide column: UISplitViewController.Column) {
-        guard column == .primary, isPresented != false else { return }
+        guard column == .primary, isPresented != false, !replacingDetail else { return }
         isPresented = false
         onPresentationChanged?(false)
     }
