@@ -29,6 +29,7 @@ final class UIKitSwipeBackTests: XCTestCase {
     }
 
     /// The navigation controller whose page `view` stands in.
+    @MainActor
     private static func navigation(around view: UIView) -> UINavigationController? {
         var responder: UIResponder? = view
         while let each = responder {
