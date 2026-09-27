@@ -12,10 +12,14 @@ enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
         "Canvas", "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator",
-        "Pin", "PositionIndicator", "Span", "Spans",
+        "Pin", "PositionIndicator",
         "TitleBar", "TrailingContent",
         "WebView",
     ]
+
+    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
+    /// tier's record reaches them: only a member the entry's own records name is realized.
+    static let viewless: Set<String> = ["Span"]
 
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
@@ -43,6 +47,14 @@ enum UIKitRealization {
         .complete("Page", "padding"),
         .complete("Page", "title"),
         .complete("RadioButton", "groupName"),
+        .complete("Span", "background"),
+        .complete("Span", "fontAttributes"),
+        .complete("Span", "fontFamily"),
+        .complete("Span", "fontSize"),
+        .complete("Span", "text"),
+        .complete("Span", "textCase"),
+        .complete("Span", "textColor"),
+        .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
@@ -61,7 +73,7 @@ enum UIKitRealization {
 
     /// What UIKit realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {
-        HostRegister(records: records, unrealized: unrealized, viewless: [], notPlanned: [:]).and(declaration)
+        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: [:]).and(declaration)
     }
 }
 #endif

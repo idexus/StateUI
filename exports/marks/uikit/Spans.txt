@@ -1,1 +1,2 @@
-Spans: not realized
+Button.clicked: ✅
+Spans: ✅

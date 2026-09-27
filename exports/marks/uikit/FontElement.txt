@@ -23,10 +23,10 @@ SearchField.fontAttributes: ✅
 SearchField.fontAutoScalingEnabled: not realized
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
-Span.fontAttributes: not realized
+Span.fontAttributes: cannot read fontAttributes of Span - UIKit's driver has no path for it yet
 Span.fontAutoScalingEnabled: not realized
-Span.fontFamily: not realized
-Span.fontSize: not realized
+Span.fontFamily: cannot read fontFamily of Span - UIKit's driver has no path for it yet
+Span.fontSize: cannot read fontSize of Span - UIKit's driver has no path for it yet
 TextEditor.fontAttributes: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet
 TextEditor.fontAutoScalingEnabled: not realized
 TextEditor.fontFamily: cannot read the words of a UIKitTextEditorView - UIKit's driver has no path for it yet

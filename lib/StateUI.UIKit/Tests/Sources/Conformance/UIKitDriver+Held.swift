@@ -27,7 +27,7 @@ extension UIKitDriver {
             return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
         case .accessibilityHeadingLevel:
             throw DriverCannot("read a heading's level: UIKit marks a heading, not its level")
-        case .fontSize, .fontAttributes, .fontFamily, .textColor:
+        case .fontSize, .fontAttributes, .fontFamily, .textColor, .characterSpacing, .lineHeight, .textDecorations:
             return try words(property, view)
         case .background:
             return view.backgroundColor.map { Background.color(color($0)).propValue }
@@ -55,8 +55,11 @@ extension UIKitDriver {
     /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their colour.
     private static func words(_ property: Prop, _ view: UIView) throws -> HostValue? {
         view.layoutIfNeeded()
+        let written = (view as? UILabel)?.attributedText
+        let first = written.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
         let drawn: (font: UIFont?, color: UIColor?) = switch view {
-        case let label as UILabel: (label.font, label.textColor)
+        case let label as UILabel:
+            (first?[.font] as? UIFont ?? label.font, first?[.foregroundColor] as? UIColor ?? label.textColor)
         case let field as UITextField: (field.font, field.textColor)
         case let button as UIButton: (button.titleLabel?.font, button.titleLabel?.textColor)
         default: (nil, nil)
@@ -72,6 +75,19 @@ extension UIKitDriver {
             if traits.contains(.traitItalic) { attributes.insert(.italic) }
             return attributes.propValue
         case .textColor: return drawn.color.map { color($0).propValue }
+        case .characterSpacing:
+            guard written != nil else { throw DriverCannot("read the spacing of a \(type(of: view))") }
+            return ((first?[.kern] as? Double) ?? 0).propValue
+        case .lineHeight:
+            guard written != nil else { throw DriverCannot("read the lines of a \(type(of: view))") }
+            let multiple = (first?[.paragraphStyle] as? NSParagraphStyle)?.lineHeightMultiple ?? 0
+            return multiple > 0 ? Double(multiple).propValue : nil
+        case .textDecorations:
+            guard written != nil else { throw DriverCannot("read the lines of a \(type(of: view))") }
+            var decorations: TextDecorations = []
+            if first?[.underlineStyle] != nil { decorations.insert(.underline) }
+            if first?[.strikethroughStyle] != nil { decorations.insert(.strikethrough) }
+            return decorations.propValue
         default: return nil
         }
     }

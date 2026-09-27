@@ -7,8 +7,8 @@ RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: not realized
-Span.text: not realized
-Span.textCase: not realized
+Span.text: cannot read text of Span - UIKit's driver has no path for it yet
+Span.textCase: cannot read text of Span - UIKit's driver has no path for it yet
 TextEditor.text: ✅
 TextEditor.textCase: not realized
 TextField.text: ✅

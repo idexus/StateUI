@@ -17,12 +17,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of Button - AppKit's driver has no path for it yet; Android Views: cannot read icon of Button - Android's driver has no path for it yet |
-| `iconPosition` | property | `IconPosition` | adaptive |  |  |  |  |  |  | cannot read iconPosition of Button - AppKit's driver has no path for it yet; Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet |
-| `iconSpacing` | property | `Double` | adaptive |  |  |  |  |  |  | Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet |
-| `lineBreak` | property | `LineBreak` | native |  |  |  |  |  |  | cannot read lineBreak of Button - AppKit's driver has no path for it yet; Android Views: cannot read lineBreak of Button - Android's driver has no path for it yet |
-| `onPressed` (`pressed`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
-| `onReleased` (`released`) | event |  | native | ✅ |  |  | ✅ | ✅ |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of Button - AppKit's driver has no path for it yet; UIKit: cannot read icon of Button - UIKit's driver has no path for it yet; Android Views: cannot read icon of Button - Android's driver has no path for it yet |
+| `iconPosition` | property | `IconPosition` | adaptive |  |  |  |  |  |  | cannot read iconPosition of Button - AppKit's driver has no path for it yet; UIKit: cannot read iconPosition of Button - UIKit's driver has no path for it yet; Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet |
+| `iconSpacing` | property | `Double` | adaptive |  |  |  |  |  |  | UIKit: cannot read iconSpacing of Button - UIKit's driver has no path for it yet; Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet |
+| `lineBreak` | property | `LineBreak` | native |  |  |  |  |  |  | cannot read lineBreak of Button - AppKit's driver has no path for it yet; UIKit: cannot read lineBreak of Button - UIKit's driver has no path for it yet; Android Views: cannot read lineBreak of Button - Android's driver has no path for it yet |
+| `onPressed` (`pressed`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `onReleased` (`released`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 Realization:
 
@@ -51,7 +51,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `background` | property | `Background` | native | ☑️ |  |  |  | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet |
+| `background` | property | `Background` | native | ☑️ |  |  |  | ✅ |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: cannot read background of Button - UIKit's driver has no path for it yet; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -135,7 +135,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  |  |
+| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | UIKit: cannot read the spacing of a UIKitButtonView - UIKit's driver has no path for it yet |
 | `textColor` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
@@ -163,9 +163,9 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of Button - AppKit's driver has no path for it yet; Android Views: cannot read shape of Button - Android's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Button - AppKit's driver has no path for it yet; Android Views: cannot read stroke of Button - Android's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Button - AppKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Button - Android's driver has no path for it yet |
+| `shape` | property | `ContainerShape` | stateUI |  |  |  |  | ✅ |  | cannot read shape of Button - AppKit's driver has no path for it yet; UIKit: cannot read shape of Button - UIKit's driver has no path for it yet; Android Views: cannot read shape of Button - Android's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  |  | ✅ |  | cannot read stroke of Button - AppKit's driver has no path for it yet; UIKit: cannot read stroke of Button - UIKit's driver has no path for it yet; Android Views: cannot read stroke of Button - Android's driver has no path for it yet |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  |  | ✅ |  | cannot read strokeWidth of Button - AppKit's driver has no path for it yet; UIKit: cannot read strokeWidth of Button - UIKit's driver has no path for it yet; Android Views: cannot read strokeWidth of Button - Android's driver has no path for it yet |
 
 ## From [ImageElement](tiers/ImageElement.md)
 

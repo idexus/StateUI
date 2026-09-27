@@ -16,7 +16,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
-| [Button](Button.md) | 86 | 60 ✅ · 2 ☑️ | 59 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
+| [Button](Button.md) | 86 | 60 ✅ · 2 ☑️ | 61 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
 | [Canvas](Canvas.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 56 ✅ | 54 ✅ |  |
 | [CheckBox](CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
 | [ColorBox](ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
@@ -25,7 +25,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Grid](Grid.md) | 77 | 59 ✅ · 1 ☑️ | 59 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
 | [HStack](HStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [Image](Image.md) | 69 | 53 ✅ · 2 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
-| [Label](Label.md) | 81 | 59 ✅ · 2 ☑️ | 60 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
+| [Label](Label.md) | 81 | 59 ✅ · 2 ☑️ | 63 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
 | [Line](Line.md) | 80 | 60 ✅ · 2 ☑️ | 60 ✅ | 13 ✅ | 61 ✅ | 64 ✅ |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
 | [Path](Path.md) | 77 | 57 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
@@ -48,7 +48,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1605 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1610 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -72,7 +72,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Page](Page.md) | 12 | 8 ✅ | 11 ✅ |  | 7 ✅ | 9 ✅ |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 | 6 ✅ |  |  | 4 ✅ | 6 ✅ |  |
-| [Span](Span.md) | 12 | 1 ✅ |  |  | 1 ✅ | 6 ✅ |  |
+| [Span](Span.md) | 12 | 1 ✅ | 1 ✅ |  | 1 ✅ | 6 ✅ |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](SplitView.md) | 5 | 3 ✅ | 4 ✅ |  | 1 ✅ | 4 ✅ |  |
 | [TabbedView](TabbedView.md) | 6 | 3 ✅ | 6 ✅ |  | 1 ✅ | 4 ✅ |  |
@@ -81,7 +81,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 41 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 42 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

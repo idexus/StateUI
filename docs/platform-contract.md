@@ -119,8 +119,8 @@ host whose passing test proved one of its members.
 | `ScrollView` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `SearchField` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Slider` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| `Span` | structure | ✅ |  |  | ✅ | ✅ |  |
-| `Spans` | structure | ✅ |  |  | ✅ | ✅ |  |
+| `Span` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
+| `Spans` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | `SplitView` | adaptive | ✅ | ✅ |  |  | ✅ |  |
 | `Stepper` | native | ✅ | ✅ | ✅ |  | ✅ |  |
 | `Switch` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -423,7 +423,7 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 | 52 ✅ · 2 ☑️ | 53 ✅ | 14 ✅ | 53 ✅ | 52 ✅ |  |
-| [Button](controls/Button.md) | 86 | 60 ✅ · 2 ☑️ | 59 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
+| [Button](controls/Button.md) | 86 | 60 ✅ · 2 ☑️ | 61 ✅ | 16 ✅ | 60 ✅ | 65 ✅ |  |
 | [Canvas](controls/Canvas.md) | 70 | 55 ✅ · 2 ☑️ |  |  | 56 ✅ | 54 ✅ |  |
 | [CheckBox](controls/CheckBox.md) | 69 | 54 ✅ · 2 ☑️ | 54 ✅ | 15 ✅ | 55 ✅ | 55 ✅ |  |
 | [ColorBox](controls/ColorBox.md) | 68 | 53 ✅ · 1 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
@@ -432,7 +432,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Grid](controls/Grid.md) | 77 | 59 ✅ · 1 ☑️ | 59 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
 | [HStack](controls/HStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [Image](controls/Image.md) | 69 | 53 ✅ · 2 ☑️ | 53 ✅ | 13 ✅ | 54 ✅ | 52 ✅ |  |
-| [Label](controls/Label.md) | 81 | 59 ✅ · 2 ☑️ | 60 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
+| [Label](controls/Label.md) | 81 | 59 ✅ · 2 ☑️ | 63 ✅ | 15 ✅ | 59 ✅ | 63 ✅ |  |
 | [Line](controls/Line.md) | 80 | 60 ✅ · 2 ☑️ | 60 ✅ | 13 ✅ | 61 ✅ | 64 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 | 57 ✅ · 2 ☑️ | 57 ✅ | 13 ✅ | 58 ✅ | 61 ✅ |  |
@@ -455,7 +455,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 56 ✅ · 1 ☑️ | 56 ✅ | 13 ✅ | 55 ✅ | 58 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  | 60 ✅ |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 55 ✅ · 1 ☑️ | 55 ✅ | 13 ✅ | 54 ✅ | 57 ✅ |  |
-| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1605 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
+| **Met** - ✅ and – | 2515 | 1640 of 2515 met | 1610 of 2515 met | 376 of 2515 met | 1709 of 2515 met | 1718 of 2515 met |  |
 
 ### Application structure
 
@@ -475,7 +475,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Page](controls/Page.md) | 12 | 8 ✅ | 11 ✅ |  | 7 ✅ | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ |  |  | 4 ✅ | 6 ✅ |  |
-| [Span](controls/Span.md) | 12 | 1 ✅ |  |  | 1 ✅ | 6 ✅ |  |
+| [Span](controls/Span.md) | 12 | 1 ✅ | 1 ✅ |  | 1 ✅ | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 4 ✅ |  | 1 ✅ | 4 ✅ |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 3 ✅ | 6 ✅ |  | 1 ✅ | 4 ✅ |  |
@@ -484,7 +484,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 41 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 42 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

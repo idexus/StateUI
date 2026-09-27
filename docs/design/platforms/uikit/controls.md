@@ -38,3 +38,17 @@ counted in characters and handed to UIKit in its UTF-16 units. A text view has
 no placeholder of its own, so an editor shows one in a label over itself; an
 editor that grows with its words asks for their whole height instead of
 scrolling them.
+
+## A label's words
+
+A Label is UIKit's label showing its words - or its spans' runs, each its
+own look over the label's - as attributed text: the font, the colour, what
+stands behind the words, the space between the letters, a line's height and
+the lines under or through them. Its padding is room it keeps around the
+words, as it measures them and as it draws them, standing them down its room
+as the tree says, which UIKit's label does not do of itself.
+
+A Button is UIKit's button, its configuration what the tree says: its words
+and their look, an icon beside them, the box behind them - its colour, its
+outline and its shape, an oval a capsule - and the room inside it.
+

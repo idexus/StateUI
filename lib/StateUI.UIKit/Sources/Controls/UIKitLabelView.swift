@@ -6,30 +6,28 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Label: a `UILabel`, its words standing across and down its room as the tree says.
+/// A Label: a `UILabel` showing its words - or its spans' runs, each its own look over the label's - with their
+/// look as attributes, standing across and down its room within its padding as the tree says.
+/// Design: docs/design/platforms/uikit/controls.md#a-labels-words
 @MainActor
 final class UIKitLabelView: UILabel {
+    private var words = ""
+    private var look = TextLook()
+    private var runs: [TextRun]?
+    private var horizontal = TextAlignment.start
+    private var breaking = LineBreak.wordWrap
+
+    /// The room between the label's edge and its words.
+    private(set) var padding = UIEdgeInsets.zero
+
     /// Where the words stand down the room; a `UILabel` of itself stands them in its middle.
     private var verticalAlignment = TextAlignment.start {
         didSet { if verticalAlignment != oldValue { setNeedsDisplay() } }
     }
 
-    /// Where the words stand across and down the room: a line's start and end follow the view's own direction.
-    func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
-        textAlignment = switch horizontal {
-        case .start: .natural
-        case .center: .center
-        case .end: effectiveUserInterfaceLayoutDirection == .rightToLeft ? .left : .right
-        }
-        verticalAlignment = vertical
-    }
-
-    private let madeFont: UIFont
-    private let madeColor: UIColor?
+    private let madeFont = UIFont.preferredFont(forTextStyle: .body)
 
     init() {
-        madeFont = UIFont.preferredFont(forTextStyle: .body)
-        madeColor = UIColor.label
         super.init(frame: .zero)
         font = madeFont
         numberOfLines = 0
@@ -40,15 +38,59 @@ final class UIKitLabelView: UILabel {
         fatalError("UIKitLabelView is made in code")
     }
 
-    /// The words' look: the system's font and colour where it says nothing.
-    func setLook(_ look: TextLook) {
-        font = .stateUI(look, standing: madeFont)
-        textColor = look.color.flatMap(UIColor.init(stateUI:)) ?? madeColor
+    /// The words, in their case.
+    func setText(_ text: String) {
+        words = text
+        show()
+    }
+
+    /// Changes the words' look; what it leaves unsaid is the system's.
+    func setLook(_ change: (inout TextLook) -> Void) {
+        change(&look)
+        show()
+    }
+
+    /// The spans' runs in place of the words; nil for the words again.
+    func setRuns(_ runs: [TextRun]?) {
+        self.runs = runs
+        show()
+    }
+
+    /// The room between the label's edge and its words.
+    func setPadding(_ insets: Insets?) {
+        padding = insets.map(UIEdgeInsets.init) ?? .zero
+        invalidateIntrinsicContentSize()
+        setNeedsDisplay()
+    }
+
+    /// Where the words stand across and down the room: a line's start and end follow the view's own direction.
+    func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
+        self.horizontal = horizontal
+        verticalAlignment = vertical
+        show()
     }
 
     /// How the words break, and how many lines show (`LineBreak.lines`).
     func setLines(breaking: LineBreak, maximum: Int?) {
+        self.breaking = breaking
         numberOfLines = breaking.lines(maximum: maximum) ?? 0
+        show()
+    }
+
+    /// Writes the words - or the runs - with their look, then how the whole stands and breaks.
+    private func show() {
+        let standing = look.attributes(standing: madeFont, color: .label)
+        let shown = NSMutableAttributedString()
+        for run in runs ?? [TextRun(text: words, look: TextLook())] {
+            shown.append(NSAttributedString(
+                string: run.text, attributes: run.look.over(look).attributes(standing: madeFont, color: .label)))
+        }
+        attributedText = shown.length > 0 ? shown : NSAttributedString(string: "", attributes: standing)
+        textAlignment = switch horizontal {
+        case .start: .natural
+        case .center: .center
+        case .end: effectiveUserInterfaceLayoutDirection == .rightToLeft ? .left : .right
+        }
         lineBreakMode = switch breaking {
         case .noWrap: .byClipping
         case .wordWrap: .byWordWrapping
@@ -57,16 +99,27 @@ final class UIKitLabelView: UILabel {
         case .tailTruncation: .byTruncatingTail
         case .middleTruncation: .byTruncatingMiddle
         }
+        invalidateIntrinsicContentSize()
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let room = CGSize(
+            width: size.width.isFinite ? max(0, size.width - padding.left - padding.right) : size.width,
+            height: size.height.isFinite ? max(0, size.height - padding.top - padding.bottom) : size.height)
+        let fitted = super.sizeThatFits(room)
+        return CGSize(
+            width: fitted.width + padding.left + padding.right, height: fitted.height + padding.top + padding.bottom)
     }
 
     override func drawText(in rect: CGRect) {
-        let fitted = textRect(forBounds: rect, limitedToNumberOfLines: numberOfLines)
+        let room = rect.inset(by: padding)
+        let fitted = textRect(forBounds: room, limitedToNumberOfLines: numberOfLines)
         let top: CGFloat = switch verticalAlignment {
-        case .start: rect.minY
-        case .center: rect.minY + (rect.height - fitted.height) / 2
-        case .end: rect.maxY - fitted.height
+        case .start: room.minY
+        case .center: room.minY + (room.height - fitted.height) / 2
+        case .end: room.maxY - fitted.height
         }
-        super.drawText(in: CGRect(x: rect.minX, y: top, width: rect.width, height: min(fitted.height, rect.height)))
+        super.drawText(in: CGRect(x: room.minX, y: top, width: room.width, height: min(fitted.height, room.height)))
     }
 }
 #endif

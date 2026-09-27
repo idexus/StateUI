@@ -1,7 +1,7 @@
-Button.clicked: cannot read shape of Grid - UIKit's driver has no path for it yet
-Button.shape: not realized
-Button.stroke: not realized
-Button.strokeWidth: not realized
+Button.clicked: cannot read shape of Button - UIKit's driver has no path for it yet
+Button.shape: cannot read shape of Button - UIKit's driver has no path for it yet
+Button.stroke: cannot read stroke of Button - UIKit's driver has no path for it yet
+Button.strokeWidth: cannot read strokeWidth of Button - UIKit's driver has no path for it yet
 Grid.shape: cannot read shape of Grid - UIKit's driver has no path for it yet
 Grid.stroke: cannot read stroke of Grid - UIKit's driver has no path for it yet
 Grid.strokeWidth: cannot read strokeWidth of Grid - UIKit's driver has no path for it yet

@@ -130,7 +130,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read characterSpacing of Label - AppKit's driver has no path for it yet; Android Views: cannot read characterSpacing of Label - Android's driver has no path for it yet |
+| `characterSpacing` | property | `Double` | native |  | ✅ |  |  | ✅ |  | cannot read characterSpacing of Label - AppKit's driver has no path for it yet; Android Views: cannot read characterSpacing of Label - Android's driver has no path for it yet |
 | `textColor` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
@@ -159,7 +159,7 @@ How far apart the lines of text are.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineHeight` | property | `Double` | native |  |  |  |  | ✅ |  | cannot read lineHeight of Label - AppKit's driver has no path for it yet; Android Views: cannot read lineHeight of Label - Android's driver has no path for it yet |
+| `lineHeight` | property | `Double` | native |  | ✅ |  |  | ✅ |  | cannot read lineHeight of Label - AppKit's driver has no path for it yet; Android Views: cannot read lineHeight of Label - Android's driver has no path for it yet |
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)
 
@@ -167,7 +167,7 @@ The lines drawn through or under text.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property | `TextDecorations` | native |  |  |  |  | ✅ |  | cannot read textDecorations of Label - AppKit's driver has no path for it yet; Android Views: cannot read textDecorations of Label - Android's driver has no path for it yet |
+| `textDecorations` | property | `TextDecorations` | native |  | ✅ |  |  | ✅ |  | cannot read textDecorations of Label - AppKit's driver has no path for it yet; Android Views: cannot read textDecorations of Label - Android's driver has no path for it yet |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 

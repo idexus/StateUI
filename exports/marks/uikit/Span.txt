@@ -1,3 +1,4 @@
-Span: not realized
-Span.background: not realized
-Span.text: not realized
+Button.clicked: ✅
+Span: ✅
+Span.background: cannot read background of Span - UIKit's driver has no path for it yet
+Span.text: ✅

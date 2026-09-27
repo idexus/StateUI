@@ -2,14 +2,25 @@ ActivityIndicator
   isRunning
   tint
 Button
+  background
+  characterSpacing
   fontAttributes
   fontFamily
   fontSize
+  icon
+  iconPosition
+  iconSpacing
+  lineBreak
   padding
+  shape
+  stroke
+  strokeWidth
   text
   textCase
   textColor
   clicked()
+  pressed()
+  released()
 CheckBox
   isOn
   toggled()
@@ -59,16 +70,19 @@ Image
   aspect
   source
 Label
+  characterSpacing
   fontAttributes
   fontFamily
   fontSize
   horizontalTextAlignment
   lineBreak
+  lineHeight
   maximumLines
   padding
   text
   textCase
   textColor
+  textDecorations
   verticalTextAlignment
 Line
   aspect

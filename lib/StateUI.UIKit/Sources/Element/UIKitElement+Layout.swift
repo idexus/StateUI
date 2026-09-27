@@ -6,9 +6,11 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a layout holds: its children's views, each as the item the host layer's arithmetic places.
+/// What a layout holds: its children's views, each as the item the host layer's arithmetic places; and a label, the
+/// runs of its spans.
 extension UIKitElement {
     func arrangeChildren() {
+        if let label = view as? UIKitLabelView { return label.setRuns(element.textRuns) }
         guard let layout = view as? UIKitLayoutView else { return }
         layout.direction = element.layoutDirection
         layout.laidOut = { [weak host] in host?.runtime.frames.laidOut() }

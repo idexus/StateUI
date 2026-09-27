@@ -6,11 +6,14 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A Button: UIKit's own, its words its title; a tap is its click.
+/// A Button: UIKit's own, its configuration what the tree says - its caption and their look, an icon beside it, the
+/// box behind them and the room inside it; a tap is its click, and the press is heard as it goes down and is let go.
 @MainActor
 final class UIKitButtonView: UIButton {
-    /// What the button does when the user taps it.
+    /// What the button does when the user taps it, and as a press goes down and is let go.
     var onClicked: (() -> Void)?
+    var onPressed: (() -> Void)?
+    var onReleased: (() -> Void)?
 
     private var look = TextLook()
 
@@ -18,6 +21,8 @@ final class UIKitButtonView: UIButton {
         super.init(frame: .zero)
         configuration = .plain()
         addAction(UIAction { [weak self] _ in self?.onClicked?() }, for: .primaryActionTriggered)
+        addAction(UIAction { [weak self] _ in self?.onPressed?() }, for: .touchDown)
+        addAction(UIAction { [weak self] _ in self?.onReleased?() }, for: [.touchUpInside, .touchUpOutside, .touchCancel])
     }
 
     @available(*, unavailable)
@@ -27,24 +32,73 @@ final class UIKitButtonView: UIButton {
 
     /// The button's words.
     func setText(_ text: String) {
-        configuration?.title = text
-        applyLook()
+        configuration?.title = text.isEmpty ? nil : text
+        showLook()
     }
 
-    /// The words' look: the button's own where it says nothing.
-    func setLook(_ look: TextLook) {
-        self.look = look
-        applyLook()
+    /// Changes the words' look; what it leaves unsaid is the button's own.
+    func setLook(_ change: (inout TextLook) -> Void) {
+        change(&look)
+        showLook()
     }
 
-    private func applyLook() {
-        let font = UIFont.stateUI(look, standing: .preferredFont(forTextStyle: .body))
-        let color = look.color.flatMap(UIColor.init(stateUI:))
-        configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
-            var attributes = attributes
-            attributes.font = font
-            if let color { attributes.foregroundColor = color }
-            return attributes
+    /// The icon, where it stands beside the words, and the room between them.
+    func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?) {
+        configuration?.image = icon
+        configuration?.imagePlacement = switch position {
+        case .leading: .leading
+        case .top: .top
+        case .trailing: .trailing
+        case .bottom: .bottom
+        }
+        configuration?.imagePadding = spacing ?? 8
+    }
+
+    /// What fills the button's box, its outline and its shape (`BoxArithmetic`).
+    func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?) {
+        configuration?.background.backgroundColor = background.flatMap(UIColor.init(stateUI:))
+        let outline = BoxArithmetic.outlineWidth(stroke: stroke, width: width)
+        configuration?.background.strokeWidth = outline
+        configuration?.background.strokeColor = outline > 0 ? UIKitBrush(stroke).lineColor : nil
+        switch BoxArithmetic.outline(shape) {
+        case .rectangle:
+            configuration?.cornerStyle = .fixed
+            configuration?.background.cornerRadius = 0
+        case .roundedRectangle(let radius):
+            configuration?.cornerStyle = .fixed
+            configuration?.background.cornerRadius = radius
+        case .ellipse:
+            configuration?.cornerStyle = .capsule
+        }
+    }
+
+    /// The room between the button's edge and what it shows.
+    func setPadding(_ insets: Insets?) {
+        configuration?.contentInsets = insets.map {
+            NSDirectionalEdgeInsets(top: $0.top, leading: $0.left, bottom: $0.bottom, trailing: $0.right)
+        } ?? UIButton.Configuration.plain().contentInsets
+    }
+
+    /// How the words break.
+    func setLineBreak(_ breaking: LineBreak) {
+        configuration?.titleLineBreakMode = switch breaking {
+        case .noWrap: .byClipping
+        case .wordWrap: .byWordWrapping
+        case .characterWrap: .byCharWrapping
+        case .headTruncation: .byTruncatingHead
+        case .tailTruncation: .byTruncatingTail
+        case .middleTruncation: .byTruncatingMiddle
+        }
+    }
+
+    private func showLook() {
+        let attributes = look.attributes(standing: .preferredFont(forTextStyle: .body), color: tintColor)
+        configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = attributes[.font] as? UIFont
+            if self.look.color != nil { outgoing.foregroundColor = attributes[.foregroundColor] as? UIColor }
+            if let kern = attributes[.kern] as? Double { outgoing.uiKit.kern = kern }
+            return outgoing
         }
     }
 }
