@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 3 ✅ of 5 | `NSSplitViewController` |  |
 | UIKit | ✅ | 4 ✅ of 5 | `UISplitViewController` |  |
 | GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no test of it has run yet |
-| Android Views |  | 1 ✅ of 5 | AndroidX `DrawerLayout` | no test of it has run yet |
+| Android Views | ✅ | 1 ✅ of 5 | AndroidX `DrawerLayout` |  |
 | WinUI 3 | ✅ | 4 ✅ of 5 | `SplitView` |  |
 | Web |  |  | `<aside>` | no host yet |
 
@@ -26,7 +26,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  |  | ✅ |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  |  | ✅ |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet; Android Views: its test waits on SplitView.isSidebarVisible, not realized yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

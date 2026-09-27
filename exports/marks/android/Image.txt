@@ -1,4 +1,5 @@
 Button.clicked: cannot read source of Image - Android's driver has no path for it yet
-Image: cannot read source of Image - Android's driver has no path for it yet
+Image: ✅
+Image.frameChanged: ✅
 Image.isAnimating: not realized
 Image.source: ✅

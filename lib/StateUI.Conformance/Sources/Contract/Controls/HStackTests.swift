@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("HStack"),
             ConformanceCase("itsChildrenStandSideBySideInTheirOrder", covers: [
                 Covered(HStackContract.self), Covered(ButtonContract.clicked),
             ]) { s in

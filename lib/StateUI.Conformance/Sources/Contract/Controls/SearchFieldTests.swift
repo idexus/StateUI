@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("SearchField"),
             ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", covers: [
                 Covered(SearchFieldContract.self), Covered(TextElementContract.text, on: SearchFieldContract.self),
                 Covered(InputViewContract.textChanged, on: SearchFieldContract.self),

@@ -1,7 +1,9 @@
+Button.clicked: waits on WebView.canGoBackChanged
 WebView: not realized
 WebView.canGoBackChanged: not realized
 WebView.canGoForwardChanged: not realized
 WebView.evaluateJavaScript: not realized
+WebView.frameChanged: not realized
 WebView.goBack: not realized
 WebView.goForward: not realized
 WebView.navigated: not realized

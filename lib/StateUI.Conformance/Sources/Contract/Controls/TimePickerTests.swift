@@ -12,6 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("TimePicker"),
             ConformanceCase("theUsersTimeIsHeardAndTheProgramsIsNot", covers: [
                 Covered(TimePickerContract.self), Covered(TimePickerContract.time), Covered(TimePickerContract.timeChanged),
                 Covered(ButtonContract.clicked),

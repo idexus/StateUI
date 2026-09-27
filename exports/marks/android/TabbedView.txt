@@ -1,4 +1,5 @@
 Button.clicked: cannot read currentPage of TabbedView - Android's driver has no path for it yet
-TabbedView: cannot read currentPage of TabbedView - Android's driver has no path for it yet
+Label.frameChanged: ✅
+TabbedView: ✅
 TabbedView.currentPage: cannot choose on TabbedView - Android's driver has no path for it yet
 TabbedView.currentPageChanged: cannot choose on TabbedView - Android's driver has no path for it yet

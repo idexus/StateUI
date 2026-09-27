@@ -1,8 +1,9 @@
 Button.clicked: ✅
-WebView: cannot read source of WebView - Android's driver has no path for it yet
+WebView: ✅
 WebView.canGoBackChanged: ✅
 WebView.canGoForwardChanged: ✅
 WebView.evaluateJavaScript: ✅
+WebView.frameChanged: ✅
 WebView.goBack: ✅
 WebView.goForward: ✅
 WebView.navigated: ✅

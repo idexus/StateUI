@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("TextEditor"),
             ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", covers: [
                 Covered(TextEditorContract.self), Covered(TextElementContract.text, on: TextEditorContract.self),
                 Covered(InputViewContract.textChanged, on: TextEditorContract.self),

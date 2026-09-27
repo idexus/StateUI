@@ -1,4 +1,6 @@
+Button.clicked: waits on Map.isScrollEnabled
 Map: not realized
+Map.frameChanged: not realized
 Map.isScrollEnabled: not realized
 Map.isTrafficEnabled: not realized
 Map.isZoomEnabled: not realized

@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("ActivityIndicator"),
             ConformanceCase("aSpinnerTurnsWhileItsWorkRuns", covers: [
                 Covered(ActivityIndicatorContract.self), Covered(ActivityIndicatorContract.isRunning),
                 Covered(ButtonContract.clicked),

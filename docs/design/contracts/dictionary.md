@@ -65,9 +65,15 @@ a host writes by hand and what its runtime registers - and by the case:
 
 A case runs only where the host realizes every member it covers; a member
 the register calls never is marked – without the case running. The element
-itself has a verdict of its own, `Button: ✅`, from its creation case: the
-creation table's mark, and the "Created" cell of the hosts table that opens
-the element's page, above its own members and then its tiers'. A tier's row groups the elements wearing the tier
+itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
+the "Created" cell of the hosts table that opens the element's page, above
+its own members and then its tiers'. Every view has one case that proves it
+alone, `standsAloneOnAPage` - made with nothing written on it, alone on a
+page, laid out in the window at a size - and an arrangement of pages one
+that shows its first page; a case that proves the element together with a
+member proves it too, and the weightiest verdict stands. So a member the
+host does not realize, or its driver cannot read, never hides that the host
+makes the element. A tier's row groups the elements wearing the tier
 that the host's run judged - made, or never had.
 
 A host checks its own register in its suite (`HostRegister.problems`): a

@@ -1,3 +1,4 @@
+Button.clicked: waits on TitleBar.barForegroundColor
 TitleBar: not realized
 TitleBar.barForegroundColor: not realized
 TitleBar.icon: not realized

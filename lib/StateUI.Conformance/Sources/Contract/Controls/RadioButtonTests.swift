@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("RadioButton"),
             ConformanceCase("aUsersChoiceTakesTheGroupsOtherCheckAway", covers: [
                 Covered(RadioButtonContract.self), Covered(RadioButtonContract.isOn),
                 Covered(RadioButtonContract.toggled), Covered(RadioButtonContract.groupName),

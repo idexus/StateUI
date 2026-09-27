@@ -12,6 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Grid"),
             ConformanceCase("eachChildStandsInItsCell", covers: [
                 Covered(GridContract.self), Covered(GridContract.columns), Covered(GridContract.rows),
                 Covered(GridContract.columnSpacing), Covered(GridContract.rowSpacing),

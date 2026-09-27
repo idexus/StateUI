@@ -1,9 +1,10 @@
 Button.clicked: cannot read date of DatePicker - Android's driver has no path for it yet
-DatePicker: cannot read date of DatePicker - Android's driver has no path for it yet
+DatePicker: ✅
 DatePicker.closed: cannot open on DatePicker - Android's driver has no path for it yet
 DatePicker.date: cannot read date of DatePicker - Android's driver has no path for it yet
 DatePicker.dateChanged: cannot read date of DatePicker - Android's driver has no path for it yet
 DatePicker.format: cannot read format of DatePicker - Android's driver has no path for it yet
+DatePicker.frameChanged: ✅
 DatePicker.isOpen: cannot open on DatePicker - Android's driver has no path for it yet
 DatePicker.maximumDate: cannot read maximumDate of DatePicker - Android's driver has no path for it yet
 DatePicker.minimumDate: cannot read minimumDate of DatePicker - Android's driver has no path for it yet

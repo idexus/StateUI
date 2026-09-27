@@ -14,6 +14,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Image"),
             ConformanceCase("aPictureStandsAtItsOwnSize", covers: [
                 Covered(ImageContract.self), Covered(ImageContract.source),
             ]) { s in

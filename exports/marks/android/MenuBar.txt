@@ -1,1 +1,5 @@
+Button.clicked: waits on MenuBar
+Menu.text: waits on MenuBar
 MenuBar: not realized
+MenuItem.clicked: waits on MenuBar
+MenuItem.isEnabled: waits on MenuBar

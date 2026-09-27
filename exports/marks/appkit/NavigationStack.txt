@@ -1,4 +1,5 @@
 Button.clicked: cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet
+Label.frameChanged: ✅
 NavigationStack: ✅
 NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet
 NavigationStack.popped: ✅

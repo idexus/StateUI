@@ -1,1 +1,5 @@
+Button.clicked: waits on SplitView.isSidebarVisible
+Label.frameChanged: ✅
+SplitView: ✅
 SplitView.isSidebarVisible: not realized
+SplitView.isSidebarVisibleChanged: waits on SplitView.isSidebarVisible

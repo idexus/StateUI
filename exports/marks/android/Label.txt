@@ -1,5 +1,6 @@
 Button.clicked: ✅
 Label: ✅
+Label.frameChanged: ✅
 Label.lineBreak: ✅
 Label.maximumLines: ✅
 Label.text: ✅

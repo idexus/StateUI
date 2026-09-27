@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Canvas"),
             ConformanceCase("itsInstructionsAreDrawnInOrder", covers: [
                 Covered(CanvasContract.self), Covered(CanvasContract.drawable),
             ]) { s in

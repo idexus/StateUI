@@ -1,3 +1,4 @@
 Button.clicked: ✅
 Path: ✅
 Path.data: ✅
+Path.frameChanged: ✅

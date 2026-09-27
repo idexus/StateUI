@@ -1,5 +1,6 @@
 Button.clicked: ✅
 Stepper: ✅
+Stepper.frameChanged: ✅
 Stepper.maximum: ✅
 Stepper.minimum: ✅
 Stepper.step: ✅

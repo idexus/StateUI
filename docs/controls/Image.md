@@ -12,10 +12,10 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 
 | Host | Created | Members | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  | 53 ✅ · 2 ☑️ of 69 | `NSImageView` | cannot read source of Image - AppKit's driver has no path for it yet |
+| AppKit | ✅ | 53 ✅ · 2 ☑️ of 69 | `NSImageView` |  |
 | UIKit | ✅ | 53 ✅ of 69 | `UIImageView` |  |
 | GTK 4 | ✅ | 13 ✅ of 69 | `GtkPicture` |  |
-| Android Views |  | 54 ✅ of 69 | `ImageView` | cannot read source of Image - Android's driver has no path for it yet |
+| Android Views | ✅ | 54 ✅ of 69 | `ImageView` |  |
 | WinUI 3 | ✅ | 52 ✅ of 69 | `Image` |  |
 | Web |  |  | `<img>` | no host yet |
 

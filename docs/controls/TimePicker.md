@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 57 ✅ · 2 ☑️ of 78 | `NSDatePicker` in time mode |  |
 | UIKit | ✅ | 54 ✅ of 78 | `UIDatePicker` in time mode |  |
 | GTK 4 |  |  | no honest native counterpart | no test of it has run yet |
-| Android Views |  | 56 ✅ of 78 | `TimePickerDialog` | cannot read time of TimePicker - Android's driver has no path for it yet |
+| Android Views | ✅ | 56 ✅ of 78 | `TimePickerDialog` |  |
 | WinUI 3 | ✅ | 57 ✅ of 78 | `TimePicker` |  |
 | Web |  |  | `<input type=time>` | no host yet |
 

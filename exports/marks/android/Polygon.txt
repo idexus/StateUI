@@ -1,4 +1,5 @@
 Button.clicked: ✅
 Polygon: ✅
 Polygon.fillRule: ✅
+Polygon.frameChanged: ✅
 Polygon.points: ✅

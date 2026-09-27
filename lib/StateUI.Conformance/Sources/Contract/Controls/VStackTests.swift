@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("VStack"),
             ConformanceCase("itsChildrenStandOneUnderAnotherInTheirOrder", covers: [
                 Covered(VStackContract.self), Covered(ButtonContract.clicked),
             ]) { s in

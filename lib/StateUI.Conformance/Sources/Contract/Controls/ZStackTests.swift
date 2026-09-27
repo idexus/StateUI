@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("ZStack"),
             ConformanceCase("itsChildrenStandOneOverAnotherInItsRoom", covers: [Covered(ZStackContract.self)]) { s in
                 let (back, front) = (Received<[Double]>(), Received<[Double]>())
                 s.start {

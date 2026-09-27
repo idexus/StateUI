@@ -56,6 +56,24 @@
         }
     }
 
+    /// `element` made with nothing written on it, alone on a page: the host stands it in the window, laid out at a
+    /// size. What says the host makes the element, whatever else of it the host realizes or its driver reads.
+    public static func standsAlone(_ element: String) -> ConformanceCase {
+        ConformanceCase("standsAloneOnAPage", covers: [
+            Covered(member: nil, element: element, tier: nil), Covered(ViewContract.frameChanged, on: element),
+        ]) { s in
+            let frames = Received<[Double]>()
+            s.start { Specimens.view(element, [Hear(ViewContract.frameChanged) { frames.values.append($0) }]) }
+            s.settle { laidOut(frames) }
+            s.expect(laidOut(frames), true, "laid out in the window, at a size")
+        }
+    }
+
+    /// Whether the last frame a view reported gives it a size.
+    public static func laidOut(_ frames: Received<[Double]>) -> Bool {
+        frames.values.last.map(FrameReport.size).map { size in size.count == 2 && size.allSatisfy { $0 > 0 } } == true
+    }
+
     /// `member` holds, on every element wearing its tier, the value the tree gives it and then the one the tree
     /// changes it to.
     public static func holdsOnEveryWearer<Owner: Contract, Value: HostRepresentable & Sendable & Equatable>(

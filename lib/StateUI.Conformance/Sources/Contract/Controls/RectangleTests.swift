@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Rectangle"),
             ConformanceCase("aRectangleFillsItsRoom", covers: [
                 Covered(RectangleContract.self), Covered(ShapeContract.fill, on: "Rectangle"),
             ]) { s in

@@ -1,5 +1,6 @@
 Button.clicked: ✅
 Label.text: ✅
 Switch: ✅
+Switch.frameChanged: ✅
 Switch.isOn: ✅
 Switch.toggled: ✅

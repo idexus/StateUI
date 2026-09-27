@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Button"),
             ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", covers: [
                 Covered(ButtonContract.self), Covered(ButtonContract.clicked),
                 Covered(TextElementContract.text, on: LabelContract.self),

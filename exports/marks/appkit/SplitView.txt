@@ -1,4 +1,5 @@
 Button.clicked: ✅
+Label.frameChanged: ✅
 SplitView: ✅
 SplitView.isSidebarVisible: ✅
 SplitView.isSidebarVisibleChanged: ✅

@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 57 ✅ · 2 ☑️ of 71 | `NSStepper` |  |
 | UIKit | ✅ | 57 ✅ of 71 | `UIStepper` |  |
 | GTK 4 | ✅ | 18 ✅ of 71 | `GtkSpinButton` |  |
-| Android Views |  | 53 ✅ of 71 | custom `NumberPicker`-based view | cannot step on Stepper - Android's driver has no path for it yet |
+| Android Views | ✅ | 53 ✅ of 71 | custom `NumberPicker`-based view |  |
 | WinUI 3 | ✅ | 56 ✅ of 71 | `NumberBox` |  |
 | Web |  |  | `<input type=number>` | no host yet |
 

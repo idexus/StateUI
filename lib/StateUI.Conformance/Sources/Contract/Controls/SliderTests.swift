@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Slider"),
             ConformanceCase("aSliderShowsItsRangeAndItsValue", covers: [
                 Covered(SliderContract.self), Covered(SliderContract.value), Covered(SliderContract.minimum),
                 Covered(SliderContract.maximum),

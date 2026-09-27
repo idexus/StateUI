@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
+| `onClosed` (`closed`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: its test waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `isOpen` | property | `Bool` | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
-| `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
+| `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: its test waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet |
 | `options` | property | `[String]` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `selectedIndex` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

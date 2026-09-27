@@ -1,5 +1,6 @@
 Button.clicked: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet
 ScrollView: ✅
+ScrollView.frameChanged: ✅
 ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet
 ScrollView.orientation: ✅
 ScrollView.scrollOffset: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet

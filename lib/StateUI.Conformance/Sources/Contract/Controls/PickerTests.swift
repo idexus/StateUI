@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Picker"),
             ConformanceCase("aPickerOffersItsChoicesAndShowsTheOneMade", covers: [
                 Covered(PickerContract.self), Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
             ]) { s in

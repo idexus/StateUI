@@ -11,6 +11,18 @@
 
     public static var cases: [ConformanceCase] {
         [
+            ConformanceCase("standsAloneShowingItsDetail", covers: [
+                Covered(SplitViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+            ]) { s in
+                let frames = Received<[Double]>()
+                s.start {
+                    SplitView(State(wrappedValue: true).projectedValue) {
+                        Label("Sidebar")
+                    } detail: { Label("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) } }
+                }
+                s.settle { Aspects.laidOut(frames) }
+                s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
+            },
             ConformanceCase("theSidebarStandsBesideTheDetail", covers: [
                 Covered(SplitViewContract.self), Covered(SplitViewContract.isSidebarVisible),
             ]) { s in

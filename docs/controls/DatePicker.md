@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 59 ✅ · 2 ☑️ of 80 | `NSDatePicker` |  |
 | UIKit | ✅ | 56 ✅ of 80 | `UIDatePicker` |  |
 | GTK 4 |  |  | `GtkCalendar` in a `GtkPopover` | no test of it has run yet |
-| Android Views |  | 56 ✅ of 80 | `DatePickerDialog` | cannot read date of DatePicker - Android's driver has no path for it yet |
+| Android Views | ✅ | 56 ✅ of 80 | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 62 ✅ · 1 ☑️ of 80 | `CalendarDatePicker` |  |
 | Web |  |  | `<input type=date>` | no host yet |
 

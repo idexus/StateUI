@@ -91,11 +91,11 @@ of its members each meets, and why a cell is empty.
 | [ColorBox](controls/ColorBox.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Content](controls/Content.md) | structure | ✅ |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ |  |  | ✅ |  |
-| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ |  |  | ✅ |  |
+| [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Image](controls/Image.md) | native |  | ✅ | ✅ |  | ✅ |  |
+| [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Label](controls/Label.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [LeadingContent](controls/LeadingContent.md) | structure | ✅ |  |  |  |  |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -105,7 +105,7 @@ of its members each meets, and why a cell is empty.
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ |  |  | ✅ |  |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ |  |  | ✅ |  |
 | [ModalStack](controls/ModalStack.md) | structure | ✅ | ✅ |  | ✅ | ✅ |  |
-| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ |  |  | ✅ |  |
+| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ |  |  | ✅ |  |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -123,20 +123,20 @@ of its members each meets, and why a cell is empty.
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Span](controls/Span.md) | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Spans](controls/Spans.md) | structure | ✅ | ✅ |  | ✅ | ✅ |  |
-| [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ |  |  | ✅ |  |
-| [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ |  | ✅ |  |
+| [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |
+| [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ |  |  | ✅ |  |
+| [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ |  |  | ✅ |  |
+| [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ |  | ✅ | ✅ |  |
 | [TitleBar](controls/TitleBar.md) | adaptive |  |  |  |  |  |  |
 | [TitleView](controls/TitleView.md) | structure |  | ✅ |  | ✅ | ✅ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | structure | ✅ | ✅ |  |  | ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ |  |  | ✅ |  |
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [WebView](controls/WebView.md) | native |  |  |  |  |  |  |
+| [WebView](controls/WebView.md) | native |  | ✅ |  | ✅ |  |  |
 | [Window](controls/Window.md) | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 <!-- creation:end -->

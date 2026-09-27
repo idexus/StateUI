@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Path"),
             ConformanceCase("aPathIsFilledInsideTheFigureItsDataDraws", covers: [
                 Covered(PathContract.self), Covered(PathContract.data), Covered(ButtonContract.clicked),
             ]) { s in

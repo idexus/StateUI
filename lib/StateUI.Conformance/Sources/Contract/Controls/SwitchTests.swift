@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Switch"),
             ConformanceCase("aSwitchShowsWhatTheTreeSays", covers: [
                 Covered(SwitchContract.self), Covered(SwitchContract.isOn), Covered(SwitchContract.toggled),
                 Covered(ButtonContract.clicked),

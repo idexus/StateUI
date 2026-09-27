@@ -13,9 +13,9 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | Host | Created | Members | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `WKWebView` | not realized |
-| UIKit |  | 61 ✅ of 77 | `WKWebView` | cannot read source of WebView - UIKit's driver has no path for it yet |
+| UIKit | ✅ | 61 ✅ of 77 | `WKWebView` |  |
 | GTK 4 |  |  | WebKitGTK `WebKitWebView` | no test of it has run yet |
-| Android Views |  | 60 ✅ of 77 | `WebView` | cannot read source of WebView - Android's driver has no path for it yet |
+| Android Views | ✅ | 60 ✅ of 77 | `WebView` |  |
 | WinUI 3 |  |  | `WebView2` | not realized |
 | Web |  |  | `<iframe>` (?) | no host yet |
 

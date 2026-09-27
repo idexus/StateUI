@@ -1,5 +1,7 @@
+Button.clicked: waits on PositionIndicator.count
 PositionIndicator: not realized
 PositionIndicator.count: not realized
+PositionIndicator.frameChanged: not realized
 PositionIndicator.hideSingle: not realized
 PositionIndicator.indicatorColor: not realized
 PositionIndicator.indicatorSize: not realized

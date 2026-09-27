@@ -2,3 +2,4 @@ Button.clicked: ✅
 Rectangle: ✅
 Rectangle.cornerRadius: ✅
 Rectangle.fill: ✅
+Rectangle.frameChanged: ✅

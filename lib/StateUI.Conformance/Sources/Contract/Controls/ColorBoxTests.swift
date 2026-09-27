@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("ColorBox"),
             ConformanceCase("aBoxFillsItsRoomWithItsColour", covers: [
                 Covered(ColorBoxContract.self), Covered(ColorBoxContract.color), Covered(ButtonContract.clicked),
             ]) { s in

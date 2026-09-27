@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Label"),
             ConformanceCase("aLabelShowsItsWords", covers: [
                 Covered(LabelContract.self), Covered(TextElementContract.text, on: "Label"),
             ]) { s in

@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Map"),
             ConformanceCase("aMapShowsTheRegionTheTreeGivesIt", covers: [
                 Covered(MapContract.self), Covered(MapContract.region),
             ]) { s in

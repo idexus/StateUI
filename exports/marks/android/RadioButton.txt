@@ -1,5 +1,6 @@
 Button.clicked: ✅
 RadioButton: ✅
+RadioButton.frameChanged: ✅
 RadioButton.groupName: ✅
 RadioButton.isOn: ✅
 RadioButton.toggled: ✅

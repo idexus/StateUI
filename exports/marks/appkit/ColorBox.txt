@@ -2,3 +2,4 @@ Button.clicked: ✅
 ColorBox: ✅
 ColorBox.color: ✅
 ColorBox.cornerRadius: ✅
+ColorBox.frameChanged: ✅

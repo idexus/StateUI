@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("PositionIndicator"),
             ConformanceCase("anIndicatorShowsItsMarksAndItsPosition", covers: [
                 Covered(PositionIndicatorContract.self), Covered(PositionIndicatorContract.count),
                 Covered(PositionIndicatorContract.position),

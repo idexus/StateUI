@@ -1,5 +1,6 @@
 Button.clicked: cannot read maximum of Stepper - Android's driver has no path for it yet
-Stepper: cannot step on Stepper - Android's driver has no path for it yet
+Stepper: ✅
+Stepper.frameChanged: ✅
 Stepper.maximum: cannot enterWords on Stepper - Android's driver has no path for it yet
 Stepper.minimum: cannot read minimum of Stepper - Android's driver has no path for it yet
 Stepper.step: cannot read step of Stepper - Android's driver has no path for it yet

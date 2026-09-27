@@ -12,6 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("WebView"),
             ConformanceCase("aPageIsHeardGoingAndArriving", covers: [
                 Covered(WebViewContract.self), Covered(WebViewContract.source), Covered(WebViewContract.navigating),
                 Covered(WebViewContract.navigated),

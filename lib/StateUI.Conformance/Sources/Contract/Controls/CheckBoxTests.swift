@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("CheckBox"),
             ConformanceCase("aUsersTickIsHeardAndTheProgramsIsNot", covers: [
                 Covered(CheckBoxContract.self), Covered(CheckBoxContract.isOn), Covered(CheckBoxContract.toggled),
                 Covered(ButtonContract.clicked),

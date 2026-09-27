@@ -12,6 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("ScrollView"),
             ConformanceCase("scrollingDownItsContentTakesItsWidth", covers: [
                 Covered(ScrollViewContract.self), Covered(ScrollViewContract.orientation),
             ]) { s in

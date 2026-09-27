@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Polyline"),
             ConformanceCase("aPolylineIsDrawnThroughItsPoints", covers: [
                 Covered(PolylineContract.self), Covered(PolylineContract.points), Covered(ButtonContract.clicked),
             ]) { s in

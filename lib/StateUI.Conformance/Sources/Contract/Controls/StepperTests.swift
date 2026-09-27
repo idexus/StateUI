@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Stepper"),
             ConformanceCase("aUsersStepIsHeardAndTheProgramsIsNot", covers: [
                 Covered(StepperContract.self), Covered(StepperContract.value), Covered(StepperContract.valueChanged),
                 Covered(StepperContract.minimum), Covered(StepperContract.maximum), Covered(StepperContract.step),

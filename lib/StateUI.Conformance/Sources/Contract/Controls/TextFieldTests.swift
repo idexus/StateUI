@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("TextField"),
             ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", covers: [
                 Covered(TextFieldContract.self), Covered(TextElementContract.text, on: TextFieldContract.self),
                 Covered(TextElementContract.text, on: LabelContract.self),

@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 2 ✅ of 6 | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
 | UIKit | ✅ | 6 ✅ of 6 | `UINavigationController` |  |
 | GTK 4 |  |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | no test of it has run yet |
-| Android Views |  | 1 ✅ of 6 | custom `ViewGroup` stack + `Toolbar` | cannot read title of Window - Android's driver has no path for it yet |
+| Android Views | ✅ | 1 ✅ of 6 | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 3 ✅ of 6 | `Frame` |  |
 | Web |  |  | History API | no host yet |
 

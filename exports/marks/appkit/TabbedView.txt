@@ -1,4 +1,5 @@
 Button.clicked: ✅
+Label.frameChanged: ✅
 TabbedView: ✅
 TabbedView.currentPage: ✅
 TabbedView.currentPageChanged: ✅

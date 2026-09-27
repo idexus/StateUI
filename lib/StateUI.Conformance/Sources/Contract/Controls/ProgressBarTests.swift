@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("ProgressBar"),
             ConformanceCase("aBarStandsAtItsShareOfTheWorkWithinItsEnds", covers: [
                 Covered(ProgressBarContract.self), Covered(ProgressBarContract.progress),
             ]) { s in

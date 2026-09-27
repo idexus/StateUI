@@ -1,4 +1,5 @@
 Button.clicked: ✅
 CheckBox: ✅
+CheckBox.frameChanged: ✅
 CheckBox.isOn: ✅
 CheckBox.toggled: ✅

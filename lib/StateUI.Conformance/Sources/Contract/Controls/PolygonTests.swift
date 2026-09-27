@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Polygon"),
             ConformanceCase("aPolygonIsFilledInsideItsPoints", covers: [
                 Covered(PolygonContract.self), Covered(PolygonContract.points), Covered(ButtonContract.clicked),
             ]) { s in

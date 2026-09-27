@@ -4,6 +4,7 @@ DatePicker.closed: not realized
 DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: not realized
+DatePicker.frameChanged: ✅
 DatePicker.isOpen: not realized
 DatePicker.maximumDate: ✅
 DatePicker.minimumDate: ✅

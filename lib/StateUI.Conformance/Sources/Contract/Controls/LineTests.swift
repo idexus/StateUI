@@ -11,6 +11,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Line"),
             ConformanceCase("aLineIsDrawnFromItsStartToItsEnd", covers: [
                 Covered(LineContract.self), Covered(LineContract.x1), Covered(LineContract.y1), Covered(LineContract.x2),
                 Covered(LineContract.y2),

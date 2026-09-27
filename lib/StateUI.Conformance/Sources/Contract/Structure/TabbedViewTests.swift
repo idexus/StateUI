@@ -11,6 +11,18 @@
 
     public static var cases: [ConformanceCase] {
         [
+            ConformanceCase("standsAloneShowingItsFirstTab", covers: [
+                Covered(TabbedViewContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+            ]) { s in
+                let frames = Received<[Double]>()
+                s.start {
+                    TabbedView([0, 1]) { tab in
+                        tab == 0 ? Label("Tab 0").onEvent(ViewContract.frameChanged) { frames.values.append($0) } : Label("Tab 1")
+                    }
+                }
+                s.settle { Aspects.laidOut(frames) }
+                s.expect(Aspects.laidOut(frames), true, "its first tab's page laid out in the window")
+            },
             ConformanceCase("theTabTheBindingNamesShows", covers: [
                 Covered(TabbedViewContract.self), Covered(TabbedViewContract.currentPage),
             ]) { s in

@@ -29,5 +29,5 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | `deactivated` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `destroying` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
-| `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  |  |
+| `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  | UIKit: its test waits on Window.windowType, not realized yet |
 | `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  |  | ✅ |  |  |

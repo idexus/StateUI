@@ -1,7 +1,10 @@
 Button.clicked: ✅
 Label.text: ✅
 Picker: ✅
+Picker.closed: waits on Picker.isOpen
+Picker.frameChanged: ✅
 Picker.isOpen: not realized
+Picker.opened: waits on Picker.isOpen
 Picker.options: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅

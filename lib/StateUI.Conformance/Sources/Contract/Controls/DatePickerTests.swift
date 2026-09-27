@@ -12,6 +12,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("DatePicker"),
             ConformanceCase("theUsersDayIsHeardAndTheProgramsIsNot", covers: [
                 Covered(DatePickerContract.self), Covered(DatePickerContract.date), Covered(DatePickerContract.dateChanged),
                 Covered(ButtonContract.clicked),

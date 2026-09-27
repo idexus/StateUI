@@ -1,5 +1,6 @@
 Button.clicked: cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet
 ScrollView: ✅
+ScrollView.frameChanged: ✅
 ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet
 ScrollView.orientation: ✅
 ScrollView.scrollOffset: ✅

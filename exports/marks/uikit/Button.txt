@@ -1,5 +1,6 @@
 Button: ✅
 Button.clicked: ✅
+Button.frameChanged: ✅
 Button.icon: cannot read icon of Button - UIKit's driver has no path for it yet
 Button.iconPosition: cannot read iconPosition of Button - UIKit's driver has no path for it yet
 Button.iconSpacing: cannot read iconSpacing of Button - UIKit's driver has no path for it yet

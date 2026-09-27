@@ -11,6 +11,18 @@
 
     public static var cases: [ConformanceCase] {
         [
+            ConformanceCase("standsAloneShowingItsRoot", covers: [
+                Covered(NavigationStackContract.self), Covered(ViewContract.frameChanged, on: "Label"),
+            ]) { s in
+                let frames = Received<[Double]>()
+                s.start {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Label("Root").onEvent(ViewContract.frameChanged) { frames.values.append($0) }
+                    } destination: { _ in Label("Pushed") }
+                }
+                s.settle { Aspects.laidOut(frames) }
+                s.expect(Aspects.laidOut(frames), true, "its root laid out in the window")
+            },
             ConformanceCase("theTopPageOfThePathShows", covers: [
                 Covered(NavigationStackContract.self), Covered(PageElementContract.title, on: "Page"),
             ]) { s in

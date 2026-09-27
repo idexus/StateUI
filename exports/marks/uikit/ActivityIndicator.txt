@@ -1,3 +1,4 @@
 ActivityIndicator: ✅
+ActivityIndicator.frameChanged: ✅
 ActivityIndicator.isRunning: ✅
 Button.clicked: ✅

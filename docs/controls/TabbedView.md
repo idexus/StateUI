@@ -15,7 +15,7 @@ Marks: ✅ proven on that host by its own passing test · ☑️ proven by its t
 | AppKit | ✅ | 3 ✅ of 6 | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 6 ✅ of 6 | `UITabBarController` |  |
 | GTK 4 |  |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | no test of it has run yet |
-| Android Views |  | 1 ✅ of 6 | Material Components `BottomNavigationView` (?) | cannot read currentPage of TabbedView - Android's driver has no path for it yet |
+| Android Views | ✅ | 1 ✅ of 6 | Material Components `BottomNavigationView` (?) |  |
 | WinUI 3 | ✅ | 4 ✅ of 6 | `NavigationView` with a top pane |  |
 | Web |  |  | ARIA `tablist` | no host yet |
 

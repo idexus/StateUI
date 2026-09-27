@@ -17,6 +17,7 @@ Window.minimumHeight: not realized
 Window.minimumWidth: not realized
 Window.modalPopped: ✅
 Window.resumed: not realized
+Window.stopped: waits on Window.resumed
 Window.title: ✅
 Window.width: not realized
 Window.windowType: not realized

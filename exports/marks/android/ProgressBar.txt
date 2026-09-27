@@ -1,3 +1,4 @@
 Button.clicked: ✅
 ProgressBar: ✅
+ProgressBar.frameChanged: ✅
 ProgressBar.progress: ✅

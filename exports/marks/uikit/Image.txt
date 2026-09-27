@@ -1,4 +1,5 @@
 Button.clicked: ✅
 Image: ✅
+Image.frameChanged: ✅
 Image.isAnimating: not realized
 Image.source: ✅

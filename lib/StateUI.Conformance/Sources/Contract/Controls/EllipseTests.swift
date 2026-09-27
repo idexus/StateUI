@@ -10,6 +10,7 @@
 
     public static var cases: [ConformanceCase] {
         [
+            Aspects.standsAlone("Ellipse"),
             ConformanceCase("anEllipseFillsItsRoomInsideItsCurve", covers: [
                 Covered(EllipseContract.self), Covered(ShapeContract.fill, on: "Ellipse"),
             ]) { s in

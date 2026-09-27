@@ -3,6 +3,7 @@ Label.text: ✅
 Slider: ✅
 Slider.dragCompleted: ✅
 Slider.dragStarted: ✅
+Slider.frameChanged: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.value: ✅

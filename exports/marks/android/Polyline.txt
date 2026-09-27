@@ -1,4 +1,5 @@
 Button.clicked: ✅
 Polyline: ✅
 Polyline.fillRule: ✅
+Polyline.frameChanged: ✅
 Polyline.points: ✅
