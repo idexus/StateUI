@@ -14,7 +14,6 @@ enum InteropHost {
         + "members `TrafficLightContract` declares with the type of each value."
     static let made = "view"
     static let awaiting = ""
-    static let cubeDrawn = "by Metal"
     static let relay: CodeLanguage? = nil
     #elseif UIKIT
     static let name = "UIKit"
@@ -25,7 +24,6 @@ enum InteropHost {
         + "members `TrafficLightContract` declares with the type of each value."
     static let made = "view"
     static let awaiting = ""
-    static let cubeDrawn = "by Metal"
     static let relay: CodeLanguage? = nil
     #elseif GTK
     static let name = "GTK"
@@ -36,7 +34,6 @@ enum InteropHost {
         + "members `TrafficLightContract` declares with the type of each value, held by a `GTKControl` of its own."
     static let made = "control"
     static let awaiting = " A performer may await: GTK reads the clipboard asynchronously."
-    static let cubeDrawn = "by OpenGL"
     static let relay: CodeLanguage? = nil
     #elseif WINUI
     static let name = "WinUI"
@@ -48,7 +45,6 @@ enum InteropHost {
         + "of its own."
     static let made = "control"
     static let awaiting = " A performer may await."
-    static let cubeDrawn = "by Direct3D"
     static let relay: CodeLanguage? = CodeLanguage.cpp
     #else
     static let name = "Android"
@@ -60,7 +56,6 @@ enum InteropHost {
         + "held by an `AndroidControl` of its own."
     static let made = "control"
     static let awaiting = " A performer may await."
-    static let cubeDrawn = "by OpenGL ES"
     static let relay: CodeLanguage? = CodeLanguage.java
     #endif
 }

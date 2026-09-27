@@ -99,7 +99,7 @@ final class Catalog {
                     Sample(AnimatedInputSample()),
                     Sample(ConcurrentAnimationSample()),
                     Sample(AnalogClockSample()),
-                ]),
+                ] + Self.drawnByTheHost),
 
             SampleGroup(
                 route: "basicInput",
@@ -311,19 +311,26 @@ final class Catalog {
             SampleGroup(
                 route: InteropHost.key + "Interop",
                 title: InteropHost.name + " interop",
-                summary: "Calling the host, hearing from it, and controls the app registers - "
-                    + "one of them drawn \(InteropHost.cubeDrawn).",
+                summary: "Calling the host, hearing from it, and a control the app registers.",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
                 card: ImageSource("cat_interop.png"),
                 samples: [
                     Sample(InteropActsSample()),
                     Sample(InteropEventsSample()),
                     Sample(InteropControlSample()),
-                    Sample(Cube3DSample()),
                 ]))
         #endif
 
         self.groups = groups
+    }
+
+    /// The animation the host draws on the GPU, on the hosts that draw it.
+    private static var drawnByTheHost: [Sample] {
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        [Sample(Cube3DSample())]
+        #else
+        []
+        #endif
     }
 
     /// How many samples a device of `formFactor` lists - the home page's count, so
