@@ -7,6 +7,7 @@
 /// The widget: made, and given the element's properties.
 extension GTKElement {
     func makeView() -> GTKView? {
+        if type == .itemsView, let host { return GTKItemsView(cells: ItemsCells(element, in: host.runtime)) }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -81,6 +82,11 @@ extension GTKElement {
     func invalidateMeasurements() {
         var element: GTKElement? = self
         while let each = element {
+            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
+            if let items = each.parent?.view as? GTKItemsView {
+                items.remeasure(each.element)
+                break
+            }
             (each.view as? GTKLayoutView)?.forgetMeasurements()
             element = each.parent
         }

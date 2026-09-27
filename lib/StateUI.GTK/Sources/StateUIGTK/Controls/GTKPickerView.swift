@@ -35,23 +35,13 @@ final class GTKPickerView: GTKView {
         let changed = choices != self.choices
         if changed {
             self.choices = choices
-            let list = Self.withCStrings(choices) { gtk_string_list_new($0) }
+            let list = withCStrings(choices) { gtk_string_list_new($0) }
             gtk_drop_down_set_model(widget.opaque, list)
             g_object_unref(UnsafeMutableRawPointer(list))
         }
         guard changed || writeChosen else { return }
         gtk_drop_down_set_selected(
             widget.opaque, choices.indices.contains(chosen) ? guint(chosen) : guint(GTK_INVALID_LIST_POSITION))
-    }
-
-    /// `words` as a list of C strings ending in NULL, for as long as `body` runs.
-    private static func withCStrings<Result>(
-        _ words: [String], _ body: (UnsafePointer<UnsafePointer<CChar>?>) -> Result
-    ) -> Result {
-        let copies = words.map { strdup($0) }
-        defer { copies.forEach { free($0) } }
-        let pointers = copies.map { UnsafePointer($0) } + [nil]
-        return pointers.withUnsafeBufferPointer { body($0.baseAddress!) }
     }
 
     override func detach() {

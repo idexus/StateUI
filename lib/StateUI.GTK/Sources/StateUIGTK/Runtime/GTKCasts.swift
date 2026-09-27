@@ -40,6 +40,12 @@ typealias GTKInputHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMuta
 typealias GTKInsertHandler = @convention(c) (
     UnsafeMutableRawPointer?, UnsafeMutablePointer<GtkTextIter>?, UnsafePointer<CChar>?, Int32, gpointer?) -> Void
 
+/// A signal naming a place in a list: a list view's item activated.
+typealias GTKPositionHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, gpointer?) -> Void
+
+/// A signal naming a run of places in a list: a selection model's changed choice.
+typealias GTKRangeHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, UInt32, gpointer?) -> Void
+
 /// Connects `handler` to `signal` of `instance`, handing it `number`.
 /// Design: docs/design/platforms/gtk/c-api.md#signals
 @discardableResult
@@ -83,8 +89,28 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKPositionHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKRangeHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
 private func connect(_ instance: UnsafeMutableRawPointer, _ signal: String, _ number: Int64, _ callback: GCallback) -> gulong {
     g_signal_connect_data(instance, signal, callback, UnsafeMutableRawPointer(bitPattern: Int(number)), nil, GConnectFlags(0))
+}
+
+/// `words` as a list of C strings ending in NULL, for as long as `body` runs.
+func withCStrings<Result>(
+    _ words: some Collection<String>, _ body: (UnsafePointer<UnsafePointer<CChar>?>) -> Result
+) -> Result {
+    let copies = words.map { strdup($0) }
+    defer { copies.forEach { free($0) } }
+    let pointers = copies.map { UnsafePointer($0) } + [nil]
+    return pointers.withUnsafeBufferPointer { body($0.baseAddress!) }
 }
 
 /// The view number a signal's data carries.

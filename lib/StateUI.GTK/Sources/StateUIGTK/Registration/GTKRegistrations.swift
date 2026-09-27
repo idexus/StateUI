@@ -22,6 +22,7 @@ enum GTKRegistrations {
         layouts(registry)
         pictures(registry)
         shapes(registry)
+        items(registry)
         shared(registry)
 
         return registry
@@ -47,7 +48,7 @@ enum GTKRegistrations {
         ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard, ApplicationContract.persistValue,
-        ApplicationContract.prompt, ApplicationContract.utcOffset,
+        ApplicationContract.prompt, ApplicationContract.utcOffset, ItemsViewContract.scrollTo,
     ]
 
 }

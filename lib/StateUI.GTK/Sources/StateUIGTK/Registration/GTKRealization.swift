@@ -10,7 +10,7 @@
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Canvas", "Content", "ContextMenu", "DatePicker", "ItemsView", "LeadingContent", "Map", "Menu", "MenuBar",
+        "Canvas", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar",
         "MenuItem", "MenuSeparator", "ModalStack", "Pin", "PositionIndicator", "TimePicker", "TrailingContent",
         "WebView",
     ]
@@ -33,6 +33,8 @@ enum GTKRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),
         .complete("Page", "hasNavigationBar"),
