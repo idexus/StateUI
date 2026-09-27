@@ -9,6 +9,7 @@ extension WinUIElement {
     /// Hands a layout its children's items, in order - a page's slots furnish it and stand in none of its room - and
     /// a label the runs of its spans.
     func arrangeChildren() {
+        if let items = view as? WinUIItemsView { return items.childrenChanged() }
         if let label = view as? WinUILabelView {
             return arrangeRuns(of: label)
         }

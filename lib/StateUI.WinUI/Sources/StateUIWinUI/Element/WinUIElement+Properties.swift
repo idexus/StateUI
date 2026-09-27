@@ -17,6 +17,11 @@ extension WinUIElement {
     }
 
     func makeView() -> WinUIView? {
+        if type == .itemsView, let host {
+            return WinUIItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+        }
         if let registered = WinUIRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -85,6 +90,11 @@ extension WinUIElement {
     func invalidateMeasurements() {
         var element: WinUIElement? = self
         while let each = element {
+            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
+            if let items = each.parent?.view as? WinUIItemsView {
+                items.remeasure(each.element)
+                break
+            }
             (each.view as? WinUILayoutView)?.forgetMeasurements()
             element = each.parent
         }

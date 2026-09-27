@@ -249,6 +249,8 @@ extension WinUIDriver {
     /// What each control holds of its own purpose.
     private func controlHolds(_ name: String, _ view: WinUIView) throws -> HostValue? {
         switch (name, view) {
+        case ("selectedItems", let items as WinUIItemsView): return .strings(items.selectedForTesting)
+        case ("selectionMode", let items as WinUIItemsView): return items.modeForTesting.propValue
         case ("isOn", let toggle as WinUIToggleView): return toggle.isOn.propValue
         case ("value", let slider as WinUISliderView): return slider.value.propValue
         case ("minimum", let slider as WinUISliderView): return slider.minimum.propValue

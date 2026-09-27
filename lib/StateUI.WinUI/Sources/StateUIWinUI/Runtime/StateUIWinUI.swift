@@ -120,6 +120,37 @@ enum WinUICallbacks {
             },
             windowClosed: { window in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.windowClosed(number: window) }
+            },
+            itemCell: { view, kind, cell in
+                // The relay's own out-parameter, and the panel it takes a reference of.
+                nonisolated(unsafe) let cell = cell
+                nonisolated(unsafe) var panel: StateUIObjectRef?
+                MainActor.assumeIsolated {
+                    guard let made = WinUIItemsList.find(view)?.makeCell(item: kind == 0) else { return }
+                    cell?.pointee = made.number
+                    panel = made.handle
+                }
+                return panel
+            },
+            itemHeld: { view, cell, utf8 in
+                let identity = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { WinUIItemsList.find(view)?.held(identity, in: cell) }
+            },
+            itemLetGo: { view, cell in
+                MainActor.assumeIsolated { WinUIItemsList.find(view)?.letGo(cell) }
+            },
+            itemsChose: { view, utf8 in
+                let joined = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated {
+                    WinUIItemsList.find(view)?.chose(joined.split(separator: "\n").map(String.init))
+                }
+            },
+            itemInvoked: { view, utf8 in
+                let identity = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated { WinUIItemsList.find(view)?.invoked(identity) }
+            },
+            itemsShowing: { view, first, last in
+                MainActor.assumeIsolated { WinUIItemsList.find(view)?.showing(Int(first)...Int(last)) }
             })
     }
 }

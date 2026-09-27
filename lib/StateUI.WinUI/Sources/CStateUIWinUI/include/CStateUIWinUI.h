@@ -146,6 +146,25 @@ typedef struct {
 
     /// The window `window` names closed - the user's click, or the program's.
     void (*windowClosed)(int64_t window);
+
+    /// An ItemsView needs a cell - an item's (0), or a header's or a footer's (1): the host answers the panel that
+    /// holds an entry, and its number in `cell`; the relay stands it in an ItemContainer kept for the list's life.
+    StateUIObjectRef (*itemCell)(int64_t view, int32_t kind, int64_t *cell);
+
+    /// An ItemsView stood the cell of the panel `cell` names for the entry of `identity`, in UTF-8.
+    void (*itemHeld)(int64_t view, int64_t cell, char const *identity);
+
+    /// An ItemsView put the cell of the panel `cell` names aside.
+    void (*itemLetGo)(int64_t view, int64_t cell);
+
+    /// The user changed an ItemsView's choice: every item chosen now, their identities joined by newlines.
+    void (*itemsChose)(int64_t view, char const *identities);
+
+    /// The user invoked an ItemsView's item.
+    void (*itemInvoked)(int64_t view, char const *identity);
+
+    /// An ItemsView's view changed: the places of the first and the last entry in it.
+    void (*itemsShowing)(int64_t view, int32_t first, int32_t last);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -574,6 +593,38 @@ void stateui_winui_scroller_move(StateUIObjectRef scroller, double x, double y);
 
 /// Where the scroller's view stands, then the farthest it reaches across and down, in DIPs: four values.
 void stateui_winui_scroller_offset(StateUIObjectRef scroller, double *offset);
+
+/// An ItemsView: WinUI's ItemsView over the identities the host gives it; the cell of each entry is the host's
+/// (`itemCell`, `itemHeld`, `itemLetGo`), and what stands in view, the user's choice and an item invoked are told.
+StateUIObjectRef stateui_winui_items_make(int64_t view);
+
+/// The identities, each an item (0) or a header or a footer (1), and the changes from the ones before: runs of places
+/// removed, last first, then runs inserted, first first, each a start and a count. Asked while the list lays its
+/// cells out, the relay applies them once it is done, in order.
+void stateui_winui_items_set_entries(StateUIObjectRef items, char const *const *identities, int32_t const *kinds,
+                                     int32_t count, int32_t const *removed, int32_t removedCount,
+                                     int32_t const *inserted, int32_t insertedCount);
+
+/// How the entries stand: down (0), across (1), or in columns at least `minimumItemWidth` DIPs wide (2); `spacing`
+/// DIPs apart.
+void stateui_winui_items_set_layout(StateUIObjectRef items, int32_t shape, double spacing, double minimumItemWidth);
+
+/// How many items the user may choose - none (0), one (1), many (2) - the identities chosen, and whether an item is
+/// invoked.
+void stateui_winui_items_set_choice(StateUIObjectRef items, int32_t mode, char const *const *chosen, int32_t count,
+                                    bool invokable);
+
+/// Brings the entry at `index` into view: at the start (0), the centre (1), the end (2), or the nearest edge (3).
+void stateui_winui_items_scroll_to(StateUIObjectRef items, int32_t index, int32_t anchor, bool animated);
+
+/// The ItemsView left: nothing waits, and every cell is let go.
+void stateui_winui_items_release(StateUIObjectRef items);
+
+/// What a test reads: the identities the list holds chosen, joined by newlines; the length it needs.
+int32_t stateui_winui_items_chosen(StateUIObjectRef items, char *utf8, int32_t capacity);
+
+/// What a test reads: how many items the user may choose, as `set_choice` numbers it.
+int32_t stateui_winui_items_mode(StateUIObjectRef items);
 
 /// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions on it or
 /// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an

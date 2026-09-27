@@ -73,6 +73,13 @@ final class WinUIActPerformer {
                 WinUIPersistence.writeScenes(text)
             }
             reply(call, [])
+        case .scrollTo:
+            guard let view = aimed(call, in: tree) else { return }
+            guard let items = view as? WinUIItemsView else { return fail(call, "scrollTo is an act of an ItemsView") }
+            items.scroll(
+                to: call.arguments.value(1)?.string ?? "",
+                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            reply(call, [])
         case .handlerFailed:
             WinUIRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])

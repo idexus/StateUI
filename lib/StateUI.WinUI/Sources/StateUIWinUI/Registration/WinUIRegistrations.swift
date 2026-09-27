@@ -24,6 +24,7 @@ enum WinUIRegistrations {
         shapes(registry)
         drawing(registry)
         layouts(registry)
+        items(registry)
         shared(registry)
 
         return registry

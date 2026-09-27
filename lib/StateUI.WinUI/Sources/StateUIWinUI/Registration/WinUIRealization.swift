@@ -10,7 +10,7 @@
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ItemsView", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
+        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
         "WebView",
     ]
 
@@ -32,6 +32,8 @@ enum WinUIRealization {
 
         // MARK: Entries - a control's or a part's own
         .partial("DatePicker", "format", missing: "WinUI writes \"D\" and \"d\" in the user's own way, and any other pattern as \"d\"."),
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
         .complete("NavigationStack", "popped"),
@@ -93,7 +95,7 @@ enum WinUIRealization {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + [ApplicationContract.persistSceneValue]).map(\.name))
+            acts: (HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo]).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.
