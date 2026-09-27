@@ -54,6 +54,16 @@ final class UIKitDriver: HostDriver {
         TestScene.forgetWhatIsKept()
     }
 
+    /// A menu item's action in the menu UIKit is handed now - the menu bar's, or the context menu of the view it
+    /// stands under.
+    func menuAction(of element: MountedElement) -> UIAction? {
+        _ = renderer?.menuBar
+        var holder = element.parent
+        while let each = holder, (each.native as? UIKitElement)?.view == nil { holder = each.parent }
+        _ = (holder?.native as? UIKitElement)?.builtContextMenu
+        return (element.native as? UIKitElement)?.menuAction
+    }
+
     /// What the hosts wrote to their log since the driver last started one.
     func logged() throws -> [String] {
         written.lines
@@ -153,6 +163,10 @@ final class UIKitDriver: HostDriver {
         case (.choose, _) where NodeType.pageTypes.contains(element.type):
             try performOnPages(act, on: element)
         case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
+        case (.activate, _) where element.type == .menuItem:
+            // The item as the menu UIKit is handed shows it, taken where it can be.
+            guard let action = menuAction(of: element) else { throw DriverCannot(act, on: element) }
+            if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
         case (.pinch(let scale, let share), _):

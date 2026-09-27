@@ -88,7 +88,7 @@ host whose passing test proved one of its members.
 | `CheckBox` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `ColorBox` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Content` | structure | ✅ |  |  |  |  |  |
-| `ContextMenu` | structure | ✅ |  |  |  | ✅ |  |
+| `ContextMenu` | structure | ✅ | ✅ |  |  | ✅ |  |
 | `DatePicker` | native | ✅ | ✅ |  |  | ✅ |  |
 | `Ellipse` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Grid` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -98,10 +98,10 @@ host whose passing test proved one of its members.
 | `LeadingContent` | structure | ✅ |  |  |  |  |  |
 | `Line` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `Map` | provider |  |  |  |  |  |  |
-| `Menu` | structure | ✅ |  |  |  | ✅ |  |
-| `MenuBar` | structure | ✅ |  |  |  | ✅ |  |
-| `MenuItem` | structure | ✅ |  |  |  | ✅ |  |
-| `MenuSeparator` | structure | ✅ |  |  |  | ✅ |  |
+| `Menu` | structure | ✅ | ✅ |  |  | ✅ |  |
+| `MenuBar` | structure | ✅ | ✅ |  |  | ✅ |  |
+| `MenuItem` | structure | ✅ | ✅ |  |  | ✅ |  |
+| `MenuSeparator` | structure | ✅ | ✅ |  |  | ✅ |  |
 | `ModalStack` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | `NavigationStack` | adaptive | ✅ | ✅ |  |  | ✅ |  |
 | `Overlay` | structure | ✅ | ✅ |  |  | ✅ |  |
@@ -465,9 +465,9 @@ Every control, and every part an application, its windows and its pages are made
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | 2 | 2 ✅ |  |  |  | 2 ✅ |  |
+| [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  |  | 2 ✅ |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ |  |  |  | 4 ✅ |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ | 5 ✅ |  |  | 4 ✅ |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 2 ✅ | 6 ✅ |  | 1 ✅ | 3 ✅ |  |
@@ -484,7 +484,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 42 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 48 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -529,7 +529,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | ✅ | ✅ |  | ✅ | ✅ |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | `isEnabled`, `text` | ✅ |  |  |  | ✅ |  |
+| [Menu](controls/Menu.md) | `isEnabled`, `text` | ✅ | ☑️ |  |  | ✅ |  |
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` |  | ✅ |  |  |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` |  |  |  |  |  |  |
 | [Path](controls/Path.md) | `data` | ✅ | ✅ |  | ✅ | ✅ |  |

@@ -27,6 +27,14 @@ final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
         return configuration
     }
 
+    /// The main menu - on an iPad the menu bar - holds the menus of the page the user sees, before UIKit's Window
+    /// menu.
+    override func buildMenu(with builder: any UIMenuBuilder) {
+        super.buildMenu(with: builder)
+        guard builder.system == .main else { return }
+        for menu in UIKitRenderer.shared.menuBar { builder.insertSibling(menu, beforeMenu: .window) }
+    }
+
     func applicationWillTerminate(_ application: UIApplication) {
         UIKitRenderer.shared.runtime.ending()
     }

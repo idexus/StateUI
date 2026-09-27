@@ -11,7 +11,7 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "Canvas", "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator",
+        "Canvas", "Content", "LeadingContent", "Map",
         "Pin", "PositionIndicator",
         "TitleBar", "TrailingContent",
         "WebView",
@@ -33,6 +33,9 @@ enum UIKitRealization {
         .complete("PageElement", "title"),
 
         // MARK: Entries - a control's or a part's own
+        .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
+        .complete("Menu", "text"),
+        .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "barForegroundColor"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),

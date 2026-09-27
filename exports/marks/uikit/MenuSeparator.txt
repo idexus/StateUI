@@ -1,1 +1,2 @@
-MenuSeparator: not realized
+Button.clicked: ✅
+MenuSeparator: ✅

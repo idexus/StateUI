@@ -1,3 +1,4 @@
-Menu: not realized
-Menu.isEnabled: not realized
-Menu.text: not realized
+Button.clicked: ✅
+Menu: ✅
+Menu.isEnabled: ☑️ UIKit holds no menu out of reach itself: each of its entries is.
+Menu.text: ✅

@@ -45,6 +45,9 @@ final class UIKitRenderer {
     private var waitingScenes: [UIWindowScene] = []
 
     private var started = false
+
+    /// The menu bar as it was last built.
+    private var menuBarSaid = ""
     private var reportedDisplay = false
 
     init(
@@ -135,7 +138,22 @@ final class UIKitRenderer {
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
+        rebuildMenuBarWhereItChanged()
         runtime.displayCycle.hold()
+    }
+
+    /// The menus the user's window's page puts on the application's menu bar.
+    var menuBar: [UIMenu] {
+        roster.windows.first { $0.1.window === userWindow }?.1.pageMenus ?? []
+    }
+
+    /// Asks UIKit to build its main menu again where the page's menus say something else now.
+    /// Design: docs/design/platforms/uikit/pages.md#menus
+    private func rebuildMenuBarWhereItChanged() {
+        let said = UIKitMenus.said(menuBar)
+        guard said != menuBarSaid else { return }
+        menuBarSaid = said
+        UIMenuSystem.main.setNeedsRebuild()
     }
 
     /// The window the user is looking at: the key one, else the first.

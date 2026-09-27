@@ -1,5 +1,6 @@
-ContextMenu: not realized
-Menu.text: not realized
-MenuItem.isEnabled: not realized
-MenuItem.text: not realized
-MenuSeparator: not realized
+Button.clicked: ✅
+ContextMenu: ✅
+Menu.text: ✅
+MenuItem.isEnabled: ✅
+MenuItem.text: ✅
+MenuSeparator: ✅

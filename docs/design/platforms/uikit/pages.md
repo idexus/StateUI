@@ -58,3 +58,17 @@ nobody of its sheets, which leave with it.
 
 An overlay is laid over the window's pages within the safe area, and a touch
 beside what it holds reaches the page under it.
+
+## Menus
+
+A menu is UIKit's, built from the host layer's walk of its entries: an
+action for each item, which tells its element when the user chooses it, a
+submenu for each menu, and the entries between two separators a group of
+their own, as UIKit parts a menu. UIKit holds no menu out of reach itself: a
+menu out of reach holds each of its entries out of reach.
+
+A view's context menu is UIKit's context menu interaction, which asks for
+the menu as the user holds the view; it is built then from what the tree says
+now. The menus the page the user sees puts on its menu bar are the
+application's main menu - on an iPad its menu bar - standing before UIKit's
+own Window menu, built again whenever they say something else.

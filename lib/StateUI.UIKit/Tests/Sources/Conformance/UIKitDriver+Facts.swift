@@ -42,6 +42,15 @@ extension UIKitDriver {
         return Color(red: channel(0), green: channel(1), blue: channel(2))
     }
 
+    /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.
+    func menu(of element: MountedElement) throws -> String {
+        if element.type == .window { return UIKitMenus.said(renderer?.menuBar ?? []) }
+        guard let native = element.native as? UIKitElement, native.view != nil else {
+            throw DriverCannot("read the menu of \(element.type.name)")
+        }
+        return UIKitMenus.said(native.builtContextMenu?.children ?? [])
+    }
+
     /// The question UIKit's alert shows now, as it shows it.
     func question(over element: MountedElement) throws -> Question? {
         guard let shown = renderer?.actToolkit.showing else { return nil }

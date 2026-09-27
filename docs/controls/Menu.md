@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
-| `text` | property | `String` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native | ✅ | ☑️ |  |  | ✅ |  | UIKit: UIKit holds no menu out of reach itself: each of its entries is.; Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read the menu of Label - Android's driver has no path for it yet |
 
 Realization:
 

@@ -1,4 +1,5 @@
-Menu.text: not realized
-MenuBar: not realized
-MenuItem.clicked: not realized
-MenuItem.isEnabled: not realized
+Button.clicked: ✅
+Menu.text: ✅
+MenuBar: ✅
+MenuItem.clicked: ✅
+MenuItem.isEnabled: ✅

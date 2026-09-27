@@ -28,6 +28,12 @@ final class UIKitElement: NativeElement {
     /// Whether the view held the focus when the element last said so.
     var reportedFocus: Bool?
 
+    /// What UIKit asks for the view's context menu, while it has one.
+    var contextMenu: UIKitContextMenu?
+
+    /// A menu item's action in the menu UIKit was last handed.
+    var menuAction: UIAction?
+
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host
@@ -64,6 +70,7 @@ final class UIKitElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         applyProperties(changed: changed)
         configureGestures()
+        configureContextMenu()
         arrangeChildren()
         arrangePages(changed: changed)
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)

@@ -1,2 +1,2 @@
-MenuItem: not realized
-MenuItem.clicked: not realized
+MenuItem: ✅
+MenuItem.clicked: ✅

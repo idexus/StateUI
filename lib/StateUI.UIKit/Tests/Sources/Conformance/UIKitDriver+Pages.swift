@@ -25,6 +25,15 @@ extension UIKitDriver {
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
     /// a tabbed view's tab and a split view's sidebar; nil for any other element.
     func pageHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        if element.type == .menuItem, let action = menuAction(of: element) {
+            switch property {
+            case .text: return action.title.propValue
+            case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
+            case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
+            case .isDestructive: return action.attributes.contains(.destructive).propValue
+            default: break
+            }
+        }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
         else { return nil }
         let onTab = controller.tabBarController != nil

@@ -51,6 +51,16 @@ final class UIKitWindowController {
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
     }
 
+    /// The menus of the page the user sees - the top sheet's, else the arrangement's - as UIKit's main menu takes
+    /// them, each under an identifier of its own.
+    var pageMenus: [UIMenu] {
+        let page = (presentation.sheets.last ?? presentation.arrangement)?.visiblePage
+        let menus = page?.children.first { $0.type == .menuBar }.map(MenuEntry.menus(of:)) ?? []
+        return menus.enumerated().map { index, menu in
+            UIKitMenus.menu(menu.entries, title: menu.title, identifier: UIMenu.Identifier("stateui.menu.\(index)"))
+        }
+    }
+
     /// The tree let the window go: its scene goes with it.
     func close() {
         let session = window?.windowScene?.session
