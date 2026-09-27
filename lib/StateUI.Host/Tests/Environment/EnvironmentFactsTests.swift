@@ -65,6 +65,15 @@ final class EnvironmentFactsTests: XCTestCase {
         XCTAssertEqual(HostDisplayInfo(width: 90, height: 100, density: 2, refreshRate: 60).orientation, .portrait)
     }
 
+    /// A screen turned by quarters from its natural orientation says each turn, whichever way it stands.
+    func testAScreenSaysHowFarItIsTurned() {
+        let turned = (0...5).map { HostDisplayInfo(width: 200, height: 100, density: 2, quarterTurns: $0, refreshRate: 60) }
+        XCTAssertEqual(turned.map(\.rotation), [.rotation0, .rotation90, .rotation180, .rotation270, .rotation0, .rotation90])
+        XCTAssertEqual(turned[1].orientation, .landscape, "the way it stands, not the way it turned")
+        XCTAssertEqual(HostDisplayInfo(width: 100, height: 200, density: 2, quarterTurns: -1, refreshRate: 60).rotation,
+                       .rotation270, "a turn back is three forward")
+    }
+
     /// A change of the environment tells the core what stands now, turns the tree to the language's direction, and
     /// renders.
     @MainActor

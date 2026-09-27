@@ -38,12 +38,8 @@ enum AndroidEnvironment {
                 versionString: device[3],
                 deviceType: device[4] == "1" ? .virtual : .physical))
             core.setDisplayInfo(HostDisplayInfo(
-                width: Double(display[0]),
-                height: Double(display[1]),
-                density: Double(display[2]),
-                orientation: display[0] >= display[1] ? .landscape : .portrait,
-                rotation: [DisplayRotation.rotation0, .rotation90, .rotation180, .rotation270][Int(display[3]) & 3],
-                refreshRate: Double(display[4])))
+                width: Double(display[0]), height: Double(display[1]), density: Double(display[2]),
+                quarterTurns: Int(display[3]), refreshRate: Double(display[4])))
             core.setApplicationInfo(HostApplicationInfo(
                 name: application[0], packageName: application[1],
                 versionString: application[2], buildString: application[3]))

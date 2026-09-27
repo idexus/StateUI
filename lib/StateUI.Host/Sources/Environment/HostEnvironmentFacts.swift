@@ -59,11 +59,17 @@ extension HostBatteryInfo {
 }
 
 extension HostDisplayInfo {
-    /// A screen `width` by `height` pixels that turns with nothing: landscape where it is at least as wide as it is
-    /// tall.
-    public init(width: Double, height: Double, density: Double, refreshRate: Double) {
+    /// A screen `width` by `height` pixels as it stands now, turned `quarterTurns` quarters from its natural
+    /// orientation: landscape where it is at least as wide as it is tall.
+    public init(width: Double, height: Double, density: Double, quarterTurns: Int, refreshRate: Double) {
+        let rotations: [DisplayRotation] = [.rotation0, .rotation90, .rotation180, .rotation270]
         self.init(
             width: width, height: height, density: density, orientation: width >= height ? .landscape : .portrait,
-            rotation: .rotation0, refreshRate: refreshRate)
+            rotation: rotations[(quarterTurns % 4 + 4) % 4], refreshRate: refreshRate)
+    }
+
+    /// A screen `width` by `height` pixels that turns with nothing.
+    public init(width: Double, height: Double, density: Double, refreshRate: Double) {
+        self.init(width: width, height: height, density: density, quarterTurns: 0, refreshRate: refreshRate)
     }
 }

@@ -280,9 +280,10 @@ What a host reads of the machine it stands on is told to the core the same
 way on every host: the locale as eight words - language, region, name, time
 zone, a 24-hour clock, the week's first day from Sunday's 0, metric measures,
 a language written right to left - the network as its access and a set of
-bits for its connections, a desktop's power as a battery present or not,
-charging, on mains or full, and a screen that turns with nothing as landscape
-where it is at least as wide as it is tall. When any of it changes, one step
+bits for its connections, a battery as present or not, charging, on mains
+or full, and a screen as landscape where it stands at least as wide as it is
+tall, turned by quarters from its natural orientation - none on one that
+turns with nothing. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
 renders what it all changed.
