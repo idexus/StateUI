@@ -1,7 +1,7 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit, Android, WinUI and GTK.",
+  "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI and GTK.",
   "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
