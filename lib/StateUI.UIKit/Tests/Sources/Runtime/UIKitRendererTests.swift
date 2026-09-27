@@ -95,6 +95,21 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertEqual(logged.lines, [], "nothing asked of iOS")
     }
 
+    /// A picture asked for by no name - a menu entry's with no icon - is none, and nothing is said of it; one the
+    /// application does not ship is said.
+    @MainActor
+    func testNoNameAsksForNoPicture() {
+        let logged = Logged()
+        let log = UIKitRenderer.log
+        UIKitRenderer.log = HostLog(host: "UIKit") { logged.append($0) }
+        defer { UIKitRenderer.log = log }
+
+        XCTAssertNil(UIKitRenderer.image(named: ""))
+        XCTAssertEqual(logged.lines, [])
+        XCTAssertNil(UIKitRenderer.image(named: "nowhere.png"))
+        XCTAssertEqual(logged.lines.count, 1)
+    }
+
     /// A host that finished holds on to nothing it showed: its window, its pages' controllers and its views go.
     @MainActor
     func testAFinishedHostLeavesNothingAlive() throws {

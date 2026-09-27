@@ -21,7 +21,7 @@ struct UIKitBarAction {
 
     /// Its picture: one of the application's, else none.
     private var image: UIImage? {
-        icon.flatMap { $0.isEmpty ? nil : UIKitRenderer.image(named: $0) }
+        icon.flatMap(UIKitRenderer.image(named:))
     }
 
     /// A button of the bar.

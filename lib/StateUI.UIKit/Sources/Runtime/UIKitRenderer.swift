@@ -239,8 +239,9 @@ final class UIKitRenderer {
 
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
     /// each at the pixels a point it holds - read from exactly that file, as UIKit's own reading of a path would take
-    /// a `@3x` file beside it for it.
+    /// a `@3x` file beside it for it. No name asks for no picture.
     static func image(named name: String) -> UIImage? {
+        guard !name.isEmpty else { return nil }
         for drawn in PictureArithmetic.drawnFiles(for: name) {
             guard let path = resourceDirectory?.appendingPathComponent(drawn.file).path,
                   let data = FileManager.default.contents(atPath: path),
