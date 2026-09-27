@@ -87,12 +87,11 @@ struct SamplePage: ContentView {
 
             Self.section(example.codeHeading, CodeBlock(example.code))
 
-            // The far side of the example, where it has one - under the
-            // heading the example gives it.
-            if !example.hostCode.isEmpty {
+            // The far side of the example, where it has one: a section per
+            // language its host's half is written in.
+            example.hostCode.listings.map { listing -> Element in
                 Self.section(
-                    example.hostCode.heading,
-                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+                    example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
         }
         .spacing(16)

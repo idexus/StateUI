@@ -100,9 +100,8 @@ struct InteropActsSample: SampleContent, ExampleContent {
 
     #if APPKIT
     static let hostCode = HostCode(
-        heading: "In AppKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/AppKit/Host/GalleryActs.swift, said before the
             // application runs. A performer is handed the arguments the
             // contract declares and answers the values it declares.
@@ -142,12 +141,11 @@ struct InteropActsSample: SampleContent, ExampleContent {
             // And in main.swift, before StateUIAppKit.run(...):
             GalleryControls.register()   // RatingBarView.register(), and the rest
             GalleryActs.register()
-            """)
+            """))
     #elseif UIKIT
     static let hostCode = HostCode(
-        heading: "In UIKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/UIKit/Host/GalleryActs.swift, said before the
             // application runs. A performer is handed the arguments the
             // contract declares and answers the values it declares.
@@ -186,12 +184,11 @@ struct InteropActsSample: SampleContent, ExampleContent {
             // And in main.swift, before StateUIUIKit.run():
             GalleryControls.register()   // RatingBarView.register(), and the rest
             GalleryActs.register()
-            """)
+            """))
     #elseif GTK
     static let hostCode = HostCode(
-        heading: "In GTK",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/GTK/Host/GalleryActs.swift, said before the
             // application runs. A performer is handed the arguments the
             // contract declares and answers the values it declares - and may
@@ -231,12 +228,11 @@ struct InteropActsSample: SampleContent, ExampleContent {
             // And in main.swift, before StateUIGTK.run(applicationID:):
             GalleryControls.register()   // RatingBarWidget.register(), and the rest
             GalleryActs.register()
-            """)
+            """))
     #elseif WINUI
     static let hostCode = HostCode(
-        heading: "In WinUI",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/WinUI/Host/GalleryActs.swift, said before the
             // application runs. A performer is handed the arguments the
             // contract declares and answers the values it declares.
@@ -275,12 +271,52 @@ struct InteropActsSample: SampleContent, ExampleContent {
             // And in main.swift, before StateUIWinUI.run():
             GalleryControls.register()   // RatingBarControl.register(), and the rest
             GalleryActs.register()
-            """)
+            """),
+        .cpp("""
+            // Platforms/WinUI/Relay/System.cpp - the battery as Windows knows it: the
+            // power status every desktop reads. GalleryPower.battery() in the Swift
+            // half calls it; the clipboard needs no relay, Swift calls Win32 itself.
+            extern "C" void gallery_battery(double *level, bool *charging) {
+                try {
+                    *level = 0;
+                    *charging = false;
+                    SYSTEM_POWER_STATUS status{};
+                    // No system battery, or a charge Windows does not know: nothing to say.
+                    if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
+                    *level = status.BatteryLifePercent / 100.0;
+                    *charging = status.ACLineStatus == 1;
+                } catch (...) {
+                    report("reading the battery");
+                }
+            }
+
+            // Platforms/WinUI/Relay/Controls.cpp - the act aimed at the bar: a
+            // Storyboard fading WinUI's RatingControl out and back, twice.
+            extern "C" void gallery_rating_bar_flash(GalleryObjectRef bar) {
+                try {
+                    auto rating = as<controls::RatingControl>(bar);
+                    animation::DoubleAnimation fade;
+                    fade.From(1.0);
+                    fade.To(0.25);
+                    fade.Duration(xaml::DurationHelper::FromTimeSpan(std::chrono::milliseconds(120)));
+                    fade.AutoReverse(true);
+                    fade.RepeatBehavior(animation::RepeatBehaviorHelper::FromCount(2));
+                    // Stopped, the opacity is the host's again.
+                    fade.FillBehavior(animation::FillBehavior::Stop);
+                    animation::Storyboard::SetTarget(fade, rating);
+                    animation::Storyboard::SetTargetProperty(fade, L"Opacity");
+                    animation::Storyboard flash;
+                    flash.Children().Append(fade);
+                    flash.Begin();
+                } catch (...) {
+                    report("flashing a rating bar");
+                }
+            }
+            """))
     #else
     static let hostCode = HostCode(
-        heading: "In Android",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/Android/Swift/Host/GalleryActs.swift, said as the
             // library loads. The device is asked through the gallery's own
             // Java, com.stateui.gallery.GalleryDevice, which `Java` calls.
@@ -326,7 +362,51 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 GalleryControls.register()   // RatingBarView.register(), and the rest
                 GalleryActs.register()
             }
-            """)
+            """),
+        .java("""
+            // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java - what
+            // the gallery's own acts ask of the device, each a static method the
+            // Swift half calls through `Java`.
+            final class GalleryDevice {
+                static void copy(Context context, String text) {
+                    context.getSystemService(ClipboardManager.class)
+                            .setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
+                }
+
+                // The clipboard's text; empty where it holds none.
+                static String paste(Context context) {
+                    ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
+                    if (clip == null || clip.getItemCount() == 0) return "";
+                    CharSequence text = clip.getItemAt(0).coerceToText(context);
+                    return text == null ? "" : text.toString();
+                }
+
+                // The battery's level, 0 to 1 - 0 where the device has none - and 1
+                // where it charges, else 0: the sticky ACTION_BATTERY_CHANGED.
+                static double[] battery(Context context) {
+                    return reading(context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));
+                }
+
+                private static double[] reading(Intent status) {
+                    if (status == null) return new double[] {0, 0};
+                    int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                    int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                    boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
+                    return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
+                }
+            }
+
+            // Platforms/Android/Java/com/stateui/gallery/RatingBarView.java - the act
+            // aimed at the bar is the view's own animation.
+            final class RatingBarView extends View {
+                // … the stars drawn, and a tap told as TrafficLightView tells a lamp
+
+                void flash() {
+                    animate().alpha(0.25f).setDuration(120).withEndAction(() -> animate().alpha(1).setDuration(120));
+                }
+            }
+            """))
     #endif
 
     var content: any View {

@@ -57,9 +57,8 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
     #if APPKIT
     static let hostCode = HostCode(
-        heading: "In AppKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/AppKit/Host/GalleryEventSources.swift. Raising is safe
             // from any thread, and a raise nobody hears is an ordinary answer,
             // so the source is wired unconditionally.
@@ -100,12 +99,11 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
             // And in main.swift, before StateUIAppKit.run(...):
             GalleryEventSources.start()
-            """)
+            """))
     #elseif UIKIT
     static let hostCode = HostCode(
-        heading: "In UIKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/UIKit/Host/GalleryEventSources.swift. Raising is safe
             // from any thread, and a raise nobody hears is an ordinary answer,
             // so the source is wired unconditionally.
@@ -143,12 +141,11 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
             // And in main.swift, before StateUIUIKit.run():
             GalleryEventSources.start()
-            """)
+            """))
     #elseif GTK
     static let hostCode = HostCode(
-        heading: "In GTK",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/GTK/Host/GalleryEventSources.swift. Raising is safe
             // from any thread, and a raise nobody hears is an ordinary answer,
             // so the source is wired unconditionally.
@@ -190,12 +187,11 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
             // And in main.swift, before StateUIGTK.run(applicationID:):
             GalleryEventSources.start()
-            """)
+            """))
     #elseif WINUI
     static let hostCode = HostCode(
-        heading: "In WinUI",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/WinUI/Host/GalleryEventSources.swift. Raising is safe
             // from any thread, and a raise nobody hears is an ordinary answer,
             // so the source is wired unconditionally.
@@ -236,12 +232,55 @@ struct InteropEventsSample: SampleContent, ExampleContent {
 
             // And in main.swift, before StateUIWinUI.run():
             GalleryEventSources.start()
-            """)
+            """),
+        .cpp("""
+            // Platforms/WinUI/Relay/System.cpp - Windows' notices of the battery's
+            // charge and of the power source, each passed on to the function the
+            // Swift half handed over. Windows calls it on a thread of its own.
+            namespace {
+                constexpr GUID batteryPercentage = {0xa7ad8041, 0xb45a, 0x4cae, {0x87, 0xa3, 0xee, 0xcb, 0xb4, 0x68, 0xa9, 0xe1}};
+                constexpr GUID powerSource = {0x5d3e9a59, 0xe9d5, 0x4b00, {0xa6, 0xbd, 0xff, 0x34, 0xff, 0x51, 0x65, 0x48}};
+
+                void (*told)(void) = nullptr;
+
+                ULONG CALLBACK changed(PVOID, ULONG, PVOID) {
+                    if (told) told();
+                    return 0;
+                }
+
+                DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS subscription{changed, nullptr};
+            }
+
+            extern "C" void gallery_battery_watch(void (*changedTold)(void)) {
+                try {
+                    told = changedTold;
+                    for (auto setting : {&batteryPercentage, &powerSource}) {
+                        HPOWERNOTIFY handle = nullptr;
+                        PowerSettingRegisterNotification(setting, DEVICE_NOTIFY_CALLBACK, &subscription, &handle);
+                    }
+                } catch (...) {
+                    report("watching the battery");
+                }
+            }
+
+            // And the reading each notice leads to, which GalleryPower.battery() calls.
+            extern "C" void gallery_battery(double *level, bool *charging) {
+                try {
+                    *level = 0;
+                    *charging = false;
+                    SYSTEM_POWER_STATUS status{};
+                    if (!GetSystemPowerStatus(&status) || (status.BatteryFlag & 128) || status.BatteryLifePercent > 100) return;
+                    *level = status.BatteryLifePercent / 100.0;
+                    *charging = status.ACLineStatus == 1;
+                } catch (...) {
+                    report("reading the battery");
+                }
+            }
+            """))
     #else
     static let hostCode = HostCode(
-        heading: "In Android",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/Android/Swift/Host/GalleryEventSources.swift. The
             // source is Android's own: the gallery's activity registers a
             // receiver for ACTION_BATTERY_CHANGED while it lives, and its Java
@@ -273,7 +312,66 @@ struct InteropEventsSample: SampleContent, ExampleContent {
             ) {
                 MainActor.assumeIsolated { GalleryEventSources.report(level: level, charging: charging != 0) }
             }
-            """)
+            """),
+        .java("""
+            // Platforms/Android/Java/com/stateui/gallery/GalleryActivity.java - the
+            // gallery's activity: the host's own, and the battery watched while it
+            // lives.
+            public final class GalleryActivity extends StateUIActivity {
+                private BroadcastReceiver battery;
+
+                @Override
+                protected void onCreate(Bundle state) {
+                    super.onCreate(state);
+                    battery = GalleryDevice.watchBattery(this);
+                }
+
+                @Override
+                protected void onDestroy() {
+                    unregisterReceiver(battery);
+                    super.onDestroy();
+                }
+            }
+
+            // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java - each
+            // change of the battery, the one standing first, told to the Swift half
+            // through a native method of the gallery's.
+            final class GalleryDevice {
+                static BroadcastReceiver watchBattery(Context context) {
+                    BroadcastReceiver receiver = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            double[] battery = reading(intent);
+                            GalleryNatives.batteryChanged(battery[0], battery[1] != 0);
+                        }
+                    };
+                    IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                    } else {
+                        context.registerReceiver(receiver, filter);
+                    }
+                    return receiver;
+                }
+
+                // The level, 0 to 1 - 0 where the device has none - and 1 where it
+                // charges, else 0.
+                private static double[] reading(Intent status) {
+                    if (status == null) return new double[] {0, 0};
+                    int level = status.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = status.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                    int state = status.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                    boolean charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL;
+                    return new double[] {level >= 0 && scale > 0 ? (double) level / scale : 0, charging ? 1 : 0};
+                }
+            }
+
+            // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java - the
+            // native method the receiver calls, answered in Swift by its JNI name.
+            final class GalleryNatives {
+                static native void batteryChanged(double level, boolean charging);
+            }
+            """))
     #endif
 
     var content: any View {

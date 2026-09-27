@@ -81,9 +81,9 @@ private struct TwoSided: SampleContent, ExampleContent {
     static let code = "Label(\"row\")"
 
     static let hostCode = HostCode(
-        heading: "In the host",
-        language: .csharp,
-        code: "var row = new Label();")
+        in: "the host",
+        .swift("let row = HostRow()"),
+        .java("Row row = new Row(context);"))
 
     var content: any View {
         Label("row")
@@ -707,9 +707,9 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(verticalScrollers(in: page), 1, "a scroller inside the page's scroller")
     }
 
-    /// An example with a half on the host shows it after its Swift, under the
-    /// heading the example itself gives it - on the scrolling page and on a
-    /// held sample's code tab alike.
+    /// An example with a half on the host shows it after its Swift, a section
+    /// per language, each headed by the host and the language - on the
+    /// scrolling page and on a held sample's code tab alike.
     ///
     /// This is the guard that was missing: the section was taken out and every
     /// suite stayed green, because nothing here asked whether the page drew
@@ -719,10 +719,10 @@ final class CatalogTests: XCTestCase {
         let sample = Sample(TwoSided())
 
         let page = SamplePage(sample: sample, nav: Place().nav).body.built
-        XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host"])
+        XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host - Swift", "In the host - Java"])
 
         let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
-        XCTAssertEqual(headings(in: tab), ["In Swift", "In the host"])
+        XCTAssertEqual(headings(in: tab), ["In Swift", "In the host - Swift", "In the host - Java"])
 
         let plain = SamplePage(sample: Sample(Filling()), nav: Place().nav).body.built
         XCTAssertEqual(
@@ -733,10 +733,10 @@ final class CatalogTests: XCTestCase {
 
     #if APPKIT || UIKIT || GTK || WINUI || ANDROID
     /// Every example of this host's interop group shows both halves, named by
-    /// what they ARE: the application's half "In StateUI" and the host's "In"
-    /// the host's name - both Swift here, so "In Swift" would tell a user
-    /// nothing. Nothing else in the gallery asks that, so a heading lost here
-    /// would show up nowhere else.
+    /// what they ARE: the application's half "In StateUI", and the host's in
+    /// each language it is written in - its Swift first, then the relay
+    /// beneath it where the host has one. Nothing else in the gallery asks
+    /// that, so a section lost here would show up nowhere else.
     func testEveryInteropExampleShowsBothHalves() throws {
         let interop = try XCTUnwrap(catalog().groups.first { $0.route == InteropHost.key + "Interop" })
 
@@ -745,10 +745,15 @@ final class CatalogTests: XCTestCase {
         for sample in interop.samples {
             for (index, example) in sample.examples.enumerated() {
                 let where_ = "\(sample.id) example \(index + 1)"
+                let languages = example.hostCode.listings.map(\.language)
 
                 XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
-                XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
-                XCTAssertEqual(example.hostCode.heading, "In " + InteropHost.name, "\(where_) heads the far side")
+                XCTAssertEqual(example.hostCode.host, InteropHost.name, "\(where_) names its host")
+                XCTAssertEqual(languages.first, .swift, "\(where_) shows the host's Swift first")
+                if let relay = InteropHost.relay {
+                    XCTAssertTrue(languages.contains(relay), "\(where_) shows no \(relay.name) beneath the host")
+                }
+                XCTAssertTrue(example.hostCode.listings.allSatisfy { !$0.code.isEmpty }, "\(where_) shows an empty listing")
             }
         }
     }

@@ -118,9 +118,8 @@ struct Cube3DSample: SampleContent, ExampleContent {
 
     #if APPKIT
     static let hostCode = HostCode(
-        heading: "In AppKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/AppKit/Host/MetalCube3DView.swift - an ordinary MTKView
             // that knows nothing of StateUI. It draws in `draw(_:)`, so it
             // needs no delegate beside it.
@@ -198,8 +197,31 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 }
             }
 
-            // The shaders, compiled FROM SOURCE as the view is made - so the
-            // application ships no .metal file and its build needs nothing
+            // And its registration, at the end of MetalCube3DView.swift. The
+            // cube reports nothing, so `create` only makes the view: every
+            // member here goes one way, from the description to the frames.
+            extension MetalCube3DView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+                        MetalCube3DView()
+                    }) { cube in
+                        cube.property(Cube3DContract.size) { view, size in
+                            view.cubeSize = size ?? 0.6
+                        }
+                        cube.property(Cube3DContract.color) { view, color in
+                            view.color = (color ?? .teal).rawValue
+                        }
+                        cube.property(Cube3DContract.isSpinning) { view, spinning in
+                            view.isSpinning = spinning ?? true
+                        }
+                    }
+                }
+            }
+            """),
+        .metal("""
+            // The shaders MetalCube3DView compiles FROM SOURCE as it is made - so
+            // the application ships no .metal file and its build needs nothing
             // added to it. A vertex is one float4: the corner in xyz and the
             // face's brightness in w, so no struct's padding can be measured
             // differently by the two languages.
@@ -230,34 +252,11 @@ struct Cube3DSample: SampleContent, ExampleContent {
             fragment float4 cube_fragment(Painted in [[stage_in]]) {
                 return in.color;
             }
-
-            // And its registration, at the end of MetalCube3DView.swift. The
-            // cube reports nothing, so `create` only makes the view: every
-            // member here goes one way, from the description to the frames.
-            extension MetalCube3DView {
-                @MainActor
-                static func register() {
-                    StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
-                        MetalCube3DView()
-                    }) { cube in
-                        cube.property(Cube3DContract.size) { view, size in
-                            view.cubeSize = size ?? 0.6
-                        }
-                        cube.property(Cube3DContract.color) { view, color in
-                            view.color = (color ?? .teal).rawValue
-                        }
-                        cube.property(Cube3DContract.isSpinning) { view, spinning in
-                            view.isSpinning = spinning ?? true
-                        }
-                    }
-                }
-            }
-            """)
+            """))
     #elseif UIKIT
     static let hostCode = HostCode(
-        heading: "In UIKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/UIKit/Host/MetalCube3DView.swift - an ordinary MTKView
             // that knows nothing of StateUI. It draws in `draw(_:)`, so it
             // needs no delegate beside it.
@@ -335,8 +334,31 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 }
             }
 
-            // The shaders, compiled FROM SOURCE as the view is made - so the
-            // application ships no .metal file and its build needs nothing
+            // And its registration, at the end of MetalCube3DView.swift. The
+            // cube reports nothing, so `create` only makes the view: every
+            // member here goes one way, from the description to the frames.
+            extension MetalCube3DView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
+                        MetalCube3DView()
+                    }) { cube in
+                        cube.property(Cube3DContract.size) { view, size in
+                            view.cubeSize = size ?? 0.6
+                        }
+                        cube.property(Cube3DContract.color) { view, color in
+                            view.color = (color ?? .teal).rawValue
+                        }
+                        cube.property(Cube3DContract.isSpinning) { view, spinning in
+                            view.isSpinning = spinning ?? true
+                        }
+                    }
+                }
+            }
+            """),
+        .metal("""
+            // The shaders MetalCube3DView compiles FROM SOURCE as it is made - so
+            // the application ships no .metal file and its build needs nothing
             // added to it. A vertex is one float4: the corner in xyz and the
             // face's brightness in w, so no struct's padding can be measured
             // differently by the two languages.
@@ -367,34 +389,11 @@ struct Cube3DSample: SampleContent, ExampleContent {
             fragment float4 cube_fragment(Painted in [[stage_in]]) {
                 return in.color;
             }
-
-            // And its registration, at the end of MetalCube3DView.swift. The
-            // cube reports nothing, so `create` only makes the view: every
-            // member here goes one way, from the description to the frames.
-            extension MetalCube3DView {
-                @MainActor
-                static func register() {
-                    StateUIControls.add(Cube3DContract.self, create: { _ -> MetalCube3DView in
-                        MetalCube3DView()
-                    }) { cube in
-                        cube.property(Cube3DContract.size) { view, size in
-                            view.cubeSize = size ?? 0.6
-                        }
-                        cube.property(Cube3DContract.color) { view, color in
-                            view.color = (color ?? .teal).rawValue
-                        }
-                        cube.property(Cube3DContract.isSpinning) { view, spinning in
-                            view.isSpinning = spinning ?? true
-                        }
-                    }
-                }
-            }
-            """)
+            """))
     #elseif GTK
     static let hostCode = HostCode(
-        heading: "In GTK",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/GTK/Host/OpenGLCube3DWidget.swift - a GtkGLArea asking for
             // OpenGL 3.3 core, which draws it through libepoxy, the loader GTK
             // itself draws with. A GTKControl is an object holding its widget.
@@ -465,12 +464,30 @@ struct Cube3DSample: SampleContent, ExampleContent {
                     }
                 }
             }
-            """)
+            """),
+        .glsl("""
+            // The shaders OpenGLCube3DWidget.swift compiles from source for OpenGL 3.3
+            // core, as its area is realized. A corner carries its face's brightness in
+            // w; the colour is the frame's.
+            #version 330 core
+            layout(location = 0) in vec4 corner;
+            uniform mat4 transform;
+            uniform vec4 color;
+            out vec4 painted;
+            void main() {
+                gl_Position = transform * vec4(corner.xyz, 1.0);
+                painted = vec4(color.rgb * corner.w, color.a);
+            }
+
+            #version 330 core
+            in vec4 painted;
+            out vec4 fragment;
+            void main() { fragment = painted; }
+            """))
     #elseif WINUI
     static let hostCode = HostCode(
-        heading: "In WinUI",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/WinUI/Host/Direct3DCube3DControl.swift. The cube is a
             // SwapChainPanel the gallery's own relay makes - C++/WinRT in
             // Platforms/WinUI/Relay/Cube3D.cpp - and draws into with a
@@ -510,12 +527,148 @@ struct Cube3DSample: SampleContent, ExampleContent {
                     }
                 }
             }
-            """)
+            """),
+        .cpp("""
+            // Platforms/WinUI/Relay/Cube3D.cpp - a SwapChainPanel, an element that
+            // knows nothing of StateUI, drawn into by a Direct3D 11.1 device. It
+            // follows WinUI's frames only while it spins and stands on screen, and a
+            // value changed while it stands still draws the one frame it needs.
+            namespace {
+                // … the device, the shaders below, the corners and the swap chain,
+                // made once and sized again with the panel (standChain)
+
+                // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+                void draw(Cube &cube) {
+                    auto panel = cube.panel.get();
+                    if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;
+                    standChain(cube, panel);
+
+                    float const housing[4] = {0.102f, 0.090f, 0.145f, 1};
+                    auto target = cube.target.get();
+                    cube.context->OMSetRenderTargets(1, &target, cube.depth.get());
+                    cube.context->ClearRenderTargetView(target, housing);
+                    cube.context->ClearDepthStencilView(cube.depth.get(), D3D11_CLEAR_DEPTH, 1, 0);
+                    D3D11_VIEWPORT viewport{0, 0, static_cast<float>(cube.width), static_cast<float>(cube.height), 0, 1};
+                    cube.context->RSSetViewports(1, &viewport);
+
+                    Frame frame{};
+                    transform(double(cube.width) / cube.height, cube.angle, std::clamp(cube.size, 0.0, 1.0), frame.transform);
+                    auto const &paint = paints[std::clamp(cube.color, 0, 2)];
+                    std::copy(paint, paint + 3, frame.color);
+                    frame.color[3] = 1;
+                    cube.context->UpdateSubresource(cube.frame.get(), 0, nullptr, &frame, 0, 0);
+
+                    UINT const stride = 4 * sizeof(float), offset = 0;
+                    auto corners = cube.corners.get();
+                    auto constants = cube.frame.get();
+                    cube.context->IASetInputLayout(cube.layout.get());
+                    cube.context->IASetVertexBuffers(0, 1, &corners, &stride, &offset);
+                    cube.context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                    cube.context->VSSetShader(cube.vertexShader.get(), nullptr, 0);
+                    cube.context->VSSetConstantBuffers(0, 1, &constants);
+                    cube.context->PSSetShader(cube.pixelShader.get(), nullptr, 0);
+                    cube.context->RSSetState(cube.bothSides.get());
+                    cube.context->OMSetDepthStencilState(cube.nearest.get(), 0);
+                    cube.context->Draw(36, 0);
+                    check_hresult(cube.chain->Present(1, 0));
+                }
+
+                // Follows WinUI's frames while the cube spins and stands on screen, and lets go of them otherwise.
+                void followFrames(std::shared_ptr<Cube> const &cube) {
+                    auto follows = static_cast<bool>(cube->rendering);
+                    if (cube->spinning && cube->shown && !follows) {
+                        cube->lastFrame = -1;
+                        std::weak_ptr<Cube> weak = cube;
+                        cube->rendering = xaml::Media::CompositionTarget::Rendering(
+                            [weak](auto const &, winrt::Windows::Foundation::IInspectable const &args) {
+                                auto cube = weak.lock();
+                                if (!cube) return;
+                                try {
+                                    auto now = std::chrono::duration<double>(
+                                        args.as<xaml::Media::RenderingEventArgs>().RenderingTime()).count();
+                                    if (cube->lastFrame >= 0) cube->angle += now - cube->lastFrame;
+                                    cube->lastFrame = now;
+                                    draw(*cube);
+                                } catch (...) {
+                                    report("drawing the cube");
+                                }
+                            });
+                    } else if (!(cube->spinning && cube->shown) && follows) {
+                        xaml::Media::CompositionTarget::Rendering(cube->rendering);
+                        cube->rendering = {};
+                    }
+                }
+            }
+
+            extern "C" GalleryObjectRef gallery_cube_make(void) {
+                try {
+                    controls::SwapChainPanel panel;
+                    panel.MinWidth(240);
+                    panel.MinHeight(240);
+                    auto cube = std::make_shared<Cube>();
+                    cube->panel = winrt::make_weak(panel);
+                    std::weak_ptr<Cube> weak = cube;
+                    panel.Loaded([weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            cube->shown = true;
+                            followFrames(cube);
+                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
+                        }
+                    });
+                    panel.Unloaded([weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            cube->shown = false;
+                            followFrames(cube);
+                        }
+                    });
+                    auto redraw = [weak](auto const &, auto const &) {
+                        if (auto cube = weak.lock()) {
+                            try { draw(*cube); } catch (...) { report("drawing the cube"); }
+                        }
+                    };
+                    panel.SizeChanged(redraw);
+                    panel.CompositionScaleChanged(redraw);
+                    cubes[identity(panel)] = cube;
+                    return detach(panel);
+                } catch (...) {
+                    report("making a cube");
+                    return nullptr;
+                }
+            }
+
+            extern "C" void gallery_cube_set(GalleryObjectRef handle, double size, int32_t color, bool spinning) {
+                try {
+                    auto found = cube(handle);
+                    if (!found) return;
+                    found->size = size;
+                    found->color = color;
+                    found->spinning = spinning;
+                    followFrames(found);
+                    if (found->shown) draw(*found);
+                } catch (...) {
+                    report("setting the cube");
+                }
+            }
+            """),
+        .hlsl("""
+            // The shaders Cube3D.cpp compiles from source with D3DCompile, vs_5_0 and
+            // ps_5_0. A corner carries its face's brightness in w; the colour is the
+            // frame's.
+            cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
+            struct Corner { float4 at : POSITION; };
+            struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
+            Painted vertex(Corner corner) {
+                Painted painted;
+                painted.position = mul(transform, float4(corner.at.xyz, 1));
+                painted.color = float4(color.rgb * corner.at.w, color.a);
+                return painted;
+            }
+            float4 pixel(Painted painted) : SV_TARGET { return painted.color; }
+            """))
     #else
     static let hostCode = HostCode(
-        heading: "In Android",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/Android/Swift/Host/GLESCube3DView.swift. The cube is a
             // TextureView of the gallery's own Java - Cube3DView.java - that
             // hands its Surface over as it comes and goes, and asks for the
@@ -567,7 +720,125 @@ struct Cube3DSample: SampleContent, ExampleContent {
                     }
                 }
             }
-            """)
+            """),
+        .java("""
+            // Platforms/Android/Java/com/stateui/gallery/Cube3DView.java - the surface
+            // the Swift half draws the cube into: a TextureView, drawn as a view is,
+            // so the opacity, transform and clip StateUI puts on every view hold for
+            // it. It hands its surface over as it comes and goes, and asks for the
+            // display's frames while it spins and stands in a window.
+            final class Cube3DView extends TextureView implements TextureView.SurfaceTextureListener, Choreographer.FrameCallback {
+                private static final float SIDE = 240;
+
+                private final long control;
+                private final float density;
+                private Surface surface;
+                private boolean spinning = true;
+                private boolean following;
+
+                Cube3DView(Context context, long control) {
+                    super(context);
+                    this.control = control;
+                    density = context.getResources().getDisplayMetrics().density;
+                    setSurfaceTextureListener(this);
+                }
+
+                // Whether the cube turns: frames come only while it does.
+                void setSpinning(boolean value) {
+                    spinning = value;
+                    follow();
+                }
+
+                @Override
+                protected void onMeasure(int width, int height) {
+                    int side = Math.round(SIDE * density);
+                    setMeasuredDimension(resolveSize(side, width), resolveSize(side, height));
+                }
+
+                @Override
+                protected void onAttachedToWindow() {
+                    super.onAttachedToWindow();
+                    follow();
+                }
+
+                @Override
+                protected void onDetachedFromWindow() {
+                    super.onDetachedFromWindow();
+                    follow();
+                }
+
+                @Override
+                public void onSurfaceTextureAvailable(SurfaceTexture texture, int width, int height) {
+                    surface = new Surface(texture);
+                    GalleryNatives.surfaceReady(control, surface, width, height);
+                    follow();
+                }
+
+                @Override
+                public void onSurfaceTextureSizeChanged(SurfaceTexture texture, int width, int height) {
+                    if (surface != null) GalleryNatives.surfaceReady(control, surface, width, height);
+                }
+
+                @Override
+                public boolean onSurfaceTextureDestroyed(SurfaceTexture texture) {
+                    GalleryNatives.surfaceGone(control);
+                    surface.release();
+                    surface = null;
+                    follow();
+                    return true;
+                }
+
+                @Override
+                public void onSurfaceTextureUpdated(SurfaceTexture texture) {}
+
+                @Override
+                public void doFrame(long nanoseconds) {
+                    if (!following) return;
+                    GalleryNatives.cubeFrame(control, nanoseconds);
+                    Choreographer.getInstance().postFrameCallback(this);
+                }
+
+                // Asks for frames while the cube spins on a surface in a window, and
+                // for none otherwise.
+                private void follow() {
+                    boolean wanted = spinning && surface != null && isAttachedToWindow();
+                    if (wanted == following) return;
+                    following = wanted;
+                    if (wanted) {
+                        Choreographer.getInstance().postFrameCallback(this);
+                    } else {
+                        Choreographer.getInstance().removeFrameCallback(this);
+                    }
+                }
+            }
+
+            // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java - what
+            // the view tells its Swift half, which answers each by its JNI name.
+            final class GalleryNatives {
+                static native void surfaceReady(long control, Surface surface, int width, int height);
+                static native void surfaceGone(long control);
+                static native void cubeFrame(long control, long nanoseconds);
+            }
+            """),
+        .glsl("""
+            // The shaders GLESCube3DView.swift compiles from source for OpenGL ES 3.0.
+            // A corner carries its face's brightness in w; the colour is the frame's.
+            #version 300 es
+            layout(location = 0) in vec4 corner;
+            uniform mat4 transform;
+            uniform vec4 color;
+            out vec4 painted;
+            void main() {
+                gl_Position = transform * vec4(corner.xyz, 1.0);
+                painted = vec4(color.rgb * corner.w, color.a);
+            }
+
+            #version 300 es
+            precision mediump float;
+            in vec4 painted;
+            out vec4 fragment;
+            void main() { fragment = painted; }
+            """))
     #endif
 
     var content: any View {

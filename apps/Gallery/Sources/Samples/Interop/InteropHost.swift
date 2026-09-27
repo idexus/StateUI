@@ -3,7 +3,7 @@
 
 #if APPKIT || UIKIT || GTK || WINUI || ANDROID
 /// The host this build of the gallery runs on, as its interop group names it: the one place the group's samples
-/// differ by host, beside each sample's host half.
+/// differ by host, beside each sample's host half - and the language of the relay beneath it, where it has one.
 enum InteropHost {
     #if APPKIT
     static let name = "AppKit"
@@ -15,6 +15,7 @@ enum InteropHost {
     static let made = "view"
     static let awaiting = ""
     static let cubeDrawn = "by Metal"
+    static let relay: CodeLanguage? = nil
     #elseif UIKIT
     static let name = "UIKit"
     static let key = "uiKit"
@@ -25,6 +26,7 @@ enum InteropHost {
     static let made = "view"
     static let awaiting = ""
     static let cubeDrawn = "by Metal"
+    static let relay: CodeLanguage? = nil
     #elseif GTK
     static let name = "GTK"
     static let key = "gtk"
@@ -35,6 +37,7 @@ enum InteropHost {
     static let made = "control"
     static let awaiting = " A performer may await: GTK reads the clipboard asynchronously."
     static let cubeDrawn = "by OpenGL"
+    static let relay: CodeLanguage? = nil
     #elseif WINUI
     static let name = "WinUI"
     static let key = "winUI"
@@ -46,6 +49,7 @@ enum InteropHost {
     static let made = "control"
     static let awaiting = " A performer may await."
     static let cubeDrawn = "by Direct3D"
+    static let relay: CodeLanguage? = CodeLanguage.cpp
     #else
     static let name = "Android"
     static let key = "android"
@@ -57,6 +61,7 @@ enum InteropHost {
     static let made = "control"
     static let awaiting = " A performer may await."
     static let cubeDrawn = "by OpenGL ES"
+    static let relay: CodeLanguage? = CodeLanguage.java
     #endif
 }
 #endif

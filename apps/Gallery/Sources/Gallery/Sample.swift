@@ -117,8 +117,7 @@ protocol ExampleContent: ContentView {
     static var codeHeading: String { get }
 
     /// The far side of the example, where it has one: the code that answers
-    /// this example on the host, under a heading and in a language the
-    /// example itself names.
+    /// this example on the host, a listing per language it is written in.
     ///
     /// `.nothing` where the example is Swift alone, which is almost every one,
     /// and the page then draws no second section.
@@ -138,28 +137,48 @@ extension ExampleContent {
     static var codeHeading: String { "In Swift" }
 }
 
-/// One listing beside an example's own code: what answers it on the other
-/// side of the boundary.
+/// What answers an example on the other side of the boundary: its host's
+/// code, a listing per language - the host's Swift first, then what stands
+/// beneath it - each headed "In <host> - <language>".
 ///
-/// The heading and the language belong to the EXAMPLE. A sample compiled for
-/// one host alone names that host in its own words; this file, which every
-/// host compiles, names none.
+/// The host belongs to the EXAMPLE. A sample compiled for one host alone
+/// names that host in its own words; this file, which every host compiles,
+/// names none.
 struct HostCode {
-    /// What heads the section.
-    let heading: String
+    /// The host whose half it is, as the headings name it.
+    let host: String
 
-    /// Which vocabulary colours it.
-    let language: CodeLanguage
+    /// Its listings, in the order the page shows them.
+    let listings: [HostListing]
 
-    /// The code itself, as its author wrote it.
-    let code: String
+    /// `host`'s half, written in `listings`.
+    init(in host: String, _ listings: HostListing...) {
+        self.host = host
+        self.listings = listings
+    }
 
     /// No far side at all - what an example written in Swift alone has, and
     /// what the page draws nothing for.
-    static let nothing = HostCode(heading: "", language: .swift, code: "")
+    static let nothing = HostCode(in: "")
 
-    /// Whether there is anything to draw.
-    var isEmpty: Bool { code.isEmpty }
+    /// The heading over `listing`: "In Android - Java".
+    func heading(of listing: HostListing) -> String {
+        "In \(host) - \(listing.language.name)"
+    }
+}
+
+/// One listing of a host's half: its language and its code, as its author
+/// wrote it.
+struct HostListing {
+    let language: CodeLanguage
+    let code: String
+
+    static func swift(_ code: String) -> Self { Self(language: .swift, code: code) }
+    static func java(_ code: String) -> Self { Self(language: .java, code: code) }
+    static func cpp(_ code: String) -> Self { Self(language: .cpp, code: code) }
+    static func metal(_ code: String) -> Self { Self(language: .metal, code: code) }
+    static func glsl(_ code: String) -> Self { Self(language: .glsl, code: code) }
+    static func hlsl(_ code: String) -> Self { Self(language: .hlsl, code: code) }
 }
 
 /// One example as its page shows it: the view, the words about it, and its

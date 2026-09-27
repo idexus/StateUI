@@ -130,10 +130,9 @@ struct SampleTabPage: ContentView {
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
-            if !example.hostCode.isEmpty {
+            example.hostCode.listings.map { listing -> Element in
                 SamplePage.section(
-                    example.hostCode.heading,
-                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+                    example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
         }
         .spacing(16)

@@ -66,9 +66,8 @@ struct InteropControlSample: SampleContent, ExampleContent {
 
     #if APPKIT
     static let hostCode = HostCode(
-        heading: "In AppKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/AppKit/Host/TrafficLightView.swift - an ordinary
             // NSView that knows nothing of StateUI.
             final class TrafficLightView: NSView {
@@ -132,12 +131,11 @@ struct InteropControlSample: SampleContent, ExampleContent {
 
             // GalleryControls.register(), called from main.swift, lists it:
             TrafficLightView.register()
-            """)
+            """))
     #elseif UIKIT
     static let hostCode = HostCode(
-        heading: "In UIKit",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/UIKit/Host/TrafficLightView.swift - an ordinary
             // UIView that knows nothing of StateUI.
             final class TrafficLightView: UIView {
@@ -205,12 +203,11 @@ struct InteropControlSample: SampleContent, ExampleContent {
 
             // GalleryControls.register(), called from main.swift, lists it:
             TrafficLightView.register()
-            """)
+            """))
     #elseif GTK
     static let hostCode = HostCode(
-        heading: "In GTK",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/GTK/Host/TrafficLightWidget.swift - a GtkDrawingArea,
             // drawn by cairo, that knows nothing of StateUI. A GTKControl is an
             // object holding the widget it shows.
@@ -251,12 +248,11 @@ struct InteropControlSample: SampleContent, ExampleContent {
                     }
                 }
             }
-            """)
+            """))
     #elseif WINUI
     static let hostCode = HostCode(
-        heading: "In WinUI",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/WinUI/Host/TrafficLightControl.swift. The lamps are XAML
             // - a Border, three Ellipses - made by the gallery's own relay,
             // C++/WinRT behind C functions in Platforms/WinUI/Relay. A
@@ -303,12 +299,58 @@ struct InteropControlSample: SampleContent, ExampleContent {
                     }
                 }
             }
-            """)
+            """),
+        .cpp("""
+            // Platforms/WinUI/Relay/Controls.cpp - the lamps as XAML that knows
+            // nothing of StateUI: a Border holding three Ellipses. Each function is
+            // C++/WinRT behind the C name the Swift half calls, declared in
+            // include/CGalleryWinUI.h; a tap is told through the callbacks the Swift
+            // half handed over, by the number it made the control with.
+            extern "C" GalleryObjectRef gallery_traffic_light_make(int64_t control) {
+                try {
+                    controls::Border housing;
+                    housing.Background(brush(26, 23, 37));
+                    housing.CornerRadius(xaml::CornerRadius{18, 18, 18, 18});
+                    housing.Padding(xaml::Thickness{12, 12, 12, 12});
+                    controls::StackPanel lamps;
+                    lamps.Spacing(10);
+                    for (int32_t lamp = 0; lamp < 3; ++lamp) {
+                        shapes::Ellipse ellipse;
+                        ellipse.Width(44);
+                        ellipse.Height(44);
+                        ellipse.Fill(brush(lampColors[lamp][0], lampColors[lamp][1], lampColors[lamp][2]));
+                        ellipse.Opacity(lamp == 0 ? 1 : 0.18);
+                        // The light does not switch itself: it reports, and whoever
+                        // owns the state decides.
+                        ellipse.Tapped([control, lamp](auto const &, xaml::Input::TappedRoutedEventArgs const &args) {
+                            args.Handled(true);
+                            if (callbacks.lampTapped) callbacks.lampTapped(control, lamp);
+                        });
+                        lamps.Children().Append(ellipse);
+                    }
+                    housing.Child(lamps);
+                    return detach(housing);
+                } catch (...) {
+                    report("making a traffic light");
+                    return nullptr;
+                }
+            }
+
+            extern "C" void gallery_traffic_light_set_signal(GalleryObjectRef light, int32_t signal) {
+                try {
+                    auto lamps = as<controls::Border>(light).Child().as<controls::StackPanel>().Children();
+                    for (uint32_t lamp = 0; lamp < lamps.Size(); ++lamp) {
+                        lamps.GetAt(lamp).as<xaml::UIElement>().Opacity(static_cast<int32_t>(lamp) == signal ? 1 : 0.18);
+                    }
+                } catch (...) {
+                    report("lighting a lamp");
+                }
+            }
+            """))
     #else
     static let hostCode = HostCode(
-        heading: "In Android",
-        language: .swift,
-        code: """
+        in: InteropHost.name,
+        .swift("""
             // Platforms/Android/Swift/Host/TrafficLightView.swift. The lamps
             // are a View of the gallery's own Java - TrafficLightView.java,
             // beside the head - that knows nothing of StateUI; the control
@@ -360,7 +402,82 @@ struct InteropControlSample: SampleContent, ExampleContent {
 
             // GalleryControls.register(), called from JNI_OnLoad, lists it:
             TrafficLightView.register()
-            """)
+            """),
+        .java("""
+            // Platforms/Android/Java/com/stateui/gallery/TrafficLightView.java - a
+            // View that knows nothing of StateUI. It is told which lamp is lit, and
+            // tells a tap through a native method of the gallery's, by the number
+            // its Swift half made it with.
+            final class TrafficLightView extends View {
+                private static final int[] LAMPS = {0xFFE5484D, 0xFFF5B546, 0xFF46B45F};
+                private static final float LAMP = 44, SPACING = 10, PADDING = 12;
+
+                private final long control;
+                private final float density;
+                private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                private final RectF housing = new RectF();
+                private int signal = -1;
+
+                TrafficLightView(Context context, long control) {
+                    super(context);
+                    this.control = control;
+                    density = context.getResources().getDisplayMetrics().density;
+                    setClickable(true);
+                }
+
+                // Which lamp is lit, from the top: what the Swift half's `signal` sets.
+                void setSignal(int lamp) {
+                    if (lamp == signal) return;
+                    signal = lamp;
+                    invalidate();
+                }
+
+                // How big it is, which the host asks as Android asks any view.
+                @Override
+                protected void onMeasure(int width, int height) {
+                    setMeasuredDimension(
+                            resolveSize(Math.round((PADDING * 2 + LAMP) * density), width),
+                            resolveSize(Math.round((PADDING * 2 + LAMP * 3 + SPACING * 2) * density), height));
+                }
+
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    housing.set(0, 0, getWidth(), getHeight());
+                    paint.setColor(0xFF1A1725);
+                    canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
+                    for (int lamp = 0; lamp < 3; lamp++) {
+                        paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
+                        canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
+                    }
+                }
+
+                // The light does not switch itself: it tells the tap, and whoever
+                // owns the state decides.
+                @Override
+                public boolean onTouchEvent(MotionEvent event) {
+                    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                        for (int lamp = 0; lamp < 3; lamp++) {
+                            if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
+                                GalleryNatives.lampTapped(control, lamp);
+                                break;
+                            }
+                        }
+                    }
+                    return true;
+                }
+
+                private float centre(int lamp) {
+                    return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
+                }
+            }
+
+            // Platforms/Android/Java/com/stateui/gallery/GalleryNatives.java - what
+            // the gallery's own views tell its Swift half, which answers each by its
+            // JNI name.
+            final class GalleryNatives {
+                static native void lampTapped(long control, int lamp);
+            }
+            """))
     #endif
 
     var content: any View {
