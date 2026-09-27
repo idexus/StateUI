@@ -113,6 +113,13 @@ final class UIKitDriver: HostDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
         let view = (element.native as? UIKitElement)?.view
         switch (act, view) {
+        case (.activate, _) where element.parent?.type == .itemsView:
+            guard let items = (element.parent?.native as? UIKitElement)?.view as? UIKitItemsView,
+                  case .manual(let identity) = element.id
+            else { throw DriverCannot(act, on: element) }
+            items.activateForTesting(identity)
+        case (.choose(let place), let items as UIKitItemsView): items.chooseForTesting(place)
+        case (.scroll(let target), let items as UIKitItemsView): items.scrollForTesting(to: target)
         case (.activate, let button as UIKitButtonView): button.sendActions(for: .primaryActionTriggered)
         case (.type(let words), let editor as UIKitTextEditorView):
             // UIKit asks the editor's delegate before any change a key makes.
@@ -220,11 +227,22 @@ final class UIKitDriver: HostDriver {
         return CalendarDate(year: parts.year ?? 0, month: parts.month ?? 1, day: parts.day ?? 1).propValue
     }
 
+    /// Where the element's view stands in its window, as UIKit placed it.
+    func place(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? UIKitElement)?.view, view.window != nil else {
+            throw DriverCannot("read where \(element.type.name) stands")
+        }
+        let frame = view.convert(view.bounds, to: nil)
+        return Rect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height)
+    }
+
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
         if let held = try pageHolds(property, element) { return held }
         let view = (element.native as? UIKitElement)?.view
         switch (property, view) {
+        case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
+        case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitLabelView): return (label.text ?? "").propValue
         case (.text, let field as any UIKitInputView): return field.words.propValue
         case (.cursorPosition, let field as any UIKitInputView): return field.selection.start.propValue

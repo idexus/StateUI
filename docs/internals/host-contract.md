@@ -228,21 +228,19 @@ larger renderer surface.
 
 ## Collections
 
-`ItemsView` is the public name for the shared collection surface. It presents
-identified items without constraining their arrangement to a list or grid.
-StateUI owns logical item order, stable identities, changes, and the subtree
-for an identity. The toolkit owns the viewport, cell reuse, input, keyboard
-navigation, and accessibility.
+`ItemsView` is the shared collection surface. StateUI owns the item order, the
+identities, their changes, and the subtree for an identity; the toolkit owns
+the viewport, cell reuse, input, keyboard navigation, and accessibility. The
+adapters are `NSCollectionView`, `UICollectionView`, Android `RecyclerView`,
+WinUI `ItemsView`, and GTK 4 `GtkListView` or `GtkGridView`.
 
-The native adapters are expected to use `NSCollectionView` or `NSTableView`,
-`UICollectionView`, Android `RecyclerView`, WinUI `ItemsView`, and GTK 4
-`GtkListView` or `GtkGridView`. The collection payload enters `HostPatch` only
-when those hosts can consume the same complete contract.
-
-Until that payload and its layout, selection, activation, reuse, accessibility,
-and programmatic-scroll semantics are settled, the base contract exposes no
-native collection control. Richer arrangements remain StateUI compositions
-over the smallest accepted primitives.
+Nothing new crosses the boundary for it. Every identity the list shows, in
+order and in groups, is one property, `ItemsViewContract.items`. The
+identities the host holds in its cells come back as an event,
+`realizedChanged`, and the element's children are those entries alone, each
+keyed by its identity; the host layer's `ItemsCells` sends the event and runs
+the turn at once, so the toolkit's synchronous call for a cell finds its
+subtree mounted ([items](../design/host/items.md)).
 
 ## Values a host is handed
 

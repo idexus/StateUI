@@ -21,6 +21,8 @@ extension UIKitDriver {
             return "the host told the scene's phase, no scene moved"
         case "endContent":
             return "the navigation delegate told, no web process ended"
+        case "choose" where taken.element == "ItemsView", "activate" where taken.element == "an item of ItemsView":
+            return "the collection's delegate told, no touch"
         default: break
         }
         switch ability {

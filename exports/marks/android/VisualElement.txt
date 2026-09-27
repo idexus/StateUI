@@ -1,4 +1,4 @@
-# inputs 12cf702e5bc98016b61d73333eb778ff7e734138
+# inputs 8df967acbc3298b8222711bd547c6a8ad0a94135
 ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.accessibilityLabel: ✅
@@ -339,6 +339,40 @@ Image.translationY: ✅
 Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Image.width: ✅
 Image.zIndex: not realized
+ItemsView.accessibilityHeadingLevel: not realized
+ItemsView.accessibilityHint: not realized
+ItemsView.accessibilityLabel: not realized
+ItemsView.automationExcludedWithChildren: not realized
+ItemsView.background: not realized
+ItemsView.focus: not realized
+ItemsView.frame: not realized
+ItemsView.frameChanged: not realized
+ItemsView.height: not realized
+ItemsView.ignoresInput: not realized
+ItemsView.isAccessibilityHidden: not realized
+ItemsView.isEnabled: not realized
+ItemsView.isFocusedChanged: not realized
+ItemsView.isVisible: not realized
+ItemsView.layoutDirection: not realized
+ItemsView.maximumHeight: not realized
+ItemsView.maximumWidth: not realized
+ItemsView.minimumHeight: not realized
+ItemsView.minimumWidth: not realized
+ItemsView.opacity: not realized
+ItemsView.pivotX: not realized
+ItemsView.pivotY: not realized
+ItemsView.rotation: not realized
+ItemsView.rotationX: not realized
+ItemsView.rotationY: not realized
+ItemsView.scale: not realized
+ItemsView.scaleX: not realized
+ItemsView.scaleY: not realized
+ItemsView.style: not realized
+ItemsView.translationX: not realized
+ItemsView.translationY: not realized
+ItemsView.unfocus: not realized
+ItemsView.width: not realized
+ItemsView.zIndex: not realized
 Label.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 Label.accessibilityHint: ✅
 Label.accessibilityLabel: ✅

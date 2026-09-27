@@ -1,4 +1,4 @@
-# inputs 12cf702e5bc98016b61d73333eb778ff7e734138
+# inputs 8df967acbc3298b8222711bd547c6a8ad0a94135
 ActivityIndicator.allowDrop: not realized
 ActivityIndicator.area: ✅
 ActivityIndicator.canDrag: not realized
@@ -319,6 +319,38 @@ Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
 Image.verticalAlignment: ✅
+ItemsView.allowDrop: not realized
+ItemsView.area: not realized
+ItemsView.canDrag: not realized
+ItemsView.dragLeave: not realized
+ItemsView.dragOver: not realized
+ItemsView.dragStarting: not realized
+ItemsView.dragText: not realized
+ItemsView.drop: not realized
+ItemsView.dropCompleted: not realized
+ItemsView.frameChanged: not realized
+ItemsView.gridColumn: not realized
+ItemsView.gridColumnSpan: not realized
+ItemsView.gridRow: not realized
+ItemsView.gridRowSpan: not realized
+ItemsView.horizontalAlignment: not realized
+ItemsView.margin: not realized
+ItemsView.panTouchCount: not realized
+ItemsView.panUpdated: not realized
+ItemsView.panXChannel: not realized
+ItemsView.panYChannel: not realized
+ItemsView.pinchUpdated: not realized
+ItemsView.pointerEntered: not realized
+ItemsView.pointerExited: not realized
+ItemsView.pointerMoved: not realized
+ItemsView.pointerPressed: not realized
+ItemsView.pointerReleased: not realized
+ItemsView.swipeDirection: not realized
+ItemsView.swipeThreshold: not realized
+ItemsView.swiped: not realized
+ItemsView.tapCount: not realized
+ItemsView.tapped: not realized
+ItemsView.verticalAlignment: not realized
 Label.allowDrop: not realized
 Label.area: ✅
 Label.canDrag: not realized

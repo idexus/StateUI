@@ -57,7 +57,7 @@ final class ItemsCellsTests: XCTestCase {
     func testTheEntriesAreTakenAndNothingIsBuiltUnasked() {
         XCTAssertEqual(cells.identities.count, 100)
         XCTAssertEqual(cells.identities.prefix(2), ["0", "1"])
-        XCTAssertEqual(cells.element.children.count, 0)
+        XCTAssertEqual(cells.element?.children.count, 0)
         XCTAssertNil(cells.takeEntries(), "the same entries change nothing")
     }
 

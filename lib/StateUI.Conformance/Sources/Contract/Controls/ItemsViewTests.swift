@@ -18,14 +18,14 @@
             ]) { s in
                 s.start { VStack { numbers().width(300).height(400).id("list") } }
 
-                s.settle { (try? s.element("0")) != nil }
-                s.expect(try s.held(TextElementContract.text, on: s.element("0")), "Item 0")
-                s.expect((try? s.element("999")) == nil, true, "an item far out of view is not built")
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                s.expect(try s.held(TextElementContract.text, on: s.item("0", of: s.element("list"))), "Item 0")
+                s.expect((try? s.item("999", of: s.element("list"))) == nil, true, "an item far out of view is not built")
             },
             ConformanceCase("aListLaysItsItemsDown", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in
                 s.start { VStack { numbers().itemsLayout(.list(spacing: 6)).width(300).height(400).id("list") } }
-                s.settle { (try? s.element("1")) != nil }
-                let (first, second) = (try s.place(of: s.element("0")), try s.place(of: s.element("1")))
+                s.settle { (try? s.item("1", of: s.element("list"))) != nil }
+                let (first, second) = (try s.place(of: s.item("0", of: s.element("list"))), try s.place(of: s.item("1", of: s.element("list"))))
 
                 s.expect(second.x, first.x, within: 0.5, "one under another")
                 s.expect(second.y, first.y + first.height + 6, within: 0.5, "six apart")
@@ -33,8 +33,8 @@
             },
             ConformanceCase("aRowLaysItsItemsAcross", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in
                 s.start { VStack { numbers().itemsLayout(.row(spacing: 8)).width(300).height(60).id("list") } }
-                s.settle { (try? s.element("1")) != nil }
-                let (first, second) = (try s.place(of: s.element("0")), try s.place(of: s.element("1")))
+                s.settle { (try? s.item("1", of: s.element("list"))) != nil }
+                let (first, second) = (try s.place(of: s.item("0", of: s.element("list"))), try s.place(of: s.item("1", of: s.element("list"))))
 
                 s.expect(second.y, first.y, within: 0.5, "one beside another")
                 s.expect(second.x, first.x + first.width + 8, within: 0.5, "eight apart")
@@ -48,8 +48,8 @@
                         numbers().itemsLayout(.grid(minimumItemWidth: 90, spacing: 10)).width(300).height(400).id("list")
                     }
                 }
-                s.settle { (try? s.element("3")) != nil }
-                let places = try (0...3).map { try s.place(of: s.element("\($0)")) }
+                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
+                let places = try (0...3).map { try s.place(of: s.item("\($0)", of: s.element("list"))) }
                 let width = (300.0 - 2 * 10) / 3
 
                 s.expect(places[1].y, places[0].y, within: 0.5, "three columns")
@@ -73,7 +73,7 @@
                     }
                 }
                 let list = try s.element("list")
-                s.settle { (try? s.element("3")) != nil }
+                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
                 s.expect(try s.held(ItemsViewContract.selectionMode, on: list), .single)
 
                 try s.perform(.choose(3), on: list)
@@ -93,7 +93,7 @@
                 let chosen = State<Set<Int>>(wrappedValue: [])
                 s.start { VStack { numbers().selection(chosen.projectedValue).width(300).height(400).id("list") } }
                 let list = try s.element("list")
-                s.settle { (try? s.element("3")) != nil }
+                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
                 s.expect(try s.held(ItemsViewContract.selectionMode, on: list), .multiple)
 
                 try s.perform(.choose(1), on: list)
@@ -110,9 +110,9 @@
                         numbers().onItemActivated { opened.values.append($0) }.width(300).height(400).id("list")
                     }
                 }
-                s.settle { (try? s.element("2")) != nil }
+                s.settle { (try? s.item("2", of: s.element("list"))) != nil }
 
-                try s.perform(.activate, on: s.element("2"))
+                try s.perform(.activate, on: s.item("2", of: s.element("list")))
                 s.settle { !opened.values.isEmpty }
                 s.expect(opened.values, [2])
             },
@@ -128,7 +128,7 @@
                     }
                 }
                 let list = try s.element("list")
-                s.settle { (try? s.element("0")) != nil }
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
                 s.expect(count.wrappedValue, 30, "nothing asked for at the start")
 
                 try s.perform(.scroll(to: Point(0, 100_000)), on: list)
@@ -146,11 +146,11 @@
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
                 }
-                s.settle { (try? s.element("0")) != nil }
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
 
                 try s.perform(.activate, on: s.element("go"))
-                s.settle { (try? s.element("80")) != nil }
-                let item = try s.place(of: s.element("80"))
+                s.settle { (try? s.item("80", of: s.element("list"))) != nil }
+                let item = try s.place(of: s.item("80", of: s.element("list")))
                 let list = try s.place(of: s.element("list"))
                 s.expect(item.y, list.y, within: 1, "at the list's start")
             },

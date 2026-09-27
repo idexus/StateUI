@@ -311,11 +311,9 @@ Use it for finite content in stacks, grids, menus, and drawing structures. A
 plain `for` is intentionally not accepted by `ViewBuilder`, because the
 builder must know stable identity rather than receiving only positions.
 
-The shared native virtualized-collection API is not admitted yet. Its contract
-must cover stable item identity, viewport ownership, reuse, selection,
-activation, accessibility, and programmatic scrolling across all target
-toolkits before it enters the base library. This keeps virtualization in the
-native host without growing a second UI framework there.
+Many items - more than a screen holds - belong in an `ItemsView`, which
+builds only the items the platform's own collection shows
+([Controls and input](controls-and-input.md#collections)).
 
 ## Frame readings
 

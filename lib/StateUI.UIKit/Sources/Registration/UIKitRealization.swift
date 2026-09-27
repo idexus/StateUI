@@ -11,7 +11,7 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "Content", "ItemsView", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
+        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -31,6 +31,8 @@ enum UIKitRealization {
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own
+        .unrealized("ItemsView", "style", why: "No style can name an ItemsView: a style names its control by an "
+            + "initializer that sets nothing, which a list of some items has not."),
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
         .complete("Menu", "text"),
         .complete("MenuItem", "isDestructive"),
@@ -83,7 +85,7 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + UIKitRegistrations.webActs).map(\.name))
+            acts: (HostActs.performed + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

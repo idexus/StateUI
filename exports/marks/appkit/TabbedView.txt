@@ -1,4 +1,4 @@
-# inputs 10f05a2eda6303ec49edc04ce43460cab9875f0c
+# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
 Label.frameChanged: ✅
 TabbedView: ✅
 TabbedView.currentPage: 🪞 read currentPage of TabbedView: the host's tab choice, not the tab view's

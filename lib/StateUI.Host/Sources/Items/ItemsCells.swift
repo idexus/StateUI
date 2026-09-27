@@ -8,10 +8,10 @@
 /// and the end reached.
 /// Design: docs/design/host/items.md
 @_spi(Host) @MainActor public final class ItemsCells {
-    /// The ItemsView.
-    public unowned let element: MountedElement
+    /// The ItemsView, while it stands in the tree: the toolkit may call its collection back after it left.
+    public private(set) weak var element: MountedElement?
 
-    private unowned let runtime: HostRuntime
+    private weak var runtime: HostRuntime?
 
     /// The entries the collection shows, as last taken.
     public private(set) var entries = ItemsEntries(sections: [])
@@ -33,7 +33,7 @@
     /// Takes the entries the element carries now; the changes from the ones before, or nil where they stand.
     @discardableResult
     public func takeEntries() -> ItemsChanges? {
-        let now = element.value(.items).flatMap(ItemsEntries.init(propValue:)) ?? ItemsEntries(sections: [])
+        let now = element?.value(.items).flatMap(ItemsEntries.init(propValue:)) ?? ItemsEntries(sections: [])
         guard now != entries else { return nil }
         let old = identities
         entries = now
@@ -49,17 +49,17 @@
 
     /// Down, across or in columns.
     public var layout: ItemsLayout {
-        element.value(.itemsLayout).flatMap(ItemsLayout.init(propValue:)) ?? .list()
+        element?.value(.itemsLayout).flatMap(ItemsLayout.init(propValue:)) ?? .list()
     }
 
     /// How many items the user can choose.
     public var selectionMode: SelectionMode {
-        element.value(.selectionMode).flatMap(SelectionMode.init(propValue:)) ?? .none
+        element?.value(.selectionMode).flatMap(SelectionMode.init(propValue:)) ?? .none
     }
 
     /// The chosen identities, in the order they show.
     public var selected: [String] {
-        element.value(.selectedItems)?.strings ?? []
+        element?.value(.selectedItems)?.strings ?? []
     }
 
     /// Whether `identity` is an item, not a header or a footer.
@@ -79,9 +79,15 @@
         if held.remove(identity) != nil { tell() }
     }
 
+    /// The identity of a mounted entry; nil for anything else.
+    public func identity(of item: MountedElement) -> String? {
+        guard let element, item.parent === element, case .manual(let identity) = item.id else { return nil }
+        return identity
+    }
+
     /// The mounted subtree of `identity`, where there is one.
     public func item(_ identity: String) -> MountedElement? {
-        element.children.first { $0.id == .manual(identity) }
+        element?.children.first { $0.id == .manual(identity) }
     }
 
     /// The user chose `chosen` - every item chosen now - told in the order they show; what the program selects is
@@ -89,19 +95,19 @@
     public func userChose(_ chosen: some Sequence<String>) {
         guard !ProgramWrite.isWriting else { return }
         let ordered = Set(chosen).filter(isItem).sorted { positions[$0, default: 0] < positions[$1, default: 0] }
-        guard ordered != selected else { return }
+        guard ordered != selected, let element, let runtime else { return }
         element.send(.selectionChanged, [.strings(ordered)], in: runtime)
     }
 
     /// The user opened the item of `identity`.
     public func userActivated(_ identity: String) {
-        guard isItem(identity) else { return }
+        guard isItem(identity), let element, let runtime else { return }
         element.send(.itemActivated, [.string(identity)], in: runtime)
     }
 
     /// The entries in view now: the end is told reached as the last item among them comes near the last of all.
     public func showing(_ inView: some Sequence<String>) {
-        guard element.handler(.endReached) != nil else { return }
+        guard let element, let runtime, element.handler(.endReached) != nil else { return }
         let last = inView.compactMap { itemPositions[$0] }.max() ?? -1
         let within = element.value(.endReachedWithin)?.number.map { Int($0) } ?? 0
         guard endWatch.reached(count: itemPositions.count, last: last, within: within) else { return }
@@ -110,6 +116,7 @@
 
     /// Tells the tree which entries the cells hold, in the order they show.
     private func tell() {
+        guard let element, let runtime else { return }
         let ordered = held.sorted { positions[$0, default: 0] < positions[$1, default: 0] }
         element.send(.realizedChanged, [.strings(ordered)], in: runtime)
     }

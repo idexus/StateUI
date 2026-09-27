@@ -90,8 +90,7 @@ final class ControlDictionaryTests: XCTestCase {
     }
 
     /// The native control mapping names every element exactly once - every
-    /// page takes its native counterparts from it - and names nothing else
-    /// but `ItemsView`, the planned collection with no node type of its own.
+    /// page takes its native counterparts from it - and names nothing else.
     func testTheNativeMappingNamesEveryElementOnce() throws {
         let lines = try String(
             contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8
@@ -111,7 +110,7 @@ final class ControlDictionaryTests: XCTestCase {
 
         XCTAssertEqual(twice, [], "the mapping names these elements twice")
         XCTAssertEqual(elements.subtracting(named).sorted(), [], "the mapping names no counterpart of these elements")
-        XCTAssertEqual(Set(named).subtracting(elements).subtracting(["ItemsView"]).sorted(), [],
+        XCTAssertEqual(Set(named).subtracting(elements).sorted(), [],
                        "the mapping names these, and no element is one")
     }
 

@@ -90,15 +90,26 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// A web view's own acts: stepping back or forward, loading again, running a script - which answers once the
-    /// page has run it.
+    /// page has run it; and an ItemsView's scroll to an item.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard [.goBack, .goForward, .reload, .evaluateJavaScript].contains(call.act) else { return false }
+        guard [.goBack, .goForward, .reload, .evaluateJavaScript, .scrollTo].contains(call.act) else { return false }
         let core = CoreLink()
         let element: MountedElement
         do {
             element = try renderer.runtime.tree.aimed(call)
         } catch {
             core.fail(call, error.reason, log: { UIKitRenderer.log.error($0) })
+            return true
+        }
+        if call.act == .scrollTo {
+            guard let items = (element.native as? UIKitElement)?.view as? UIKitItemsView else {
+                core.fail(call, "scrollTo is an act of an ItemsView", log: { UIKitRenderer.log.error($0) })
+                return true
+            }
+            items.scroll(
+                to: call.arguments.value(1)?.string ?? "",
+                anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
+            core.reply(call, [])
             return true
         }
         guard let web = (element.native as? UIKitElement)?.view as? UIKitWebView else {

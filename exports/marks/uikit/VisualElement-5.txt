@@ -1,4 +1,4 @@
-# inputs b0bd60ef70c1f8684eca8f3cb77c10fd9147005e
+# inputs b639ee46ae1c7b0b03519b4e7383dc959c16e43a
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.maximumHeight: ✅
 ActivityIndicator.maximumWidth: ✅
@@ -21,46 +21,48 @@ HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 Image.opacity: ✅
 Image.translationY: 🪞 read translationY of Image: the host's own transform, checked against the layer it composed itself
-Label.scaleX: 🪞 read scaleX of Label: the host's own transform, checked against the layer it composed itself
-Line.rotationX: 🪞 read rotationX of Line: the host's own transform, checked against the layer it composed itself
-Map.pivotX: not realized
-Path.automationExcludedWithChildren: ✅
-Picker.accessibilityHint: ✅
-Polygon.focus: cannot focus Polygon: it takes no keyboard focus here
-Polygon.isFocusedChanged: cannot focus Polygon: it takes no keyboard focus here
-Polygon.unfocus: cannot focus Polygon: it takes no keyboard focus here
-Polyline.frameChanged: ✅
-Polyline.maximumHeight: ✅
-Polyline.maximumWidth: ✅
-Polyline.minimumHeight: ✅
-Polyline.minimumWidth: ✅
-PositionIndicator.opacity: not realized
-PositionIndicator.translationY: not realized
-ProgressBar.scaleX: 🪞 read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
-RadioButton.rotationX: 🪞 read rotationX of RadioButton: the host's own transform, checked against the layer it composed itself
-Rectangle.pivotX: 🪞 read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.automationExcludedWithChildren: ✅
-SearchField.accessibilityHint: ✅
-Slider.focus: cannot focus Slider: it takes no keyboard focus here
-Slider.isFocusedChanged: cannot focus Slider: it takes no keyboard focus here
-Slider.unfocus: cannot focus Slider: it takes no keyboard focus here
-Stepper.frameChanged: ✅
-Stepper.maximumHeight: ✅
-Stepper.maximumWidth: ✅
-Stepper.minimumHeight: ✅
-Stepper.minimumWidth: ✅
-Switch.opacity: ✅
-Switch.translationY: 🪞 read translationY of Switch: the host's own transform, checked against the layer it composed itself
-TextEditor.scaleX: 🪞 read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.rotationX: 🪞 read rotationX of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.pivotX: 🪞 read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.automationExcludedWithChildren: not realized
-VStack.accessibilityHint: ✅
-WebView.focus: ✅
-WebView.isFocusedChanged: ✅
-WebView.unfocus: ✅
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
+ItemsView.scaleX: 🪞 read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
+Label.rotationX: 🪞 read rotationX of Label: the host's own transform, checked against the layer it composed itself
+Line.pivotX: 🪞 read pivotX of Line: the host's own transform, checked against the layer it composed itself
+Map.automationExcludedWithChildren: not realized
+Path.accessibilityHint: ✅
+Picker.focus: cannot focus Picker: it takes no keyboard focus here
+Picker.isFocusedChanged: cannot focus Picker: it takes no keyboard focus here
+Picker.unfocus: cannot focus Picker: it takes no keyboard focus here
+Polygon.frameChanged: ✅
+Polygon.maximumHeight: ✅
+Polygon.maximumWidth: ✅
+Polygon.minimumHeight: ✅
+Polygon.minimumWidth: ✅
+Polyline.opacity: ✅
+Polyline.translationY: 🪞 read translationY of Polyline: the host's own transform, checked against the layer it composed itself
+PositionIndicator.scaleX: not realized
+ProgressBar.rotationX: 🪞 read rotationX of ProgressBar: the host's own transform, checked against the layer it composed itself
+RadioButton.pivotX: 🪞 read pivotX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.automationExcludedWithChildren: ✅
+ScrollView.accessibilityHint: ✅
+SearchField.focus: ✅
+SearchField.isFocusedChanged: ✅
+SearchField.unfocus: ✅
+Slider.frameChanged: ✅
+Slider.maximumHeight: ✅
+Slider.maximumWidth: ✅
+Slider.minimumHeight: ✅
+Slider.minimumWidth: ✅
+Stepper.opacity: ✅
+Stepper.translationY: 🪞 read translationY of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.scaleX: 🪞 read scaleX of Switch: the host's own transform, checked against the layer it composed itself
+TextEditor.rotationX: 🪞 read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
+TextField.pivotX: 🪞 read pivotX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.automationExcludedWithChildren: ✅
+TitleBar.accessibilityHint: not realized
+VStack.focus: cannot focus VStack: it takes no keyboard focus here
+VStack.isFocusedChanged: cannot focus VStack: it takes no keyboard focus here
+VStack.unfocus: cannot focus VStack: it takes no keyboard focus here
+WebView.frameChanged: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+ZStack.opacity: ✅
+ZStack.translationY: 🪞 read translationY of ZStack: the host's own transform, checked against the layer it composed itself

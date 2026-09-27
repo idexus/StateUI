@@ -10,6 +10,11 @@ import UIKit
 /// takes here, by the host layer's reading of it.
 extension UIKitElement {
     func makeView() -> UIView? {
+        if type == .itemsView, let host {
+            return UIKitItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
+                host?.runtime.reducesMotion() ?? false
+            })
+        }
         if let registered = UIKitRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -72,6 +77,11 @@ extension UIKitElement {
     func invalidateMeasurements() {
         var each: UIKitElement? = self
         while let element = each {
+            // An entry of an ItemsView is measured by its cell; the list's own size never follows its items.
+            if let items = element.parent?.view as? UIKitItemsView {
+                element.view.map { _ in items.remeasure(element.element) }
+                return
+            }
             (element.view as? UIKitLayoutView)?.forgetMeasurements()
             element.view?.setNeedsLayout()
             each = element.parent

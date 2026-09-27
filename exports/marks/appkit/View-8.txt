@@ -1,4 +1,4 @@
-# inputs 10f05a2eda6303ec49edc04ce43460cab9875f0c
+# inputs bc8926d43135981f42cbcd9aea74fe13d6e46b0a
 ActivityIndicator.panYChannel: 🪞 pan on ActivityIndicator: handed to the host's recognizer or handler, no NSEvent sent
 Button.tapCount: 🪞 tap on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.tapped: 🪞 tap on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -34,76 +34,77 @@ Image.dragText: not realized
 Image.dropCompleted: not realized
 Image.frameChanged: ✅
 Image.margin: ✅
-Label.pinchUpdated: 🪞 pinch on Label: handed to the host's recognizer or handler, no NSEvent sent
-Line.panYChannel: 🪞 pan on Line: handed to the host's recognizer or handler, no NSEvent sent
-Map.tapCount: not realized
-Map.tapped: not realized
+ItemsView.pinchUpdated: not realized
+Label.panYChannel: 🪞 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
+Line.tapCount: 🪞 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
+Line.tapped: 🪞 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
+Map.frameChanged: not realized
+Map.gridColumn: not realized
+Map.gridRow: not realized
+Path.allowDrop: not realized
+Path.dragLeave: not realized
+Path.dragOver: not realized
+Path.drop: not realized
 Path.frameChanged: ✅
-Path.gridColumn: ✅
-Path.gridRow: ✅
-Picker.allowDrop: not realized
-Picker.dragLeave: not realized
-Picker.dragOver: not realized
-Picker.drop: not realized
-Picker.frameChanged: ✅
-Picker.horizontalAlignment: ✅
-Picker.verticalAlignment: ✅
-Polygon.pointerEntered: 🪞 hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerExited: 🪞 hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerMoved: 🪞 hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerPressed: 🪞 hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerReleased: 🪞 hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.swipeDirection: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.swipeThreshold: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.swiped: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-PositionIndicator.panTouchCount: not realized
-PositionIndicator.panUpdated: not realized
-PositionIndicator.panXChannel: not realized
+Path.horizontalAlignment: ✅
+Path.verticalAlignment: ✅
+Picker.pointerEntered: 🪞 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerExited: 🪞 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerMoved: 🪞 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerPressed: 🪞 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerReleased: 🪞 hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swipeDirection: 🪞 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swipeThreshold: 🪞 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swiped: 🪞 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panTouchCount: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panUpdated: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.panXChannel: 🪞 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+PositionIndicator.frameChanged: not realized
+PositionIndicator.gridColumnSpan: not realized
+PositionIndicator.gridRowSpan: not realized
+ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
-ProgressBar.gridColumnSpan: ✅
-ProgressBar.gridRowSpan: ✅
-RadioButton.area: ✅
+RadioButton.canDrag: not realized
+RadioButton.dragStarting: not realized
+RadioButton.dragText: not realized
+RadioButton.dropCompleted: not realized
 RadioButton.frameChanged: ✅
-Rectangle.canDrag: not realized
-Rectangle.dragStarting: not realized
-Rectangle.dragText: not realized
-Rectangle.dropCompleted: not realized
-Rectangle.frameChanged: ✅
-Rectangle.margin: ✅
-ScrollView.pinchUpdated: 🪞 pinch on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.panYChannel: 🪞 pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-Slider.tapCount: 🪞 tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Slider.tapped: 🪞 tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
+RadioButton.margin: ✅
+Rectangle.pinchUpdated: 🪞 pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.panYChannel: 🪞 pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapCount: 🪞 tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.tapped: 🪞 tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Slider.frameChanged: ✅
+Slider.gridColumn: ✅
+Slider.gridRow: ✅
+Stepper.allowDrop: not realized
+Stepper.dragLeave: not realized
+Stepper.dragOver: not realized
+Stepper.drop: not realized
 Stepper.frameChanged: ✅
-Stepper.gridColumn: ✅
-Stepper.gridRow: ✅
-Switch.allowDrop: not realized
-Switch.dragLeave: not realized
-Switch.dragOver: not realized
-Switch.drop: not realized
-Switch.frameChanged: ✅
-Switch.horizontalAlignment: ✅
-Switch.verticalAlignment: ✅
-TextEditor.pointerEntered: 🪞 hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerExited: 🪞 hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerMoved: 🪞 hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerPressed: 🪞 hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerReleased: 🪞 hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextField.swipeDirection: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.swipeThreshold: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.swiped: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.panTouchCount: 🪞 pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.panUpdated: 🪞 pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.panXChannel: 🪞 pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.horizontalAlignment: ✅
+Stepper.verticalAlignment: ✅
+Switch.pointerEntered: 🪞 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerExited: 🪞 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerMoved: 🪞 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerPressed: 🪞 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerReleased: 🪞 hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swipeDirection: 🪞 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swipeThreshold: 🪞 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swiped: 🪞 pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panTouchCount: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panUpdated: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.panXChannel: 🪞 pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.frameChanged: ✅
+TimePicker.gridColumnSpan: ✅
+TimePicker.gridRowSpan: ✅
+TitleBar.area: not realized
 TitleBar.frameChanged: not realized
-TitleBar.gridColumnSpan: not realized
-TitleBar.gridRowSpan: not realized
-VStack.area: ✅
+VStack.canDrag: not realized
+VStack.dragStarting: not realized
+VStack.dragText: not realized
+VStack.dropCompleted: not realized
 VStack.frameChanged: ✅
-WebView.canDrag: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.margin: not realized
-ZStack.pinchUpdated: 🪞 pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.margin: ✅
+WebView.pinchUpdated: not realized
+ZStack.panYChannel: 🪞 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

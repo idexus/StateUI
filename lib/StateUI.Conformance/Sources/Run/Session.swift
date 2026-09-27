@@ -77,6 +77,15 @@
         return element
     }
 
+    /// The entry of `identity` in the ItemsView `list`, built for a cell the platform holds.
+    /// - Throws: where the platform holds no cell of it.
+    public func item(_ identity: String, of list: MountedElement) throws -> MountedElement {
+        guard let item = list.children.first(where: { $0.id == .manual(identity) }) else {
+            throw Missing(id: "\(identity) of \(list.type.name)")
+        }
+        return item
+    }
+
     /// Runs `application` on the host, its display frames at `clock`'s time where one is given. The case's first
     /// start is the application's first launch, and finds nothing kept; a start after it is the next launch.
     public func start(clock: TestClock? = nil, application: @escaping @Sendable () -> any Application) throws {
@@ -106,7 +115,11 @@
 
     /// Does `act` to `element` as the user does.
     public func perform(_ act: UserAct, on element: MountedElement) throws {
-        note("\(act) on \(element.type.name)", element: element.type.name)
+        if element.parent?.type == .itemsView {
+            note("\(act) on an item of ItemsView", element: NodeType.itemsView.name)
+        } else {
+            note("\(act) on \(element.type.name)", element: element.type.name)
+        }
         try driver.perform(act, on: element)
     }
 

@@ -258,11 +258,68 @@ not authorize production use on an unmarked host.
 
 ## Collections
 
-`ForEach` is identified composition, not virtualization. The native
-virtualized collection contract remains intentionally unadmitted until all
-target hosts can share identity, reuse, selection, activation, accessibility,
-and programmatic scrolling semantics. See [Layout](layout.md) for the current
-boundary.
+`ItemsView` shows items with the platform's own collection. StateUI says
+which items there are and builds an item only when the platform shows it;
+the platform scrolls, reuses its cells, shows the user's choice and tells
+assistive technology about the items:
+
+```swift
+struct Contact: Hashable {
+    let name: String
+    let phone: String
+}
+
+struct ContactsPage: ContentView {
+    @State private var chosen: String?
+    @Aim(ItemsViewContract.self) private var list
+
+    let contacts: [Contact]
+
+    var content: any View {
+        Grid {
+            ItemsView(contacts, id: \.name) { contact in
+                VStack {
+                    Label(contact.name).fontAttributes(.bold)
+                    Label(contact.phone)
+                }
+                .padding(14, 10)
+            }
+            .selection($chosen)
+            .onItemActivated { name in chosen = name }
+            .aim(list)
+            .gridRow(0)
+
+            Button("Back to the top")
+                .onClicked { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .gridRow(1)
+        }
+        .rows(.fill, .auto)
+    }
+}
+```
+
+An item names itself by its identity described as text, so two items must
+describe differently. Each item is a view of its own: a state it reads
+builds that item alone, and a state it declares lives while the platform
+holds it on screen. The binding given to `.selection` says how many the
+user may choose - an optional for one, a `Set` for many - and the user's
+choice lands on it, while a value the application writes is shown and
+reported to nobody. `.onItemActivated` hears an item opened: a tap on a
+phone, a double-click or Return on a desktop.
+
+`.itemsLayout` lays the items `.list(spacing:)` one under another,
+`.row(spacing:)` one beside another, scrolled across, or
+`.grid(minimumItemWidth:spacing:)` in as many columns as the width holds.
+An item is as tall as it asks in a list and as wide as it asks in a row; a
+size written on its view is kept. A list has no height of its own: give it
+one, or a row of a grid that fills.
+
+`ItemsView(groups:)` takes `ItemsGroup`s, each named with `.id` - so two
+groups may hold equal items - and each with a `.header` and a `.footer`;
+`.header` and `.footer` on the list stand before and after everything.
+`.onEndReached(within:)` hears the user come within so many items of the
+end - once, until they scroll away or the list gains items - and
+`.emptyView` stands in the list's place while it has no items.
 
 ## Choosing a control
 

@@ -18,6 +18,7 @@ enum UIKitRegistrations {
         toggles(registry)
         values(registry)
         indicators(registry)
+        items(registry)
         pickers(registry)
         shapes(registry)
         canvas(registry)
