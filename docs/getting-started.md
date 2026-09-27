@@ -16,8 +16,9 @@ the repository root. Neither host has a published package route yet.
 - a checkout of this repository;
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
-[Android Views host](android-host.md#requirements) lists what the Android Views
-host needs as well, [WinUI host](winui-host.md#requirements) what the
+[UIKit host](uikit-host.md#requirements) lists what the UIKit host needs for
+the iOS simulator, [Android Views host](android-host.md#requirements) what the
+Android Views host needs as well, [WinUI host](winui-host.md#requirements) what the
 WinUI host needs on Windows, and [GTK host](gtk-host.md#requirements) what
 the GTK host needs on Linux.
 
@@ -232,8 +233,10 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The Android head calls the same `stateui_app_register` when Android loads its
-library; [Android Views host](android-host.md) describes that head.
+The UIKit head calls the same `stateui_app_register` before `StateUIUIKit.run`;
+[UIKit host](uikit-host.md) describes that head. The Android head calls it
+when Android loads its library; [Android Views host](android-host.md)
+describes that head.
 
 The repository examples use this directory shape:
 

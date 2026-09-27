@@ -61,6 +61,9 @@ usable platform promise.
   application's structure member by member, each with a mark per platform.
 - [AppKit host](appkit-host.md) builds, runs, and tests the Swift host that
   renders an application with AppKit on macOS, in the application's process.
+- [UIKit host](uikit-host.md) builds, runs, and tests the Swift host that
+  renders an application with UIKit on iOS and iPadOS, in the application's
+  process.
 - [Android Views host](android-host.md) builds, runs, and tests the Swift host
   that renders an application with Android views, in the application's process.
 - [WinUI host](winui-host.md) builds, runs, and tests the Swift host that
