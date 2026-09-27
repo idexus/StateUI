@@ -35,6 +35,11 @@ final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
         for menu in UIKitRenderer.shared.menuBar { builder.insertSibling(menu, beforeMenu: .window) }
     }
 
+    /// The user closed windows - swiped their scenes away: each window hears it.
+    func application(_ application: UIApplication, didDiscardSceneSessions sessions: Set<UISceneSession>) {
+        sessions.forEach(UIKitRenderer.shared.closedByUser)
+    }
+
     func applicationWillTerminate(_ application: UIApplication) {
         UIKitRenderer.shared.runtime.ending()
     }
@@ -52,6 +57,22 @@ final class UIKitSceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidDisconnect(_ scene: UIScene) {
         guard let scene = scene as? UIWindowScene else { return }
         UIKitRenderer.shared.disconnect(scene)
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .active) }
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .inactive) }
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .inactive) }
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        (scene as? UIWindowScene).map { UIKitRenderer.shared.scene($0, movedTo: .background) }
     }
 }
 #endif

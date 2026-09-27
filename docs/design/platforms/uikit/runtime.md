@@ -27,7 +27,22 @@ stands in it: a window of the scene's, its root view showing the window's
 arrangement of pages within the safe area, the title of the page the user
 sees the scene's title. A window the tree lets go of lets its scene go with
 it. The application's `Info.plist` says it supports many scenes, so an iPad
-opens as many as the user asks for.
+opens as many as the user asks for; a window the tree holds with no scene
+standing for it asks iOS for one, and stands in the next scene iOS connects.
+
+A window's lifecycle is its scene's: in front of the user and active, behind
+once in the background, and neither between - each told to the host layer,
+which settles what it means for the window, its scene and the application. A
+window that comes to stand in a scene already in front, or behind, is told
+where it stands. The user closing a window - swiping its scene away - is the
+scene's session discarded, which the window hears as closed by the user; a
+scene iOS only disconnects to save memory closes nothing.
+
+The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
+ends the process once an application's last scene is destroyed. A host whose
+windows share one scene - the tests' host stands every window in the one
+scene the runner has - does not own that scene, so its windows only leave
+it.
 
 ## Acts
 

@@ -135,7 +135,7 @@ host whose passing test proved one of its members.
 | `TrailingContent` | structure | ✅ |  |  |  |  |  |
 | `VStack` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | `WebView` | native |  |  |  |  |  |  |
-| `Window` | structure | ✅ |  |  | ✅ | ✅ |  |
+| `Window` | structure | ✅ | ✅ |  | ✅ | ✅ |  |
 | `ZStack` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 <!-- creation:end -->
 
@@ -474,7 +474,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 | 8 ✅ | 11 ✅ |  | 7 ✅ | 9 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | 6 | 6 ✅ |  |  | 4 ✅ | 6 ✅ |  |
+| [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ |  | 4 ✅ | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 | 1 ✅ | 1 ✅ |  | 1 ✅ | 6 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 4 ✅ |  | 1 ✅ | 4 ✅ |  |
@@ -483,8 +483,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 2 ✅ |  |  | 6 ✅ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 48 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| [Window](controls/Window.md) | 23 | 22 ✅ | 6 ✅ |  | 6 ✅ | 23 ✅ |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 57 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

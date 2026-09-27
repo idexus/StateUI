@@ -1,8 +1,10 @@
+Button.clicked: ✅
 ModalStack: ✅
-Window.activated: not realized
-Window.created: not realized
-Window.deactivated: not realized
-Window.destroying: not realized
+Window: ✅
+Window.activated: ✅
+Window.created: ✅
+Window.deactivated: ✅
+Window.destroying: ✅
 Window.floatsOnTop: not realized
 Window.height: not realized
 Window.hidesWhenInactive: not realized
@@ -15,8 +17,7 @@ Window.minimumHeight: not realized
 Window.minimumWidth: not realized
 Window.modalPopped: ✅
 Window.resumed: not realized
-Window.stopped: not realized
-Window.title: not realized
+Window.title: ✅
 Window.width: not realized
 Window.windowType: not realized
 Window.windowValue: not realized

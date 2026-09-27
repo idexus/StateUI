@@ -44,6 +44,7 @@ extension UIKitRenderer {
         UIKitRenderer.resourceDirectory = Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
         let renderer = UIKitRenderer(
             clock: clock.map { clock in { clock.now } }, preferences: preferences, reducesMotion: { reducesMotion })
+        renderer.ownsScenes = false
         renderer.hydratePersistentState()
         renderer.connect(TestScene.scene!)
         renderer.layOut()

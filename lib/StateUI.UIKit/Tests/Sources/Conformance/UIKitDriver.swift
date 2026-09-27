@@ -161,6 +161,25 @@ final class UIKitDriver: HostDriver {
             guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
                 throw DriverCannot("press \(caption): no question shows it")
             }
+        case (.switchAway, _) where element.type == .window: renderer?.window(element, movedTo: .inactive)
+        case (.switchBack, _) where element.type == .window: renderer?.window(element, movedTo: .active)
+        case (.minimize, _) where element.type == .window:
+            renderer?.window(element, movedTo: .inactive)
+            renderer?.window(element, movedTo: .background)
+        case (.restore, _) where element.type == .window:
+            renderer?.window(element, movedTo: .inactive)
+            renderer?.window(element, movedTo: .active)
+        case (.bringToFront, _) where element.type == .window:
+            // The window taken to the front is the active one; every other window's scene resigns.
+            for (other, _) in renderer?.roster.windows ?? [] where other !== element {
+                renderer?.window(other, movedTo: .inactive)
+            }
+            renderer?.window(element, movedTo: .active)
+        case (.close, _) where element.type == .window:
+            // As the user swipes a window's scene away: it leaves the front, goes behind, then closes.
+            renderer?.window(element, movedTo: .inactive)
+            renderer?.window(element, movedTo: .background)
+            renderer?.runtime.userClosed(element)
         case (.goBack, _) where element.type == .window || NodeType.pageTypes.contains(element.type):
             try performOnPages(act, on: element)
         case (.choose, _) where NodeType.pageTypes.contains(element.type):

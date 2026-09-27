@@ -50,6 +50,11 @@ enum UIKitRealization {
         .complete("Page", "padding"),
         .complete("Page", "title"),
         .complete("RadioButton", "groupName"),
+        .complete("Scene", "activated"),
+        .complete("Scene", "deactivated"),
+        .complete("Scene", "destroying"),
+        .complete("Scene", "stopped"),
+        .complete("Scene", "windowClosed"),
         .complete("Span", "background"),
         .complete("Span", "fontAttributes"),
         .complete("Span", "fontFamily"),
@@ -64,7 +69,13 @@ enum UIKitRealization {
         .complete("TabbedView", "currentPageChanged"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
+        .complete("Window", "activated"),
+        .complete("Window", "created"),
+        .complete("Window", "deactivated"),
+        .complete("Window", "destroying"),
         .complete("Window", "modalPopped"),
+        .complete("Window", "stopped"),
+        .complete("Window", "title"),
     ]
 
     /// What UIKit's registry says it realizes: the export's content.

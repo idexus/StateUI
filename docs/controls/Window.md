@@ -16,10 +16,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `created` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `deactivated` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `destroying` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
+| `activated` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `created` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `deactivated` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
+| `destroying` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `floatsOnTop` | property | `Bool` | adaptive | ✅ |  |  |  | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |
 | `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  |  | ✅ |  | cannot read isVisible of Window - AppKit's driver has no path for it yet |
@@ -33,7 +33,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet |
 | `resumed` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ |  |  | ✅ | ✅ |  |  |
-| `title` | property | `String` | native | ✅ |  |  |  | ✅ |  | Android Views: cannot read title of Window - Android's driver has no path for it yet |
+| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read title of Window - Android's driver has no path for it yet |
 | `width` | property | `Double` | native | ✅ |  |  |  | ✅ |  |  |
 | `windowType` | property | `WindowType` | structure | ✅ |  |  |  | ✅ |  |  |
 | `windowValue` | property | `String` | structure | ✅ |  |  |  | ✅ |  |  |

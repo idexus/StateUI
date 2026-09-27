@@ -51,6 +51,44 @@ final class UIKitRendererTests: XCTestCase {
         XCTAssertNotEqual(TestScene.scene?.activationState, .unattached, "the scene stays connected")
     }
 
+    /// A window the tree closes in a host whose windows share its one scene only leaves it: the scene, which would
+    /// end the application on an iPad, stays.
+    @MainActor
+    func testAWindowClosedInASharedSceneLeavesTheSceneStanding() throws {
+        let host = UIKitRenderer.running { Greeting() }
+        defer { host.finish() }
+        let session = try XCTUnwrap(TestScene.scene?.session)
+        let (element, controller) = try XCTUnwrap(host.roster.windows.first)
+
+        host.runtime.userClosed(element)
+        host.settle { false }
+
+        XCTAssertNil(controller.window?.windowScene, "the window left the scene")
+        XCTAssertTrue(UIApplication.shared.openSessions.contains(session), "the scene's session stays open")
+        XCTAssertNotEqual(TestScene.scene?.activationState, .unattached, "the scene stays connected")
+    }
+
+    /// A host that finished holds on to nothing it showed: its window, its pages' controllers and its views go.
+    @MainActor
+    func testAFinishedHostLeavesNothingAlive() throws {
+        weak var window: UIWindow?
+        weak var root: UIViewController?
+        weak var field: UIView?
+        autoreleasepool {
+            let host = UIKitRenderer.running { Greeting() }
+            window = host.roster.windows.first?.1.window
+            root = window?.rootViewController
+            field = host.views(UIKitTextFieldView.self).first
+            host.finish()
+        }
+        let settled = Date(timeIntervalSinceNow: 0.3)
+        while Date() < settled { RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02)) }
+
+        XCTAssertNil(window, "the window")
+        XCTAssertNil(root, "its root controller")
+        XCTAssertNil(field, "a view it showed")
+    }
+
     /// A tap on the button reaches its handler, and the page shows what it counted.
     @MainActor
     func testATapReachesTheButtonsHandler() throws {

@@ -12,20 +12,29 @@ import UIKit
 @MainActor
 final class UIKitWindowController {
     /// The scene's window; nil for a StateUI window no scene stands for yet.
-    let window: UIWindow?
+    private(set) var window: UIWindow?
+
+    /// The session of the scene the window stands in, which the user closes the window by.
+    private(set) var session: UISceneSession?
+
+    /// The phase the window was last told; nil until it was told one.
+    var toldPhase: ApplicationPhase?
 
     private let root = UIKitRootViewController()
     let presentation = WindowPresentation()
 
     init(_ element: MountedElement, scene: UIWindowScene?) {
-        guard let scene else {
-            window = nil
-            return
-        }
+        if let scene { stand(in: scene) }
+    }
+
+    /// Stands the window in `scene`, which iOS connected for it.
+    func stand(in scene: UIWindowScene) {
+        guard window == nil else { return }
         let window = UIWindow(windowScene: scene)
         window.rootViewController = root
         window.makeKeyAndVisible()
         self.window = window
+        session = scene.session
     }
 
     /// Shows what the window holds now: the arrangement of pages it shows, and the title of the page the user

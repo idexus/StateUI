@@ -71,7 +71,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](Page.md) | 12 | 8 ✅ | 11 ✅ |  | 7 ✅ | 9 ✅ |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](Scene.md) | 6 | 6 ✅ |  |  | 4 ✅ | 6 ✅ |  |
+| [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ |  | 4 ✅ | 6 ✅ |  |
 | [Span](Span.md) | 12 | 1 ✅ | 1 ✅ |  | 1 ✅ | 6 ✅ |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](SplitView.md) | 5 | 3 ✅ | 4 ✅ |  | 1 ✅ | 4 ✅ |  |
@@ -80,8 +80,8 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 2 ✅ |  |  | 6 ✅ |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](Window.md) | 23 | 22 ✅ | 1 ✅ |  | 6 ✅ | 23 ✅ |  |
-| **Met** - ✅ and – | 104 | 64 of 104 met | 48 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
+| [Window](Window.md) | 23 | 22 ✅ | 6 ✅ |  | 6 ✅ | 23 ✅ |  |
+| **Met** - ✅ and – | 104 | 64 of 104 met | 57 of 104 met |  | 28 of 104 met | 79 of 104 met |  |
 <!-- structure:end -->
 
 ## Tiers

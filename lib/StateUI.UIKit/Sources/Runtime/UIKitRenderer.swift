@@ -24,6 +24,10 @@ final class UIKitRenderer {
     /// Whether the user asked for less motion.
     let reducesMotion: () -> Bool
 
+    /// Whether each window has a scene of its own, which the host asks iOS for and lets go with the window; a host
+    /// under test stands its windows in the one scene it has, which stays.
+    var ownsScenes = true
+
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in UIKitElement(element, host: self) },
@@ -88,6 +92,45 @@ final class UIKitRenderer {
         }
     }
 
+    /// Asks iOS for a scene for a window the tree holds and no scene stands for - on an iPad another window.
+    private func requestScene() {
+        UIApplication.shared.activateSceneSession(
+            for: UISceneSessionActivationRequest(role: .windowApplication), errorHandler: { error in
+                MainActor.assumeIsolated { Self.log.error("no scene for another window: \(error.localizedDescription)") }
+            })
+    }
+
+    /// A scene's lifecycle moved: the window standing in it is in front of the user and activated, off the screen
+    /// once in the background, and neither between.
+    func scene(_ scene: UIWindowScene, movedTo phase: ApplicationPhase) {
+        guard let shown = roster.windows.first(where: { $0.1.window?.windowScene === scene })?.0 else { return }
+        window(shown, movedTo: phase)
+    }
+
+    /// `window`'s lifecycle moved: the host layer settles what that means for it, its scene and the application.
+    func window(_ window: MountedElement, movedTo phase: ApplicationPhase) {
+        roster.windows.first { $0.0 === window }?.1.toldPhase = phase
+        runtime.windowStateChanged(window, minimized: phase == .background, activated: phase == .active)
+    }
+
+    /// A window that came to stand in a scene already in front, or already behind, hears where it stands: its scene
+    /// tells no move it made before the window stood in it.
+    private func tellStandingPhases() {
+        for (element, controller) in roster.windows where controller.toldPhase == nil {
+            switch controller.window?.windowScene?.activationState {
+            case .foregroundActive?: window(element, movedTo: .active)
+            case .background?: window(element, movedTo: .background)
+            default: break
+            }
+        }
+    }
+
+    /// The user closed the window standing in the scene `session` names - on an iPad, swiped it away.
+    func closedByUser(_ session: UISceneSession) {
+        guard let window = roster.windows.first(where: { $0.1.session === session })?.0 else { return }
+        runtime.userClosed(window)
+    }
+
     /// A scene iOS connected: a StateUI scene of its own, whose window stands in it. The first says what the
     /// display is.
     func connect(_ scene: UIWindowScene) {
@@ -97,6 +140,11 @@ final class UIKitRenderer {
             runtime.core.setDisplayInfo(HostDisplayInfo(
                 width: screen.nativeBounds.width, height: screen.nativeBounds.height, density: screen.nativeScale,
                 refreshRate: Double(screen.maximumFramesPerSecond)))
+        }
+        // A window the tree already holds, waiting for a scene, stands in it.
+        if let waiting = roster.windows.first(where: { $0.1.window == nil })?.1 {
+            waiting.stand(in: scene)
+            return synchronizeWindows()
         }
         waitingScenes.append(scene)
         runtime.core.connectScene()
@@ -133,11 +181,14 @@ final class UIKitRenderer {
         guard let root = runtime.tree.root, root.type == .application else { return }
 
         roster.update(root: root, make: { [unowned self] element in
-            UIKitWindowController(element, scene: waitingScenes.isEmpty ? nil : waitingScenes.removeFirst())
-        }, close: { $0.close() })
+            let scene = waitingScenes.isEmpty ? nil : waitingScenes.removeFirst()
+            if scene == nil, ownsScenes { requestScene() }
+            return UIKitWindowController(element, scene: scene)
+        }, close: { [unowned self] in ownsScenes ? $0.close() : $0.hide() })
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
+        tellStandingPhases()
         rebuildMenuBarWhereItChanged()
         runtime.displayCycle.hold()
     }
