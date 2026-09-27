@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 52 ✅ · 2 ☑️ of 68 | `NSProgressIndicator` bar |  |
+| UIKit | ✅ | 53 ✅ of 68 | `UIProgressView` |  |
+| GTK 4 | ✅ | 14 ✅ of 68 | `GtkProgressBar` |  |
+| Android Views | ✅ | 53 ✅ of 68 | horizontal `ProgressBar` |  |
+| WinUI 3 | ✅ | 52 ✅ of 68 | `ProgressBar` |  |
+| Web |  |  | `<progress>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ProgressBarContract.swift`.
 
 ## ProgressBar's own members
@@ -17,15 +26,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ProgressBarContract
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `progress` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSProgressIndicator` bar
-- **UIKit**: `UIProgressView`
-- **GTK 4**: `GtkProgressBar`
-- **Android Views**: horizontal `ProgressBar`
-- **WinUI 3**: `ProgressBar`
-- **Web**: `<progress>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

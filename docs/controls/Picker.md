@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 56 ✅ · 2 ☑️ of 82 | `NSPopUpButton` |  |
+| UIKit | ✅ | 56 ✅ of 82 | pop-up `UIButton` menu |  |
+| GTK 4 | ✅ | 16 ✅ of 82 | `GtkDropDown` |  |
+| Android Views | ✅ | 57 ✅ of 82 | `Spinner` |  |
+| WinUI 3 | ✅ | 64 ✅ of 82 | `ComboBox` |  |
+| Web |  |  | `<select>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swift`.
 
 ## Picker's own members
@@ -23,15 +32,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 | `selectedIndex` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `title` | property | `String` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSPopUpButton`
-- **UIKit**: pop-up `UIButton` menu
-- **GTK 4**: `GtkDropDown`
-- **Android Views**: `Spinner`
-- **WinUI 3**: `ComboBox`
-- **Web**: `<select>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

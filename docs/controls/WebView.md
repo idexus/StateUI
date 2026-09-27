@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit |  |  | `WKWebView` | not realized |
+| UIKit |  | 61 ✅ of 77 | `WKWebView` | cannot read source of WebView - UIKit's driver has no path for it yet |
+| GTK 4 |  |  | WebKitGTK `WebKitWebView` | no test of it has run yet |
+| Android Views |  | 60 ✅ of 77 | `WebView` | cannot read source of WebView - Android's driver has no path for it yet |
+| WinUI 3 |  |  | `WebView2` | not realized |
+| Web |  |  | `<iframe>` (?) | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
 
 ## WebView's own members
@@ -27,15 +36,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/WebViewContract.swi
 | `reload` | act | `() -> Void` |  |  | ✅ |  | ✅ |  |  |  |
 | `source` | property | `WebViewSource` | native |  |  |  |  |  |  | UIKit: cannot read source of WebView - UIKit's driver has no path for it yet; Android Views: cannot read source of WebView - Android's driver has no path for it yet |
 | `userAgent` | property | `String` | adaptive |  | ✅ |  |  |  |  | Android Views: cannot read userAgent of WebView - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `WKWebView`
-- **UIKit**: `WKWebView`
-- **GTK 4**: WebKitGTK `WebKitWebView`
-- **Android Views**: `WebView`
-- **WinUI 3**: `WebView2`
-- **Web**: `<iframe>` (?)
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

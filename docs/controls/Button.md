@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 60 ✅ · 2 ☑️ of 86 | `NSButton` |  |
+| UIKit | ✅ | 61 ✅ of 86 | `UIButton` |  |
+| GTK 4 | ✅ | 16 ✅ of 86 | `GtkButton` |  |
+| Android Views | ✅ | 60 ✅ of 86 | `Button` |  |
+| WinUI 3 | ✅ | 65 ✅ of 86 | `Button` |  |
+| Web |  |  | `<button>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
 
 ## Button's own members
@@ -23,15 +32,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | `lineBreak` | property | `LineBreak` | native |  |  |  |  |  |  | cannot read lineBreak of Button - AppKit's driver has no path for it yet; UIKit: cannot read lineBreak of Button - UIKit's driver has no path for it yet; Android Views: cannot read lineBreak of Button - Android's driver has no path for it yet |
 | `onPressed` (`pressed`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `onReleased` (`released`) | event |  | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSButton`
-- **UIKit**: `UIButton`
-- **GTK 4**: `GtkButton`
-- **Android Views**: `Button`
-- **WinUI 3**: `Button`
-- **Web**: `<button>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

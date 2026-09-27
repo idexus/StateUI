@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 2 ✅ of 6 | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| UIKit | ✅ | 6 ✅ of 6 | `UINavigationController` |  |
+| GTK 4 |  |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | no test of it has run yet |
+| Android Views |  | 1 ✅ of 6 | custom `ViewGroup` stack + `Toolbar` | cannot read title of Window - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 3 ✅ of 6 | `Frame` |  |
+| Web |  |  | History API | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
 
 ## NavigationStack's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `barForegroundColor` | property | `Color` | adaptive |  | ✅ |  |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet |
 | `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: custom `NSView` stack; title, back and actions in the window's `NSToolbar`
-- **UIKit**: `UINavigationController`
-- **GTK 4**: `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView`
-- **Android Views**: custom `ViewGroup` stack + `Toolbar`
-- **WinUI 3**: `Frame`
-- **Web**: History API
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

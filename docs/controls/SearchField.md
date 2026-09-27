@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 61 ✅ · 2 ☑️ of 89 | `NSSearchField` |  |
+| UIKit | ✅ | 66 ✅ of 89 | `UISearchBar` |  |
+| GTK 4 | ✅ | 16 ✅ of 89 | `GtkSearchEntry` |  |
+| Android Views | ✅ | 60 ✅ of 89 | `SearchView` |  |
+| WinUI 3 | ✅ | 60 ✅ of 89 | `AutoSuggestBox` |  |
+| Web |  |  | `<input type=search>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
 
 ## SearchField's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swi
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  |  |  |  | Android Views: cannot read returnKey of SearchField - Android's driver has no path for it yet |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSSearchField`
-- **UIKit**: `UISearchBar`
-- **GTK 4**: `GtkSearchEntry`
-- **Android Views**: `SearchView`
-- **WinUI 3**: `AutoSuggestBox`
-- **Web**: `<input type=search>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

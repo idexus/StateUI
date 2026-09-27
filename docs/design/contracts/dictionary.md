@@ -15,12 +15,15 @@ declarations, so the handbook cannot drift from the code.
       tiers, as worn  ------------------------->  "Inherits:", and a table per tier
       members  -------------------------------->  a row each: name, kind, value, layer,
                                                   a mark per host, notes
+      the element's verdict and its members' ->  the hosts table under the legend: a row
+                                                  per host - made, members met, what it is
+                                                  there, why a mark is empty
   a tier contract
       first paragraph  ------------------------>  the tier's page
       first sentence  ------------------------->  the tier list, and the line over the
                                                   tier's table on every element page
   each host's written declaration + its export  ->  the marks and their notes
-  the matrix's native mapping  ---------------->  each page's "Realization:" lines
+  the matrix's native mapping  ---------------->  the hosts table's "Realization" column
   the views' on... modifiers  ----------------->  the modifier an event is heard through
 ```
 
@@ -61,7 +64,8 @@ a host writes by hand and what its runtime registers - and by the case:
 A case runs only where the host realizes every member it covers; a member
 the register calls never is marked – without the case running. The element
 itself has a verdict of its own, `Button: ✅`, from its creation case: the
-creation table's mark. A tier's row groups the elements wearing the tier
+creation table's mark, and the "Created" cell of the hosts table that opens
+the element's page, above its own members and then its tiers'. A tier's row groups the elements wearing the tier
 that the host's run judged - made, or never had.
 
 A host checks its own register in its suite (`HostRegister.problems`): a

@@ -10,6 +10,15 @@ Inherits: [PageElement](tiers/PageElement.md)
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 8 ✅ of 12 | custom `NSView` |  |
+| UIKit | ✅ | 11 ✅ of 12 | `UIViewController` |  |
+| GTK 4 |  |  | custom `GtkWidget` | no test of it has run yet |
+| Android Views | ✅ | 7 ✅ of 12 | custom `ViewGroup` |  |
+| WinUI 3 | ✅ | 9 ✅ of 12 | `Page` |  |
+| Web |  |  | `<section>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
 
 ## Page's own members
@@ -26,15 +35,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 | `navigatedTo` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `navigatingFrom` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `padding` | property | `Insets` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: custom `NSView`
-- **UIKit**: `UIViewController`
-- **GTK 4**: custom `GtkWidget`
-- **Android Views**: custom `ViewGroup`
-- **WinUI 3**: `Page`
-- **Web**: `<section>`
 
 ## From [PageElement](tiers/PageElement.md)
 

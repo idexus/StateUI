@@ -10,6 +10,15 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 12 ✅ of 12 | `NSApplication` / structure |  |
+| UIKit | ✅ | 11 ✅ of 12 | `UIApplication` / `UIWindowScene` |  |
+| GTK 4 |  |  | `GtkApplication` / structure | no test of it has run yet |
+| Android Views | ✅ | 7 ✅ of 12 | `Application` / structure |  |
+| WinUI 3 | ✅ | 12 ✅ of 12 | `Application` / structure |  |
+| Web |  |  | `document` / structure | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContract.swift`.
 
 ## Application's own members
@@ -28,12 +37,3 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 | `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read what is kept - Android's driver has no path for it yet |
 | `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSApplication` / structure
-- **UIKit**: `UIApplication` / `UIWindowScene`
-- **GTK 4**: `GtkApplication` / structure
-- **Android Views**: `Application` / structure
-- **WinUI 3**: `Application` / structure
-- **Web**: `document` / structure

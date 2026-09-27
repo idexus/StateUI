@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 52 ✅ · 2 ☑️ of 68 | spinning `NSProgressIndicator` |  |
+| UIKit | ✅ | 53 ✅ of 68 | `UIActivityIndicatorView` |  |
+| GTK 4 | ✅ | 14 ✅ of 68 | `GtkSpinner` |  |
+| Android Views | ✅ | 53 ✅ of 68 | indeterminate `ProgressBar` |  |
+| WinUI 3 | ✅ | 52 ✅ of 68 | `ProgressRing` |  |
+| Web |  |  | indeterminate `<progress>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ActivityIndicatorContract.swift`.
 
 ## ActivityIndicator's own members
@@ -17,15 +26,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ActivityIndicatorCo
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isRunning` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: spinning `NSProgressIndicator`
-- **UIKit**: `UIActivityIndicatorView`
-- **GTK 4**: `GtkSpinner`
-- **Android Views**: indeterminate `ProgressBar`
-- **WinUI 3**: `ProgressRing`
-- **Web**: indeterminate `<progress>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

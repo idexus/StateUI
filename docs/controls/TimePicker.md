@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 57 ✅ · 2 ☑️ of 78 | `NSDatePicker` in time mode |  |
+| UIKit | ✅ | 54 ✅ of 78 | `UIDatePicker` in time mode |  |
+| GTK 4 |  |  | no honest native counterpart | no test of it has run yet |
+| Android Views |  | 56 ✅ of 78 | `TimePickerDialog` | cannot read time of TimePicker - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 57 ✅ of 78 | `TimePicker` |  |
+| Web |  |  | `<input type=time>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
 
 ## TimePicker's own members
@@ -22,15 +31,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/TimePickerContract.
 | `onOpened` (`opened`) | event |  | native |  |  |  |  |  |  | Android Views: cannot open on TimePicker - Android's driver has no path for it yet |
 | `time` | property | `ClockTime` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read time of TimePicker - Android's driver has no path for it yet |
 | `onTimeChanged` (`timeChanged`) | event | `ClockTime` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read time of TimePicker - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSDatePicker` in time mode
-- **UIKit**: `UIDatePicker` in time mode
-- **GTK 4**: no honest native counterpart.
-- **Android Views**: `TimePickerDialog`
-- **WinUI 3**: `TimePicker`
-- **Web**: `<input type=time>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

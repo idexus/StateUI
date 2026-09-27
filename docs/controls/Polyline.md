@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 58 ✅ · 2 ☑️ of 78 | `NSView` drawing `NSBezierPath` |  |
+| UIKit | ✅ | 58 ✅ of 78 | `UIView` drawing `UIBezierPath` |  |
+| GTK 4 | ✅ | 13 ✅ of 78 | `GskPath` in a snapshot |  |
+| Android Views | ✅ | 59 ✅ of 78 | `View` drawing `Path` |  |
+| WinUI 3 | ✅ | 62 ✅ of 78 | `Microsoft.UI.Xaml.Shapes` |  |
+| Web |  |  | inline SVG | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/PolylineContract.swift`.
 
 ## Polyline's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/PolylineContract.swif
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fillRule` | property | `FillRule` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `points` | property | `[Point]` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSView` drawing `NSBezierPath`
-- **UIKit**: `UIView` drawing `UIBezierPath`
-- **GTK 4**: `GskPath` in a snapshot
-- **Android Views**: `View` drawing `Path`
-- **WinUI 3**: `Microsoft.UI.Xaml.Shapes`
-- **Web**: inline SVG
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

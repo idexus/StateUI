@@ -10,17 +10,17 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ |  | sheet `NSWindow` |  |
+| UIKit | ✅ |  | `present(_:animated:)` |  |
+| GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | no test of it has run yet |
+| Android Views | ✅ |  | full-screen `Dialog` (?) |  |
+| WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
+| Web |  |  | `<dialog>` with `showModal()` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/ModalStackContract.swift`.
 
 ## ModalStack's own members
 
 ModalStack declares no members of its own.
-
-Realization:
-
-- **AppKit**: sheet `NSWindow`
-- **UIKit**: `present(_:animated:)`
-- **GTK 4**: modal `GtkWindow`; libadwaita `AdwDialog`
-- **Android Views**: full-screen `Dialog` (?)
-- **WinUI 3**: `ContentDialog` (?)
-- **Web**: `<dialog>` with `showModal()`

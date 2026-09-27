@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 56 ✅ · 2 ☑️ of 73 | `NSSlider` |  |
+| UIKit | ✅ | 59 ✅ of 73 | `UISlider` |  |
+| GTK 4 | ✅ | 17 ✅ of 73 | `GtkScale` |  |
+| Android Views | ✅ | 59 ✅ of 73 | `SeekBar` |  |
+| WinUI 3 | ✅ | 56 ✅ of 73 | `Slider` |  |
+| Web |  |  | `<input type=range>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SliderContract.swift`.
 
 ## Slider's own members
@@ -22,15 +31,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SliderContract.swif
 | `minimum` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `value` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onValueChanged` (`valueChanged`) | event | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSSlider`
-- **UIKit**: `UISlider`
-- **GTK 4**: `GtkScale`
-- **Android Views**: `SeekBar`
-- **WinUI 3**: `Slider`
-- **Web**: `<input type=range>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

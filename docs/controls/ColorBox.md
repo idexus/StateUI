@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 53 ✅ · 1 ☑️ of 68 | custom `NSView` drawing |  |
+| UIKit | ✅ | 53 ✅ of 68 | `UIView` + `CALayer` |  |
+| GTK 4 | ✅ | 13 ✅ of 68 | custom `GtkWidget` snapshot |  |
+| Android Views | ✅ | 54 ✅ of 68 | `View` + `GradientDrawable` |  |
+| WinUI 3 | ✅ | 52 ✅ of 68 | `Border` |  |
+| Web |  |  | `<div>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ColorBoxContract.swift`.
 
 ## ColorBox's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ColorBoxContract.sw
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `color` | property | `Color` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `cornerRadius` | property | `CornerRadius` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: custom `NSView` drawing
-- **UIKit**: `UIView` + `CALayer`
-- **GTK 4**: custom `GtkWidget` snapshot
-- **Android Views**: `View` + `GradientDrawable`
-- **WinUI 3**: `Border`
-- **Web**: `<div>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

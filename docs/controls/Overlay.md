@@ -10,17 +10,17 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ |  | pass-through `NSView` above the page |  |
+| UIKit | ✅ |  | pass-through `UIView` above the page |  |
+| GTK 4 |  |  | `GtkOverlay` | no test of it has run yet |
+| Android Views |  |  | top child of a `FrameLayout` | cannot read what reaches Label - Android's driver has no path for it yet |
+| WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
+| Web |  |  | positioned element above the page | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/OverlayContract.swift`.
 
 ## Overlay's own members
 
 Overlay declares no members of its own.
-
-Realization:
-
-- **AppKit**: pass-through `NSView` above the page
-- **UIKit**: pass-through `UIView` above the page
-- **GTK 4**: `GtkOverlay`
-- **Android Views**: top child of a `FrameLayout`
-- **WinUI 3**: top layer of a root `Grid`
-- **Web**: positioned element above the page

@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 59 ✅ · 1 ☑️ of 77 | custom `NSView` |  |
+| UIKit | ✅ | 59 ✅ of 77 | composed by StateUI |  |
+| GTK 4 | ✅ | 13 ✅ of 77 | composed by StateUI |  |
+| Android Views | ✅ | 58 ✅ of 77 | composed by StateUI |  |
+| WinUI 3 | ✅ | 61 ✅ of 77 | composed by StateUI |  |
+| Web |  |  | composed by StateUI | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
 
 ## Grid's own members
@@ -20,15 +29,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
 | `columns` | property | `[GridLength]` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `rowSpacing` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `rows` | property | `[GridLength]` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: custom `NSView`
-- **UIKit**: composed by StateUI
-- **GTK 4**: composed by StateUI
-- **Android Views**: composed by StateUI
-- **WinUI 3**: composed by StateUI
-- **Web**: composed by StateUI
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

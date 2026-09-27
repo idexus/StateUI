@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 57 ✅ · 2 ☑️ of 77 | `NSView` drawing `NSBezierPath` |  |
+| UIKit | ✅ | 57 ✅ of 77 | `UIView` drawing `UIBezierPath` |  |
+| GTK 4 | ✅ | 13 ✅ of 77 | `GskPath` in a snapshot |  |
+| Android Views | ✅ | 58 ✅ of 77 | `View` drawing `Path` |  |
+| WinUI 3 | ✅ | 61 ✅ of 77 | `Microsoft.UI.Xaml.Shapes` |  |
+| Web |  |  | inline SVG | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/RectangleContract.swift`.
 
 ## Rectangle's own members
@@ -17,15 +26,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/RectangleContract.swi
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cornerRadius` | property | `CornerRadius` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSView` drawing `NSBezierPath`
-- **UIKit**: `UIView` drawing `UIBezierPath`
-- **GTK 4**: `GskPath` in a snapshot
-- **Android Views**: `View` drawing `Path`
-- **WinUI 3**: `Microsoft.UI.Xaml.Shapes`
-- **Web**: inline SVG
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit |  | 53 ✅ · 2 ☑️ of 69 | `NSImageView` | cannot read source of Image - AppKit's driver has no path for it yet |
+| UIKit | ✅ | 53 ✅ of 69 | `UIImageView` |  |
+| GTK 4 | ✅ | 13 ✅ of 69 | `GtkPicture` |  |
+| Android Views |  | 54 ✅ of 69 | `ImageView` | cannot read source of Image - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 52 ✅ of 69 | `Image` |  |
+| Web |  |  | `<img>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift`.
 
 ## Image's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isAnimating` | property | `Bool` | native |  |  |  |  |  |  | cannot read isAnimating of Image - AppKit's driver has no path for it yet |
 | `source` | property | `ImageSource` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSImageView`
-- **UIKit**: `UIImageView`
-- **GTK 4**: `GtkPicture`
-- **Android Views**: `ImageView`
-- **WinUI 3**: `Image`
-- **Web**: `<img>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

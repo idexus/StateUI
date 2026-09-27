@@ -10,17 +10,17 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ |  | `UIBarButtonItem` |  |
+| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
+| Android Views |  |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
+| Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.
 
 ## ToolbarItems's own members
 
 ToolbarItems declares no members of its own.
-
-Realization:
-
-- **AppKit**: `NSToolbarItem`; `NSMenuToolbarItem` overflow
-- **UIKit**: `UIBarButtonItem`
-- **GTK 4**: `GtkButton` in `GtkHeaderBar`
-- **Android Views**: `Toolbar` `MenuItem`
-- **WinUI 3**: `CommandBar` `AppBarButton`
-- **Web**: `<button>` in an ARIA `toolbar`

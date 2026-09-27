@@ -218,7 +218,15 @@ struct ControlDictionary {
             return lines
         }
 
-        var body = [
+        var tables = ["## \(name)'s own members", ""]
+        tables += element.members.isEmpty ? ["\(name) declares no members of its own."] : table(of: element, tier: nil)
+        tables.append("")
+        for tier in worn {
+            tables += ["## From [\(tier.name)](tiers/\(tier.name).md)", "", Self.firstSentence(doc(of: tier)), ""]
+            tables += table(of: tier, tier: tier.name) + [""]
+        }
+
+        let body = [
             Self.rendered, "",
             "# \(name)", "",
             doc(of: element), "",
@@ -228,24 +236,38 @@ struct ControlDictionary {
                 : "Inherits: " + worn.map { "[\($0.name)](tiers/\($0.name).md)" }.joined(separator: " · "),
             "",
             "Marks: \(Self.legend). See [the dictionary](README.md).", "",
+        ] + hosts(of: name, members: members, marks: marks) + [
+            "",
             "Declared in `lib/StateUI/Sources/\(declared[ObjectIdentifier(element)] ?? "")`.", "",
-            "## \(name)'s own members", "",
-        ]
-
-        if element.members.isEmpty {
-            body.append("\(name) declares no members of its own.")
-        } else {
-            body += table(of: element, tier: nil)
-        }
-
-        body += ["", "Realization:", ""] + Self.platforms.map { realization(of: name, on: $0) } + [""]
-
-        for tier in worn {
-            body += ["## From [\(tier.name)](tiers/\(tier.name).md)", "", Self.firstSentence(doc(of: tier)), ""]
-            body += table(of: tier, tier: tier.name) + [""]
-        }
+        ] + tables
 
         return Page(text: Self.ending(body), members: members, marks: marks)
+    }
+
+    /// Where an element stands on each host: whether its test proved the host makes it, how many of its `members`
+    /// the host meets by mark, what it is there, and why a mark is empty.
+    func hosts(of element: String, members: Int, marks: [String: Marks]) -> [String] {
+        var lines = [Self.row(["Host", "Created", "Members", "Realization", "Notes"]), "| --- | :---: | --- | --- | --- |"]
+
+        for platform in Self.platforms {
+            let counted = Self.counted(marks[platform] ?? Marks())
+            let created: (mark: String, note: String)
+            if let column = column(of: platform) {
+                let own = column.mark(of: nil, on: element)
+                created = own.mark.isEmpty && own.note.isEmpty
+                    ? ("", column.verdicts[element] == nil ? "no test of it has run yet" : "not realized")
+                    : own
+            } else {
+                created = ("", "no host yet")
+            }
+
+            lines.append(Self.row([
+                platform, created.mark, counted.isEmpty ? "" : "\(counted) of \(members)",
+                realization(of: element, on: platform), created.note,
+            ]))
+        }
+
+        return lines
     }
 
     /// One tier's page: its doc, what it wears, who wears it, and its members.
@@ -291,16 +313,12 @@ struct ControlDictionary {
         ]
     }
 
-    /// The line naming what an element is on one host, from the platform
-    /// contract's mapping.
+    /// What an element is on one host, from the platform contract's mapping.
     func realization(of element: String, on platform: String) -> String {
         switch mapping[element]?[platform] {
-        case "—"?:
-            return "- **\(platform)**: no honest native counterpart."
-        case let native? where !native.isEmpty:
-            return "- **\(platform)**: \(native)"
-        default:
-            return "- **\(platform)**: no native counterpart is named yet."
+        case "—"?: "no honest native counterpart"
+        case let native? where !native.isEmpty: native
+        default: "no native counterpart is named yet"
         }
     }
 
@@ -355,15 +373,15 @@ struct ControlDictionary {
         ]
     }
 
-    /// A row per element: the layer that realizes it, and a ✅ for each host
-    /// that creates or interprets it.
+    /// A row per element, linked to its page: the layer that realizes it, and
+    /// a ✅ for each host whose test proved it makes it.
     func creationTable() -> String {
         var lines = [Self.header("Element", "Layer"), Self.rule(leading: 2)]
 
         for element in elements {
             let marks = Self.platforms.map { column(of: $0)?.mark(of: nil, on: element.name).mark ?? "" }
 
-            lines.append(Self.row(["`\(element.name)`", "\(element.layer)"] + marks))
+            lines.append(Self.row(["[\(element.name)](controls/\(element.name).md)", "\(element.layer)"] + marks))
         }
 
         return lines.joined(separator: "\n")

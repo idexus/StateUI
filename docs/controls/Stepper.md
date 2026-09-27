@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 57 ✅ · 2 ☑️ of 71 | `NSStepper` |  |
+| UIKit | ✅ | 57 ✅ of 71 | `UIStepper` |  |
+| GTK 4 | ✅ | 18 ✅ of 71 | `GtkSpinButton` |  |
+| Android Views |  | 53 ✅ of 71 | custom `NumberPicker`-based view | cannot step on Stepper - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 56 ✅ of 71 | `NumberBox` |  |
+| Web |  |  | `<input type=number>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/StepperContract.swift`.
 
 ## Stepper's own members
@@ -21,15 +30,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/StepperContract.swi
 | `step` | property | `Double` | native | ✅ | ✅ | ✅ |  | ✅ |  | Android Views: cannot read step of Stepper - Android's driver has no path for it yet |
 | `value` | property | `Double` | native | ✅ | ✅ | ✅ |  | ✅ |  | Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet |
 | `onValueChanged` (`valueChanged`) | event | `Double` | native | ✅ | ✅ | ✅ |  | ✅ |  | Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSStepper`
-- **UIKit**: `UIStepper`
-- **GTK 4**: `GtkSpinButton`
-- **Android Views**: custom `NumberPicker`-based view
-- **WinUI 3**: `NumberBox`
-- **Web**: `<input type=number>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

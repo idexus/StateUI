@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 55 ✅ · 2 ☑️ of 70 | custom `NSView` drawing |  |
+| UIKit | ✅ | 55 ✅ of 70 | `UIView` `draw(_:)` |  |
+| GTK 4 |  |  | `GtkDrawingArea` | no test of it has run yet |
+| Android Views | ✅ | 56 ✅ of 70 | `View` `onDraw(Canvas)` |  |
+| WinUI 3 | ✅ | 54 ✅ of 70 | Direct2D in a `SurfaceImageSource` |  |
+| Web |  |  | `<canvas>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`.
 
 ## Canvas's own members
@@ -20,15 +29,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`
 | `drawable` | property | `[DrawCommand]` | structure | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `onPressed` (`pressed`) | event | `Point` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `onReleased` (`released`) | event | `Point` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: custom `NSView` drawing
-- **UIKit**: `UIView` `draw(_:)`
-- **GTK 4**: `GtkDrawingArea`
-- **Android Views**: `View` `onDraw(Canvas)`
-- **WinUI 3**: Direct2D in a `SurfaceImageSource`
-- **Web**: `<canvas>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

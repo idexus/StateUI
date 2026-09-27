@@ -10,6 +10,15 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 6 ✅ of 6 | `NSApplication` / structure |  |
+| UIKit | ✅ | 4 ✅ of 6 | `UIApplication` / `UIWindowScene` |  |
+| GTK 4 |  |  | `GtkApplication` / structure | no test of it has run yet |
+| Android Views | ✅ | 4 ✅ of 6 | `Application` / structure |  |
+| WinUI 3 | ✅ | 6 ✅ of 6 | `Application` / structure |  |
+| Web |  |  | `document` / structure | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
 
 ## Scene's own members
@@ -22,12 +31,3 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | `stopped` | event |  | adaptive | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `windowClosed` | event | `String` | adaptive | ✅ |  |  |  | ✅ |  |  |
 | `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  |  | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSApplication` / structure
-- **UIKit**: `UIApplication` / `UIWindowScene`
-- **GTK 4**: `GtkApplication` / structure
-- **Android Views**: `Application` / structure
-- **WinUI 3**: `Application` / structure
-- **Web**: `document` / structure

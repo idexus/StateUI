@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 54 ✅ · 2 ☑️ of 69 | `NSButton` checkbox |  |
+| UIKit | ✅ | 54 ✅ of 69 | composed by StateUI |  |
+| GTK 4 | ✅ | 15 ✅ of 69 | `GtkCheckButton` |  |
+| Android Views | ✅ | 55 ✅ of 69 | `CheckBox` |  |
+| WinUI 3 | ✅ | 55 ✅ of 69 | `CheckBox` |  |
+| Web |  |  | `<input type=checkbox>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/CheckBoxContract.swift`.
 
 ## CheckBox's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/CheckBoxContract.sw
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isOn` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onToggled` (`toggled`) | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSButton` checkbox
-- **UIKit**: composed by StateUI
-- **GTK 4**: `GtkCheckButton`
-- **Android Views**: `CheckBox`
-- **WinUI 3**: `CheckBox`
-- **Web**: `<input type=checkbox>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

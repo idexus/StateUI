@@ -10,17 +10,17 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
+| Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
+| WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
+| Web |  |  | text element; `<span>` runs | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpansContract.swift`.
 
 ## Spans's own members
 
 Spans declares no members of its own.
-
-Realization:
-
-- **AppKit**: `NSTextField` label; `NSAttributedString` runs
-- **UIKit**: `UILabel`; `NSAttributedString` runs
-- **GTK 4**: `GtkLabel`; `PangoAttrList` runs
-- **Android Views**: `TextView`; `SpannableString` spans
-- **WinUI 3**: `TextBlock`; `Run` inlines
-- **Web**: text element; `<span>` runs

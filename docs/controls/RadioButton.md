@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 61 ✅ · 2 ☑️ of 81 | `NSButton` radio |  |
+| UIKit | ✅ | 61 ✅ of 81 | composed by StateUI |  |
+| GTK 4 | ✅ | 18 ✅ of 81 | grouped `GtkCheckButton` |  |
+| Android Views | ✅ | 61 ✅ of 81 | `RadioButton` |  |
+| WinUI 3 | ✅ | 62 ✅ of 81 | `RadioButton` |  |
+| Web |  |  | `<input type=radio>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/RadioButtonContract.swift`.
 
 ## RadioButton's own members
@@ -19,15 +28,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/RadioButtonContract
 | `groupName` | property | `Name` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isOn` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onToggled` (`toggled`) | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSButton` radio
-- **UIKit**: composed by StateUI
-- **GTK 4**: grouped `GtkCheckButton`
-- **Android Views**: `RadioButton`
-- **WinUI 3**: `RadioButton`
-- **Web**: `<input type=radio>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

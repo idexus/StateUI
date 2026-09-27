@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 60 ✅ · 2 ☑️ of 80 | `NSView` drawing `NSBezierPath` |  |
+| UIKit | ✅ | 60 ✅ of 80 | `UIView` drawing `UIBezierPath` |  |
+| GTK 4 | ✅ | 13 ✅ of 80 | `GskPath` in a snapshot |  |
+| Android Views | ✅ | 61 ✅ of 80 | `View` drawing `Path` |  |
+| WinUI 3 | ✅ | 64 ✅ of 80 | `Microsoft.UI.Xaml.Shapes` |  |
+| Web |  |  | inline SVG | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/LineContract.swift`.
 
 ## Line's own members
@@ -20,15 +29,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/LineContract.swift`.
 | `x2` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `y1` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `y2` | property | `Double` | stateUI | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSView` drawing `NSBezierPath`
-- **UIKit**: `UIView` drawing `UIBezierPath`
-- **GTK 4**: `GskPath` in a snapshot
-- **Android Views**: `View` drawing `Path`
-- **WinUI 3**: `Microsoft.UI.Xaml.Shapes`
-- **Web**: inline SVG
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 54 ✅ · 2 ☑️ of 69 | `NSSwitch` |  |
+| UIKit | ✅ | 54 ✅ of 69 | `UISwitch` |  |
+| GTK 4 | ✅ | 15 ✅ of 69 | `GtkSwitch` |  |
+| Android Views | ✅ | 55 ✅ of 69 | `Switch` |  |
+| WinUI 3 | ✅ | 55 ✅ of 69 | `ToggleSwitch` |  |
+| Web |  |  | checkbox `<input>` with `role=switch` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SwitchContract.swift`.
 
 ## Switch's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/SwitchContract.swif
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isOn` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onToggled` (`toggled`) | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSSwitch`
-- **UIKit**: `UISwitch`
-- **GTK 4**: `GtkSwitch`
-- **Android Views**: `Switch`
-- **WinUI 3**: `ToggleSwitch`
-- **Web**: checkbox `<input>` with `role=switch`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

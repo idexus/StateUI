@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit |  |  | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet |
+| UIKit |  |  | no honest native counterpart | not realized |
+| GTK 4 |  |  | `GtkHeaderBar` | no test of it has run yet |
+| Android Views |  |  | no honest native counterpart | not realized |
+| WinUI 3 |  |  | `TitleBar` | not realized |
+| Web |  |  | no honest native counterpart | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.swift`.
 
 ## TitleBar's own members
@@ -20,15 +29,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.s
 | `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | cannot read icon of TitleBar - AppKit's driver has no path for it yet |
 | `subtitle` | property | `String` | adaptive |  |  |  |  |  |  | cannot read subtitle of TitleBar - AppKit's driver has no path for it yet |
 | `title` | property | `String` | native |  |  |  |  |  |  | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController`
-- **UIKit**: no honest native counterpart.
-- **GTK 4**: `GtkHeaderBar`
-- **Android Views**: no honest native counterpart.
-- **WinUI 3**: `TitleBar`
-- **Web**: no honest native counterpart.
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

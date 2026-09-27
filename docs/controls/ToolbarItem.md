@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 2 ✅ of 8 | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ | 5 ✅ of 8 | `UIBarButtonItem` |  |
+| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no test of it has run yet |
+| Android Views |  |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 6 ✅ of 8 | `CommandBar` `AppBarButton` |  |
+| Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
 
 ## ToolbarItem's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  |  | ✅ |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet |
 | `priority` | property | `Int` | adaptive |  |  |  |  | ✅ |  | cannot read priority of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read priority of ToolbarItem - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSToolbarItem`; `NSMenuToolbarItem` overflow
-- **UIKit**: `UIBarButtonItem`
-- **GTK 4**: `GtkButton` in `GtkHeaderBar`
-- **Android Views**: `Toolbar` `MenuItem`
-- **WinUI 3**: `CommandBar` `AppBarButton`
-- **Web**: `<button>` in an ARIA `toolbar`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

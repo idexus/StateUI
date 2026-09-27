@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextElement](tiers
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 1 ✅ of 12 | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ | 1 ✅ of 12 | `UILabel`; `NSAttributedString` runs |  |
+| GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no test of it has run yet |
+| Android Views | ✅ | 1 ✅ of 12 | `TextView`; `SpannableString` spans |  |
+| WinUI 3 | ✅ | 6 ✅ of 12 | `TextBlock`; `Run` inlines |  |
+| Web |  |  | text element; `<span>` runs | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 ## Span's own members
@@ -17,15 +26,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `background` | property | `Color` | native |  |  |  |  | ✅ |  | UIKit: cannot read background of Span - UIKit's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSTextField` label; `NSAttributedString` runs
-- **UIKit**: `UILabel`; `NSAttributedString` runs
-- **GTK 4**: `GtkLabel`; `PangoAttrList` runs
-- **Android Views**: `TextView`; `SpannableString` spans
-- **WinUI 3**: `TextBlock`; `Run` inlines
-- **Web**: text element; `<span>` runs
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

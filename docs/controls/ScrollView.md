@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 57 ✅ · 2 ☑️ of 77 | `NSScrollView` |  |
+| UIKit | ✅ | 57 ✅ of 77 | `UIScrollView` |  |
+| GTK 4 | ✅ | 13 ✅ of 77 | `GtkScrolledWindow` |  |
+| Android Views | ✅ | 54 ✅ of 77 | `ScrollView` / `HorizontalScrollView` |  |
+| WinUI 3 | ✅ | 62 ✅ of 77 | `ScrollViewer` |  |
+| Web |  |  | `overflow: auto` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ScrollViewContract.swift`.
 
 ## ScrollView's own members
@@ -23,15 +32,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ScrollViewContract.s
 | `scrollXChanged` | event | `Double` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot scroll on ScrollView - Android's driver has no path for it yet |
 | `scrollYChanged` | event | `Double` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet |
 | `verticalScrollBarVisibility` | property | `ScrollBarVisibility` | adaptive |  |  |  |  | ✅ |  | cannot read verticalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet; UIKit: cannot read verticalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet; Android Views: cannot read verticalScrollBarVisibility of ScrollView - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSScrollView`
-- **UIKit**: `UIScrollView`
-- **GTK 4**: `GtkScrolledWindow`
-- **Android Views**: `ScrollView` / `HorizontalScrollView`
-- **WinUI 3**: `ScrollViewer`
-- **Web**: `overflow: auto`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 59 ✅ · 2 ☑️ of 80 | `NSDatePicker` |  |
+| UIKit | ✅ | 56 ✅ of 80 | `UIDatePicker` |  |
+| GTK 4 |  |  | `GtkCalendar` in a `GtkPopover` | no test of it has run yet |
+| Android Views |  | 56 ✅ of 80 | `DatePickerDialog` | cannot read date of DatePicker - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 62 ✅ · 1 ☑️ of 80 | `CalendarDatePicker` |  |
+| Web |  |  | `<input type=date>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/DatePickerContract.swift`.
 
 ## DatePicker's own members
@@ -24,15 +33,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/DatePickerContract.
 | `maximumDate` | property | `CalendarDate` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read maximumDate of DatePicker - Android's driver has no path for it yet |
 | `minimumDate` | property | `CalendarDate` | native | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot read minimumDate of DatePicker - Android's driver has no path for it yet |
 | `onOpened` (`opened`) | event |  | native |  |  |  |  | ✅ |  | Android Views: cannot open on DatePicker - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSDatePicker`
-- **UIKit**: `UIDatePicker`
-- **GTK 4**: `GtkCalendar` in a `GtkPopover`
-- **Android Views**: `DatePickerDialog`
-- **WinUI 3**: `CalendarDatePicker`
-- **Web**: `<input type=date>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

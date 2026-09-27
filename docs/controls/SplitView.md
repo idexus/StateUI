@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [PageElement](tiers
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 3 ✅ of 5 | `NSSplitViewController` |  |
+| UIKit | ✅ | 4 ✅ of 5 | `UISplitViewController` |  |
+| GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no test of it has run yet |
+| Android Views |  | 1 ✅ of 5 | AndroidX `DrawerLayout` | no test of it has run yet |
+| WinUI 3 | ✅ | 4 ✅ of 5 | `SplitView` |  |
+| Web |  |  | `<aside>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
 
 ## SplitView's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ |  |  |  | ✅ |  | UIKit: cannot toggle on SplitView - UIKit's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSSplitViewController`
-- **UIKit**: `UISplitViewController`
-- **GTK 4**: `GtkPaned`; libadwaita `AdwOverlaySplitView`
-- **Android Views**: AndroidX `DrawerLayout`
-- **WinUI 3**: `SplitView`
-- **Web**: `<aside>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

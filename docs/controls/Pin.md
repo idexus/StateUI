@@ -10,6 +10,15 @@ Inherits nothing: every member below is its own.
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
+| UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
+| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no test of it has run yet |
+| Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
+| WinUI 3 |  |  | `MapControl` (?) | not realized |
+| Web |  |  | no honest native counterpart | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 ## Pin's own members
@@ -22,12 +31,3 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 | `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  |  |
 | `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  |  |
 | `type` | property | `PinType` | provider |  |  |  |  |  |  |  |
-
-Realization:
-
-- **AppKit**: `MKMapView` / `MKAnnotation`
-- **UIKit**: `MKMapView` / `MKAnnotation`
-- **GTK 4**: libshumate `ShumateMap` / `ShumateMarker`
-- **Android Views**: Google Play services `MapView` / `Marker` (?)
-- **WinUI 3**: `MapControl` (?)
-- **Web**: no honest native counterpart.

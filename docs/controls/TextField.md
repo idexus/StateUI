@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 56 ✅ · 2 ☑️ of 90 | `NSTextField` / `NSSecureTextField` |  |
+| UIKit | ✅ | 67 ✅ of 90 | `UITextField` |  |
+| GTK 4 | ✅ | 17 ✅ of 90 | `GtkEntry` / `GtkPasswordEntry` |  |
+| Android Views | ✅ | 60 ✅ of 90 | `EditText` |  |
+| WinUI 3 | ✅ | 67 ✅ of 90 | `TextBox` / `PasswordBox` |  |
+| Web |  |  | `<input>` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
 
 ## TextField's own members
@@ -20,15 +29,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 | `returnKey` | property | `ReturnKey` | adaptive |  |  |  |  |  |  | Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet |
 | `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  |  |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
-
-Realization:
-
-- **AppKit**: `NSTextField` / `NSSecureTextField`
-- **UIKit**: `UITextField`
-- **GTK 4**: `GtkEntry` / `GtkPasswordEntry`
-- **Android Views**: `EditText`
-- **WinUI 3**: `TextBox` / `PasswordBox`
-- **Web**: `<input>`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

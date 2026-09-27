@@ -10,20 +10,20 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 55 ✅ · 1 ☑️ of 73 | custom `NSView` |  |
+| UIKit | ✅ | 55 ✅ of 73 | custom `UIView` |  |
+| GTK 4 | ✅ | 13 ✅ of 73 | `GtkFixed` |  |
+| Android Views | ✅ | 54 ✅ of 73 | custom `ViewGroup` |  |
+| WinUI 3 | ✅ | 57 ✅ of 73 | `Canvas` |  |
+| Web |  |  | `position: absolute` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ZStackContract.swift`.
 
 ## ZStack's own members
 
 ZStack declares no members of its own.
-
-Realization:
-
-- **AppKit**: custom `NSView`
-- **UIKit**: custom `UIView`
-- **GTK 4**: `GtkFixed`
-- **Android Views**: custom `ViewGroup`
-- **WinUI 3**: `Canvas`
-- **Web**: `position: absolute`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

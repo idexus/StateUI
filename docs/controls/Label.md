@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 59 ✅ · 2 ☑️ of 81 | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ | 63 ✅ of 81 | `UILabel`; `NSAttributedString` runs |  |
+| GTK 4 | ✅ | 15 ✅ of 81 | `GtkLabel`; `PangoAttrList` runs |  |
+| Android Views | ✅ | 59 ✅ of 81 | `TextView`; `SpannableString` spans |  |
+| WinUI 3 | ✅ | 63 ✅ of 81 | `TextBlock`; `Run` inlines |  |
+| Web |  |  | text element; `<span>` runs | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/LabelContract.swift`.
 
 ## Label's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/LabelContract.swift`.
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `lineBreak` | property | `LineBreak` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
 | `maximumLines` | property | `Int` | native | ✅ | ✅ |  | ✅ | ✅ |  |  |
-
-Realization:
-
-- **AppKit**: `NSTextField` label; `NSAttributedString` runs
-- **UIKit**: `UILabel`; `NSAttributedString` runs
-- **GTK 4**: `GtkLabel`; `PangoAttrList` runs
-- **Android Views**: `TextView`; `SpannableString` spans
-- **WinUI 3**: `TextBlock`; `Run` inlines
-- **Web**: text element; `<span>` runs
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

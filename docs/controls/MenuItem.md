@@ -10,20 +10,20 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 3 ✅ of 6 | `NSMenu` / `NSMenuItem` |  |
+| UIKit | ✅ | 5 ✅ of 6 | `UIMenu` / `UIAction` |  |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no test of it has run yet |
+| Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | cannot activate on MenuItem - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 4 ✅ of 6 | `MenuFlyout` / `MenuBar` |  |
+| Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
 
 ## MenuItem's own members
 
 MenuItem declares no members of its own.
-
-Realization:
-
-- **AppKit**: `NSMenu` / `NSMenuItem`
-- **UIKit**: `UIMenu` / `UIAction`
-- **GTK 4**: `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar`
-- **Android Views**: `PopupMenu` / `MenuItem`; no menu bar
-- **WinUI 3**: `MenuFlyout` / `MenuBar`
-- **Web**: ARIA `menu` / `menubar` (?)
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

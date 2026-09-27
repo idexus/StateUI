@@ -10,20 +10,20 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 56 ✅ · 1 ☑️ of 74 | custom `NSView` |  |
+| UIKit | ✅ | 56 ✅ of 74 | custom `UIView` |  |
+| GTK 4 | ✅ | 13 ✅ of 74 | `GtkBox` |  |
+| Android Views | ✅ | 55 ✅ of 74 | custom `ViewGroup` |  |
+| WinUI 3 | ✅ | 58 ✅ of 74 | `StackPanel` |  |
+| Web |  |  | flexbox | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/VStackContract.swift`.
 
 ## VStack's own members
 
 VStack declares no members of its own.
-
-Realization:
-
-- **AppKit**: custom `NSView`
-- **UIKit**: custom `UIView`
-- **GTK 4**: `GtkBox`
-- **Android Views**: custom `ViewGroup`
-- **WinUI 3**: `StackPanel`
-- **Web**: flexbox
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

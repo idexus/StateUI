@@ -10,6 +10,15 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 
 Marks: ✅ proven on that host by its own passing test · ☑️ proven by its test, but the host records what is missing - the note says what · – never on that host's family, which meets the contract there - its register says why · empty: not proven on that host yet. See [the dictionary](README.md).
 
+| Host | Created | Members | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 3 ✅ of 6 | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
+| UIKit | ✅ | 6 ✅ of 6 | `UITabBarController` |  |
+| GTK 4 |  |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | no test of it has run yet |
+| Android Views |  | 1 ✅ of 6 | Material Components `BottomNavigationView` (?) | cannot read currentPage of TabbedView - Android's driver has no path for it yet |
+| WinUI 3 | ✅ | 4 ✅ of 6 | `NavigationView` with a top pane |  |
+| Web |  |  | ARIA `tablist` | no host yet |
+
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContract.swift`.
 
 ## TabbedView's own members
@@ -18,15 +27,6 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `currentPage` | property | `Int` | structure | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 | `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ |  |  | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
-
-Realization:
-
-- **AppKit**: `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it
-- **UIKit**: `UITabBarController`
-- **GTK 4**: `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack`
-- **Android Views**: Material Components `BottomNavigationView` (?)
-- **WinUI 3**: `NavigationView` with a top pane
-- **Web**: ARIA `tablist`
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
