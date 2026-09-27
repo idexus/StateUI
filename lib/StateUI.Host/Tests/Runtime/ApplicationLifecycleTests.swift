@@ -58,6 +58,28 @@ final class ApplicationLifecycleTests: XCTestCase {
         XCTAssertEqual(Self.names(moves.told), ["1/main deactivated", "1/tool activated"])
     }
 
+    /// The window a user comes back to is the one activated last among those asked: a window told again later, but
+    /// not activated, keeps its place; a window never activated is none.
+    func testTheWindowActivatedLastIsTheOneComeBackTo() throws {
+        let (runtime, lifecycle) = Self.application([
+            ("1", [Self.window("main")]), ("2", [Self.window("main")]), ("3", [Self.window("main")]),
+        ])
+        let (first, second, third) = (
+            try Self.window("main", in: "1", of: runtime), try Self.window("main", in: "2", of: runtime),
+            try Self.window("main", in: "3", of: runtime))
+
+        lifecycle.report(first, minimized: false, activated: true)
+        lifecycle.report(second, minimized: false, activated: true)
+        lifecycle.report(first, minimized: false, activated: false)
+        lifecycle.report(third, minimized: false, activated: true)
+
+        XCTAssertTrue(lifecycle.activatedLast(among: [first, second]) === second)
+        XCTAssertTrue(lifecycle.activatedLast(among: [first, second, third]) === third)
+        lifecycle.report(first, minimized: false, activated: true)
+        XCTAssertTrue(lifecycle.activatedLast(among: [first, second]) === first)
+        XCTAssertNil(lifecycle.activatedLast(among: []))
+    }
+
     /// The scene in front is the one whose window was activated last: the application going behind another moves it
     /// nowhere, another scene's window activated moves it there - the scene left hears it first.
     func testOnlyAnotherScenesWindowMovesTheSceneInFront() throws {

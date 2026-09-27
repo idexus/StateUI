@@ -49,6 +49,9 @@
     public var isHidden = false
 
     private var reports: [Report] = []
+
+    /// Every window activated, the one activated last last.
+    private var activations: [Report] = []
     private var heard: [Heard] = []
     private weak var settledFront: MountedElement?
     private var settledInFront = true
@@ -61,7 +64,17 @@
     public func report(_ window: MountedElement, minimized: Bool, activated: Bool) {
         reports.removeAll { $0.window == nil || $0.window === window }
         reports.append(Report(window: window, minimized: minimized, activated: activated))
-        if activated { front = window.enclosing(type: .scene) }
+        if activated {
+            front = window.enclosing(type: .scene)
+            activations.removeAll { $0.window == nil || $0.window === window }
+            activations.append(Report(window: window, minimized: minimized, activated: true))
+        }
+    }
+
+    /// The window among `windows` activated last - the one a user comes back to when another goes; nil where none
+    /// was activated.
+    public func activatedLast(among windows: [MountedElement]) -> MountedElement? {
+        activations.last { activation in windows.contains { $0 === activation.window } }?.window
     }
 
     /// Whether `window` stands hidden by its scene: it hides while another scene is in front.

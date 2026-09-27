@@ -184,13 +184,32 @@ final class UIKitRenderer {
             let scene = waitingScenes.isEmpty ? nil : waitingScenes.removeFirst()
             if scene == nil, ownsScenes { requestScene() }
             return UIKitWindowController(element, scene: scene)
-        }, close: { [unowned self] in ownsScenes ? $0.close() : $0.hide() })
+        }, close: { [unowned self] closing in
+            guard ownsScenes else { return closing.hide() }
+            bringBack(insteadOf: closing, staying: root.windows)
+            closing.close()
+        })
         for (element, controller) in roster.windows {
             controller.present(element, in: runtime)
         }
         tellStandingPhases()
         rebuildMenuBarWhereItChanged()
         runtime.displayCycle.hold()
+    }
+
+    /// A window closing in front of the user leaves the one they were in before in front of them - iPadOS shows the
+    /// home screen once the scene in front goes.
+    /// Design: docs/design/platforms/uikit/runtime.md#scenes
+    private func bringBack(insteadOf closing: UIKitWindowController, staying: [MountedElement]) {
+        guard let state = closing.window?.windowScene?.activationState,
+              state == .foregroundActive || state == .foregroundInactive,
+              let back = runtime.lifecycle.activatedLast(among: staying) ?? staying.first,
+              let session = roster.windows.first(where: { $0.0 === back })?.1.session
+        else { return }
+        UIApplication.shared.activateSceneSession(
+            for: UISceneSessionActivationRequest(session: session), errorHandler: { error in
+                MainActor.assumeIsolated { Self.log.error("no window to come back to: \(error.localizedDescription)") }
+            })
     }
 
     /// The menus the user's window's page puts on the application's menu bar.

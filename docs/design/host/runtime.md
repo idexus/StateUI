@@ -302,7 +302,9 @@ and the two are one move, in which the application stays in use.
   else showing behind another application.
 - The scene in front is the one whose window was activated last. Only
   another window's activation moves it; the application going behind another
-  moves it nowhere.
+  moves it nowhere. Of the windows staying when one goes, the one activated
+  last is the one the user comes back to (`activatedLast`), for a host whose
+  toolkit leaves that choice to it.
 - A scene is activated while one of its windows is, stopped while the
   application is hidden or its main window is off the screen, else
   deactivated - so a tool window the user is in keeps its scene activated

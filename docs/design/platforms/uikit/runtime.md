@@ -38,6 +38,10 @@ where it stands. The user closing a window - swiping its scene away - is the
 scene's session discarded, which the window hears as closed by the user; a
 scene iOS only disconnects to save memory closes nothing.
 
+A window the tree closes in front of the user first brings back the window
+activated last of those staying: iPadOS shows the home screen once the scene
+in front is destroyed, the application's other windows behind it.
+
 The trap: the scene of a window the tree lets go of is destroyed, and iPadOS
 ends the process once an application's last scene is destroyed. A host whose
 windows share one scene - the tests' host stands every window in the one
