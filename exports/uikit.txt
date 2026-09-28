@@ -88,6 +88,7 @@ ItemsView
   realizedChanged()
   selectionChanged()
 Label
+  background
   characterSpacing
   fontAttributes
   fontFamily

@@ -46,7 +46,10 @@ own look over the label's - as attributed text: the font, the colour, what
 stands behind the words, the space between the letters, a line's height and
 the lines under or through them. Its padding is room it keeps around the
 words, as it measures them and as it draws them, standing them down its room
-as the tree says, which UIKit's label does not do of itself.
+as the tree says, which UIKit's label does not do of itself. Its background -
+a colour or a brush - fills its whole box, that room included, painted
+before the words: they are the label's own drawing, which a layer laid over
+it would cover.
 
 A Button is UIKit's button, its configuration what the tree says: its words
 and their look, an icon beside them, the box behind them - its colour, its

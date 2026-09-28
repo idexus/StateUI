@@ -36,6 +36,9 @@ extension UIKitRegistrations {
                     vertical: values[TextAlignmentElementContract.verticalTextAlignment] ?? .start)
             }
             label.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            label.property(VisualElementContract.background) { view, background in
+                view.setBackground(background?.propValue)
+            }
             label.property(TextStyleElementContract.characterSpacing) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }

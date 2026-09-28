@@ -20,6 +20,9 @@ final class UIKitLabelView: UILabel {
     /// The room between the label's edge and its words.
     private(set) var padding = UIEdgeInsets.zero
 
+    /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
+    private var fill = UIKitBrush()
+
     /// Where the words stand down the room; a `UILabel` of itself stands them in its middle.
     private var verticalAlignment = TextAlignment.start {
         didSet { if verticalAlignment != oldValue { setNeedsDisplay() } }
@@ -109,6 +112,20 @@ final class UIKitLabelView: UILabel {
         let fitted = super.sizeThatFits(room)
         return CGSize(
             width: fitted.width + padding.left + padding.right, height: fitted.height + padding.top + padding.bottom)
+    }
+
+    /// What fills the label's box behind its words - a colour or a brush - painted before the words: they are the
+    /// layer's own contents, which any layer added over it would cover.
+    func setBackground(_ value: HostValue?) {
+        fill = UIKitBrush(value)
+        setNeedsDisplay()
+    }
+
+    override func draw(_ rect: CGRect) {
+        if let context = UIGraphicsGetCurrentContext(), let painted = fill.layer(over: bounds, reusing: nil) {
+            painted.render(in: context)
+        }
+        super.draw(rect)
     }
 
     override func drawText(in rect: CGRect) {
