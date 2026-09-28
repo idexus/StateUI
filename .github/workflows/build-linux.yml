@@ -3,7 +3,7 @@
 # The container is swift.org's own image, so the library compiles with the
 # release it is written against.
 
-name: Linux
+name: Core Linux
 
 on:
   push:

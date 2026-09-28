@@ -2,7 +2,7 @@
 # runner - and the Gallery's, with the starter application built, since no
 # suite compiles it. Each host's own suite runs in a workflow of its own.
 
-name: Tests
+name: Core macOS
 
 on:
   push:

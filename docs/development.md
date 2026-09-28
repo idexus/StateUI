@@ -226,11 +226,13 @@ user-visible change in the running Gallery on the affected platform. Run only
 one application build at a time because Swift build directories are shared by
 the package graph.
 
-On GitHub each suite has a workflow of its own, so each shows its own state:
-**Tests** (the core, the host layer, the conformance runner and the Gallery on
-macOS), **Linux** and **Windows** (the core's suites there), and one for each
-host - **AppKit**, **UIKit** (an iPhone and an iPad simulator), **Android**
-(the test APK built on macOS, run on a Linux emulator), **GTK** and **WinUI**.
+On GitHub each suite has a workflow of its own, so each shows its own state,
+the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
+Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
+the host layer and the conformance runner, and on macOS the Gallery), and one
+for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
+**Android** (the test APK built on macOS, run on a Linux emulator), **GTK**
+and **WinUI**.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine.

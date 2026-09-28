@@ -1,6 +1,6 @@
-[![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
-[![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
-[![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
+[![Core macOS](https://github.com/idexus/StateUI/actions/workflows/build-mac.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-mac.yml?query=branch%3Amain)
+[![Core Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
+[![Core Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)\
 [![AppKit](https://github.com/idexus/StateUI/actions/workflows/appkit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/appkit.yml?query=branch%3Amain)
 [![UIKit](https://github.com/idexus/StateUI/actions/workflows/uikit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/uikit.yml?query=branch%3Amain)
 [![Android](https://github.com/idexus/StateUI/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/android.yml?query=branch%3Amain)
