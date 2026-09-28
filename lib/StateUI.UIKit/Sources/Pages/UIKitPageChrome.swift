@@ -43,10 +43,16 @@ struct UIKitPageChrome {
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = background
         }
-        if let foreground = barForeground.flatMap(UIColor.init(stateUI:)) {
+        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        let words = BandWords.color(on: barBackground, written: barForeground)
+        if let foreground = words.flatMap(UIColor.init(stateUI:)) {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]
             appearance.buttonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
+            appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
+            let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)
+            appearance.setBackIndicatorImage(back, transitionMaskImage: back)
+            item.rightBarButtonItems?.forEach { $0.tintColor = foreground }
         }
         (item.standardAppearance, item.scrollEdgeAppearance) = (appearance, appearance)
     }

@@ -37,10 +37,43 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
+    /// colour for them (`BandWords`).
+    @MainActor
+    func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
+        let dark = State(wrappedValue: true)
+        let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TitledPage(title: "Root")
+            } destination: { _ in Label("Pushed") }
+                .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
+        let words = { () -> CGFloat? in
+            let color = page()?.navigationItem.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor
+            var white: CGFloat = -1
+            return color?.getWhite(&white, alpha: nil) == true ? white : nil
+        }
+        host.settle { words() != nil }
+        XCTAssertEqual(words() ?? -1, 1, accuracy: 0.01, "light on navy")
+
+        dark.wrappedValue = false
+        host.settle { (words() ?? 1) < 0.01 }
+        XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
+    }
+
     /// The first tabbed view in `element`'s tree.
     @MainActor
     private static func tabbedView(in element: MountedElement) -> MountedElement? {
-        element.type == .tabbedView ? element : element.children.lazy.compactMap { tabbedView(in: $0) }.first
+        first(.tabbedView, in: element)
+    }
+
+    /// The first element of `type` in `element`'s tree.
+    @MainActor
+    private static func first(_ type: NodeType, in element: MountedElement) -> MountedElement? {
+        element.type == type ? element : element.children.lazy.compactMap { first(type, in: $0) }.first
     }
 }
 

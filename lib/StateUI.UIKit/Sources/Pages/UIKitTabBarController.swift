@@ -93,7 +93,8 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = color
         }
-        if let color = foreground.flatMap(UIColor.init(stateUI:)) {
+        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        if let color = BandWords.color(on: background, written: foreground).flatMap(UIColor.init(stateUI:)) {
             appearance.stackedLayoutAppearance.selected.iconColor = color
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: color]
         }

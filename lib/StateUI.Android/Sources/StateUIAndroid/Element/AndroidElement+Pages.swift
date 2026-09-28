@@ -117,7 +117,7 @@ extension AndroidElement {
         var content = AndroidBarView.Content()
         content.title = element.titledPage?.value(.title)?.string ?? ""
         content.background = colors.background
-        content.foreground = colors.foreground
+        content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         content.actions = shown.map { item in
             var action = item.android.menuItem
             action.onBar = actions.primary.contains { $0 === item }

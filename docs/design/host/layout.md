@@ -187,7 +187,8 @@ keeps nine tenths of its opacity under the pointer and eight tenths pressed
 Words on a band the tree paints - a bar, a row of tabs - take the colour the
 tree writes for them; where it writes none, they are light on a dark band and
 dark on a light one (`BandWords`): a band is dark where its relative
-luminance, by Rec. 709's weights, is below a half. Every host decides it alike, whatever
+luminance, by Rec. 709's weights, is below a half - white words on it, black
+on a light one (`BandWords.color`). Every host decides it alike, whatever
 its toolkit's own idea of a dark colour.
 
 ## A picture

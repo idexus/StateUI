@@ -12,6 +12,7 @@ final class AndroidPagesTests: XCTestCase {
         [
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
+            ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
@@ -77,6 +78,28 @@ final class AndroidPagesTests: XCTestCase {
             path.wrappedValue = [1]
             host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.title, "ItemsView")
+        }
+    }
+
+    /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
+    /// colour for them (`BandWords`).
+    func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
+        try onMainActor {
+            let dark = State(wrappedValue: true)
+            let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in TitledPage(title: "Pushed") }
+                    .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+            }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(navigation.bar.content.foreground, .color(red: 255, green: 255, blue: 255, alpha: 255))
+
+            dark.wrappedValue = false
+            host.runtime.pump.turn()
+            XCTAssertEqual(navigation.bar.content.foreground, .color(red: 0, green: 0, blue: 0, alpha: 255))
         }
     }
 

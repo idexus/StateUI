@@ -100,6 +100,19 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertNil(BandWords.light(on: .number(1)))
     }
 
+    /// Words on a band take the colour written for them, else white on a dark band and black on a light one; with
+    /// no colour written and no band, the host's own.
+    func testWordsOnABandTakeTheColourWrittenElseTheBands() {
+        let navy = HostValue.color(red: 0, green: 0, blue: 128, alpha: 255)
+        let yellow = HostValue.color(red: 255, green: 230, blue: 0, alpha: 255)
+        let red = HostValue.color(red: 255, green: 0, blue: 0, alpha: 255)
+        XCTAssertEqual(BandWords.color(on: navy, written: nil), .color(red: 255, green: 255, blue: 255, alpha: 255))
+        XCTAssertEqual(BandWords.color(on: yellow, written: nil), .color(red: 0, green: 0, blue: 0, alpha: 255))
+        XCTAssertEqual(BandWords.color(on: navy, written: red), red)
+        XCTAssertEqual(BandWords.color(on: nil, written: red), red)
+        XCTAssertNil(BandWords.color(on: nil, written: nil))
+    }
+
     /// A view's own move, turn and scale drawn under a placing run's: the move turned and scaled by the run's, the
     /// turns added and the scales multiplied, about the centre; with no run, the view's own.
     func testAPlacedChildIsDrawnUnderItsRunsTransform() {
