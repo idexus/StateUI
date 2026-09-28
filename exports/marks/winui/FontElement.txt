@@ -1,4 +1,4 @@
-Button.clicked: ✅
+# inputs 060dce6c31e4a4b66f1b9fddbb22ecd3444c2f88
 Button.fontAttributes: ✅
 Button.fontAutoScalingEnabled: not realized
 Button.fontFamily: ✅
@@ -25,7 +25,7 @@ SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
 Span.fontAttributes: ✅
 Span.fontAutoScalingEnabled: not realized
-Span.fontFamily: not realized
+Span.fontFamily: ✅
 Span.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: not realized

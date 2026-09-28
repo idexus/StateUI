@@ -29,8 +29,12 @@ those states in the platform's colours.
 ## Runs of words
 
 A label's spans are its words, run by run: each a `Run` among the text
-block's inlines, taking the colour, size, weight, slant and lines its span
-says and the label's own where it says nothing. A run's background is a
+block's inlines, taking the colour, size, weight, slant, lines and family its
+span says and the label's own where it says nothing. The space between a
+run's letters is WinUI's thousandths of an em of the run's own size - its
+span's spacing, else its label's, so a larger run keeps the label's points
+([runs of words](../../host/tree.md#runs-of-words)); a line's height is the whole
+text block's, and a span's own is not realized. A run's background is a
 `TextHighlighter` over its part of the words - a text block has no background
 per run - keeping the run's colour on them. The runs stand in place of the
 label's own words; a label whose spans are taken away shows its own words

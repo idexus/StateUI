@@ -158,6 +158,8 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             if (run.underline) lines = lines | TextDecorations::Underline;
             if (run.strikethrough) lines = lines | TextDecorations::Strikethrough;
             if (lines != TextDecorations::None) piece.TextDecorations(lines);
+            if (run.family && *run.family) piece.FontFamily(media::FontFamily(text(run.family)));
+            piece.CharacterSpacing(run.spacing);
             inlines.Append(piece);
 
             // A run's background is a highlighter over its part of the words; its own colour stays on them.

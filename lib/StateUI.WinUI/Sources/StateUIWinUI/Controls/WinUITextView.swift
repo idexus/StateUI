@@ -11,7 +11,7 @@ import CStateUIWinUI
 class WinUITextView: WinUIView {
     /// The font's size, the space between the letters and the height of a line - what the spacing is measured
     /// against, and what it is.
-    private var look = TextLook()
+    private(set) var look = TextLook()
 
     /// The size WinUI draws body text at, in DIPs.
     static let platformFontSize = 14.0

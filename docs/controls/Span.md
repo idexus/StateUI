@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextField` label; `NSAttributedString` runs | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UILabel`; `NSAttributedString` runs | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `TextView`; `SpannableString` spans | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `TextBlock`; `Run` inlines | a run of other sources said: ✅ |
+| WinUI 3 | ✅ | 6 ✅ | `TextBlock`; `Run` inlines |  |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SpanContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read background of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
+| `background` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read background of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -50,8 +50,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read textColor of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
+| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
+| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read textColor of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -59,10 +59,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read fontAttributes of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read fontFamily of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read fontSize of Span - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read fontAttributes of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read fontAttributes of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read fontFamily of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized |
+| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read fontSize of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read fontSize of Span - Android's driver has no path for it yet |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 

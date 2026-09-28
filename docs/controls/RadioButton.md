@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSButton` radio | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | composed by StateUI | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `RadioButton` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `RadioButton` | a run of other sources said: ✅ |
+| WinUI 3 | ⌛ | 4 ✅ | `RadioButton` | a run of other sources said: ✅ |
 | GTK 4 |  |  | grouped `GtkCheckButton` | no run of it on these sources |
 | Web |  |  | `<input type=radio>` | no host yet |
 
@@ -131,8 +131,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -140,10 +140,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read a family - Android's typeface keeps no family's name; WinUI 3: a run of other sources said: ✅ |
-| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read a family - Android's typeface keeps no family's name |
+| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 

@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSPopUpButton` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | pop-up `UIButton` menu | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `Spinner` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `ComboBox` | a run of other sources said: ✅ |
+| WinUI 3 | ⌛ | 4 ✅ | `ComboBox` | a run of other sources said: ✅ |
 | GTK 4 |  |  | `GtkDropDown` | no run of it on these sources |
 | Web |  |  | `<select>` | no host yet |
 
@@ -126,8 +126,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read textColor of Picker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read textColor of Picker - Android's driver has no path for it yet |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -135,10 +135,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontAttributes of Picker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontFamily of Picker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontSize of Picker - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontAttributes of Picker - Android's driver has no path for it yet |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontFamily of Picker - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read the words of a AppKitPickerView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read fontSize of Picker - Android's driver has no path for it yet |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 

@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A Label: a `TextBlock` - its words, or runs of them each in its own colour, size, weight and background.
+/// A Label: a `TextBlock` - its words, or runs of them each in its own colour, size, weight, family, letter spacing
+/// and background.
 /// Design: docs/design/platforms/winui/controls.md#runs-of-words
 @MainActor
 final class WinUILabelView: WinUITextView {
@@ -25,18 +26,24 @@ final class WinUILabelView: WinUITextView {
         guard let runs else { return super.setText(ownText) }
 
         WinUIStrings.withCStrings(runs.map(\.text)) { texts in
-            let words = runs.indices.map { index in
-                let look = runs[index].look
-                let color = look.color?.argb
-                let background = look.background?.argb
-                return StateUIWordsRun(
-                    text: texts[index], color: color ?? 0, background: background ?? 0, size: look.size ?? 0,
-                    hasColor: color != nil, hasBackground: background != nil,
-                    bold: look.attributes.contains(.bold), italic: look.attributes.contains(.italic),
-                    underline: look.decorations.contains(.underline),
-                    strikethrough: look.decorations.contains(.strikethrough))
+            WinUIStrings.withCStrings(runs.map { $0.look.family ?? "" }) { families in
+                let words = runs.indices.map { index in
+                    let look = runs[index].look
+                    let color = look.color?.argb
+                    let background = look.background?.argb
+                    // The space between the letters in ems of the run's own size, its label's where it says none.
+                    let shown = look.over(self.look)
+                    let spacing = shown.letterSpacing(inEmsOf: shown.size ?? Self.platformFontSize)
+                    return StateUIWordsRun(
+                        text: texts[index], color: color ?? 0, background: background ?? 0, size: look.size ?? 0,
+                        hasColor: color != nil, hasBackground: background != nil,
+                        bold: look.attributes.contains(.bold), italic: look.attributes.contains(.italic),
+                        underline: look.decorations.contains(.underline),
+                        strikethrough: look.decorations.contains(.strikethrough), family: families[index],
+                        spacing: Int32((spacing * 1000).rounded()))
+                }
+                stateui_winui_text_set_runs(handle, words, Int32(words.count))
             }
-            stateui_winui_text_set_runs(handle, words, Int32(words.count))
         }
     }
 }

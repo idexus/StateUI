@@ -348,6 +348,16 @@ extension WinUIDriver {
             if run[3] != 0 { attributes.insert(.italic) }
             return attributes.propValue
         case "textDecorations": return TextDecorations(rawValue: Int32(run[4])).propValue
+        case "fontFamily":
+            let families = try read(label, "runFamilies").split(separator: "\u{1F}", omittingEmptySubsequences: false)
+            guard families.indices.contains(index), !families[index].isEmpty else { return nil }
+            return Name(String(families[index])).propValue
+        case "characterSpacing":
+            // Thousandths of an em of the run's size on WinUI: back in DIPs, to the tenth WinUI keeps.
+            let spacings = try read(label, "runSpacings").split(separator: "\u{1F}", omittingEmptySubsequences: false)
+            guard spacings.indices.contains(index) else { return nil }
+            let size = run[1] != 0 ? run[1] : Double(try read(label, "fontSize")) ?? 14
+            return (((Double(spacings[index]) ?? 0) * size / 1000 * 10).rounded() / 10).propValue
         default: return nil
         }
     }

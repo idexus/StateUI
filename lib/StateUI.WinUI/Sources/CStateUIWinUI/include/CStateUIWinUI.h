@@ -321,7 +321,8 @@ StateUIObjectRef stateui_winui_text_make(void);
 void stateui_winui_text_set_text(StateUIObjectRef text, char const *utf8);
 
 /// One run of a label's words, and how it differs from the label's: its colour and its background where it has
-/// them, as 0xAARRGGBB; its size in DIPs, 0 for the label's; bold, italic, and lines under or through it.
+/// them, as 0xAARRGGBB; its size in DIPs, 0 for the label's; bold, italic, and lines under or through it; its font
+/// family, empty for the label's; and the space between its letters in thousandths of an em of its size.
 typedef struct {
     char const *text;
     uint32_t color;
@@ -333,6 +334,8 @@ typedef struct {
     bool italic;
     bool underline;
     bool strikethrough;
+    char const *family;
+    int32_t spacing;
 } StateUIWordsRun;
 
 /// Shows `runs`, in order, as the text block's words, each as it says, in place of its words.

@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextField` label; `NSAttributedString` runs | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UILabel`; `NSAttributedString` runs | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `TextView`; `SpannableString` spans | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `TextBlock`; `Run` inlines | a run of other sources said: ✅ |
+| WinUI 3 | ✅ | 7 ✅ | `TextBlock`; `Run` inlines |  |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/LabelContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineBreak` | property | `LineBreak` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read lineBreak of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read lineBreak of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read lineBreak of Label - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `maximumLines` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read maximumLines of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read maximumLines of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read maximumLines of Label - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `lineBreak` | property | `LineBreak` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read lineBreak of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read lineBreak of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read lineBreak of Label - Android's driver has no path for it yet |
+| `maximumLines` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read maximumLines of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read maximumLines of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read maximumLines of Label - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -130,8 +130,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read characterSpacing of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read characterSpacing of Label - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read characterSpacing of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read characterSpacing of Label - Android's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -139,10 +139,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read a family - Android's typeface keeps no family's name; WinUI 3: a run of other sources said: ✅ |
-| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read a family - Android's typeface keeps no family's name |
+| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 

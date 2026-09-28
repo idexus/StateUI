@@ -107,6 +107,24 @@ namespace {
             }
             return words;
         }
+        if (what == "runFamilies" || what == "runSpacings") {
+            // Each run's own family, empty for the label's; each run's space between its letters.
+            namespace documents = winrt::Microsoft::UI::Xaml::Documents;
+            std::string values;
+            bool first = true;
+            for (auto const &inline_ : text.Inlines()) {
+                auto run = inline_.try_as<documents::Run>();
+                if (!run) continue;
+                values += first ? "" : "\x1f";
+                if (what == "runSpacings") values += std::to_string(run.CharacterSpacing());
+                else if (run.ReadLocalValue(documents::TextElement::FontFamilyProperty())
+                         != xaml::DependencyProperty::UnsetValue()) {
+                    values += narrow(run.FontFamily().Source());
+                }
+                first = false;
+            }
+            return values;
+        }
         if (what == "lineHeight") return number(text.LineHeight());
         if (what == "decorations") return number(static_cast<int32_t>(text.TextDecorations()));
         if (what == "textAlignment") return number(static_cast<int32_t>(text.TextAlignment()));
