@@ -35,7 +35,7 @@ enum AppKitRealization {
         .complete("Layout", "clipsContent"),
         .partial("VisualElement", "accessibilityHeadingLevel", missing: "AppKit marks a heading, not its level: every level is a heading."),
         .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by a layout."),
-        .partial("View", "panTouchCount", missing: "AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off."),
+        .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier

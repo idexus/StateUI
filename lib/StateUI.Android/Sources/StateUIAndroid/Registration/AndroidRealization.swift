@@ -31,7 +31,7 @@ enum AndroidRealization {
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .partial("VisualElement", "accessibilityHeadingLevel", missing: "Android marks a heading, not its level: every level is a heading."),
-        .partial("View", "panTouchCount", missing: "Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off."),
+        .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "style"),
 
         // MARK: Entries - a control's or a part's own

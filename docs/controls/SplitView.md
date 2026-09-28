@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ | `NSSplitViewController` |  |
 | UIKit | ✅ | 5 ✅ | `UISplitViewController` |  |
-| Android Views | ✅ | 1 ✅ | AndroidX `DrawerLayout` |  |
+| Android Views | ✅ | 1 ✅ | custom `ViewGroup`: a drawer where narrow, beside where wide |  |
 | WinUI 3 | ✅ | 4 ✅ | `SplitView` |  |
 | GTK 4 | ⌛ |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
 | Web |  |  | `<aside>` | no host yet |

@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 2 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 6 ✅ | `UITabBarController` |  |
-| Android Views | ✅ | 1 ✅ | Material Components `BottomNavigationView` (?) |  |
+| Android Views | ✅ | 1 ✅ | custom `LinearLayout` tab row |  |
 | WinUI 3 | ✅ | 4 ✅ | `NavigationView` with a top pane |  |
 | GTK 4 | ✅ |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
 | Web |  |  | ARIA `tablist` | no host yet |

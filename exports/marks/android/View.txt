@@ -15,7 +15,7 @@ ActivityIndicator.gridRow: ✅
 ActivityIndicator.gridRowSpan: ✅
 ActivityIndicator.horizontalAlignment: ✅
 ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ActivityIndicator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ActivityIndicator.panUpdated: ✅
 ActivityIndicator.panXChannel: ✅
 ActivityIndicator.panYChannel: ✅
@@ -47,7 +47,7 @@ Button.gridRow: ✅
 Button.gridRowSpan: ✅
 Button.horizontalAlignment: ✅
 Button.margin: ✅
-Button.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Button.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
@@ -79,7 +79,7 @@ Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
 Canvas.horizontalAlignment: ✅
 Canvas.margin: ✅
-Canvas.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Canvas.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
@@ -111,7 +111,7 @@ CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.margin: ✅
-CheckBox.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+CheckBox.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
@@ -143,7 +143,7 @@ ColorBox.gridRow: ✅
 ColorBox.gridRowSpan: ✅
 ColorBox.horizontalAlignment: ✅
 ColorBox.margin: ✅
-ColorBox.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ColorBox.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ColorBox.panUpdated: ✅
 ColorBox.panXChannel: ✅
 ColorBox.panYChannel: ✅
@@ -175,7 +175,7 @@ DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.margin: ✅
-DatePicker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+DatePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
@@ -207,7 +207,7 @@ Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.margin: ✅
-Ellipse.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Ellipse.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
@@ -239,7 +239,7 @@ Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
 Grid.horizontalAlignment: ✅
 Grid.margin: ✅
-Grid.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
@@ -271,7 +271,7 @@ HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
 HStack.horizontalAlignment: ✅
 HStack.margin: ✅
-HStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+HStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
@@ -303,7 +303,7 @@ Image.gridRow: ✅
 Image.gridRowSpan: ✅
 Image.horizontalAlignment: ✅
 Image.margin: ✅
-Image.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Image.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
@@ -335,7 +335,7 @@ ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.margin: ✅
-ItemsView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ItemsView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
@@ -367,7 +367,7 @@ Label.gridRow: ✅
 Label.gridRowSpan: ✅
 Label.horizontalAlignment: ✅
 Label.margin: ✅
-Label.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Label.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Label.panUpdated: ✅
 Label.panXChannel: ✅
 Label.panYChannel: ✅
@@ -399,7 +399,7 @@ Line.gridRow: ✅
 Line.gridRowSpan: ✅
 Line.horizontalAlignment: ✅
 Line.margin: ✅
-Line.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
@@ -463,7 +463,7 @@ Path.gridRow: ✅
 Path.gridRowSpan: ✅
 Path.horizontalAlignment: ✅
 Path.margin: ✅
-Path.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
@@ -495,7 +495,7 @@ Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
 Picker.horizontalAlignment: ✅
 Picker.margin: ✅
-Picker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Picker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
@@ -527,7 +527,7 @@ Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
 Polygon.horizontalAlignment: ✅
 Polygon.margin: ✅
-Polygon.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Polygon.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
@@ -559,7 +559,7 @@ Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
 Polyline.horizontalAlignment: ✅
 Polyline.margin: ✅
-Polyline.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Polyline.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
@@ -623,7 +623,7 @@ ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.margin: ✅
-ProgressBar.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ProgressBar.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
@@ -655,7 +655,7 @@ RadioButton.gridRow: ✅
 RadioButton.gridRowSpan: ✅
 RadioButton.horizontalAlignment: ✅
 RadioButton.margin: ✅
-RadioButton.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+RadioButton.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 RadioButton.panUpdated: ✅
 RadioButton.panXChannel: ✅
 RadioButton.panYChannel: ✅
@@ -687,7 +687,7 @@ Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.horizontalAlignment: ✅
 Rectangle.margin: ✅
-Rectangle.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Rectangle.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
@@ -719,7 +719,7 @@ ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.margin: ✅
-ScrollView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ScrollView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
@@ -751,7 +751,7 @@ SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
 SearchField.horizontalAlignment: ✅
 SearchField.margin: ✅
-SearchField.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+SearchField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
@@ -783,7 +783,7 @@ Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
 Slider.horizontalAlignment: ✅
 Slider.margin: ✅
-Slider.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Slider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
@@ -815,7 +815,7 @@ Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.margin: ✅
-Stepper.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Stepper.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
@@ -847,7 +847,7 @@ Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
 Switch.horizontalAlignment: ✅
 Switch.margin: ✅
-Switch.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
@@ -879,7 +879,7 @@ TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.margin: ✅
-TextEditor.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TextEditor.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
@@ -911,7 +911,7 @@ TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
 TextField.horizontalAlignment: ✅
 TextField.margin: ✅
-TextField.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TextField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
@@ -943,7 +943,7 @@ TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
 TimePicker.horizontalAlignment: ✅
 TimePicker.margin: ✅
-TimePicker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TimePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
@@ -1007,7 +1007,7 @@ VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
 VStack.horizontalAlignment: ✅
 VStack.margin: ✅
-VStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+VStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
@@ -1039,7 +1039,7 @@ WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
 WebView.horizontalAlignment: ✅
 WebView.margin: ✅
-WebView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+WebView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 WebView.panUpdated: ✅
 WebView.panXChannel: ✅
 WebView.panYChannel: ✅
@@ -1071,7 +1071,7 @@ ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
 ZStack.horizontalAlignment: ✅
 ZStack.margin: ✅
-ZStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ZStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅

@@ -36,7 +36,7 @@ enum UIKitRealization {
         .partial("Menu", "isEnabled", missing: "UIKit holds no menu out of reach itself: each of its entries is."),
         .partial("Layout", "avoidsSafeArea", missing: "UIKit lets a page's own layout under the bars and the notch; "
             + "a layout deeper in stands where its page puts it, and none stands clear of the keyboard."),
-        .partial("View", "panTouchCount", missing: "UIKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off."),
+        .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("Menu", "text"),
         .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "barForegroundColor"),
