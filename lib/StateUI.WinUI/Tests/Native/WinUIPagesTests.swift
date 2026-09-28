@@ -39,6 +39,38 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// The sidebar's page stands in the pane's height from the first start: a footer under a scroller of many rows
+    /// stands inside the window. WinUI lays the pane's content out once in a row sized to what it holds, before the
+    /// relay gives that row the pane's height; a StateUI layout inside kept the places of that first layout, and the
+    /// footer stood below the window until the pane was closed and opened again.
+    func testTheSidebarsFooterStandsInTheWindowFromTheFirstStart() throws {
+        try onUIThread {
+            let open = State(wrappedValue: true)
+            let host = WinUIRenderer.running {
+                SplitView(open.projectedValue) {
+                    Grid {
+                        ScrollView {
+                            VStack { ForEach(0..<60, id: \.self) { Label("row \($0)") } }
+                        }
+                        Label("footer").gridRow(1)
+                    }
+                    .rows(.fill, .auto)
+                } detail: {
+                    Label("detail")
+                }
+            }
+            for _ in 0..<20 { host.step() }
+            host.layOut()
+
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            let footer = try XCTUnwrap(host.views(WinUILabelView.self).first { $0.text == "footer" })
+            XCTAssertGreaterThan(footer.frame.height, 0)
+            XCTAssertLessThanOrEqual(
+                footer.origin.y + footer.frame.height, split.origin.y + split.frame.height + 1,
+                "the footer stands below the window")
+        }
+    }
+
     /// A row of tabs marks the tab the view shows as the tabs change, and what the program changes is no choice of the
     /// user's.
     func testTheRowMarksTheTabShownAsTheTabsChange() throws {

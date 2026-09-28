@@ -74,6 +74,13 @@ namespace {
         auto shown = element ? as<xaml::UIElement>(element) : xaml::UIElement{nullptr};
         if (slot.Content() != shown) slot.Content(shown);
     }
+
+    /// Asks WinUI to measure `element` and everything in it again.
+    void measureAgain(xaml::DependencyObject const &element) {
+        if (auto each = element.try_as<xaml::UIElement>()) each.InvalidateMeasure();
+        for (int32_t index = 0, count = xaml::Media::VisualTreeHelper::GetChildrenCount(element); index < count; ++index)
+            measureAgain(xaml::Media::VisualTreeHelper::GetChild(element, index));
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
@@ -223,6 +230,8 @@ extern "C" StateUIObjectRef stateui_winui_split_make(int64_t view, double expand
             auto rows = pane.RowDefinitions();
             rows.GetAt(controls::Grid::GetRow(sidebar)).Height(xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star));
             rows.GetAt(controls::Grid::GetRow(items)).Height(xaml::GridLengthHelper::Auto());
+            // Laid out once already, in the row sized to what it holds: measured again, it takes the pane's height.
+            measureAgain(sidebar);
         });
         split.PaneOpening([view](controls::NavigationView const &, IInspectable const &) { callbacks.presented(view, true); });
         split.PaneClosing([view](controls::NavigationView const &, controls::NavigationViewPaneClosingEventArgs const &) {

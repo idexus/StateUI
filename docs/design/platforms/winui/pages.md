@@ -73,7 +73,10 @@ a page, with no icons to stand in one. The pane's own content stands, in
 WinUI's template, in a row sized to what it holds, however tall - a sidebar's
 scroller would hold all its rows and never scroll - so once the view is
 loaded that row takes the pane's room, and the row of the items the view
-holds none of takes only theirs.
+holds none of takes only theirs. The row exists only once WinUI has measured
+the view, so the sidebar has been laid out in it by then; everything in the
+pane is measured again, or a layout inside keeps the places that first layout
+gave it - a footer under a scroller stood below the window.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane opening or closing of WinUI's accord - a click beside it, the
