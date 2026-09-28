@@ -16,40 +16,40 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 68 |  |  |  |  |  |  |
-| [Button](Button.md) | 86 |  |  |  | 4 ✅ |  |  |
+| [Button](Button.md) | 86 |  |  |  |  |  |  |
 | [Canvas](Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](CheckBox.md) | 69 |  |  |  |  |  |  |
 | [ColorBox](ColorBox.md) | 68 |  |  |  |  |  |  |
-| [DatePicker](DatePicker.md) | 80 |  |  |  | 4 ✅ |  |  |
+| [DatePicker](DatePicker.md) | 80 |  |  |  |  |  |  |
 | [Ellipse](Ellipse.md) | 76 |  |  |  |  |  |  |
 | [Grid](Grid.md) | 77 |  |  |  |  |  |  |
 | [HStack](HStack.md) | 74 |  |  |  |  |  |  |
 | [Image](Image.md) | 69 |  |  |  |  |  |  |
 | [ItemsView](ItemsView.md) | 76 |  |  |  |  |  |  |
-| [Label](Label.md) | 81 |  |  |  | 7 ✅ |  |  |
+| [Label](Label.md) | 81 |  |  |  |  |  |  |
 | [Line](Line.md) | 80 |  |  |  |  |  |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
 | [Path](Path.md) | 77 |  |  |  |  |  |  |
-| [Picker](Picker.md) | 82 |  |  |  | 4 ✅ |  |  |
+| [Picker](Picker.md) | 82 |  |  |  |  |  |  |
 | [Polygon](Polygon.md) | 78 |  |  |  |  |  |  |
 | [Polyline](Polyline.md) | 78 |  |  |  |  |  |  |
 | [PositionIndicator](PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](ProgressBar.md) | 68 |  |  |  |  |  |  |
-| [RadioButton](RadioButton.md) | 81 |  |  |  | 4 ✅ |  |  |
+| [RadioButton](RadioButton.md) | 81 |  |  |  |  |  |  |
 | [Rectangle](Rectangle.md) | 77 |  |  |  |  |  |  |
 | [ScrollView](ScrollView.md) | 77 |  |  |  |  |  |  |
-| [SearchField](SearchField.md) | 89 |  |  |  | 4 ✅ |  |  |
+| [SearchField](SearchField.md) | 89 |  |  |  |  |  |  |
 | [Slider](Slider.md) | 73 |  |  |  |  |  |  |
 | [Stepper](Stepper.md) | 71 |  |  |  |  |  |  |
 | [Switch](Switch.md) | 69 |  |  |  |  |  |  |
-| [TextEditor](TextEditor.md) | 87 |  |  |  | 4 ✅ |  |  |
-| [TextField](TextField.md) | 90 |  |  |  | 4 ✅ |  |  |
-| [TimePicker](TimePicker.md) | 78 |  |  |  | 4 ✅ |  |  |
+| [TextEditor](TextEditor.md) | 87 |  |  |  |  |  |  |
+| [TextField](TextField.md) | 90 |  |  |  |  |  |  |
+| [TimePicker](TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 39 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -73,7 +73,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Page](Page.md) | 12 |  |  |  |  |  |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 |  |  |  |  |  |  |
-| [Span](Span.md) | 12 |  |  |  | 6 ✅ |  |  |
+| [Span](Span.md) | 12 |  |  |  |  |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](SplitView.md) | 5 |  |  |  |  |  |  |
 | [TabbedView](TabbedView.md) | 6 |  |  |  |  |  |  |
@@ -82,7 +82,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  | 6 of 104 met |  |  |
+| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
 <!-- structure:end -->
 
 ## Tiers

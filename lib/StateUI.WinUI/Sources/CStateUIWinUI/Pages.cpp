@@ -16,6 +16,10 @@ using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
+    /// Whether the program is setting a row of tabs: a selection it makes - a tab chosen, or the row's own after
+    /// the chosen tab is taken away - is heard by nobody.
+    bool settingTabs = false;
+
     winrt::Windows::UI::Color color(uint32_t argb) {
         return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
                 static_cast<uint8_t>(argb)};
@@ -186,6 +190,7 @@ extern "C" StateUIObjectRef stateui_winui_tabs_make(int64_t view) {
     try {
         controls::SelectorBar tabs;
         tabs.SelectionChanged([view](controls::SelectorBar const &sender, controls::SelectorBarSelectionChangedEventArgs const &) {
+            if (settingTabs) return;
             uint32_t index = 0;
             if (sender.SelectedItem() && sender.Items().IndexOf(sender.SelectedItem(), index)) {
                 callbacks.chosen(view, static_cast<int32_t>(index));
@@ -209,6 +214,10 @@ extern "C" void stateui_winui_tabs_choose_as_user(StateUIObjectRef handle, int32
 }
 
 extern "C" void stateui_winui_tabs_set(StateUIObjectRef handle, char const *const *titles, int32_t count, int32_t selected) {
+    struct Setting {
+        Setting() { settingTabs = true; }
+        ~Setting() { settingTabs = false; }
+    } setting;
     try {
         auto tabs = borrow<controls::SelectorBar>(handle);
         auto items = tabs.Items();

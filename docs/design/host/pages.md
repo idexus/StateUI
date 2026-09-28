@@ -52,7 +52,9 @@ A tabbed view's choice (`TabChoice`) is none until the tree or the user makes
 one. A tab the tree asks for anew is chosen, so the application can move the
 user; the same tab asked for again changes nothing, so the user's own choice
 is not argued with. The user's choice stands where it is another tab that
-exists, and says which tab showed before it.
+exists, and says which tab showed before it. The tab shown among the tabs
+there are is one answer for the view and its row alike: the chosen one while
+it is there, else the last there is (`shown(among:)`).
 
 ## A sidebar on the first room
 

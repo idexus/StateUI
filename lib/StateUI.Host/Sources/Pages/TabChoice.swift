@@ -18,6 +18,12 @@
         chosen ?? 0
     }
 
+    /// The tab shown among `count` tabs: the chosen one where it is still there, else the last there is - what the
+    /// view shows and its row marks alike; nil where there are none.
+    public func shown(among count: Int) -> Int? {
+        count > 0 ? min(max(shown, 0), count - 1) : nil
+    }
+
     /// The tree asks for `requested`: whether the choice changed.
     public mutating func request(_ requested: Int?) -> Bool {
         guard let requested, requested != chosen else { return false }

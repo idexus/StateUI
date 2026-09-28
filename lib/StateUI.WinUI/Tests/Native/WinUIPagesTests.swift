@@ -39,6 +39,37 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A row of tabs marks the tab the view shows as the tabs change, and what the program changes is no choice of the
+    /// user's.
+    func testTheRowMarksTheTabShownAsTheTabsChange() throws {
+        try onUIThread {
+            let tabs = State(wrappedValue: [0, 1, 2])
+            let tab = State(wrappedValue: 2)
+            let host = WinUIRenderer.running {
+                TabbedView(tabs.wrappedValue) { number in Label("Tab \(number)") }.selection(tab.projectedValue)
+            }
+            let tabbed = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row
+            XCTAssertEqual(Self.selected(row), 2)
+
+            tabs.wrappedValue = [0, 1]
+            host.runtime.pump.turn()
+            let now = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            XCTAssertEqual(now.titles.count, 2)
+            XCTAssertEqual(Self.selected(row), now.shownIndex, "the row marks the tab shown")
+            XCTAssertEqual(tab.wrappedValue, 2, "and no choice of the user's heard")
+        }
+    }
+
+    /// The place of the tab a row marks; -1 for none.
+    @MainActor
+    private static func selected(_ row: WinUIView) -> Int {
+        var bytes = [CChar](repeating: 0, count: 16)
+        let length = stateui_winui_read(row.handle, "selected", &bytes, Int32(bytes.count))
+        let words = String(decoding: bytes.prefix(Int(max(length, 0))).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+        return Double(words).map { Int($0) } ?? -1
+    }
+
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
     /// colour for them (`BandWords`) - the title, the way back and the actions alike.
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {

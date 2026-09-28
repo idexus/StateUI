@@ -129,6 +129,17 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(choice.shown, 1)
     }
 
+    /// The tab shown among the tabs there are: the chosen one while it is there, else the last - one answer for the
+    /// view and its row; none among no tabs.
+    func testTheTabShownIsOneOfTheTabsThereAre() {
+        var choice = TabChoice()
+        XCTAssertEqual(choice.shown(among: 3), 0)
+        _ = choice.request(2)
+        XCTAssertEqual(choice.shown(among: 3), 2)
+        XCTAssertEqual(choice.shown(among: 2), 1, "the chosen tab gone, the last there is")
+        XCTAssertNil(choice.shown(among: 0))
+    }
+
     /// Only the first room wider than nothing decides: a room at least the breakpoint shows a hidden sidebar.
     func testASidebarShowsOnTheFirstWideRoomOnly() {
         var adaptation = SidebarAdaptation()

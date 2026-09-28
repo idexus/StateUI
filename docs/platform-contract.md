@@ -115,7 +115,7 @@ of its members each meets, and why a cell is empty.
 | [HStack](controls/HStack.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Image](controls/Image.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [ItemsView](controls/ItemsView.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [LeadingContent](controls/LeadingContent.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Line](controls/Line.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Map](controls/Map.md) | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
@@ -140,8 +140,8 @@ of its members each meets, and why a cell is empty.
 | [ScrollView](controls/ScrollView.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [SearchField](controls/SearchField.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Slider](controls/Slider.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Span](controls/Span.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Spans](controls/Spans.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Span](controls/Span.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| [Spans](controls/Spans.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [SplitView](controls/SplitView.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Stepper](controls/Stepper.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Switch](controls/Switch.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
@@ -440,40 +440,40 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  |  |  |  |
-| [Button](controls/Button.md) | 86 |  |  |  | 4 ✅ |  |  |
+| [Button](controls/Button.md) | 86 |  |  |  |  |  |  |
 | [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](controls/CheckBox.md) | 69 |  |  |  |  |  |  |
 | [ColorBox](controls/ColorBox.md) | 68 |  |  |  |  |  |  |
-| [DatePicker](controls/DatePicker.md) | 80 |  |  |  | 4 ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
 | [Ellipse](controls/Ellipse.md) | 76 |  |  |  |  |  |  |
 | [Grid](controls/Grid.md) | 77 |  |  |  |  |  |  |
 | [HStack](controls/HStack.md) | 74 |  |  |  |  |  |  |
 | [Image](controls/Image.md) | 69 |  |  |  |  |  |  |
 | [ItemsView](controls/ItemsView.md) | 76 |  |  |  |  |  |  |
-| [Label](controls/Label.md) | 81 |  |  |  | 7 ✅ |  |  |
+| [Label](controls/Label.md) | 81 |  |  |  |  |  |  |
 | [Line](controls/Line.md) | 80 |  |  |  |  |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 |  |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 82 |  |  |  | 4 ✅ |  |  |
+| [Picker](controls/Picker.md) | 82 |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | 78 |  |  |  |  |  |  |
 | [Polyline](controls/Polyline.md) | 78 |  |  |  |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 68 |  |  |  |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 81 |  |  |  | 4 ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | 81 |  |  |  |  |  |  |
 | [Rectangle](controls/Rectangle.md) | 77 |  |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | 77 |  |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  |  | 4 ✅ |  |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  |  |  |  |  |
 | [Slider](controls/Slider.md) | 73 |  |  |  |  |  |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  |  |  |  |  |
 | [Switch](controls/Switch.md) | 69 |  |  |  |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 4 ✅ |  |  |
-| [TextField](controls/TextField.md) | 90 |  |  |  | 4 ✅ |  |  |
-| [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 4 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  |  |  |  |  |
+| [TextField](controls/TextField.md) | 90 |  |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 39 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
 
 ### Application structure
 
@@ -493,7 +493,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Page](controls/Page.md) | 12 |  |  |  |  |  |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 |  |  |  |  |  |  |
-| [Span](controls/Span.md) | 12 |  |  |  | 6 ✅ |  |  |
+| [Span](controls/Span.md) | 12 |  |  |  |  |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 |  |  |  |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 |  |  |  |  |  |  |
@@ -502,7 +502,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  | 6 of 104 met |  |  |
+| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -526,8 +526,8 @@ contract's page in [the control dictionary](controls/README.md).
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |  |  |  |  |  |  |
 | [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 10 |  |  |  |  |  |  |
 | [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |  |  |  |  |  |  |
-| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |  |  |  | 2 ✅ |  |  |
-| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |  |  |  | 3 ✅ |  |  |
+| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |  |  |  |  |  |  |
+| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |  |  |  |  |  |  |
 | [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |  |  |  |  |  |  |
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |  |  |  |  |  |  |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | 1 |  |  |  |  |  |  |
@@ -547,7 +547,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 |  |  |  |  |  |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 |  |  |  |  |  |  |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 |  |  |  |  |  |  |
-| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 |  |  |  | 2 ✅ |  |  |
+| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 |  |  |  |  |  |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 |  |  |  |  |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 |  |  |  |  |  |  |
@@ -566,7 +566,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 |  |  |  |  |  |  |
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 |  |  |  |  |  |  |
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 |  |  |  |  |  |  |
-| [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ |  |  |
+| [Span](controls/Span.md) | `background` | 1 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 |  |  |  |  |  |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  |  |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  |  |  |  |

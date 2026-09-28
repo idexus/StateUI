@@ -39,8 +39,8 @@ final class WinUITabbedView: WinUILayoutView {
         (tabsShownByWindow ? [] : [row]) + (selectedItem.map { [$0.view] } ?? [])
     }
 
-    /// The tab the view shows, as an index into its titles.
-    var shownIndex: Int { choice.shown }
+    /// The tab the view shows, as an index into its titles; -1 for none.
+    var shownIndex: Int { choice.shown(among: titles.count) ?? -1 }
 
     /// Shows the tabs' titles and the tab the tree asks for, where the user has not chosen another since.
     func show(_ titles: [String], requested: Int?) {
@@ -63,8 +63,7 @@ final class WinUITabbedView: WinUILayoutView {
     }
 
     private var selectedItem: WinUILayoutItem? {
-        guard !items.isEmpty else { return nil }
-        return items[min(max(shownIndex, 0), items.count - 1)]
+        choice.shown(among: items.count).map { items[$0] }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
