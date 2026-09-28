@@ -40,9 +40,6 @@ final class AppKitElement: NSObject, NativeElement {
     /// The focus this element last reported, where it follows its focus.
     var reportedFocus = false
 
-    /// Whether this element is fading out: still visible, deaf to input, and
-    /// hidden once the fade lands.
-    var leaving = false
     var tapRecognizer: AppKitTapRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var pinchRecognizer: AppKitPinchRecognizer?
@@ -119,81 +116,35 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func leave() {
-        leaving = false
         releaseNativeAttachments()
     }
 
-    /// Crosses a change of visibility on an element already shown: out -
-    /// fading to nothing, deaf to input, hidden when the fade lands - or in,
-    /// from nothing up to the opacity the tree describes. Under the element's
-    /// own motion, or the application's where it says nothing; at once under
-    /// `.motion(.none)`, an engine's value, or a user who asked for less.
+    /// Crosses a change of visibility by the host layer's rule - out, fading and then hidden, deaf to input
+    /// meanwhile; back from where it stands; in from nothing - and as a fade out ends, the layout that places the
+    /// element closes over it the way a patch moves its children.
     func crossVisibility() {
-        guard let host, let view else { return }
-        let visible = value(.isVisible)?.bool != false
-        let law = host.runtime.layoutMotion.law(of: motion)
-        let opacity = resolvedValue(.opacity) ?? .number(1)
-
-        if !visible {
-            guard !view.isHidden, !leaving, let law else { return }
-            leaving = true
-            let started = host.runtime.tree.receiveProperty(
-                mount: mount,
-                property: .opacity,
-                standing: .number(Double(view.alphaValue)),
-                target: .number(0),
-                motion: law,
-                landed: { [weak self] in self?.crossed() })
-            if !started { leaving = false }
-        } else if leaving {
-            // BACK BEFORE IT WENT: up again from where the fade has reached,
-            // or at once where nothing moves.
-            leaving = false
-            host.runtime.tree.receiveProperty(
-                mount: mount,
-                property: .opacity,
-                standing: .number(Double(view.alphaValue)),
-                target: opacity,
-                motion: law)
-        } else if view.isHidden, let law {
-            view.isHidden = false
-            host.runtime.tree.receiveProperty(
-                mount: mount,
-                property: .opacity,
-                standing: .number(0),
-                target: opacity,
-                motion: law)
+        guard view != nil else { return }
+        element.crossVisibility(self) { [weak self] in
+            guard let view = self?.view else { return }
+            (view.superview as? AppKitTravellingLayout)?.places.patchArrived()
+            view.invalidateMeasurements()
         }
-    }
-
-    /// The fade out ended - landed, or cut short - and the element goes,
-    /// unless it was shown again on the way.
-    ///
-    /// THE REST OF THE CHANGE the patch began: the layout that places the
-    /// element closes over it the way a patch moves its children, rather than
-    /// snapping the rows below into the gap.
-    func crossed() {
-        guard leaving, let view else { return }
-        leaving = false
-        (view.superview as? AppKitTravellingLayout)?.places.patchArrived()
-        applyVisibility()
-        view.invalidateMeasurements()
     }
 
     /// Shows, hides and fades the view as the tree says - kept visible and
     /// deaf to input while it fades out.
     func applyVisibility() {
         guard let view else { return }
-        view.isHidden = !leaving && value(.isVisible)?.bool == false
+        view.isHidden = !element.standsShown
         view.alphaValue = value(.opacity)?.number ?? 1
         let ignores = value(.ignoresInput)?.bool ?? false
         if let hitTestView = view as? AppKitHitTestView {
             // The whole view and its children, or only its own empty area.
             hitTestView.applyInputTransparency(
-                leaving || ignores || value(.letsInputThrough)?.bool == true,
-                cascades: leaving || ignores)
+                element.isLeaving || ignores || value(.letsInputThrough)?.bool == true,
+                cascades: element.isLeaving || ignores)
         } else {
-            AppKitIgnoredInput.set(view, ignores: leaving || ignores)
+            AppKitIgnoredInput.set(view, ignores: element.isLeaving || ignores)
         }
     }
 
@@ -249,30 +200,15 @@ final class AppKitElement: NSObject, NativeElement {
         layout.places.patchArrived()
     }
 
-    /// Whether this element can fade in as it joins a standing layout: its
-    /// view presents its opacity, and no state owns that opacity.
+    /// Whether this element fades in as it joins a standing layout, by the host layer's rule.
     var fadesIn: Bool {
-        view != nil && driven[.opacity] == nil
-            && TransitionSurface.presents(.opacity, on: type)
+        view != nil && element.fadesIn(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
-    /// Fades this element in as it joins a layout that was already standing:
-    /// the other half of the children around it sliding to make room.
-    ///
-    /// Not an opacity already travelling: the patch that set it said how it
-    /// moves, and a fade over it would be a second answer for one value.
+    /// Fades this element in as it joins a layout already standing, by the host layer's rule.
     func fadeIn(under motion: Motion) {
-        guard fadesIn, let host, let view,
-              host.runtime.tree.presentedPropertyValue(mount: mount, property: .opacity) == nil
-        else { return }
-
-        host.runtime.tree.receiveProperty(
-            mount: mount,
-            property: .opacity,
-            standing: .number(0),
-            target: resolvedValue(.opacity) ?? .number(1),
-            motion: motion)
-        view.alphaValue = value(.opacity)?.number ?? 1
+        guard fadesIn else { return }
+        element.fadeIn(self, under: motion)
     }
 
     /// Presents one display frame of this element's own changed properties.
@@ -285,5 +221,19 @@ final class AppKitElement: NSObject, NativeElement {
 extension MountedElement {
     /// This element's AppKit half.
     var appKit: AppKitElement { native as! AppKitElement }
+}
+
+/// A view fades by its showing and its opacity, as the host layer's visibility rule moves them.
+extension AppKitElement: FadingView {
+    var isShown: Bool { view?.isHidden == false }
+    var opacity: Double { Double(view?.alphaValue ?? 1) }
+
+    func setShown(_ shown: Bool) {
+        applyVisibility()
+    }
+
+    func setOpacity(_ opacity: Double) {
+        view?.alphaValue = opacity
+    }
 }
 #endif
