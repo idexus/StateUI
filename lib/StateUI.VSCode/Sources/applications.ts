@@ -115,3 +115,8 @@ export function appKitProgram(application: Application, configuration: "debug" |
 export function gtkProgram(application: Application, configuration: "debug" | "release"): string {
     return path.join(application.directory, ".build-gtk", configuration, `${application.name}GTK`);
 }
+
+/** Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`. */
+export function winUIProgram(application: Application, configuration: "debug" | "release"): string {
+    return path.join(application.directory, ".build-winui", configuration, `${application.name}WinUI.exe`);
+}

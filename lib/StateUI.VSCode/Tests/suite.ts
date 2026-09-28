@@ -389,29 +389,31 @@ export async function run(): Promise<void> {
                 && !uiKitSuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
         }
 
-        // 6b. WinUI: HelloWorld's head, a launch through run-app.ps1 with no
-        //     session yet, and the host's own package through test-winui.ps1.
+        // 6b. WinUI: HelloWorld's head, built by run-app.ps1 -BuildOnly and
+        //     launched under lldb-dap, and the host's own package through test-winui.ps1.
         check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build-winui/index-build",
             hasHead(helloWorld, "winui")
             && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build-winui/index-build" }));
         {
-            const started: vscode.Task[] = [];
+            const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
                 host: () => "winui", application: async () => helloWorld,
-                run: async () => 0,
-                start: async (task) => { started.push(task); },
+                run: async (task) => { ran.push(task); return 0; },
+                start: async () => {},
                 ready: async () => false,
                 device: async () => undefined,
                 uiKitDevice: async () => undefined,
             });
             const resolved = await provider.resolveDebugConfiguration(root,
                 { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
-            const process_ = started[0]?.execution as vscode.ProcessExecution | undefined;
+            const process_ = ran[0]?.execution as vscode.ProcessExecution | undefined;
             const line = process_ ? [process_.process, ...process_.args].join(" ") : "";
-            say(`     winui started: ${line}`);
-            check("WinUI: run-app.ps1 -App <HelloWorld> -Configuration release started as a task, and no session",
-                resolved === undefined && started.length === 1
-                && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release`);
+            say(`     winui built: ${line}`);
+            check("WinUI: run-app.ps1 -App <HelloWorld> -Configuration release -BuildOnly ran as a task, then lldb-dap launches HelloWorldWinUI.exe",
+                ran.length === 1
+                && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release -BuildOnly`
+                && resolved?.type === "lldb-dap" && resolved.request === "launch"
+                && resolved.program === path.join(helloWorld.directory, ".build-winui", "release", "HelloWorldWinUI.exe"));
         }
         {
             const winUISuites = findSuites(root.uri.fsPath, "winui");
@@ -506,8 +508,7 @@ export async function run(): Promise<void> {
                 stray.length === 0 && packed.includes("out/Sources/extension.js"));
         }
         // 9. StateUI: Debug runs the REMEMBERED application - no question asked - on this machine's host: AppKit
-        //    built and under lldb-dap on macOS, WinUI built and started by run-app.ps1 on Windows, GTK built and
-        //    under lldb-dap on Linux.
+        //    built and under lldb-dap on macOS, WinUI on Windows and GTK on Linux alike.
         if (process.platform === "darwin") {
             await api.selectHost("appkit");
             await api.selectApplication("HelloWorld");
@@ -584,28 +585,28 @@ export async function run(): Promise<void> {
             await api.selectHost("winui");
             await api.selectApplication("HelloWorld");
             check("the chosen application is remembered", api.application() === "HelloWorld");
-            const started = new Promise<vscode.TaskExecution>((resolve) => {
-                const listener = vscode.tasks.onDidStartTask((each) => {
-                    if (each.execution.task.name.startsWith("Run HelloWorld (WinUI")) {
+            const session = new Promise<vscode.DebugSession>((resolve) => {
+                const listener = vscode.debug.onDidStartDebugSession((each) => {
+                    if (each.type === "lldb-dap") {
                         listener.dispose();
-                        resolve(each.execution);
+                        resolve(each);
                     }
                 });
             });
-            await vscode.debug.startDebugging(root,
-                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" });
-            const execution = await Promise.race([started, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 60_000))]);
-            check("StateUI: Debug starts run-app.ps1 for HelloWorld as a task", execution !== undefined);
-            const running = (): boolean => {
+            check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+            const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
+            check("an lldb-dap session starts on HelloWorldWinUI.exe",
+                String(running?.configuration.program ?? "").endsWith(path.join("apps", "HelloWorld", ".build-winui", "debug", "HelloWorldWinUI.exe")));
+            const alive = (): boolean => {
                 try {
                     return execSync('tasklist /FI "IMAGENAME eq HelloWorldWinUI.exe" /NH').toString().includes("HelloWorldWinUI.exe");
                 } catch {
                     return false;
                 }
             };
-            await until("the HelloWorldWinUI process is running", async () => running(), 900);
-            execSync("taskkill /IM HelloWorldWinUI.exe /F");
-            execution?.terminate();
+            await until("the HelloWorldWinUI process is running", async () => alive(), 60);
+            await vscode.debug.stopDebugging(running);
         } else {
             await api.selectHost("gtk");
             await api.selectApplication("HelloWorld");

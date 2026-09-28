@@ -40,13 +40,13 @@ than assuming a thread.
 The head links as a windowed application (`/SUBSYSTEM:WINDOWS`, its entry
 still the C runtime's `main`), so one started by itself - from Explorer, a
 shortcut - opens no console beside its window. One started from a console - a
-terminal, the editor's task that F5 runs - still writes there: where the
-process was handed no output of its own, the relay attaches it to the console
-of the process that started it before WinUI starts, and points the C
-runtime's streams, and its descriptors 1 and 2, at that console. Output a
-caller sent elsewhere - a file - stays where it was sent. A windowed
-application is not waited for by the shell that starts it, so `run-app.ps1`
-waits for it itself.
+terminal - still writes there: where the process was handed no output of its
+own, the relay attaches it to the console of the process that started it
+before WinUI starts, and points the C runtime's streams, and its descriptors
+1 and 2, at that console. Output a caller sent elsewhere - a file, or the
+debugger F5 starts it under, which shows it in the editor's debug console -
+stays where it was sent. A windowed application is not waited for by the
+shell that starts it, so `run-app.ps1` waits for it itself.
 
 ## An application with no XAML
 

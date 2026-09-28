@@ -27,13 +27,17 @@
 // launched by lldb-dap: the debugger is the application's parent, which is what
 // Ubuntu's ptrace scope permits.
 //
+// A WinUI head is built by .scripts/WinUI/run-app.ps1 -BuildOnly, as a task -
+// which stops a running copy first, its executable written again - and
+// launched by lldb-dap, which reads the DWARF the head carries.
+//
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead.
 
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, appKitProgram, gtkProgram } from "./applications";
+import { Application, appKitProgram, gtkProgram, winUIProgram } from "./applications";
 import { androidScript } from "./devices";
 import { environment, Host } from "./hosts";
 import { uiKitScript } from "./uiKitDevices";
@@ -140,7 +144,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         if (host === "winui") {
-            return this.winUI(root, application, configuration);
+            return this.winUI(root, application, configuration, name);
         }
 
         if (host === "gtk") {
@@ -256,31 +260,44 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
     }
 
     /**
-     * A WinUI head, built and started by run-app.ps1 in a task whose terminal passes on what it writes. No
-     * debugger attaches to it yet, so the launch has no session.
+     * A WinUI head, built by run-app.ps1 -BuildOnly in a task - which stops a running copy first, its executable
+     * written again - and launched by lldb-dap.
      */
     private async winUI(
         root: vscode.WorkspaceFolder,
         application: Application,
         configuration: Configuration,
-    ): Promise<undefined> {
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
         const script = winUIScript(root.uri.fsPath, "run-app.ps1");
         if (!fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
-                `StateUI: a WinUI head runs through a StateUI checkout's .scripts/WinUI/run-app.ps1, which ${root.name} does not have.`);
+                `StateUI: a WinUI head is built by a StateUI checkout's .scripts/WinUI/run-app.ps1, which ${root.name} does not have.`);
             return undefined;
         }
 
         const task = new vscode.Task(
             { type: "stateui", application: application.name, configuration, device: "windows" }, root,
-            `Run ${application.name} (WinUI, ${configuration})`, "StateUI",
+            `Build ${application.name} (WinUI, ${configuration})`, "StateUI",
             new vscode.ProcessExecution("powershell",
                 ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
-                    "-App", application.directory, "-Configuration", configuration],
+                    "-App", application.directory, "-Configuration", configuration, "-BuildOnly"],
                 { cwd: root.uri.fsPath }), []);
         task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-        await this.choices.start(task);
-        return undefined;
+        if ((await this.choices.run(task)) !== 0) {
+            void vscode.window.showErrorMessage(
+                `StateUI: the WinUI build of ${application.name} failed - its output is in the terminal.`);
+            return undefined;
+        }
+
+        return {
+            type: "lldb-dap",
+            request: "launch",
+            name,
+            program: winUIProgram(application, configuration),
+            cwd: root.uri.fsPath,
+            stopOnEntry: false,
+        };
     }
     /**
      * A GTK head, built by run-app.sh --build-only in a task - which stops a running copy first, a GTK application

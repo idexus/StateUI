@@ -67,8 +67,8 @@ says **no host**, a launch says why it runs nothing, and the editor and
   its terminal follows what the application prints. StateUI: Debug starts it
   held until `lldb-dap` attaches - to a simulator's process, one of this Mac's,
   or through the device - and a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
-  builds the head, lays the Windows App SDK beside it and starts it, its
-  terminal passing on what the application writes; no debugger attaches yet.
+  builds the head, stopping a running copy first, and lays the Windows App SDK
+  beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
   On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
   first, and `lldb-dap` starts it: a breakpoint holds from the first line.
 
@@ -166,9 +166,10 @@ launch file at all:
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
   SDK, in `ANDROID_HOME` or `~/Library/Android/sdk`. The scripts fetch Gradle
   themselves.
-- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds and
-  runs the head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the
-  Windows SDK. The scripts fetch C++/WinRT and the Windows App SDK themselves.
+- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
+  head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
+  SDK; and the `lldb-dap` extension. The scripts fetch C++/WinRT and the
+  Windows App SDK themselves.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
   headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); and the `lldb-dap`

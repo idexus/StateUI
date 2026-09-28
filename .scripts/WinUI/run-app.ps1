@@ -15,11 +15,12 @@
 # Builds an application's WinUI head, lays the Windows App SDK beside it and
 # starts it.
 #
-#   .\run-app.ps1 -App apps\HelloWorld [-Configuration debug|release] [-Detach]
+#   .\run-app.ps1 -App apps\HelloWorld [-Configuration debug|release] [-Detach | -BuildOnly]
 #
 #   -App        the application's folder: Package.swift, and Platforms\WinUI
 #   -Detach     returns once the application has started, instead of waiting
 #               for it and passing on what it writes
+#   -BuildOnly  starts nothing: the head stands ready for a debugger to start
 #
 # Everything a build writes stays under <App>\.build-winui. Every STATEUI_
 # variable of the calling shell - STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches
@@ -28,7 +29,8 @@
 param(
     [Parameter(Mandatory = $true)][string]$App,
     [ValidateSet('debug', 'release')][string]$Configuration = 'debug',
-    [switch]$Detach
+    [switch]$Detach,
+    [switch]$BuildOnly
 )
 . (Join-Path $PSScriptRoot 'tools.ps1')
 
@@ -59,6 +61,11 @@ Set-StateUISelfContained -Directory $bin -Executables $executable
 $images = Join-Path $application 'Resources\Images'
 if (Test-Path $images) {
     Copy-Item -Path (Join-Path $images '*') -Destination (New-Item -ItemType Directory -Force (Join-Path $bin 'Images')) -Recurse -Force
+}
+
+if ($BuildOnly) {
+    Write-Host "built $executable"
+    exit 0
 }
 
 Write-Host "starting $executable"
