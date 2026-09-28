@@ -7,13 +7,13 @@ The frames come from the UI thread's choreographer ([runtime](runtime.md)).
 
 ## What moves
 
-A host moves only a value it draws, so the Android Views host keeps a closed
-set: `AndroidTransitionSurface` names, for each element, the properties whose
-frames reach the view - opacity, background, the sizes, margin and the
-planar transforms on every view it presents; padding and spacing on a stack;
-the text's size and colour on a label, a button and a field; a slider's value
-and tint. Any other property arrives at its value at once, rather than
-keeping an animation alive that nothing on screen would show.
+A host moves only a value it draws, so the Android Views host moves the host
+layer's closed set ([what travels](../../host/motion.md#what-travels)),
+element by element, with no exception of its own: every value in it reaches
+Android's views on each frame - a view's opacity, background, sizes, margin
+and planar transforms, a layout's box, the words' size and colour, a shape's
+paint, a slider's value. Any other property arrives at its value at once,
+rather than keeping an animation alive that nothing on screen would show.
 
 A property's animation begins where the view stands: the opacity it is drawn
 at, the value a slider's thumb shows. A thumb the user holds is where the

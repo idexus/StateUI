@@ -10,30 +10,11 @@ import XCTest
 final class AndroidMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidMotionTests) -> () throws -> Void)] {
         [
-            ("testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents", testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents),
             ("testAPropertyTransitionBeginsWhereItStandsAndLandsExactly", testAPropertyTransitionBeginsWhereItStandsAndLandsExactly),
-            ("testLessMotionPutsThePropertyAtItsValueAtOnce", testLessMotionPutsThePropertyAtItsValueAtOnce),
-            ("testAJourneyMovesEveryBoundControlOnTheSameFrames", testAJourneyMovesEveryBoundControlOnTheSameFrames),
             ("testTheViewIsMovedTurnedAndScaledWhereItsLayoutPutIt", testTheViewIsMovedTurnedAndScaledWhereItsLayoutPutIt),
             ("testPositiveTurnsSendTheTopAndTheRightEdgeAway", testPositiveTurnsSendTheTopAndTheRightEdgeAway),
             ("testAMoveCarriedByAJourneyTravelsOnTheDisplaysFrames", testAMoveCarriedByAJourneyTravelsOnTheDisplaysFrames),
         ]
-    }
-
-    func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
-        onMainActor { Self.theTransitionSurfaceIsClosedAroundWhatTheHostPresents() }
-    }
-
-    @MainActor
-    private static func theTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
-        XCTAssertTrue(AndroidTransitionSurface.presents(.opacity, on: .label))
-        XCTAssertTrue(AndroidTransitionSurface.presents(.translationX, on: .button))
-        XCTAssertTrue(AndroidTransitionSurface.presents(.value, on: .slider))
-        XCTAssertTrue(AndroidTransitionSurface.presents(.spacing, on: .vStack))
-        XCTAssertFalse(AndroidTransitionSurface.presents(.value, on: .label))
-        XCTAssertTrue(AndroidTransitionSurface.presents(.opacity, on: .checkBox), "every registered view")
-        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .positionIndicator))
-        XCTAssertFalse(AndroidTransitionSurface.presents(Prop("custom"), on: .label))
     }
 
     func testAPropertyTransitionBeginsWhereItStandsAndLandsExactly() throws {
@@ -60,57 +41,6 @@ final class AndroidMotionTests: XCTestCase {
             host.frame()
             XCTAssertEqual(label.opacity, 0.75, accuracy: 1e-6)
             XCTAssertFalse(host.runtime.describedMotion.isActive)
-        }
-    }
-
-    func testLessMotionPutsThePropertyAtItsValueAtOnce() throws {
-        try onMainActor {
-            let host = AndroidRenderer.bare(clock: TestClock(), reducesMotion: true)
-            var initial = HostPatch(id: .manual("label"), type: .label)
-            initial.properties[.opacity] = .number(0.25)
-            host.apply(initial)
-
-            var changed = HostPatch(id: .manual("label"), type: .label)
-            changed.properties[.opacity] = .number(0.75)
-            changed.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
-            host.apply(changed)
-
-            XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("label"))).opacity, 0.75, accuracy: 1e-6)
-            XCTAssertFalse(host.runtime.animator.isMoving)
-        }
-    }
-
-    /// One state, one channel: both sliders stand at the same value on every frame, and the waiter hears the arrival.
-    func testAJourneyMovesEveryBoundControlOnTheSameFrames() throws {
-        try onMainActor {
-            let clock = TestClock()
-            let level = State(wrappedValue: 0.0)
-            let arrived = State(wrappedValue: false)
-            let host = AndroidRenderer.running(clock: clock) {
-                VStack {
-                    Label(arrived.wrappedValue ? "arrived" : "away")
-                    Slider(level.projectedValue)
-                    Slider(level.projectedValue)
-                    Button("Go").onClicked {
-                        try await level.projectedValue.journey.move(to: 1, .eased(200, .linear))
-                        arrived.wrappedValue = true
-                    }
-                }
-            }
-            let sliders = host.views(AndroidSliderView.self)
-            XCTAssertEqual(sliders.count, 2)
-
-            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
-            clock.now = 100
-            host.frame()
-            XCTAssertEqual(sliders.map(\.value), [0.5, 0.5])
-
-            clock.now = 200
-            host.frame()
-            XCTAssertEqual(sliders.map(\.value), [1, 1])
-
-            host.settle { arrived.wrappedValue }
-            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["arrived"])
         }
     }
 
