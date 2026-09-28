@@ -61,6 +61,7 @@ final class GTKDriver: HostDriver {
             type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
+        case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -90,6 +91,19 @@ final class GTKDriver: HostDriver {
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// Moves the scrolled window in `view` to `offset`, as a wheel does: through its adjustments, which hold it
+    /// within what it shows - laid out first, as a frame lays out what the user sees before they scroll it.
+    private func scroll(_ view: GTKView, to offset: Point, on element: MountedElement, _ act: UserAct) throws {
+        renderer?.layOut()
+        var child = gtk_widget_get_first_child(view.widget)
+        while let each = child, g_type_check_instance_is_a(each.of(GTypeInstance.self), gtk_scrolled_window_get_type()) == 0 {
+            child = gtk_widget_get_first_child(each)
+        }
+        guard let scrolled = child?.opaque else { throw DriverCannot(act, on: element) }
+        gtk_adjustment_set_value(gtk_scrolled_window_get_hadjustment(scrolled), offset.x)
+        gtk_adjustment_set_value(gtk_scrolled_window_get_vadjustment(scrolled), offset.y)
     }
 
     /// Types `words` into `input` as the keyboard leaves them - what does not lead to them chosen and deleted, the

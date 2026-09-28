@@ -41,6 +41,9 @@ final class GTKItemsView: GTKLayoutView {
     /// Whether the list left the tree: what GTK still says is heard by nobody.
     private var released = false
 
+    /// Whether the entries in view are to be told after the layout under way.
+    private var tellsShowing = false
+
     init(cells: ItemsCells) {
         self.cells = cells
         model = gtk_string_list_new(nil)
@@ -116,6 +119,9 @@ final class GTKItemsView: GTKLayoutView {
             gtk_orientable_set_orientation(
                 made.opaque, shape.isAcross ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL)
         }
+        // A row stands at its natural size: at its least, a StateUI panel's nothing, every row fits in view at once.
+        gtk_scrollable_set_hscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
+        gtk_scrollable_set_vscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
         connectSignal(UnsafeMutableRawPointer(made), "activate", number: number) { (_: UnsafeMutableRawPointer?, place: UInt32, data: gpointer?) in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.activated(Int(place)) }
         }
@@ -302,10 +308,28 @@ final class GTKItemsView: GTKLayoutView {
         cells.userChose((0..<count).map { identity(at: gtk_bitset_get_nth(chosen, guint($0))) })
     }
 
-    /// The entries the bound rows show: GTK binds those in view and a few beside them.
+    /// The entries in view, told once GTK has laid the list out: it binds rows far beside the view, and maps some
+    /// beside it while it measures rows it has not yet.
     private func tellShowing() {
-        guard !released else { return }
-        cells.showing(made.values.compactMap(\.identity))
+        guard !tellsShowing else { return }
+        tellsShowing = true
+        GTKDoorbell.afterLayout { [weak self] in
+            guard let self else { return }
+            tellsShowing = false
+            guard !released, let list else { return }
+            cells.showing(made.values.filter { Self.stands($0, inViewOf: list) }.compactMap(\.identity))
+        }
+    }
+
+    /// Whether `cell` stands within the view of `list`, which is its own viewport.
+    private static func stands(_ cell: GTKItemCell, inViewOf list: GTKWidget) -> Bool {
+        var bounds = graphene_rect_t()
+        guard gtk_widget_get_mapped(cell.widget) != 0, gtk_widget_compute_bounds(cell.widget, list, &bounds) != 0
+        else { return false }
+        let (width, height) = (Float(gtk_widget_get_width(list)), Float(gtk_widget_get_height(list)))
+        return bounds.size.width > 0 && bounds.size.height > 0
+            && bounds.origin.x < width && bounds.origin.x + bounds.size.width > 0
+            && bounds.origin.y < height && bounds.origin.y + bounds.size.height > 0
     }
 
     /// The identity at `place` of the string list.

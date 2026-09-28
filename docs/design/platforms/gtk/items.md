@@ -13,9 +13,12 @@ The factory's `bind` and `unbind` are the host layer's `hold` and
 `endShowing` ([one cell an entry](../../host/items.md#one-cell-an-entry)):
 GTK binds a row again for an entry it shows again, so nothing stands for
 `show`. A row is `setup` with its cell and `teardown` lets it go. A header's
-or a footer's row is neither selectable nor activatable. GTK binds the rows
-in view and a few beside them, and says no more of what is in view: the
-entries of the bound rows are what the host layer hears as shown.
+or a footer's row is neither selectable nor activatable. GTK binds rows far
+beside its view - up to two hundred around where it stands - and maps some
+beside it while it measures rows it has not yet, so neither says what is in
+view: once GTK has laid the list out, the entries of the cells standing
+within the list's own bounds - the list is its own viewport - are what the
+host layer hears as shown.
 
 The choice is a selection model over the string list - none, one the user
 may take back, or many - told back in the list's order; what the host
@@ -32,7 +35,9 @@ list is given.
 ## A cell
 
 A cell is a StateUI panel GTK places, so it answers GTK's measure with the
-room its entry takes. A cell whose entry is still on its way keeps the room
+room its entry takes, and the list stands each row at its natural size (the
+scrollable's natural policy): at its least, a panel's nothing, every row
+would stand in view at once. A cell whose entry is still on its way keeps the room
 of a row: measured of nothing, every cell would fit in view at once and the
 list would bind every entry. An entry whose size changes is measured again
 by the cell holding it; the list's own size never follows its items.
