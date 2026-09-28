@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
@@ -35,6 +36,27 @@ final class WinUIPagesTests: XCTestCase {
             XCTAssertTrue(open.wrappedValue)
             XCTAssertGreaterThan(scroller.frame.width, 0)
             XCTAssertEqual(row.frame.width, scroller.frame.width, "the row across the scroller's content")
+        }
+    }
+
+    /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
+    /// colour for them (`BandWords`) - the title, the way back and the actions alike.
+    func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
+        try onUIThread {
+            let dark = State(wrappedValue: true)
+            let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Label("Root")
+                } destination: { _ in Label("Pushed") }
+                    .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            XCTAssertEqual(stateui_winui_title_bar_words(bar.handle), 1, "light on navy")
+
+            dark.wrappedValue = false
+            host.settle { stateui_winui_title_bar_words(bar.handle) == 2 }
+            XCTAssertEqual(stateui_winui_title_bar_words(bar.handle), 2, "dark on yellow, once the colour travelled")
         }
     }
 

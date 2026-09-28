@@ -59,7 +59,7 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 
 extern "C" void stateui_winui_title_bar_set(
     StateUIObjectRef handle, char const *title, bool back, bool paneToggle, bool hasBackground, uint32_t background,
-    bool hasForeground, uint32_t foreground
+    bool hasForeground, uint32_t foreground, int32_t words
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -70,8 +70,24 @@ extern "C" void stateui_winui_title_bar_set(
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (hasForeground) bar.Foreground(media::SolidColorBrush(color(foreground)));
         else bar.ClearValue(controls::Control::ForegroundProperty());
+        auto theme = words == 1 ? xaml::ElementTheme::Dark
+            : words == 2 ? xaml::ElementTheme::Light : xaml::ElementTheme::Default;
+        if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
     } catch (...) {
         report("setting a title bar");
+    }
+}
+
+extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
+    try {
+        switch (borrow<controls::TitleBar>(handle).RequestedTheme()) {
+        case xaml::ElementTheme::Dark: return 1;
+        case xaml::ElementTheme::Light: return 2;
+        default: return 0;
+        }
+    } catch (...) {
+        report("reading a title bar's words");
+        return 0;
     }
 }
 
