@@ -19,7 +19,8 @@
 #   ABIS="arm64-v8a x86_64"      (default: both)
 #   SCRATCH_PATH=<dir>           SwiftPM's build directory (default: <app>/.build-android)
 #   SWIFT_BIN=<path>             the compiler, where PATH has the wrong one
-#   ANDROID_NDK_HOME=<path>      the NDK, where it is not found on its own
+#   ANDROID_NDK_ROOT=<path>      the NDK, 30 or newer, where it is not found on its own
+#   ANDROID_NDK_HOME=<path>      the same, read after ANDROID_NDK_ROOT
 #
 # The application's manifest reads STATEUI_ANDROID to declare its Android
 # head; the caller sets it for an Android Views build.
@@ -126,7 +127,14 @@ ndk_root () {
 }
 
 NDK_ROOT="$(ndk_root)"
-[[ -n "$NDK_ROOT" ]] || { echo "ERROR: no Android NDK found. Set ANDROID_NDK_HOME to one - 30 or newer."; exit 1; }
+[[ -n "$NDK_ROOT" ]] || { echo "ERROR: no Android NDK found. Set ANDROID_NDK_ROOT to one - 30 or newer."; exit 1; }
+# An older NDK's headers type the C library otherwise, and its build fails far from the reason.
+NDK_MAJOR="$(sed -n 's/^Pkg\.Revision *= *\([0-9]*\).*/\1/p' "$NDK_ROOT/source.properties" 2>/dev/null)"
+[[ -n "$NDK_MAJOR" && "$NDK_MAJOR" -ge 30 ]] || {
+  echo "ERROR: $NDK_ROOT is NDK ${NDK_MAJOR:-of no known version}, and the build takes 30 or newer."
+  echo "       Name one with ANDROID_NDK_ROOT, which is read before ANDROID_NDK_HOME."
+  exit 1
+}
 export ANDROID_NDK_ROOT="$NDK_ROOT"
 mkdir -p "$OUT_ROOT"
 echo "$NDK_ROOT" > "$OUT_ROOT/ndk-root"

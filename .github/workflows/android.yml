@@ -74,7 +74,8 @@ jobs:
             --checksum "$ANDROID_SDK_CHECKSUM"
           swift sdk list
 
-      # build-swift.sh finds the NDK ANDROID_NDK_HOME names; the SDK's own
+      # build-swift.sh reads ANDROID_NDK_ROOT before ANDROID_NDK_HOME, and the
+      # image names its own older NDK there: both name this one. The SDK's own
       # setup script is not needed (platform-traps.md).
       - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
         run: |
@@ -82,6 +83,7 @@ jobs:
           # sdkmanager stops reading. The pipe's status is sdkmanager's own.
           set -eu
           yes 2> /dev/null | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ANDROID_NDK_VERSION" > /dev/null
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
 
       # Gradle and the Android plugin take JDK 21.
