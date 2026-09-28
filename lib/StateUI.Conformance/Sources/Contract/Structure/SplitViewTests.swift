@@ -18,7 +18,7 @@
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
                         Label("Sidebar")
-                    } detail: { Label("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) } }
+                    } detail: { WideDetail(Label("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) }) }
                 }
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
@@ -29,7 +29,7 @@
                 s.start {
                     SplitView(State(wrappedValue: true).projectedValue) {
                         Label("Sidebar").id("sidebar")
-                    } detail: { Label("Detail").id("detail") }
+                    } detail: { WideDetail(Label("Detail").id("detail")) }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
 
@@ -42,7 +42,7 @@
             ]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(open.projectedValue) { Label("Sidebar") } detail: { Label("Detail") }
+                    SplitView(open.projectedValue) { Label("Sidebar") } detail: { WideDetail(Label("Detail")) }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
                 try s.settle { try s.held(SplitViewContract.isSidebarVisible, on: split) == true }
@@ -64,7 +64,7 @@
                     SplitView(open.projectedValue) {
                         Label("Sidebar")
                     } detail: {
-                        VStack { Button("Hide").onClicked { open.wrappedValue = false }.id("hide") }
+                        WideDetail(VStack { Button("Hide").onClicked { open.wrappedValue = false }.id("hide") })
                     }
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
@@ -75,5 +75,26 @@
                 s.expect(try s.held(SplitViewContract.isSidebarVisible, on: split), false)
             },
         ]
+    }
+}
+
+/// A split view's detail in a window wide enough for every desktop host to stand the sidebar beside it: in a
+/// narrower one a host may lay the sidebar over the detail, and closed.
+private struct WideDetail: ContentView {
+    let detail: any View
+
+    @Environment private var window: WindowSession
+
+    init(_ detail: any View) {
+        self.detail = detail
+    }
+
+    var content: any View {
+        let window = self.window
+        return VStack { detail }
+            .onCreated {
+                window.width = 1016
+                window.height = 700
+            }
     }
 }

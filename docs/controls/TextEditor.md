@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit |  |  | `NSTextView` in an `NSScrollView` | no run of it on these sources |
 | UIKit |  |  | `UITextView` | no run of it on these sources |
 | Android Views |  |  | multi-line `EditText` | no run of it on these sources |
-| WinUI 3 | ⌛ | 65 ✅ | multi-line `TextBox` |  |
+| WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
 
@@ -38,7 +38,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `growsWithText` | property | `Bool` | native |  |  |  | ⌛ | ✅ |  |  |
+| `growsWithText` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -103,7 +103,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ⌛ | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ✅ |  |  |
 | `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
@@ -138,11 +138,11 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read isReadOnly of TextEditor - GTK's driver has no path for it yet |
 | `isSpellCheckEnabled` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isSpellCheckEnabled of TextEditor - GTK's driver has no path for it yet |
 | `isTextPredictionEnabled` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isTextPredictionEnabled of TextEditor - GTK's driver has no path for it yet |
-| `maximumLength` | property | `Int` | native |  |  |  | ⌛ | ✅ |  |  |
+| `maximumLength` | property | `Int` | native |  |  |  | ✅ | ✅ |  |  |
 | `placeholder` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read placeholder of TextEditor - GTK's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native |  |  |  | ✅ | · |  | GTK 4: cannot read placeholderColor of TextEditor - GTK's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native |  |  |  | ✅ | · |  | GTK 4: cannot read selectionLength of TextEditor - GTK's driver has no path for it yet |
-| `onTextChanged` (`textChanged`) | event | `String` | native |  |  |  | ⌛ | ✅ |  |  |
+| `onTextChanged` (`textChanged`) | event | `String` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -150,7 +150,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native |  |  |  | ⌛ | ◐ |  | GTK 4: waits on TextEditor.textCase |
+| `text` | property | `String` | native |  |  |  | ✅ | ◐ |  | GTK 4: waits on TextEditor.textCase |
 | `textCase` | property | `TextCase` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

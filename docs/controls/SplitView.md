@@ -29,7 +29,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit |  |  | `UISplitViewController` | no run of it on these sources |
 | Android Views |  |  | AndroidX `DrawerLayout` | no run of it on these sources |
 | WinUI 3 | ✅ | 4 ✅ | `SplitView` |  |
-| GTK 4 | ✅ |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
+| GTK 4 | ⌛ |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
 | Web |  |  | `<aside>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -38,8 +38,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isSidebarVisible of SplitView - GTK's driver has no path for it yet |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isSidebarVisible` | property | `Bool` | native |  |  |  | ✅ | ⌛ |  |  |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive |  |  |  | ✅ | ⌛ |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

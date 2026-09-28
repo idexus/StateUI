@@ -13,3 +13,4 @@
 # change alone does. A change that proves nothing new raises nothing.
 
 TextEditor 2
+SplitView 2

@@ -129,11 +129,11 @@ of its members each meets, and why a cell is empty.
 | [Slider](controls/Slider.md) | native |  |  |  | ✅ | ✅ |  |
 | [Span](controls/Span.md) | structure |  |  |  | ✅ | ✅ |  |
 | [Spans](controls/Spans.md) | structure |  |  |  | ✅ | ✅ |  |
-| [SplitView](controls/SplitView.md) | adaptive |  |  |  | ✅ | ✅ |  |
+| [SplitView](controls/SplitView.md) | adaptive |  |  |  | ✅ | ⌛ |  |
 | [Stepper](controls/Stepper.md) | native |  |  |  | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | native |  |  |  | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | adaptive |  |  |  | ✅ | ✅ |  |
-| [TextEditor](controls/TextEditor.md) | native |  |  |  | ⌛ | ✅ |  |
+| [TextEditor](controls/TextEditor.md) | native |  |  |  | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native |  |  |  | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | adaptive |  |  |  |  | ⏸ |  |
@@ -438,7 +438,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 74 |  |  |  | 56 ✅ · 3 – | 22 ✅ |  |
 | [Image](controls/Image.md) | 69 |  |  |  | 50 ✅ · 3 – | 20 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 60 ✅ | 23 ✅ |  |
-| [Label](controls/Label.md) | 81 |  |  |  | 63 ✅ · 3 – | 22 ✅ |  |
+| [Label](controls/Label.md) | 81 |  |  |  | 63 ✅ · 3 – | 21 ✅ |  |
 | [Line](controls/Line.md) | 80 |  |  |  | 62 ✅ · 3 – | 20 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 |  |  |  | 59 ✅ · 3 – | 20 ✅ |  |
@@ -454,14 +454,14 @@ Every control, and every part an application, its windows and its pages are made
 | [Slider](controls/Slider.md) | 73 |  |  |  | 57 ✅ | 24 ✅ |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  |  | 57 ✅ | 20 ✅ |  |
 | [Switch](controls/Switch.md) | 69 |  |  |  | 56 ✅ | 22 ✅ |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 65 ✅ | 23 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 70 ✅ | 23 ✅ |  |
 | [TextField](controls/TextField.md) | 90 |  |  |  | 68 ✅ | 23 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 |  |  |  | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met | 586 of 2591 met |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met | 585 of 2591 met |  |
 
 ### Application structure
 
@@ -566,7 +566,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  | 5 ✅ |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 |  |  |  | 2 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  |  | 1 ✅ |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 |  |  |  |  | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  |  |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  |  |  |  |

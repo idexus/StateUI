@@ -29,7 +29,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit |  |  | `UILabel`; `NSAttributedString` runs | no run of it on these sources |
 | Android Views |  |  | `TextView`; `SpannableString` spans | no run of it on these sources |
 | WinUI 3 | ✅ | 63 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
-| GTK 4 | ✅ | 22 ✅ | `GtkLabel`; `PangoAttrList` runs |  |
+| GTK 4 | ✅ | 21 ✅ | `GtkLabel`; `PangoAttrList` runs |  |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/LabelContract.swift`.
@@ -104,7 +104,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ✅ |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ⌛ |  |  |
 | `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
 | `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
