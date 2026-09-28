@@ -22,6 +22,11 @@ Android Views host needs as well, [WinUI host](hosts/winui.md#requirements) what
 WinUI host needs on Windows, and [GTK host](hosts/gtk.md#requirements) what
 the GTK host needs on Linux.
 
+With the extension installed ([Installing the extension](#installing-the-extension)),
+**StateUI: Check Toolchain** in the Command Palette looks on this machine for
+what these pages list for its platform's hosts, and says what to install for
+whatever is missing.
+
 ## Working in VS Code
 
 VS Code is where StateUI applications are built, run, debugged, and tested. The

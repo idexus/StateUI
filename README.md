@@ -114,11 +114,13 @@ Android asks for more, and builds on macOS only:
 
 Then open the repository in VS Code:
 
-1. Choose the host in the status bar - **AppKit** or **Android** - and the
+1. Run **StateUI: Check Toolchain** from the Command Palette. It lists what
+   this machine has of the above, and what to install for the rest.
+2. Choose the host in the status bar - **AppKit** or **Android** - and the
    application, **Gallery**.
-2. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
+3. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
    it under the debugger; **StateUI: Release** runs the optimized build.
-3. Run **StateUI: Run Tests** from the Command Palette for every suite of that
+4. Run **StateUI: Run Tests** from the Command Palette for every suite of that
    host.
 
 [Working in VS Code](docs/getting-started.md#working-in-vs-code) covers the

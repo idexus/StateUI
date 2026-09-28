@@ -153,10 +153,11 @@ them and restarts the server, for an index a failed build left inconsistent.
 the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
 say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
 JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
-Windows; GTK, libadwaita and a desktop session on Linux; `lldb-dap` and the
-LLDB DAP extension for a Debug launch; and Node.js for this extension's own
-build. The **StateUI Toolchain** output lists each with what was found, and for
-each missing what to install. It finds; it installs nothing.
+Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
+Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
+for this extension's own build. The **StateUI Toolchain** output lists each
+with what was found, and for each missing what to install. It finds; it
+installs nothing.
 
 ## The extension itself
 
