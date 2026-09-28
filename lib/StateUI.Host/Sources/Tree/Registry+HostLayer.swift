@@ -41,9 +41,10 @@ extension Registry {
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
-    /// its identifier, label, hint and heading level, and whether it is met at all.
-    public func everyElementMeetsAssistiveTechnology() {
-        everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+    /// its identifier where the toolkit gives an accessible one - `identifying` - its label, hint and heading level,
+    /// and whether it is met at all.
+    public func everyElementMeetsAssistiveTechnology(identifying: Bool = true) {
+        if identifying { everyElementRealizes(PropertyContainerContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
         everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)

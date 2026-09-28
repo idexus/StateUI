@@ -34,9 +34,8 @@ enum GTKRegistrations {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.isEnabled)
-        registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
-        registry.everyElementRealizes(VisualElementContract.accessibilityHint)
-        registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        // GTK 4.14 gives an accessible no identifier of its own: it is met by its role, its label and its place.
+        registry.everyElementMeetsAssistiveTechnology(identifying: false)
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
         registry.everyElementHearsTheUser()
