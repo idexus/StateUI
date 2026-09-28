@@ -46,6 +46,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         super.init(frame: frameRect)
         drawsBackground = false
         borderType = .noBorder
+        // Design: docs/design/platforms/appkit/views.md#scroll-bars
         scrollerStyle = .overlay
         contentView.postsBoundsChangedNotifications = true
         documentView = documentSurface

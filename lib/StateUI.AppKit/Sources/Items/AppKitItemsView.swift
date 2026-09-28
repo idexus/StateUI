@@ -59,6 +59,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
             guard let identity = self?.source.itemIdentifier(for: indexPath) else { return }
             self?.cells.userActivated(identity)
         }
+        // Design: docs/design/platforms/appkit/views.md#scroll-bars
+        scroller.scrollerStyle = .overlay
         scroller.documentView = collection
         scroller.hasVerticalScroller = true
         scroller.drawsBackground = false

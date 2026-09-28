@@ -46,6 +46,17 @@ to its shape, always. AppKit repaints a scroller's layer as it displays it and
 clears its colour and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller cuts and draws no outline.
 
+## Scroll bars
+
+A ScrollView and an ItemsView lay their scroll bars over what they show,
+whatever the Mac is set to show. StateUI gives what they hold their whole
+width - a list's item as wide as the list - and a bar standing beside it
+takes 17 points of that: a Mac with a mouse and no trackpad shows its bars
+always, beside the content, and a hosted CI runner is such a Mac. The style
+is set before the scroll view first lays out; set later, its clip keeps the
+narrower width until it lays out again. To see the runner's bars on a
+desktop, run the suite after `defaults write com.apple.dt.xctest.tool
+AppleShowScrollBars Always`, and delete that key afterwards.
 
 ## A radio button's set
 
