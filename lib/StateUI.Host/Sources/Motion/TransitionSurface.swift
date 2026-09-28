@@ -7,8 +7,13 @@
 /// Every other pair arrives at once, rather than keeping a motion alive that nothing shows.
 /// Design: docs/design/host/motion.md#what-travels
 @_spi(Host) public enum TransitionSurface {
-    /// Whether a host moves `property` of an element of `type` frame by frame.
-    public static func presents(_ property: Prop, on type: NodeType) -> Bool {
+    /// Whether a host moves `property` of an element of `type` frame by frame; `atRest` names, element type by
+    /// element type, what the host's toolkit paints only at rest, which arrives at once there.
+    public static func presents(_ property: Prop, on type: NodeType, atRest: [NodeType: Set<Prop>] = [:]) -> Bool {
+        if atRest[type]?.contains(property) == true {
+            return false
+        }
+
         if nativeViewTypes.contains(type), sharedViewProperties.contains(property) {
             return true
         }

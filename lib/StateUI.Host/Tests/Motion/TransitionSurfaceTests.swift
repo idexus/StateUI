@@ -26,4 +26,14 @@ final class TransitionSurfaceTests: XCTestCase {
         XCTAssertFalse(TransitionSurface.presents(.opacity, on: .positionIndicator))
         XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .label))
     }
+
+    /// What a host's toolkit paints only at rest arrives at once on that host, and the rest of the surface travels.
+    func testWhatAToolkitPaintsAtRestArrivesAtOnce() {
+        let atRest: [NodeType: Set<Prop>] = [.label: [.padding, .background]]
+
+        XCTAssertFalse(TransitionSurface.presents(.padding, on: .label, atRest: atRest))
+        XCTAssertFalse(TransitionSurface.presents(.background, on: .label, atRest: atRest))
+        XCTAssertTrue(TransitionSurface.presents(.textColor, on: .label, atRest: atRest))
+        XCTAssertTrue(TransitionSurface.presents(.padding, on: .vStack, atRest: atRest))
+    }
 }

@@ -7,12 +7,13 @@ The frames come from the window's tick callback ([runtime](runtime.md#one-frame)
 
 ## What moves
 
-A host moves only a value it draws, so the GTK host keeps a closed set:
-`GTKTransitionSurface` names, for each element, the properties whose frames
-reach GTK - opacity, the sizes, margin and the planar transforms on every view
-it presents; padding and spacing on a stack; a slider's value. Any other
-property arrives at its value at once, rather than keeping an animation alive
-that nothing on screen would show.
+A host moves only a value it draws: the GTK host moves what the host layer's
+surface names ([what travels](../../host/motion.md#what-travels)), less what
+GTK paints only at rest (`GTKTransitionSurface.atRest`) - what a class of the
+host's style sheet paints, a class a value, which a value on its way would add
+every frame: a label's padding and background, a button's box, a field's
+font and colours, a slider's tint, the bars' colours; and a window's place and
+size, which the desktop keeps. Those arrive at once.
 
 A property's animation begins where the element stands: the opacity the host
 last wrote, the value a slider's thumb shows. GTK keeps a widget's opacity in

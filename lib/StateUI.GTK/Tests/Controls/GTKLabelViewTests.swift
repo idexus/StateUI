@@ -156,7 +156,7 @@ final class GTKLabelViewTests: XCTestCase {
         }
     }
 
-    /// A span that changes changes its run.
+    /// A span that changes changes its run, its colour travelling there.
     func testASpanThatChangesChangesItsRun() throws {
         try onUIThread {
             let host = GTKRenderer.running { ChangingRunPage() }
@@ -164,9 +164,10 @@ final class GTKLabelViewTests: XCTestCase {
             XCTAssertEqual(label.ranged, ["0-4 foreground 65535 0 0", "0-4 foreground-alpha 65535"])
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
-            host.runtime.pump.turn()
+            let blue = ["0-4 foreground 0 0 65535", "0-4 foreground-alpha 65535"]
+            host.settle { label.ranged == blue }
 
-            XCTAssertEqual(label.ranged, ["0-4 foreground 0 0 65535", "0-4 foreground-alpha 65535"])
+            XCTAssertEqual(label.ranged, blue)
         }
     }
 

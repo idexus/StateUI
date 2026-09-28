@@ -4,28 +4,29 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The closed set of properties the GTK host moves; any other arrives at once.
+/// What the GTK host moves frame by frame: the host layer's surface (`TransitionSurface`), less what GTK paints only
+/// at rest, which arrives at once.
 /// Design: docs/design/platforms/gtk/motion.md#what-moves
 @MainActor
 enum GTKTransitionSurface {
     /// Whether the host moves `property` on an element of `type`.
     static func presents(_ property: Prop, on type: NodeType) -> Bool {
-        if viewTypes.contains(type), viewProperties.contains(property) { return true }
-
-        switch type {
-        case .vStack, .hStack: return property == .padding || property == .spacing
-        case .slider: return property == .value
-        default: return false
-        }
+        TransitionSurface.presents(property, on: type, atRest: atRest)
     }
 
-    /// Every element the registry makes a view for: each one's view moves the view properties.
-    private static let viewTypes = Set(GTKRegistrations.registry.realization.elements.map { NodeType($0) })
-
-    private static let viewProperties: Set<Prop> = [
-        .opacity,
-        .width, .height, .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
-        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .translationX, .translationY,
-        .margin,
+    /// What a class of the host's style sheet paints - a class a value, which a value on its way would add every
+    /// frame - and a window's place and size, which the desktop keeps.
+    static let atRest: [NodeType: Set<Prop>] = [
+        .label: [.padding, .background],
+        .button: [.padding, .background, .stroke, .strokeWidth, .shape],
+        .radioButton: [.padding],
+        .textField: [.fontSize, .textColor, .placeholderColor],
+        .searchField: [.fontSize, .textColor, .placeholderColor],
+        .textEditor: [.fontSize, .textColor, .placeholderColor],
+        .slider: [.tint],
+        .navigationStack: [.barBackgroundColor, .barForegroundColor],
+        .tabbedView: [.barBackgroundColor],
+        .titleBar: [.background, .barForegroundColor],
+        .window: [.x, .y, .width, .height],
     ]
 }
