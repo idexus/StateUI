@@ -24,7 +24,8 @@ extension AppKitRegistrations {
             return button
         }, members: { button in
             button.applies([
-                TextElementContract.text, ButtonContract.icon, ButtonContract.iconPosition,
+                TextElementContract.text, TextElementContract.textCase, ButtonContract.icon,
+                ButtonContract.iconPosition,
                 ImageElementContract.aspect, ButtonContract.lineBreak,
                 TextStyleElementContract.textColor, VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke,
@@ -35,7 +36,8 @@ extension AppKitRegistrations {
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
-                let caption: String = values[TextElementContract.text] ?? ""
+                let caption = (values[TextElementContract.textCase] ?? .none)
+                    .applied(to: values[TextElementContract.text] ?? "")
                 let icon: NSImage? = values[ButtonContract.icon]
                     .flatMap { $0.isEmpty ? nil : view.picture?($0.file) }
                 let position: NSControl.ImagePosition = caption.isEmpty

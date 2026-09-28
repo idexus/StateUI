@@ -14,6 +14,9 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     private(set) var isSecure = false
     private(set) var maximumLength: Int?
 
+    /// The case the view holds its words in; nil for as they are typed.
+    var textCase: TextCase?
+
     var onTextChanged: ((String) -> Void)?
     var onSubmitted: (() -> Void)?
 
@@ -128,7 +131,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     func controlTextDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
 
-        let typed = InputWords.cut(textField.stringValue, toBound: maximumLength) ?? textField.stringValue
+        let typed = InputWords.held(textField.stringValue, in: textCase, toBound: maximumLength) ?? textField.stringValue
 
         if typed != textField.stringValue {
             ProgramWrite.perform {

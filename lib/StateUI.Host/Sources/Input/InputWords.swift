@@ -13,6 +13,14 @@
         return String(words.prefix(max(0, bound)))
     }
 
+    /// What a field holds of the words the user left in it: in the field's case, then cut to its bound; nil where it
+    /// holds them as they were typed.
+    public static func held(_ typed: String, in textCase: TextCase?, toBound bound: Int?) -> String? {
+        let cased = (textCase ?? .none).applied(to: typed)
+        let held = cut(cased, toBound: bound) ?? cased
+        return held == typed ? nil : held
+    }
+
     /// What of `inserted` goes in beside `held` within `bound` characters, where a toolkit asks before it inserts:
     /// its first characters that fit, where it runs past; nil where it fits whole, or there is no bound.
     public static func fitting(_ inserted: String, beside held: String, toBound bound: Int?) -> String? {

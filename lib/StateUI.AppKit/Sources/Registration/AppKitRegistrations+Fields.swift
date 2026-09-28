@@ -24,10 +24,12 @@ extension AppKitRegistrations {
         }, members: { entry in
             entry.applies(Self.fieldMembers + [TextFieldContract.isPassword]) { view, values in
                 let words = Self.words(values)
+                view.textCase = values[TextElementContract.textCase]
 
                 view.apply(
                     text: words,
-                    writeText: values.changed(TextElementContract.text) && words != nil,
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase))
+                        && words != nil,
                     placeholder: values[InputViewContract.placeholder],
                     placeholderColor: values[InputViewContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
@@ -60,10 +62,12 @@ extension AppKitRegistrations {
         }, members: { editor in
             editor.applies(Self.fieldMembers + [TextEditorContract.growsWithText]) { view, values in
                 let words = Self.words(values)
+                view.textCase = values[TextElementContract.textCase]
 
                 view.apply(
                     text: words,
-                    writeText: values.changed(TextElementContract.text) && words != nil,
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase))
+                        && words != nil,
                     placeholder: values[InputViewContract.placeholder],
                     placeholderColor: values[InputViewContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
@@ -96,10 +100,12 @@ extension AppKitRegistrations {
         }, members: { search in
             search.applies(Self.fieldMembers) { view, values in
                 let words = Self.words(values)
+                view.textCase = values[TextElementContract.textCase]
 
                 view.apply(
                     text: words,
-                    writeText: values.changed(TextElementContract.text) && words != nil,
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase))
+                        && words != nil,
                     placeholder: values[InputViewContract.placeholder],
                     placeholderColor: values[InputViewContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
@@ -125,7 +131,8 @@ extension AppKitRegistrations {
 
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers: [any ContractMember] = [
-        TextElementContract.text, InputViewContract.placeholder, InputViewContract.placeholderColor,
+        TextElementContract.text, TextElementContract.textCase, InputViewContract.placeholder,
+        InputViewContract.placeholderColor,
         TextStyleElementContract.textColor, VisualElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,

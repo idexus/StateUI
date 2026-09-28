@@ -16,6 +16,9 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     var onTextChanged: ((String) -> Void)?
     private(set) var maximumLength: Int?
 
+    /// The case the view holds its words in; nil for as they are typed.
+    var textCase: TextCase?
+
     private var growsWithText = false
     private var cursorPosition: Int?
     private var selectionLength: Int?
@@ -148,7 +151,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
 
     func textDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
-        let typed = InputWords.cut(textView.string, toBound: maximumLength) ?? textView.string
+        let typed = InputWords.held(textView.string, in: textCase, toBound: maximumLength) ?? textView.string
 
         if typed != textView.string {
             ProgramWrite.perform {

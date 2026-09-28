@@ -61,10 +61,12 @@ enum AppKitRegistrations {
 
     /// The words to put on a field: NONE where the host carries the text in,
     /// since the control is the source there and the tree describes it only to
-    /// read back - and otherwise what the tree says, which is empty where the
-    /// tree took the words away, so clearing a field clears the control.
+    /// read back - and otherwise what the tree says in its case, which is empty
+    /// where the tree took the words away, so clearing a field clears the
+    /// control.
     static func words<Realized: ElementContract>(_ values: ElementValues<Realized>) -> String? {
-        values.carriedIn(TextElementContract.text) ? nil : (values[TextElementContract.text] ?? "")
+        guard !values.carriedIn(TextElementContract.text) else { return nil }
+        return (values[TextElementContract.textCase] ?? .none).applied(to: values[TextElementContract.text] ?? "")
     }
 
     /// The font a field draws in, composed from the members it wears.

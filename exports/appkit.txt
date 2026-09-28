@@ -14,6 +14,7 @@ Button
   stroke
   strokeWidth
   text
+  textCase
   textColor
   clicked()
   pressed()
@@ -195,6 +196,7 @@ SearchField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -237,6 +239,7 @@ TextEditor
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   textChanged()
 TextField
@@ -256,6 +259,7 @@ TextField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()

@@ -13,6 +13,9 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     var onSubmitted: (() -> Void)?
     private(set) var maximumLength: Int?
 
+    /// The case the view holds its words in; nil for as they are typed.
+    var textCase: TextCase?
+
     private var spellChecking = true
     private var textPrediction = true
     private var cursorPosition: Int?
@@ -100,7 +103,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     func controlTextDidChange(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
-        let typed = InputWords.cut(stringValue, toBound: maximumLength) ?? stringValue
+        let typed = InputWords.held(stringValue, in: textCase, toBound: maximumLength) ?? stringValue
 
         if typed != stringValue {
             ProgramWrite.perform {

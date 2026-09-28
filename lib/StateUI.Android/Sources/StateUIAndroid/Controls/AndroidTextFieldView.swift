@@ -34,6 +34,9 @@ final class AndroidTextFieldView: AndroidTextView {
     /// The most characters the user can type; nil for no bound.
     var maximumLength: Int?
 
+    /// The case the field holds its words in; nil for as they are typed.
+    var textCase: TextCase?
+
     private(set) var isPassword = false
     private var madeHintColors: JavaObject?
 
@@ -114,13 +117,14 @@ final class AndroidTextFieldView: AndroidTextView {
         Java.call(reference, JavaAPI.setSelection, .int(end), .int(end))
     }
 
-    /// The user changed the words: kept within `maximumLength`, then handed on.
+    /// The user changed the words: held in the field's case within `maximumLength` (`InputWords.held`), then handed
+    /// on.
     func typed(_ text: String) {
         guard !ProgramWrite.isWriting else { return }
 
         var kept = text
-        if let cut = InputWords.cut(text, toBound: maximumLength) {
-            kept = cut
+        if let held = InputWords.held(text, in: textCase, toBound: maximumLength) {
+            kept = held
             ProgramWrite.perform { setText(kept) }
         }
         onTextChanged?(kept)

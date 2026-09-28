@@ -49,10 +49,11 @@ extension UIKitRegistrations {
         }
     }
 
-    /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
+    /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers: [any ContractMember] = [
-        TextElementContract.text, InputViewContract.placeholder, InputViewContract.maximumLength,
+        TextElementContract.text, TextElementContract.textCase, InputViewContract.placeholder,
+        InputViewContract.maximumLength,
         VisualElementContract.isEnabled, InputViewContract.isReadOnly, InputViewContract.isSpellCheckEnabled,
         InputViewContract.isTextPredictionEnabled, InputViewContract.inputPurpose, FontElementContract.fontSize,
         FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
@@ -66,7 +67,8 @@ extension UIKitRegistrations {
         if values.changed(InputViewContract.maximumLength) {
             view.typing.maximumLength = values[InputViewContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
         }
-        if values.changed(TextElementContract.text) { view.setText(values[TextElementContract.text] ?? "") }
+        if values.changed(TextElementContract.textCase) { view.typing.textCase = values[TextElementContract.textCase] }
+        if let words = TextMembers.words(values) { view.setText(words) }
         if values.changed(InputViewContract.placeholder) || values.changed(InputViewContract.placeholderColor) {
             view.setPlaceholder(
                 values[InputViewContract.placeholder],

@@ -55,6 +55,15 @@ final class TextRulesTests: XCTestCase {
         XCTAssertNil(InputWords.cut("Ada", toBound: nil))
     }
 
+    /// A field holds what the user typed in its case, then cut to its bound; words already so are held as typed.
+    func testAFieldHoldsTypedWordsInItsCaseWithinItsBound() {
+        XCTAssertEqual(InputWords.held("Mixed", in: .uppercase, toBound: nil), "MIXED")
+        XCTAssertEqual(InputWords.held("Mixed", in: .lowercase, toBound: 3), "mix")
+        XCTAssertEqual(InputWords.held("Mixed", in: nil, toBound: 3), "Mix")
+        XCTAssertNil(InputWords.held("MIXED", in: .uppercase, toBound: 5))
+        XCTAssertNil(InputWords.held("Mixed", in: .none, toBound: nil))
+    }
+
     /// Words going into a field before they stand there - where a toolkit asks before it inserts - are cut to the
     /// characters that fit beside the words held: an emoji whole or not at all, none where the bound is reached.
     func testWordsGoingInAreCutToWhatFitsBesideTheHeld() {

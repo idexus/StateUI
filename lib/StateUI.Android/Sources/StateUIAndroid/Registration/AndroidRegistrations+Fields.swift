@@ -52,7 +52,8 @@ extension AndroidRegistrations {
 
     /// What every field takes whole.
     private static let inputMembers: [any ContractMember] = [
-        TextElementContract.text, FontElementContract.fontSize, FontElementContract.fontAttributes,
+        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
+        FontElementContract.fontAttributes,
         FontElementContract.fontFamily, TextStyleElementContract.textColor, InputViewContract.placeholder,
         InputViewContract.placeholderColor,
         InputViewContract.maximumLength, InputViewContract.cursorPosition, InputViewContract.selectionLength,
@@ -65,7 +66,9 @@ extension AndroidRegistrations {
         if values.changed(TextFieldContract.isPassword) {
             view.setPassword(values[TextFieldContract.isPassword] ?? false)
         }
-        if values.changed(TextElementContract.text), let words = words(values) {
+        if values.changed(TextElementContract.textCase) { view.textCase = values[TextElementContract.textCase] }
+        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase),
+           let words = words(values) {
             view.setText(words)
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
@@ -87,8 +90,10 @@ extension AndroidRegistrations {
         }
     }
 
-    /// The words to put on a field: none where the host carries them in, since the field is their source.
+    /// The words to put on a field, in their case: none where the host carries them in, since the field is their
+    /// source.
     private static func words<Realized: ElementContract>(_ values: ElementValues<Realized>) -> String? {
-        values.carriedIn(TextElementContract.text) ? nil : (values[TextElementContract.text] ?? "")
+        guard !values.carriedIn(TextElementContract.text) else { return nil }
+        return (values[TextElementContract.textCase] ?? .none).applied(to: values[TextElementContract.text] ?? "")
     }
 }
