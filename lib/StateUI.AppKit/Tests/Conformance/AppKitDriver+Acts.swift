@@ -13,6 +13,7 @@ import AppKit
 /// Design: docs/design/platforms/appkit/conformance.md#what-the-driver-does
 extension AppKitDriver {
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        layOutWindows()
         let native = element.native as? AppKitElement
         let view = native?.view
         switch (act, view) {

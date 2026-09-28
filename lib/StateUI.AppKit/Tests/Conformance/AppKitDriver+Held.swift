@@ -31,7 +31,7 @@ extension AppKitDriver {
         case .background:
             return view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }.map { Background.color(color($0)).propValue }
         default:
-            return nil
+            return try controlHolds(property, view)
         }
     }
 
@@ -66,11 +66,14 @@ extension AppKitDriver {
 
     /// A control's words as AppKit draws them: their font's size, bold and italic, family, and their colour.
     private static func words(_ property: Prop, _ view: NSView) throws -> HostValue? {
-        // A label draws its words in the attributes of its text; a control, in its own font and colour.
+        // A label draws its words in the attributes of its text; a control, in its own font and colour; a view
+        // wrapping one, in its control's.
         let label = (view as? AppKitLabelView)?.attributedStringValue
         let attributes = label.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
-        let control = view as? NSControl
-        guard let font = attributes?[.font] as? NSFont ?? control?.font else {
+        let presented = (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
+        let control = presented as? NSControl
+        let text = presented as? NSTextView
+        guard let font = attributes?[.font] as? NSFont ?? control?.font ?? text?.font else {
             throw DriverCannot("read the words of a \(type(of: view))")
         }
         switch property {
@@ -85,6 +88,8 @@ extension AppKitDriver {
         case .textColor:
             if let written = attributes?[.foregroundColor] as? NSColor { return color(written).propValue }
             if let field = control as? NSTextField, let written = field.textColor { return color(written).propValue }
+            if let written = text?.textColor { return color(written).propValue }
+            if let picker = control as? NSDatePicker { return color(picker.textColor).propValue }
             if let button = control as? NSButton, button.attributedTitle.length > 0,
                let written = button.attributedTitle.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor {
                 return color(written).propValue

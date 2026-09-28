@@ -14,7 +14,49 @@ import AppKit
 @MainActor
 final class AppKitDriver: HostDriver {
     let host = "AppKit"
-    let cannot: [String: String] = [:]
+    let cannot = [
+        "read aspect of Button": "AppKit's button has no covering scale, as the register records: a fill shows fitted",
+        "read shape of a box shorter than its radius":
+            "AppKit's layer holds the radius it draws, at most half the box's shorter side",
+    ]
+    let platformHasNone = AppKitDriver.none()
+
+    /// What AppKit holds none of: what StateUI draws in a view's `draw(_:)`, where StateUI's layout places the
+    /// children, what StateUI measures and what the host cuts - each proven by its effect in another case.
+    private static func none() -> [String: String] {
+        var none = [
+            "read growsWithText of TextEditor":
+                "an editor's growing is StateUI's measuring, which no property of AppKit's holds; its frames prove it",
+        ]
+        for field in ["TextField", "SearchField", "TextEditor"] {
+            none["read maximumLength of \(field)"] =
+                "AppKit's field keeps no bound: the host cuts what is typed, and typing proves it"
+        }
+        let shapePaint = [
+            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
+            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+        ]
+        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+            for member in shapePaint {
+                none["read \(member) of \(shape)"] =
+                    "StateUI draws a shape in its view's draw(_:), which holds none of its \(member); its drawing proves it"
+            }
+        }
+        for layout in ["Grid", "HStack", "VStack", "ZStack"] {
+            for member in ["stroke", "strokeWidth", "shape"] {
+                none["read \(member) of \(layout)"] =
+                    "StateUI draws a layout's box in its view's draw(_:), which holds none of its \(member); its drawing proves it"
+            }
+        }
+        for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
+            none["read padding of \(layout)"] =
+                "AppKit's view places its children where StateUI's layout says; their frames prove it"
+        }
+        for stack in ["HStack", "VStack"] {
+            none["read spacing of \(stack)"] = "AppKit's view places its children where StateUI's layout says; their frames prove it"
+        }
+        return none
+    }
 
     /// What the families ask of a driver that AppKit's has no path for yet says so, and stays empty in AppKit's column
     /// with why, rather than failing.
@@ -110,6 +152,14 @@ final class AppKitDriver: HostDriver {
         _ = renderer.runtime.core.runJobs()
         renderer.runtime.pump.turn()
         if renderer.frameClock.held { renderer.displayFrameForTesting() }
+        layOutWindows()
+    }
+
+    /// Lays each window out as the display cycle does: the windows stand off the screen, where none runs. A user
+    /// sees a window laid out, and acts on it laid out.
+    /// Design: docs/design/platforms/appkit/conformance.md#windows
+    func layOutWindows() {
+        for controller in renderer?.windowsForTesting ?? [] { controller.window?.layoutIfNeeded() }
     }
 
     func turn() {
@@ -131,6 +181,7 @@ final class AppKitDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
         let view = (element.native as? AppKitElement)?.view

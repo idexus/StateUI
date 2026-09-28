@@ -27,6 +27,10 @@ where the delegate hears it as it hears AppKit; another application in front
 is every window's `didResignKey`. A window closed by the user is the window's
 own `close`.
 
+No display cycle lays out a window off the screen, so the driver lays each
+window out at every step, as the cycle would, and before every act of the
+user's: a user acts on a window they see, laid out.
+
 A case's next launch is a launch: the windows the last host left open, each
 as its delegate encoded it, go through the restoration class as the system
 hands them back, before the new host finishes launching, and stand where
