@@ -209,6 +209,16 @@
         }
     }
 
+    /// Steps the host until `done` holds, at most `seconds`: for what another process does, as a web view's page.
+    /// Design: docs/design/host/conformance.md#a-session
+    public func settle(for seconds: Int, until done: () throws -> Bool) rethrows {
+        let end = ContinuousClock.now + .seconds(seconds)
+        while ContinuousClock.now < end {
+            if try done() { return }
+            driver.step()
+        }
+    }
+
     /// One turn of the pump: the only way a case waits to see that nothing happens.
     public func turn() {
         driver.turn()

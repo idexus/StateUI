@@ -103,6 +103,13 @@ holds, at most 150 steps, and sees that nothing happens by one turn of the
 pump alone. Motion is driven by a test clock and display frames, never by
 the time a machine takes.
 
+What another process does is waited for by the clock: a web view's page
+loads in its engine's own process, as fast as the machine lets it, and on a
+loaded machine or a CI simulator one page takes seconds. The web view's
+cases step the host until their effect holds or 20 seconds pass
+(`settle(for:until:)`); a step count would make their verdict the machine's
+speed.
+
 ## A colour drawn
 
 A colour StateUI draws is read at a point of what it draws and held as a

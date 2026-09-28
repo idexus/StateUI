@@ -27,7 +27,7 @@
                     }
                 }
 
-                s.settle { heard.values.contains { $0.hasPrefix("navigated") } }
+                s.settle(for: Self.pageSeconds) { heard.values.contains { $0.hasPrefix("navigated") } }
                 s.expect(heard.values.last, "navigated success")
                 s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseUrl: nil))
             },
@@ -44,10 +44,10 @@
                         Button("Ask").onClicked { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
                     }
                 }
-                s.settle { !arrived.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
 
                 try s.perform(.activate, on: s.element("ask"))
-                s.settle { !said.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !said.values.isEmpty }
                 s.expect(said.values, ["2"])
             },
             ConformanceCase("theAgentItNamesItselfByIsTheTrees", proves: [
@@ -65,11 +65,11 @@
                         }.id("ask")
                     }
                 }
-                s.settle { !arrived.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
                 s.expect(try s.held(WebViewContract.userAgent, on: s.element("web")), "StateUI conformance")
 
                 try s.perform(.activate, on: s.element("ask"))
-                s.settle { !said.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !said.values.isEmpty }
                 s.expect(said.values, ["StateUI conformance"])
             },
             ConformanceCase("theWayBackAndForwardOpenAndAreTaken", proves: [
@@ -92,22 +92,27 @@
                         Button("Forward").onClicked { try await web.goForward() }.id("forward")
                     }
                 }
-                // A page arrives before the next is asked for: one asked for while the first still loads takes its
-                // place, as in any browser, and leaves no way back to it.
-                s.settle { !arrived.values.isEmpty }
+                // Each page arrives before the next is asked for: one asked for while another still loads takes its
+                // place, as in any browser - and a way opens as its navigation starts, before its page arrives.
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
                 s.expect(arrived.values.isEmpty, false, "the first page arrived")
 
+                var pages = arrived.values.count
                 try s.perform(.activate, on: s.element("second"))
-                s.settle { heard.values.contains("back true") }
+                s.settle(for: Self.pageSeconds) { heard.values.contains("back true") && arrived.values.count > pages }
                 s.expect(heard.values.contains("back true"), true, "the way back opened")
 
+                pages = arrived.values.count
                 try s.perform(.activate, on: s.element("back"))
-                s.settle { heard.values.contains("forward true") }
+                s.settle(for: Self.pageSeconds) { heard.values.contains("forward true") && arrived.values.count > pages }
                 s.expect(heard.values.contains("forward true"), true, "taken back, the way forward opened")
 
+                // Both ways change as it is taken forward, in no order the contract names.
+                let beforeForward = heard.values.count
                 try s.perform(.activate, on: s.element("forward"))
-                s.settle { heard.values.last == "forward false" }
-                s.expect(heard.values.last, "forward false", "taken forward, the way forward closed")
+                s.settle(for: Self.pageSeconds) { heard.values.dropFirst(beforeForward).contains("forward false") }
+                s.expect(heard.values.dropFirst(beforeForward).contains("forward false"), true,
+                         "taken forward, the way forward closed")
             },
             ConformanceCase("aPageLoadedAgainIsHeard", proves: [
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
@@ -121,10 +126,10 @@
                         Button("Reload").onClicked { try await web.reload() }.id("reload")
                     }
                 }
-                s.settle { !heard.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !heard.values.isEmpty }
 
                 try s.perform(.activate, on: s.element("reload"))
-                s.settle { heard.values.count >= 2 }
+                s.settle(for: Self.pageSeconds) { heard.values.count >= 2 }
                 s.expect(heard.values.last, .refresh)
             },
             ConformanceCase("theEndOfItsContentIsHeard", proves: [Covered(WebViewContract.processTerminated)]) { s in
@@ -137,11 +142,14 @@
                 }
 
                 try s.perform(.endContent, on: s.element("web"))
-                s.settle { !heard.values.isEmpty }
+                s.settle(for: Self.pageSeconds) { !heard.values.isEmpty }
                 s.expect(heard.values, ["ended"])
             },
         ]
     }
+
+    /// How long a case waits for the web view's own process, in seconds: on a loaded machine one page takes seconds.
+    static let pageSeconds = 20
 
     /// A page saying `words`.
     static func page(_ words: String) -> String {
