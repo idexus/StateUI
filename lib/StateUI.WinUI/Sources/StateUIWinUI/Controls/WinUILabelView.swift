@@ -6,7 +6,8 @@
 import CStateUIWinUI
 
 /// A Label: a `TextBlock` - its words, or runs of them each in its own colour, size, weight, family, letter spacing
-/// and background.
+/// and background - standing in a `Border`, which draws what the label is drawn over and stands the words across its
+/// height.
 /// Design: docs/design/platforms/winui/controls.md#runs-of-words
 @MainActor
 final class WinUILabelView: WinUITextView {
@@ -17,6 +18,16 @@ final class WinUILabelView: WinUITextView {
     override func setText(_ text: String) {
         ownText = text
         if runs == nil { super.setText(text) }
+    }
+
+    /// What the label is drawn over: a colour, a gradient, or nothing.
+    func setBackground(_ value: HostValue?) {
+        WinUIBrush(value).withRelayBrush { stateui_winui_text_set_background(handle, $0) }
+    }
+
+    /// Where the words stand across the label's height.
+    func setVerticalAlignment(_ alignment: TextAlignment) {
+        stateui_winui_text_set_vertical(handle, alignment.rawValue)
     }
 
     /// Runs of words shown in place of the label's own (`MountedElement.textRuns`), each in its own look over the

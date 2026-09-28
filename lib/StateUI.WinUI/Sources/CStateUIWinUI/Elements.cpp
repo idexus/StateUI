@@ -251,7 +251,7 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
     try {
         auto object = as<IInspectable>(handle);
         winrt::hstring words;
-        if (auto block = object.try_as<controls::TextBlock>()) {
+        if (auto block = wordsOf(object)) {
             // Runs of words are the block's words, in order.
             for (auto const &piece : block.Inlines())
                 if (auto run = piece.try_as<winrt::Microsoft::UI::Xaml::Documents::Run>()) words = words + run.Text();

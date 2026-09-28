@@ -32,11 +32,11 @@ namespace {
                                    | static_cast<uint32_t>(c.G) << 8 | c.B);
     }
 
-    /// Runs `block` on a text block, or `control` on a control; the element is one or the other.
+    /// Runs `block` on a label's text block, or `control` on a control; the element is one or the other.
     template <typename OnBlock, typename OnControl>
     void either(StateUIObjectRef handle, OnBlock block, OnControl control) {
         auto object = as<IInspectable>(handle);
-        if (auto text = object.try_as<controls::TextBlock>()) block(text);
+        if (auto text = wordsOf(object)) block(text);
         else if (auto other = object.try_as<controls::Control>()) control(other);
     }
 }
@@ -104,7 +104,7 @@ extern "C" void stateui_winui_set_padding(StateUIObjectRef handle, double left, 
 
 extern "C" void stateui_winui_text_set_lines(StateUIObjectRef handle, bool wraps, int32_t lines, bool trims) {
     try {
-        auto block = borrow<controls::TextBlock>(handle);
+        auto block = labelWords(handle);
         block.TextWrapping(wraps ? xaml::TextWrapping::Wrap : xaml::TextWrapping::NoWrap);
         block.TextTrimming(trims ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
         block.MaxLines(std::max(0, lines));
@@ -117,7 +117,7 @@ extern "C" void stateui_winui_text_set_alignment(StateUIObjectRef handle, int32_
     try {
         auto aligned = horizontal == 1 ? xaml::TextAlignment::Center
             : horizontal == 2 ? xaml::TextAlignment::End : xaml::TextAlignment::Start;
-        borrow<controls::TextBlock>(handle).TextAlignment(aligned);
+        labelWords(handle).TextAlignment(aligned);
     } catch (...) {
         report("aligning a label's words");
     }
@@ -125,7 +125,7 @@ extern "C" void stateui_winui_text_set_alignment(StateUIObjectRef handle, int32_
 
 extern "C" void stateui_winui_text_set_spacing(StateUIObjectRef handle, int32_t characterSpacing, double lineHeight) {
     try {
-        auto block = borrow<controls::TextBlock>(handle);
+        auto block = labelWords(handle);
         block.CharacterSpacing(characterSpacing);
         block.LineStackingStrategy(lineHeight > 0 ? xaml::LineStackingStrategy::BlockLineHeight
                                                   : xaml::LineStackingStrategy::MaxHeight);
@@ -139,7 +139,7 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
     try {
         namespace documents = winrt::Microsoft::UI::Xaml::Documents;
         using winrt::Windows::UI::Text::TextDecorations;
-        auto block = borrow<controls::TextBlock>(handle);
+        auto block = labelWords(handle);
         auto inlines = block.Inlines();
         auto highlighters = block.TextHighlighters();
         inlines.Clear();
@@ -182,7 +182,7 @@ extern "C" int32_t stateui_winui_text_runs(StateUIObjectRef handle, double *valu
     try {
         namespace documents = winrt::Microsoft::UI::Xaml::Documents;
         using winrt::Windows::UI::Text::TextDecorations;
-        auto block = borrow<controls::TextBlock>(handle);
+        auto block = labelWords(handle);
         int32_t count = 0, at = 0;
         for (auto const &piece : block.Inlines()) {
             auto run = piece.try_as<documents::Run>();
@@ -221,7 +221,7 @@ extern "C" void stateui_winui_text_set_decorations(StateUIObjectRef handle, bool
         auto lines = TextDecorations::None;
         if (underline) lines = lines | TextDecorations::Underline;
         if (strikethrough) lines = lines | TextDecorations::Strikethrough;
-        borrow<controls::TextBlock>(handle).TextDecorations(lines);
+        labelWords(handle).TextDecorations(lines);
     } catch (...) {
         report("decorating a label's words");
     }

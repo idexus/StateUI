@@ -170,6 +170,10 @@ extension WinUIDriver {
             }
             let across = Int(try read(view, "textAlignment")) ?? 1
             return (across == 0 ? TextAlignment.center : across == 2 ? .end : .start).propValue
+        case "verticalTextAlignment" where view is WinUILabelView:
+            // WinUI's VerticalAlignment: top 0, centre 1, bottom 2, stretched 3 - the words at its top.
+            let down = Int(try read(view, "verticalAlignment")) ?? 3
+            return (down == 1 ? TextAlignment.center : down == 2 ? .end : .start).propValue
         case "padding" where !(view is WinUILayoutView): return try Self.insets(read(view, "padding"))?.propValue
         default: return nil
         }

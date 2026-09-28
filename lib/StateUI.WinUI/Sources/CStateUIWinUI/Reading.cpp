@@ -79,7 +79,7 @@ namespace {
 
     /// How words are written on a text block or a control.
     std::optional<std::string> font(IInspectable const &object, std::string_view what) {
-        auto text = object.try_as<controls::TextBlock>();
+        auto text = wordsOf(object);
         auto control = object.try_as<controls::Control>();
         if (!text && !control) return std::nullopt;
         if (what == "fontSize") return number(text ? text.FontSize() : control.FontSize());
@@ -131,6 +131,7 @@ namespace {
         if (what == "wrapping") return number(static_cast<int32_t>(text.TextWrapping()));
         if (what == "trimming") return number(static_cast<int32_t>(text.TextTrimming()));
         if (what == "maxLines") return number(text.MaxLines());
+        if (what == "verticalAlignment") return number(static_cast<int32_t>(text.VerticalAlignment()));
         return std::nullopt;
     }
 
@@ -284,7 +285,7 @@ namespace {
             }
         }
         if (auto found = font(object, what)) return found;
-        if (auto text = object.try_as<controls::TextBlock>()) {
+        if (auto text = wordsOf(object)) {
             if (auto found = block(text, what)) return found;
         }
         if (auto found = field(object, what)) return found;
@@ -346,7 +347,7 @@ namespace {
             if (what == "cornerRadius") return corners(held.CornerRadius());
         }
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
-            if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(element));
+            if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(metOf(object)));
             if (what == "flowDirection") return number(static_cast<int32_t>(element.FlowDirection()));
             if (what == "hitTestable") return flag(element.IsHitTestVisible());
             if (what == "zIndex") return number(controls::Canvas::GetZIndex(element));

@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Label: a `TextBlock` - its words, how they break and stand across it, and the space between the letters and
-    /// the lines.
+    /// A Label: a `TextBlock` in a `Border` - its words, how they break and stand across it and down it, the space
+    /// between the letters and the lines, and what it is drawn over.
     static func text(_ registry: Registry<WinUIView>) {
         registry.add(LabelContract.self, create: { _ in WinUILabelView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
@@ -17,6 +17,12 @@ extension WinUIRegistrations {
             }
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
+            }
+            label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+                view.setVerticalAlignment(alignment ?? .start)
+            }
+            label.property(VisualElementContract.background) { view, background in
+                view.setBackground(background?.propValue)
             }
             label.property(TextStyleElementContract.characterSpacing) { view, spacing in
                 view.setLetterSpacing(spacing ?? 0)

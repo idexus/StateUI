@@ -52,6 +52,16 @@ namespace stateui {
     /// Reads the control's theme again, so its template takes the resources written into the control.
     void readThemeAgain(xaml::FrameworkElement const &control);
 
+    /// The words a label shows - the text block its border holds - or `element` itself where it is a text block;
+    /// null for any other element.
+    controls::TextBlock wordsOf(IInspectable const &element);
+
+    /// The text block of the label `handle` names; throws for any other element.
+    controls::TextBlock labelWords(StateUIObjectRef handle);
+
+    /// What assistive technology meets of an element: a label's words, or the element itself.
+    xaml::UIElement metOf(IInspectable const &element);
+
     /// The first of the files `names` - UTF-8, each ended by a line feed - that the application's pictures hold;
     /// empty for none.
     std::wstring pictureFile(char const *names);

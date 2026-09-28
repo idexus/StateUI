@@ -10,8 +10,18 @@ value and reports the user's change back ([patches](../../host/patches.md)).
 How words look is one road for every element showing them, a `TextBlock` or a
 control: the font - its size, weight, slant and family - the colour, and the
 room around them, each the platform's where the tree says nothing. A label
-adds its lines, its alignment across itself, the space between its letters
-and its lines, and the lines under or through its words.
+adds its lines, its alignment across itself and down itself, the space
+between its letters and its lines, the lines under or through its words, and
+what it is drawn over.
+
+A label is a `TextBlock` standing in a `Border`: a text block draws nothing
+behind its words and stands them at its top whatever its height, so the
+border draws the label's background and stands the text block at the label's
+top, middle or bottom, the text block's room around the words inside it. With
+no background the border is drawn clear, so a label is hit across its bounds
+as its text block was. What assistive technology meets of a label is its text
+block - a border has no automation peer - so its identifier, name, hint and
+heading level are the text block's.
 
 WinUI spaces letters in thousandths of an em and lines in DIPs, where StateUI
 gives the first in points and the second as a multiple of the font's own

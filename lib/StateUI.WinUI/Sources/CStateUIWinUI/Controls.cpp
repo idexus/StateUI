@@ -16,22 +16,72 @@
 
 using namespace stateui;
 
+namespace {
+    /// What a label with no background is drawn over: nothing, which is still hit across its bounds.
+    xaml::Media::SolidColorBrush clearGround() {
+        return xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0});
+    }
+}
+
+controls::TextBlock stateui::wordsOf(IInspectable const &element) {
+    if (auto block = element.try_as<controls::TextBlock>()) return block;
+    if (auto border = element.try_as<controls::Border>()) return border.Child().try_as<controls::TextBlock>();
+    return nullptr;
+}
+
+controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
+    auto words = wordsOf(as<IInspectable>(handle));
+    if (!words) winrt::throw_hresult(E_INVALIDARG);
+    return words;
+}
+
+xaml::UIElement stateui::metOf(IInspectable const &element) {
+    if (auto border = element.try_as<controls::Border>()) {
+        if (auto block = border.Child().try_as<controls::TextBlock>()) return block;
+    }
+    return element.as<xaml::UIElement>();
+}
+
 extern "C" StateUIObjectRef stateui_winui_text_make(void) {
     try {
+        // The words stand in a border, which draws what they are drawn over and stands them across its height as
+        // their alignment says: a text block does neither.
         controls::TextBlock block;
         block.TextWrapping(xaml::TextWrapping::Wrap);
-        return detach(block);
+        controls::Border label;
+        label.Background(clearGround());
+        label.Child(block);
+        return detach(label);
     } catch (...) {
-        report("making a text block");
+        report("making a label");
         return nullptr;
     }
 }
 
 extern "C" void stateui_winui_text_set_text(StateUIObjectRef handle, char const *utf8) {
     try {
-        borrow<controls::TextBlock>(handle).Text(text(utf8));
+        labelWords(handle).Text(text(utf8));
     } catch (...) {
-        report("setting a text block's words");
+        report("setting a label's words");
+    }
+}
+
+extern "C" void stateui_winui_text_set_background(StateUIObjectRef handle, StateUIBrush background) {
+    try {
+        auto fill = brush(background);
+        borrow<controls::Border>(handle).Background(fill ? fill : clearGround());
+    } catch (...) {
+        report("setting what a label is drawn over");
+    }
+}
+
+extern "C" void stateui_winui_text_set_vertical(StateUIObjectRef handle, int32_t vertical) {
+    try {
+        labelWords(handle).VerticalAlignment(vertical == 1 ? xaml::VerticalAlignment::Center
+                                             : vertical == 2 ? xaml::VerticalAlignment::Bottom
+                                                             : xaml::VerticalAlignment::Stretch);
+    } catch (...) {
+        report("standing a label's words across its height");
     }
 }
 

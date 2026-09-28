@@ -33,7 +33,7 @@ namespace {
 
     /// The peer assistive technology meets for `handle`; null for an element WinUI gives none.
     peers::AutomationPeer peer(StateUIObjectRef handle) {
-        return peers::FrameworkElementAutomationPeer::CreatePeerForElement(as<xaml::UIElement>(handle));
+        return peers::FrameworkElementAutomationPeer::CreatePeerForElement(metOf(as<IInspectable>(handle)));
     }
 
     /// A control left out with its parts - what its own template draws - each part with the view it had, so it
@@ -102,7 +102,8 @@ extern "C" void stateui_winui_set_accessibility(
     int32_t presence
 ) {
     try {
-        auto element = as<xaml::UIElement>(handle);
+        // A label's words are what assistive technology meets of it; the border they stand in has no peer.
+        auto element = metOf(as<IInspectable>(handle));
         words(element, Properties::AutomationIdProperty(), identifier);
         words(element, Properties::NameProperty(), label);
         words(element, Properties::HelpTextProperty(), hint);
