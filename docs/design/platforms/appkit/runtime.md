@@ -81,6 +81,15 @@ routes ⌘C, ⌘V and ⌘Z through the menu bar's key equivalents, so a field in
 application with no Edit menu copies and pastes nothing. A page's menus join
 the bar as the page shows, into the menu of the same name where there is one.
 
+## The toolbar
+
+A window's toolbar holds the chrome its arrangement composes. A layout the
+tree stands in it - a title bar's leading or trailing content, a page's
+title view - is held in a slot at the size StateUI measures it at: AppKit
+measures a toolbar item's view by its constraints and warns of any it
+measures at nothing, so a layout holding nothing stands out of the toolbar,
+and in it again once it holds something.
+
 ## Acts
 
 The acts every host performs (`HostActs`) are AppKit's own calls: the time

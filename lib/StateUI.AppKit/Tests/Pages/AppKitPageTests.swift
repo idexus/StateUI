@@ -818,6 +818,39 @@ final class AppKitPageTests: XCTestCase {
         chrome.performForTesting(saveItem.itemIdentifier)
     }
 
+    /// A layout standing in the toolbar stands at the size StateUI measures it at - AppKit measures a toolbar item's
+    /// view by Auto Layout and warns of any at nothing - so it stands out of the toolbar while it holds nothing, and
+    /// in it once it holds something.
+    @MainActor
+    func testALayoutInTheToolbarSaysItsSize() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        func details(_ words: [String]) -> HostPatch {
+            var row = HostPatch(id: .manual("row"), type: .hStack)
+            row.children = .arranged(words.map { word in
+                var label = HostPatch(id: .manual(word), type: .label)
+                label.properties[.text] = .string(word)
+                return label
+            })
+            var slot = HostPatch(id: .manual("title-slot"), type: .titleView)
+            slot.children = .arranged([row])
+            var page = page("details", title: "Details", events: 200)
+            var content = page.children.arrangedForTesting
+            content.append(slot)
+            page.children = .arranged(content)
+            return page
+        }
+        renderer.applyForTesting(tree(navigation([page("home", events: 100), details([])])))
+        let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        XCTAssertNil(chrome.itemForTesting(AppKitWindowToolbar.center), "nothing held, no item")
+
+        renderer.applyForTesting(tree(navigation([page("home", events: 100), details(["Search", "title"])])))
+        let held = try XCTUnwrap(chrome.itemForTesting(AppKitWindowToolbar.center)?.view)
+        XCTAssertGreaterThan(held.fittingSize.width, 40, "the words' room")
+        XCTAssertGreaterThan(held.fittingSize.height, 10)
+    }
+
     /// The page's actions are native toolbar items: the primary ones by
     /// priority, then source order, and the secondary ones behind the
     /// toolbar's own overflow menu.

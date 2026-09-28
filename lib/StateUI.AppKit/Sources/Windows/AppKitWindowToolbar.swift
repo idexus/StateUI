@@ -73,6 +73,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
     private var overflowActions: [AppKitToolbarAction] = []
 
+    /// The chrome last shown, shown again as a slot comes to hold something or nothing.
+    private var shown: AppKitWindowChrome?
+
+    /// The slots the layouts standing in the toolbar are held in, by the layout.
+    private var slots: [ObjectIdentifier: AppKitToolbarSlot] = [:]
+
     init(windowIdentifier: String) {
         toolbar = NSToolbar(identifier: NSToolbar.Identifier(
             "StateUI.Window.\(windowIdentifier)"))
@@ -87,6 +93,22 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// Shows exactly this chrome. Items that stay keep their native item and
     /// view; only what changed is written.
     func apply(_ chrome: AppKitWindowChrome) {
+        shown = chrome
+        var nextSlots: [ObjectIdentifier: AppKitToolbarSlot] = [:]
+        /// A layout stands in the toolbar in its slot, and not at all while it holds nothing.
+        func standing(_ view: NSView?) -> NSView? {
+            guard let view, view is AppKitTravellingLayout else { return view }
+            let slot = slots[ObjectIdentifier(view)] ?? AppKitToolbarSlot(holding: view)
+            slot.onEmptied = { [weak self] in
+                guard let self, let shown = self.shown else { return }
+                self.apply(shown)
+            }
+            nextSlots[ObjectIdentifier(view)] = slot
+            return slot.holdsNothing ? nil : slot
+        }
+        let (leading, center, trailing) = (standing(chrome.leading), standing(chrome.center), standing(chrome.trailing))
+        slots = nextSlots
+
         var nextIdentifiers: [NSToolbarItem.Identifier] = []
         var nextViews: [NSToolbarItem.Identifier: NSView] = [:]
         var nextActions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
@@ -102,12 +124,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextIdentifiers.append(Self.title)
             nextViews[Self.title] = title
         }
-        if let leading = chrome.leading {
+        if let leading {
             nextIdentifiers.append(Self.leading)
             nextViews[Self.leading] = leading
         }
         nextIdentifiers.append(.flexibleSpace)
-        if let center = chrome.center {
+        if let center {
             nextIdentifiers += [Self.center, .flexibleSpace]
             nextViews[Self.center] = center
         }
@@ -116,7 +138,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextActions[action.identifier] = action
         }
         if !chrome.overflow.isEmpty { nextIdentifiers.append(Self.overflow) }
-        if let trailing = chrome.trailing {
+        if let trailing {
             nextIdentifiers.append(Self.trailing)
             nextViews[Self.trailing] = trailing
         }
@@ -136,7 +158,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         views = nextViews
         actions = nextActions
         overflowActions = chrome.overflow
-        toolbar.centeredItemIdentifiers = chrome.center == nil ? [] : [Self.center]
+        toolbar.centeredItemIdentifiers = center == nil ? [] : [Self.center]
 
         if sameItems {
             if !drawsAlike { toolbar.items.forEach(configure) }
