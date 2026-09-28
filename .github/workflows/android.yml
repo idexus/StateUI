@@ -78,8 +78,10 @@ jobs:
       # setup script is not needed (platform-traps.md).
       - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
         run: |
-          set -euo pipefail
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ANDROID_NDK_VERSION" > /dev/null
+          # No pipefail: the runner ignores SIGPIPE, so `yes` fails on the broken pipe once
+          # sdkmanager stops reading. The pipe's status is sdkmanager's own.
+          set -eu
+          yes 2> /dev/null | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ANDROID_NDK_VERSION" > /dev/null
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
 
       # Gradle and the Android plugin take JDK 21.
