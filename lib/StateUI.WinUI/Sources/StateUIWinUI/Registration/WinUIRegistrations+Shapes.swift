@@ -68,6 +68,8 @@ extension WinUIRegistrations {
             fill: WinUIBrush(values[ShapeContract.fill]?.propValue),
             stroke: WinUIBrush(values[ShapeContract.stroke]?.propValue),
             width: values[ShapeContract.strokeWidth] ?? 1,
+            outline: BoxArithmetic.outlineWidth(
+                stroke: values[ShapeContract.stroke]?.propValue, width: values[ShapeContract.strokeWidth]),
             dashes: values[ShapeContract.strokeDashPattern] ?? [],
             dashOffset: values[ShapeContract.strokeDashOffset] ?? 0,
             cap: values[ShapeContract.strokeLineCap] ?? .flat,

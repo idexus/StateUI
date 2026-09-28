@@ -104,7 +104,7 @@ of its members each meets, and why a cell is empty.
 | [ActivityIndicator](controls/ActivityIndicator.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Application](controls/Application.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Button](controls/Button.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Canvas](controls/Canvas.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Canvas](controls/Canvas.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [CheckBox](controls/CheckBox.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [ColorBox](controls/ColorBox.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Content](controls/Content.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
@@ -441,7 +441,7 @@ Every control, and every part an application, its windows and its pages are made
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  |  |  |  |
 | [Button](controls/Button.md) | 86 |  |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | 70 |  |  |  | 4 ✅ |  |  |
+| [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](controls/CheckBox.md) | 69 |  |  |  |  |  |  |
 | [ColorBox](controls/ColorBox.md) | 68 |  |  |  |  |  |  |
 | [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
@@ -473,7 +473,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 4 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
 
 ### Application structure
 
@@ -540,7 +540,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |  |  |  |  |  |  |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 |  |  |  |  |  |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 |  |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 |  |  |  | 4 ✅ |  |  |
+| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 |  |  |  |  |  |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  |  |  |  |
 | [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 |  |  |  |  |  |  |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 |  |  |  |  |  |  |

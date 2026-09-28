@@ -17,7 +17,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 68 |  |  |  |  |  |  |
 | [Button](Button.md) | 86 |  |  |  |  |  |  |
-| [Canvas](Canvas.md) | 70 |  |  |  | 4 ✅ |  |  |
+| [Canvas](Canvas.md) | 70 |  |  |  |  |  |  |
 | [CheckBox](CheckBox.md) | 69 |  |  |  |  |  |  |
 | [ColorBox](ColorBox.md) | 68 |  |  |  |  |  |  |
 | [DatePicker](DatePicker.md) | 80 |  |  |  |  |  |  |
@@ -49,7 +49,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 4 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
 <!-- controls:end -->
 
 ## Application structure

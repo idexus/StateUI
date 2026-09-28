@@ -66,13 +66,9 @@ final class WinUIImageView: WinUIView {
     private func draw(in room: Rect) {
         guard let declared, aspect != .stretch, room.width > 0, room.height > 0 else { return }
 
-        let across = room.width / declared.width, down = room.height / declared.height
-        let scale = switch aspect {
-        case .fit: min(across, down)
-        case .fill, .stretch: max(across, down)
-        case .center: 1.0
-        }
-        let size = LayoutSize(width: declared.width * scale, height: declared.height * scale)
+        let shown = PictureArithmetic.place(declared, in: LayoutSize(width: room.width, height: room.height), aspect: aspect)
+        let size = LayoutSize(width: shown.width, height: shown.height)
+        guard size.width > 0, size.height > 0 else { return }
         if let drawn, drawn.width >= size.width, drawn.height >= size.height { return }
 
         drawn = size

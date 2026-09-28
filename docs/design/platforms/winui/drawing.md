@@ -51,7 +51,9 @@ Each of the six shapes is one WinUI `Path` in a figure of the relay's (see
 whose geometry the host hands over for the room its layout gives it, again
 whenever that room changes. A
 rectangle and an ellipse fill the room, drawn half their outline in from its
-edges so the outline stays inside, as WinUI's own `Rectangle` does, then
+edges so the outline stays inside, as WinUI's own `Rectangle` does - the
+outline drawn, none without a colour (`BoxArithmetic.outlineWidth`), while
+the `Path` holds the width the tree gave - then
 moved by their transform; a rectangle's corners are its own arcs, each
 corner its radius. A line, a
 path, a polygon and a polyline draw a geometry of their own - a path's data

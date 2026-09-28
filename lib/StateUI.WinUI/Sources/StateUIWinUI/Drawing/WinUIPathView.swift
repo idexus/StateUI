@@ -21,6 +21,9 @@ final class WinUIPathView: WinUIView {
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var strokeWidth = 1.0
 
+    /// The outline drawn, which the figure is inset by half of; none without a colour.
+    private var outlineWidth = 0.0
+
     /// Where a geometry of the shape's own stands before it is placed, as WinUI measures it.
     private var bounds = Rect(x: 0, y: 0, width: 0, height: 0)
 
@@ -31,12 +34,14 @@ final class WinUIPathView: WinUIView {
         super.init { number in stateui_winui_path_make(number) }
     }
 
-    /// Paints the shape.
+    /// Paints the shape: its outline `width` wide - WinUI holding the width whatever it draws - and its figure
+    /// inset by half of `outline`, the outline drawn: none without a colour.
     func paint(
-        fill: WinUIBrush, stroke: WinUIBrush, width: Double, dashes: [Double], dashOffset: Double, cap: LineCap,
-        join: LineJoin, miter: Double
+        fill: WinUIBrush, stroke: WinUIBrush, width: Double, outline: Double, dashes: [Double], dashOffset: Double,
+        cap: LineCap, join: LineJoin, miter: Double
     ) {
         strokeWidth = ShapeArithmetic.strokeWidth(width)
+        outlineWidth = ShapeArithmetic.strokeWidth(outline)
         fill.withRelayBrush { fill in
             stroke.withRelayBrush { stroke in
                 stateui_winui_path_paint(
@@ -78,7 +83,7 @@ final class WinUIPathView: WinUIView {
 
     /// Hands WinUI the geometry for `room`, again only where the room or the geometry changed.
     private func draw(in room: Rect) {
-        let inset = strokeWidth / 2
+        let inset = outlineWidth / 2
         if let drawn, drawn.geometry == geometry, drawn.width == room.width, drawn.height == room.height,
            drawn.inset == inset { return }
 

@@ -18,6 +18,15 @@ final class WinUIPathViewTests: XCTestCase {
         XCTAssertEqual(colours, [Self.red, Self.red, 0])
     }
 
+    /// A shape with no outline's colour has no outline: it is filled to the very edge of its room, not inset by half
+    /// an outline nobody sees (`BoxArithmetic.outlineWidth`).
+    func testAShapeWithNoOutlineColourIsFilledToItsEdge() throws {
+        let colours = try drawn(width: 100, height: 60, at: [(0.25, 30), (99.75, 30), (50, 0.25)]) {
+            Rectangle().fill(Color("#FF0000")).width(100).height(60)
+        }
+        XCTAssertEqual(colours, [Self.red, Self.red, Self.red])
+    }
+
     /// An ellipse fills its room, and nothing beyond its curve.
     func testAnEllipseFillsItsRoom() throws {
         let colours = try drawn(width: 100, height: 60, at: [(50, 30), (5, 30), (3, 3)]) {
