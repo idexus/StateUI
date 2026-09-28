@@ -115,8 +115,10 @@ the working tree before the build. The host's test script works it out
 to the run in `STATEUI_MARKS_INPUTS`; Android's script writes it over the files
 it pulls from the device. The renderer works the digest out again the same way
 (`MarkInputs`), and a verdict whose file names another digest, or none, is
-shown ⌛ with what it said in the note. A run of the current sources makes it
-fresh again; nothing a person remembers does.
+shown ⌛ with no note: what it said is no verdict of these sources, and a note
+repeating it on every stale cell of every host only hides the notes that
+count. A run of the current sources makes it fresh again; nothing a person
+remembers does.
 
 A case's outcome is the verdict of what it proves, never of what it only
 needs: `needs:` holds the button whose click makes the change, and the case

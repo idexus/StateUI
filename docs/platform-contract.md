@@ -37,7 +37,7 @@ host merely implements or declares by hand earns a mark.
   here: each run writes the digest of the sources its verdicts rest on
   (`.scripts/Marks/inputs.sh`, the folders `.scripts/Marks/inputs.txt`
   names), and a verdict whose digest differs is stale until the host's suite
-  runs again. The note keeps what that run said.
+  runs again. It carries no note: what that run said is no verdict of these.
 - An empty cell means not realized on that host, or no run of it; the note
   says which. It is deliberately not an estimate of how difficult the work
   will be.

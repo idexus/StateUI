@@ -12,10 +12,10 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (90) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSTextField` / `NSSecureTextField` | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UITextField` | a run of other sources said: ✅ |
-| Android Views | ⌛ |  | `EditText` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `TextBox` / `PasswordBox` | a run of other sources said: ✅ |
+| AppKit | ⌛ |  | `NSTextField` / `NSSecureTextField` |  |
+| UIKit | ⌛ |  | `UITextField` |  |
+| Android Views | ⌛ |  | `EditText` |  |
+| WinUI 3 | ⌛ |  | `TextBox` / `PasswordBox` |  |
 | GTK 4 |  |  | `GtkEntry` / `GtkPasswordEntry` | no run of it on these sources |
 | Web |  |  | `<input>` | no host yet |
 
@@ -25,10 +25,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isPassword` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read isPassword of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read isPassword of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `returnKey` | property | `ReturnKey` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: · cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: not realized |
-| `showsClearButton` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onSubmitted` (`submitted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: · cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
+| `isPassword` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `returnKey` | property | `ReturnKey` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `showsClearButton` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onSubmitted` (`submitted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -36,7 +36,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -44,39 +44,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read a heading's level - AppKit marks a heading, not its level; UIKit: a run of other sources said: · cannot read a heading's level - UIKit marks a heading, not its level; Android Views: a run of other sources said: · cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: ✅ |
-| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ waits on TextField.isReadOnly; WinUI 3: a run of other sources said: ✅ |
-| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read pivotX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read pivotX of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read pivotY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read pivotY of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotation of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotation of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotationX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotationX of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotationY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotationY of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scale of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scale of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scaleX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scaleX of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scaleY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scaleY of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read translationX of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read translationX of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read translationY of TextField: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read translationY of TextField: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [View](tiers/View.md)
 
@@ -84,38 +84,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pinch on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pinch on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: tap on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: tap on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: tap on TextField: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: tap on TextField: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [InputView](tiers/InputView.md)
 
@@ -123,16 +123,16 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read cursorPosition of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `inputPurpose` | property | `InputPurpose` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: · cannot read inputPurpose of TextField - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isReadOnly` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isSpellCheckEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `isTextPredictionEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read maximumLength of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read maximumLength of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `placeholder` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read placeholder of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read placeholder of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `placeholderColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read placeholderColor of TextField - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read placeholderColor of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `selectionLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read selectionLength of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read selectionLength of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `onTextChanged` (`textChanged`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `cursorPosition` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `inputPurpose` | property | `InputPurpose` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isReadOnly` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isSpellCheckEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isTextPredictionEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `placeholder` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `placeholderColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `selectionLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onTextChanged` (`textChanged`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -140,8 +140,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read isPassword of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ waits on TextField.textCase; Android Views: a run of other sources said: ◐ cannot read isPassword of TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ◐ waits on TextField.isPassword |
-| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
+| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -149,8 +149,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `characterSpacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `textColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -158,10 +158,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read a family - Android's typeface keeps no family's name; WinUI 3: a run of other sources said: ✅ |
-| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read the words of a AppKitTextFieldView - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `fontAttributes` | property | `FontAttributes` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `fontFamily` | property | `Name` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `fontSize` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -169,5 +169,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read horizontalTextAlignment of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read horizontalTextAlignment of TextField - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `verticalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `verticalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |

@@ -12,10 +12,10 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSApplication` / structure | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UIApplication` / `UIWindowScene` | a run of other sources said: ✅ |
-| Android Views | ⌛ |  | `Application` / structure | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `Application` / structure | a run of other sources said: ✅ |
+| AppKit | ⌛ |  | `NSApplication` / structure |  |
+| UIKit | ⌛ |  | `UIApplication` / `UIWindowScene` |  |
+| Android Views | ⌛ |  | `Application` / structure |  |
+| WinUI 3 | ⌛ |  | `Application` / structure |  |
 | GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
 | Web |  |  | `document` / structure | no host yet |
 
@@ -25,15 +25,15 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: a run of other sources said: 🔌 only through the host's own: read a question: the buttons' captions the host keeps; Android Views: a run of other sources said: 🔌 only through the host's own: read a question: what the relay keeps of the dialog it showed; WinUI 3: a run of other sources said: ✅ |
-| `announce` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read what the screen reader said: the host's own list of what it announced; UIKit: a run of other sources said: 🔌 only through the host's own: read what the screen reader said: the host's own list of what it announced; Android Views: a run of other sources said: · cannot read what the screen reader said - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: a run of other sources said: 🔌 only through the host's own: read a question: the buttons' captions the host keeps; Android Views: a run of other sources said: 🔌 only through the host's own: read a question: what the relay keeps of the dialog it showed; WinUI 3: a run of other sources said: ✅ |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: a run of other sources said: 🔌 only through the host's own: read a question: the buttons' captions the host keeps; Android Views: a run of other sources said: 🔌 only through the host's own: read a question: what the relay keeps of the dialog it showed; WinUI 3: a run of other sources said: ✅ |
-| `currentTime` | act | `() -> [Double]` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `currentTimeZone` | act | `() -> String` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `handlerFailed` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read the log - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot focus on TextField - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: ✅ |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read what is kept - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read a question: the captions the host keeps, not the alert's buttons; UIKit: a run of other sources said: 🔌 only through the host's own: read a question: the buttons' captions the host keeps; Android Views: a run of other sources said: 🔌 only through the host's own: read a question: what the relay keeps of the dialog it showed; WinUI 3: a run of other sources said: ✅ |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `alert` | act | `(String, String, String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `announce` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `currentTime` | act | `() -> [Double]` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `currentTimeZone` | act | `() -> String` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |

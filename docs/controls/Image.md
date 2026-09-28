@@ -12,10 +12,10 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (69) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSImageView` | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UIImageView` | a run of other sources said: ✅ |
-| Android Views | ⌛ |  | `ImageView` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `Image` | a run of other sources said: ✅ |
+| AppKit | ⌛ |  | `NSImageView` |  |
+| UIKit | ⌛ |  | `UIImageView` |  |
+| Android Views | ⌛ |  | `ImageView` |  |
+| WinUI 3 | ⌛ |  | `Image` |  |
 | GTK 4 |  |  | `GtkPicture` | no run of it on these sources |
 | Web |  |  | `<img>` | no host yet |
 
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isAnimating` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read isAnimating of Image - AppKit's driver has no path for it yet; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `source` | property | `ImageSource` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read source of Image - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read source of Image - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `isAnimating` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `source` | property | `ImageSource` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -42,39 +42,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot read a heading's level - AppKit marks a heading, not its level; UIKit: a run of other sources said: · cannot read a heading's level - UIKit marks a heading, not its level; Android Views: a run of other sources said: · cannot read a heading's level - Android marks a heading, not its level; WinUI 3: a run of other sources said: ✅ |
-| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot focus Image: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; WinUI 3: a run of other sources said: – Image takes no keyboard focus here: it refuses it, and nothing is heard |
-| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot focus Image: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; WinUI 3: a run of other sources said: – Image takes no keyboard focus here: it refuses it, and nothing is heard |
-| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read pivotX of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read pivotX of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read pivotY of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read pivotY of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotation of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotation of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotationX of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotationX of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read rotationY of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read rotationY of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: not realized |
-| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scale of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scale of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scaleX of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scaleX of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read scaleY of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read scaleY of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read translationX of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read translationX of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: read translationY of Image: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🔌 only through the host's own: read translationY of Image: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: · cannot focus Image: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus Image: it takes no keyboard focus here; WinUI 3: a run of other sources said: – Image takes no keyboard focus here: it refuses it, and nothing is heard |
-| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [View](tiers/View.md)
 
@@ -82,38 +82,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: a run of other sources said: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pinch on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pinch on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: hover on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: hover on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: pan on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: pan on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: tap on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: tap on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🔌 only through the host's own: tap on Image: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🔌 only through the host's own: tap on Image: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
 
 ## From [ImageElement](tiers/ImageElement.md)
 
@@ -121,4 +121,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ◐ cannot read aspect of Image - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read aspect of Image - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read aspect of Image - Android's driver has no path for it yet; WinUI 3: a run of other sources said: ✅ |
+| `aspect` | property | `Aspect` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |

@@ -164,7 +164,7 @@ final class ControlDictionaryTests: XCTestCase {
 
     /// A mark is the run's alone, each verdict its own sign: proven ✅, never –, failed ❌, partly ◐, the driver
     /// unable ·, waiting ⏸, and nothing for a cell a run gave no verdict or said is not realized; a verdict a run of
-    /// other sources gave is ⌛, what it said kept in the note.
+    /// other sources gave is ⌛, with no note: what it said is no verdict of these sources.
     func testAMarkIsTheRunsVerdictAlone() {
         let column = ControlDictionary.Column(host: "WinUI 3", verdicts: [
             "Button": HostVerdict(element: "Button", member: nil, mark: .proven),
@@ -190,7 +190,7 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(column.mark(of: "text", on: "TextField").mark, "⏸")
         XCTAssertEqual(column.mark(of: nil, on: "Map").mark, "–")
         XCTAssertEqual(column.mark(of: nil, on: "Label").mark, "⌛")
-        XCTAssertEqual(column.mark(of: nil, on: "Label").note, "a run of other sources said: ✅")
+        XCTAssertEqual(column.mark(of: nil, on: "Label").note, "")
     }
 
     /// The renderer's digest of a host's sources is the one `.scripts/Marks/inputs.sh` prints, which every host's

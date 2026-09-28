@@ -12,10 +12,10 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSMenu` / `NSMenuItem` | a run of other sources said: ✅ |
-| UIKit | ⌛ |  | `UIMenu` / `UIAction` | a run of other sources said: ✅ |
-| Android Views | ⌛ |  | `PopupMenu` / `MenuItem`; no menu bar | a run of other sources said: · cannot read the menu of Label - Android's driver has no path for it yet |
-| WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` | a run of other sources said: ✅ |
+| AppKit | ⌛ |  | `NSMenu` / `NSMenuItem` |  |
+| UIKit | ⌛ |  | `UIMenu` / `UIAction` |  |
+| Android Views | ⌛ |  | `PopupMenu` / `MenuItem`; no menu bar |  |
+| WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 

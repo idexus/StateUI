@@ -83,14 +83,13 @@ struct ControlDictionary {
         let stale: Set<String>
 
         /// The mark and the note `member` of `element` has on this host - or `element` itself, where `member` is
-        /// nil: what its runs said, ⌛ over what a run of other sources said.
+        /// nil: what its runs said, or ⌛ with no note where a run of other sources said it.
         /// Design: docs/design/contracts/dictionary.md#marks
         func mark(of member: String?, on element: String) -> (mark: String, note: String) {
             let subject = member.map { "\(element).\($0)" } ?? element
             let (mark, note) = Self.shown(verdicts[subject]?.mark)
             guard stale.contains(subject), verdicts[subject] != nil else { return (mark, note) }
-            let was = [mark.isEmpty ? nil : mark, note.isEmpty ? nil : note].compactMap { $0 }.joined(separator: " ")
-            return ("⌛", "a run of other sources said: " + (was.isEmpty ? "not realized" : was))
+            return ("⌛", "")
         }
 
         /// How a verdict is shown: its mark, and the note that says more.
