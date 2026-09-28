@@ -26,7 +26,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [HStack](HStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [Image](Image.md) | 69 |  |  |  | 50 ✅ · 3 – |  |  |
 | [ItemsView](ItemsView.md) | 76 |  |  |  | 60 ✅ |  |  |
-| [Label](Label.md) | 81 |  |  |  | 61 ✅ · 3 – |  |  |
+| [Label](Label.md) | 81 |  |  |  | 63 ✅ · 3 – |  |  |
 | [Line](Line.md) | 80 |  |  |  | 62 ✅ · 3 – |  |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
 | [Path](Path.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
@@ -49,7 +49,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1810 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met |  |  |
 <!-- controls:end -->
 
 ## Application structure

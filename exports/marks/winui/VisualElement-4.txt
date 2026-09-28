@@ -1,4 +1,4 @@
-# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
+# inputs 8db4bb9866bd95b1c7987ac988249ece1075cf5a
 ActivityIndicator.accessibilityHeadingLevel: ✅
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frameChanged: ✅
@@ -98,7 +98,7 @@ ItemsView.pivotY: ✅
 ItemsView.scale: ✅
 ItemsView.translationY: ✅
 Label.accessibilityHint: ✅
-Label.background: not realized
+Label.background: ✅
 Label.frame: ✅
 Label.isEnabled: not realized
 Label.rotation: ✅

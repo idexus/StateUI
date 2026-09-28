@@ -452,7 +452,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [Image](controls/Image.md) | 69 |  |  |  | 50 ✅ · 3 – |  |  |
 | [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 60 ✅ |  |  |
-| [Label](controls/Label.md) | 81 |  |  |  | 61 ✅ · 3 – |  |  |
+| [Label](controls/Label.md) | 81 |  |  |  | 63 ✅ · 3 – |  |  |
 | [Line](controls/Line.md) | 80 |  |  |  | 62 ✅ · 3 – |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
@@ -475,7 +475,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1810 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met |  |  |
 
 ### Application structure
 

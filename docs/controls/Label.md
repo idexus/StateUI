@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextField` label; `NSAttributedString` runs | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UILabel`; `NSAttributedString` runs | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `TextView`; `SpannableString` spans | a run of other sources said: ✅ |
-| WinUI 3 | ✅ | 61 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
+| WinUI 3 | ✅ | 63 ✅ · 3 – | `TextBlock`; `Run` inlines |  |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
@@ -46,7 +46,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
-| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: ✅; WinUI 3: not realized |
+| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: ✅ |
 | `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | – |  |  | a run of other sources said: · cannot focus Label: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus Label: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus Label: it takes no keyboard focus here; WinUI 3: Label takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
@@ -151,7 +151,7 @@ Where text sits inside the space its own element was given.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `horizontalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read horizontalTextAlignment of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read horizontalTextAlignment of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read horizontalTextAlignment of Label - Android's driver has no path for it yet |
-| `verticalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: · cannot read verticalTextAlignment of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read verticalTextAlignment of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read verticalTextAlignment of Label - Android's driver has no path for it yet; WinUI 3: not realized |
+| `verticalTextAlignment` | property | `TextAlignment` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read verticalTextAlignment of Label - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read verticalTextAlignment of Label - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read verticalTextAlignment of Label - Android's driver has no path for it yet |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
