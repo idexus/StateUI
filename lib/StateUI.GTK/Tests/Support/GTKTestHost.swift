@@ -182,14 +182,16 @@ extension GTKRenderer {
         }
     }
 
-    /// One step as a shown window's frame clock takes it: GLib's loop a moment, a handler resumed on the pool back
-    /// on the UI thread's queue, a turn, and a display frame while something asks for one - else GTK's layout
-    /// alone. A window behind another gets neither from the desktop.
+    /// One step as a shown window's frame clock takes it: GTK's layout of what waits for one, then GLib's loop a
+    /// moment - what waits for the layout among it - a handler resumed on the pool back on the UI thread's queue, a
+    /// turn, and a display frame while something asks for one. A window behind another gets no frames from the
+    /// desktop.
     func step() {
+        layOut()
         GTKTestHost.pump(0.01)
         _ = runtime.core.runJobs()
         runtime.pump.turn()
-        if frameClock.held { frame() } else { layOut() }
+        if frameClock.held { frame() }
     }
 
     /// The window's name, as GTK holds it.
