@@ -20,13 +20,7 @@ enum GTKDoorbell {
 
     /// Started from a nonisolated function: a closure written in a `@MainActor` one is MainActor's.
     private nonisolated static func startThread() {
-        _ = g_thread_new("stateui-doorbell", { _ in
-            let core = CoreLink()
-            while true {
-                _ = core.waitForWork()
-                GTKDoorbell.postTurn()
-            }
-        }, nil)
+        _ = g_thread_new("stateui-doorbell", { _ in CoreLink().ringForever { GTKDoorbell.postTurn() } }, nil)
     }
 
     /// Posts one turn to the main loop, at input's priority, so it lands before the next paint.
