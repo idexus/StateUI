@@ -18,15 +18,15 @@ import java.util.ArrayDeque;
 /**
  * A canvas: StateUI's drawing instructions replayed in the order they were written, inside the view's own
  * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind, colours,
- * flags and text as ints, its numbers as floats, its text as strings - and a finger's press, drag and
- * release come back in points.
+ * flags and text as ints, its numbers as floats, its text as strings, an arc as the curves it runs along -
+ * and a finger's press, drag and release come back in points.
  */
 final class StateUICanvasView extends View {
     /** The instructions' kinds, as StateUI numbers them. */
     private static final int FILL_COLOR = 0, STROKE_COLOR = 1, TEXT_COLOR = 2, STROKE_WIDTH = 3, FONT_SIZE = 4,
             ALPHA = 5, DRAW_LINE = 6, DRAW_RECTANGLE = 7, DRAW_ROUNDED_RECTANGLE = 8, DRAW_ELLIPSE = 9,
-            DRAW_ARC = 10, DRAW_PATH = 11, FILL_RECTANGLE = 12, FILL_ROUNDED_RECTANGLE = 13, FILL_ELLIPSE = 14,
-            FILL_ARC = 15, FILL_PATH = 16, DRAW_TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE = 21,
+            DRAW_PATH = 11, FILL_RECTANGLE = 12, FILL_ROUNDED_RECTANGLE = 13, FILL_ELLIPSE = 14,
+            FILL_PATH = 16, DRAW_TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE = 21,
             RESTORE = 22;
 
     /** A path command's kinds, as the Swift host numbers them, each followed by its points. */
@@ -122,18 +122,6 @@ final class StateUICanvasView extends View {
                     number += 4;
                     if (kind == FILL_ELLIPSE ? filling(state) : stroking(state)) canvas.drawOval(box, paint);
                     break;
-                case DRAW_ARC: case FILL_ARC: {
-                    box.set(numbers[number], numbers[number + 1],
-                            numbers[number] + numbers[number + 2], numbers[number + 1] + numbers[number + 3]);
-                    float start = numbers[number + 4];
-                    float end = numbers[number + 5];
-                    number += 6;
-                    boolean clockwise = ints[at++] != 0;
-                    boolean closed = kind == FILL_ARC || ints[at++] != 0;
-                    arc(start, end, clockwise, closed, kind == FILL_ARC);
-                    if (kind == FILL_ARC ? filling(state) : stroking(state)) canvas.drawPath(path, paint);
-                    break;
-                }
                 case DRAW_PATH: case FILL_PATH: {
                     int count = ints[at++];
                     number = path(number, count);
@@ -186,19 +174,6 @@ final class StateUICanvasView extends View {
         paint.setColor(state.stroke);
         paint.setAlpha(Math.round(((state.stroke >>> 24) & 0xFF) * state.alpha));
         return true;
-    }
-
-    /** An arc of the ellipse in `box`, from `start` to `end` degrees the way it turns; a wedge from its middle. */
-    private void arc(float start, float end, boolean clockwise, boolean closed, boolean wedge) {
-        if (clockwise) {
-            while (end < start) end += 360;
-        } else {
-            while (end > start) end -= 360;
-        }
-        path.rewind();
-        if (wedge) path.moveTo(box.centerX(), box.centerY());
-        path.arcTo(box, start, end - start, !wedge);
-        if (closed) path.close();
     }
 
     /** `count` path commands read from `numbers` at `number`; answers where the next instruction's start. */

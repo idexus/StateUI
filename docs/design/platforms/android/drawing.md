@@ -117,9 +117,11 @@ its own canvas, in the order they were written, inside its bounds, in points:
 the canvas is scaled once by the display's density. The whole drawing
 crosses in one call - each instruction's kind, colours, flags and the index
 of its text as ints, its numbers as floats, its text as strings - so a
-drawing of a thousand instructions is one crossing, not a thousand. A record
-that does not read whole is left out, as every host leaves it out. A path's
-arcs come as the shared parser's curves; an arc of an ellipse is Android's
-own. Text wraps within its rectangle, stands across and down it as the
+drawing of a thousand instructions is one crossing, not a thousand. The three
+lists are the host layer's
+([three lists for a relay](../../types/drawing.md#three-lists-for-a-relay)):
+a record that does not read whole is left out, as every host leaves it out,
+and a path's arcs and an arc of an ellipse come as the curves they run along,
+so a whole turn fills the whole oval. Text wraps within its rectangle, stands across and down it as the
 instruction says, and is cut at its edges. A finger's press, drag and release
 come back in points; the canvas asks for no room of its own.

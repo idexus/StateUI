@@ -12,7 +12,6 @@ final class AndroidCanvasViewTests: XCTestCase {
         [
             ("testTheInstructionsDrawInPointsAndInOrder", testTheInstructionsDrawInPointsAndInOrder),
             ("testAFilledArcIsAWedge", testAFilledArcIsAWedge),
-            ("testARecordThatDoesNotReadIsLeftOut", testARecordThatDoesNotReadIsLeftOut),
             ("testAFingersPressDragAndReleaseArriveInPoints", testAFingersPressDragAndReleaseArriveInPoints),
         ]
     }
@@ -56,19 +55,6 @@ final class AndroidCanvasViewTests: XCTestCase {
             let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
 
             XCTAssertEqual(canvas.pixels(at: [(26, 26), (26, 14)]), [Self.red, 0])
-        }
-    }
-
-    /// A record that does not read whole - a rectangle with three numbers - is left out, and the rest drawn.
-    func testARecordThatDoesNotReadIsLeftOut() {
-        onMainActor {
-            let broken = DrawCommand(propValue: .values([.enumeration(12), .number(0), .number(0), .number(5)]))!
-            let (ints, numbers, _) = AndroidCanvasView.encoded([
-                broken, Draw.fillColor(.red), Draw.fillRectangle(x: 0, y: 0, width: 5, height: 5),
-            ])
-
-            XCTAssertEqual(ints, [0, Int32(bitPattern: Self.red), 12])
-            XCTAssertEqual(numbers, [0, 0, 5, 5])
         }
     }
 
