@@ -182,6 +182,17 @@ A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
 
+## The safe area
+
+A window with bars and a notch over its screen - a phone's, a tablet's -
+stands a page's content clear of them, in the safe area. Where the content's
+own layout lets itself under them on an edge - `.none`, edge to edge, or
+`.keyboard`, clear of the keyboard alone - its page reaches out to the
+screen's edge there (`SafeAreaArithmetic.room`), so a background or a
+gradient runs behind the status bar. The page's background stands behind the
+bars either way. A desktop window has no safe area: its content stands in its
+whole room.
+
 ## Words on a painted band
 
 Words on a band the tree paints - a bar, a row of tabs - take the colour the

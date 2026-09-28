@@ -55,7 +55,12 @@ extension UIKitElement {
                 switch property {
                 case .opacity: drawing?.ownOpacity = element.number(.opacity) ?? 1
                 case .isVisible: view.isHidden = !element.standsShown
-                case .background: view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
+                case .background:
+                    view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
+                    (controller as? UIKitPageController)?.showBackground()
+                case .avoidsSafeArea:
+                    // A page's content standing against the safe area otherwise: its page stands again.
+                    (parent?.controller as? UIKitPageController)?.view.setNeedsLayout()
                 case .padding where type == .page:
                     (view as? UIKitSingleChildView)?.padding = element.insets(.padding)
                 default: break

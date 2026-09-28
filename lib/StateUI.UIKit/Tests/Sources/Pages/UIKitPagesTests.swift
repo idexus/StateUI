@@ -64,6 +64,27 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
     }
 
+    /// A page's content stands clear of the bars and the notch, but where it lets itself under them it reaches the
+    /// screen's edge; the page's background stands behind the bars either way.
+    @MainActor
+    func testAPagesContentReachesUnderTheBarsWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.safeAreaInsets.top > 0 }
+        let top = controller.view.safeAreaInsets.top
+        XCTAssertGreaterThan(top, 0, "the phone has a notch")
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, top, "clear of the notch")
+
+        under.wrappedValue = true
+        host.settle { page()?.view?.frame.minY == 0 }
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
+    }
+
     /// The first tabbed view in `element`'s tree.
     @MainActor
     private static func tabbedView(in element: MountedElement) -> MountedElement? {

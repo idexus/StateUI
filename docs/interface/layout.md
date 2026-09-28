@@ -428,11 +428,30 @@ is drawn and nothing is cut. A dashed outline belongs to a shape: lay a
 
 ## Safe areas and clipping
 
-`avoidsSafeArea` states which edges participate in the host's safe-area
-integration. `clipsContent` controls whether descendants may draw outside
-the assigned rectangle, cut to the layout's shape where it names one. Both are
-semantic requests and only count as available on a platform after the matrix
-records host tests for them.
+`avoidsSafeArea` states, edge by edge, what a layout stands clear of on a
+screen with bars and a notch. A page's content stands clear of them by
+default (`.container`); the page's own layout says `.none` - edge to edge -
+to run under them, so its background colours the status bar's strip:
+
+```swift
+import StateUI
+
+struct Header: ContentView {
+    var content: any View {
+        VStack {
+            Label("StateUI")
+        }
+        .padding(20, 60, 20, 20)
+        .background(.steelBlue)
+        .avoidsSafeArea(.none)
+    }
+}
+```
+
+Words under the bars are hidden by them, so a layout that runs under them
+pads its words clear. `clipsContent` controls whether descendants may draw
+outside the assigned rectangle, cut to the layout's shape where it names one.
+The [platform contract](../platform-contract.md) says where each is realized.
 
 ## StateUI-authored layouts
 

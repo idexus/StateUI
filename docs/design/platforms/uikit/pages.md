@@ -11,6 +11,15 @@ area its bars leave. An arrangement of pages is the controller UIKit has for
 it; the window's arrangement is a child of the window's root controller, over
 the whole window.
 
+## The safe area
+
+A page's view stands in its controller's safe area, clear of the bars and the
+notch, and out to the screen's edge on each edge its content lets itself under
+them ([the safe area](../../host/layout.md#the-safe-area)); the controller's
+own view shows the page's background, so it stands behind the bars either
+way. Only a page's own layout reaches under them; one deeper in stands where
+its page puts it.
+
 ## The bar
 
 A page's bar is its navigation item: its title - or the view standing in for
