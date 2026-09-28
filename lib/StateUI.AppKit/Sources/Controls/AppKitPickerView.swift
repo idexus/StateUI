@@ -22,7 +22,9 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     private var requestedOpen = false
     private var menuOpen = false
     private var openingScheduled = false
-    private var suppressLifecycle = false
+    /// Whether the program is opening or closing the list, which is no opening or closing of the user's.
+    private var programOpens = false
+    private var programCloses = false
     /// The choices and the choice as the tree last wrote them (`PickerChoices`).
     private var written = PickerChoices()
 
@@ -155,7 +157,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         if open {
             presentRequestedMenuIfPossible()
         } else if menuOpen {
-            suppressLifecycle = true
+            programCloses = true
             button.menu?.cancelTracking()
         }
     }
@@ -175,7 +177,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
             guard let self else { return }
             self.openingScheduled = false
             guard self.requestedOpen, self.window != nil, !self.menuOpen else { return }
-            self.suppressLifecycle = true
+            self.programOpens = true
             if let opensForTesting {
                 opensForTesting(self)
             } else {
@@ -192,14 +194,18 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         menuOpen = true
-        if !suppressLifecycle { onOpened?() }
+        if programOpens {
+            programOpens = false
+        } else {
+            onOpened?()
+        }
     }
 
     func menuDidClose(_ menu: NSMenu) {
         menuOpen = false
         requestedOpen = false
-        if suppressLifecycle {
-            suppressLifecycle = false
+        if programCloses {
+            programCloses = false
         } else {
             onClosed?()
         }

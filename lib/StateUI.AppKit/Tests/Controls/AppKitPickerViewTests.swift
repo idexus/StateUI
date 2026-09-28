@@ -186,6 +186,33 @@ final class AppKitPickerViewTests: XCTestCase {
         XCTAssertTrue(opened.first === picker)
     }
 
+    /// A list the program opened is no opening of the user's, but the user's
+    /// closing it is heard: the handbook's picker reports the user's close.
+    @MainActor
+    func testTheUsersCloseOfAListTheProgramOpenedIsHeard() throws {
+        var opened: [AppKitPickerView] = []
+        AppKitPickerView.opensMenuForTesting = { opened.append($0) }
+        defer { AppKitPickerView.opensMenuForTesting = nil }
+
+        let renderer = AppKitRenderer.running {
+            Picker(["Small", "Medium", "Large"]).isOpen(true)
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
+        for _ in 0..<300 where opened.isEmpty {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+        }
+        var events: [String] = []
+        picker.onOpened = { events.append("opened") }
+        picker.onClosed = { events.append("closed") }
+
+        let menu = NSMenu()
+        picker.menuWillOpen(menu)
+        picker.menuDidClose(menu)
+
+        XCTAssertEqual(events, ["closed"])
+    }
+
     /// Where a picker's text stands reaches its native pop-up button and each
     /// of its items.
     @MainActor
