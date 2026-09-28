@@ -15,9 +15,9 @@ enum GTKRealization {
         "WebView",
     ]
 
-    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
-    /// tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span"]
+    /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its
+    /// label's words - so no tier's record reaches them: only a member the entry's own records name is realized.
+    static let viewless: Set<String> = ["Span", "TitleBar"]
 
     /// The entries GTK will not have; none.
     static let notPlanned: [String: String] = [:]
