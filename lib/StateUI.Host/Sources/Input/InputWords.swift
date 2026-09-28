@@ -13,6 +13,13 @@
         return String(words.prefix(max(0, bound)))
     }
 
+    /// What of `inserted` goes in beside `held` within `bound` characters, where a toolkit asks before it inserts:
+    /// its first characters that fit, where it runs past; nil where it fits whole, or there is no bound.
+    public static func fitting(_ inserted: String, beside held: String, toBound bound: Int?) -> String? {
+        guard let bound, held.count + inserted.count > bound else { return nil }
+        return String(inserted.prefix(max(0, bound - held.count)))
+    }
+
     /// A selection of `length` characters from the `start`th, in the UTF-16 units a toolkit counts in, each end
     /// kept within `words`.
     public static func utf16Selection(start: Int, length: Int, in words: String) -> (start: Int, length: Int) {

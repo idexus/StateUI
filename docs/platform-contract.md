@@ -450,18 +450,18 @@ Every control, and every part an application, its windows and its pages are made
 | [RadioButton](controls/RadioButton.md) | 81 |  |  |  | 63 ✅ | 25 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 |  |  |  | 59 ✅ · 3 – | 20 ✅ |  |
 | [ScrollView](controls/ScrollView.md) | 77 |  |  |  | 60 ✅ · 3 – | 21 ✅ |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  |  | 63 ✅ | 22 ✅ |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  |  | 63 ✅ | 23 ✅ |  |
 | [Slider](controls/Slider.md) | 73 |  |  |  | 57 ✅ | 24 ✅ |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  |  | 57 ✅ | 20 ✅ |  |
 | [Switch](controls/Switch.md) | 69 |  |  |  | 56 ✅ | 22 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 65 ✅ | 23 ✅ |  |
-| [TextField](controls/TextField.md) | 90 |  |  |  | 68 ✅ | 22 ✅ |  |
+| [TextField](controls/TextField.md) | 90 |  |  |  | 68 ✅ | 23 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 |  |  |  | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met | 584 of 2591 met |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met | 586 of 2591 met |  |
 
 ### Application structure
 

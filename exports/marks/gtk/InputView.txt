@@ -5,7 +5,7 @@ SearchField.isEnabled: ✅
 SearchField.isReadOnly: ◐ cannot read isReadOnly of SearchField - GTK's driver has no path for it yet
 SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - GTK's driver has no path for it yet
 SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - GTK's driver has no path for it yet
-SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - GTK's driver has no path for it yet
+SearchField.maximumLength: ✅
 SearchField.placeholder: cannot read placeholder of SearchField - GTK's driver has no path for it yet
 SearchField.placeholderColor: cannot read placeholderColor of SearchField - GTK's driver has no path for it yet
 SearchField.selectionLength: cannot read selectionLength of SearchField - GTK's driver has no path for it yet
@@ -29,7 +29,7 @@ TextField.isEnabled: ✅
 TextField.isReadOnly: ◐ cannot read isReadOnly of TextField - GTK's driver has no path for it yet
 TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - GTK's driver has no path for it yet
 TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - GTK's driver has no path for it yet
-TextField.maximumLength: ◐ cannot read maximumLength of TextField - GTK's driver has no path for it yet
+TextField.maximumLength: ✅
 TextField.placeholder: cannot read placeholder of TextField - GTK's driver has no path for it yet
 TextField.placeholderColor: cannot read placeholderColor of TextField - GTK's driver has no path for it yet
 TextField.selectionLength: cannot read selectionLength of TextField - GTK's driver has no path for it yet

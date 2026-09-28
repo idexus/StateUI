@@ -142,16 +142,15 @@ final class GTKTextEditorView: GTKView, GTKInputView {
         onTextChanged?(text)
     }
 
-    /// Words going in at `place`: where they would take the editor past its bound, only the first that fit go in,
-    /// as a field's text takes them - from a key, a paste and a program's write alike.
+    /// Words going in at `place`: where they would take the editor past its bound, only the first characters that
+    /// fit go in (`InputWords.fitting`) - from a key, a paste and a program's write alike.
     private func inserting(_ words: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<GtkTextIter>?) {
-        guard let maximumLength, let words, bytes > 0 else { return }
+        guard let words, bytes > 0 else { return }
         let inserted = String(decoding: UnsafeRawBufferPointer(start: words, count: Int(bytes)), as: UTF8.self)
-        let room = max(0, maximumLength - Int(gtk_text_buffer_get_char_count(buffer)))
-        guard inserted.unicodeScalars.count > room else { return }
+        guard let fitting = InputWords.fitting(inserted, beside: text, toBound: maximumLength) else { return }
         g_signal_stop_emission_by_name(UnsafeMutableRawPointer(buffer), "insert-text")
-        guard room > 0 else { return }
-        gtk_text_buffer_insert(buffer, place, String(String.UnicodeScalarView(inserted.unicodeScalars.prefix(room))), -1)
+        guard !fitting.isEmpty else { return }
+        gtk_text_buffer_insert(buffer, place, fitting, -1)
     }
 
     private func showPlaceholder() {

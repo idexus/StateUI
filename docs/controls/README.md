@@ -51,18 +51,18 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [RadioButton](RadioButton.md) | 81 |  |  |  | 63 ✅ | 25 ✅ |  |
 | [Rectangle](Rectangle.md) | 77 |  |  |  | 59 ✅ · 3 – | 20 ✅ |  |
 | [ScrollView](ScrollView.md) | 77 |  |  |  | 60 ✅ · 3 – | 21 ✅ |  |
-| [SearchField](SearchField.md) | 89 |  |  |  | 63 ✅ | 22 ✅ |  |
+| [SearchField](SearchField.md) | 89 |  |  |  | 63 ✅ | 23 ✅ |  |
 | [Slider](Slider.md) | 73 |  |  |  | 57 ✅ | 24 ✅ |  |
 | [Stepper](Stepper.md) | 71 |  |  |  | 57 ✅ | 20 ✅ |  |
 | [Switch](Switch.md) | 69 |  |  |  | 56 ✅ | 22 ✅ |  |
 | [TextEditor](TextEditor.md) | 87 |  |  |  | 65 ✅ | 23 ✅ |  |
-| [TextField](TextField.md) | 90 |  |  |  | 68 ✅ | 22 ✅ |  |
+| [TextField](TextField.md) | 90 |  |  |  | 68 ✅ | 23 ✅ |  |
 | [TimePicker](TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](VStack.md) | 74 |  |  |  | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met | 584 of 2591 met |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met | 586 of 2591 met |  |
 <!-- controls:end -->
 
 ## Application structure

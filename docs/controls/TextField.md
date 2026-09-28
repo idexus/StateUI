@@ -29,7 +29,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit |  |  | `UITextField` | no run of it on these sources |
 | Android Views |  |  | `EditText` | no run of it on these sources |
 | WinUI 3 | ✅ | 68 ✅ | `TextBox` / `PasswordBox` |  |
-| GTK 4 | ✅ | 22 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
+| GTK 4 | ✅ | 23 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift`.
@@ -141,7 +141,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read isReadOnly of TextField - GTK's driver has no path for it yet |
 | `isSpellCheckEnabled` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isSpellCheckEnabled of TextField - GTK's driver has no path for it yet |
 | `isTextPredictionEnabled` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isTextPredictionEnabled of TextField - GTK's driver has no path for it yet |
-| `maximumLength` | property | `Int` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read maximumLength of TextField - GTK's driver has no path for it yet |
+| `maximumLength` | property | `Int` | native |  |  |  | ✅ | ✅ |  |  |
 | `placeholder` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read placeholder of TextField - GTK's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native |  |  |  | ✅ | · |  | GTK 4: cannot read placeholderColor of TextField - GTK's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native |  |  |  | ✅ | · |  | GTK 4: cannot read selectionLength of TextField - GTK's driver has no path for it yet |

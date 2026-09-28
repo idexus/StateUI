@@ -40,6 +40,10 @@ typealias GTKInputHandler = @convention(c) (UnsafeMutableRawPointer?, UnsafeMuta
 typealias GTKInsertHandler = @convention(c) (
     UnsafeMutableRawPointer?, UnsafeMutablePointer<GtkTextIter>?, UnsafePointer<CChar>?, Int32, gpointer?) -> Void
 
+/// A signal handing words going into an editable - their bytes, their count of bytes - and where they go.
+typealias GTKEditableInsertHandler = @convention(c) (
+    UnsafeMutableRawPointer?, UnsafePointer<CChar>?, Int32, UnsafeMutablePointer<Int32>?, gpointer?) -> Void
+
 /// A signal naming a place in a list: a list view's item activated.
 typealias GTKPositionHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, gpointer?) -> Void
 
@@ -86,6 +90,13 @@ func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number
 
 @discardableResult
 func connectSignal(_ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKInsertHandler) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
+@discardableResult
+func connectSignal(
+    _ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKEditableInsertHandler
+) -> gulong {
     connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
 }
 

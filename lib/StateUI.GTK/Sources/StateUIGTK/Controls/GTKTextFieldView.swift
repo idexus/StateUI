@@ -17,6 +17,7 @@ class GTKTextFieldView: GTKView, GTKInputView {
     var onSubmitted: (() -> Void)?
 
     private var wordsClass: String?
+    private var maximumLength: Int?
 
     convenience init() {
         self.init { gtk_entry_new() }
@@ -32,6 +33,13 @@ class GTKTextFieldView: GTKView, GTKInputView {
         }
         connect("activate") { _, data in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKTextFieldView)?.onSubmitted?() }
+        }
+        connectSignal(UnsafeMutableRawPointer(words), "insert-text", number: number) {
+            (_: UnsafeMutableRawPointer?, typed: UnsafePointer<CChar>?, bytes: Int32, place: UnsafeMutablePointer<Int32>?,
+             data: gpointer?) in
+            MainActor.assumeIsolated {
+                (GTKView.find(viewNumber(data)) as? GTKTextFieldView)?.inserting(typed, bytes, at: place)
+            }
         }
     }
 
@@ -54,8 +62,21 @@ class GTKTextFieldView: GTKView, GTKInputView {
         gtk_text_set_placeholder_text(words, placeholder)
     }
 
+    /// The most characters the words take. GTK's own bound counts code points, so the host cuts what goes in.
     func setMaximumLength(_ length: Int?) {
-        gtk_text_set_max_length(words, Int32(clamping: length ?? 0))
+        maximumLength = length
+    }
+
+    /// Words going in at `place`: where they would take the field past its bound, only the first characters that
+    /// fit go in (`InputWords.fitting`) - from a key, a paste and a program's write alike.
+    private func inserting(_ typed: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<Int32>?) {
+        guard let typed, maximumLength != nil else { return }
+        let inserted = bytes < 0
+            ? String(cString: typed) : String(decoding: UnsafeRawBufferPointer(start: typed, count: Int(bytes)), as: UTF8.self)
+        guard let fitting = InputWords.fitting(inserted, beside: text, toBound: maximumLength) else { return }
+        g_signal_stop_emission_by_name(UnsafeMutableRawPointer(words), "insert-text")
+        guard !fitting.isEmpty else { return }
+        gtk_editable_insert_text(OpaquePointer(words), fitting, -1, place)
     }
 
     /// Whether the words are shown or each hidden behind a dot.

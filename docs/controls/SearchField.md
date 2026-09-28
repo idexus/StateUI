@@ -29,7 +29,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit |  |  | `UISearchBar` | no run of it on these sources |
 | Android Views |  |  | `SearchView` | no run of it on these sources |
 | WinUI 3 | ✅ | 63 ✅ | `AutoSuggestBox` |  |
-| GTK 4 | ✅ | 22 ✅ | `GtkSearchEntry` |  |
+| GTK 4 | ✅ | 23 ✅ | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -139,7 +139,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read isReadOnly of SearchField - GTK's driver has no path for it yet |
 | `isSpellCheckEnabled` | property | `Bool` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read isSpellCheckEnabled of SearchField - GTK's driver has no path for it yet |
 | `isTextPredictionEnabled` | property | `Bool` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read isTextPredictionEnabled of SearchField - GTK's driver has no path for it yet |
-| `maximumLength` | property | `Int` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read maximumLength of SearchField - GTK's driver has no path for it yet |
+| `maximumLength` | property | `Int` | native |  |  |  | ✅ | ✅ |  |  |
 | `placeholder` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read placeholder of SearchField - GTK's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read placeholderColor of SearchField - GTK's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read selectionLength of SearchField - GTK's driver has no path for it yet |

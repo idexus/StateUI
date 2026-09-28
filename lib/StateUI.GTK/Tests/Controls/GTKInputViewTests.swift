@@ -24,6 +24,28 @@ private struct RewrittenPage: ContentView {
 }
 
 final class GTKInputViewTests: XCTestCase {
+    /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
+    /// editor alike.
+    func testTypingStopsAtTheMostCharactersAllowed() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    TextField(State(wrappedValue: "").projectedValue).maximumLength(2)
+                    TextEditor(State(wrappedValue: "").projectedValue).maximumLength(2)
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
+
+            GTKTestHost.emit(gtk_editable_get_delegate(field.widget.opaque), "insert-at-cursor", words: "a👍🏽b")
+            GTKTestHost.emit(
+                OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)), "insert-at-cursor", words: "a👍🏽b")
+
+            XCTAssertEqual(field.text, "a👍🏽")
+            XCTAssertEqual(editor.text, "a👍🏽")
+        }
+    }
+
     /// Words the program writes into a field or an editor stand there and are heard by nobody: only the user's are.
     func testTheProgramsWordsAreHeardByNobody() throws {
         try onUIThread {

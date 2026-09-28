@@ -24,6 +24,10 @@ final class GTKDriver: HostDriver {
                 "an editor's growing is StateUI's measuring, which no property of GTK's holds; its frames prove it",
             "read maximumLength of TextEditor":
                 "GTK's text view keeps no bound: the host cuts what is typed, and typing proves it",
+            "read maximumLength of TextField":
+                "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
+            "read maximumLength of SearchField":
+                "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
         ]
         let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
