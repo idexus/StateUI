@@ -18,10 +18,12 @@ wider than the label, or at any character; cut short, it shows an ellipsis
 where the tree asks. GTK cuts a word short at its start or middle on one line
 only, so a label allowed several lines is cut at its end. Its lines stand
 from its leading edge, in its middle or at its trailing edge, which GTK turns
-over for a language written from the right.
+over for a language written from the right, and at its top unless the tree
+stands them in its middle or at its bottom - GTK's own is the middle.
 
 A label's padding is room inside its own box, around its words
-([a widget's own box](drawing.md#a-widgets-own-box)). A button's caption is
+([a widget's own box](drawing.md#a-widgets-own-box)), and its background a
+class filling that box in its colour - a brush's first colour. A button's caption is
 the `GtkLabel` the button shows it in, and takes the same look, font and
 colour, and the button its padding.
 

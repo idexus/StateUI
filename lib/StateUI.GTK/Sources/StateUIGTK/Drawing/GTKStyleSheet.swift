@@ -68,6 +68,13 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class filling a widget's box in `color`.
+    static func fill(_ color: GdkRGBA) -> String {
+        let name = "stateui-fill-" + hex(color)
+        write(name, "background: \(css(color));")
+        return name
+    }
+
     /// The class giving a control its tint: the colour `part` of it - its own words and marks where `part` is nil -
     /// is drawn in.
     static func tint(_ color: GdkRGBA, of part: String?) -> String {

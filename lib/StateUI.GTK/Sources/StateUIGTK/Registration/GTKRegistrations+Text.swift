@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
-    /// A Label: a `GtkLabel` - its words, how they break and stand across it, and the space between the letters and
-    /// the lines.
+    /// A Label: a `GtkLabel` - its words, how they break and stand across and down it, the space between the
+    /// letters and the lines, and what fills its box.
     static func text(_ registry: Registry<GTKView>) {
         registry.add(LabelContract.self, create: { _ in GTKLabelView() }) { label in
             label.applies(textMembers) { view, values in applyText(view, values) }
@@ -17,6 +17,12 @@ extension GTKRegistrations {
             }
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
+            }
+            label.property(TextAlignmentElementContract.verticalTextAlignment) { view, alignment in
+                view.setAlignment(vertical: alignment ?? .start)
+            }
+            label.property(VisualElementContract.background) { view, background in
+                view.setBackground(background?.propValue)
             }
             label.property(TextStyleElementContract.characterSpacing) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }

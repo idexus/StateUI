@@ -15,11 +15,13 @@ class GTKTextView: GTKView {
     /// The label's own words, and the runs shown in their place; nil while none are.
     private var ownText = ""
     private var runs: [TextRun]?
+    private var fillClass: String?
 
     init() {
         super.init { _ in gtk_label_new(nil) }
         setLines(breaking: .wordWrap, maximum: nil)
         gtk_label_set_xalign(widget.opaque, 0)
+        gtk_label_set_yalign(widget.opaque, 0)
     }
 
     /// The label's own words, shown while it shows no runs.
@@ -103,5 +105,15 @@ class GTKTextView: GTKView {
         }
         gtk_label_set_xalign(widget.opaque, share)
         gtk_label_set_justify(widget.opaque, justification)
+    }
+
+    /// Where the words stand down the label's height.
+    func setAlignment(vertical: TextAlignment) {
+        gtk_label_set_yalign(widget.opaque, vertical == .start ? 0 : vertical == .center ? 0.5 : 1)
+    }
+
+    /// What fills the label's box: a colour, or a brush's first colour; nil for nothing.
+    func setBackground(_ value: HostValue?) {
+        swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))
     }
 }

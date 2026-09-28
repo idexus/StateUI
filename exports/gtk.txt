@@ -68,6 +68,7 @@ ItemsView
   realizedChanged()
   selectionChanged()
 Label
+  background
   characterSpacing
   fontAttributes
   fontFamily
@@ -81,6 +82,7 @@ Label
   textCase
   textColor
   textDecorations
+  verticalTextAlignment
 Line
   aspect
   fill

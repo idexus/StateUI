@@ -71,6 +71,26 @@ final class GTKLabelViewTests: XCTestCase {
         }
     }
 
+    /// A label's box takes its background, and its words stand down its height where the tree says.
+    func testALabelsBackgroundFillsItsBoxAndItsWordsStandDownIt() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Label("7").background(Color("#FF0000")).verticalTextAlignment(.end).width(60).height(72)
+                    Label("at the top").height(72)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let labels = host.views(GTKLabelView.self)
+            host.settle { labels[0].pixels(at: [(2, 2)]) != [0] }
+
+            XCTAssertEqual(labels[0].pixels(at: [(2, 2), (58, 70)]), [0xFFFF_0000, 0xFFFF_0000], "filled corner to corner")
+            XCTAssertEqual(gtk_label_get_yalign(labels[0].widget.opaque), 1, "at the bottom")
+            XCTAssertEqual(gtk_label_get_yalign(labels[1].widget.opaque), 0, "at the top unless told")
+        }
+    }
+
     /// A label's padding is room between its edge and its words, on each side as the tree says.
     func testALabelsPaddingIsRoomAroundItsWords() throws {
         try onUIThread {
