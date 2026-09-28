@@ -294,6 +294,7 @@ VStack
   minimumHeight
   minimumWidth
   opacity
+  panTouchCount
   panXChannel
   panYChannel
   pivotX

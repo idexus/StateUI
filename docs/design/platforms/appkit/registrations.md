@@ -17,18 +17,19 @@ element cannot wear - the whole advantage of declaring shared machinery this
 way rather than as a list of names. Each reaches exactly the elements wearing
 the contract that declares it, so `Layout`'s members go to the layouts alone.
 
-There is one call per member, and it cannot be a loop: each member is declared
-with the type it carries, so a list of them is a list of `Any`, and the
-registry's owner and value can no longer be inferred. The length is what the
-typing costs, and it is the same typing that refuses a wrong tier where a
-list of names would pass quietly.
+What every host realizes by the host layer's rules is declared by the layer's
+groups ([what every element realizes](../../host/tree.md#what-every-element-realizes)):
+the room, the drawing over it, what assistive technology meets and the
+user's input; the host adds one call per member of its own. Each member is
+declared with the type it carries, so the compiler still refuses a wrong
+tier where a list of names would pass quietly.
 
 ## What a declaration leaves out
 
 A declaration says what the host does, not what a tier offers:
 
-- `panTouchCount` is absent: this host recognizes a one-finger pan only, a
-  partial realization that only a record with its note can say.
+- `panTouchCount` is recorded partial: the host layer hears a one-finger pan
+  only, which only a record with its note can say.
 - `allowDrop`, `canDrag` and `dragText` are absent: AppKit realizes no
   dragging.
 - `clipsContent` and `avoidsSafeArea` are absent: this host reads neither.
