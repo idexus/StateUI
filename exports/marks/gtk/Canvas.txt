@@ -1,0 +1,7 @@
+# revision 1.1
+Canvas: not realized
+Canvas.dragged: not realized
+Canvas.drawable: not realized
+Canvas.frameChanged: not realized
+Canvas.pressed: not realized
+Canvas.released: not realized

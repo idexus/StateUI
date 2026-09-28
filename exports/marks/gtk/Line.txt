@@ -1,0 +1,7 @@
+# revision 1.1
+Line: ✅
+Line.frameChanged: ✅
+Line.x1: cannot read the colour of Line - GTK's driver has no path for it yet
+Line.x2: cannot read the colour of Line - GTK's driver has no path for it yet
+Line.y1: cannot read the colour of Line - GTK's driver has no path for it yet
+Line.y2: cannot read the colour of Line - GTK's driver has no path for it yet

@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | structure | no run of it on these sources |
 | Android Views |  |  | structure | no run of it on these sources |
 | WinUI 3 | ✅ |  | structure |  |
-| GTK 4 |  |  | structure | no run of it on these sources |
+| GTK 4 | ✅ |  | structure |  |
 | Web |  |  | structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/TitleViewContract.swift`.

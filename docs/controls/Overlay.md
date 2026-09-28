@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | pass-through `UIView` above the page | no run of it on these sources |
 | Android Views |  |  | top child of a `FrameLayout` | no run of it on these sources |
 | WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
-| GTK 4 |  |  | `GtkOverlay` | no run of it on these sources |
+| GTK 4 | · |  | `GtkOverlay` | cannot read what reaches Label - GTK's driver has no path for it yet |
 | Web |  |  | positioned element above the page | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/OverlayContract.swift`.

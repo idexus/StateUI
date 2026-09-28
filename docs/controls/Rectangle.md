@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIView` drawing `UIBezierPath` | no run of it on these sources |
 | Android Views |  |  | `View` drawing `Path` | no run of it on these sources |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | `Microsoft.UI.Xaml.Shapes` |  |
-| GTK 4 |  |  | `GskPath` in a snapshot | no run of it on these sources |
+| GTK 4 | ✅ | 20 ✅ | `GskPath` in a snapshot |  |
 | Web |  |  | inline SVG | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/RectangleContract.swift`.
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/RectangleContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cornerRadius` | property | `CornerRadius` | native |  |  |  | ✅ |  |  |  |
+| `cornerRadius` | property | `CornerRadius` | native |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -33,7 +33,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -41,39 +41,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ |  |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ |  |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ |  |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `background` | property | `Background` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `focus` | act | `() -> Bool` |  |  |  |  | – |  |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard |
-| `frame` | property | `Rect` | structure |  |  |  | ✅ |  |  |  |
-| `height` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | – |  |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard |
-| `isVisible` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `opacity` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `rotation` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `scale` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `style` | property | `Name` | structure |  |  |  | ✅ |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `translationY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  | – |  |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard |
-| `width` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHeadingLevel of Rectangle - GTK's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHint of Rectangle - GTK's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Rectangle - GTK's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `background` | property | `Background` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `focus` | act | `() -> Bool` |  |  |  |  | – | ⏸ |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Rectangle.isFocusedChanged, not realized yet |
+| `frame` | property | `Rect` | structure |  |  |  | ✅ | ✅ |  |  |
+| `height` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | WinUI 3: not realized |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  | – |  |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isVisible` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotX of Rectangle - GTK's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotY of Rectangle - GTK's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read rotation of Rectangle - GTK's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationX of Rectangle - GTK's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationY of Rectangle - GTK's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scale of Rectangle - GTK's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleX of Rectangle - GTK's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleY of Rectangle - GTK's driver has no path for it yet |
+| `style` | property | `Name` | structure |  |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationX of Rectangle - GTK's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationY of Rectangle - GTK's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  |  |  |  | – | ⏸ |  | WinUI 3: Rectangle takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Rectangle.isFocusedChanged, not realized yet |
+| `width` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -81,38 +81,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `area` | property | `Area` | structure |  |  |  | ✅ |  |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ |  |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  |  |
-| `margin` | property | `Insets` | native |  |  |  | ✅ |  |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ |  |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ |  |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ |  |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  |  |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure |  |  |  | ✅ | ✅ |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pinch on Rectangle - GTK's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Rectangle - GTK's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Rectangle - GTK's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Rectangle - GTK's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Rectangle - GTK's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Rectangle - GTK's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on Rectangle - GTK's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot tap on Rectangle - GTK's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot tap on Rectangle - GTK's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [Shape](tiers/Shape.md)
 
@@ -120,13 +120,13 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  |  |  | ✅ |  |  |  |
-| `fill` | property | `Brush` | stateUI |  |  |  | ✅ |  |  |  |
-| `renderTransform` | property | `ViewTransform` | native |  |  |  | ✅ |  |  |  |
-| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeDashOffset` | property | `Double` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ |  |  |  |
+| `aspect` | property | `Aspect` | native |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |
+| `fill` | property | `Brush` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |
+| `renderTransform` | property | `ViewTransform` | native |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |
+| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |
+| `strokeDashOffset` | property | `Double` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeDashOffset of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashOffset; its drawing proves it |
+| `strokeDashPattern` | property | `[Double]` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeDashPattern of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeDashPattern; its drawing proves it |
+| `strokeLineCap` | property | `LineCap` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeLineCap of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineCap; its drawing proves it |
+| `strokeLineJoin` | property | `LineJoin` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeLineJoin of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeLineJoin; its drawing proves it |
+| `strokeMiterLimit` | property | `Double` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeMiterLimit of Rectangle - StateUI draws a shape on GTK's snapshot, which holds none of its strokeMiterLimit; its drawing proves it |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read the colour of Rectangle - GTK's driver has no path for it yet |

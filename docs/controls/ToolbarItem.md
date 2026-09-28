@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIBarButtonItem` | no run of it on these sources |
 | Android Views |  |  | `Toolbar` `MenuItem` | no run of it on these sources |
 | WinUI 3 | ✅ | 7 ✅ | `CommandBar` `AppBarButton` |  |
-| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
+| GTK 4 | · |  | `GtkButton` in `GtkHeaderBar` | cannot activate on ToolbarItem - GTK's driver has no path for it yet |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  | ✅ |  |  |  |
-| `priority` | property | `Int` | adaptive |  |  |  | ✅ |  |  |  |
+| `placement` | property | `ToolbarItemPlacement` | adaptive |  |  |  | ✅ | · |  | GTK 4: cannot read placement of ToolbarItem - GTK's driver has no path for it yet |
+| `priority` | property | `Int` | adaptive |  |  |  | ✅ | · |  | GTK 4: cannot read priority of ToolbarItem - GTK's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -42,8 +42,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `icon` | property | `ImageSource` | adaptive |  |  |  | ✅ |  |  |  |
-| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
-| `isEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `text` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `onClicked` (`clicked`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive |  |  |  | ✅ | · |  | GTK 4: cannot read icon of ToolbarItem - GTK's driver has no path for it yet |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| `text` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read text of ToolbarItem - GTK's driver has no path for it yet |

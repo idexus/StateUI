@@ -1,0 +1,3 @@
+# revision 1.1
+Label.lineHeight: cannot read lineHeight of Label - GTK's driver has no path for it yet
+Span.lineHeight: not realized

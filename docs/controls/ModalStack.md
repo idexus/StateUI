@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `present(_:animated:)` | no run of it on these sources |
 | Android Views |  |  | full-screen `Dialog` (?) | no run of it on these sources |
 | WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
-| GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | no run of it on these sources |
+| GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | not realized |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/ModalStackContract.swift`.

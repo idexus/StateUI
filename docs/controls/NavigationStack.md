@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UINavigationController` | no run of it on these sources |
 | Android Views |  |  | custom `ViewGroup` stack + `Toolbar` | no run of it on these sources |
 | WinUI 3 | ✅ | 3 ✅ | `Frame` |  |
-| GTK 4 |  |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | no run of it on these sources |
+| GTK 4 | ✅ |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
-| `popped` | event | `Int` | adaptive |  |  |  | ✅ |  |  |  |
+| `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `popped` | event | `Int` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -42,7 +42,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
+| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -50,5 +50,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
-| `title` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `title` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read title of NavigationStack - GTK's driver has no path for it yet |

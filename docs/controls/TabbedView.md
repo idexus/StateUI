@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UITabBarController` | no run of it on these sources |
 | Android Views |  |  | Material Components `BottomNavigationView` (?) | no run of it on these sources |
 | WinUI 3 | ✅ | 4 ✅ | `NavigationView` with a top pane |  |
-| GTK 4 |  |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | no run of it on these sources |
+| GTK 4 | ✅ |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
 | Web |  |  | ARIA `tablist` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContract.swift`.
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `currentPageChanged` | event | `Int` | adaptive |  |  |  | ✅ |  |  |  |
+| `currentPage` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot read currentPage of TabbedView - GTK's driver has no path for it yet |
+| `currentPageChanged` | event | `Int` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -42,7 +42,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
+| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -50,5 +50,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
-| `title` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `title` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read title of TabbedView - GTK's driver has no path for it yet |

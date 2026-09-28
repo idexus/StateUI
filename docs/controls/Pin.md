@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | no run of it on these sources |
 | Android Views |  |  | Google Play services `MapView` / `Marker` (?) | no run of it on these sources |
 | WinUI 3 |  |  | `MapControl` (?) | not realized |
-| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no run of it on these sources |
+| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | not realized |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider |  |  |  |  |  |  | WinUI 3: not realized |
-| `label` | property | `String` | provider |  |  |  |  |  |  | WinUI 3: not realized |
-| `location` | property | `Location` | provider |  |  |  |  |  |  | WinUI 3: not realized |
-| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  | WinUI 3: not realized |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  | WinUI 3: not realized |
-| `type` | property | `PinType` | provider |  |  |  |  |  |  | WinUI 3: not realized |
+| `address` | property | `String` | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `label` | property | `String` | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `location` | property | `Location` | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `type` | property | `PinType` | provider |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |

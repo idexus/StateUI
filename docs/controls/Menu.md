@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIMenu` / `UIAction` | no run of it on these sources |
 | Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | no run of it on these sources |
 | WinUI 3 | ✅ | 2 ✅ | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
@@ -25,5 +25,5 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `text` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `isEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `text` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |

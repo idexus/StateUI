@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIBarButtonItem` | no run of it on these sources |
 | Android Views |  |  | `Toolbar` `MenuItem` | no run of it on these sources |
 | WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
-| GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
+| GTK 4 | · |  | `GtkButton` in `GtkHeaderBar` | cannot activate on ToolbarItem - GTK's driver has no path for it yet |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.

@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIWindow` | no run of it on these sources |
 | Android Views |  |  | `Activity` | no run of it on these sources |
 | WinUI 3 | ✅ | 23 ✅ | `Window` |  |
-| GTK 4 |  |  | `GtkApplicationWindow` | no run of it on these sources |
+| GTK 4 | ⏸ |  | `GtkApplicationWindow` | waits on Window.created, not realized yet |
 | Web |  |  | browser `window` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -25,26 +25,26 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `created` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `floatsOnTop` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `height` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `isMaximizable` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `isMinimizable` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `isTranslucent` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
-| `maximumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `modalPopped` | event | `Int` | adaptive |  |  |  | ✅ |  |  |  |
-| `resumed` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `title` | property | `String` | native |  |  |  | ✅ |  |  |  |
-| `width` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `windowType` | property | `WindowType` | structure |  |  |  | ✅ |  |  |  |
-| `windowValue` | property | `String` | structure |  |  |  | ✅ |  |  |  |
-| `x` | property | `Double` | structure |  |  |  | ✅ |  |  |  |
-| `y` | property | `Double` | structure |  |  |  | ✅ |  |  |  |
+| `activated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `created` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `floatsOnTop` | property | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `height` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `hidesWhenInactive` | property | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isMaximizable` | property | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isMinimizable` | property | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isTranslucent` | property | `Bool` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `maximumWidth` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `modalPopped` | event | `Int` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `resumed` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `title` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `width` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `windowType` | property | `WindowType` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `windowValue` | property | `String` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `x` | property | `Double` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `y` | property | `Double` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |

@@ -14,6 +14,41 @@ import CStateUIGTK
 final class GTKDriver: HostDriver {
     let host = "GTK 4"
     let cannot: [String: String] = [:]
+    let platformHasNone = GTKDriver.none()
+
+    /// What GTK holds none of: what StateUI draws on GTK's snapshot, where StateUI's layout places the children,
+    /// what StateUI measures and what the host cuts - each proven by its effect in another case.
+    private static func none() -> [String: String] {
+        var none = [
+            "read growsWithText of TextEditor":
+                "an editor's growing is StateUI's measuring, which no property of GTK's holds; its frames prove it",
+            "read maximumLength of TextEditor":
+                "GTK's text view keeps no bound: the host cuts what is typed, and typing proves it",
+        ]
+        let shapes = ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
+        let shapePaint = [
+            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
+            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+        ]
+        for shape in shapes {
+            for member in shapePaint {
+                none["read \(member) of \(shape)"] =
+                    "StateUI draws a shape on GTK's snapshot, which holds none of its \(member); its drawing proves it"
+            }
+        }
+        for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
+            for member in ["background", "stroke", "strokeWidth", "shape"] {
+                none["read \(member) of \(layout)"] =
+                    "StateUI draws a layout's box on GTK's snapshot, which holds none of its \(member); its drawing proves it"
+            }
+            none["read padding of \(layout)"] =
+                "GTK's panel places its children where StateUI's layout says; their frames prove it"
+        }
+        for stack in ["HStack", "VStack"] {
+            none["read spacing of \(stack)"] = "GTK's panel places its children where StateUI's layout says; their frames prove it"
+        }
+        return none
+    }
 
     /// What the families ask of a driver that GTK's has no path for yet says so, and stays empty in GTK's column
     /// with why, rather than failing: GTK's reads and acts are written on Linux (work-plan.md, ON LINUX).
@@ -71,8 +106,10 @@ final class GTKDriver: HostDriver {
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
-        case (.minimum, let slider as GTKSliderView): return slider.minimum.propValue
-        case (.maximum, let slider as GTKSliderView): return slider.maximum.propValue
+        case (.minimum, let slider as GTKSliderView):
+            return gtk_adjustment_get_lower(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
+        case (.maximum, let slider as GTKSliderView):
+            return gtk_adjustment_get_upper(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
         case (.isRunning, let spinner as GTKActivityIndicatorView): return spinner.isRunning.propValue

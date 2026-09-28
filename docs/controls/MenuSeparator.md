@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIMenu` / `UIAction` | no run of it on these sources |
 | Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | no run of it on these sources |
 | WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
+| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuSeparatorContract.swift`.

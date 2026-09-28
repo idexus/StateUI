@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | `UIApplication` / `UIWindowScene` | no run of it on these sources |
 | Android Views |  |  | `Application` / structure | no run of it on these sources |
 | WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
-| GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
+| GTK 4 | ✅ |  | `GtkApplication` / structure |  |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  |  |
-| `windowClosed` | event | `String` | adaptive |  |  |  | ✅ |  |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  | ✅ |  |  |  |
+| `activated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `windowClosed` | event | `String` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |

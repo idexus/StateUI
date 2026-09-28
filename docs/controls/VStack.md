@@ -16,7 +16,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | UIKit |  |  | custom `UIView` | no run of it on these sources |
 | Android Views |  |  | custom `ViewGroup` | no run of it on these sources |
 | WinUI 3 | ✅ | 56 ✅ · 3 – | `StackPanel` |  |
-| GTK 4 |  |  | `GtkBox` | no run of it on these sources |
+| GTK 4 | ✅ | 22 ✅ | `GtkBox` |  |
 | Web |  |  | flexbox | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/VStackContract.swift`.
@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -39,39 +39,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ |  |  |  |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ |  |  |  |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ |  |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `background` | property | `Background` | native |  |  |  | ✅ |  |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  | – |  |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard |
-| `frame` | property | `Rect` | structure |  |  |  | ✅ |  |  |  |
-| `height` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | – |  |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard |
-| `isVisible` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `opacity` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `rotation` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `scale` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `style` | property | `Name` | structure |  |  |  | ✅ |  |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `translationY` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  | – |  |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard |
-| `width` | property | `Double` | native |  |  |  | ✅ |  |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHeadingLevel of VStack - GTK's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHint of VStack - GTK's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityLabel of VStack - GTK's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `background` | property | `Background` | native |  |  |  | ✅ | · |  | GTK 4: cannot read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it |
+| `focus` | act | `() -> Bool` |  |  |  |  | – | ⏸ |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on VStack.isFocusedChanged, not realized yet |
+| `frame` | property | `Rect` | structure |  |  |  | ✅ | ✅ |  |  |
+| `height` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read what reaches VStack - GTK's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | WinUI 3: not realized |
+| `isFocusedChanged` | event | `Bool` | native |  |  |  | – |  |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isVisible` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotX of VStack - GTK's driver has no path for it yet |
+| `pivotY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotY of VStack - GTK's driver has no path for it yet |
+| `rotation` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read rotation of VStack - GTK's driver has no path for it yet |
+| `rotationX` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationX of VStack - GTK's driver has no path for it yet |
+| `rotationY` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationY of VStack - GTK's driver has no path for it yet |
+| `scale` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scale of VStack - GTK's driver has no path for it yet |
+| `scaleX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleX of VStack - GTK's driver has no path for it yet |
+| `scaleY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleY of VStack - GTK's driver has no path for it yet |
+| `style` | property | `Name` | structure |  |  |  | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationX of VStack - GTK's driver has no path for it yet |
+| `translationY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationY of VStack - GTK's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  |  |  |  | – | ⏸ |  | WinUI 3: VStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on VStack.isFocusedChanged, not realized yet |
+| `width` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -79,38 +79,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `area` | property | `Area` | structure |  |  |  | ✅ |  |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ |  |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  |  |
-| `margin` | property | `Insets` | native |  |  |  | ✅ |  |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ |  |  |  |
-| `panXChannel` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `panYChannel` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ |  |  |  |
-| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ |  |  |  |
-| `tapCount` | property | `Int` | structure |  |  |  | ✅ |  |  |  |
-| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  |  |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure |  |  |  | ✅ | ✅ |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pinch on VStack - GTK's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on VStack - GTK's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on VStack - GTK's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on VStack - GTK's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on VStack - GTK's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on VStack - GTK's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on VStack - GTK's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot tap on VStack - GTK's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot tap on VStack - GTK's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [Layout](tiers/Layout.md)
 
@@ -118,9 +118,9 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
-| `clipsContent` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `letsInputThrough` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized |
+| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `clipsContent` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read clipsContent of VStack - GTK's driver has no path for it yet |
+| `letsInputThrough` | property | `Bool` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read letsInputThrough of VStack - GTK's driver has no path for it yet |
 
 ## From [StackBase](tiers/StackBase.md)
 
@@ -128,7 +128,7 @@ What both stacks have: the space between their children.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `spacing` | property | `Double` | native |  |  |  | ✅ |  |  |  |
+| `spacing` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -136,7 +136,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native |  |  |  | ✅ |  |  |  |
+| `padding` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -144,6 +144,6 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI |  |  |  | ✅ |  |  |  |
-| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ |  |  |  |
-| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ |  |  |  |
+| `shape` | property | `ContainerShape` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read shape of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it |
+| `stroke` | property | `Brush` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read stroke of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it |
+| `strokeWidth` | property | `Double` | stateUI |  |  |  | ✅ | · |  | GTK 4: cannot read strokeWidth of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its strokeWidth; its drawing proves it |
