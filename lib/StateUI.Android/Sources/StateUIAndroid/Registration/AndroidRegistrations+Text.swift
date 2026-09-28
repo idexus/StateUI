@@ -9,7 +9,7 @@ extension AndroidRegistrations {
     /// Runs of words in a label's spans are its element's to lay down, as its children.
     static func text(_ registry: Registry<AndroidView>) {
         registry.add(LabelContract.self, create: { _ in AndroidLabelView() }) { label in
-            label.applies(textMembers) { view, values in applyText(view, values) }
+            label.applies(TextMembers.members) { view, values in applyText(view, values) }
             label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
                 view.setLines(
                     breaking: values[LabelContract.lineBreak] ?? .wordWrap,

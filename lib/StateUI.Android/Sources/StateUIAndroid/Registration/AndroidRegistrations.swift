@@ -55,31 +55,10 @@ enum AndroidRegistrations {
         registry.everyElementRaises(VisualElementContract.isFocusedChanged)
     }
 
-    /// The words of a text control, their size, weight and colour, and the room around them.
-    static let textMembers: [any ContractMember] = [
-        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
-        PaddingElementContract.padding,
-    ]
-
-    /// Puts `textMembers` on a text view.
+    /// Puts `TextMembers.members` on a text view: its words in their case, their look, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
-        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            let textCase = values[TextElementContract.textCase] ?? .none
-            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
-        }
-        if values.changed(FontElementContract.fontSize) {
-            view.setFontSize(values[FontElementContract.fontSize])
-        }
-        if values.changed(FontElementContract.fontAttributes) {
-            view.setFontAttributes(values[FontElementContract.fontAttributes])
-        }
-        if values.changed(FontElementContract.fontFamily) {
-            view.setFontFamily(values[FontElementContract.fontFamily]?.text)
-        }
-        if values.changed(TextStyleElementContract.textColor) {
-            view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)
-        }
+        if let words = TextMembers.words(values) { view.setText(words) }
+        if let look = TextMembers.look(values) { view.setLook(look) }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])
         }

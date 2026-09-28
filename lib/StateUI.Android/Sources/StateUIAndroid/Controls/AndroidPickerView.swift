@@ -43,12 +43,14 @@ final class AndroidPickerView: AndroidView {
         }
     }
 
-    /// The words' size in points, colour and face, and where they stand across the field; nil for the theme's.
-    func setLook(size: Double?, color: HostValue?, family: String?, attributes: FontAttributes?, alignment: TextAlignment) {
+    /// How the words look (`TextMembers.look`) - each the theme's where it says nothing - and where they stand across
+    /// the field.
+    func setLook(_ look: TextLook, alignment: TextAlignment) {
+        let (size, color) = (look.size, look.color)
         Java.frame {
-            let style = (attributes?.rawValue ?? 0) & 3
+            let style = look.attributes.rawValue & 3
             let face = Java.callStaticObject(
-                JavaAPI.typeface, JavaAPI.createTypeface, .object(family.flatMap(Java.string)), .int(style))
+                JavaAPI.typeface, JavaAPI.createTypeface, .object(look.family.flatMap(Java.string)), .int(style))
             let across: Int32 = switch alignment {
             case .start: 0x0080_0003
             case .center: 0x01

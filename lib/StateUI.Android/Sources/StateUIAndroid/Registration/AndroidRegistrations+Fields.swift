@@ -68,18 +68,7 @@ extension AndroidRegistrations {
         if values.changed(TextElementContract.text), let words = words(values) {
             view.setText(words)
         }
-        if values.changed(FontElementContract.fontSize) {
-            view.setFontSize(values[FontElementContract.fontSize])
-        }
-        if values.changed(FontElementContract.fontAttributes) {
-            view.setFontAttributes(values[FontElementContract.fontAttributes])
-        }
-        if values.changed(FontElementContract.fontFamily) {
-            view.setFontFamily(values[FontElementContract.fontFamily]?.text)
-        }
-        if values.changed(TextStyleElementContract.textColor) {
-            view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)
-        }
+        if let look = TextMembers.look(values) { view.setLook(look) }
         if values.changed(InputViewContract.placeholder) {
             view.setPlaceholder(values[InputViewContract.placeholder])
         }

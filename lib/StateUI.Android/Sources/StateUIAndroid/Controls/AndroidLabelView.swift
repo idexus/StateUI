@@ -79,11 +79,13 @@ final class AndroidLabelView: AndroidTextView {
         Java.call(reference, JavaAPI.setGravity, .int(across | down))
     }
 
-    /// The space between the letters in points, which Android counts in the text's own size.
+    /// The space between the letters in points, which Android counts in ems of the text's own size.
     func setLetterSpacing(_ points: Double) {
         spacing = points
-        let size = Double(Java.callFloat(reference, JavaAPI.getTextSize))
-        Java.call(reference, JavaAPI.setLetterSpacing, .float(size > 0 ? Float(points * density / size) : 0))
+        var look = TextLook()
+        look.letterSpacing = points
+        let size = Double(Java.callFloat(reference, JavaAPI.getTextSize)) / density
+        Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
     /// The height of a line, as a multiple of the font's own; nil for the font's.

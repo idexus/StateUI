@@ -31,10 +31,7 @@ extension AndroidRegistrations {
                 TextStyleElementContract.textColor, TextAlignmentElementContract.horizontalTextAlignment,
             ]) { view, values in
                 view.setLook(
-                    size: values[FontElementContract.fontSize],
-                    color: values[TextStyleElementContract.textColor]?.propValue,
-                    family: values[FontElementContract.fontFamily]?.text,
-                    attributes: values[FontElementContract.fontAttributes],
+                    TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
             }
             picker.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }

@@ -60,15 +60,6 @@ extension AndroidRegistrations {
     ]
 
     private static func applyFont<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
-        if values.changed(FontElementContract.fontSize) { view.setFontSize(values[FontElementContract.fontSize]) }
-        if values.changed(FontElementContract.fontAttributes) {
-            view.setFontAttributes(values[FontElementContract.fontAttributes])
-        }
-        if values.changed(FontElementContract.fontFamily) {
-            view.setFontFamily(values[FontElementContract.fontFamily]?.text)
-        }
-        if values.changed(TextStyleElementContract.textColor) {
-            view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)
-        }
+        if let look = TextMembers.look(values) { view.setLook(look) }
     }
 }

@@ -39,6 +39,16 @@ class AndroidTextView: AndroidView {
         return Java.text(string)
     }
 
+    /// How the words look (`TextMembers.look`): their size, weight, slant, family and colour, each the
+    /// platform's own where the look says nothing.
+    func setLook(_ look: TextLook) {
+        setFontSize(look.size)
+        fontAttributes = look.attributes
+        fontFamily = look.family
+        applyTypeface()
+        setTextColor(look.color)
+    }
+
     /// The size of the words, in points the user's font scale applies to; nil puts back the platform's.
     func setFontSize(_ size: Double?) {
         let made = madeWith
@@ -52,12 +62,6 @@ class AndroidTextView: AndroidView {
     /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
     func setFontAttributes(_ attributes: FontAttributes?) {
         fontAttributes = attributes
-        applyTypeface()
-    }
-
-    /// The family the words are drawn in, as Android names it; one it does not know, or nil, is its own.
-    func setFontFamily(_ family: String?) {
-        fontFamily = family
         applyTypeface()
     }
 

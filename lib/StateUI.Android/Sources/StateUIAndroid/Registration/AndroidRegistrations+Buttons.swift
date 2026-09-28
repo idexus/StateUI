@@ -14,7 +14,7 @@ extension AndroidRegistrations {
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
-            button.applies(textMembers) { view, values in applyText(view, values) }
+            button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.applies([
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 ImageElementContract.aspect,
