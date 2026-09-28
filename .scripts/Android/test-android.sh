@@ -24,6 +24,9 @@
 # The suite also writes what the host declares - its registry, as exports/
 # holds it for the control dictionary. The run is held to exports/android.txt;
 # STATEUI_UPDATE_EXPORTS=1 writes it instead.
+#
+# STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts in exports/marks/android stand at another
+# revision, or at none - chosen here, since the device reads no repository - and takes only theirs off the device.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -50,6 +53,21 @@ done < <(find "$tests_dir/Sources" -name '*.swift')
 if [[ "${1:-}" == --build ]]; then
   build_head "$tests_dir" StateUIAndroidTests debug "${2:?an ABI: arm64-v8a or x86_64}"
   exit
+fi
+
+marks="$repository_dir/exports/marks/android"
+stale_only="${STATEUI_STALE_ONLY:-}"
+if [[ "$stale_only" == 1 ]]; then
+  stale=""
+  for family in $(grep -oE 'func test[A-Za-z]+\(\) throws \{ try conform' "$tests_dir/Sources/Conformance/AndroidConformanceTests.swift" \
+      | sed -E 's/func test([A-Za-z]+).*/\1/'); do
+    revision="$("$repository_dir/.scripts/Marks/revision.sh" android "$family")"
+    [[ "$(head -n 1 "$marks/$family.txt" 2>/dev/null)" == "# revision $revision" ]] \
+      || stale="$stale,AndroidConformanceTests.test$family"
+  done
+  [[ -n "$stale" ]] || { echo "Every family's verdicts stand at its revision: nothing to run."; exit 0; }
+  STATEUI_FILTER="${stale#,}"
+  echo "stale:      ${STATEUI_FILTER//AndroidConformanceTests.test/}"
 fi
 
 serial="$(device_serial "${1:-${ANDROID_SERIAL:-}}")"
@@ -95,10 +113,12 @@ echo "$output"
 summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing - read: $ADB -s $serial logcat -s StateUI"; exit 1; }
 [[ "$summary" == *" with 0 failures" ]] || exit 1
-[[ -z "${STATEUI_FILTER:-}" ]] || exit 0
+[[ -z "${STATEUI_FILTER:-}" || "$stale_only" == 1 ]] || exit 0
 
 declared="$(mktemp -d)"
-for name in android.txt; do
+# A run of the stale families alone runs no declaration's test.
+[[ "$stale_only" == 1 ]] && declarations=() || declarations=(android.txt)
+for name in ${declarations[@]+"${declarations[@]}"}; do
   "$ADB" -s "$serial" exec-out run-as "$package" cat "files/$name" > "$declared/$name"
   if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
     cp "$declared/$name" "$repository_dir/exports/$name"
@@ -111,7 +131,6 @@ done
 
 # The conformance families' verdicts, one file a family: Android's column of the control dictionary.
 held="$declared/marks"
-marks="$repository_dir/exports/marks/android"
 mkdir -p "$held"
 for name in $("$ADB" -s "$serial" exec-out run-as "$package" ls files/marks/android | tr -d '\r'); do
   # The revision its family stands at, written over each verdict file: the device reads no repository.
@@ -123,14 +142,23 @@ done
 # Two runs at other revisions compare by their verdicts, the line naming the revision aside.
 verdicts_alone () {
   mkdir -p "$2"
-  for file in "$1"/*.txt; do [[ -e "$file" ]] && grep -v '^# revision ' "$file" > "$2/$(basename "$file")"; done
+  for file in "$1"/*.txt; do
+    if [[ -e "$file" ]]; then grep -v '^# revision ' "$file" > "$2/$(basename "$file")" || true; fi
+  done
 }
+verdicts_alone "$held" "$declared/run"
+verdicts_alone "$marks" "$declared/kept"
+# A run of the stale families holds only theirs to what was kept.
+if [[ "$stale_only" == 1 ]]; then
+  for file in "$declared/kept"/*.txt; do
+    if [[ ! -e "$declared/run/$(basename "$file")" ]]; then rm -f "$file"; fi
+  done
+fi
 if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
-  rm -rf "$marks"
+  [[ "$stale_only" == 1 ]] || rm -rf "$marks"
   mkdir -p "$marks"
   cp "$held"/*.txt "$marks/"
-elif verdicts_alone "$held" "$declared/run" && verdicts_alone "$marks" "$declared/kept" \
-     && ! diff -r "$declared/run" "$declared/kept" >/dev/null 2>&1; then
+elif ! diff -r "$declared/run" "$declared/kept" >/dev/null 2>&1; then
   diff -r "$declared/run" "$declared/kept" | head -n 40
   echo "ERROR: exports/marks/android is not what this run proved - a verdict changed, or something stopped"
   echo "working. Run again with STATEUI_UPDATE_EXPORTS=1 and read the diff."

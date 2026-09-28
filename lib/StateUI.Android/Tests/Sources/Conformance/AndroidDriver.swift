@@ -15,6 +15,44 @@ import CStateUIAndroid
 final class AndroidDriver: HostDriver {
     let host = "Android Views"
     let cannot: [String: String] = [:]
+    let platformHasNone = AndroidDriver.none()
+
+    /// What Android holds none of: what StateUI draws in its own views' `onDraw` and drawables, where StateUI's
+    /// layout places the children, what StateUI measures and what the host cuts - each proven by its effect in
+    /// another case.
+    private static func none() -> [String: String] {
+        var none = [
+            "read growsWithText of TextEditor":
+                "an editor's growing is StateUI's measuring, which no property of Android's holds; its frames prove it",
+        ]
+        for field in ["TextField", "SearchField", "TextEditor"] {
+            none["read maximumLength of \(field)"] =
+                "Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it"
+        }
+        let shapePaint = [
+            "aspect", "renderTransform", "fill", "stroke", "strokeWidth", "strokeDashOffset", "strokeDashPattern",
+            "strokeLineCap", "strokeLineJoin", "strokeMiterLimit",
+        ]
+        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+            for member in shapePaint {
+                none["read \(member) of \(shape)"] =
+                    "StateUI draws a shape in its view's onDraw, which holds none of its \(member); its drawing proves it"
+            }
+        }
+        for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
+            for member in ["stroke", "strokeWidth", "shape"] {
+                none["read \(member) of \(layout)"] =
+                    "StateUI draws a layout's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
+            }
+            none["read padding of \(layout)"] =
+                "Android's view group places its children where StateUI's layout says; their frames prove it"
+        }
+        for stack in ["HStack", "VStack"] {
+            none["read spacing of \(stack)"] =
+                "Android's view group places its children where StateUI's layout says; their frames prove it"
+        }
+        return none
+    }
 
     /// What the families ask of a driver that Android's has no path for yet says so, and stays empty in Android's
     /// column with why, rather than failing.

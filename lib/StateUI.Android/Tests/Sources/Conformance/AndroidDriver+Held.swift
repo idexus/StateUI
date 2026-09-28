@@ -90,7 +90,7 @@ extension AndroidDriver {
             return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
         case .accessibilityHeadingLevel:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
-        default: return nil
+        default: return controlHolds(property, view)
         }
     }
 
