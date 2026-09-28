@@ -159,7 +159,14 @@ class AndroidLayoutView: AndroidView {
         return (resolve(widthSpec, natural.width), resolve(heightSpec, natural.height))
     }
 
-    /// Answers Android's layout: places every child in `width` by `height` pixels.
+    /// Answers Android's layout, which may place the layout itself: its box drawn at `width` by `height` pixels,
+    /// then every child placed in it.
+    final func laidOut(width: Int32, height: Int32) {
+        box?.fit(width: width, height: height)
+        arrange(width: width, height: height)
+    }
+
+    /// Places every child in `width` by `height` pixels.
     func arrange(width: Int32, height: Int32) {
         arrange(in: Rect(x: 0, y: 0, width: Double(width) / density, height: Double(height) / density))
     }

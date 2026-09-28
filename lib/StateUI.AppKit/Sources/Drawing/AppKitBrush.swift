@@ -56,7 +56,8 @@ struct AppKitBrush {
             path.addClip()
             let middle = Self.point(center, in: bounds)
             gradient.draw(
-                fromCenter: middle, radius: 0, toCenter: middle, radius: max(bounds.width, bounds.height) * radius,
+                fromCenter: middle, radius: 0, toCenter: middle,
+                radius: HostBrush.reach(of: radius, width: bounds.width, height: bounds.height),
                 options: [])
             NSGraphicsContext.restoreGraphicsState()
         }

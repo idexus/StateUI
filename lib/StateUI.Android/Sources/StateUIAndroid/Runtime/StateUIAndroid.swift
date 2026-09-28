@@ -277,7 +277,7 @@ enum JavaNatives {
         let arrange: @convention(c) (Environment, jclass?, jlong, jint, jint) -> Void = {
             _, _, number, width, height in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidLayoutView)?.arrange(width: width, height: height)
+                (AndroidView.find(number) as? AndroidLayoutView)?.laidOut(width: width, height: height)
             }
         }
 

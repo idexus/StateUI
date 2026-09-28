@@ -67,6 +67,9 @@ final class AndroidShapeDrawable {
     /// The radii last told the Java side.
     private var told: (kind: Int32, radii: [Float])?
 
+    /// What fills the shape, as the tree gave it.
+    private var fill: HostValue?
+
     /// The shape, its radii in points turned into pixels at `density`.
     func setShape(_ shape: Shape, density: Double) {
         self.shape = shape
@@ -79,6 +82,7 @@ final class AndroidShapeDrawable {
         guard size.map({ $0 != (width, height) }) ?? true else { return }
         size = (width, height)
         tellShape()
+        if case .radial = HostBrush(fill) { tellFill() }
     }
 
     /// Tells the Java side the shape, its corners fitted within the outline where the drawable's size is known.
@@ -94,7 +98,13 @@ final class AndroidShapeDrawable {
 
     /// What fills the shape: a colour, or a brush as it crosses; nil for nothing.
     func setFill(_ value: HostValue?) {
-        let brush = Self.brush(value)
+        fill = value
+        tellFill()
+    }
+
+    /// Tells the Java side the fill, a radial gradient reaching as far as the size the drawable is drawn at says.
+    private func tellFill() {
+        let brush = Self.brush(fill, over: size.map { (Double($0.width), Double($0.height)) })
         let colors = Java.ints(brush.colors)
         let offsets = Java.floats(brush.offsets)
         let fractions = Java.floats(brush.geometry)
@@ -105,9 +115,12 @@ final class AndroidShapeDrawable {
     }
 
     /// A brush as the Java side takes it, from the host layer's reading of it: its kind, then a colour and an offset
-    /// for each stop, and its geometry in fractions of the shape.
+    /// for each stop, and its geometry - points in fractions of the shape, a radial gradient's reach in pixels over
+    /// `size` (`HostBrush.reach`), none before the size is known.
     /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
-    static func brush(_ value: HostValue?) -> (kind: Int32, colors: [Int32], offsets: [Float], geometry: [Float]) {
+    static func brush(
+        _ value: HostValue?, over size: (width: Double, height: Double)?
+    ) -> (kind: Int32, colors: [Int32], offsets: [Float], geometry: [Float]) {
         func stops(_ stops: [HostBrush.Stop]) -> (colors: [Int32], offsets: [Float]) {
             let drawn = stops.compactMap { stop in AndroidView.argb(stop.color).map { ($0, Float(stop.offset)) } }
             return (drawn.map(\.0), drawn.map(\.1))
@@ -123,7 +136,8 @@ final class AndroidShapeDrawable {
             return (2, colors, offsets, [from.x, from.y, to.x, to.y].map(Float.init))
         case .radial(let center, let radius, let run):
             let (colors, offsets) = stops(run)
-            return (3, colors, offsets, [center.x, center.y, radius].map(Float.init))
+            let reach = size.map { HostBrush.reach(of: radius, width: $0.width, height: $0.height) } ?? 0
+            return (3, colors, offsets, [center.x, center.y, reach].map(Float.init))
         }
     }
 

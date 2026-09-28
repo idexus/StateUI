@@ -203,11 +203,17 @@ class AndroidView {
         }
         let brush = AndroidShapeDrawable()
         brush.setFill(value)
+        if let size = placedSize { brush.fit(width: size.width, height: size.height) }
         showBackground(brush.object)
+        backgroundBrush = brush
     }
+
+    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a colour or none.
+    private var backgroundBrush: AndroidShapeDrawable?
 
     /// Shows `drawable` behind the view; nil puts back the background it was made with.
     func showBackground(_ drawable: JavaObject?) {
+        backgroundBrush = nil
         if madeBackground == nil {
             madeBackground = .some(Java.callObject(reference, JavaAPI.getBackground).map(JavaObject.init))
         }
@@ -341,7 +347,10 @@ class AndroidView {
             JavaAPI.views, JavaAPI.placeView, .object(reference),
             .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
         if resized, pivot != (0.5, 0.5) { applyTransform() }
-        if resized { sized(width: frame.right - frame.left, height: frame.bottom - frame.top) }
+        if resized {
+            backgroundBrush?.fit(width: frame.right - frame.left, height: frame.bottom - frame.top)
+            sized(width: frame.right - frame.left, height: frame.bottom - frame.top)
+        }
     }
 
     /// The view was placed at a new size, in pixels: what it draws to its size is drawn again.

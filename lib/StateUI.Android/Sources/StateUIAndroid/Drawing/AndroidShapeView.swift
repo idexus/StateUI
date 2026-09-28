@@ -43,6 +43,9 @@ final class AndroidShapeView: AndroidView {
     private var strokePixels = 0.0
     private var toldCorners: [Float]?
 
+    /// What fills the shape, as the tree gave it.
+    private var fill: HostValue?
+
     /// Everything the shape draws, from what the tree says.
     func draw(
         _ geometry: Geometry, fill: HostValue?, stroke: HostValue?, strokeWidth: Double, dashes: [Double],
@@ -58,10 +61,8 @@ final class AndroidShapeView: AndroidView {
             Java.call(
                 reference, JavaAPI.setShapeGeometry, .int(kind), .object(Java.floats(commands)), .bool(evenOdd))
 
-            let brush = AndroidShapeDrawable.brush(fill)
-            Java.call(
-                reference, JavaAPI.setShapeFill, .int(brush.kind), .object(Java.ints(brush.colors)),
-                .object(Java.floats(brush.offsets)), .object(Java.floats(brush.geometry)))
+            self.fill = fill
+            tellFill()
 
             let dashes = ShapeArithmetic.dashLengths(dashes, strokeWidth: width).map { Float($0 * density) }
             Java.call(
@@ -84,6 +85,15 @@ final class AndroidShapeView: AndroidView {
 
     override func sized(width: Int32, height: Int32) {
         fitCorners()
+        if case .radial = HostBrush(fill) { Java.frame { tellFill() } }
+    }
+
+    /// Tells the Java side the fill, a radial gradient reaching as far as the room the shape stands in says.
+    private func tellFill() {
+        let brush = AndroidShapeDrawable.brush(fill, over: placedSize.map { (Double($0.width), Double($0.height)) })
+        Java.call(
+            reference, JavaAPI.setShapeFill, .int(brush.kind), .object(Java.ints(brush.colors)),
+            .object(Java.floats(brush.offsets)), .object(Java.floats(brush.geometry)))
     }
 
     /// Tells the Java side a rectangle's corners, each no more than half the side it rounds within the outline

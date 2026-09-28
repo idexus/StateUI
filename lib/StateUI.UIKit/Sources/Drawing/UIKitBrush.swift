@@ -29,7 +29,7 @@ struct UIKitBrush: Equatable {
     }
 
     /// A layer painting the brush over `bounds`, made anew or `reusing` one of the kind it needs: a gradient's
-    /// points are fractions of `bounds`, a radial one's radius a fraction of its larger side.
+    /// points are fractions of `bounds`, a radial one a circle reaching as `HostBrush.reach` says.
     func layer(over bounds: CGRect, reusing layer: CALayer?) -> CALayer? {
         switch brush {
         case .none:
@@ -51,7 +51,7 @@ struct UIKitBrush: Equatable {
             let gradient = layer as? CAGradientLayer ?? CAGradientLayer()
             gradient.type = .radial
             Self.paint(gradient, stops)
-            let reach = max(bounds.width, bounds.height) * radius
+            let reach = HostBrush.reach(of: radius, width: bounds.width, height: bounds.height)
             gradient.startPoint = CGPoint(x: center.x, y: center.y)
             gradient.endPoint = CGPoint(
                 x: center.x + (bounds.width > 0 ? reach / bounds.width : 0),

@@ -56,7 +56,10 @@ final class StateUIShapeDrawable extends Drawable {
         invalidateSelf();
     }
 
-    /** The brush: its kind, its stops' colours and offsets, and its geometry in fractions of the shape. */
+    /**
+     * The brush: its kind, its stops' colours and offsets, its points in fractions of the shape and a radial
+     * one's reach in pixels.
+     */
     void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] fractions) {
         brush.set(kind, stopColors, stopOffsets, fractions);
         invalidateSelf();

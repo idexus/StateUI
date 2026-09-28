@@ -13,9 +13,12 @@ outlined in one colour. The Swift host tells it every part as the host layer
 reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
 corner's width and height in pixels, the brush's kind, its stops' colours and
 offsets and its whole geometry, the outline's colour and width - and it
-builds the gradient for the bounds it is drawn at, so the geometry stays in
-fractions of the thing painted, as
-[brushes](../../types/brushes.md#geometry-in-fractions) says. A plain colour
+builds the gradient for the bounds it is drawn at, so a gradient's points stay
+in fractions of the thing painted, as
+[brushes](../../types/brushes.md#geometry-in-fractions) says. A radial
+gradient's reach is the host layer's circle, worked out in Swift for the size
+the drawable is drawn at and told again as that size changes - whether Swift
+or Android placed the view. A plain colour
 stays the view's own colour background; a background cleared gives back the
 one the view was made with.
 
