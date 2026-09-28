@@ -174,16 +174,22 @@ extension GTKRenderer {
         GTKTestHost.layOut((window ?? GTKTestHost.window).widget)
     }
 
-    /// Turns until `done` holds: a handler resumed on the pool comes back to the UI thread's queue, and a display
-    /// frame runs while something asks for one - a window behind another gets none from the desktop.
+    /// Steps until `done` holds, at most 150 steps.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 {
             if done() { return }
-            GTKTestHost.pump(0.01)
-            _ = runtime.core.runJobs()
-            runtime.pump.turn()
-            if frameClock.held { frame() }
+            step()
         }
+    }
+
+    /// One step as a shown window's frame clock takes it: GLib's loop a moment, a handler resumed on the pool back
+    /// on the UI thread's queue, a turn, and a display frame while something asks for one - else GTK's layout
+    /// alone. A window behind another gets neither from the desktop.
+    func step() {
+        GTKTestHost.pump(0.01)
+        _ = runtime.core.runJobs()
+        runtime.pump.turn()
+        if frameClock.held { frame() } else { layOut() }
     }
 
     /// The window's name, as GTK holds it.

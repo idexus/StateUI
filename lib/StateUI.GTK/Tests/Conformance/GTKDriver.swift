@@ -32,11 +32,7 @@ final class GTKDriver: HostDriver {
     }
 
     func step() {
-        guard let renderer else { return }
-        GTKTestHost.pump(0.01)
-        _ = renderer.runtime.core.runJobs()
-        renderer.runtime.pump.turn()
-        if renderer.frameClock.held { renderer.frame() }
+        renderer?.step()
     }
 
     func turn() {
