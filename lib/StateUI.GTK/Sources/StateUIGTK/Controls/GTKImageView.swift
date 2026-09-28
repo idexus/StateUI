@@ -36,7 +36,7 @@ final class GTKImageView: GTKPanelView {
         self.aspect = aspect
         path = GTKPictures.path(of: file)
         found = path != nil
-        if !found, !file.isEmpty { GTKLog.error("no picture \(file) among the application's pictures") }
+        if !found, !file.isEmpty { GTKRenderer.log.error("no picture \(file) among the application's pictures") }
 
         var width: Int32 = 0
         var height: Int32 = 0

@@ -32,7 +32,7 @@ enum GTKKeptValues {
         var kept = read(file)
         guard kept.keep(call.arguments, keys: core.persistentKeys) else { return }
 
-        if !write(kept, to: file) { GTKLog.error("the kept values could not be written") }
+        if !write(kept, to: file) { GTKRenderer.log.error("the kept values could not be written") }
     }
 
     /// Writes `kept` whole to `file`, aside and then in its place; whether it was written.

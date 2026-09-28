@@ -12,6 +12,9 @@ final class GTKRenderer {
     /// The one runtime of the process, made when the application is activated.
     static var shared: GTKRenderer?
 
+    /// What the host says for whoever reads its log: standard error, or wherever a test listens.
+    static var log = HostLog(host: "GTK")
+
     let frameClock: GTKFrameClock
 
     /// Whether the user asked for less motion: every animation arrives at once.
@@ -24,7 +27,7 @@ final class GTKRenderer {
     /// the turn - each element's GTK half a `GTKElement`.
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
-        makeNative: { [unowned self] element in GTKElement(element, host: self) }, log: { GTKLog.error($0) })
+        makeNative: { [unowned self] element in GTKElement(element, host: self) }, log: { GTKRenderer.log.error($0) })
 
     /// What performs the acts the application calls, and answers them.
     private(set) lazy var acts = GTKActPerformer(core: runtime.core)

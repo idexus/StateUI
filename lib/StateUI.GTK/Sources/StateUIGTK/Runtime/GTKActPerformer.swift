@@ -62,7 +62,7 @@ final class GTKActPerformer {
                 anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             reply(call, [])
         case .handlerFailed:
-            GTKLog.error("a handler failed: \(call.arguments.first?.string ?? "")")
+            GTKRenderer.log.error("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
         default:
             perform(registered: call, in: tree)
@@ -73,7 +73,7 @@ final class GTKActPerformer {
     /// handed that element's control; an act nobody registered is refused by name.
     private func perform(registered call: HostActCall, in tree: MountedTree) {
         guard !GTKInterop.acts.perform(
-            call, in: tree, core: core, view: { ($0.native as? GTKElement)?.view }, log: { GTKLog.error($0) })
+            call, in: tree, core: core, view: { ($0.native as? GTKElement)?.view }, log: { GTKRenderer.log.error($0) })
         else { return }
         fail(call, "the GTK host does not perform the act '\(call.act.name)'")
     }
@@ -151,6 +151,6 @@ final class GTKActPerformer {
     }
 
     private func fail(_ call: HostActCall, _ reason: String) {
-        core.fail(call, reason, log: { GTKLog.error($0) })
+        core.fail(call, reason, log: { GTKRenderer.log.error($0) })
     }
 }
