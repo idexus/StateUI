@@ -38,18 +38,16 @@ extension GTKView {
         if let placingLayout { gtk_widget_queue_allocate(placingLayout.widget) }
     }
 
-    /// The place's corner, then a placing run's drawing, then the view's own transform: each the core's matrix
-    /// for the size allocated, the view's own applied first.
+    /// The place's corner, then the view's own transform drawn under a placing run's (`HostDrawingTransform.under`):
+    /// the core's matrix for the size allocated.
     /// Design: docs/design/platforms/gtk/motion.md#moved-turned-and-scaled
     private func allocation(at place: Rect, width: Double, height: Double) -> OpaquePointer? {
         var corner = graphene_point_t(x: Float(place.x), y: Float(place.y))
-        var drawn = gsk_transform_translate(nil, &corner)
-        for each in [placedDrawing, transform] {
-            guard let each, !each.isIdentity else { continue }
-            var matrix = Self.graphene(each.matrix(width: width, height: height))
-            drawn = gsk_transform_matrix(drawn, &matrix)
-        }
-        return drawn
+        let moved = gsk_transform_translate(nil, &corner)
+        let drawn = transform.under(placedDrawing)
+        guard !drawn.isIdentity else { return moved }
+        var matrix = Self.graphene(drawn.matrix(width: width, height: height))
+        return gsk_transform_matrix(moved, &matrix)
     }
 
     /// The core's matrix as graphene's: both act on row vectors, entry for entry.
