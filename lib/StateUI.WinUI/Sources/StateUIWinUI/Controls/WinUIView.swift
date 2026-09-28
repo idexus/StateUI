@@ -135,7 +135,7 @@ class WinUIView {
     }
 
     /// Places the element at `place`, in DIPs of its parent: at once inside a pass, and between passes by asking
-    /// the layout for one.
+    /// the layout for one. Its size is its words' room while its place travels.
     /// Design: docs/design/platforms/winui/layout.md#a-place-between-passes
     func layout(_ place: Rect) {
         let resized = placed.map { $0.width != place.width || $0.height != place.height } ?? true
@@ -147,12 +147,19 @@ class WinUIView {
                 _ = measure(width: place.width, height: nil)
                 layout.standsAt = place.width
             }
-            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
+            let room = wordsRoom ?? place
+            stateui_winui_arrange(handle, place.x, place.y, room.width, room.height)
         } else {
             placingLayout?.invalidateArrange()
         }
         if resized, transform != .identity || placedDrawing != nil { writeTransform() }
     }
+
+    /// Nothing of the view's own follows where its place travels.
+    func travels(to destination: Rect?) {}
+
+    /// The size the view's words are laid out at while its place travels; nil for its place's.
+    var wordsRoom: Rect? { nil }
 
     /// Where the element's top left corner stands in its window's content, in DIPs.
     var origin: Point {

@@ -13,6 +13,9 @@ class WinUITextView: WinUIView {
     /// against, and what it is.
     private(set) var look = TextLook()
 
+    /// Where the view's place is bound while it travels; nil where it stands.
+    private var bound: Rect?
+
     /// The size WinUI draws body text at, in DIPs.
     static let platformFontSize = 14.0
 
@@ -69,6 +72,14 @@ class WinUITextView: WinUIView {
         stateui_winui_text_set_decorations(
             handle, decorations?.contains(.underline) == true, decorations?.contains(.strikethrough) == true)
     }
+
+    /// The words stand at the size the place is bound for, whole, while the place travels.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    override func travels(to destination: Rect?) {
+        bound = destination
+    }
+
+    override var wordsRoom: Rect? { bound }
 
     /// WinUI spaces letters in thousandths of an em and lines in DIPs: both measured against the font's size.
     private func writeSpacing() {

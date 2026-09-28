@@ -139,4 +139,47 @@ final class WinUILayoutMotionTests: XCTestCase {
             XCTAssertTrue(first.isShown, "and never gone")
         }
     }
+
+    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
+    /// there, never breaking at the widths its place passes through, and show whole.
+    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let host = WinUIRenderer.running(clock: clock) { LengtheningPage() }
+            let label = try XCTUnwrap(host.views(WinUILabelView.self).first)
+
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.runtime.pump.turn()
+            host.layOut()
+            clock.now += 100
+            host.frame()
+            let (place, words) = (label.placedFrame, label.laidOutFrame)
+            let stack = try XCTUnwrap(host.views(WinUIStackView.self).first)
+            let end = stack.pixels(at: [(place.x + words.width - 1, place.y + 1)])
+
+            clock.now += 200
+            host.frame()
+            let bound = label.laidOutFrame
+            XCTAssertLessThan(place.width, bound.width - 1, "its place on its way")
+            XCTAssertEqual(words.width, bound.width, accuracy: 0.5, "its words at the width it is bound for")
+            XCTAssertEqual(words.height, bound.height, accuracy: 0.5, "on the one line they fit there")
+            XCTAssertEqual(end, [0xFFFF_0000], "shown whole, to the end of its box")
+        }
+    }
+}
+
+/// A label on red lengthened by a button, in a stack whose children travel for 200 ms.
+private struct LengtheningPage: ContentView {
+    @State private var long = false
+
+    var content: any View {
+        VStack {
+            Label(long ? "Text & typing" : "Text").background(.red).horizontalAlignment(.start)
+            Button("Longer").onClicked { long = true }
+        }
+        .motion(.eased(200, .linear))
+        .width(300)
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
 }

@@ -42,6 +42,14 @@ child, the view asks the layout that placed it to arrange again
 (`InvalidateArrange`); WinUI runs that arrangement before it draws the frame,
 and the layout's arrangement gives the child the place it keeps.
 
+A label whose place travels is arranged at its place's corner but at the size
+the place is bound for ([words at their
+destination](../../host/motion.md#words-at-their-destination)). WinUI would
+keep its words on the one line the destination gives them anyway - it
+arranges nothing smaller than it measured - but it cuts an element to the
+place it is arranged in, so the words' ends would not be drawn until the
+place arrived.
+
 ## A place filled
 
 A control's style aligns it inside the place its parent arranges it in - a
