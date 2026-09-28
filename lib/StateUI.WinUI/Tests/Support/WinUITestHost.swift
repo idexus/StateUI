@@ -64,8 +64,9 @@ extension WinUIRenderer {
             application: { OneWindowApplication(page: page) })
     }
 
-    /// A host running `application`, its window laid out in `room` from the first layout, on `clock` where one is
-    /// given.
+    /// A host running `application`, its windows laid out in `room` from the first layout - but for a size a window
+    /// asks for itself, as a window opens at its host's size and then stands as it is asked - on `clock` where one
+    /// is given.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, room: LayoutSize = WinUITestHost.room,
         application: @escaping @Sendable () -> any Application
@@ -73,7 +74,11 @@ extension WinUIRenderer {
         stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
-        renderer.window?.request(WindowFrame(width: room.width, height: room.height))
+        for controller in renderer.windows {
+            let asked = controller.element.map { WindowFrame(of: $0) } ?? WindowFrame()
+            controller.window.request(WindowFrame(
+                width: asked.width == nil ? room.width : nil, height: asked.height == nil ? room.height : nil))
+        }
         renderer.waitForFirstLayout()
         return renderer
     }
