@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | structure | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | structure | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | structure | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | structure | a run of other sources said: ✅ |
+| WinUI 3 | ✅ |  | structure |  |
 | GTK 4 |  |  | structure | no run of it on these sources |
 | Web |  |  | structure | no host yet |
 

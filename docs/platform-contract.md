@@ -101,63 +101,63 @@ of its members each meets, and why a cell is empty.
 <!-- creation:begin -->
 | Element | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Application](controls/Application.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Button](controls/Button.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Canvas](controls/Canvas.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [CheckBox](controls/CheckBox.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ColorBox](controls/ColorBox.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Content](controls/Content.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ContextMenu](controls/ContextMenu.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [DatePicker](controls/DatePicker.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Ellipse](controls/Ellipse.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Grid](controls/Grid.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [HStack](controls/HStack.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Image](controls/Image.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Application](controls/Application.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Button](controls/Button.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Canvas](controls/Canvas.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Content](controls/Content.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
+| [ContextMenu](controls/ContextMenu.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Ellipse](controls/Ellipse.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Grid](controls/Grid.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [HStack](controls/HStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Image](controls/Image.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
 | [ItemsView](controls/ItemsView.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [LeadingContent](controls/LeadingContent.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Line](controls/Line.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Map](controls/Map.md) | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Menu](controls/Menu.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [MenuBar](controls/MenuBar.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [MenuItem](controls/MenuItem.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [MenuSeparator](controls/MenuSeparator.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ModalStack](controls/ModalStack.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [NavigationStack](controls/NavigationStack.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Overlay](controls/Overlay.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Page](controls/Page.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Path](controls/Path.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Picker](controls/Picker.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Pin](controls/Pin.md) | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Polygon](controls/Polygon.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Polyline](controls/Polyline.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [PositionIndicator](controls/PositionIndicator.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ProgressBar](controls/ProgressBar.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [RadioButton](controls/RadioButton.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Rectangle](controls/Rectangle.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Scene](controls/Scene.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ScrollView](controls/ScrollView.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [SearchField](controls/SearchField.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Slider](controls/Slider.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Span](controls/Span.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Spans](controls/Spans.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [SplitView](controls/SplitView.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Stepper](controls/Stepper.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Switch](controls/Switch.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TabbedView](controls/TabbedView.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TextEditor](controls/TextEditor.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TextField](controls/TextField.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TimePicker](controls/TimePicker.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TitleBar](controls/TitleBar.md) | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TitleView](controls/TitleView.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ToolbarItems](controls/ToolbarItems.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [TrailingContent](controls/TrailingContent.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [VStack](controls/VStack.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [WebView](controls/WebView.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [Window](controls/Window.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ZStack](controls/ZStack.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [LeadingContent](controls/LeadingContent.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
+| [Line](controls/Line.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Map](controls/Map.md) | provider | ⌛ | ⌛ | ⌛ |  |  |  |
+| [Menu](controls/Menu.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [MenuBar](controls/MenuBar.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [MenuItem](controls/MenuItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [MenuSeparator](controls/MenuSeparator.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ModalStack](controls/ModalStack.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Overlay](controls/Overlay.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Page](controls/Page.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Path](controls/Path.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Picker](controls/Picker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Pin](controls/Pin.md) | provider | ⌛ | ⌛ | ⌛ |  |  |  |
+| [Polygon](controls/Polygon.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Polyline](controls/Polyline.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [PositionIndicator](controls/PositionIndicator.md) | stateUI | ⌛ | ⌛ | ⌛ |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Scene](controls/Scene.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [SearchField](controls/SearchField.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Slider](controls/Slider.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Span](controls/Span.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Spans](controls/Spans.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [SplitView](controls/SplitView.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Stepper](controls/Stepper.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [Switch](controls/Switch.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TextField](controls/TextField.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TitleBar](controls/TitleBar.md) | adaptive | ⌛ | ⌛ | ⌛ |  |  |  |
+| [TitleView](controls/TitleView.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ToolbarItems](controls/ToolbarItems.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [TrailingContent](controls/TrailingContent.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
+| [VStack](controls/VStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [WebView](controls/WebView.md) | native | ⌛ | ⌛ | ⌛ |  |  |  |
+| [Window](controls/Window.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ZStack](controls/ZStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
 <!-- creation:end -->
 
 The AppKit split view uses `NSSplitViewController`.
@@ -440,70 +440,70 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  |  |  |  |
-| [Button](controls/Button.md) | 86 |  |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | 70 |  |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | 69 |  |  |  |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  |  |  |  |  |
-| [DatePicker](controls/DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  |  |  |  |  |
-| [Grid](controls/Grid.md) | 77 |  |  |  |  |  |  |
-| [HStack](controls/HStack.md) | 74 |  |  |  |  |  |  |
-| [Image](controls/Image.md) | 69 |  |  |  |  |  |  |
-| [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 11 ✅ |  |  |
-| [Label](controls/Label.md) | 81 |  |  |  |  |  |  |
-| [Line](controls/Line.md) | 80 |  |  |  |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [Button](controls/Button.md) | 86 |  |  |  | 66 ✅ |  |  |
+| [Canvas](controls/Canvas.md) | 70 |  |  |  | 52 ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | 69 |  |  |  | 56 ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | 80 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  |  | 56 ✅ |  |  |
+| [Grid](controls/Grid.md) | 77 |  |  |  | 58 ✅ |  |  |
+| [HStack](controls/HStack.md) | 74 |  |  |  | 54 ✅ |  |  |
+| [Image](controls/Image.md) | 69 |  |  |  | 50 ✅ |  |  |
+| [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 60 ✅ |  |  |
+| [Label](controls/Label.md) | 81 |  |  |  | 61 ✅ |  |  |
+| [Line](controls/Line.md) | 80 |  |  |  | 60 ✅ |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 82 |  |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  |  |  |  |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  |  |  |  |  |
+| [Path](controls/Path.md) | 77 |  |  |  | 57 ✅ |  |  |
+| [Picker](controls/Picker.md) | 82 |  |  |  | 65 ✅ |  |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  |  | 58 ✅ |  |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 |  |  |  |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 81 |  |  |  |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 77 |  |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  |  |  |  |  |
-| [Slider](controls/Slider.md) | 73 |  |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | 71 |  |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 69 |  |  |  |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  |  |  |  |  |
-| [TextField](controls/TextField.md) | 90 |  |  |  |  |  |  |
-| [TimePicker](controls/TimePicker.md) | 78 |  |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | 81 |  |  |  | 63 ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  |  | 57 ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | 77 |  |  |  | 59 ✅ |  |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  |  | 58 ✅ |  |  |
+| [Slider](controls/Slider.md) | 73 |  |  |  | 57 ✅ |  |  |
+| [Stepper](controls/Stepper.md) | 71 |  |  |  | 57 ✅ |  |  |
+| [Switch](controls/Switch.md) | 69 |  |  |  | 56 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 66 ✅ |  |  |
+| [TextField](controls/TextField.md) | 90 |  |  |  | 66 ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 |  |  |  |  |  |  |
+| [VStack](controls/VStack.md) | 74 |  |  |  | 54 ✅ |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](controls/ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 11 of 2591 met |  |  |
+| [ZStack](controls/ZStack.md) | 73 |  |  |  | 54 ✅ |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1729 of 2591 met |  |  |
 
 ### Application structure
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](controls/Application.md) | 12 |  |  |  |  |  |  |
+| [Application](controls/Application.md) | 12 |  |  |  | 12 ✅ |  |  |
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | 2 |  |  |  |  |  |  |
+| [Menu](controls/Menu.md) | 2 |  |  |  | 2 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 |  |  |  |  |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 |  |  |  | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 6 |  |  |  |  |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 6 |  |  |  | 3 ✅ |  |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](controls/Page.md) | 12 |  |  |  |  |  |  |
+| [Page](controls/Page.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | 6 |  |  |  |  |  |  |
-| [Span](controls/Span.md) | 12 |  |  |  |  |  |  |
+| [Scene](controls/Scene.md) | 6 |  |  |  | 6 ✅ |  |  |
+| [Span](controls/Span.md) | 12 |  |  |  | 7 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 |  |  |  |  |  |  |
-| [TabbedView](controls/TabbedView.md) | 6 |  |  |  |  |  |  |
+| [SplitView](controls/SplitView.md) | 5 |  |  |  | 4 ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | 6 |  |  |  | 4 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  | 6 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
+| [Window](controls/Window.md) | 23 |  |  |  | 23 ✅ |  |  |
+| **Met** - ✅ and – | 104 |  |  |  | 80 of 104 met |  |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -546,46 +546,46 @@ its layer are on the element's page in [the control dictionary](controls/README.
 
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 |  |  |  |  |  |  |
-| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 |  |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 |  |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  |  |  |  |
-| [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 |  |  |  |  |  |  |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 |  |  |  |  |  |  |
-| [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 |  |  |  |  |  |  |
-| [Image](controls/Image.md) | `isAnimating`, `source` | 2 |  |  |  |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 |  |  |  | 1 ✅ |  |  |
+| [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 |  |  |  | 3 ✅ |  |  |
+| [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 |  |  |  | 4 ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  | 2 ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | `color`, `cornerRadius` | 2 |  |  |  | 2 ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 |  |  |  | 7 ✅ · 1 ☑️ |  |  |
+| [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 |  |  |  | 4 ✅ |  |  |
+| [Image](controls/Image.md) | `isAnimating`, `source` | 2 |  |  |  | 1 ✅ |  |  |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 |  |  |  | 9 ✅ |  |  |
-| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 |  |  |  |  |  |  |
-| [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 |  |  |  |  |  |  |
+| [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 |  |  |  | 2 ✅ |  |  |
+| [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 |  |  |  | 4 ✅ |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 |  |  |  |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 |  |  |  |  |  |  |
-| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | `data` | 1 |  |  |  |  |  |  |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 |  |  |  |  |  |  |
+| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 |  |  |  | 2 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 |  |  |  | 1 ✅ |  |  |
+| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 |  |  |  | 8 ✅ |  |  |
+| [Path](controls/Path.md) | `data` | 1 |  |  |  | 1 ✅ |  |  |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 |  |  |  | 7 ✅ |  |  |
 | [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 |  |  |  |  |  |  |
-| [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 |  |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 |  |  |  | 2 ✅ |  |  |
+| [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 |  |  |  | 2 ✅ |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` | 8 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | `progress` | 1 |  |  |  |  |  |  |
-| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 |  |  |  |  |  |  |
-| [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 |  |  |  |  |  |  |
-| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 |  |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 |  |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 |  |  |  |  |  |  |
-| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 |  |  |  |  |  |  |
-| [Span](controls/Span.md) | `background` | 1 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 |  |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  |  |  |  |
-| [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  |  |  |  |
-| [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 |  |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | `progress` | 1 |  |  |  | 1 ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 |  |  |  | 3 ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 |  |  |  | 1 ✅ |  |  |
+| [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | 6 |  |  |  | 6 ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | `horizontalScrollBarVisibility`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `scrollXChanged`, `scrollYChanged`, `verticalScrollBarVisibility` | 7 |  |  |  | 7 ✅ |  |  |
+| [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | 2 |  |  |  | 1 ✅ |  |  |
+| [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 |  |  |  | 4 ✅ |  |  |
+| [Span](controls/Span.md) | `background` | 1 |  |  |  | 1 ✅ |  |  |
+| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | 2 |  |  |  | 2 ✅ |  |  |
+| [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  | 5 ✅ |  |  |
+| [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  | 2 ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 |  |  |  | 2 ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  |  |  |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 |  |  |  |  |  |  |
-| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  |  |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  | 2 ✅ |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 |  |  |  |  |  |  |
+| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 |  |  |  | 23 ✅ |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

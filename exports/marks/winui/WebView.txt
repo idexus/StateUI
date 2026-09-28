@@ -1,7 +1,9 @@
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 WebView: not realized
 WebView.canGoBackChanged: not realized
 WebView.canGoForwardChanged: not realized
 WebView.evaluateJavaScript: not realized
+WebView.frameChanged: not realized
 WebView.goBack: not realized
 WebView.goForward: not realized
 WebView.navigated: not realized

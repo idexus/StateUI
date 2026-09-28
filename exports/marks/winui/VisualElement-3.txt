@@ -1,3 +1,4 @@
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.background: not realized
 ActivityIndicator.frame: ✅
@@ -6,7 +7,6 @@ ActivityIndicator.rotation: ✅
 ActivityIndicator.scaleX: ✅
 ActivityIndicator.zIndex: not realized
 Button.accessibilityHeadingLevel: ✅
-Button.clicked: ✅
 Button.focus: ✅
 Button.frameChanged: ✅
 Button.height: ✅
@@ -25,7 +25,7 @@ Canvas.minimumHeight: ✅
 Canvas.minimumWidth: ✅
 Canvas.pivotX: ✅
 Canvas.rotationY: not realized
-Canvas.style: not realized
+Canvas.style: ✅
 Canvas.translationX: ✅
 CheckBox.accessibilityLabel: ✅
 CheckBox.automationExcludedWithChildren: ✅
@@ -60,7 +60,7 @@ Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.pivotX: ✅
 Ellipse.rotationY: not realized
-Ellipse.style: not realized
+Ellipse.style: ✅
 Ellipse.translationX: ✅
 Grid.accessibilityLabel: ✅
 Grid.automationExcludedWithChildren: ✅
@@ -77,212 +77,222 @@ HStack.rotation: ✅
 HStack.scaleX: ✅
 HStack.zIndex: not realized
 Image.accessibilityHeadingLevel: ✅
-Image.focus: ✅
+Image.focus: cannot focus Image: it takes no keyboard focus here
 Image.frameChanged: ✅
 Image.height: ✅
-Image.isFocusedChanged: ✅
+Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
 Image.layoutDirection: not realized
 Image.rotationX: not realized
 Image.scaleY: ✅
-Image.unfocus: ✅
+Image.unfocus: cannot focus Image: it takes no keyboard focus here
 Image.width: ✅
-Label.frameChanged: ✅
-Label.isAccessibilityHidden: ✅
-Label.isVisible: ✅
-Label.maximumHeight: ✅
-Label.maximumWidth: ✅
-Label.minimumHeight: ✅
-Label.minimumWidth: ✅
-Label.pivotX: ✅
-Label.rotationY: not realized
-Label.style: not realized
-Label.translationX: ✅
-Line.accessibilityLabel: ✅
-Line.automationExcludedWithChildren: ✅
-Line.ignoresInput: not realized
-Line.opacity: ✅
-Line.pivotY: ✅
-Line.scale: ✅
-Line.translationY: ✅
-Map.accessibilityHint: not realized
-Map.background: not realized
-Map.frame: not realized
-Map.isEnabled: not realized
-Map.rotation: not realized
-Map.scaleX: not realized
-Map.zIndex: not realized
-Path.accessibilityHeadingLevel: ✅
-Path.focus: ✅
+ItemsView.frameChanged: ✅
+ItemsView.isAccessibilityHidden: ✅
+ItemsView.isVisible: ✅
+ItemsView.maximumHeight: ✅
+ItemsView.maximumWidth: ✅
+ItemsView.minimumHeight: ✅
+ItemsView.minimumWidth: ✅
+ItemsView.pivotX: ✅
+ItemsView.rotationY: not realized
+ItemsView.style: not realized
+ItemsView.translationX: ✅
+Label.accessibilityLabel: ✅
+Label.automationExcludedWithChildren: ✅
+Label.ignoresInput: not realized
+Label.opacity: ✅
+Label.pivotY: ✅
+Label.scale: ✅
+Label.translationY: ✅
+Line.accessibilityHint: ✅
+Line.background: not realized
+Line.frame: ✅
+Line.isEnabled: not realized
+Line.rotation: ✅
+Line.scaleX: ✅
+Line.zIndex: not realized
+Map.accessibilityHeadingLevel: not realized
+Map.focus: not realized
+Map.frameChanged: not realized
+Map.height: not realized
+Map.isFocusedChanged: not realized
+Map.layoutDirection: not realized
+Map.rotationX: not realized
+Map.scaleY: not realized
+Map.unfocus: not realized
+Map.width: not realized
 Path.frameChanged: ✅
-Path.height: ✅
-Path.isFocusedChanged: ✅
-Path.layoutDirection: not realized
-Path.rotationX: not realized
-Path.scaleY: ✅
-Path.unfocus: ✅
-Path.width: ✅
-Picker.frameChanged: ✅
-Picker.isAccessibilityHidden: ✅
-Picker.isVisible: ✅
-Picker.maximumHeight: ✅
-Picker.maximumWidth: ✅
-Picker.minimumHeight: ✅
-Picker.minimumWidth: ✅
-Picker.pivotX: ✅
-Picker.rotationY: not realized
-Picker.style: not realized
-Picker.translationX: ✅
-Polygon.accessibilityLabel: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polygon.ignoresInput: not realized
-Polygon.opacity: ✅
-Polygon.pivotY: ✅
-Polygon.scale: ✅
-Polygon.translationY: ✅
-Polyline.accessibilityHint: ✅
-Polyline.background: not realized
-Polyline.frame: ✅
-Polyline.isEnabled: not realized
-Polyline.rotation: ✅
-Polyline.scaleX: ✅
-Polyline.zIndex: not realized
-PositionIndicator.accessibilityHeadingLevel: not realized
-PositionIndicator.focus: not realized
+Path.isAccessibilityHidden: ✅
+Path.isVisible: ✅
+Path.maximumHeight: ✅
+Path.maximumWidth: ✅
+Path.minimumHeight: ✅
+Path.minimumWidth: ✅
+Path.pivotX: ✅
+Path.rotationY: not realized
+Path.style: ✅
+Path.translationX: ✅
+Picker.accessibilityLabel: ✅
+Picker.automationExcludedWithChildren: ✅
+Picker.ignoresInput: not realized
+Picker.opacity: ✅
+Picker.pivotY: ✅
+Picker.scale: ✅
+Picker.translationY: ✅
+Polygon.accessibilityHint: ✅
+Polygon.background: not realized
+Polygon.frame: ✅
+Polygon.isEnabled: not realized
+Polygon.rotation: ✅
+Polygon.scaleX: ✅
+Polygon.zIndex: not realized
+Polyline.accessibilityHeadingLevel: ✅
+Polyline.focus: cannot focus Polyline: it takes no keyboard focus here
+Polyline.frameChanged: ✅
+Polyline.height: ✅
+Polyline.isFocusedChanged: cannot focus Polyline: it takes no keyboard focus here
+Polyline.layoutDirection: not realized
+Polyline.rotationX: not realized
+Polyline.scaleY: ✅
+Polyline.unfocus: cannot focus Polyline: it takes no keyboard focus here
+Polyline.width: ✅
 PositionIndicator.frameChanged: not realized
-PositionIndicator.height: not realized
-PositionIndicator.isFocusedChanged: not realized
-PositionIndicator.layoutDirection: not realized
-PositionIndicator.rotationX: not realized
-PositionIndicator.scaleY: not realized
-PositionIndicator.unfocus: not realized
-PositionIndicator.width: not realized
-ProgressBar.frameChanged: ✅
-ProgressBar.isAccessibilityHidden: ✅
-ProgressBar.isVisible: ✅
-ProgressBar.maximumHeight: ✅
-ProgressBar.maximumWidth: ✅
-ProgressBar.minimumHeight: ✅
-ProgressBar.minimumWidth: ✅
-ProgressBar.pivotX: ✅
-ProgressBar.rotationY: not realized
-ProgressBar.style: not realized
-ProgressBar.translationX: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.ignoresInput: not realized
-RadioButton.opacity: ✅
-RadioButton.pivotY: ✅
-RadioButton.scale: ✅
-RadioButton.translationY: ✅
-Rectangle.accessibilityHint: ✅
-Rectangle.background: not realized
-Rectangle.frame: ✅
-Rectangle.isEnabled: not realized
-Rectangle.rotation: ✅
-Rectangle.scaleX: ✅
-Rectangle.zIndex: not realized
-ScrollView.accessibilityHeadingLevel: ✅
-ScrollView.focus: ✅
+PositionIndicator.isAccessibilityHidden: not realized
+PositionIndicator.isVisible: not realized
+PositionIndicator.maximumHeight: not realized
+PositionIndicator.maximumWidth: not realized
+PositionIndicator.minimumHeight: not realized
+PositionIndicator.minimumWidth: not realized
+PositionIndicator.pivotX: not realized
+PositionIndicator.rotationY: not realized
+PositionIndicator.style: not realized
+PositionIndicator.translationX: not realized
+ProgressBar.accessibilityLabel: ✅
+ProgressBar.automationExcludedWithChildren: ✅
+ProgressBar.ignoresInput: not realized
+ProgressBar.opacity: ✅
+ProgressBar.pivotY: ✅
+ProgressBar.scale: ✅
+ProgressBar.translationY: ✅
+RadioButton.accessibilityHint: ✅
+RadioButton.background: ✅
+RadioButton.frame: ✅
+RadioButton.isEnabled: ✅
+RadioButton.rotation: ✅
+RadioButton.scaleX: ✅
+RadioButton.zIndex: not realized
+Rectangle.accessibilityHeadingLevel: ✅
+Rectangle.focus: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.frameChanged: ✅
+Rectangle.height: ✅
+Rectangle.isFocusedChanged: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.layoutDirection: not realized
+Rectangle.rotationX: not realized
+Rectangle.scaleY: ✅
+Rectangle.unfocus: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.width: ✅
 ScrollView.frameChanged: ✅
-ScrollView.height: ✅
-ScrollView.isFocusedChanged: ✅
-ScrollView.layoutDirection: not realized
-ScrollView.rotationX: not realized
-ScrollView.scaleY: ✅
-ScrollView.unfocus: ✅
-ScrollView.width: ✅
-SearchField.frameChanged: ✅
-SearchField.isAccessibilityHidden: ✅
-SearchField.isVisible: ✅
-SearchField.maximumHeight: ✅
-SearchField.maximumWidth: ✅
-SearchField.minimumHeight: ✅
-SearchField.minimumWidth: ✅
-SearchField.pivotX: ✅
-SearchField.rotationY: not realized
-SearchField.style: not realized
-SearchField.translationX: ✅
-Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: ✅
-Slider.ignoresInput: not realized
-Slider.opacity: ✅
-Slider.pivotY: ✅
-Slider.scale: ✅
-Slider.translationY: ✅
-Stepper.accessibilityHint: ✅
-Stepper.background: not realized
-Stepper.frame: ✅
-Stepper.isEnabled: ✅
-Stepper.rotation: ✅
-Stepper.scaleX: ✅
-Stepper.zIndex: not realized
-Switch.accessibilityHeadingLevel: ✅
-Switch.focus: ✅
+ScrollView.isAccessibilityHidden: ✅
+ScrollView.isVisible: ✅
+ScrollView.maximumHeight: ✅
+ScrollView.maximumWidth: ✅
+ScrollView.minimumHeight: ✅
+ScrollView.minimumWidth: ✅
+ScrollView.pivotX: ✅
+ScrollView.rotationY: not realized
+ScrollView.style: ✅
+ScrollView.translationX: ✅
+SearchField.accessibilityLabel: ✅
+SearchField.automationExcludedWithChildren: ✅
+SearchField.ignoresInput: not realized
+SearchField.opacity: ✅
+SearchField.pivotY: ✅
+SearchField.scale: ✅
+SearchField.translationY: ✅
+Slider.accessibilityHint: ✅
+Slider.background: not realized
+Slider.frame: ✅
+Slider.isEnabled: ✅
+Slider.rotation: ✅
+Slider.scaleX: ✅
+Slider.zIndex: not realized
+Stepper.accessibilityHeadingLevel: ✅
+Stepper.focus: ✅
+Stepper.frameChanged: ✅
+Stepper.height: ✅
+Stepper.isFocusedChanged: ✅
+Stepper.layoutDirection: not realized
+Stepper.rotationX: not realized
+Stepper.scaleY: ✅
+Stepper.unfocus: ✅
+Stepper.width: ✅
 Switch.frameChanged: ✅
-Switch.height: ✅
-Switch.isFocusedChanged: ✅
-Switch.layoutDirection: not realized
-Switch.rotationX: not realized
-Switch.scaleY: ✅
-Switch.unfocus: ✅
-Switch.width: ✅
-TextEditor.frameChanged: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextEditor.isVisible: ✅
-TextEditor.maximumHeight: ✅
-TextEditor.maximumWidth: ✅
-TextEditor.minimumHeight: ✅
-TextEditor.minimumWidth: ✅
-TextEditor.pivotX: ✅
-TextEditor.rotationY: not realized
-TextEditor.style: not realized
-TextEditor.translationX: ✅
-TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: ✅
-TextField.ignoresInput: not realized
-TextField.opacity: ✅
-TextField.pivotY: ✅
-TextField.scale: ✅
-TextField.translationY: ✅
-TimePicker.accessibilityHint: ✅
-TimePicker.background: not realized
-TimePicker.frame: ✅
-TimePicker.isEnabled: ✅
-TimePicker.rotation: ✅
-TimePicker.scaleX: ✅
-TimePicker.zIndex: not realized
-TitleBar.accessibilityHeadingLevel: not realized
-TitleBar.focus: not realized
+Switch.isAccessibilityHidden: ✅
+Switch.isVisible: ✅
+Switch.maximumHeight: ✅
+Switch.maximumWidth: ✅
+Switch.minimumHeight: ✅
+Switch.minimumWidth: ✅
+Switch.pivotX: ✅
+Switch.rotationY: not realized
+Switch.style: ✅
+Switch.translationX: ✅
+TextEditor.accessibilityLabel: ✅
+TextEditor.automationExcludedWithChildren: ✅
+TextEditor.ignoresInput: not realized
+TextEditor.opacity: ✅
+TextEditor.pivotY: ✅
+TextEditor.scale: ✅
+TextEditor.translationY: ✅
+TextField.accessibilityHint: ✅
+TextField.background: not realized
+TextField.frame: ✅
+TextField.isEnabled: ✅
+TextField.rotation: ✅
+TextField.scaleX: ✅
+TextField.zIndex: not realized
+TimePicker.accessibilityHeadingLevel: ✅
+TimePicker.focus: ✅
+TimePicker.frameChanged: ✅
+TimePicker.height: ✅
+TimePicker.isFocusedChanged: ✅
+TimePicker.layoutDirection: not realized
+TimePicker.rotationX: not realized
+TimePicker.scaleY: ✅
+TimePicker.unfocus: ✅
+TimePicker.width: ✅
 TitleBar.frameChanged: not realized
-TitleBar.height: not realized
-TitleBar.isFocusedChanged: not realized
-TitleBar.layoutDirection: not realized
-TitleBar.rotationX: not realized
-TitleBar.scaleY: not realized
-TitleBar.unfocus: not realized
-TitleBar.width: not realized
-VStack.frameChanged: ✅
-VStack.isAccessibilityHidden: ✅
-VStack.isVisible: ✅
-VStack.maximumHeight: ✅
-VStack.maximumWidth: ✅
-VStack.minimumHeight: ✅
-VStack.minimumWidth: ✅
-VStack.pivotX: ✅
-VStack.rotationY: not realized
-VStack.style: not realized
-VStack.translationX: ✅
-WebView.accessibilityLabel: not realized
-WebView.automationExcludedWithChildren: not realized
-WebView.ignoresInput: not realized
-WebView.opacity: not realized
-WebView.pivotY: not realized
-WebView.scale: not realized
-WebView.translationY: not realized
-ZStack.accessibilityHint: ✅
-ZStack.background: ✅
-ZStack.frame: ✅
-ZStack.isEnabled: not realized
-ZStack.rotation: ✅
-ZStack.scaleX: ✅
-ZStack.zIndex: not realized
+TitleBar.isAccessibilityHidden: not realized
+TitleBar.isVisible: not realized
+TitleBar.maximumHeight: not realized
+TitleBar.maximumWidth: not realized
+TitleBar.minimumHeight: not realized
+TitleBar.minimumWidth: not realized
+TitleBar.pivotX: not realized
+TitleBar.rotationY: not realized
+TitleBar.style: not realized
+TitleBar.translationX: not realized
+VStack.accessibilityLabel: ✅
+VStack.automationExcludedWithChildren: ✅
+VStack.ignoresInput: ✅
+VStack.opacity: ✅
+VStack.pivotY: ✅
+VStack.scale: ✅
+VStack.translationY: ✅
+WebView.accessibilityHint: not realized
+WebView.background: not realized
+WebView.frame: not realized
+WebView.isEnabled: not realized
+WebView.rotation: not realized
+WebView.scaleX: not realized
+WebView.zIndex: not realized
+ZStack.accessibilityHeadingLevel: ✅
+ZStack.focus: cannot focus ZStack: it takes no keyboard focus here
+ZStack.frameChanged: ✅
+ZStack.height: ✅
+ZStack.isFocusedChanged: cannot focus ZStack: it takes no keyboard focus here
+ZStack.layoutDirection: not realized
+ZStack.rotationX: not realized
+ZStack.scaleY: ✅
+ZStack.unfocus: cannot focus ZStack: it takes no keyboard focus here
+ZStack.width: ✅

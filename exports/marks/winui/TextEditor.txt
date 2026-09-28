@@ -1,6 +1,7 @@
-Button.clicked: ✅
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 TextEditor: ✅
-TextEditor.growsWithText: ✅
+TextEditor.frameChanged: ✅
+TextEditor.growsWithText: ◐ cannot read growsWithText of TextEditor - an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it
 TextEditor.maximumLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅

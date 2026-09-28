@@ -1,7 +1,8 @@
-Button.clicked: ✅
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 Label.text: ✅
 Picker: ✅
 Picker.closed: ✅
+Picker.frameChanged: ✅
 Picker.isOpen: ✅
 Picker.opened: ✅
 Picker.options: ✅

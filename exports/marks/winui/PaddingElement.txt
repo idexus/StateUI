@@ -1,9 +1,9 @@
-Button.clicked: ✅
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 Button.padding: ✅
-Grid.padding: ✅
-HStack.padding: ✅
+Grid.padding: ◐ cannot read padding of Grid - WinUI's panel places its children where StateUI's layout says; their frames prove it
+HStack.padding: ◐ cannot read padding of HStack - WinUI's panel places its children where StateUI's layout says; their frames prove it
 Label.padding: ✅
 RadioButton.padding: ✅
-ScrollView.padding: ✅
-VStack.padding: ✅
-ZStack.padding: ✅
+ScrollView.padding: ◐ cannot read padding of ScrollView - WinUI's panel places its children where StateUI's layout says; their frames prove it
+VStack.padding: ◐ cannot read padding of VStack - WinUI's panel places its children where StateUI's layout says; their frames prove it
+ZStack.padding: ◐ cannot read padding of ZStack - WinUI's panel places its children where StateUI's layout says; their frames prove it

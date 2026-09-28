@@ -1,7 +1,9 @@
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 Label.text: ✅
 TextField: ✅
+TextField.frameChanged: ✅
 TextField.isPassword: not realized
 TextField.returnKey: not realized
 TextField.showsClearButton: not realized
 TextField.submitted: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field
-TextField.text: ✅
+TextField.text: ◐ waits on TextField.isPassword

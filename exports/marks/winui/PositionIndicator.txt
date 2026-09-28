@@ -1,5 +1,7 @@
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
 PositionIndicator: not realized
 PositionIndicator.count: not realized
+PositionIndicator.frameChanged: not realized
 PositionIndicator.hideSingle: not realized
 PositionIndicator.indicatorColor: not realized
 PositionIndicator.indicatorSize: not realized

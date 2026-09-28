@@ -1,7 +1,7 @@
-Button.clicked: ✅
-Ellipse.aspect: ✅
+# inputs e0630117caf2bc35b76d2d3528de507256555be6
+Ellipse.aspect: ◐ cannot read aspect of Ellipse - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Ellipse.fill: ✅
-Ellipse.renderTransform: ✅
+Ellipse.renderTransform: ◐ cannot read renderTransform of Ellipse - WinUI folds a shape's transform into its figure; its drawing proves it
 Ellipse.stroke: ✅
 Ellipse.strokeDashOffset: ✅
 Ellipse.strokeDashPattern: ✅
@@ -9,9 +9,9 @@ Ellipse.strokeLineCap: ✅
 Ellipse.strokeLineJoin: ✅
 Ellipse.strokeMiterLimit: ✅
 Ellipse.strokeWidth: ✅
-Line.aspect: ✅
+Line.aspect: ◐ cannot read aspect of Line - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Line.fill: ✅
-Line.renderTransform: ✅
+Line.renderTransform: ◐ cannot read renderTransform of Line - WinUI folds a shape's transform into its figure; its drawing proves it
 Line.stroke: ✅
 Line.strokeDashOffset: ✅
 Line.strokeDashPattern: ✅
@@ -19,9 +19,9 @@ Line.strokeLineCap: ✅
 Line.strokeLineJoin: ✅
 Line.strokeMiterLimit: ✅
 Line.strokeWidth: ✅
-Path.aspect: ✅
+Path.aspect: ◐ cannot read aspect of Path - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Path.fill: ✅
-Path.renderTransform: ✅
+Path.renderTransform: ◐ cannot read renderTransform of Path - WinUI folds a shape's transform into its figure; its drawing proves it
 Path.stroke: ✅
 Path.strokeDashOffset: ✅
 Path.strokeDashPattern: ✅
@@ -29,9 +29,9 @@ Path.strokeLineCap: ✅
 Path.strokeLineJoin: ✅
 Path.strokeMiterLimit: ✅
 Path.strokeWidth: ✅
-Polygon.aspect: ✅
+Polygon.aspect: ◐ cannot read aspect of Polygon - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polygon.fill: ✅
-Polygon.renderTransform: ✅
+Polygon.renderTransform: ◐ cannot read renderTransform of Polygon - WinUI folds a shape's transform into its figure; its drawing proves it
 Polygon.stroke: ✅
 Polygon.strokeDashOffset: ✅
 Polygon.strokeDashPattern: ✅
@@ -39,9 +39,9 @@ Polygon.strokeLineCap: ✅
 Polygon.strokeLineJoin: ✅
 Polygon.strokeMiterLimit: ✅
 Polygon.strokeWidth: ✅
-Polyline.aspect: ✅
+Polyline.aspect: ◐ cannot read aspect of Polyline - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polyline.fill: ✅
-Polyline.renderTransform: ✅
+Polyline.renderTransform: ◐ cannot read renderTransform of Polyline - WinUI folds a shape's transform into its figure; its drawing proves it
 Polyline.stroke: ✅
 Polyline.strokeDashOffset: ✅
 Polyline.strokeDashPattern: ✅
@@ -49,9 +49,9 @@ Polyline.strokeLineCap: ✅
 Polyline.strokeLineJoin: ✅
 Polyline.strokeMiterLimit: ✅
 Polyline.strokeWidth: ✅
-Rectangle.aspect: ✅
+Rectangle.aspect: ◐ cannot read aspect of Rectangle - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Rectangle.fill: ✅
-Rectangle.renderTransform: ✅
+Rectangle.renderTransform: ◐ cannot read renderTransform of Rectangle - WinUI folds a shape's transform into its figure; its drawing proves it
 Rectangle.stroke: ✅
 Rectangle.strokeDashOffset: ✅
 Rectangle.strokeDashPattern: ✅

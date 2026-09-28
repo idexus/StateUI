@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | sheet `NSWindow` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `present(_:animated:)` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | full-screen `Dialog` (?) | a run of other sources said: ◐ cannot goBack on Window - Android's driver has no path for it yet |
-| WinUI 3 | ⌛ |  | `ContentDialog` (?) | a run of other sources said: ✅ |
+| WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
 | GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | no run of it on these sources |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |
 

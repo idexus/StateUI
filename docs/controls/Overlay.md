@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | pass-through `NSView` above the page | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | pass-through `UIView` above the page | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | top child of a `FrameLayout` | a run of other sources said: · cannot read what reaches Label - Android's driver has no path for it yet |
-| WinUI 3 | ⌛ |  | top layer of a root `Grid` | a run of other sources said: ✅ |
+| WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
 | GTK 4 |  |  | `GtkOverlay` | no run of it on these sources |
 | Web |  |  | positioned element above the page | no host yet |
 
