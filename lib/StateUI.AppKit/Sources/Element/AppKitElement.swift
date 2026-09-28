@@ -33,6 +33,10 @@ final class AppKitElement: NSObject, NativeElement {
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
+    /// Where a label's place travels: its words stand at that size meanwhile.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    var wordsRoom: Rect?
+
     /// The focus this element last reported, where it follows its focus.
     var reportedFocus = false
 

@@ -12,6 +12,16 @@ final class AndroidLabelView: AndroidTextView {
     /// The space between the letters, in points.
     private var spacing = 0.0
 
+    /// Where the label's place travels: its words stand at that size meanwhile.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    private var bound: Rect?
+
+    override func travels(to destination: Rect?) {
+        bound = destination
+    }
+
+    override var wordsRoom: Rect? { bound }
+
     init() {
         super.init { _ in Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidRenderer.context)) }
     }

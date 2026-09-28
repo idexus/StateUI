@@ -43,6 +43,48 @@ final class AppKitLayoutMotionTests: XCTestCase {
         return layout
     }
 
+    /// A label whose width travels lays its words out at the width it is bound
+    /// for: midway, its view is already as wide as it lands, so words that fit
+    /// there on one line never break at the widths its place passes through.
+    @MainActor
+    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        func caption(_ text: String) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
+            var label = HostPatch(id: .manual("caption"), type: .label)
+            label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
+            stack.children = .arranged([label])
+            return stack
+        }
+        renderer.applyForTesting(caption("Text"))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("caption")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let start = label.frame.width
+
+        renderer.applyForTesting(caption("Text & typing"))
+        native.layoutSubtreeIfNeeded()
+        now = 100
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+        let midway = label.frame.width
+        now = 200
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+
+        XCTAssertGreaterThan(label.frame.width, start + 1, "the caption grew")
+        XCTAssertEqual(midway, label.frame.width, accuracy: 0.5, "its words at the width it is bound for")
+    }
+
     /// A child a patch moves starts from where it stood, travels on the
     /// layout's law, and lands exactly on its new place.
     @MainActor

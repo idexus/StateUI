@@ -34,6 +34,10 @@ final class UIKitElement: NativeElement {
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
+    /// Where a label's place travels: its words stand at that size meanwhile.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    var wordsRoom: Rect?
+
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
 
@@ -103,7 +107,8 @@ final class UIKitElement: NativeElement {
 
 extension UIKitElement: PlacedView {
     /// Where the view stands in its parent, in points; set, it stands there by its bounds and its centre, which
-    /// hold under any transform, and its drawing is composed for its size again.
+    /// hold under any transform, and its drawing is composed for its size again - a label at the size its place
+    /// travels to, its words standing there meanwhile.
     var placedFrame: Rect {
         get {
             guard let view else { return Rect(x: 0, y: 0, width: 0, height: 0) }
@@ -114,12 +119,17 @@ extension UIKitElement: PlacedView {
         }
         set {
             guard let view else { return }
-            let size = CGSize(width: max(0, newValue.width), height: max(0, newValue.height))
+            let room = wordsRoom ?? newValue
+            let size = CGSize(width: max(0, room.width), height: max(0, room.height))
             if view.bounds.size != size { view.bounds.size = size }
             view.center = CGPoint(x: newValue.x + size.width / 2, y: newValue.y + size.height / 2)
             isPlaced = true
             drawing?.compose()
         }
+    }
+
+    func travels(to destination: Rect?) {
+        if type == .label { wordsRoom = destination }
     }
 }
 

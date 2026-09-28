@@ -11,6 +11,40 @@ import XCTest
 /// A change that travels, as UIKit draws it frame by frame: the host layer walks the value, and the view stands where
 /// the frame says.
 final class UIKitMotionTests: XCTestCase {
+    /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
+    /// wide as it lands, so words that fit there on one line never break at the widths its place passes through.
+    @MainActor
+    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+        let clock = TestClock()
+        let long = State(wrappedValue: false)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                Label(long.wrappedValue ? "Text & typing" : "Text").horizontalAlignment(.start).id("caption")
+            }
+            .motion(.eased(200, .linear))
+            .width(300)
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        let label = try XCTUnwrap(Self.view(of: "caption", in: host))
+        let start = label.bounds.width
+
+        long.wrappedValue = true
+        host.runtime.pump.turn()
+        host.layOut()
+        clock.now = 100
+        host.frame()
+        host.layOut()
+        let midway = label.bounds.width
+        clock.now = 200
+        host.frame()
+        host.layOut()
+
+        XCTAssertGreaterThan(label.bounds.width, start + 1, "the caption grew")
+        XCTAssertEqual(midway, label.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
+    }
+
     /// A colour box whose colour and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample.
     @MainActor

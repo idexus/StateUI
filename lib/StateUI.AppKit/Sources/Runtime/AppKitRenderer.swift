@@ -200,14 +200,20 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 }
 
-/// An element's view, placed by the layout motion of the layout it stands in.
+/// An element's view, placed by the layout motion of the layout it stands in - a label at the size its place
+/// travels to, its words standing there meanwhile.
 extension AppKitElement: PlacedView {
     var placedFrame: Rect {
         get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
         set {
-            view?.frame = NSRect(placed: newValue)
+            let size = wordsRoom ?? newValue
+            view?.frame = NSRect(x: newValue.x, y: newValue.y, width: size.width, height: size.height)
             isPlaced = true
         }
+    }
+
+    func travels(to destination: Rect?) {
+        if type == .label { wordsRoom = destination }
     }
 }
 

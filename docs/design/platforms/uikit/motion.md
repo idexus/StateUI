@@ -15,4 +15,8 @@ grown or a box resized moves its neighbours rather than snapping them. A
 child that joins a standing layout fades in, and a change of visibility is
 crossed - faded out before the layout closes over it, faded in as it opens.
 A view fades by its drawing (`UIKitViewDrawing`): its own opacity, times
-the one its placing layout draws it with, and whether UIKit shows it.
+the one its placing layout draws it with, and whether UIKit shows it. A
+label whose place travels stands at the size it is bound for, its corner
+travelling: UIKit breaks its words at its bounds, so at the widths the place
+passes through words that fit the destination on one line would stand on
+two ([words at their destination](../../host/motion.md#words-at-their-destination)).

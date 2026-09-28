@@ -46,7 +46,11 @@ A stack is a travelling layout: when a patch reaches it, its children travel
 to their new places ([layout motion](../../host/motion.md#layout-motion)).
 Its places are set on the views in the display's frame, as the layout motion
 follows the animator, and a layout pass Android runs meanwhile asks for the
-same places and keeps the running animation.
+same places and keeps the running animation. A label whose place travels is
+laid out at the size it is bound for, its corner travelling: a `TextView`
+breaks its words at its width, so at the widths the place passes through
+words that fit the destination on one line would stand on two
+([words at their destination](../../host/motion.md#words-at-their-destination)).
 
 By the host layer's rule ([showing and
 hiding](../../host/motion.md#showing-and-hiding)), a child that joins a

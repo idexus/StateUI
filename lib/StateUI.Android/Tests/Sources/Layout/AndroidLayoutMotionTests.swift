@@ -11,6 +11,7 @@ import XCTest
 final class AndroidLayoutMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
         [
+            ("testALabelsWordsStandAtTheWidthItTravelsTo", testALabelsWordsStandAtTheWidthItTravelsTo),
             ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
             ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
             ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
@@ -31,6 +32,39 @@ final class AndroidLayoutMotionTests: XCTestCase {
             return row
         })
         return stack
+    }
+
+    /// A label whose width travels lays its words out at the width it is bound for: midway, its view is already as
+    /// wide as it lands, so words that fit there on one line never break at the widths its place passes through.
+    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+        try onMainActor {
+            func caption(_ text: String) -> HostPatch {
+                var stack = HostPatch(id: .manual("stack"), type: .vStack)
+                stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
+                var label = HostPatch(id: .manual("caption"), type: .label)
+                label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
+                stack.children = .arranged([label])
+                return stack
+            }
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(caption("Text"))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let label = try XCTUnwrap(host.view(id: .manual("caption")))
+            layout.layOut(width: 600, height: 400)
+            let start = label.frame.width
+
+            host.apply(caption("Text & typing"))
+            layout.layOut(width: 600, height: 400)
+            clock.now = 100
+            host.frame()
+            let midway = label.frame.width
+            clock.now = 200
+            host.frame()
+
+            XCTAssertGreaterThan(label.frame.width, start + 2, "the caption grew")
+            XCTAssertEqual(midway, label.frame.width, "its words at the width it is bound for")
+        }
     }
 
     /// Two pixels a point: a row 40 points down stands at 80 pixels.
