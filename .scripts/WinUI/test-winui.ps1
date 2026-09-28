@@ -27,9 +27,10 @@
 #
 # The tests are built, the Windows App SDK laid beside the runner, and the run
 # skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file
-# under the revision its family stands at (.scripts/Marks/revisions.txt);
-# -Stale runs only the conformance families whose verdicts stand at another
-# revision, or at none - each other one's process ends at once.
+# under the revision its family stands at
+# (lib/StateUI.Conformance/revisions.txt); -Stale runs only the conformance
+# families whose verdicts stand at another revision, or at none - each other
+# one's process ends at once.
 # ---------------------------------------------------------------------------
 param(
     [string]$Filter,

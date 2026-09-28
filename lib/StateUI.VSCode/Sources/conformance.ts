@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The chosen host's conformance marks made again in a checkout - every family, or only those whose verdicts stand at
-// another revision than .scripts/Marks/revisions.txt says - and the control dictionary rendered again from them. A
-// checkout's own work: an application's workspace holds no marks.
+// another revision than lib/StateUI.Conformance/revisions.txt says - and the control dictionary rendered again from
+// them. A checkout's own work: an application's workspace holds no marks.
 
 import * as path from "path";
 import { Host } from "./hosts";

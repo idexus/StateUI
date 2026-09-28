@@ -36,9 +36,9 @@ host merely implements or declares by hand earns a mark.
 - ⌛ means the verdict was written at another revision of its family than it
   stands at: each run writes its family's revision over its verdicts, and a
   change that changes what a family's cases prove raises the family's in
-  `.scripts/Marks/revisions.txt`, so a verdict of another is stale until the
-  host's suite runs the family again. It carries no note: what that run said is
-  no verdict of the family as it stands.
+  `lib/StateUI.Conformance/revisions.txt`, so a verdict of another is stale
+  until the host's suite runs the family again. It carries no note: what that
+  run said is no verdict of the family as it stands.
 - An empty cell means not realized on that host, or no run of it; the note
   says which. It is deliberately not an estimate of how difficult the work
   will be.

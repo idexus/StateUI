@@ -652,10 +652,12 @@ struct ControlDictionary {
         }
     }
 
-    /// `.scripts/Marks/revisions.txt`: the revision each family's verdicts stand at.
+    /// `lib/StateUI.Conformance/revisions.txt`: the revision each family's verdicts stand at.
     static var revisions: String {
-        let url = SourceTree.repository.appendingPathComponent(".scripts/Marks/revisions.txt")
-        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+        let url = SourceTree.repository.appendingPathComponent("lib/StateUI.Conformance/revisions.txt")
+        // No file is no revision: every family would read as standing at 1, whatever was raised.
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { preconditionFailure("no \(url.path)") }
+        return text
     }
 
     /// The verdicts the runs of the host whose folder is `folder` wrote, file by file: the family's name - a part's

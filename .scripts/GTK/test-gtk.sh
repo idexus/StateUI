@@ -4,7 +4,7 @@
 #
 # Runs the GTK host's suite. A run with STATEUI_UPDATE_EXPORTS=1 writes each
 # verdict file under the revision its family stands at
-# (.scripts/Marks/revisions.txt); STATEUI_STALE_ONLY=1 runs only the
+# (lib/StateUI.Conformance/revisions.txt); STATEUI_STALE_ONLY=1 runs only the
 # conformance families whose verdicts stand at another revision, or at none.
 #
 # USAGE:

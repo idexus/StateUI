@@ -18,7 +18,7 @@ enum GTKExports {
         .deletingLastPathComponent()    // the repository
         .appendingPathComponent("exports")
 
-    /// The revision `family`'s verdicts on this host stand at, as `.scripts/Marks/revisions.txt` says.
+    /// The revision `family`'s verdicts on this host stand at, as `lib/StateUI.Conformance/revisions.txt` says.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
     static func revision(of family: String) -> String {
         HostVerdict.revision(of: family, on: "gtk", in: revisions)
@@ -32,10 +32,12 @@ enum GTKExports {
         return !HostVerdict.isStale(held, family: family, on: "gtk", in: revisions)
     }
 
-    /// `.scripts/Marks/revisions.txt`, beside `exports`.
+    /// `lib/StateUI.Conformance/revisions.txt`, in the conformance package.
     private static var revisions: String {
-        let url = folder.deletingLastPathComponent().appendingPathComponent(".scripts/Marks/revisions.txt")
-        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+        let url = folder.deletingLastPathComponent().appendingPathComponent("lib/StateUI.Conformance/revisions.txt")
+        // No file is no revision: every family would read as standing at 1, whatever was raised.
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { preconditionFailure("no \(url.path)") }
+        return text
     }
 
     /// Holds `text` to `path` under `exports` - or writes it there, where the run is asked to.

@@ -192,8 +192,8 @@
     }
 
     /// The revision `family`'s verdicts on `host` stand at, as `revisions` - the text of
-    /// `.scripts/Marks/revisions.txt` - says: the family's own on every host, then the host's own, each 1 where no
-    /// line names it - `1.1`.
+    /// `lib/StateUI.Conformance/revisions.txt` - says: the family's own on every host, then the host's own, each 1
+    /// where no line names it - `1.1`.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
     public static func revision(of family: String, on host: String, in revisions: String) -> String {
         var every = 1

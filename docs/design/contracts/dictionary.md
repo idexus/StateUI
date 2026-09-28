@@ -106,10 +106,11 @@ reason, an unrealized one on a tier.
 ## Fresh verdicts
 
 A verdict stands until a change changes what its family's cases prove, and
-the one who makes such a change says so: `.scripts/Marks/revisions.txt` holds
-the revision each family stands at - a line naming the family alone on every
-host, a line naming a host and the family on that host alone, 1 where no line
-names it (`HostVerdict.revision`). A change to the cases, or to what every host
+the one who makes such a change says so. The conformance package, where the
+families are, holds the revision each stands at in
+`lib/StateUI.Conformance/revisions.txt` - a line naming the family alone on
+every host, a line naming a host and the family on that host alone, 1 where
+no line names it (`HostVerdict.revision`). A change to the cases, or to what every host
 decides alike, raises the family's own; a change one host alone makes raises
 that host's. Any other change of the sources - a comment, a sign, a rule no
 case proves - raises nothing and leaves every mark standing.

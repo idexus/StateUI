@@ -218,8 +218,8 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
-    /// Every line of `.scripts/Marks/revisions.txt` raises a family a contract declares - on every host, or on one
-    /// host a column names - to a whole number above 1: a line that raises nothing is no revision.
+    /// Every line of `lib/StateUI.Conformance/revisions.txt` raises a family a contract declares - on every host, or
+    /// on one host a column names - to a whole number above 1: a line that raises nothing is no revision.
     func testEveryRevisionRaisesAFamily() throws {
         let hosts = Set(ControlDictionary.folders.values)
         var families = Set(LibraryContracts.elements.map { $0.nodeType.name })
@@ -229,7 +229,7 @@ final class ControlDictionaryTests: XCTestCase {
             let raised = words.last.flatMap(Int.init).map { $0 > 1 } ?? false
             let named = words.count == 2 ? families.contains(words[0])
                 : words.count == 3 && hosts.contains(words[0]) && families.contains(words[1])
-            XCTAssertTrue(raised && named, "`\(line)` in .scripts/Marks/revisions.txt raises no family")
+            XCTAssertTrue(raised && named, "`\(line)` in lib/StateUI.Conformance/revisions.txt raises no family")
         }
     }
 
