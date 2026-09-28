@@ -31,6 +31,9 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
+    /// Whether a layout of StateUI's has placed the view.
+    var isPlaced = false
+
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
 
@@ -114,6 +117,7 @@ extension UIKitElement: PlacedView {
             let size = CGSize(width: max(0, newValue.width), height: max(0, newValue.height))
             if view.bounds.size != size { view.bounds.size = size }
             view.center = CGPoint(x: newValue.x + size.width / 2, y: newValue.y + size.height / 2)
+            isPlaced = true
             drawing?.compose()
         }
     }

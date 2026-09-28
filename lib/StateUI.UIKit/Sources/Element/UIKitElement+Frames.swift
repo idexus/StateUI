@@ -22,9 +22,9 @@ extension UIKitElement: FrameReporter {
     }
 
     /// Where the view stands now: in its parent, in its window, and from the safe area the window's pages stand in;
-    /// nil for a view in no window.
+    /// nil for a view in no window, or one no layout placed yet - StateUI's, or UIKit's giving it a size.
     func frameNumbers() -> [Double]? {
-        guard let view, let window = view.window else { return nil }
+        guard let view, let window = view.window, isPlaced || view.bounds.size != .zero else { return nil }
         let corner = view.convert(view.bounds, to: window).origin
         return MountedElement.frameNumbers(
             place: placedFrame, corner: Point(x: corner.x, y: corner.y),

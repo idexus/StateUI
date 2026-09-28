@@ -220,7 +220,10 @@ one it last said (`MountedElement.reportFrame`). The runtime's
 something to say, or a frame read may have moved, and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
 order its view was made, as one user's transaction. A host says only what its
-toolkit knows: the numbers of the place.
+toolkit knows: the numbers of the place. It says nothing while the view
+stands in no window or before a layout placed it - a view that joins a shown
+page meets a display frame before the layout pass that places it - so the
+first report a handler hears is where the view is laid out, never zeros.
 
 ## A scroller's movement
 
