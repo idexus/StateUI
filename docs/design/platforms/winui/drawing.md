@@ -18,7 +18,12 @@ made again, the two being different elements.
 A brush crosses as its parts ([brushes](../../types/brushes.md)) and becomes
 WinUI's own: a `SolidColorBrush`, or a `LinearGradientBrush` or
 `RadialGradientBrush` whose points are fractions of the painted box, as
-StateUI's are.
+StateUI's are. WinUI reads a radial gradient's radius per axis, each a
+fraction of its own side, which would stretch StateUI's circle over anything
+not square; so the host hands it each side's share of the one reach
+(`HostBrush.reach`) for the box's size, and a view painted with such a brush
+paints it again at each new size. A shape's brushes are mapped over its
+figure's box - the room less its outline, or its own geometry as placed.
 
 The cut is a clip on the panel's composition visual, a rounded rectangle or an
 ellipse of the layout's size, written in the arrangement that gives the size

@@ -13,6 +13,9 @@ struct WinUIBrush: Equatable {
 
     /// A line's two points, or a centre and a radius, in fractions of the painted box.
     var geometry: [Double] = [0, 0, 0, 0]
+
+    /// Whether how it paints follows the size of what it paints: a radial gradient's circle does.
+    var followsSize: Bool { kind == 3 }
     var colors: [UInt32] = []
     var offsets: [Double] = []
 
@@ -44,11 +47,17 @@ struct WinUIBrush: Equatable {
         stop.color.argb.map { (stop.offset, $0) }
     }
 
-    /// Runs `body` with the brush as the relay's struct, its stops held for the call.
-    func withRelayBrush<Result>(_ body: (StateUIBrush) -> Result) -> Result {
+    /// Runs `body` with the brush as the relay's struct for a box of `size`, its stops held for the call: a radial
+    /// gradient's radius per axis, one circle's reach (`HostBrush.reach`) in fractions of each side.
+    /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
+    func withRelayBrush<Result>(over size: LayoutSize, _ body: (StateUIBrush) -> Result) -> Result {
         colors.withUnsafeBufferPointer { colors in
             offsets.withUnsafeBufferPointer { offsets in
-                let g = geometry
+                var g = geometry
+                if followsSize {
+                    let reach = HostBrush.reach(of: g[2], width: size.width, height: size.height)
+                    (g[2], g[3]) = (size.width > 0 ? reach / size.width : g[2], size.height > 0 ? reach / size.height : g[2])
+                }
                 return body(StateUIBrush(
                     kind: kind, geometry: (g[0], g[1], g[2], g[3]), count: Int32(colors.count),
                     colors: colors.baseAddress, offsets: offsets.baseAddress))

@@ -39,6 +39,9 @@ class WinUIView {
     private var writtenOpacity = 1.0
     private var writtenZIndex: Int32 = 0
 
+    /// What the view paints with brushes that follow its size, by what they paint.
+    private var paintsBySize: [String: (LayoutSize) -> Void] = [:]
+
     private static let live = LiveViews<WinUIView>()
 
     /// Takes the next number and holds the element `make` makes, handed that number.
@@ -153,6 +156,18 @@ class WinUIView {
             placingLayout?.invalidateArrange()
         }
         if resized, transform != .identity || placedDrawing != nil { writeTransform() }
+        if resized {
+            for what in paintsBySize.keys.sorted() { paintsBySize[what]?(LayoutSize(width: place.width, height: place.height)) }
+        }
+    }
+
+    /// Paints `what` with `paint` at the view's size now, and again at each new size where its brushes follow the
+    /// size of what they paint (`WinUIBrush.followsSize`).
+    /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
+    func paint(_ what: String, followsSize: Bool, _ paint: @escaping (LayoutSize) -> Void) {
+        paintsBySize[what] = followsSize ? paint : nil
+        let frame = placedFrame
+        paint(LayoutSize(width: frame.width, height: frame.height))
     }
 
     /// Nothing of the view's own follows where its place travels.
@@ -311,6 +326,7 @@ class WinUIView {
         hear([]) { _ in }
         setFocusChanged(nil)
         menuActions = []
+        paintsBySize = [:]
     }
 }
 

@@ -35,11 +35,14 @@ final class WinUIButtonView: WinUIView {
         case .rectangle?: 0
         case nil: -1
         }
-        WinUIBrush(background).withRelayBrush { fill in
-            WinUIBrush(stroke).withRelayBrush { outline in
-                stateui_winui_button_set_look(
-                    handle, fill, outline, BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth), radius,
-                    PressedFill.underPointer, PressedFill.pressed)
+        let (fill, outline) = (WinUIBrush(background), WinUIBrush(stroke))
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: strokeWidth)
+        paint("look", followsSize: fill.followsSize || outline.followsSize) { [handle] size in
+            fill.withRelayBrush(over: size) { fill in
+                outline.withRelayBrush(over: size) { outline in
+                    stateui_winui_button_set_look(
+                        handle, fill, outline, width, radius, PressedFill.underPointer, PressedFill.pressed)
+                }
             }
         }
     }

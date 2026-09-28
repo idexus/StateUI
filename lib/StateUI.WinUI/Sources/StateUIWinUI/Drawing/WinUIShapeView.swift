@@ -25,9 +25,11 @@ final class WinUIShapeView: WinUIView {
            painted.width == width { return }
 
         painted = (radius, fill, stroke, width)
-        fill.withRelayBrush { fill in
-            stroke.withRelayBrush { stroke in
-                stateui_winui_shape_set(handle, radius, fill, stroke, width)
+        paint("shape", followsSize: fill.followsSize || stroke.followsSize) { [handle] size in
+            fill.withRelayBrush(over: size) { fill in
+                stroke.withRelayBrush(over: size) { stroke in
+                    stateui_winui_shape_set(handle, radius, fill, stroke, width)
+                }
             }
         }
     }

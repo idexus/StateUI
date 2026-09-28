@@ -54,7 +54,7 @@ namespace stateui {
             radial.Center(point(g[0], g[1]));
             radial.GradientOrigin(point(g[0], g[1]));
             radial.RadiusX(g[2]);
-            radial.RadiusY(g[2]);
+            radial.RadiusY(g[3]);
             addStops(radial.GradientStops(), brush);
             return radial;
         }

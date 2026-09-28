@@ -46,6 +46,13 @@ final class DrawingRulesTests: XCTestCase {
             .radial(center: Point(x: 0.5, y: 0.5), radius: 0.5, stops: stops))
     }
 
+    /// A radial gradient is a circle: its radius is its fraction of the larger side, whichever side that is.
+    func testARadialGradientReachesAsFarAcrossAsDown() {
+        XCTAssertEqual(HostBrush.reach(of: 0.5, width: 200, height: 100), 100)
+        XCTAssertEqual(HostBrush.reach(of: 0.5, width: 100, height: 200), 100)
+        XCTAssertEqual(HostBrush.reach(of: 0.25, width: 80, height: 80), 20)
+    }
+
     /// A colour crosses to a relay as one number, alpha highest; what is no colour gives none.
     func testAColourIsOneARGBNumber() {
         XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78).propValue.argb, 0x7812_3456)

@@ -62,6 +62,13 @@
             : .linear(from: Point(x: at(0, 0), y: at(1, 0)), to: Point(x: at(2, 0), y: at(3, 1)), stops: stops)
     }
 
+    /// How far a radial gradient of `radius` reaches over a box `width` by `height`: a circle, its radius that
+    /// fraction of the box's larger side, as far across as down.
+    /// Design: docs/design/types/brushes.md#geometry-in-fractions
+    public static func reach(of radius: Double, width: Double, height: Double) -> Double {
+        max(width, height) * radius
+    }
+
     /// The brush's colour, or its first stop's: what a line of one colour draws with it.
     public var firstColor: HostValue? {
         switch self {

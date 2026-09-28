@@ -37,6 +37,12 @@ without points runs from `Point(0, 0)` to `Point(0, 1)`, straight down. A
 radial gradient's centre is a fraction of the painted thing and its radius a
 fraction of its size, from `Point(0.5, 0.5)` and 0.5 unless said.
 
+A radial gradient is a circle on every host: its radius is that fraction of
+the painted thing's larger side, reaching as far across as down
+(`HostBrush.reach`). A toolkit that reads a radius per axis in fractions of
+the box would stretch the circle into an ellipse on anything not square, so
+such a host is handed each axis's share of that one reach.
+
 ## Themed stops
 
 A stop's colour may be a `Color(light:dark:)` pair. It crosses as both

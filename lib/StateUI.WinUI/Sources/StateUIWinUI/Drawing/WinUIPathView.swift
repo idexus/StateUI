@@ -30,6 +30,11 @@ final class WinUIPathView: WinUIView {
     /// The geometry and the room it was last drawn for.
     private var drawn: (geometry: Geometry, width: Double, height: Double, inset: Double)?
 
+    /// How the figure is painted, and the size of the figure WinUI maps its brushes over.
+    private var painting: (fill: WinUIBrush, stroke: WinUIBrush, dashes: [Double], dashOffset: Double,
+                           cap: LineCap, join: LineJoin, miter: Double)?
+    private var figure = LayoutSize(width: 0, height: 0)
+
     init() {
         super.init { number in stateui_winui_path_make(number) }
     }
@@ -42,14 +47,29 @@ final class WinUIPathView: WinUIView {
     ) {
         strokeWidth = ShapeArithmetic.strokeWidth(width)
         outlineWidth = ShapeArithmetic.strokeWidth(outline)
-        fill.withRelayBrush { fill in
-            stroke.withRelayBrush { stroke in
+        painting = (fill, stroke, dashes, dashOffset, cap, join, miter)
+        sendPainting()
+        if let placed { draw(in: placed) }
+    }
+
+    /// Hands WinUI the painting, its brushes over the figure's box: WinUI maps a shape's brush over its geometry.
+    /// Design: docs/design/platforms/winui/drawing.md#a-box-and-its-brush
+    private func sendPainting() {
+        guard let painting else { return }
+        painting.fill.withRelayBrush(over: figure) { fill in
+            painting.stroke.withRelayBrush(over: figure) { stroke in
                 stateui_winui_path_paint(
-                    handle, fill, stroke, strokeWidth, dashes, Int32(dashes.count), dashOffset, cap.rawValue, join.rawValue,
-                    miter)
+                    handle, fill, stroke, strokeWidth, painting.dashes, Int32(painting.dashes.count),
+                    painting.dashOffset, painting.cap.rawValue, painting.join.rawValue, painting.miter)
             }
         }
-        if let placed { draw(in: placed) }
+    }
+
+    /// The figure's box is `size` now: brushes that follow it are painted again.
+    private func standFigure(_ size: LayoutSize) {
+        guard size != figure else { return }
+        figure = size
+        if let painting, painting.fill.followsSize || painting.stroke.followsSize { sendPainting() }
     }
 
     /// Draws `geometry`, now and whenever the room changes.
@@ -88,21 +108,27 @@ final class WinUIPathView: WinUIView {
            drawn.inset == inset { return }
 
         drawn = (geometry, room.width, room.height, inset)
+        let filled = LayoutSize(width: max(room.width - 2 * inset, 0), height: max(room.height - 2 * inset, 0))
         switch geometry {
         case .rectangle(let radii, let transform):
             Self.moving(by: transform) { moved in
                 stateui_winui_path_draw(handle, 0, radii, nil, 0, false, moved, room.width, room.height, inset)
             }
+            standFigure(filled)
         case .ellipse(let transform):
             Self.moving(by: transform) { moved in
                 stateui_winui_path_draw(handle, 1, nil, nil, 0, false, moved, room.width, room.height, inset)
             }
+            standFigure(filled)
         case .authored(let commands, let evenOdd, let aspect, let transform):
             let placement = ShapeArithmetic.placement(
                 of: bounds, in: LayoutSize(width: room.width, height: room.height), aspect: aspect,
                 transform: transform)
             stateui_winui_path_draw(
                 handle, 2, nil, commands, Int32(commands.count), evenOdd, placement, room.width, room.height, inset)
+            standFigure(LayoutSize(
+                width: bounds.width * (placement[0] * placement[0] + placement[1] * placement[1]).squareRoot(),
+                height: bounds.height * (placement[2] * placement[2] + placement[3] * placement[3]).squareRoot()))
         }
     }
 }

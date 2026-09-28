@@ -22,7 +22,10 @@ final class WinUILabelView: WinUITextView {
 
     /// What the label is drawn over: a colour, a gradient, or nothing.
     func setBackground(_ value: HostValue?) {
-        WinUIBrush(value).withRelayBrush { stateui_winui_text_set_background(handle, $0) }
+        let brush = WinUIBrush(value)
+        paint("background", followsSize: brush.followsSize) { [handle] size in
+            brush.withRelayBrush(over: size) { stateui_winui_text_set_background(handle, $0) }
+        }
     }
 
     /// Where the words stand across the label's height.

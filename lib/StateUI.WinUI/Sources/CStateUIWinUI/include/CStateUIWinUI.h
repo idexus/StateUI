@@ -18,7 +18,8 @@ extern "C" {
 typedef struct StateUIObject *StateUIObjectRef;
 
 /// A brush as the host hands it: its kind - 0 none, 1 solid, 2 linear, 3 radial - its geometry in fractions of
-/// the painted box (a line's two points, or a centre and a radius), then a colour and an offset for each stop.
+/// the painted box (a line's two points, or a centre and its radii across and down), then a colour and an offset
+/// for each stop.
 typedef struct {
     int32_t kind;
     double geometry[4];
