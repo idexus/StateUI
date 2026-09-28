@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | structure | no run of it on these sources |
-| UIKit |  |  | structure | no run of it on these sources |
-| Android Views |  |  | structure | no run of it on these sources |
+| AppKit | ✅ |  | structure |  |
+| UIKit | ✅ |  | structure |  |
+| Android Views | ✅ |  | structure |  |
 | WinUI 3 | ✅ |  | structure |  |
 | GTK 4 | ✅ |  | structure |  |
 | Web |  |  | structure | no host yet |

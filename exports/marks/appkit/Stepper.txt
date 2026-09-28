@@ -1,0 +1,8 @@
+# revision 1.1
+Stepper: ✅
+Stepper.frameChanged: ✅
+Stepper.maximum: ◐ cannot enterWords on Stepper - AppKit's driver has no path for it yet
+Stepper.minimum: ✅
+Stepper.step: ✅
+Stepper.value: ◐ cannot enterWords on Stepper - AppKit's driver has no path for it yet
+Stepper.valueChanged: ◐ cannot enterWords on Stepper - AppKit's driver has no path for it yet

@@ -1,0 +1,61 @@
+# revision 1.1
+Ellipse.aspect: ◐ cannot read aspect of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Ellipse.fill: ◐ cannot read fill of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Ellipse.renderTransform: ◐ cannot read renderTransform of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Ellipse.stroke: ◐ cannot read stroke of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Ellipse.strokeDashOffset: cannot read strokeDashOffset of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Ellipse.strokeDashPattern: cannot read strokeDashPattern of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Ellipse.strokeLineCap: cannot read strokeLineCap of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Ellipse.strokeLineJoin: cannot read strokeLineJoin of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Ellipse.strokeMiterLimit: cannot read strokeMiterLimit of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Ellipse.strokeWidth: ◐ cannot read strokeWidth of Ellipse - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it
+Line.aspect: ◐ cannot read aspect of Line - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Line.fill: ◐ cannot read fill of Line - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Line.renderTransform: ◐ cannot read renderTransform of Line - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Line.stroke: ◐ cannot read stroke of Line - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Line.strokeDashOffset: cannot read strokeDashOffset of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Line.strokeDashPattern: cannot read strokeDashPattern of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Line.strokeLineCap: cannot read strokeLineCap of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Line.strokeLineJoin: cannot read strokeLineJoin of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Line.strokeMiterLimit: cannot read strokeMiterLimit of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Line.strokeWidth: ◐ cannot read strokeWidth of Line - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it
+Path.aspect: ◐ cannot read aspect of Path - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Path.fill: ◐ cannot read fill of Path - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Path.renderTransform: ◐ cannot read renderTransform of Path - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Path.stroke: ◐ cannot read stroke of Path - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Path.strokeDashOffset: cannot read strokeDashOffset of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Path.strokeDashPattern: cannot read strokeDashPattern of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Path.strokeLineCap: cannot read strokeLineCap of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Path.strokeLineJoin: cannot read strokeLineJoin of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Path.strokeMiterLimit: cannot read strokeMiterLimit of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Path.strokeWidth: ◐ cannot read strokeWidth of Path - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it
+Polygon.aspect: ◐ cannot read aspect of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Polygon.fill: ◐ cannot read fill of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Polygon.renderTransform: ◐ cannot read renderTransform of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Polygon.stroke: ◐ cannot read stroke of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Polygon.strokeDashOffset: cannot read strokeDashOffset of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Polygon.strokeDashPattern: cannot read strokeDashPattern of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Polygon.strokeLineCap: cannot read strokeLineCap of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Polygon.strokeLineJoin: cannot read strokeLineJoin of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Polygon.strokeMiterLimit: cannot read strokeMiterLimit of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Polygon.strokeWidth: ◐ cannot read strokeWidth of Polygon - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it
+Polyline.aspect: ◐ cannot read aspect of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Polyline.fill: ◐ cannot read fill of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Polyline.renderTransform: ◐ cannot read renderTransform of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Polyline.stroke: ◐ cannot read stroke of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Polyline.strokeDashOffset: cannot read strokeDashOffset of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Polyline.strokeDashPattern: cannot read strokeDashPattern of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Polyline.strokeLineCap: cannot read strokeLineCap of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Polyline.strokeLineJoin: cannot read strokeLineJoin of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Polyline.strokeMiterLimit: cannot read strokeMiterLimit of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Polyline.strokeWidth: ◐ cannot read strokeWidth of Polyline - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it
+Rectangle.aspect: ◐ cannot read aspect of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its aspect; its drawing proves it
+Rectangle.fill: ◐ cannot read fill of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its fill; its drawing proves it
+Rectangle.renderTransform: ◐ cannot read renderTransform of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its renderTransform; its drawing proves it
+Rectangle.stroke: ◐ cannot read stroke of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its stroke; its drawing proves it
+Rectangle.strokeDashOffset: cannot read strokeDashOffset of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashOffset; its drawing proves it
+Rectangle.strokeDashPattern: cannot read strokeDashPattern of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeDashPattern; its drawing proves it
+Rectangle.strokeLineCap: cannot read strokeLineCap of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineCap; its drawing proves it
+Rectangle.strokeLineJoin: cannot read strokeLineJoin of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeLineJoin; its drawing proves it
+Rectangle.strokeMiterLimit: cannot read strokeMiterLimit of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeMiterLimit; its drawing proves it
+Rectangle.strokeWidth: ◐ cannot read strokeWidth of Rectangle - StateUI draws a shape in its view's onDraw, which holds none of its strokeWidth; its drawing proves it

@@ -1,0 +1,47 @@
+# revision 1.1
+ActivityIndicator.isAccessibilityHidden: ✅
+Button.accessibilityLabel: ✅
+Canvas.frame: ✅
+CheckBox.frameChanged: ✅
+CheckBox.height: ✅
+CheckBox.width: ✅
+ColorBox.isVisible: ✅
+ColorBox.translationX: 🔌 read translationX of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.scale: 🔌 read scale of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.rotation: 🔌 read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.layoutDirection: not realized
+HStack.isAccessibilityHidden: ✅
+Image.accessibilityLabel: ✅
+ItemsView.frame: ✅
+Label.frameChanged: ✅
+Label.height: ✅
+Label.width: ✅
+Line.isVisible: ✅
+Line.translationX: 🔌 read translationX of Line: the host's own transform, checked against the layer it composed itself
+Map.scale: not realized
+Path.rotation: 🔌 read rotation of Path: the host's own transform, checked against the layer it composed itself
+Picker.layoutDirection: not realized
+Polygon.isAccessibilityHidden: ✅
+Polyline.accessibilityLabel: ✅
+PositionIndicator.frame: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.height: ✅
+ProgressBar.width: ✅
+RadioButton.isVisible: ✅
+RadioButton.translationX: 🔌 read translationX of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.scale: 🔌 read scale of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.rotation: 🔌 read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.layoutDirection: not realized
+Slider.isAccessibilityHidden: ✅
+Stepper.accessibilityLabel: ✅
+Switch.frame: ✅
+TextEditor.frameChanged: ✅
+TextEditor.height: ✅
+TextEditor.width: ✅
+TextField.isVisible: ✅
+TextField.translationX: 🔌 read translationX of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.scale: 🔌 read scale of TimePicker: the host's own transform, checked against the layer it composed itself
+TitleBar.rotation: not realized
+VStack.layoutDirection: not realized
+WebView.isAccessibilityHidden: ✅
+ZStack.accessibilityLabel: ✅

@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `NSApplication` / structure | no run of it on these sources |
-| UIKit |  |  | `UIApplication` / `UIWindowScene` | no run of it on these sources |
-| Android Views |  |  | `Application` / structure | no run of it on these sources |
+| AppKit | ✅ | 6 ✅ | `NSApplication` / structure |  |
+| UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
+| Android Views | ✅ | 4 ✅ | `Application` / structure |  |
 | WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
 | GTK 4 | ✅ |  | `GtkApplication` / structure |  |
 | Web |  |  | `document` / structure | no host yet |
@@ -38,9 +38,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `windowClosed` | event | `String` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ |  |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized; GTK 4: not realized |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |

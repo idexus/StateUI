@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (71) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `NSStepper` | no run of it on these sources |
-| UIKit |  |  | `UIStepper` | no run of it on these sources |
-| Android Views |  |  | custom `NumberPicker`-based view | no run of it on these sources |
+| AppKit | ✅ | 31 ✅ · 1 ☑️ | `NSStepper` |  |
+| UIKit | ✅ | 27 ✅ · 3 – | `UIStepper` |  |
+| Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | custom `NumberPicker`-based view |  |
 | WinUI 3 | ✅ | 57 ✅ | `NumberBox` |  |
 | GTK 4 | ✅ | 20 ✅ | `GtkSpinButton` |  |
 | Web |  |  | `<input type=number>` | no host yet |
@@ -38,11 +38,11 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/StepperContract.swi
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `maximum` | property | `Double` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read maximum of Stepper - GTK's driver has no path for it yet |
-| `minimum` | property | `Double` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read minimum of Stepper - GTK's driver has no path for it yet |
-| `step` | property | `Double` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read step of Stepper - GTK's driver has no path for it yet |
-| `value` | property | `Double` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read maximum of Stepper - GTK's driver has no path for it yet |
-| `onValueChanged` (`valueChanged`) | event | `Double` | native |  |  |  | ✅ | ◐ |  | GTK 4: cannot read minimum of Stepper - GTK's driver has no path for it yet |
+| `maximum` | property | `Double` | native | ◐ | ◐ | · | ✅ | ◐ |  | cannot enterWords on Stepper - AppKit's driver has no path for it yet; UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet; Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet; GTK 4: cannot read maximum of Stepper - GTK's driver has no path for it yet |
+| `minimum` | property | `Double` | native | ✅ | ✅ | · | ✅ | ◐ |  | Android Views: cannot read minimum of Stepper - Android's driver has no path for it yet; GTK 4: cannot read minimum of Stepper - GTK's driver has no path for it yet |
+| `step` | property | `Double` | native | ✅ | ✅ | · | ✅ | ◐ |  | Android Views: cannot read step of Stepper - Android's driver has no path for it yet; GTK 4: cannot read step of Stepper - GTK's driver has no path for it yet |
+| `value` | property | `Double` | native | ◐ | ◐ | · | ✅ | ◐ |  | cannot enterWords on Stepper - AppKit's driver has no path for it yet; UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet; Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet; GTK 4: cannot read maximum of Stepper - GTK's driver has no path for it yet |
+| `onValueChanged` (`valueChanged`) | event | `Double` | native | ◐ | ◐ | · | ✅ | ◐ |  | cannot enterWords on Stepper - AppKit's driver has no path for it yet; UIKit: cannot enterWords on Stepper - UIKit's driver has no path for it yet; Android Views: cannot enterWords on Stepper - Android's driver has no path for it yet; GTK 4: cannot read minimum of Stepper - GTK's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -50,7 +50,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -58,39 +58,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHeadingLevel of Stepper - GTK's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHint of Stepper - GTK's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Stepper - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of Stepper - GTK's driver has no path for it yet |
-| `background` | property | `Background` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ⏸ |  | GTK 4: waits on Stepper.isFocusedChanged, not realized yet |
-| `frame` | property | `Rect` | structure |  |  |  | ✅ | ✅ |  |  |
-| `height` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Stepper - GTK's driver has no path for it yet |
-| `isEnabled` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `isVisible` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `maximumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `minimumHeight` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `minimumWidth` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `opacity` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotX of Stepper - GTK's driver has no path for it yet |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read pivotY of Stepper - GTK's driver has no path for it yet |
-| `rotation` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read rotation of Stepper - GTK's driver has no path for it yet |
-| `rotationX` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationX of Stepper - GTK's driver has no path for it yet |
-| `rotationY` | property | `Double` | native |  |  |  |  | · |  | WinUI 3: not realized; GTK 4: cannot read rotationY of Stepper - GTK's driver has no path for it yet |
-| `scale` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scale of Stepper - GTK's driver has no path for it yet |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleX of Stepper - GTK's driver has no path for it yet |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read scaleY of Stepper - GTK's driver has no path for it yet |
-| `style` | property | `Name` | structure |  |  |  | ✅ | ✅ |  |  |
-| `translationX` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationX of Stepper - GTK's driver has no path for it yet |
-| `translationY` | property | `Double` | native |  |  |  | ✅ | · |  | GTK 4: cannot read translationY of Stepper - GTK's driver has no path for it yet |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ | ⏸ |  | GTK 4: waits on Stepper.isFocusedChanged, not realized yet |
-| `width` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | · |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; GTK 4: cannot read accessibilityHeadingLevel of Stepper - GTK's driver has no path for it yet |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityHint of Stepper - GTK's driver has no path for it yet |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Stepper - GTK's driver has no path for it yet |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of Stepper - GTK's driver has no path for it yet |
+| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Stepper.isFocusedChanged, not realized yet |
+| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Stepper - GTK's driver has no path for it yet |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotX of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotX of Stepper - GTK's driver has no path for it yet |
+| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotY of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotY of Stepper - GTK's driver has no path for it yet |
+| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read rotation of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read rotation of Stepper - GTK's driver has no path for it yet |
+| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationX of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Stepper: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationX of Stepper - GTK's driver has no path for it yet |
+| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationY of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Stepper: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationY of Stepper - GTK's driver has no path for it yet |
+| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scale of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scale of Stepper - GTK's driver has no path for it yet |
+| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleX of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleX of Stepper - GTK's driver has no path for it yet |
+| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleY of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleY of Stepper - GTK's driver has no path for it yet |
+| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationX of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationX of Stepper - GTK's driver has no path for it yet |
+| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationY of Stepper: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Stepper: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationY of Stepper - GTK's driver has no path for it yet |
+| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Stepper takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Stepper.isFocusedChanged, not realized yet |
+| `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -98,35 +98,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure |  |  |  | ✅ | ✅ |  |  |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ | ✅ |  |  |
-| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ | ✅ |  |  |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
-| `margin` | property | `Insets` | native |  |  |  | ✅ | ✅ |  |  |
-| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `panXChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `panYChannel` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ | · |  | GTK 4: cannot pinch on Stepper - GTK's driver has no path for it yet |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ | · |  | GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ | · |  | GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
-| `tapCount` | property | `Int` | structure |  |  |  | ✅ | · |  | GTK 4: cannot tap on Stepper - GTK's driver has no path for it yet |
-| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ | · |  | GTK 4: cannot tap on Stepper - GTK's driver has no path for it yet |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ | ✅ |  |  |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `panTouchCount` | property | `Int` | structure | 🔌 | 🔌 | ☑️ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; Android Views: Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `panXChannel` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `panYChannel` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pinch on Stepper - GTK's driver has no path for it yet |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
+| `onPointerExited` (`pointerExited`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot hover on Stepper - GTK's driver has no path for it yet |
+| `swipeDirection` | property | `SwipeDirection` | structure | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `swipeThreshold` | property | `Double` | structure | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot pan on Stepper - GTK's driver has no path for it yet |
+| `tapCount` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: tap on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot tap on Stepper - GTK's driver has no path for it yet |
+| `onTapped` (`tapped`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: tap on Stepper: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on Stepper: the view's listening handed the recognizer's states, no touch sent; GTK 4: cannot tap on Stepper - GTK's driver has no path for it yet |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

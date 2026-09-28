@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `NSTextField` label; `NSAttributedString` runs | no run of it on these sources |
-| UIKit |  |  | `UILabel`; `NSAttributedString` runs | no run of it on these sources |
-| Android Views |  |  | `TextView`; `SpannableString` spans | no run of it on these sources |
+| AppKit | ✅ |  | `NSTextField` label; `NSAttributedString` runs |  |
+| UIKit | ✅ |  | `UILabel`; `NSAttributedString` runs |  |
+| Android Views | ✅ |  | `TextView`; `SpannableString` spans |  |
 | WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
 | GTK 4 | ✅ |  | `GtkLabel`; `PangoAttrList` runs |  |
 | Web |  |  | text element; `<span>` runs | no host yet |

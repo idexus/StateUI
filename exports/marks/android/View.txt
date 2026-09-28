@@ -1,0 +1,1089 @@
+# revision 1.1
+ActivityIndicator.allowDrop: not realized
+ActivityIndicator.area: ✅
+ActivityIndicator.canDrag: not realized
+ActivityIndicator.dragLeave: not realized
+ActivityIndicator.dragOver: not realized
+ActivityIndicator.dragStarting: not realized
+ActivityIndicator.dragText: not realized
+ActivityIndicator.drop: not realized
+ActivityIndicator.dropCompleted: not realized
+ActivityIndicator.frameChanged: ✅
+ActivityIndicator.gridColumn: ✅
+ActivityIndicator.gridColumnSpan: ✅
+ActivityIndicator.gridRow: ✅
+ActivityIndicator.gridRowSpan: ✅
+ActivityIndicator.horizontalAlignment: ✅
+ActivityIndicator.margin: ✅
+ActivityIndicator.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ActivityIndicator.panUpdated: ✅
+ActivityIndicator.panXChannel: ✅
+ActivityIndicator.panYChannel: ✅
+ActivityIndicator.pinchUpdated: ✅
+ActivityIndicator.pointerEntered: ✅
+ActivityIndicator.pointerExited: ✅
+ActivityIndicator.pointerMoved: ✅
+ActivityIndicator.pointerPressed: ✅
+ActivityIndicator.pointerReleased: ✅
+ActivityIndicator.swipeDirection: ✅
+ActivityIndicator.swipeThreshold: ✅
+ActivityIndicator.swiped: ✅
+ActivityIndicator.tapCount: ✅
+ActivityIndicator.tapped: ✅
+ActivityIndicator.verticalAlignment: ✅
+Button.allowDrop: not realized
+Button.area: ✅
+Button.canDrag: not realized
+Button.dragLeave: not realized
+Button.dragOver: not realized
+Button.dragStarting: not realized
+Button.dragText: not realized
+Button.drop: not realized
+Button.dropCompleted: not realized
+Button.frameChanged: ✅
+Button.gridColumn: ✅
+Button.gridColumnSpan: ✅
+Button.gridRow: ✅
+Button.gridRowSpan: ✅
+Button.horizontalAlignment: ✅
+Button.margin: ✅
+Button.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Button.panUpdated: ✅
+Button.panXChannel: ✅
+Button.panYChannel: ✅
+Button.pinchUpdated: ✅
+Button.pointerEntered: ✅
+Button.pointerExited: ✅
+Button.pointerMoved: ✅
+Button.pointerPressed: ✅
+Button.pointerReleased: ✅
+Button.swipeDirection: ✅
+Button.swipeThreshold: ✅
+Button.swiped: ✅
+Button.tapCount: ✅
+Button.tapped: ✅
+Button.verticalAlignment: ✅
+Canvas.allowDrop: not realized
+Canvas.area: ✅
+Canvas.canDrag: not realized
+Canvas.dragLeave: not realized
+Canvas.dragOver: not realized
+Canvas.dragStarting: not realized
+Canvas.dragText: not realized
+Canvas.drop: not realized
+Canvas.dropCompleted: not realized
+Canvas.frameChanged: ✅
+Canvas.gridColumn: ✅
+Canvas.gridColumnSpan: ✅
+Canvas.gridRow: ✅
+Canvas.gridRowSpan: ✅
+Canvas.horizontalAlignment: ✅
+Canvas.margin: ✅
+Canvas.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
+Canvas.panYChannel: ✅
+Canvas.pinchUpdated: ✅
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Canvas.pointerMoved: ✅
+Canvas.pointerPressed: ✅
+Canvas.pointerReleased: ✅
+Canvas.swipeDirection: ✅
+Canvas.swipeThreshold: ✅
+Canvas.swiped: ✅
+Canvas.tapCount: ✅
+Canvas.tapped: ✅
+Canvas.verticalAlignment: ✅
+CheckBox.allowDrop: not realized
+CheckBox.area: ✅
+CheckBox.canDrag: not realized
+CheckBox.dragLeave: not realized
+CheckBox.dragOver: not realized
+CheckBox.dragStarting: not realized
+CheckBox.dragText: not realized
+CheckBox.drop: not realized
+CheckBox.dropCompleted: not realized
+CheckBox.frameChanged: ✅
+CheckBox.gridColumn: ✅
+CheckBox.gridColumnSpan: ✅
+CheckBox.gridRow: ✅
+CheckBox.gridRowSpan: ✅
+CheckBox.horizontalAlignment: ✅
+CheckBox.margin: ✅
+CheckBox.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+CheckBox.panUpdated: ✅
+CheckBox.panXChannel: ✅
+CheckBox.panYChannel: ✅
+CheckBox.pinchUpdated: ✅
+CheckBox.pointerEntered: ✅
+CheckBox.pointerExited: ✅
+CheckBox.pointerMoved: ✅
+CheckBox.pointerPressed: ✅
+CheckBox.pointerReleased: ✅
+CheckBox.swipeDirection: ✅
+CheckBox.swipeThreshold: ✅
+CheckBox.swiped: ✅
+CheckBox.tapCount: ✅
+CheckBox.tapped: ✅
+CheckBox.verticalAlignment: ✅
+ColorBox.allowDrop: not realized
+ColorBox.area: ✅
+ColorBox.canDrag: not realized
+ColorBox.dragLeave: not realized
+ColorBox.dragOver: not realized
+ColorBox.dragStarting: not realized
+ColorBox.dragText: not realized
+ColorBox.drop: not realized
+ColorBox.dropCompleted: not realized
+ColorBox.frameChanged: ✅
+ColorBox.gridColumn: ✅
+ColorBox.gridColumnSpan: ✅
+ColorBox.gridRow: ✅
+ColorBox.gridRowSpan: ✅
+ColorBox.horizontalAlignment: ✅
+ColorBox.margin: ✅
+ColorBox.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ColorBox.panUpdated: ✅
+ColorBox.panXChannel: ✅
+ColorBox.panYChannel: ✅
+ColorBox.pinchUpdated: ✅
+ColorBox.pointerEntered: ✅
+ColorBox.pointerExited: ✅
+ColorBox.pointerMoved: ✅
+ColorBox.pointerPressed: ✅
+ColorBox.pointerReleased: ✅
+ColorBox.swipeDirection: ✅
+ColorBox.swipeThreshold: ✅
+ColorBox.swiped: ✅
+ColorBox.tapCount: ✅
+ColorBox.tapped: ✅
+ColorBox.verticalAlignment: ✅
+DatePicker.allowDrop: not realized
+DatePicker.area: ✅
+DatePicker.canDrag: not realized
+DatePicker.dragLeave: not realized
+DatePicker.dragOver: not realized
+DatePicker.dragStarting: not realized
+DatePicker.dragText: not realized
+DatePicker.drop: not realized
+DatePicker.dropCompleted: not realized
+DatePicker.frameChanged: ✅
+DatePicker.gridColumn: ✅
+DatePicker.gridColumnSpan: ✅
+DatePicker.gridRow: ✅
+DatePicker.gridRowSpan: ✅
+DatePicker.horizontalAlignment: ✅
+DatePicker.margin: ✅
+DatePicker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+DatePicker.panUpdated: ✅
+DatePicker.panXChannel: ✅
+DatePicker.panYChannel: ✅
+DatePicker.pinchUpdated: ✅
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+DatePicker.pointerMoved: ✅
+DatePicker.pointerPressed: ✅
+DatePicker.pointerReleased: ✅
+DatePicker.swipeDirection: ✅
+DatePicker.swipeThreshold: ✅
+DatePicker.swiped: ✅
+DatePicker.tapCount: ✅
+DatePicker.tapped: ✅
+DatePicker.verticalAlignment: ✅
+Ellipse.allowDrop: not realized
+Ellipse.area: ✅
+Ellipse.canDrag: not realized
+Ellipse.dragLeave: not realized
+Ellipse.dragOver: not realized
+Ellipse.dragStarting: not realized
+Ellipse.dragText: not realized
+Ellipse.drop: not realized
+Ellipse.dropCompleted: not realized
+Ellipse.frameChanged: ✅
+Ellipse.gridColumn: ✅
+Ellipse.gridColumnSpan: ✅
+Ellipse.gridRow: ✅
+Ellipse.gridRowSpan: ✅
+Ellipse.horizontalAlignment: ✅
+Ellipse.margin: ✅
+Ellipse.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Ellipse.panUpdated: ✅
+Ellipse.panXChannel: ✅
+Ellipse.panYChannel: ✅
+Ellipse.pinchUpdated: ✅
+Ellipse.pointerEntered: ✅
+Ellipse.pointerExited: ✅
+Ellipse.pointerMoved: ✅
+Ellipse.pointerPressed: ✅
+Ellipse.pointerReleased: ✅
+Ellipse.swipeDirection: ✅
+Ellipse.swipeThreshold: ✅
+Ellipse.swiped: ✅
+Ellipse.tapCount: ✅
+Ellipse.tapped: ✅
+Ellipse.verticalAlignment: ✅
+Grid.allowDrop: not realized
+Grid.area: ✅
+Grid.canDrag: not realized
+Grid.dragLeave: not realized
+Grid.dragOver: not realized
+Grid.dragStarting: not realized
+Grid.dragText: not realized
+Grid.drop: not realized
+Grid.dropCompleted: not realized
+Grid.frameChanged: ✅
+Grid.gridColumn: ✅
+Grid.gridColumnSpan: ✅
+Grid.gridRow: ✅
+Grid.gridRowSpan: ✅
+Grid.horizontalAlignment: ✅
+Grid.margin: ✅
+Grid.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Grid.panUpdated: ✅
+Grid.panXChannel: ✅
+Grid.panYChannel: ✅
+Grid.pinchUpdated: ✅
+Grid.pointerEntered: ✅
+Grid.pointerExited: ✅
+Grid.pointerMoved: ✅
+Grid.pointerPressed: ✅
+Grid.pointerReleased: ✅
+Grid.swipeDirection: ✅
+Grid.swipeThreshold: ✅
+Grid.swiped: ✅
+Grid.tapCount: ✅
+Grid.tapped: ✅
+Grid.verticalAlignment: ✅
+HStack.allowDrop: not realized
+HStack.area: ✅
+HStack.canDrag: not realized
+HStack.dragLeave: not realized
+HStack.dragOver: not realized
+HStack.dragStarting: not realized
+HStack.dragText: not realized
+HStack.drop: not realized
+HStack.dropCompleted: not realized
+HStack.frameChanged: ✅
+HStack.gridColumn: ✅
+HStack.gridColumnSpan: ✅
+HStack.gridRow: ✅
+HStack.gridRowSpan: ✅
+HStack.horizontalAlignment: ✅
+HStack.margin: ✅
+HStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+HStack.panUpdated: ✅
+HStack.panXChannel: ✅
+HStack.panYChannel: ✅
+HStack.pinchUpdated: ✅
+HStack.pointerEntered: ✅
+HStack.pointerExited: ✅
+HStack.pointerMoved: ✅
+HStack.pointerPressed: ✅
+HStack.pointerReleased: ✅
+HStack.swipeDirection: ✅
+HStack.swipeThreshold: ✅
+HStack.swiped: ✅
+HStack.tapCount: ✅
+HStack.tapped: ✅
+HStack.verticalAlignment: ✅
+Image.allowDrop: not realized
+Image.area: ✅
+Image.canDrag: not realized
+Image.dragLeave: not realized
+Image.dragOver: not realized
+Image.dragStarting: not realized
+Image.dragText: not realized
+Image.drop: not realized
+Image.dropCompleted: not realized
+Image.frameChanged: ✅
+Image.gridColumn: ✅
+Image.gridColumnSpan: ✅
+Image.gridRow: ✅
+Image.gridRowSpan: ✅
+Image.horizontalAlignment: ✅
+Image.margin: ✅
+Image.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Image.panUpdated: ✅
+Image.panXChannel: ✅
+Image.panYChannel: ✅
+Image.pinchUpdated: ✅
+Image.pointerEntered: ✅
+Image.pointerExited: ✅
+Image.pointerMoved: ✅
+Image.pointerPressed: ✅
+Image.pointerReleased: ✅
+Image.swipeDirection: ✅
+Image.swipeThreshold: ✅
+Image.swiped: ✅
+Image.tapCount: ✅
+Image.tapped: ✅
+Image.verticalAlignment: ✅
+ItemsView.allowDrop: not realized
+ItemsView.area: ✅
+ItemsView.canDrag: not realized
+ItemsView.dragLeave: not realized
+ItemsView.dragOver: not realized
+ItemsView.dragStarting: not realized
+ItemsView.dragText: not realized
+ItemsView.drop: not realized
+ItemsView.dropCompleted: not realized
+ItemsView.frameChanged: ✅
+ItemsView.gridColumn: ✅
+ItemsView.gridColumnSpan: ✅
+ItemsView.gridRow: ✅
+ItemsView.gridRowSpan: ✅
+ItemsView.horizontalAlignment: ✅
+ItemsView.margin: ✅
+ItemsView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ItemsView.panUpdated: ✅
+ItemsView.panXChannel: ✅
+ItemsView.panYChannel: ✅
+ItemsView.pinchUpdated: ✅
+ItemsView.pointerEntered: ✅
+ItemsView.pointerExited: ✅
+ItemsView.pointerMoved: ✅
+ItemsView.pointerPressed: ✅
+ItemsView.pointerReleased: ✅
+ItemsView.swipeDirection: ✅
+ItemsView.swipeThreshold: ✅
+ItemsView.swiped: ✅
+ItemsView.tapCount: ✅
+ItemsView.tapped: ✅
+ItemsView.verticalAlignment: ✅
+Label.allowDrop: not realized
+Label.area: ✅
+Label.canDrag: not realized
+Label.dragLeave: not realized
+Label.dragOver: not realized
+Label.dragStarting: not realized
+Label.dragText: not realized
+Label.drop: not realized
+Label.dropCompleted: not realized
+Label.frameChanged: ✅
+Label.gridColumn: ✅
+Label.gridColumnSpan: ✅
+Label.gridRow: ✅
+Label.gridRowSpan: ✅
+Label.horizontalAlignment: ✅
+Label.margin: ✅
+Label.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Label.panUpdated: ✅
+Label.panXChannel: ✅
+Label.panYChannel: ✅
+Label.pinchUpdated: ✅
+Label.pointerEntered: ✅
+Label.pointerExited: ✅
+Label.pointerMoved: ✅
+Label.pointerPressed: ✅
+Label.pointerReleased: ✅
+Label.swipeDirection: ✅
+Label.swipeThreshold: ✅
+Label.swiped: ✅
+Label.tapCount: ✅
+Label.tapped: ✅
+Label.verticalAlignment: ✅
+Line.allowDrop: not realized
+Line.area: ✅
+Line.canDrag: not realized
+Line.dragLeave: not realized
+Line.dragOver: not realized
+Line.dragStarting: not realized
+Line.dragText: not realized
+Line.drop: not realized
+Line.dropCompleted: not realized
+Line.frameChanged: ✅
+Line.gridColumn: ✅
+Line.gridColumnSpan: ✅
+Line.gridRow: ✅
+Line.gridRowSpan: ✅
+Line.horizontalAlignment: ✅
+Line.margin: ✅
+Line.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Line.panUpdated: ✅
+Line.panXChannel: ✅
+Line.panYChannel: ✅
+Line.pinchUpdated: ✅
+Line.pointerEntered: ✅
+Line.pointerExited: ✅
+Line.pointerMoved: ✅
+Line.pointerPressed: ✅
+Line.pointerReleased: ✅
+Line.swipeDirection: ✅
+Line.swipeThreshold: ✅
+Line.swiped: ✅
+Line.tapCount: ✅
+Line.tapped: ✅
+Line.verticalAlignment: ✅
+Map.allowDrop: not realized
+Map.area: not realized
+Map.canDrag: not realized
+Map.dragLeave: not realized
+Map.dragOver: not realized
+Map.dragStarting: not realized
+Map.dragText: not realized
+Map.drop: not realized
+Map.dropCompleted: not realized
+Map.frameChanged: not realized
+Map.gridColumn: not realized
+Map.gridColumnSpan: not realized
+Map.gridRow: not realized
+Map.gridRowSpan: not realized
+Map.horizontalAlignment: not realized
+Map.margin: not realized
+Map.panTouchCount: not realized
+Map.panUpdated: not realized
+Map.panXChannel: not realized
+Map.panYChannel: not realized
+Map.pinchUpdated: not realized
+Map.pointerEntered: not realized
+Map.pointerExited: not realized
+Map.pointerMoved: not realized
+Map.pointerPressed: not realized
+Map.pointerReleased: not realized
+Map.swipeDirection: not realized
+Map.swipeThreshold: not realized
+Map.swiped: not realized
+Map.tapCount: not realized
+Map.tapped: not realized
+Map.verticalAlignment: not realized
+Path.allowDrop: not realized
+Path.area: ✅
+Path.canDrag: not realized
+Path.dragLeave: not realized
+Path.dragOver: not realized
+Path.dragStarting: not realized
+Path.dragText: not realized
+Path.drop: not realized
+Path.dropCompleted: not realized
+Path.frameChanged: ✅
+Path.gridColumn: ✅
+Path.gridColumnSpan: ✅
+Path.gridRow: ✅
+Path.gridRowSpan: ✅
+Path.horizontalAlignment: ✅
+Path.margin: ✅
+Path.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Path.panUpdated: ✅
+Path.panXChannel: ✅
+Path.panYChannel: ✅
+Path.pinchUpdated: ✅
+Path.pointerEntered: ✅
+Path.pointerExited: ✅
+Path.pointerMoved: ✅
+Path.pointerPressed: ✅
+Path.pointerReleased: ✅
+Path.swipeDirection: ✅
+Path.swipeThreshold: ✅
+Path.swiped: ✅
+Path.tapCount: ✅
+Path.tapped: ✅
+Path.verticalAlignment: ✅
+Picker.allowDrop: not realized
+Picker.area: ✅
+Picker.canDrag: not realized
+Picker.dragLeave: not realized
+Picker.dragOver: not realized
+Picker.dragStarting: not realized
+Picker.dragText: not realized
+Picker.drop: not realized
+Picker.dropCompleted: not realized
+Picker.frameChanged: ✅
+Picker.gridColumn: ✅
+Picker.gridColumnSpan: ✅
+Picker.gridRow: ✅
+Picker.gridRowSpan: ✅
+Picker.horizontalAlignment: ✅
+Picker.margin: ✅
+Picker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Picker.panUpdated: ✅
+Picker.panXChannel: ✅
+Picker.panYChannel: ✅
+Picker.pinchUpdated: ✅
+Picker.pointerEntered: ✅
+Picker.pointerExited: ✅
+Picker.pointerMoved: ✅
+Picker.pointerPressed: ✅
+Picker.pointerReleased: ✅
+Picker.swipeDirection: ✅
+Picker.swipeThreshold: ✅
+Picker.swiped: ✅
+Picker.tapCount: ✅
+Picker.tapped: ✅
+Picker.verticalAlignment: ✅
+Polygon.allowDrop: not realized
+Polygon.area: ✅
+Polygon.canDrag: not realized
+Polygon.dragLeave: not realized
+Polygon.dragOver: not realized
+Polygon.dragStarting: not realized
+Polygon.dragText: not realized
+Polygon.drop: not realized
+Polygon.dropCompleted: not realized
+Polygon.frameChanged: ✅
+Polygon.gridColumn: ✅
+Polygon.gridColumnSpan: ✅
+Polygon.gridRow: ✅
+Polygon.gridRowSpan: ✅
+Polygon.horizontalAlignment: ✅
+Polygon.margin: ✅
+Polygon.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Polygon.panUpdated: ✅
+Polygon.panXChannel: ✅
+Polygon.panYChannel: ✅
+Polygon.pinchUpdated: ✅
+Polygon.pointerEntered: ✅
+Polygon.pointerExited: ✅
+Polygon.pointerMoved: ✅
+Polygon.pointerPressed: ✅
+Polygon.pointerReleased: ✅
+Polygon.swipeDirection: ✅
+Polygon.swipeThreshold: ✅
+Polygon.swiped: ✅
+Polygon.tapCount: ✅
+Polygon.tapped: ✅
+Polygon.verticalAlignment: ✅
+Polyline.allowDrop: not realized
+Polyline.area: ✅
+Polyline.canDrag: not realized
+Polyline.dragLeave: not realized
+Polyline.dragOver: not realized
+Polyline.dragStarting: not realized
+Polyline.dragText: not realized
+Polyline.drop: not realized
+Polyline.dropCompleted: not realized
+Polyline.frameChanged: ✅
+Polyline.gridColumn: ✅
+Polyline.gridColumnSpan: ✅
+Polyline.gridRow: ✅
+Polyline.gridRowSpan: ✅
+Polyline.horizontalAlignment: ✅
+Polyline.margin: ✅
+Polyline.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Polyline.panUpdated: ✅
+Polyline.panXChannel: ✅
+Polyline.panYChannel: ✅
+Polyline.pinchUpdated: ✅
+Polyline.pointerEntered: ✅
+Polyline.pointerExited: ✅
+Polyline.pointerMoved: ✅
+Polyline.pointerPressed: ✅
+Polyline.pointerReleased: ✅
+Polyline.swipeDirection: ✅
+Polyline.swipeThreshold: ✅
+Polyline.swiped: ✅
+Polyline.tapCount: ✅
+Polyline.tapped: ✅
+Polyline.verticalAlignment: ✅
+PositionIndicator.allowDrop: not realized
+PositionIndicator.area: not realized
+PositionIndicator.canDrag: not realized
+PositionIndicator.dragLeave: not realized
+PositionIndicator.dragOver: not realized
+PositionIndicator.dragStarting: not realized
+PositionIndicator.dragText: not realized
+PositionIndicator.drop: not realized
+PositionIndicator.dropCompleted: not realized
+PositionIndicator.frameChanged: not realized
+PositionIndicator.gridColumn: not realized
+PositionIndicator.gridColumnSpan: not realized
+PositionIndicator.gridRow: not realized
+PositionIndicator.gridRowSpan: not realized
+PositionIndicator.horizontalAlignment: not realized
+PositionIndicator.margin: not realized
+PositionIndicator.panTouchCount: not realized
+PositionIndicator.panUpdated: not realized
+PositionIndicator.panXChannel: not realized
+PositionIndicator.panYChannel: not realized
+PositionIndicator.pinchUpdated: not realized
+PositionIndicator.pointerEntered: not realized
+PositionIndicator.pointerExited: not realized
+PositionIndicator.pointerMoved: not realized
+PositionIndicator.pointerPressed: not realized
+PositionIndicator.pointerReleased: not realized
+PositionIndicator.swipeDirection: not realized
+PositionIndicator.swipeThreshold: not realized
+PositionIndicator.swiped: not realized
+PositionIndicator.tapCount: not realized
+PositionIndicator.tapped: not realized
+PositionIndicator.verticalAlignment: not realized
+ProgressBar.allowDrop: not realized
+ProgressBar.area: ✅
+ProgressBar.canDrag: not realized
+ProgressBar.dragLeave: not realized
+ProgressBar.dragOver: not realized
+ProgressBar.dragStarting: not realized
+ProgressBar.dragText: not realized
+ProgressBar.drop: not realized
+ProgressBar.dropCompleted: not realized
+ProgressBar.frameChanged: ✅
+ProgressBar.gridColumn: ✅
+ProgressBar.gridColumnSpan: ✅
+ProgressBar.gridRow: ✅
+ProgressBar.gridRowSpan: ✅
+ProgressBar.horizontalAlignment: ✅
+ProgressBar.margin: ✅
+ProgressBar.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ProgressBar.panUpdated: ✅
+ProgressBar.panXChannel: ✅
+ProgressBar.panYChannel: ✅
+ProgressBar.pinchUpdated: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+ProgressBar.pointerMoved: ✅
+ProgressBar.pointerPressed: ✅
+ProgressBar.pointerReleased: ✅
+ProgressBar.swipeDirection: ✅
+ProgressBar.swipeThreshold: ✅
+ProgressBar.swiped: ✅
+ProgressBar.tapCount: ✅
+ProgressBar.tapped: ✅
+ProgressBar.verticalAlignment: ✅
+RadioButton.allowDrop: not realized
+RadioButton.area: ✅
+RadioButton.canDrag: not realized
+RadioButton.dragLeave: not realized
+RadioButton.dragOver: not realized
+RadioButton.dragStarting: not realized
+RadioButton.dragText: not realized
+RadioButton.drop: not realized
+RadioButton.dropCompleted: not realized
+RadioButton.frameChanged: ✅
+RadioButton.gridColumn: ✅
+RadioButton.gridColumnSpan: ✅
+RadioButton.gridRow: ✅
+RadioButton.gridRowSpan: ✅
+RadioButton.horizontalAlignment: ✅
+RadioButton.margin: ✅
+RadioButton.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+RadioButton.panUpdated: ✅
+RadioButton.panXChannel: ✅
+RadioButton.panYChannel: ✅
+RadioButton.pinchUpdated: ✅
+RadioButton.pointerEntered: ✅
+RadioButton.pointerExited: ✅
+RadioButton.pointerMoved: ✅
+RadioButton.pointerPressed: ✅
+RadioButton.pointerReleased: ✅
+RadioButton.swipeDirection: ✅
+RadioButton.swipeThreshold: ✅
+RadioButton.swiped: ✅
+RadioButton.tapCount: ✅
+RadioButton.tapped: ✅
+RadioButton.verticalAlignment: ✅
+Rectangle.allowDrop: not realized
+Rectangle.area: ✅
+Rectangle.canDrag: not realized
+Rectangle.dragLeave: not realized
+Rectangle.dragOver: not realized
+Rectangle.dragStarting: not realized
+Rectangle.dragText: not realized
+Rectangle.drop: not realized
+Rectangle.dropCompleted: not realized
+Rectangle.frameChanged: ✅
+Rectangle.gridColumn: ✅
+Rectangle.gridColumnSpan: ✅
+Rectangle.gridRow: ✅
+Rectangle.gridRowSpan: ✅
+Rectangle.horizontalAlignment: ✅
+Rectangle.margin: ✅
+Rectangle.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Rectangle.panUpdated: ✅
+Rectangle.panXChannel: ✅
+Rectangle.panYChannel: ✅
+Rectangle.pinchUpdated: ✅
+Rectangle.pointerEntered: ✅
+Rectangle.pointerExited: ✅
+Rectangle.pointerMoved: ✅
+Rectangle.pointerPressed: ✅
+Rectangle.pointerReleased: ✅
+Rectangle.swipeDirection: ✅
+Rectangle.swipeThreshold: ✅
+Rectangle.swiped: ✅
+Rectangle.tapCount: ✅
+Rectangle.tapped: ✅
+Rectangle.verticalAlignment: ✅
+ScrollView.allowDrop: not realized
+ScrollView.area: ✅
+ScrollView.canDrag: not realized
+ScrollView.dragLeave: not realized
+ScrollView.dragOver: not realized
+ScrollView.dragStarting: not realized
+ScrollView.dragText: not realized
+ScrollView.drop: not realized
+ScrollView.dropCompleted: not realized
+ScrollView.frameChanged: ✅
+ScrollView.gridColumn: ✅
+ScrollView.gridColumnSpan: ✅
+ScrollView.gridRow: ✅
+ScrollView.gridRowSpan: ✅
+ScrollView.horizontalAlignment: ✅
+ScrollView.margin: ✅
+ScrollView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ScrollView.panUpdated: ✅
+ScrollView.panXChannel: ✅
+ScrollView.panYChannel: ✅
+ScrollView.pinchUpdated: ✅
+ScrollView.pointerEntered: ✅
+ScrollView.pointerExited: ✅
+ScrollView.pointerMoved: ✅
+ScrollView.pointerPressed: ✅
+ScrollView.pointerReleased: ✅
+ScrollView.swipeDirection: ✅
+ScrollView.swipeThreshold: ✅
+ScrollView.swiped: ✅
+ScrollView.tapCount: ✅
+ScrollView.tapped: ✅
+ScrollView.verticalAlignment: ✅
+SearchField.allowDrop: not realized
+SearchField.area: ✅
+SearchField.canDrag: not realized
+SearchField.dragLeave: not realized
+SearchField.dragOver: not realized
+SearchField.dragStarting: not realized
+SearchField.dragText: not realized
+SearchField.drop: not realized
+SearchField.dropCompleted: not realized
+SearchField.frameChanged: ✅
+SearchField.gridColumn: ✅
+SearchField.gridColumnSpan: ✅
+SearchField.gridRow: ✅
+SearchField.gridRowSpan: ✅
+SearchField.horizontalAlignment: ✅
+SearchField.margin: ✅
+SearchField.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+SearchField.panUpdated: ✅
+SearchField.panXChannel: ✅
+SearchField.panYChannel: ✅
+SearchField.pinchUpdated: ✅
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+SearchField.pointerMoved: ✅
+SearchField.pointerPressed: ✅
+SearchField.pointerReleased: ✅
+SearchField.swipeDirection: ✅
+SearchField.swipeThreshold: ✅
+SearchField.swiped: ✅
+SearchField.tapCount: ✅
+SearchField.tapped: ✅
+SearchField.verticalAlignment: ✅
+Slider.allowDrop: not realized
+Slider.area: ✅
+Slider.canDrag: not realized
+Slider.dragLeave: not realized
+Slider.dragOver: not realized
+Slider.dragStarting: not realized
+Slider.dragText: not realized
+Slider.drop: not realized
+Slider.dropCompleted: not realized
+Slider.frameChanged: ✅
+Slider.gridColumn: ✅
+Slider.gridColumnSpan: ✅
+Slider.gridRow: ✅
+Slider.gridRowSpan: ✅
+Slider.horizontalAlignment: ✅
+Slider.margin: ✅
+Slider.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Slider.panUpdated: ✅
+Slider.panXChannel: ✅
+Slider.panYChannel: ✅
+Slider.pinchUpdated: ✅
+Slider.pointerEntered: ✅
+Slider.pointerExited: ✅
+Slider.pointerMoved: ✅
+Slider.pointerPressed: ✅
+Slider.pointerReleased: ✅
+Slider.swipeDirection: ✅
+Slider.swipeThreshold: ✅
+Slider.swiped: ✅
+Slider.tapCount: ✅
+Slider.tapped: ✅
+Slider.verticalAlignment: ✅
+Stepper.allowDrop: not realized
+Stepper.area: ✅
+Stepper.canDrag: not realized
+Stepper.dragLeave: not realized
+Stepper.dragOver: not realized
+Stepper.dragStarting: not realized
+Stepper.dragText: not realized
+Stepper.drop: not realized
+Stepper.dropCompleted: not realized
+Stepper.frameChanged: ✅
+Stepper.gridColumn: ✅
+Stepper.gridColumnSpan: ✅
+Stepper.gridRow: ✅
+Stepper.gridRowSpan: ✅
+Stepper.horizontalAlignment: ✅
+Stepper.margin: ✅
+Stepper.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Stepper.panUpdated: ✅
+Stepper.panXChannel: ✅
+Stepper.panYChannel: ✅
+Stepper.pinchUpdated: ✅
+Stepper.pointerEntered: ✅
+Stepper.pointerExited: ✅
+Stepper.pointerMoved: ✅
+Stepper.pointerPressed: ✅
+Stepper.pointerReleased: ✅
+Stepper.swipeDirection: ✅
+Stepper.swipeThreshold: ✅
+Stepper.swiped: ✅
+Stepper.tapCount: ✅
+Stepper.tapped: ✅
+Stepper.verticalAlignment: ✅
+Switch.allowDrop: not realized
+Switch.area: ✅
+Switch.canDrag: not realized
+Switch.dragLeave: not realized
+Switch.dragOver: not realized
+Switch.dragStarting: not realized
+Switch.dragText: not realized
+Switch.drop: not realized
+Switch.dropCompleted: not realized
+Switch.frameChanged: ✅
+Switch.gridColumn: ✅
+Switch.gridColumnSpan: ✅
+Switch.gridRow: ✅
+Switch.gridRowSpan: ✅
+Switch.horizontalAlignment: ✅
+Switch.margin: ✅
+Switch.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+Switch.panUpdated: ✅
+Switch.panXChannel: ✅
+Switch.panYChannel: ✅
+Switch.pinchUpdated: ✅
+Switch.pointerEntered: ✅
+Switch.pointerExited: ✅
+Switch.pointerMoved: ✅
+Switch.pointerPressed: ✅
+Switch.pointerReleased: ✅
+Switch.swipeDirection: ✅
+Switch.swipeThreshold: ✅
+Switch.swiped: ✅
+Switch.tapCount: ✅
+Switch.tapped: ✅
+Switch.verticalAlignment: ✅
+TextEditor.allowDrop: not realized
+TextEditor.area: ✅
+TextEditor.canDrag: not realized
+TextEditor.dragLeave: not realized
+TextEditor.dragOver: not realized
+TextEditor.dragStarting: not realized
+TextEditor.dragText: not realized
+TextEditor.drop: not realized
+TextEditor.dropCompleted: not realized
+TextEditor.frameChanged: ✅
+TextEditor.gridColumn: ✅
+TextEditor.gridColumnSpan: ✅
+TextEditor.gridRow: ✅
+TextEditor.gridRowSpan: ✅
+TextEditor.horizontalAlignment: ✅
+TextEditor.margin: ✅
+TextEditor.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TextEditor.panUpdated: ✅
+TextEditor.panXChannel: ✅
+TextEditor.panYChannel: ✅
+TextEditor.pinchUpdated: ✅
+TextEditor.pointerEntered: ✅
+TextEditor.pointerExited: ✅
+TextEditor.pointerMoved: ✅
+TextEditor.pointerPressed: ✅
+TextEditor.pointerReleased: ✅
+TextEditor.swipeDirection: ✅
+TextEditor.swipeThreshold: ✅
+TextEditor.swiped: ✅
+TextEditor.tapCount: ✅
+TextEditor.tapped: ✅
+TextEditor.verticalAlignment: ✅
+TextField.allowDrop: not realized
+TextField.area: ✅
+TextField.canDrag: not realized
+TextField.dragLeave: not realized
+TextField.dragOver: not realized
+TextField.dragStarting: not realized
+TextField.dragText: not realized
+TextField.drop: not realized
+TextField.dropCompleted: not realized
+TextField.frameChanged: ✅
+TextField.gridColumn: ✅
+TextField.gridColumnSpan: ✅
+TextField.gridRow: ✅
+TextField.gridRowSpan: ✅
+TextField.horizontalAlignment: ✅
+TextField.margin: ✅
+TextField.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TextField.panUpdated: ✅
+TextField.panXChannel: ✅
+TextField.panYChannel: ✅
+TextField.pinchUpdated: ✅
+TextField.pointerEntered: ✅
+TextField.pointerExited: ✅
+TextField.pointerMoved: ✅
+TextField.pointerPressed: ✅
+TextField.pointerReleased: ✅
+TextField.swipeDirection: ✅
+TextField.swipeThreshold: ✅
+TextField.swiped: ✅
+TextField.tapCount: ✅
+TextField.tapped: ✅
+TextField.verticalAlignment: ✅
+TimePicker.allowDrop: not realized
+TimePicker.area: ✅
+TimePicker.canDrag: not realized
+TimePicker.dragLeave: not realized
+TimePicker.dragOver: not realized
+TimePicker.dragStarting: not realized
+TimePicker.dragText: not realized
+TimePicker.drop: not realized
+TimePicker.dropCompleted: not realized
+TimePicker.frameChanged: ✅
+TimePicker.gridColumn: ✅
+TimePicker.gridColumnSpan: ✅
+TimePicker.gridRow: ✅
+TimePicker.gridRowSpan: ✅
+TimePicker.horizontalAlignment: ✅
+TimePicker.margin: ✅
+TimePicker.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+TimePicker.panUpdated: ✅
+TimePicker.panXChannel: ✅
+TimePicker.panYChannel: ✅
+TimePicker.pinchUpdated: ✅
+TimePicker.pointerEntered: ✅
+TimePicker.pointerExited: ✅
+TimePicker.pointerMoved: ✅
+TimePicker.pointerPressed: ✅
+TimePicker.pointerReleased: ✅
+TimePicker.swipeDirection: ✅
+TimePicker.swipeThreshold: ✅
+TimePicker.swiped: ✅
+TimePicker.tapCount: ✅
+TimePicker.tapped: ✅
+TimePicker.verticalAlignment: ✅
+TitleBar.allowDrop: not realized
+TitleBar.area: not realized
+TitleBar.canDrag: not realized
+TitleBar.dragLeave: not realized
+TitleBar.dragOver: not realized
+TitleBar.dragStarting: not realized
+TitleBar.dragText: not realized
+TitleBar.drop: not realized
+TitleBar.dropCompleted: not realized
+TitleBar.frameChanged: not realized
+TitleBar.gridColumn: not realized
+TitleBar.gridColumnSpan: not realized
+TitleBar.gridRow: not realized
+TitleBar.gridRowSpan: not realized
+TitleBar.horizontalAlignment: not realized
+TitleBar.margin: not realized
+TitleBar.panTouchCount: not realized
+TitleBar.panUpdated: not realized
+TitleBar.panXChannel: not realized
+TitleBar.panYChannel: not realized
+TitleBar.pinchUpdated: not realized
+TitleBar.pointerEntered: not realized
+TitleBar.pointerExited: not realized
+TitleBar.pointerMoved: not realized
+TitleBar.pointerPressed: not realized
+TitleBar.pointerReleased: not realized
+TitleBar.swipeDirection: not realized
+TitleBar.swipeThreshold: not realized
+TitleBar.swiped: not realized
+TitleBar.tapCount: not realized
+TitleBar.tapped: not realized
+TitleBar.verticalAlignment: not realized
+VStack.allowDrop: not realized
+VStack.area: ✅
+VStack.canDrag: not realized
+VStack.dragLeave: not realized
+VStack.dragOver: not realized
+VStack.dragStarting: not realized
+VStack.dragText: not realized
+VStack.drop: not realized
+VStack.dropCompleted: not realized
+VStack.frameChanged: ✅
+VStack.gridColumn: ✅
+VStack.gridColumnSpan: ✅
+VStack.gridRow: ✅
+VStack.gridRowSpan: ✅
+VStack.horizontalAlignment: ✅
+VStack.margin: ✅
+VStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+VStack.panUpdated: ✅
+VStack.panXChannel: ✅
+VStack.panYChannel: ✅
+VStack.pinchUpdated: ✅
+VStack.pointerEntered: ✅
+VStack.pointerExited: ✅
+VStack.pointerMoved: ✅
+VStack.pointerPressed: ✅
+VStack.pointerReleased: ✅
+VStack.swipeDirection: ✅
+VStack.swipeThreshold: ✅
+VStack.swiped: ✅
+VStack.tapCount: ✅
+VStack.tapped: ✅
+VStack.verticalAlignment: ✅
+WebView.allowDrop: not realized
+WebView.area: ✅
+WebView.canDrag: not realized
+WebView.dragLeave: not realized
+WebView.dragOver: not realized
+WebView.dragStarting: not realized
+WebView.dragText: not realized
+WebView.drop: not realized
+WebView.dropCompleted: not realized
+WebView.frameChanged: ✅
+WebView.gridColumn: ✅
+WebView.gridColumnSpan: ✅
+WebView.gridRow: ✅
+WebView.gridRowSpan: ✅
+WebView.horizontalAlignment: ✅
+WebView.margin: ✅
+WebView.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+WebView.panUpdated: ✅
+WebView.panXChannel: ✅
+WebView.panYChannel: ✅
+WebView.pinchUpdated: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+WebView.pointerMoved: ✅
+WebView.pointerPressed: ✅
+WebView.pointerReleased: ✅
+WebView.swipeDirection: ✅
+WebView.swipeThreshold: ✅
+WebView.swiped: ✅
+WebView.tapCount: ✅
+WebView.tapped: ✅
+WebView.verticalAlignment: ✅
+ZStack.allowDrop: not realized
+ZStack.area: ✅
+ZStack.canDrag: not realized
+ZStack.dragLeave: not realized
+ZStack.dragOver: not realized
+ZStack.dragStarting: not realized
+ZStack.dragText: not realized
+ZStack.drop: not realized
+ZStack.dropCompleted: not realized
+ZStack.frameChanged: ✅
+ZStack.gridColumn: ✅
+ZStack.gridColumnSpan: ✅
+ZStack.gridRow: ✅
+ZStack.gridRowSpan: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.margin: ✅
+ZStack.panTouchCount: ☑️ Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.
+ZStack.panUpdated: ✅
+ZStack.panXChannel: ✅
+ZStack.panYChannel: ✅
+ZStack.pinchUpdated: ✅
+ZStack.pointerEntered: ✅
+ZStack.pointerExited: ✅
+ZStack.pointerMoved: ✅
+ZStack.pointerPressed: ✅
+ZStack.pointerReleased: ✅
+ZStack.swipeDirection: ✅
+ZStack.swipeThreshold: ✅
+ZStack.swiped: ✅
+ZStack.tapCount: ✅
+ZStack.tapped: ✅
+ZStack.verticalAlignment: ✅

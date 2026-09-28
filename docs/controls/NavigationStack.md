@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | no run of it on these sources |
-| UIKit |  |  | `UINavigationController` | no run of it on these sources |
-| Android Views |  |  | custom `ViewGroup` stack + `Toolbar` | no run of it on these sources |
+| AppKit | ✅ | 1 ✅ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| UIKit | ✅ | 6 ✅ | `UINavigationController` |  |
+| Android Views | ✅ | 1 ✅ | custom `ViewGroup` stack + `Toolbar` |  |
 | WinUI 3 | ✅ | 3 ✅ | `Frame` |  |
 | GTK 4 | ✅ |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
@@ -38,8 +38,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `popped` | event | `Int` | adaptive |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet; GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -47,7 +47,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -55,7 +55,7 @@ The bar a page arrangement draws: its colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `barBackgroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barBackgroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -63,5 +63,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `title` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read title of NavigationStack - GTK's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read icon of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `title` | property | `String` | native | · | ✅ | · | ✅ | · |  | cannot read title of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read title of NavigationStack - Android's driver has no path for it yet; GTK 4: cannot read title of NavigationStack - GTK's driver has no path for it yet |

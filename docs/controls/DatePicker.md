@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (80) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `NSDatePicker` | no run of it on these sources |
-| UIKit |  |  | `UIDatePicker` | no run of it on these sources |
-| Android Views |  |  | `DatePickerDialog` | no run of it on these sources |
+| AppKit | ✅ | 35 ✅ · 1 ☑️ | `NSDatePicker` |  |
+| UIKit | ✅ | 29 ✅ · 3 – | `UIDatePicker` |  |
+| Android Views | ✅ | 53 ✅ · 1 ☑️ · 3 – | `DatePickerDialog` |  |
 | WinUI 3 | ✅ | 63 ✅ · 1 ☑️ | `CalendarDatePicker` |  |
 | GTK 4 |  |  | `GtkCalendar` in a `GtkPopover` | not realized |
 | Web |  |  | `<input type=date>` | no host yet |
@@ -38,14 +38,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/DatePickerContract.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `date` | property | `CalendarDate` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `format` | property | `String` | native |  |  |  | ☑️ |  |  | WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".; GTK 4: not realized |
-| `isOpen` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `maximumDate` | property | `CalendarDate` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `minimumDate` | property | `CalendarDate` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onOpened` (`opened`) | event |  | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `onClosed` (`closed`) | event |  | native |  |  | · | ✅ |  |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `date` | property | `CalendarDate` | native | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `onDateChanged` (`dateChanged`) | event | `CalendarDate` | native | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: pickDate on DatePicker: the host's change handler called, not the picker's action; Android Views: cannot read date of DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `format` | property | `String` | native |  |  | · | ☑️ |  |  | not realized; UIKit: not realized; Android Views: cannot read format of DatePicker - Android's driver has no path for it yet; WinUI 3: WinUI writes "D" and "d" in the user's own way, and any other pattern as "d".; GTK 4: not realized |
+| `isOpen` | property | `Bool` | native |  |  | · | ✅ |  |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `maximumDate` | property | `CalendarDate` | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read maximumDate of DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `minimumDate` | property | `CalendarDate` | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read minimumDate of DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
+| `onOpened` (`opened`) | event |  | native |  |  | · | ✅ |  |  | not realized; UIKit: not realized; Android Views: cannot open on DatePicker - Android's driver has no path for it yet; GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -53,7 +53,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -61,39 +61,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `accessibilityHint` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `accessibilityLabel` | property | `String` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `background` | property | `Background` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `frame` | property | `Rect` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `height` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `isEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `isVisible` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `maximumWidth` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `minimumHeight` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `minimumWidth` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `opacity` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `pivotX` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `pivotY` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `rotation` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `scale` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `scaleX` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `scaleY` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `style` | property | `Name` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `translationX` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `translationY` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `unfocus` | act | `() -> Void` |  |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `width` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ |  |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; GTK 4: not realized |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ |  |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read rotation of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  |  |  | only through the host's own: read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of DatePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: not realized |
+| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  |  |  | only through the host's own: read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: not realized |
+| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read scale of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read translationX of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read translationY of DatePicker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of DatePicker: the host's own transform, checked against the layer it composed itself; GTK 4: not realized |
+| `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ |  |  | UIKit: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: DatePicker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
+| `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -101,38 +101,38 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `gridRow` | property | `Int` | stateUI |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `margin` | property | `Insets` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `panTouchCount` | property | `Int` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `panXChannel` | property | `Int` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `panYChannel` | property | `Int` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `swipeThreshold` | property | `Double` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `tapCount` | property | `Int` | structure |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `onTapped` (`tapped`) | event |  | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `area` | property | `Area` | structure | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `margin` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `panTouchCount` | property | `Int` | structure | 🔌 | 🔌 | ☑️ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; Android Views: Android recognises a one-finger pan only; any other `panTouchCount` turns the pan off.; GTK 4: not realized |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `panXChannel` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `panYChannel` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pinch on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pinch on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPointerExited` (`pointerExited`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: hover on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `swipeDirection` | property | `SwipeDirection` | structure | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `swipeThreshold` | property | `Double` | structure | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pan on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `tapCount` | property | `Int` | structure | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: tap on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `onTapped` (`tapped`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: tap on DatePicker: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: tap on DatePicker: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -140,8 +140,8 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `textColor` | property | `Color` | native | ✅ |  | ✅ | ✅ |  |  | UIKit: not realized; GTK 4: not realized |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -149,7 +149,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
-| `fontSize` | property | `Double` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | ✅ | ✅ |  |  | UIKit: not realized; GTK 4: not realized |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read a family - Android's typeface keeps no family's name; GTK 4: not realized |
+| `fontSize` | property | `Double` | native | ✅ |  | ✅ | ✅ |  |  | UIKit: not realized; GTK 4: not realized |

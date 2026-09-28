@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow | no run of it on these sources |
-| UIKit |  |  | `UIBarButtonItem` | no run of it on these sources |
-| Android Views |  |  | `Toolbar` `MenuItem` | no run of it on these sources |
+| AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ |  | `UIBarButtonItem` |  |
+| Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
 | GTK 4 | · |  | `GtkButton` in `GtkHeaderBar` | cannot activate on ToolbarItem - GTK's driver has no path for it yet |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |

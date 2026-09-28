@@ -1,0 +1,5 @@
+# revision 2.1
+Label.frameChanged: ✅
+SplitView: ✅
+SplitView.isSidebarVisible: ✅
+SplitView.isSidebarVisibleChanged: ✅

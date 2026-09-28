@@ -1,0 +1,9 @@
+# revision 1.1
+TimePicker: ✅
+TimePicker.closed: cannot open on TimePicker - Android's driver has no path for it yet
+TimePicker.format: cannot read format of TimePicker - Android's driver has no path for it yet
+TimePicker.frameChanged: ✅
+TimePicker.isOpen: cannot open on TimePicker - Android's driver has no path for it yet
+TimePicker.opened: cannot open on TimePicker - Android's driver has no path for it yet
+TimePicker.time: cannot read time of TimePicker - Android's driver has no path for it yet
+TimePicker.timeChanged: cannot read time of TimePicker - Android's driver has no path for it yet

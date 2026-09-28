@@ -25,9 +25,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit |  |  | sheet `NSWindow` | no run of it on these sources |
-| UIKit |  |  | `present(_:animated:)` | no run of it on these sources |
-| Android Views |  |  | full-screen `Dialog` (?) | no run of it on these sources |
+| AppKit | ✅ |  | sheet `NSWindow` |  |
+| UIKit | ✅ |  | `present(_:animated:)` |  |
+| Android Views | ◐ |  | full-screen `Dialog` (?) | cannot goBack on Window - Android's driver has no path for it yet |
 | WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
 | GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | not realized |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |

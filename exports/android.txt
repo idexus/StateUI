@@ -224,6 +224,7 @@ SearchField
   returnKey
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -259,6 +260,7 @@ TextEditor
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   textChanged()
 TextField
@@ -274,6 +276,7 @@ TextField
   returnKey
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -313,6 +316,7 @@ ZStack
   stroke
   strokeWidth
 (every element)
+  accessibilityHeadingLevel
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
