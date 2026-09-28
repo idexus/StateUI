@@ -19,7 +19,7 @@ final class NoView: NativeElement {
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact { .none }
+    func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
     func leave() {}
 }

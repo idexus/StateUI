@@ -96,7 +96,7 @@
     private static let nativeViewTypes: Set<NodeType> = [
         .activityIndicator, .colorBox, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
-        .grid, .hStack, .image, .label, .line,
+        .grid, .hStack, .image, .itemsView, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack, .zStack,

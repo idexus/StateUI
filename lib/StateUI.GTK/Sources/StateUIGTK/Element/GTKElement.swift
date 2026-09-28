@@ -60,14 +60,8 @@ final class GTKElement: NativeElement {
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-
-        var impact = FrameImpact(content: true)
-        if view == nil || !changed.isDisjoint(with: MountedElement.arrangedProperties) {
-            impact.arrangement = true
-        }
-        return impact
     }
 
     func leave() {

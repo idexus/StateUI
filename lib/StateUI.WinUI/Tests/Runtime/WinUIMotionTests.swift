@@ -30,16 +30,39 @@ private struct CutPage: ContentView {
 }
 
 final class WinUIMotionTests: XCTestCase {
-    func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
-        onUIThread {
-            XCTAssertTrue(WinUITransitionSurface.presents(.opacity, on: .label))
-            XCTAssertTrue(WinUITransitionSurface.presents(.translationX, on: .button))
-            XCTAssertTrue(WinUITransitionSurface.presents(.value, on: .slider))
-            XCTAssertTrue(WinUITransitionSurface.presents(.spacing, on: .vStack))
-            XCTAssertFalse(WinUITransitionSurface.presents(.value, on: .label))
-            XCTAssertTrue(WinUITransitionSurface.presents(.opacity, on: .switch), "every registered view")
-            XCTAssertFalse(WinUITransitionSurface.presents(.opacity, on: .positionIndicator))
-            XCTAssertFalse(WinUITransitionSurface.presents(Prop("custom"), on: .label))
+    /// A colour box whose colour and width change under a motion stands halfway at half its time, and lands - the
+    /// Gallery's Motion sample: what travels is the host layer's list.
+    func testAColourAndAWidthTravelHalfwayAndLand() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let wide = State(wrappedValue: false)
+            let host = WinUIRenderer.running(clock: clock) {
+                VStack {
+                    ColorBox()
+                        .color(wide.wrappedValue ? Color(red: 255, green: 0, blue: 0) : Color(red: 0, green: 0, blue: 255))
+                        .width(wide.wrappedValue ? 300 : 100)
+                        .height(60)
+                        .horizontalAlignment(.start)
+                        .motion(.eased(1000, .linear))
+                        .id("box")
+                }
+            }
+            let box = try XCTUnwrap(host.view(id: .manual("box")))
+            XCTAssertEqual(box.laidOutFrame.width, 100, accuracy: 0.5)
+
+            wide.wrappedValue = true
+            host.runtime.pump.turn()
+            clock.now = 500
+            host.frame()
+            XCTAssertEqual(box.laidOutFrame.width, 200, accuracy: 1, "halfway across")
+            let halfway = box.pixels(at: [(20, 30)])[0]
+            XCTAssertEqual(Double((halfway >> 16) & 0xFF), 127.5, accuracy: 8, "halfway to red")
+            XCTAssertEqual(Double(halfway & 0xFF), 127.5, accuracy: 8, "halfway from blue")
+
+            clock.now = 1000
+            host.frame()
+            XCTAssertEqual(box.laidOutFrame.width, 300, accuracy: 0.5, "landed")
+            XCTAssertEqual((box.pixels(at: [(20, 30)])[0] >> 16) & 0xFF, 255)
         }
     }
 

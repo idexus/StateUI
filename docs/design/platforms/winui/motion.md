@@ -8,12 +8,13 @@ once. The frames come from `CompositionTarget.Rendering`
 
 ## What moves
 
-A host moves only a value it draws, so the WinUI host keeps a closed set:
-`WinUITransitionSurface` names, for each element, the properties whose frames
-reach WinUI - opacity, the sizes, margin and the planar transforms on every
-view it presents; padding and spacing on a stack; a slider's value. Any other
-property arrives at its value at once, rather than keeping an animation alive
-that nothing on screen would show.
+What moves is the host layer's list ([what
+travels](../../host/motion.md#what-travels)), and WinUI draws every pair it
+names on each frame through the same setters a patch uses. A tint moving
+reads its control's theme again on every frame - a template reads its
+resources only as its theme is read ([a control's
+accent](controls.md#a-controls-accent)); a bar's colour moving composes the
+window's chrome again, and a window's place and size stand the window again.
 
 A property's animation begins where the element stands: the opacity it is
 drawn at, the value a slider's thumb shows.

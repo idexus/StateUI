@@ -253,7 +253,7 @@ private final class TabsReading: NativeElement {
 
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact { .none }
+    func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
     func leave() {}
 }

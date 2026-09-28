@@ -20,7 +20,7 @@ extension WinUIElement {
 
     /// Whether the element fades in as it joins a standing layout, by the host layer's rule.
     var fadesIn: Bool {
-        view != nil && element.fadesIn(presentsOpacity: WinUITransitionSurface.presents(.opacity, on: type))
+        view != nil && element.fadesIn(presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
     /// Fades the element in as it joins a layout already standing, by the host layer's rule.

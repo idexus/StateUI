@@ -57,4 +57,12 @@
         menuBar = page?.children.first { $0.type == .menuBar }
         sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
     }
+
+    /// Whether the chrome shows what an element of `type` moves on a frame: a window's frame, a title bar's own
+    /// colours, a stack's or a tabbed view's bar colours - the chrome is composed again as they move.
+    public static func follows(_ type: NodeType) -> Bool {
+        followed.contains(type)
+    }
+
+    private static let followed: Set<NodeType> = [.window, .titleBar, .navigationStack, .tabbedView]
 }

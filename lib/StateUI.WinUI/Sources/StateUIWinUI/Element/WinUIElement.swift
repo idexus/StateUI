@@ -49,7 +49,7 @@ final class WinUIElement: NativeElement {
     }
 
     func animates(_ property: Prop) -> Bool {
-        WinUITransitionSurface.presents(property, on: type)
+        TransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
@@ -67,14 +67,8 @@ final class WinUIElement: NativeElement {
         if let view { host?.runtime.frames.follow(self, order: view.number, reads: readsFrame) }
     }
 
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-
-        var impact = FrameImpact(content: true)
-        if view == nil || !changed.subtracting(element.ownPlacementRun).isDisjoint(with: MountedElement.arrangedProperties) {
-            impact.arrangement = true
-        }
-        return impact
     }
 
     func leave() {

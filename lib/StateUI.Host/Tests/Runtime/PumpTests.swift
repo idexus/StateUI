@@ -251,7 +251,7 @@ private final class HeldNative: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if element.type == .label { runtime.applied() }
     }
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact { FrameImpact(content: true) }
+    func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
     func leave() {}
 }

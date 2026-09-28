@@ -65,15 +65,8 @@ final class AndroidElement: NativeElement {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-
-        var impact = FrameImpact(content: true)
-        let arranged = changed.subtracting(element.ownPlacementRun)
-        if view == nil || !arranged.isDisjoint(with: MountedElement.arrangedProperties) {
-            impact.arrangement = true
-        }
-        return impact
     }
 
     func leave() {

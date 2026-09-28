@@ -58,6 +58,12 @@ the backend each frame's. Every other pair arrives at once, rather than
 keeping a motion alive that nothing shows: a host that answers no pair
 animates nothing, however the tree asks.
 
+What a moved value asks of the elements around it is the host layer's too
+([one frame](runtime.md#one-frame)): a window's frame, a title bar's
+colours and a stack's or a tabbed view's bar colours are the window's
+chrome, which the host composes again on the frames that move them
+(`WindowChrome.follows`).
+
 ## Layout motion
 
 A layout works out where each child goes; `LayoutMotion` decides where the

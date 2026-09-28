@@ -174,7 +174,11 @@ extension WinUIRenderer: FramePresenter {
     }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        runtime.tree.present(states: states, properties: properties)
+        let impact = runtime.tree.present(states: states, properties: properties)
+        if impact.windowChrome {
+            showWindows()
+            refreshWindowChrome()
+        }
     }
 
     func renderIfNeeded() {

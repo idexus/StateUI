@@ -11,7 +11,7 @@
     /// The element's place in its parent changed, so the parent arranges again.
     public var arrangement: Bool
 
-    /// The window's chrome follows the element: a window, a title bar, a navigation stack.
+    /// The window's chrome shows what moved: a window's frame, a bar's colours (`WindowChrome.follows`).
     public var windowChrome: Bool
 
     /// An impact of the parts named.
@@ -48,8 +48,8 @@
     /// The patch is in: presents the `changed` properties and arranges; `wasDescribed` is false the first time.
     func applied(changed: Set<Prop>, wasDescribed: Bool)
 
-    /// Presents one frame's `changed` properties and says what the frame asks of the parent.
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact
+    /// Presents one frame's `changed` properties; what that asks of the elements around it is the host layer's.
+    func presentFrame(_ changed: Set<Prop>)
 
     /// Places the element's children again.
     func arrangeChildren()

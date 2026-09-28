@@ -259,6 +259,32 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
     }
 
+    /// What a frame asks is the host layer's, the same on every host: a colour moved presents the element alone, a
+    /// width moved arranges its parent too, and a bar's colour moved composes the window's chrome again.
+    @MainActor
+    func testWhatAFrameAsksFollowsWhatMoved() {
+        let (tree, log) = Self.tree(viewless: [])
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [.width: .number(10)]
+        let bars = HostPatch(id: .manual("bars"), type: .navigationStack)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([label, bars])
+        tree.apply(stack, complete: true)
+        let (labelMount, barsMount) = (tree.root!.children[0].mount, tree.root!.children[1].mount)
+
+        log.arranged.removeAll()
+        let colour = tree.present(states: [:], properties: [labelMount: [.textColor]])
+        XCTAssertEqual(log.arranged, ["label"], "a colour moves the label alone")
+        XCTAssertFalse(colour.windowChrome)
+
+        log.arranged.removeAll()
+        tree.present(states: [:], properties: [labelMount: [.width]])
+        XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
+
+        let bar = tree.present(states: [:], properties: [barsMount: [.barBackgroundColor]])
+        XCTAssertTrue(bar.windowChrome, "a bar's colour is the window's chrome")
+    }
+
     /// A grid's and a ZStack's children stand in the order they are drawn: by `zIndex`, ties in the order
     /// written. A sparse change restacks them; a stack's children never overlap and keep the order written.
     @MainActor
@@ -609,9 +635,8 @@ private final class RecordingNative: NativeElement {
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
     func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ changed: Set<Prop>) {
         log.presentedWriting.append(ProgramWrite.isWriting)
-        return FrameImpact(content: true, arrangement: changed.contains(.width))
     }
     func arrangeChildren() { log.arranged.append(name) }
     func leave() { log.left.append(name) }

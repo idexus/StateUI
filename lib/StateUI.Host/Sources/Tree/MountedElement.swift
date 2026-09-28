@@ -359,7 +359,7 @@
             changed.insert(property)
         }
 
-        let own = changed.isEmpty ? FrameImpact.none : native.presentFrame(changed)
+        let own = changed.isEmpty ? FrameImpact.none : presentFrame(changed)
         var descendants = FrameImpact.none
 
         for child in children {
@@ -372,6 +372,19 @@
         guard native.presentsView else { return own.union(descendants) }
         descendants.arrangement = false
         return own.union(descendants)
+    }
+
+    /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own
+    /// presentation; its parent's arrangement where it moved in its slot or shows no view of its own, being drawn
+    /// by its parent's; the window's chrome where the chrome shows what moved.
+    /// Design: docs/design/host/runtime.md#one-frame
+    private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+        native.presentFrame(changed)
+        return FrameImpact(
+            content: true,
+            arrangement: !native.presentsView
+                || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties),
+            windowChrome: WindowChrome.follows(type))
     }
 
     /// The value `property` presents: a running animation's, else the described or bound one.

@@ -269,22 +269,8 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     /// Presents one display frame of this element's own changed properties.
-    func presentFrame(_ properties: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ properties: Set<Prop>) {
         applyProperties(changed: properties)
-
-        var impact = FrameImpact(content: true)
-        // An element without a native view - a span, a formatted string - is
-        // drawn by the nearest ancestor that has one, which arranges again. A
-        // layout's own placement run moves its children inside the room it
-        // already has, so it arranges the layout and not its parent.
-        let arranged = properties.subtracting(element.ownPlacementRun)
-        if view == nil || !arranged.isDisjoint(with: MountedElement.arrangedProperties) {
-            impact.arrangement = true
-        }
-        if needsWindowSynchronization(for: properties) {
-            impact.windowChrome = true
-        }
-        return impact
     }
 
 }

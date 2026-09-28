@@ -8,15 +8,6 @@ import AppKit
 
 /// The native view: made, and given the element's properties.
 extension AppKitElement {
-    /// Only properties whose native presentation lives outside the mounted
-    /// content view need the scene/window reconciliation path. Ordinary view
-    /// frames are already applied in place and AppKit lays them out before the
-    /// display link's frame is drawn.
-    func needsWindowSynchronization(for properties: Set<Prop>) -> Bool {
-        guard !properties.isEmpty else { return false }
-        return type == .window || type == .titleBar || type == .navigationStack
-    }
-
     func makeView() -> NSView? {
         if let registered = AppKitRegistrations.registry.makeView(
             for: type,

@@ -78,21 +78,13 @@ final class UIKitElement: NativeElement {
         host?.runtime.frames.follow(self, order: Int64(truncatingIfNeeded: element.mount), reads: readsFrame)
     }
 
-    func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
+    func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-
-        var impact = FrameImpact(content: true)
-        let arranged = changed.subtracting(element.ownPlacementRun)
-        if view == nil || !arranged.isDisjoint(with: MountedElement.arrangedProperties) {
-            impact.arrangement = true
-        }
-        // A bar's colours are the window's chrome, which its controller shows again; a tab bar takes them itself.
+        // A tab bar takes the bars' colours itself; the window's controller shows the rest of the chrome again.
         if !changed.isDisjoint(with: Self.barColors) {
             let colors = element.barColors
             (controller as? UIKitTabBarController)?.showColors(background: colors.background, foreground: colors.foreground)
-            impact.windowChrome = true
         }
-        return impact
     }
 
     private static let barColors: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
