@@ -1,4 +1,4 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 ActivityIndicator.accessibilityLabel: ✅
 ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.ignoresInput: not realized
@@ -14,14 +14,14 @@ Button.rotation: ✅
 Button.scaleX: ✅
 Button.zIndex: not realized
 Canvas.accessibilityHeadingLevel: ✅
-Canvas.focus: cannot focus Canvas: it takes no keyboard focus here
+Canvas.focus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.frameChanged: ✅
 Canvas.height: ✅
-Canvas.isFocusedChanged: cannot focus Canvas: it takes no keyboard focus here
+Canvas.isFocusedChanged: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.layoutDirection: not realized
 Canvas.rotationX: not realized
 Canvas.scaleY: ✅
-Canvas.unfocus: cannot focus Canvas: it takes no keyboard focus here
+Canvas.unfocus: – Canvas takes no keyboard focus here: it refuses it, and nothing is heard
 Canvas.width: ✅
 CheckBox.frameChanged: ✅
 CheckBox.isAccessibilityHidden: ✅
@@ -49,14 +49,14 @@ DatePicker.rotation: ✅
 DatePicker.scaleX: ✅
 DatePicker.zIndex: not realized
 Ellipse.accessibilityHeadingLevel: ✅
-Ellipse.focus: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.focus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
-Ellipse.isFocusedChanged: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.isFocusedChanged: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.layoutDirection: not realized
 Ellipse.rotationX: not realized
 Ellipse.scaleY: ✅
-Ellipse.unfocus: cannot focus Ellipse: it takes no keyboard focus here
+Ellipse.unfocus: – Ellipse takes no keyboard focus here: it refuses it, and nothing is heard
 Ellipse.width: ✅
 Grid.frameChanged: ✅
 Grid.isAccessibilityHidden: ✅
@@ -119,14 +119,14 @@ Map.rotation: not realized
 Map.scaleX: not realized
 Map.zIndex: not realized
 Path.accessibilityHeadingLevel: ✅
-Path.focus: cannot focus Path: it takes no keyboard focus here
+Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.frameChanged: ✅
 Path.height: ✅
-Path.isFocusedChanged: cannot focus Path: it takes no keyboard focus here
+Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.layoutDirection: not realized
 Path.rotationX: not realized
 Path.scaleY: ✅
-Path.unfocus: cannot focus Path: it takes no keyboard focus here
+Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.width: ✅
 Picker.frameChanged: ✅
 Picker.isAccessibilityHidden: ✅
@@ -189,14 +189,14 @@ Rectangle.rotation: ✅
 Rectangle.scaleX: ✅
 Rectangle.zIndex: not realized
 ScrollView.accessibilityHeadingLevel: ✅
-ScrollView.focus: cannot focus ScrollView: it takes no keyboard focus here
+ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
-ScrollView.isFocusedChanged: cannot focus ScrollView: it takes no keyboard focus here
+ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.layoutDirection: not realized
 ScrollView.rotationX: not realized
 ScrollView.scaleY: ✅
-ScrollView.unfocus: cannot focus ScrollView: it takes no keyboard focus here
+ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.width: ✅
 SearchField.frameChanged: ✅
 SearchField.isAccessibilityHidden: ✅

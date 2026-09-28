@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextField` / `NSSecureTextField` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UITextField` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `EditText` | a run of other sources said: ✅ |
-| WinUI 3 | ✅ | 66 ✅ | `TextBox` / `PasswordBox` |  |
+| WinUI 3 | ✅ | 68 ✅ | `TextBox` / `PasswordBox` |  |
 | GTK 4 |  |  | `GtkEntry` / `GtkPasswordEntry` | no run of it on these sources |
 | Web |  |  | `<input>` | no host yet |
 
@@ -128,7 +128,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
 | `isSpellCheckEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
 | `isTextPredictionEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
-| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read maximumLength of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read maximumLength of TextField - Android's driver has no path for it yet; WinUI 3: cannot read maximumLength of TextField - WinUI's text box holds no bound: the host cuts what is typed; typing proves it |
+| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read maximumLength of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read maximumLength of TextField - Android's driver has no path for it yet |
 | `placeholder` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read placeholder of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read placeholder of TextField - Android's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read placeholderColor of TextField - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read placeholderColor of TextField - Android's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read selectionLength of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read selectionLength of TextField - Android's driver has no path for it yet |
@@ -141,7 +141,7 @@ What every element showing words has: the words, and the case they are drawn in.
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read isPassword of TextField - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ waits on TextField.textCase; Android Views: a run of other sources said: ◐ cannot read isPassword of TextField - Android's driver has no path for it yet; WinUI 3: waits on TextField.isPassword |
-| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

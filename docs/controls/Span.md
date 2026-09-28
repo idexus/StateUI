@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextField` label; `NSAttributedString` runs | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UILabel`; `NSAttributedString` runs | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `TextView`; `SpannableString` spans | a run of other sources said: ✅ |
-| WinUI 3 | ✅ | 7 ✅ | `TextBlock`; `Run` inlines |  |
+| WinUI 3 | ✅ | 9 ✅ | `TextBlock`; `Run` inlines |  |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |
 
@@ -41,8 +41,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read text of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read text of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read text of Span - Android's driver has no path for it yet; WinUI 3: waits on Span.textCase |
-| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: · cannot read text of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read text of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read text of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read text of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read text of Span - Android's driver has no path for it yet |
+| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read text of Span - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read text of Span - UIKit's driver has no path for it yet; Android Views: a run of other sources said: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

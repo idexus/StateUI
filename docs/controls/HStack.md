@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | custom `NSView` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | custom `UIView` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | custom `ViewGroup` | a run of other sources said: ✅ |
-| WinUI 3 | ✅ | 54 ✅ | `StackPanel` |  |
+| WinUI 3 | ✅ | 56 ✅ · 3 – | `StackPanel` |  |
 | GTK 4 |  |  | `GtkBox` | no run of it on these sources |
 | Web |  |  | flexbox | no host yet |
 
@@ -44,13 +44,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: · cannot read background of HStack - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ✅ |
-| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | · |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: cannot focus HStack: it takes no keyboard focus here |
+| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | – |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read what reaches HStack - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
-| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | · |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: cannot focus HStack: it takes no keyboard focus here |
+| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | – |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
 | `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
@@ -69,7 +69,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: read translationX of HStack: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read translationX of HStack: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅ |
 | `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: read translationY of HStack: the host's own transform, checked against the layer it composed itself; UIKit: a run of other sources said: 🪞 only through the host's own: read translationY of HStack: the host's own transform, checked against the layer it composed itself; Android Views: a run of other sources said: ✅ |
-| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | · |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: cannot focus HStack: it takes no keyboard focus here |
+| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | – |  |  | a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; UIKit: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; Android Views: a run of other sources said: · cannot focus HStack: it takes no keyboard focus here; WinUI 3: HStack takes no keyboard focus here: it refuses it, and nothing is heard |
 | `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
 
@@ -128,7 +128,7 @@ What both stacks have: the space between their children.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `spacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read spacing of HStack - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read spacing of HStack - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read spacing of HStack - Android's driver has no path for it yet; WinUI 3: cannot read spacing of HStack - WinUI's panel places its children where StateUI's layout says; their frames prove it |
+| `spacing` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read spacing of HStack - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read spacing of HStack - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read spacing of HStack - Android's driver has no path for it yet |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -136,7 +136,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read padding of HStack - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read padding of HStack - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read padding of HStack - Android's driver has no path for it yet; WinUI 3: cannot read padding of HStack - WinUI's panel places its children where StateUI's layout says; their frames prove it |
+| `padding` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read padding of HStack - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read padding of HStack - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read padding of HStack - Android's driver has no path for it yet |
 
 ## From [BorderElement](tiers/BorderElement.md)
 

@@ -1,13 +1,13 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 ActivityIndicator.accessibilityHeadingLevel: ✅
-ActivityIndicator.focus: cannot focus ActivityIndicator: it takes no keyboard focus here
+ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
-ActivityIndicator.isFocusedChanged: cannot focus ActivityIndicator: it takes no keyboard focus here
+ActivityIndicator.isFocusedChanged: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.layoutDirection: not realized
 ActivityIndicator.rotationX: not realized
 ActivityIndicator.scaleY: ✅
-ActivityIndicator.unfocus: cannot focus ActivityIndicator: it takes no keyboard focus here
+ActivityIndicator.unfocus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.width: ✅
 Button.frameChanged: ✅
 Button.isAccessibilityHidden: ✅
@@ -35,14 +35,14 @@ CheckBox.rotation: ✅
 CheckBox.scaleX: ✅
 CheckBox.zIndex: not realized
 ColorBox.accessibilityHeadingLevel: ✅
-ColorBox.focus: cannot focus ColorBox: it takes no keyboard focus here
+ColorBox.focus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
-ColorBox.isFocusedChanged: cannot focus ColorBox: it takes no keyboard focus here
+ColorBox.isFocusedChanged: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.layoutDirection: not realized
 ColorBox.rotationX: not realized
 ColorBox.scaleY: ✅
-ColorBox.unfocus: cannot focus ColorBox: it takes no keyboard focus here
+ColorBox.unfocus: – ColorBox takes no keyboard focus here: it refuses it, and nothing is heard
 ColorBox.width: ✅
 DatePicker.frameChanged: ✅
 DatePicker.isAccessibilityHidden: ✅
@@ -70,14 +70,14 @@ Grid.rotation: ✅
 Grid.scaleX: ✅
 Grid.zIndex: not realized
 HStack.accessibilityHeadingLevel: ✅
-HStack.focus: cannot focus HStack: it takes no keyboard focus here
+HStack.focus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.frameChanged: ✅
 HStack.height: ✅
-HStack.isFocusedChanged: cannot focus HStack: it takes no keyboard focus here
+HStack.isFocusedChanged: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.layoutDirection: not realized
 HStack.rotationX: not realized
 HStack.scaleY: ✅
-HStack.unfocus: cannot focus HStack: it takes no keyboard focus here
+HStack.unfocus: – HStack takes no keyboard focus here: it refuses it, and nothing is heard
 HStack.width: ✅
 Image.frameChanged: ✅
 Image.isAccessibilityHidden: ✅
@@ -105,14 +105,14 @@ Label.rotation: ✅
 Label.scaleX: ✅
 Label.zIndex: not realized
 Line.accessibilityHeadingLevel: ✅
-Line.focus: cannot focus Line: it takes no keyboard focus here
+Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.frameChanged: ✅
 Line.height: ✅
-Line.isFocusedChanged: cannot focus Line: it takes no keyboard focus here
+Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.layoutDirection: not realized
 Line.rotationX: not realized
 Line.scaleY: ✅
-Line.unfocus: cannot focus Line: it takes no keyboard focus here
+Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
 Map.frameChanged: not realized
 Map.isAccessibilityHidden: not realized
@@ -140,14 +140,14 @@ Picker.rotation: ✅
 Picker.scaleX: ✅
 Picker.zIndex: not realized
 Polygon.accessibilityHeadingLevel: ✅
-Polygon.focus: cannot focus Polygon: it takes no keyboard focus here
+Polygon.focus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.frameChanged: ✅
 Polygon.height: ✅
-Polygon.isFocusedChanged: cannot focus Polygon: it takes no keyboard focus here
+Polygon.isFocusedChanged: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.layoutDirection: not realized
 Polygon.rotationX: not realized
 Polygon.scaleY: ✅
-Polygon.unfocus: cannot focus Polygon: it takes no keyboard focus here
+Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and nothing is heard
 Polygon.width: ✅
 Polyline.frameChanged: ✅
 Polyline.isAccessibilityHidden: ✅

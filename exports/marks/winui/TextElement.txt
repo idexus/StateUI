@@ -1,15 +1,15 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 Button.text: ✅
 Button.textCase: ✅
 Label.text: ✅
 Label.textCase: ✅
 RadioButton.text: ✅
 RadioButton.textCase: ✅
-SearchField.text: ◐ waits on SearchField.textCase
-SearchField.textCase: not realized
-Span.text: ◐ waits on Span.textCase
-Span.textCase: not realized
-TextEditor.text: ◐ waits on TextEditor.textCase
-TextEditor.textCase: not realized
-TextField.text: ◐ waits on TextField.textCase
-TextField.textCase: not realized
+SearchField.text: ✅
+SearchField.textCase: ✅
+Span.text: ✅
+Span.textCase: ✅
+TextEditor.text: ✅
+TextEditor.textCase: ✅
+TextField.text: ✅
+TextField.textCase: ✅

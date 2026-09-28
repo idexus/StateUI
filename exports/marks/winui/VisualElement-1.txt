@@ -1,4 +1,4 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isVisible: ✅
@@ -60,14 +60,14 @@ Ellipse.rotation: ✅
 Ellipse.scaleX: ✅
 Ellipse.zIndex: not realized
 Grid.accessibilityHeadingLevel: ✅
-Grid.focus: cannot focus Grid: it takes no keyboard focus here
+Grid.focus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.frameChanged: ✅
 Grid.height: ✅
-Grid.isFocusedChanged: cannot focus Grid: it takes no keyboard focus here
+Grid.isFocusedChanged: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.layoutDirection: not realized
 Grid.rotationX: not realized
 Grid.scaleY: ✅
-Grid.unfocus: cannot focus Grid: it takes no keyboard focus here
+Grid.unfocus: – Grid takes no keyboard focus here: it refuses it, and nothing is heard
 Grid.width: ✅
 HStack.frameChanged: ✅
 HStack.isAccessibilityHidden: ✅
@@ -95,14 +95,14 @@ ItemsView.rotation: ✅
 ItemsView.scaleX: ✅
 ItemsView.zIndex: not realized
 Label.accessibilityHeadingLevel: ✅
-Label.focus: cannot focus Label: it takes no keyboard focus here
+Label.focus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.frameChanged: ✅
 Label.height: ✅
-Label.isFocusedChanged: cannot focus Label: it takes no keyboard focus here
+Label.isFocusedChanged: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.layoutDirection: not realized
 Label.rotationX: not realized
 Label.scaleY: ✅
-Label.unfocus: cannot focus Label: it takes no keyboard focus here
+Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothing is heard
 Label.width: ✅
 Line.frameChanged: ✅
 Line.isAccessibilityHidden: ✅
@@ -165,14 +165,14 @@ PositionIndicator.rotation: not realized
 PositionIndicator.scaleX: not realized
 PositionIndicator.zIndex: not realized
 ProgressBar.accessibilityHeadingLevel: ✅
-ProgressBar.focus: cannot focus ProgressBar: it takes no keyboard focus here
+ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
-ProgressBar.isFocusedChanged: cannot focus ProgressBar: it takes no keyboard focus here
+ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.layoutDirection: not realized
 ProgressBar.rotationX: not realized
 ProgressBar.scaleY: ✅
-ProgressBar.unfocus: cannot focus ProgressBar: it takes no keyboard focus here
+ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.width: ✅
 RadioButton.frameChanged: ✅
 RadioButton.isAccessibilityHidden: ✅
@@ -270,14 +270,14 @@ TitleBar.rotation: not realized
 TitleBar.scaleX: not realized
 TitleBar.zIndex: not realized
 VStack.accessibilityHeadingLevel: ✅
-VStack.focus: cannot focus VStack: it takes no keyboard focus here
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.frameChanged: ✅
 VStack.height: ✅
-VStack.isFocusedChanged: cannot focus VStack: it takes no keyboard focus here
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.layoutDirection: not realized
 VStack.rotationX: not realized
 VStack.scaleY: ✅
-VStack.unfocus: cannot focus VStack: it takes no keyboard focus here
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 WebView.frameChanged: not realized
 WebView.isAccessibilityHidden: not realized

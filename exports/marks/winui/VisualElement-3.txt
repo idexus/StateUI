@@ -1,4 +1,4 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 ActivityIndicator.accessibilityHint: ✅
 ActivityIndicator.background: not realized
 ActivityIndicator.frame: ✅
@@ -77,14 +77,14 @@ HStack.rotation: ✅
 HStack.scaleX: ✅
 HStack.zIndex: not realized
 Image.accessibilityHeadingLevel: ✅
-Image.focus: cannot focus Image: it takes no keyboard focus here
+Image.focus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.frameChanged: ✅
 Image.height: ✅
-Image.isFocusedChanged: cannot focus Image: it takes no keyboard focus here
+Image.isFocusedChanged: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.layoutDirection: not realized
 Image.rotationX: not realized
 Image.scaleY: ✅
-Image.unfocus: cannot focus Image: it takes no keyboard focus here
+Image.unfocus: – Image takes no keyboard focus here: it refuses it, and nothing is heard
 Image.width: ✅
 ItemsView.frameChanged: ✅
 ItemsView.isAccessibilityHidden: ✅
@@ -147,14 +147,14 @@ Polygon.rotation: ✅
 Polygon.scaleX: ✅
 Polygon.zIndex: not realized
 Polyline.accessibilityHeadingLevel: ✅
-Polyline.focus: cannot focus Polyline: it takes no keyboard focus here
+Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.frameChanged: ✅
 Polyline.height: ✅
-Polyline.isFocusedChanged: cannot focus Polyline: it takes no keyboard focus here
+Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.layoutDirection: not realized
 Polyline.rotationX: not realized
 Polyline.scaleY: ✅
-Polyline.unfocus: cannot focus Polyline: it takes no keyboard focus here
+Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 PositionIndicator.frameChanged: not realized
 PositionIndicator.isAccessibilityHidden: not realized
@@ -182,14 +182,14 @@ RadioButton.rotation: ✅
 RadioButton.scaleX: ✅
 RadioButton.zIndex: not realized
 Rectangle.accessibilityHeadingLevel: ✅
-Rectangle.focus: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
-Rectangle.isFocusedChanged: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.isFocusedChanged: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.layoutDirection: not realized
 Rectangle.rotationX: not realized
 Rectangle.scaleY: ✅
-Rectangle.unfocus: cannot focus Rectangle: it takes no keyboard focus here
+Rectangle.unfocus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard
 Rectangle.width: ✅
 ScrollView.frameChanged: ✅
 ScrollView.isAccessibilityHidden: ✅
@@ -287,12 +287,12 @@ WebView.rotation: not realized
 WebView.scaleX: not realized
 WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: ✅
-ZStack.focus: cannot focus ZStack: it takes no keyboard focus here
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.frameChanged: ✅
 ZStack.height: ✅
-ZStack.isFocusedChanged: cannot focus ZStack: it takes no keyboard focus here
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.layoutDirection: not realized
 ZStack.rotationX: not realized
 ZStack.scaleY: ✅
-ZStack.unfocus: cannot focus ZStack: it takes no keyboard focus here
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.width: ✅

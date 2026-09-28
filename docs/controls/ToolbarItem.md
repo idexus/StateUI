@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow | a run of other sources said: 🪞 only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | UIKit | ⌛ |  | `UIBarButtonItem` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `Toolbar` `MenuItem` | a run of other sources said: · cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ | 6 ✅ | `CommandBar` `AppBarButton` |  |
+| WinUI 3 | ✅ | 7 ✅ | `CommandBar` `AppBarButton` |  |
 | GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
@@ -43,7 +43,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClicked` (`clicked`) | event |  | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| `icon` | property | `ImageSource` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: · cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read icon of ToolbarItem - Android's driver has no path for it yet; WinUI 3: not realized |
+| `icon` | property | `ImageSource` | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read icon of ToolbarItem - Android's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet; WinUI 3: not realized |
 | `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot activate on ToolbarItem - Android's driver has no path for it yet |
 | `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read text of ToolbarItem - Android's driver has no path for it yet |

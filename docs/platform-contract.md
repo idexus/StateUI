@@ -441,41 +441,41 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
 | [Button](controls/Button.md) | 86 |  |  |  | 66 ✅ |  |  |
-| [Canvas](controls/Canvas.md) | 70 |  |  |  | 52 ✅ |  |  |
+| [Canvas](controls/Canvas.md) | 70 |  |  |  | 52 ✅ · 3 – |  |  |
 | [CheckBox](controls/CheckBox.md) | 69 |  |  |  | 56 ✅ |  |  |
-| [ColorBox](controls/ColorBox.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
 | [DatePicker](controls/DatePicker.md) | 80 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
-| [Ellipse](controls/Ellipse.md) | 76 |  |  |  | 56 ✅ |  |  |
-| [Grid](controls/Grid.md) | 77 |  |  |  | 58 ✅ |  |  |
-| [HStack](controls/HStack.md) | 74 |  |  |  | 54 ✅ |  |  |
-| [Image](controls/Image.md) | 69 |  |  |  | 50 ✅ |  |  |
+| [Ellipse](controls/Ellipse.md) | 76 |  |  |  | 58 ✅ · 3 – |  |  |
+| [Grid](controls/Grid.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
+| [HStack](controls/HStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
+| [Image](controls/Image.md) | 69 |  |  |  | 50 ✅ · 3 – |  |  |
 | [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 60 ✅ |  |  |
-| [Label](controls/Label.md) | 81 |  |  |  | 61 ✅ |  |  |
-| [Line](controls/Line.md) | 80 |  |  |  | 60 ✅ |  |  |
+| [Label](controls/Label.md) | 81 |  |  |  | 61 ✅ · 3 – |  |  |
+| [Line](controls/Line.md) | 80 |  |  |  | 62 ✅ · 3 – |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
-| [Path](controls/Path.md) | 77 |  |  |  | 57 ✅ |  |  |
+| [Path](controls/Path.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
 | [Picker](controls/Picker.md) | 82 |  |  |  | 65 ✅ |  |  |
-| [Polygon](controls/Polygon.md) | 78 |  |  |  | 58 ✅ |  |  |
-| [Polyline](controls/Polyline.md) | 78 |  |  |  | 58 ✅ |  |  |
+| [Polygon](controls/Polygon.md) | 78 |  |  |  | 60 ✅ · 3 – |  |  |
+| [Polyline](controls/Polyline.md) | 78 |  |  |  | 60 ✅ · 3 – |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 68 |  |  |  | 50 ✅ |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
 | [RadioButton](controls/RadioButton.md) | 81 |  |  |  | 63 ✅ |  |  |
-| [Rectangle](controls/Rectangle.md) | 77 |  |  |  | 57 ✅ |  |  |
-| [ScrollView](controls/ScrollView.md) | 77 |  |  |  | 59 ✅ |  |  |
-| [SearchField](controls/SearchField.md) | 89 |  |  |  | 58 ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
+| [ScrollView](controls/ScrollView.md) | 77 |  |  |  | 60 ✅ · 3 – |  |  |
+| [SearchField](controls/SearchField.md) | 89 |  |  |  | 63 ✅ |  |  |
 | [Slider](controls/Slider.md) | 73 |  |  |  | 57 ✅ |  |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  |  | 57 ✅ |  |  |
 | [Switch](controls/Switch.md) | 69 |  |  |  | 56 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 66 ✅ |  |  |
-| [TextField](controls/TextField.md) | 90 |  |  |  | 66 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 70 ✅ |  |  |
+| [TextField](controls/TextField.md) | 90 |  |  |  | 68 ✅ |  |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 74 |  |  |  | 54 ✅ |  |  |
+| [VStack](controls/VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](controls/ZStack.md) | 73 |  |  |  | 54 ✅ |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1729 of 2591 met |  |  |
+| [ZStack](controls/ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1810 of 2591 met |  |  |
 
 ### Application structure
 
@@ -495,16 +495,16 @@ Every control, and every part an application, its windows and its pages are made
 | [Page](controls/Page.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 |  |  |  | 6 ✅ |  |  |
-| [Span](controls/Span.md) | 12 |  |  |  | 7 ✅ |  |  |
+| [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](controls/SplitView.md) | 5 |  |  |  | 4 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 |  |  |  | 4 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  | 6 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 |  |  |  | 7 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 |  |  |  | 23 ✅ |  |  |
-| **Met** - ✅ and – | 104 |  |  |  | 80 of 104 met |  |  |
+| **Met** - ✅ and – | 104 |  |  |  | 83 of 104 met |  |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -580,7 +580,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  | 5 ✅ |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  | 2 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 |  |  |  | 2 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  |  |  |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  | 1 ✅ |  |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 |  |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  |  |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  |  |  |  |

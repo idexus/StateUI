@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSTextView` in an `NSScrollView` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UITextView` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | multi-line `EditText` | a run of other sources said: ✅ |
-| WinUI 3 | ✅ | 66 ✅ | multi-line `TextBox` |  |
+| WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 |  |  | `GtkTextView` | no run of it on these sources |
 | Web |  |  | `<textarea>` | no host yet |
 
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `growsWithText` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read growsWithText of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read growsWithText of TextEditor - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read growsWithText of TextEditor - Android's driver has no path for it yet; WinUI 3: cannot read growsWithText of TextEditor - an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it |
+| `growsWithText` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read growsWithText of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ◐ cannot read growsWithText of TextEditor - UIKit's driver has no path for it yet; Android Views: a run of other sources said: ◐ cannot read growsWithText of TextEditor - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -125,7 +125,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
 | `isSpellCheckEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read isSpellCheckEnabled of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
 | `isTextPredictionEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read isTextPredictionEnabled of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: not realized |
-| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ cannot read maximumLength of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read maximumLength of TextEditor - Android's driver has no path for it yet; WinUI 3: cannot read maximumLength of TextEditor - WinUI's text box holds no bound: the host cuts what is typed; typing proves it |
+| `maximumLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ cannot read maximumLength of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ◐ cannot read maximumLength of TextEditor - Android's driver has no path for it yet |
 | `placeholder` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read placeholder of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read placeholder of TextEditor - Android's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read placeholderColor of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: · cannot read placeholderColor of TextEditor - UIKit's driver has no path for it yet; Android Views: a run of other sources said: · cannot read placeholderColor of TextEditor - Android's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: · cannot read selectionLength of TextEditor - AppKit's driver has no path for it yet; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: · cannot read selectionLength of TextEditor - Android's driver has no path for it yet |
@@ -137,8 +137,8 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ◐ |  |  | a run of other sources said: ◐ waits on TextEditor.textCase; UIKit: a run of other sources said: ◐ waits on TextEditor.textCase; Android Views: a run of other sources said: ◐ waits on TextEditor.isReadOnly; WinUI 3: waits on TextEditor.textCase |
-| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized; WinUI 3: not realized |
+| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ◐ waits on TextEditor.textCase; UIKit: a run of other sources said: ◐ waits on TextEditor.textCase; Android Views: a run of other sources said: ◐ waits on TextEditor.isReadOnly |
+| `textCase` | property | `TextCase` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 

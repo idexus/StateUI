@@ -1,15 +1,15 @@
-# inputs e0630117caf2bc35b76d2d3528de507256555be6
+# inputs 3432f1f6ed17ffde0e7a2d06da00a0038756a51c
 SearchField.cursorPosition: not realized
 SearchField.inputPurpose: not realized
-SearchField.isEnabled: waits on SearchField.isReadOnly
-SearchField.isReadOnly: not realized
+SearchField.isEnabled: ✅
+SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: not realized
 SearchField.isTextPredictionEnabled: not realized
-SearchField.maximumLength: ◐ cannot read maximumLength of SearchField - WinUI's search box holds no bound: the host cuts what is typed; typing proves it
+SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
 SearchField.placeholderColor: not realized
 SearchField.selectionLength: not realized
-SearchField.text: ◐ waits on SearchField.isReadOnly
+SearchField.text: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
 TextEditor.inputPurpose: ✅
@@ -17,7 +17,7 @@ TextEditor.isEnabled: ✅
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
-TextEditor.maximumLength: ◐ cannot read maximumLength of TextEditor - WinUI's text box holds no bound: the host cuts what is typed; typing proves it
+TextEditor.maximumLength: ✅
 TextEditor.placeholder: ✅
 TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
@@ -29,7 +29,7 @@ TextField.isEnabled: ✅
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
-TextField.maximumLength: ◐ cannot read maximumLength of TextField - WinUI's text box holds no bound: the host cuts what is typed; typing proves it
+TextField.maximumLength: ✅
 TextField.placeholder: ✅
 TextField.placeholderColor: ✅
 TextField.selectionLength: ✅
