@@ -66,6 +66,7 @@ enum WinUIRealization {
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
+        .complete("ToolbarItem", "icon"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),

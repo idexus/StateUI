@@ -397,12 +397,18 @@ extension WinUIDriver {
         case "isEnabled": return (!row[index].hasPrefix("!")).propValue
         case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
         case "priority": return index.propValue
-        case "accessibilityIdentifier":
-            let rows = try read(window().titleBar, "actionIdentifiers").split(separator: "|", omittingEmptySubsequences: false)
-            let identifiers = (row == bar ? rows.first : rows.last).map {
+        case "accessibilityIdentifier", "icon":
+            let read = name == "icon" ? "actionIcons" : "actionIdentifiers"
+            let rows = try self.read(window().titleBar, read).split(separator: "|", omittingEmptySubsequences: false)
+            let values = (row == bar ? rows.first : rows.last).map {
                 $0.split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             } ?? []
-            return identifiers.indices.contains(index) ? .string(identifiers[index]) : nil
+            guard values.indices.contains(index) else { return nil }
+            guard name == "icon" else { return .string(values[index]) }
+            // The file shown is the picture the tree named where it is one of the files that name stands for.
+            let named = element.value(.icon)?.string ?? ""
+            let shown = values[index]
+            return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
         default: return nil
         }
     }

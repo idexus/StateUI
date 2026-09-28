@@ -152,8 +152,8 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 }
 
 extern "C" void stateui_winui_title_bar_set_actions(
-    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, bool const *overflows,
-    bool const *enabled, int32_t count
+    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
+    bool const *overflows, bool const *enabled, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -167,6 +167,15 @@ extern "C" void stateui_winui_title_bar_set_actions(
             button.IsEnabled(enabled[index]);
             if (identifiers[index] && *identifiers[index]) {
                 xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifiers[index]));
+            }
+            // An action with a picture shows the picture alone; its words name it to Narrator and in its tip.
+            if (auto file = pictureFile(icons[index]); !file.empty()) {
+                controls::ImageIcon icon;
+                icon.Source(pictureSource(file));
+                icon.Tag(winrt::box_value(winrt::hstring(file)));
+                button.Icon(icon);
+                button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
+                controls::ToolTipService::SetToolTip(button, winrt::box_value(text(texts[index])));
             }
             button.Click([view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);

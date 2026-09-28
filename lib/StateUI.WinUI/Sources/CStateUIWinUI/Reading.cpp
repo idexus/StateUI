@@ -201,6 +201,21 @@ namespace {
             };
             return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
         }
+        if (what == "actionIcons") {
+            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
+            auto listed = [](auto const &commands) {
+                std::string files;
+                for (auto const &command : commands) {
+                    auto button = command.template try_as<controls::AppBarButton>();
+                    if (!button) continue;
+                    auto icon = button.Icon().template try_as<controls::ImageIcon>();
+                    auto file = icon && icon.Tag() ? winrt::unbox_value<winrt::hstring>(icon.Tag()) : winrt::hstring();
+                    files += (files.empty() ? "" : ";") + narrow(file);
+                }
+                return files;
+            };
+            return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
+        }
         if (what == "actionIdentifiers") {
             auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
             auto listed = [](auto const &commands) {

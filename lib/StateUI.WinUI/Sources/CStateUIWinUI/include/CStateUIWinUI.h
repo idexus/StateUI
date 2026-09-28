@@ -661,9 +661,12 @@ StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool back, bool paneToggle,
                                  bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground,
                                  int32_t words);
+/// The page's actions on a window's chrome: each one's words, the identifier automation finds it by (empty for
+/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether it stands in the
+/// overflow, and whether it can be chosen.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
-                                         char const *const *identifiers, bool const *overflows, bool const *enabled,
-                                         int32_t count);
+                                         char const *const *identifiers, char const *const *icons,
+                                         bool const *overflows, bool const *enabled, int32_t count);
 
 /// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);

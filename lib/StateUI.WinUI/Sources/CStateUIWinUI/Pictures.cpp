@@ -142,6 +142,26 @@ namespace {
     }
 }
 
+std::wstring stateui::pictureFile(char const *names) {
+    std::string_view left(names ? names : "");
+    while (!left.empty()) {
+        auto end = left.find('\n');
+        auto name = left.substr(0, end);
+        std::wstring each(winrt::to_hstring(name).c_str());
+        if (!each.empty() && exists(pictures() + each)) return each;
+        if (end == std::string_view::npos) break;
+        left.remove_prefix(end + 1);
+    }
+    return {};
+}
+
+xaml::Media::ImageSource stateui::pictureSource(std::wstring const &file) {
+    auto path = pictures() + file;
+    auto dot = file.find_last_of(L'.');
+    if (dot != std::wstring::npos && file.substr(dot) == L".svg") return drawing(contents(path));
+    return imaging::BitmapImage(address(path));
+}
+
 extern "C" void stateui_winui_set_pictures(char const *utf8) {
     try {
         folder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();
@@ -177,11 +197,9 @@ extern "C" bool stateui_winui_image_set(
         image.ClearValue(xaml::FrameworkElement::HeightProperty());
 
         // The first of the files the name stands for that the pictures hold.
-        std::wstring file;
-        for (int32_t index = 0; index < count && file.empty(); ++index) {
-            std::wstring each(winrt::to_hstring(std::string_view(names[index] ? names[index] : "")).c_str());
-            if (!each.empty() && exists(pictures() + each)) file = each;
-        }
+        std::string listed;
+        for (int32_t index = 0; index < count; ++index) listed += std::string(names[index] ? names[index] : "") + "\n";
+        auto file = pictureFile(listed.c_str());
         auto named = count > 0 && names[0] && *names[0];
         image.Tag(winrt::box_value(winrt::hstring(file)));
         if (file.empty()) {

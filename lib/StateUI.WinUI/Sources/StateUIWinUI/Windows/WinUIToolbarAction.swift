@@ -7,10 +7,12 @@ struct WinUIToolbarAction {
     let title: String
     let isEnabled: Bool
     var identifier: String?
+    /// The files its picture may stand in, in order (`PictureArithmetic.files`); none for words alone.
+    var icon: [String] = []
     let perform: () -> Void
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
-        title == other.title && isEnabled == other.isEnabled && identifier == other.identifier
+        title == other.title && isEnabled == other.isEnabled && identifier == other.identifier && icon == other.icon
     }
 }

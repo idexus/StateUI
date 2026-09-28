@@ -52,6 +52,13 @@ namespace stateui {
     /// Reads the control's theme again, so its template takes the resources written into the control.
     void readThemeAgain(xaml::FrameworkElement const &control);
 
+    /// The first of the files `names` - UTF-8, each ended by a line feed - that the application's pictures hold;
+    /// empty for none.
+    std::wstring pictureFile(char const *names);
+
+    /// A source drawing the application's picture `file` - a bitmap, or an SVG - at its own proportions.
+    xaml::Media::ImageSource pictureSource(std::wstring const &file);
+
     /// Paints a panel clear while its view listens for the user or offers a context menu, so it is hit across its
     /// bounds and not only where its children stand; takes that away once neither holds. An author's background
     /// stays.
