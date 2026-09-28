@@ -86,6 +86,24 @@ final class WinUIGesturesTests: XCTestCase {
             XCTAssertEqual(row.hearing, [])
         }
     }
+
+    /// A view that stops listening keeps its handlers until the event running is over, and they come off once the
+    /// thread's queue runs. WinUI raising a routed event reads the element's list of handlers after each one
+    /// returns: a tap that closes what was tapped - the inspector's ✕ - took them off under it, and XAML read past
+    /// the list's end and crashed the application.
+    func testAViewThatStopsListeningLetsTheEventRunningEnd() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { TapsPage(count: 1) }
+            let row = try XCTUnwrap(host.views(WinUIStackView.self).dropFirst().first)
+            let hung = stateui_winui_hung_handlers()
+
+            row.hear([]) { _ in }
+
+            XCTAssertEqual(stateui_winui_hung_handlers(), hung, "taken off inside the call that stopped the listening")
+            host.settle { stateui_winui_hung_handlers() == hung - 1 }
+            XCTAssertEqual(stateui_winui_hung_handlers(), hung - 1, "never taken off")
+        }
+    }
 }
 
 private extension WinUIRenderer {

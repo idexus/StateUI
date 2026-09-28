@@ -16,7 +16,13 @@ user does with a finger](../../host/runtime.md#what-the-user-does-with-a-finger)
 The relay takes what a view listens for in the host layer's own bits, and
 hangs its handlers on the element once, each naming the view by its number,
 and each asks what the view listens for as it runs; a view that stops
-listening, or leaves the tree, takes them off again.
+listening, or leaves the tree, takes them off again once the event running
+is over. WinUI raising a routed event reads the element's list of handlers
+after each one returns, and a handler that renders runs the whole turn
+inside the event: a tap that closes what was tapped - an inspector's close -
+would take the handlers off under the list being read, and XAML reads past
+its end. Until they come off, each asks what the view listens for and
+answers nothing.
 
 A panel draws nothing between its children, and WinUI hits nothing there. A
 panel with no background of its own is painted clear while it listens or

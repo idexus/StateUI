@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include <winrt/Windows.UI.h>
+#include <winrt/Microsoft.UI.Dispatching.h>
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Peers.h>
 #include <winrt/Microsoft.UI.Xaml.Automation.Provider.h>
@@ -44,6 +45,10 @@ namespace {
     };
 
     std::unordered_map<int64_t, Listening> listening;
+
+    /// How many sets of handlers hang on elements: each listening view's, and a view's that stopped listening, until
+    /// they come off.
+    int32_t hung = 0;
 
     Listening *listener(int64_t view, uint32_t what) {
         auto found = listening.find(view);
@@ -160,6 +165,7 @@ namespace {
             [view](IInspectable const &sender, input::ManipulationCompletedRoutedEventArgs const &args) {
                 if (listener(view, StateUIHearingPinches)) tell(view, StateUIHeardPinch, 2, shares(sender, args.Position()), 1);
             });
+        ++hung;
     }
 
     void unhook(xaml::UIElement const &element, Listening const &entry) {
@@ -175,7 +181,19 @@ namespace {
         element.ManipulationStarted(entry.started);
         element.ManipulationDelta(entry.delta);
         element.ManipulationCompleted(entry.completed);
+        --hung;
+    }
+
+    /// Takes a view's handlers off its element once the event running now is over: WinUI raising a routed event
+    /// reads the element's list of handlers after each one returns, and a list shortened inside one - a tap that
+    /// closes what was tapped - is read past its end. Until then each asks what the view listens for, and answers
+    /// nothing.
+    /// Design: docs/design/platforms/winui/input.md#listening
+    void unhookLater(xaml::UIElement const &element, Listening const &entry) {
         element.ManipulationMode(input::ManipulationModes::System);
+        winrt::Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread().TryEnqueue([element, entry] {
+            unhook(element, entry);
+        });
     }
 
     /// The clear brush a panel is painted with to be hit, told from an author's by being this one.
@@ -211,7 +229,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         auto found = listening.find(view);
         if (!hearing) {
             if (found == listening.end()) return;
-            unhook(element, found->second);
+            unhookLater(element, found->second);
             listening.erase(found);
             holdHitArea(element, view);
             return;
@@ -335,6 +353,10 @@ extern "C" void stateui_winui_hear_focus(StateUIObjectRef handle, int64_t view, 
     } catch (...) {
         report("hearing an element's focus");
     }
+}
+
+extern "C" int32_t stateui_winui_hung_handlers(void) {
+    return hung;
 }
 
 extern "C" int32_t stateui_winui_listeners(void) {

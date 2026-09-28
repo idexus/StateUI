@@ -731,6 +731,10 @@ void stateui_winui_hear_focus(StateUIObjectRef element, int64_t view, bool heari
 /// How many views listen for the user's input - what a test counts to see every one stop.
 int32_t stateui_winui_listeners(void);
 
+/// How many sets of input handlers hang on elements - a view that stopped listening keeps its set until the event
+/// running is over - what a test counts.
+int32_t stateui_winui_hung_handlers(void);
+
 /// What assistive technology meets of the element: its automation id, name and help text - null for the control's
 /// own - its heading level (0 none, 1 to 9), and `presence`: 0 as the control is of itself, 1 met, 2 skipped, 3
 /// skipped with every part its template draws.
