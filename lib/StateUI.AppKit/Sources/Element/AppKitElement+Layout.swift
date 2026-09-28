@@ -21,7 +21,7 @@ extension AppKitElement {
                 horizontalAlignment: textAlignment(enumeration(.horizontalTextAlignment)),
                 verticalAlignment: AppKitVerticalTextAlignment(
                     rawValue: enumeration(.verticalTextAlignment) ?? 0) ?? .start,
-                lineBreakMode: lineBreakMode(enumeration(.lineBreak)),
+                breaking: lineBreak,
                 maximumNumberOfLines: maximumLines())
             return
         }

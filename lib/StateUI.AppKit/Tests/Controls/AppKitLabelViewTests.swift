@@ -195,7 +195,7 @@ final class AppKitLabelViewTests: XCTestCase {
             padding: NSEdgeInsets(top: 6, left: 4, bottom: 10, right: 8),
             horizontalAlignment: .left,
             verticalAlignment: .end,
-            lineBreakMode: .byClipping,
+            breaking: .noWrap,
             maximumNumberOfLines: 1)
 
         view.layoutSubtreeIfNeeded()
@@ -214,7 +214,7 @@ final class AppKitLabelViewTests: XCTestCase {
             padding: NSEdgeInsets(top: 2, left: 5, bottom: 3, right: 7),
             horizontalAlignment: .left,
             verticalAlignment: .start,
-            lineBreakMode: .byWordWrapping,
+            breaking: .wordWrap,
             maximumNumberOfLines: 0)
 
         let measured = view.fittingContentSize(width: 300)
@@ -239,7 +239,7 @@ final class AppKitLabelViewTests: XCTestCase {
             padding: NSEdgeInsets(),
             horizontalAlignment: .left,
             verticalAlignment: .start,
-            lineBreakMode: .byWordWrapping,
+            breaking: .wordWrap,
             maximumNumberOfLines: 2)
 
         XCTAssertEqual(view.fittingContentSize(width: 100).height, 60, accuracy: 1)

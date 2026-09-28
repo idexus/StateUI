@@ -51,8 +51,7 @@ extension AppKitRegistrations {
                 let strokeWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.strokeWidth])
                 let strokeColor = strokeWidth > 0 ? AppKitBrush(stroke).lineColor : nil
-                let breaking: NSLineBreakMode = Self.lineBreakMode(
-                    values[ButtonContract.lineBreak] ?? .wordWrap)
+                let breaking = NSLineBreakMode(values[ButtonContract.lineBreak] ?? .wordWrap)
 
                 view.apply(
                     text: caption,
@@ -94,18 +93,6 @@ extension AppKitRegistrations {
         case .stretch: .scaleAxesIndependently
         case .center: .scaleNone
         case .fit, .fill: .scaleProportionallyUpOrDown
-        }
-    }
-
-    /// How a caption too long for its room is broken.
-    private static func lineBreakMode(_ mode: LineBreak) -> NSLineBreakMode {
-        switch mode {
-        case .noWrap: .byClipping
-        case .wordWrap: .byWordWrapping
-        case .characterWrap: .byCharWrapping
-        case .headTruncation: .byTruncatingHead
-        case .tailTruncation: .byTruncatingTail
-        case .middleTruncation: .byTruncatingMiddle
         }
     }
 }

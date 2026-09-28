@@ -297,8 +297,7 @@ extension AppKitElement {
 
     /// The most lines a label's words stand on, by the host layer's rule; none for no bound.
     func maximumLines() -> Int {
-        let breaking = value(.lineBreak)?.enumeration.flatMap(LineBreak.init(rawValue:)) ?? .wordWrap
-        return breaking.lines(maximum: whole(.maximumLines)) ?? 0
+        lineBreak.lines(maximum: whole(.maximumLines)) ?? 0
     }
 
     func color(_ property: Prop) -> NSColor? {
@@ -341,15 +340,22 @@ extension AppKitElement {
         appKitTextAlignment(value)
     }
 
-    func lineBreakMode(_ mode: Int32?) -> NSLineBreakMode {
-        switch mode {
-        case 0: return .byClipping
-        case 1: return .byWordWrapping
-        case 2: return .byCharWrapping
-        case 3: return .byTruncatingHead
-        case 4: return .byTruncatingTail
-        case 5: return .byTruncatingMiddle
-        default: return .byWordWrapping
+    /// How the element's words break, as the tree says; word wrapping where it says nothing.
+    var lineBreak: LineBreak {
+        enumeration(.lineBreak).flatMap(LineBreak.init(rawValue:)) ?? .wordWrap
+    }
+}
+
+extension NSLineBreakMode {
+    /// AppKit's break for StateUI's.
+    init(_ breaking: LineBreak) {
+        self = switch breaking {
+        case .noWrap: .byClipping
+        case .wordWrap: .byWordWrapping
+        case .characterWrap: .byCharWrapping
+        case .headTruncation: .byTruncatingHead
+        case .tailTruncation: .byTruncatingTail
+        case .middleTruncation: .byTruncatingMiddle
         }
     }
 }
