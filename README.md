@@ -13,14 +13,16 @@
 identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
-Every host is Swift, in the application's own process. Two are active, AppKit
-and Android Views; WinUI 3 is built control by control, and GTK 4 with
-libadwaita has its first controls; UIKit follows, on the same host contract.
-Web DOM/CSS comes after the native contract is settled.
+Every host is Swift, in the application's own process, and all five native
+hosts are active on the same host contract: AppKit, UIKit, GTK 4 with
+libadwaita, Android Views and WinUI 3. What each realizes, element by element
+and member by member, is the [platform contract](docs/platform-contract.md),
+rendered from each host's own test run. Web DOM/CSS comes after the native
+contract is settled.
 
 | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| ☑️ | — | — | ☑️ | — | — |
+| ☑️ | ☑️ | ☑️ | ☑️ | ☑️ | — |
 
 ## In Action
 
