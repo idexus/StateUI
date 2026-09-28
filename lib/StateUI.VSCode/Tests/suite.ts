@@ -22,6 +22,7 @@ import { availableHosts, environment, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { inAppsCommand, nameProblem } from "../Sources/newApplication";
 import { reinstallSteps } from "../Sources/reinstall";
+import { rebuildSteps } from "../Sources/conformance";
 
 const started = Date.now();
 
@@ -491,6 +492,29 @@ export async function run(): Promise<void> {
                 && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
                 && steps[1].command === "/Editor/bin/code"
                 && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
+        }
+        // 7c. The chosen host's marks are made again - every family, or the stale ones - then the documents rendered,
+        //     from a checkout alone.
+        {
+            const checkout = root.uri.fsPath;
+            const all = rebuildSteps(checkout, "winui", "all");
+            const changed = rebuildSteps(checkout, "winui", "changed");
+            const appKit = rebuildSteps(checkout, "appkit", "changed");
+            const manifest = JSON.parse(fs.readFileSync(path.join(checkout, "lib", "StateUI.VSCode", "package.json"), "utf8"));
+            const hidden = (command: string): boolean => manifest.contributes.menus.commandPalette
+                .some((each: { command: string; when?: string }) => each.command === command && each.when === "stateui.hasCheckout");
+            check("Conformance - Rebuild all and Rebuild changed run the host's families writing their verdicts, then render the documents",
+                commands.includes("stateui.conformanceRebuildAll") && commands.includes("stateui.conformanceRebuildChanged")
+                && all?.length === 2 && all[0].args.slice(-1)[0] === "-Conformance" && all[0].env.STATEUI_UPDATE_EXPORTS === "1"
+                && changed?.[0].args.slice(-1)[0] === "-Stale"
+                && appKit?.[0].args.slice(-2).join(" ") === "--filter AppKitConformanceTests" && appKit[0].env.STATEUI_STALE_ONLY === "1"
+                && all[1].command === "swift" && all[1].args.join(" ") === "test --filter ControlDictionaryTests"
+                && all[1].env.STATEUI_UPDATE_DOCS === "1"
+                && rebuildSteps(checkout, "android", "changed", "serial") === undefined
+                && rebuildSteps(checkout, "uikit", "all") === undefined);
+            check("the conformance rebuilds and the reinstall show in a StateUI checkout alone",
+                hidden("stateui.conformanceRebuildAll") && hidden("stateui.conformanceRebuildChanged")
+                && hidden("stateui.reinstallExtension"));
         }
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.

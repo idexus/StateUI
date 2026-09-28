@@ -125,6 +125,19 @@ them AS THE HOST, one after another, each in a terminal of its own:
 A failure does not stop the suites after it; the summary names the ones that
 failed.
 
+## The conformance marks
+
+In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
+conformance family as the host chosen, writing its verdicts into
+`exports/marks/<host>`, then renders the control dictionary and
+`docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
+changed** does the same for the families whose verdicts stand at another
+revision than `.scripts/Marks/revisions.txt` says, or have none; every other
+family's run ends at once. UIKit runs on the simulator chosen and Android on
+the device chosen, where Android rebuilds all only, its device reading no
+repository. Neither command shows outside a checkout: an application's
+workspace holds no marks.
+
 ## The index
 
 The Swift language server indexes each application in a directory of the host's

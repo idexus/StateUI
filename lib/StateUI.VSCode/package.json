@@ -70,6 +70,18 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.conformanceRebuildAll",
+        "title": "Conformance - Rebuild all",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
+        "command": "stateui.conformanceRebuildChanged",
+        "title": "Conformance - Rebuild changed",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
         "command": "stateui.cleanIndex",
         "title": "Clean Index",
         "category": "StateUI"
@@ -172,6 +184,14 @@
         },
         {
           "command": "stateui.reinstallExtension",
+          "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.conformanceRebuildAll",
+          "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.conformanceRebuildChanged",
           "when": "stateui.hasCheckout"
         }
       ]
