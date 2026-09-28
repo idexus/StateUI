@@ -157,7 +157,7 @@ final class GTKListening {
 
     private func makeDrag() -> OpaquePointer {
         let drag = gtk_gesture_drag_new()!
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { gesture, _, _, data in
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, _: Double, _: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
             MainActor.assumeIsolated { GTKListening.find(number)?.dragBegan(OpaquePointer(gesture)) }
@@ -169,7 +169,7 @@ final class GTKListening {
                 GTKListening.find(number)?.dragUpdated(OpaquePointer(gesture), offset: Point(x: x, y: y))
             }
         }
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-end", number: number) { gesture, _, _, data in
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-end", number: number) { (gesture, _: Double, _: Double, data) in
             let number = viewNumber(data)
             nonisolated(unsafe) let gesture = gesture
             MainActor.assumeIsolated { GTKListening.find(number)?.dragEnded(OpaquePointer(gesture)) }

@@ -57,6 +57,16 @@ HStack
 Image
   aspect
   source
+ItemsView
+  endReachedWithin
+  items
+  itemsLayout
+  selectedItems
+  selectionMode
+  endReached()
+  itemActivated()
+  realizedChanged()
+  selectionChanged()
 Label
   characterSpacing
   fontAttributes
@@ -314,5 +324,6 @@ ZStack
   hideOnScreenKeyboard()
   persistValue()
   prompt()
+  scrollTo()
   unfocus()
   utcOffset()
