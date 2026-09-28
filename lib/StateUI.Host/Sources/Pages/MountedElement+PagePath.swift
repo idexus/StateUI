@@ -18,8 +18,9 @@ extension MountedElement {
         }
     }
 
-    /// The page whose title names the window while this arrangement shows: the visible page, but tabs pushed onto a
-    /// stack keep the title of the page beneath them - their pages name their tabs alone; nil for none.
+    /// The page whose title names the window while this arrangement shows: the visible page, but tabs on a stack are
+    /// its last place and name the window by their own title, else by the page beneath - their pages name their tabs
+    /// alone; nil for none.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     public var titledPage: MountedElement? {
         switch type {
@@ -28,11 +29,10 @@ extension MountedElement {
         case .splitView: return children.dropFirst().first?.titledPage
         case .tabbedView:
             if let tab = selectedTab, tab.type != .page { return tab.titledPage }
-            if let stack = parent, stack.type == .navigationStack,
-               let place = stack.children.firstIndex(where: { $0 === self }), place > 0 {
-                return stack.children[place - 1].titledPage
-            }
-            return selectedTab
+            guard let stack = parent, stack.type == .navigationStack else { return selectedTab }
+            if value(.title) != nil { return self }
+            let place = stack.children.firstIndex { $0 === self } ?? 0
+            return place > 0 ? stack.children[place - 1].titledPage : selectedTab
         default: return nil
         }
     }

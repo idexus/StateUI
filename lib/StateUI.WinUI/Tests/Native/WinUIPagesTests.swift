@@ -93,16 +93,16 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// Tabs pushed onto a stack keep the title of the page beneath them, in the chrome and in the window's own name:
-    /// their pages name their tabs alone.
-    func testTabsPushedOntoAStackKeepTheTitleBeneathThem() throws {
+    /// Tabs pushed onto a stack are its last place and name the window by their own title, in the chrome and in the
+    /// window's own name - never by what they show: their pages name their tabs alone.
+    func testTabsOnAStackNameTheWindowByTheirOwnTitle() throws {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }
+                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
                 }
             }
             let window = try XCTUnwrap(host.window)
@@ -111,12 +111,12 @@ final class WinUIPagesTests: XCTestCase {
             path.wrappedValue = [1]
             host.settle { host.views(WinUITabbedView.self).first?.titles == ["Example 1", "Example 2"] }
             XCTAssertEqual(host.views(WinUITabbedView.self).first?.titles, ["Example 1", "Example 2"], "pushed")
-            XCTAssertEqual(Self.words(window.titleBar, "title"), "Items and Cards", "the chrome's title")
+            XCTAssertEqual(Self.words(window.titleBar, "title"), "ItemsView", "the chrome's title")
             var bytes = [CChar](repeating: 0, count: 64)
             let length = stateui_winui_window_system_title(window.handle, &bytes, Int32(bytes.count))
             XCTAssertEqual(
                 String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self),
-                "Items and Cards", "the window's own name")
+                "ItemsView", "the window's own name")
         }
     }
 

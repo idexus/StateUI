@@ -210,6 +210,31 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(title("stacked"), "Top", "a stack in a tab names the window by its top page")
     }
 
+    /// Tabs pushed onto a stack are its last place: a title of their own names the window, never what the tabs show.
+    /// A window's own tabs name it by the chosen tab, and a stack in the chosen tab by its top page, titled or not.
+    func testTabsWithATitleNameTheWindowByItOnAStack() throws {
+        let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
+            node("stack", .navigationStack, children: [
+                node("group", .page, [.title: .string("Items and Cards")]),
+                node("tabs", .tabbedView, [.title: .string("ItemsView")], children: [
+                    node("one", .page, [.title: .string("Example 1")]),
+                ]),
+            ]),
+            node("alone", .tabbedView, [.title: .string("Tabs")], children: [
+                node("tab", .page, [.title: .string("Tab")]),
+            ]),
+            node("stacked", .tabbedView, [.title: .string("Tabs")], children: [
+                node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let title = { (id: String) in WindowChrome(window: root, arrangement: root.first(id: .manual(id))).title }
+
+        XCTAssertEqual(title("stack"), "ItemsView", "the pushed tabs' own title")
+        XCTAssertEqual(title("alone"), "Tab", "a window's own tabs: the chosen tab")
+        XCTAssertEqual(title("stacked"), "Top", "a stack in a tab names the window by its top page")
+    }
+
     /// A menu walks its items, separators and submenus in order, each with its caption and whether it can be chosen;
     /// a bar holds only its menus.
     func testAMenuIsWalkedInOrder() throws {

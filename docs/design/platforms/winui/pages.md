@@ -16,8 +16,8 @@ the window shows after every render, and after every change the user makes
 that the application may not render for - a tab chosen, the sidebar shown:
 
 - the title of the page that names the window, on the chrome and to the
-  system - the visible page, but tabs pushed onto a stack keep the title of
-  the page beneath them ([the window's chrome](../../host/pages.md#the-windows-chrome));
+  system - the visible page, but tabs on a stack name it by their own title,
+  else by the page beneath ([the window's chrome](../../host/pages.md#the-windows-chrome));
 - the way back is the chrome's own back button, while the visible stack's
   top page can go back;
 - a split view adds the chrome's pane toggle, which shows and hides its

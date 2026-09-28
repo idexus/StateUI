@@ -83,9 +83,10 @@ own is shown by the first under it that has one (`presentingElement`).
 ## The window's chrome
 
 A window composes one chrome from what it shows (`WindowChrome`): the title
-of the page that names it (`titledPage`) - the visible page, but tabs pushed
-onto a stack keep the title of the page beneath them, their pages naming
-their tabs alone - else the window's, else the host's own; the way back, in the
+of the page that names it (`titledPage`) - the visible page, but tabs on a
+stack are its last place and name the window by their own title, else by the
+page beneath, never by what they show, their pages naming their tabs alone -
+else the window's, else the host's own; the way back, in the
 words the page beneath gives, else "Back"; the visible page's actions - none
 where it hides its bar - by priority, then in the order written, those placed
 in the overflow apart; the title bar's content in the title's place, else the
