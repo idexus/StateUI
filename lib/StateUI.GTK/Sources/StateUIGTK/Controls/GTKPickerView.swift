@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// A Picker: a `GtkDropDown` over a list of its choices' words, the chosen one shown on its button.
@@ -10,8 +11,8 @@ final class GTKPickerView: GTKView {
     /// What the picker does when the user chooses, handed the chosen choice's place.
     var onChosen: ((Int) -> Void)?
 
-    /// The choices, as the list holds them.
-    private(set) var choices: [String] = []
+    /// The choices and the choice as the tree last wrote them (`PickerChoices`).
+    private var written = PickerChoices()
 
     init() {
         super.init { _ in gtk_drop_down_new(nil, nil) }
@@ -32,16 +33,14 @@ final class GTKPickerView: GTKView {
     /// The choices, then the one chosen - written only where the tree changed it or the choices changed, so the
     /// user's choice is never argued with; less than 0 chooses none.
     func setChoices(_ choices: [String], chosen: Int, writeChosen: Bool) {
-        let changed = choices != self.choices
-        if changed {
-            self.choices = choices
+        let write = written.write(choices, chosen: chosen, choiceChanged: writeChosen)
+        if let choices = write.choices {
             let list = withCStrings(choices) { gtk_string_list_new($0) }
             gtk_drop_down_set_model(widget.opaque, list)
             g_object_unref(UnsafeMutableRawPointer(list))
         }
-        guard changed || writeChosen else { return }
-        gtk_drop_down_set_selected(
-            widget.opaque, choices.indices.contains(chosen) ? guint(chosen) : guint(GTK_INVALID_LIST_POSITION))
+        guard write.writesChoice else { return }
+        gtk_drop_down_set_selected(widget.opaque, write.chosen.map { guint($0) } ?? guint(GTK_INVALID_LIST_POSITION))
     }
 
     override func detach() {
