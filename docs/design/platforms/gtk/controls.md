@@ -14,9 +14,10 @@ the letters, a line's height as a multiple of the font's own, and the lines
 under or through the words - each GTK's own where the tree says nothing.
 
 A label wraps at word boundaries, breaking a word only where it alone is
-wider than the label, or at any character; cut short, it shows an ellipsis
-where the tree asks. GTK cuts a word short at its start or middle on one line
-only, so a label allowed several lines is cut at its end. Its lines stand
+wider than the label, or at any character, on as many lines as it is allowed,
+the last cut short with an ellipsis; cut short where the tree asks, it keeps
+one line, however many it is allowed ([runs of words](../../host/tree.md#runs-of-words)), and shows
+the ellipsis at its start, middle or end. Its lines stand
 from its leading edge, in its middle or at its trailing edge, which GTK turns
 over for a language written from the right, and at its top unless the tree
 stands them in its middle or at its bottom - GTK's own is the middle.

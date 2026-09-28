@@ -74,30 +74,24 @@ class GTKTextView: GTKView {
         pango_attr_list_unref(list)
     }
 
-    /// How words too long for the width break, and how many lines show before they are cut; nil or less than one
-    /// for no limit. GTK cuts a word short at its start or middle on one line only; over more, at its end.
+    /// How words too long for the width break, and how many lines show before they are cut (`LineBreak.lines`): a
+    /// break that cuts them short keeps one line; wrapped words keep to `maximum` - nil or less than one for no
+    /// limit - the last cut at its end.
     /// Design: docs/design/platforms/gtk/controls.md#words
     func setLines(breaking: LineBreak, maximum: Int?) {
         let label = widget.opaque
-        let most = Int32(max(maximum ?? 0, 0))
-        let wraps: Bool
-        let cut: PangoEllipsizeMode
-        switch breaking {
-        case .noWrap:
-            (wraps, cut) = (false, PANGO_ELLIPSIZE_NONE)
-        case .wordWrap, .characterWrap:
-            (wraps, cut) = (true, most > 0 ? PANGO_ELLIPSIZE_END : PANGO_ELLIPSIZE_NONE)
-        case .headTruncation:
-            (wraps, cut) = (most > 1, most > 1 ? PANGO_ELLIPSIZE_END : PANGO_ELLIPSIZE_START)
-        case .middleTruncation:
-            (wraps, cut) = (most > 1, most > 1 ? PANGO_ELLIPSIZE_END : PANGO_ELLIPSIZE_MIDDLE)
-        case .tailTruncation:
-            (wraps, cut) = (most > 1, PANGO_ELLIPSIZE_END)
+        let lines = breaking.lines(maximum: maximum)
+        let cut: PangoEllipsizeMode = switch breaking {
+        case .noWrap: PANGO_ELLIPSIZE_NONE
+        case .wordWrap, .characterWrap: lines == nil ? PANGO_ELLIPSIZE_NONE : PANGO_ELLIPSIZE_END
+        case .headTruncation: PANGO_ELLIPSIZE_START
+        case .middleTruncation: PANGO_ELLIPSIZE_MIDDLE
+        case .tailTruncation: PANGO_ELLIPSIZE_END
         }
-        gtk_label_set_wrap(label, wraps ? 1 : 0)
+        gtk_label_set_wrap(label, breaking.wraps ? 1 : 0)
         gtk_label_set_wrap_mode(label, breaking == .characterWrap ? PANGO_WRAP_CHAR : PANGO_WRAP_WORD_CHAR)
         gtk_label_set_ellipsize(label, cut)
-        gtk_label_set_lines(label, wraps && most > 0 ? most : -1)
+        gtk_label_set_lines(label, breaking.wraps ? Int32(lines ?? -1) : -1)
     }
 
     /// Where the lines stand across the label: from its leading edge, in its middle, or at its trailing edge.

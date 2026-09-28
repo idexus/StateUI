@@ -109,7 +109,8 @@ final class GTKLabelViewTests: XCTestCase {
         }
     }
 
-    /// A label cut short keeps to one line, or to as many as it is allowed; wrapping, it takes as many as its words.
+    /// A label cut short keeps to one line, however many it is allowed (`LineBreak.lines`); wrapping, it keeps to
+    /// as many as it is allowed, else takes as many as its words.
     func testALabelKeepsToItsLines() {
         onUIThread {
             let words = "one two three four five six seven eight nine ten eleven twelve"
@@ -119,6 +120,7 @@ final class GTKLabelViewTests: XCTestCase {
                     Label(words).maximumLines(2)
                     Label(words)
                     Label("one")
+                    Label(words).lineBreak(.tailTruncation).maximumLines(3)
                 }
             }
             let heights = host.views(GTKLabelView.self).map { $0.measure(width: 120, height: nil).height }
@@ -127,6 +129,7 @@ final class GTKLabelViewTests: XCTestCase {
             XCTAssertEqual(heights[0], line, "cut at its end on one line")
             XCTAssertEqual(heights[1], line * 2, accuracy: 2, "two lines, the second cut")
             XCTAssertGreaterThan(heights[2], line * 2, "every word shown")
+            XCTAssertEqual(heights[4], line, "cut short on one line, though three are allowed")
         }
     }
 
