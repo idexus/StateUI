@@ -207,3 +207,9 @@ alike. A hidden state leaves out the element itself and passes its children
 up to its parent, which is what a hidden element asks; an element left out
 with its children needs every widget under it hidden too.
 
+A word said to a screen reader goes through the window's accessible, and only
+where its context is GTK's AT-SPI one: without the accessibility bus GTK
+stands a context of no assistive technology, which GTK 4.14 announces through
+a call it lacks - the process dies. There no one listens, and the act is
+answered all the same.
+

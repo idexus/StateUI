@@ -41,7 +41,7 @@ final class GTKActPerformer {
             asked.ticket = ticket
             if showsNow { asked.show() }
         case .announce:
-            if let window {
+            if let window, Self.reachesAScreenReader(window.widget) {
                 gtk_accessible_announce(
                     window.widget.opaque, call.arguments.first?.string ?? "", GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
             }
@@ -152,5 +152,18 @@ final class GTKActPerformer {
 
     private func fail(_ call: HostActCall, _ reason: String) {
         core.fail(call, reason, log: { GTKRenderer.log.error($0) })
+    }
+}
+
+extension GTKActPerformer {
+    /// Whether what `widget` announces reaches a screen reader: through GTK's AT-SPI context alone. Without the
+    /// accessibility bus GTK stands a context of no assistive technology, which GTK 4.14 announces through a call it
+    /// lacks - a crash.
+    /// Design: docs/design/platforms/gtk/controls.md#what-assistive-technology-meets
+    static func reachesAScreenReader(_ widget: GTKWidget) -> Bool {
+        let atSpi = g_type_from_name("GtkAtSpiContext")
+        guard atSpi != 0, let context = gtk_accessible_get_at_context(widget.opaque) else { return false }
+        defer { g_object_unref(UnsafeMutableRawPointer(context)) }
+        return g_type_check_instance_is_a(UnsafeMutablePointer<GTypeInstance>(context), atSpi) != 0
     }
 }
