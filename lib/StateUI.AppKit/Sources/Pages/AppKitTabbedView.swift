@@ -44,8 +44,8 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
     /// Which tab the view shows, by the host layer's rule.
     private(set) var choice = TabChoice()
 
-    /// The tab shown, as an index into the tabs; -1 for none.
-    var selectedIndex: Int { items.isEmpty ? -1 : min(max(choice.shown, 0), items.count - 1) }
+    /// The tab shown, as an index into the tabs (`TabChoice.shown(among:)`); -1 for none.
+    var selectedIndex: Int { choice.shown(among: items.count) ?? -1 }
 
     /// Set while this side selects, so the tab view's report of it is not
     /// taken for the user's.

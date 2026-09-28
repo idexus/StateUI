@@ -16,6 +16,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
+            ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
@@ -191,6 +192,28 @@ final class AndroidPagesTests: XCTestCase {
             tabs.selectByUser(1)
             XCTAssertEqual(tab.wrappedValue, 1)
             XCTAssertTrue(tabs.heldViews().first === pages[1])
+        }
+    }
+
+    /// A tab asked for past the last shows the last there is, and the row marks that one - no choice of the user's.
+    func testTheRowMarksTheTabShown() throws {
+        try onMainActor {
+            let tab = State(wrappedValue: 0)
+            let host = AndroidRenderer.running {
+                TabbedView([0, 1, 2]) { number in TitledPage(title: "Tab \(number)") }
+                    .selection(tab.projectedValue)
+            }
+            host.layOut()
+            let tabs = try XCTUnwrap(host.views(AndroidTabbedView.self).first)
+            let pages = host.views(AndroidSingleChildView.self)
+            var row = AndroidTabbedView.Row()
+            row.tabs = (0..<3).map { AndroidTabbedView.Tab(title: "Tab \($0)", picture: nil) }
+
+            tabs.show(row, requested: 5)
+            host.layOut()
+            XCTAssertEqual(tabs.markedTab, 2, "the row marks the tab shown")
+            XCTAssertTrue(tabs.heldViews().first === pages.last, "the last there is")
+            XCTAssertEqual(tab.wrappedValue, 0, "and no choice of the user's heard")
         }
     }
 

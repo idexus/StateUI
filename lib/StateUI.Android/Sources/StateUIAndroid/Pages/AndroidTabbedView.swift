@@ -31,7 +31,8 @@ final class AndroidTabbedView: AndroidLayoutView {
 
     private let row = AndroidTabsView()
     private var shownRow = Row()
-    private var shownChosen = -1
+    /// The tab the row marks; -1 for none.
+    private(set) var markedTab = -1
 
     override init() {
         super.init()
@@ -49,11 +50,11 @@ final class AndroidTabbedView: AndroidLayoutView {
             holdChildren()
             invalidateMeasurements()
         }
-        let chosen = choice.shown
-        guard row != shownRow || chosen != shownChosen else { return }
+        let chosen = choice.shown(among: row.tabs.count) ?? -1
+        guard row != shownRow || chosen != markedTab else { return }
 
         shownRow = row
-        shownChosen = chosen
+        markedTab = chosen
         self.row.show(row, chosen: chosen)
     }
 
@@ -61,7 +62,7 @@ final class AndroidTabbedView: AndroidLayoutView {
     func selectByUser(_ index: Int) {
         guard let previous = choice.choose(index, of: items.count) else { return }
 
-        shownChosen = index
+        markedTab = index
         holdChildren()
         invalidateMeasurements()
         row.show(shownRow, chosen: index)
@@ -69,8 +70,7 @@ final class AndroidTabbedView: AndroidLayoutView {
     }
 
     private var selectedItem: AndroidLayoutItem? {
-        guard !items.isEmpty else { return nil }
-        return items[min(max(choice.shown, 0), items.count - 1)]
+        choice.shown(among: items.count).map { items[$0] }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

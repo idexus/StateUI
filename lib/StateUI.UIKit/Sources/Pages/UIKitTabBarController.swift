@@ -79,8 +79,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             }
         }
         _ = choice.request(requested)
-        let shown = min(choice.shown, max(0, controllers.count - 1))
-        if !controllers.isEmpty, selectedIndex != shown { selectedIndex = shown }
+        if let shown = choice.shown(among: controllers.count), selectedIndex != shown { selectedIndex = shown }
     }
 
     /// The tab bar's colours: its own where the tree says none.
