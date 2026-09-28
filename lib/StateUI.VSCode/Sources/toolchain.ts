@@ -84,6 +84,17 @@ export function newestIOSRuntime(json: string): string | undefined {
     }
 }
 
+/** The file of the loader a gdk-pixbuf loaders cache names for SVG pictures, or undefined where it names none. */
+export function svgLoaderIn(cache: string): string | undefined {
+    for (const entry of cache.split(/\r?\n\s*\r?\n/)) {
+        const lines = entry.split(/\r?\n/).filter((line) => line.length > 0 && !line.startsWith("#"));
+        if (lines.length > 1 && lines.some((line) => /(^|\s)"image\/svg\+xml"(\s|$)/.test(line))) {
+            return path.basename(lines[0].replace(/^"|"$/g, ""));
+        }
+    }
+    return undefined;
+}
+
 /** The output of `command` run with `args` - its standard output and error together - or undefined where it did not run. */
 function run(command: string, args: readonly string[]): Promise<string | undefined> {
     return new Promise((resolve) => {
@@ -162,6 +173,15 @@ function linuxChecks(): Check[] {
         },
         module("gtk4", "GTK", "4.14", "libgtk-4-dev"),
         module("libadwaita-1", "libadwaita", "1.5", "libadwaita-1-dev"),
+        {
+            component: "gdk-pixbuf's SVG loader", neededBy: "GTK's pictures",
+            advice: "Install librsvg2-common: without it GTK draws no SVG picture.",
+            look: async () => {
+                const cache = process.env.GDK_PIXBUF_MODULE_FILE
+                    || (await run("pkg-config", ["--variable=gdk_pixbuf_cache_file", "gdk-pixbuf-2.0"]))?.trim();
+                return cache && fs.existsSync(cache) ? svgLoaderIn(fs.readFileSync(cache, "utf8")) : undefined;
+            },
+        },
         {
             component: "a desktop session", neededBy: "GTK, its test suite included",
             advice: "Run from a Wayland or X11 session: nothing shows a window without one.",

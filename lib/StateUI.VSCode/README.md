@@ -196,8 +196,8 @@ launch file at all:
   Windows App SDK themselves.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
-  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); and the `lldb-dap`
-  extension.
+  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
+  loader (`librsvg2-common`); and the `lldb-dap` extension.
 
 Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
 `swift.swiftEnvironmentVariables`: that setting is laid over the host chosen

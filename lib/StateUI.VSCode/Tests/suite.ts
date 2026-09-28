@@ -23,7 +23,9 @@ import { StateUIApi } from "../Sources/extension";
 import { inAppsCommand, nameProblem } from "../Sources/newApplication";
 import { reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
-import { atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, newestIOSRuntime, report, xcodeVersion } from "../Sources/toolchain";
+import {
+    atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, newestIOSRuntime, report, svgLoaderIn, xcodeVersion,
+} from "../Sources/toolchain";
 
 const started = Date.now();
 
@@ -520,7 +522,14 @@ export async function run(): Promise<void> {
         // 7d. StateUI: Check Toolchain says what this machine has of what its hosts need, and what to install for the
         //     rest: its tools' words read, and on the machine running the suite, nothing missing.
         {
-            check("Check Toolchain compares versions part by part and reads Xcode's, simctl's and a toolchain's words",
+            const loaders = (svg: boolean) => [
+                "# GdkPixbuf Image Loader Modules file", "",
+                '"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-png.so"',
+                '"png" 5 "gdk-pixbuf" "PNG" "LGPL"', '"image/png" ""', '"png" ""', "",
+                ...(svg ? ['"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so"',
+                    '"svg" 6 "gdk-pixbuf" "Scalable Vector Graphics" "LGPL"', '"image/svg+xml" "image/svg" ""', ""] : []),
+            ].join("\n");
+            check("Check Toolchain compares versions part by part and reads Xcode's, simctl's, a toolchain's and gdk-pixbuf's words",
                 commands.includes("stateui.checkToolchain")
                 && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
                 && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
@@ -529,6 +538,7 @@ export async function run(): Promise<void> {
                 && newestIOSRuntime(JSON.stringify({ runtimes: [
                     { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
                     { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
+                && svgLoaderIn(loaders(true)) === "libpixbufloader-svg.so" && svgLoaderIn(loaders(false)) === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined);
             const findings = await checkToolchain();
             report(findings).forEach((line) => say(`     ${line}`));

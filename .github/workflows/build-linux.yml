@@ -53,7 +53,8 @@ jobs:
   # GTK 4 and libadwaita as Ubuntu 24.04 has them, the versions the host is
   # written against, drawn on Xvfb with a session bus. A label is measured in
   # the font GNOME gives this platform's desktop, so a verdict that reads a
-  # frame holds here as it was written.
+  # frame holds here as it was written. gdk-pixbuf reads an SVG only through
+  # librsvg's loader, which an install without recommends leaves out.
   gtk:
     name: GTK
     runs-on: ubuntu-24.04
@@ -66,7 +67,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev \
-            xvfb xauth dbus fonts-ubuntu
+            librsvg2-common xvfb xauth dbus fonts-ubuntu
           mkdir -p "$HOME/.config/gtk-4.0"
           printf '[Settings]\ngtk-font-name=Ubuntu Sans 11\n' > "$HOME/.config/gtk-4.0/settings.ini"
 
