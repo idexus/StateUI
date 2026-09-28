@@ -71,6 +71,16 @@ a window keeps nothing in the application's preferences: a frame autosave
 name, one a window, would leave a key there for every window ever opened,
 and every move would write the growing file again.
 
+## The menu bar
+
+Every application stands with the menu bar a Mac application has: its own
+menu with Quit, File with a new window, Edit and Window. Edit holds the text
+commands - undo, redo, cut, copy, paste, delete, select all - each sent down
+the responder chain, where the field holding the keyboard answers it: AppKit
+routes ⌘C, ⌘V and ⌘Z through the menu bar's key equivalents, so a field in an
+application with no Edit menu copies and pastes nothing. A page's menus join
+the bar as the page shows, into the menu of the same name where there is one.
+
 ## Acts
 
 The acts every host performs (`HostActs`) are AppKit's own calls: the time

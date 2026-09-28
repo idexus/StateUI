@@ -44,40 +44,58 @@ public enum StateUIAppKit {
         application: NSApplication,
         delegate: AppDelegate
     ) {
+        let main = mainMenu(newScene: delegate)
+        application.windowsMenu = main.item(withTitle: "Window")?.submenu
+        application.mainMenu = main
+    }
+
+    /// The menu bar every StateUI application stands with: the application's own, File with a new window for
+    /// `newScene`, Edit with the text commands a field answers through the responder chain, and Window. A page's
+    /// menus join it as it shows.
+    /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
+    static func mainMenu(newScene: AnyObject?) -> NSMenu {
         let main = NSMenu()
-        let applicationItem = NSMenuItem(
-            title: ProcessInfo.processInfo.processName, action: nil, keyEquivalent: "")
-        let fileItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
-        let windowItem = NSMenuItem(title: "Window", action: nil, keyEquivalent: "")
-        main.addItem(applicationItem)
-        main.addItem(fileItem)
-        main.addItem(windowItem)
+        let name = ProcessInfo.processInfo.processName
 
         let applicationMenu = NSMenu()
-        applicationMenu.addItem(withTitle: "Quit \(ProcessInfo.processInfo.processName)",
-                                action: #selector(NSApplication.terminate(_:)),
-                                keyEquivalent: "q")
-        applicationItem.submenu = applicationMenu
+        applicationMenu.addItem(
+            withTitle: "Quit \(name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        main.addItem(submenu: applicationMenu, titled: name)
 
         let fileMenu = NSMenu(title: "File")
-        let newWindow = NSMenuItem(
-            title: "New Window",
-            action: #selector(AppDelegate.newScene(_:)),
-            keyEquivalent: "n")
-        newWindow.target = delegate
+        let newWindow = NSMenuItem(title: "New Window", action: #selector(AppDelegate.newScene(_:)), keyEquivalent: "n")
+        newWindow.target = newScene
         fileMenu.addItem(newWindow)
-        fileItem.submenu = fileMenu
+        main.addItem(submenu: fileMenu, titled: "File")
+
+        let editMenu = NSMenu(title: "Edit")
+        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        let redo = editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "z")
+        redo.keyEquivalentModifierMask = [.command, .shift]
+        editMenu.addItem(.separator())
+        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(withTitle: "Delete", action: #selector(NSText.delete(_:)), keyEquivalent: "")
+        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        main.addItem(submenu: editMenu, titled: "Edit")
 
         let windowMenu = NSMenu(title: "Window")
-        windowMenu.addItem(withTitle: "Minimize",
-                           action: #selector(NSWindow.performMiniaturize(_:)),
-                           keyEquivalent: "m")
-        windowMenu.addItem(withTitle: "Bring All to Front",
-                           action: #selector(NSApplication.arrangeInFront(_:)),
-                           keyEquivalent: "")
-        windowItem.submenu = windowMenu
-        application.windowsMenu = windowMenu
-        application.mainMenu = main
+        windowMenu.addItem(
+            withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        windowMenu.addItem(
+            withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
+        main.addItem(submenu: windowMenu, titled: "Window")
+        return main
+    }
+}
+
+private extension NSMenu {
+    /// Adds `submenu` to the bar under `title`.
+    func addItem(submenu: NSMenu, titled title: String) {
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        item.submenu = submenu
+        addItem(item)
     }
 }
 
