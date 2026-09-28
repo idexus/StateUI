@@ -97,9 +97,13 @@ final class WinUIRenderer {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
     }
 
-    /// Windows said the theme, the power or the network changed: the core hears it, and renders what it changed.
+    /// Windows said the theme, the power, the network or a screen changed: the core hears it, and renders what it
+    /// changed.
     func environmentChanged() {
-        runtime.environmentChanged { WinUIEnvironment.reportChanging(to: runtime.core) }
+        runtime.environmentChanged {
+            WinUIEnvironment.reportChanging(to: runtime.core)
+            if let window { WinUIEnvironment.reportDisplay(to: runtime.core, window: window) }
+        }
     }
 
     /// The window numbered `number` was activated, deactivated or minimized: the host layer settles what that means

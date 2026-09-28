@@ -46,14 +46,14 @@ enum WinUIEnvironment {
         }
     }
 
-    /// Tells `core` the screen `window` stands on.
+    /// Tells `core` the screen `window` stands on, as it is turned now.
     static func reportDisplay(to core: CoreLink, window: WinUIWindow) {
         let display = facts(StateUIFactsDisplay, window: window.handle)
-        guard display.count == 4 else { return }
+        guard display.count == 5 else { return }
 
         core.setDisplayInfo(HostDisplayInfo(
             width: Double(display[0]) ?? 0, height: Double(display[1]) ?? 0, density: Double(display[2]) ?? 1,
-            refreshRate: Double(display[3]) ?? 60))
+            quarterTurns: Int(Double(display[4]) ?? 0), refreshRate: Double(display[3]) ?? 60))
     }
 
     /// One group of facts, as the relay reads them.

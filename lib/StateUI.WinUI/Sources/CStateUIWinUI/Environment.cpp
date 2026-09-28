@@ -125,7 +125,9 @@ namespace {
         DEVMODEW mode{};
         mode.dmSize = sizeof mode;
         EnumDisplaySettingsW(nullptr, ENUM_CURRENT_SETTINGS, &mode);
-        facts << width << height << density << static_cast<double>(mode.dmDisplayFrequency);
+        // Its turn from its natural orientation, in quarters the way the picture turns - clockwise, as DMDO_90 says.
+        facts << width << height << density << static_cast<double>(mode.dmDisplayFrequency)
+              << static_cast<double>(mode.dmDisplayOrientation);
     }
 
     void changed() {
@@ -170,6 +172,10 @@ extern "C" void stateui_winui_watch_environment(void) {
         power::PowerManager::RemainingChargePercentChanged([](auto const &, auto const &) { changed(); });
         power::PowerManager::EnergySaverStatusChanged([](auto const &, auto const &) { changed(); });
         connectivity::NetworkInformation::NetworkStatusChanged([](auto const &) { changed(); });
+        // A screen turned, or sized again: its area changes.
+        static auto displays = winrt::Microsoft::UI::Windowing::DisplayArea::CreateWatcher();
+        displays.Updated([](auto const &, auto const &) { changed(); });
+        displays.Start();
     } catch (...) {
         report("watching the environment");
     }

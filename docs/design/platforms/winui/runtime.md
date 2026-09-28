@@ -141,11 +141,14 @@ The host tells the core what it stands on as it starts: a desktop running
 Windows - the device's maker, model, name and version, and whether it is a
 virtual machine - the application's name, the system's theme, the user's
 locale, the battery and the network; and the screen once there is a window,
-at the system's scale, which a window on a second screen may not share. The
-theme is the one Windows paints its controls in, so a colour written for
-light and dark reads as WinUI's own text beside it. Windows says when the
-theme, the power or the network changes; the relay posts each change to the
-UI thread, and the host tells the core again and renders what it changed.
+at the system's scale, which a window on a second screen may not share, and
+turned as Windows says (`dmDisplayOrientation`, quarters of the picture's
+turn clockwise, the host layer's rotation). The theme is the one Windows
+paints its controls in, so a colour written for light and dark reads as
+WinUI's own text beside it. Windows says when the theme, the power, the
+network or a screen's area changes - a tablet turned among them; the relay
+posts each change to the UI thread, and the host tells the core again,
+the screen with it, and renders what it changed.
 
 ## Acts
 

@@ -114,6 +114,18 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
+    /// The page reads the screen its window stands on: its size, and how it is turned - not at all on this machine.
+    func testThePageReadsTheScreenItStandsOn() {
+        onUIThread {
+            let host = WinUIRenderer.running { DisplayPage() }
+            host.settle { host.views(WinUILabelView.self).first?.text != "0 unknown" }
+
+            let words = host.views(WinUILabelView.self).first?.text.split(separator: " ") ?? []
+            XCTAssertGreaterThan(Double(words.first ?? "") ?? 0, 0, "a width")
+            XCTAssertEqual(words.last, "rotation0", "a screen standing as it is made")
+        }
+    }
+
     /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
     /// has it now.
     func testThePageReadsWindowsAndItsTheme() {
@@ -164,6 +176,15 @@ private struct ToolOpeningPage: ContentView {
 
 private struct ToolWindow: Window {
     var page: any Page { Label("A tool") }
+}
+
+/// A page saying the screen's width and turn.
+private struct DisplayPage: ContentView {
+    @Environment private var display: DeviceDisplay
+
+    var content: any View {
+        Label("\(Int(display.width)) \(display.rotation)")
+    }
 }
 
 /// A page saying what it runs on and the theme it runs in.
