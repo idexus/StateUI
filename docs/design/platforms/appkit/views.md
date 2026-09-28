@@ -20,6 +20,15 @@ control in its own place, through `AppKitAccessibilityPresenting`. The
 author's words, the role and whether the element takes part are written where
 VoiceOver meets the control, not on the view around it.
 
+## A stated size
+
+A size the tree states for a view - its width, height and bounds - is what
+StateUI's layouts measure and place it by; the view also carries it as a
+constraint, for a measurement of AppKit's own to read. That constraint stands
+just short of required: a layout of StateUI's places the view by its frame,
+whose constraints stand over it until the first layout gives that frame,
+and two required answers to one width are a conflict AppKit reports.
+
 ## A layout's own box
 
 A stack, a grid or a ZStack paints its own box. A plain colour on a plain

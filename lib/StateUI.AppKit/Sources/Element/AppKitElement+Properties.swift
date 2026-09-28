@@ -160,29 +160,29 @@ extension AppKitElement {
             value: requested(.width).map {
                 CGFloat(Extent.bounded(Double($0), minimum: minimumWidth.map(Double.init), maximum: maximumWidth.map(Double.init)))
             },
-            make: { view.widthAnchor.constraint(equalToConstant: $0) })
+            make: { view.widthAnchor.constraint(equalToConstant: $0).stated })
         heightConstraint = reconciledConstraint(
             heightConstraint,
             value: requested(.height).map {
                 CGFloat(Extent.bounded(Double($0), minimum: minimumHeight.map(Double.init), maximum: maximumHeight.map(Double.init)))
             },
-            make: { view.heightAnchor.constraint(equalToConstant: $0) })
+            make: { view.heightAnchor.constraint(equalToConstant: $0).stated })
         minimumWidthConstraint = reconciledConstraint(
             minimumWidthConstraint,
             value: minimumWidth,
-            make: { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+            make: { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0).stated })
         minimumHeightConstraint = reconciledConstraint(
             minimumHeightConstraint,
             value: minimumHeight,
-            make: { view.heightAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+            make: { view.heightAnchor.constraint(greaterThanOrEqualToConstant: $0).stated })
         maximumWidthConstraint = reconciledConstraint(
             maximumWidthConstraint,
             value: maximumWidth,
-            make: { view.widthAnchor.constraint(lessThanOrEqualToConstant: $0) })
+            make: { view.widthAnchor.constraint(lessThanOrEqualToConstant: $0).stated })
         maximumHeightConstraint = reconciledConstraint(
             maximumHeightConstraint,
             value: maximumHeight,
-            make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0) })
+            make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0).stated })
 
         if let button = view as? NSButton,
            let padding = value(.padding)?.numbers, padding.count >= 4 {
@@ -341,6 +341,16 @@ extension NSLineBreakMode {
         case .tailTruncation: .byTruncatingTail
         case .middleTruncation: .byTruncatingMiddle
         }
+    }
+}
+
+extension NSLayoutConstraint {
+    /// A size the tree states, for a native measurement to read: just short of required, since a layout of StateUI's
+    /// places the view by its frame, whose own constraints stand over it before the first layout gives that frame.
+    /// Design: docs/design/platforms/appkit/views.md#a-stated-size
+    fileprivate var stated: NSLayoutConstraint {
+        priority = NSLayoutConstraint.Priority(999)
+        return self
     }
 }
 #endif
