@@ -10,10 +10,16 @@
 @_spi(Host) public struct ItemsPlacement: Equatable, Sendable {
     /// The room an entry keeps around it, in points: before it in the reading direction, above it, after it.
     public struct Room: Equatable, Sendable {
+        /// The room before the entry, in the reading direction.
         public var leading = 0.0
+
+        /// The room above the entry.
         public var top = 0.0
+
+        /// The room after the entry, in the reading direction.
         public var trailing = 0.0
 
+        /// A room of `leading`, `top` and `trailing` points.
         public init(leading: Double = 0, top: Double = 0, trailing: Double = 0) {
             self.leading = leading
             self.top = top
