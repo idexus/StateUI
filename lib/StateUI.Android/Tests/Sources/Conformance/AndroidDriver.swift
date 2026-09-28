@@ -25,10 +25,14 @@ final class AndroidDriver: HostDriver {
     /// The host the driver started last.
     private(set) var renderer: AndroidRenderer?
 
+    /// What the hosts wrote to their log since the last started.
+    private let written = AndroidLogLines()
+
     var register: HostRegister { AndroidRealization.register }
 
     func start(clock: TestClock?, reducesMotion: Bool, _ page: @escaping @Sendable () -> any Page) -> MountedTree {
         finish()
+        written.listen()
         stateUIUseApp(OneWindowApplication(page: page))
         let window = TestContext.window!
         let root = Java.new(TestJava.frameLayout, TestJava.newFrameLayout, .object(window.reference))
@@ -63,6 +67,11 @@ final class AndroidDriver: HostDriver {
 
     /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
     /// an activity's end does: each case starts in a window as a new activity's.
+    /// What the hosts wrote to their log since the driver last started one.
+    func logged() throws -> [String] {
+        written.lines
+    }
+
     func finish() {
         Java.callStatic(Self.dialogs, Self.dismissAll)
         if let root = renderer?.root.reference {
@@ -158,4 +167,18 @@ final class AndroidDriver: HostDriver {
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
     static let getAlpha = Java.method(JavaAPI.view, "getAlpha", "()F")
     static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
+}
+
+/// The host's log, line by line, as the driver hears it - and logcat still.
+final class AndroidLogLines: @unchecked Sendable {
+    private(set) var lines: [String] = []
+
+    /// Listens to the host's log from now on.
+    @MainActor func listen() {
+        lines = []
+        AndroidRenderer.log = HostLog(host: "Android") { [self] line in
+            lines.append(line)
+            AndroidStandardStreams.log(line)
+        }
+    }
 }

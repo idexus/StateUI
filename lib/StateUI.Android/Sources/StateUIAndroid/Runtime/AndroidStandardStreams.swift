@@ -4,25 +4,18 @@
 import Android
 import CStateUIAndroid
 
-/// The host's lines in logcat, under the tag `StateUI`.
-enum AndroidLog {
-    /// The tag every line of the host and of the application's `print` carries.
-    static let tag = "StateUI"
-
-    /// An ordinary line.
-    static func info(_ message: String) {
-        _ = __android_log_write(Int32(ANDROID_LOG_INFO.rawValue), tag, message)
-    }
-
-    /// A line about something that went wrong.
-    static func error(_ message: String) {
-        _ = __android_log_write(Int32(ANDROID_LOG_ERROR.rawValue), tag, message)
-    }
-}
-
 /// An Android application's stdout and stderr go nowhere; this sends them to logcat a line at a time.
 /// Design: docs/design/platforms/android/runtime.md#print-reaches-logcat
 enum AndroidStandardStreams {
+    /// The tag every line of the host's log and of the application's `print` carries.
+    static let tag = "StateUI"
+
+    /// Writes one line of the host's log (`HostLog`) to logcat.
+    @Sendable static func log(_ line: String) {
+        let words = line.hasSuffix("\n") ? String(line.dropLast()) : line
+        _ = __android_log_write(Int32(ANDROID_LOG_ERROR.rawValue), tag, words)
+    }
+
     /// Points stdout and stderr at a pipe that a thread of its own reads into logcat.
     static func redirect() {
         var ends: [Int32] = [0, 0]
@@ -51,8 +44,9 @@ enum AndroidStandardStreams {
                     }
 
                     line.append(0)
-                    _ = line.withUnsafeBufferPointer {
-                        __android_log_write(Int32(ANDROID_LOG_INFO.rawValue), AndroidLog.tag, $0.baseAddress)
+                    _ = line.withUnsafeBufferPointer { words in
+                        __android_log_write(
+                            Int32(ANDROID_LOG_INFO.rawValue), AndroidStandardStreams.tag, words.baseAddress)
                     }
                     line.removeAll(keepingCapacity: true)
                 }

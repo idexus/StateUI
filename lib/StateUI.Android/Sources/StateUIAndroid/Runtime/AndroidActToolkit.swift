@@ -148,12 +148,12 @@ final class AndroidActToolkit: ActToolkit {
         do {
             element = try tree().aimed(call)
         } catch {
-            core.fail(call, error.reason, log: { AndroidLog.error($0) })
+            core.fail(call, error.reason, log: { AndroidRenderer.log.error($0) })
             return true
         }
         if call.act == .scrollTo {
             guard let items = (element.native as? AndroidElement)?.view as? AndroidItemsView else {
-                core.fail(call, "scrollTo is an act of an ItemsView", log: { AndroidLog.error($0) })
+                core.fail(call, "scrollTo is an act of an ItemsView", log: { AndroidRenderer.log.error($0) })
                 return true
             }
             items.scroll(
@@ -163,7 +163,7 @@ final class AndroidActToolkit: ActToolkit {
             return true
         }
         guard let web = (element.native as? AndroidElement)?.view as? AndroidWebView else {
-            core.fail(call, "\(call.act.name) is an act of a web view", log: { AndroidLog.error($0) })
+            core.fail(call, "\(call.act.name) is an act of a web view", log: { AndroidRenderer.log.error($0) })
             return true
         }
         switch call.act {
@@ -188,10 +188,10 @@ final class AndroidActToolkit: ActToolkit {
 
     func performRegistered(_ call: HostActCall) -> Bool {
         AndroidInterop.acts.perform(
-            call, in: tree(), core: core, view: { ($0.native as? AndroidElement)?.view }, log: { AndroidLog.error($0) })
+            call, in: tree(), core: core, view: { ($0.native as? AndroidElement)?.view }, log: { AndroidRenderer.log.error($0) })
     }
 
     func log(_ message: String) {
-        AndroidLog.error(message)
+        AndroidRenderer.log.error(message)
     }
 }

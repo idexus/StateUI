@@ -331,7 +331,7 @@ enum JavaNatives {
         let functions = env.pointee!.pointee
         guard let host = functions.FindClass(env, "stateui/android/StateUIHost") else {
             functions.ExceptionClear(env)
-            AndroidLog.error("stateui.android.StateUIHost is missing from the application")
+            AndroidRenderer.log.error("stateui.android.StateUIHost is missing from the application")
             return false
         }
 

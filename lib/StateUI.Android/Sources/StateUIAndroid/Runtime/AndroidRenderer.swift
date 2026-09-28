@@ -9,6 +9,10 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/runtime.md#the-android-views-runtime
 @MainActor
 final class AndroidRenderer {
+    /// What the host says for whoever reads its log: logcat, or wherever a test listens. Written from JNI's load too,
+    /// before any actor runs.
+    nonisolated(unsafe) static var log = HostLog(host: "Android", output: AndroidStandardStreams.log)
+
     /// The one runtime of the process, made when the activity starts it.
     static var shared: AndroidRenderer?
 
@@ -28,7 +32,7 @@ final class AndroidRenderer {
     private(set) lazy var runtime = HostRuntime(
         clock: frameClock, reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in AndroidElement(element, host: self) },
-        log: { AndroidLog.error($0) })
+        log: { AndroidRenderer.log.error($0) })
 
     private let context: JavaObject
 

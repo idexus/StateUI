@@ -109,7 +109,7 @@ enum AndroidPictures {
         let asset = found.flatMap { found in
             bounds(found.path).map { Asset(path: found.path, density: found.density, size: scaled($0, from: found.density)) }
         }
-        if asset == nil { AndroidLog.error("no picture named \(name) in the application's images") }
+        if asset == nil { AndroidRenderer.log.error("no picture named \(name) in the application's images") }
 
         assets[name] = asset
         return asset

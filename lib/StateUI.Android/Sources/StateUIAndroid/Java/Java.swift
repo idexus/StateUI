@@ -5,6 +5,7 @@
 // and the calls, each straight through the function table.
 // Design: docs/design/platforms/android/jni.md#the-main-threads-environment
 
+@_spi(Host) import StateUIHost
 import CStateUIAndroid
 
 /// The main thread's JNI environment and the calls the host makes through it - which an application's own control
@@ -39,7 +40,7 @@ public enum Java {
 
         jni.ExceptionDescribe(env)
         jni.ExceptionClear(env)
-        AndroidLog.error("a Java exception in \(call())")
+        AndroidRenderer.log.error("a Java exception in \(call())")
     }
 
     /// The application's class loader, kept as the host starts: it finds the application's classes where no

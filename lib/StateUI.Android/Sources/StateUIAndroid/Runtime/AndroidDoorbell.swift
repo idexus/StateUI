@@ -23,7 +23,7 @@ enum AndroidDoorbell {
         bell = eventfd(0, Int32(EFD_CLOEXEC) | Int32(EFD_NONBLOCK))
 
         guard let looper = ALooper_forThread() else {
-            AndroidLog.error("the doorbell found no looper on the main thread")
+            AndroidRenderer.log.error("the doorbell found no looper on the main thread")
             return
         }
 
@@ -43,9 +43,7 @@ enum AndroidDoorbell {
     private nonisolated static func startThread() {
         var thread: pthread_t = 0
         pthread_create(&thread, nil, { _ in
-            let core = CoreLink()
-            while true {
-                _ = core.waitForWork()
+            CoreLink().ringForever {
                 var one: UInt64 = 1
                 _ = write(AndroidDoorbell.bell, &one, 8)
             }
