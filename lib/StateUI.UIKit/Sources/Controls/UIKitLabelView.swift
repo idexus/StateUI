@@ -114,10 +114,17 @@ final class UIKitLabelView: UILabel {
             width: fitted.width + padding.left + padding.right, height: fitted.height + padding.top + padding.bottom)
     }
 
-    /// What fills the label's box behind its words - a colour or a brush - painted before the words: they are the
-    /// layer's own contents, which any layer added over it would cover.
+    /// What fills the label's box behind its words: a colour as the view's own background, a brush painted before
+    /// the words - they are the layer's own contents, which any layer added over it would cover.
     func setBackground(_ value: HostValue?) {
-        fill = UIKitBrush(value)
+        let brush = HostBrush(value)
+        if case .solid(let color) = brush {
+            backgroundColor = UIColor(stateUI: color)
+            fill = UIKitBrush()
+        } else {
+            backgroundColor = nil
+            fill = UIKitBrush(value)
+        }
         setNeedsDisplay()
     }
 
