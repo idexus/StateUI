@@ -212,26 +212,10 @@ extension AppKitElement {
             buttonHeightConstraint = nil
         }
 
-        drawing?.own = drawingTransform()
+        drawing?.own = element.drawingTransform
         // Last, so the words meet the control as configured above - a text
         // field may just have swapped in a password field.
         applyAccessibility(to: view)
-    }
-
-    /// The view's own drawing transform. `scale` multiplies both axes on
-    /// top of `scaleX` and `scaleY`.
-    func drawingTransform() -> HostDrawingTransform {
-        let scale = value(.scale)?.number ?? 1
-        return HostDrawingTransform(
-            translationX: value(.translationX)?.number ?? 0,
-            translationY: value(.translationY)?.number ?? 0,
-            rotation: value(.rotation)?.number ?? 0,
-            rotationX: value(.rotationX)?.number ?? 0,
-            rotationY: value(.rotationY)?.number ?? 0,
-            scaleX: scale * (value(.scaleX)?.number ?? 1),
-            scaleY: scale * (value(.scaleY)?.number ?? 1),
-            pivotX: value(.pivotX)?.number ?? 0.5,
-            pivotY: value(.pivotY)?.number ?? 0.5)
     }
 
     /// Keeps the native constraint identity stable while a host channel moves
