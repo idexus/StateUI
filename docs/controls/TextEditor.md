@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit |  |  | `NSTextView` in an `NSScrollView` | no run of it on these sources |
 | UIKit |  |  | `UITextView` | no run of it on these sources |
 | Android Views |  |  | multi-line `EditText` | no run of it on these sources |
-| WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
+| WinUI 3 | ⌛ | 65 ✅ | multi-line `TextBox` |  |
 | GTK 4 |  |  | `GtkTextView` | no run of it on these sources |
 | Web |  |  | `<textarea>` | no host yet |
 
@@ -25,7 +25,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `growsWithText` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
+| `growsWithText` | property | `Bool` | native |  |  |  | ⌛ |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -90,7 +90,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
 | `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | WinUI 3: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | WinUI 3: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ✅ |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  | ⌛ |  |  |  |
 | `gridColumn` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
 | `gridColumnSpan` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
 | `gridRow` | property | `Int` | stateUI |  |  |  | ✅ |  |  |  |
@@ -125,11 +125,11 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isReadOnly` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
 | `isSpellCheckEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
 | `isTextPredictionEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
-| `maximumLength` | property | `Int` | native |  |  |  | ✅ |  |  |  |
+| `maximumLength` | property | `Int` | native |  |  |  | ⌛ |  |  |  |
 | `placeholder` | property | `String` | native |  |  |  | ✅ |  |  |  |
 | `placeholderColor` | property | `Color` | native |  |  |  | ✅ |  |  |  |
 | `selectionLength` | property | `Int` | native |  |  |  | ✅ |  |  |  |
-| `onTextChanged` (`textChanged`) | event | `String` | native |  |  |  | ✅ |  |  |  |
+| `onTextChanged` (`textChanged`) | event | `String` | native |  |  |  | ⌛ |  |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -137,7 +137,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native |  |  |  | ✅ |  |  |  |
+| `text` | property | `String` | native |  |  |  | ⌛ |  |  |  |
 | `textCase` | property | `TextCase` | native |  |  |  | ✅ |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

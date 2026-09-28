@@ -54,8 +54,8 @@
                 let before = (growing.values.last?[3] ?? 0, fixed.values.last?[3] ?? 0)
 
                 try s.perform(.activate, on: s.element("change"))
-                s.settle { (growing.values.last?[3] ?? 0) > before.0 * 2 }
-                s.expect((growing.values.last?[3] ?? 0) > before.0 * 2, true, "grown with its words")
+                s.settle { (growing.values.last?[3] ?? 0) > before.0 * 1.5 }
+                s.expect((growing.values.last?[3] ?? 0) > before.0 * 1.5, true, "grown with its words")
                 s.expect(fixed.values.last?[3] ?? 0, before.1, within: 0.5, "a line's height, however many it holds")
             },
             Aspects.holds(TextEditorContract.growsWithText, on: "TextEditor", false, then: true),

@@ -42,14 +42,14 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Slider](Slider.md) | 73 |  |  |  | 57 ✅ |  |  |
 | [Stepper](Stepper.md) | 71 |  |  |  | 57 ✅ |  |  |
 | [Switch](Switch.md) | 69 |  |  |  | 56 ✅ |  |  |
-| [TextEditor](TextEditor.md) | 87 |  |  |  | 70 ✅ |  |  |
+| [TextEditor](TextEditor.md) | 87 |  |  |  | 65 ✅ |  |  |
 | [TextField](TextField.md) | 90 |  |  |  | 68 ✅ |  |  |
 | [TimePicker](TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met |  |  |
 <!-- controls:end -->
 
 ## Application structure

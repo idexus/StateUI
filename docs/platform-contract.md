@@ -148,7 +148,7 @@ of its members each meets, and why a cell is empty.
 | [Stepper](controls/Stepper.md) | native |  |  |  | ✅ |  |  |
 | [Switch](controls/Switch.md) | native |  |  |  | ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | adaptive |  |  |  | ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | native |  |  |  | ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | native |  |  |  | ⌛ |  |  |
 | [TextField](controls/TextField.md) | native |  |  |  | ✅ |  |  |
 | [TimePicker](controls/TimePicker.md) | native |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | adaptive |  |  |  |  |  |  |
@@ -469,14 +469,14 @@ Every control, and every part an application, its windows and its pages are made
 | [Slider](controls/Slider.md) | 73 |  |  |  | 57 ✅ |  |  |
 | [Stepper](controls/Stepper.md) | 71 |  |  |  | 57 ✅ |  |  |
 | [Switch](controls/Switch.md) | 69 |  |  |  | 56 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 70 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | 87 |  |  |  | 65 ✅ |  |  |
 | [TextField](controls/TextField.md) | 90 |  |  |  | 68 ✅ |  |  |
 | [TimePicker](controls/TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1807 of 2591 met |  |  |
 
 ### Application structure
 
@@ -581,7 +581,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | 5 |  |  |  | 5 ✅ |  |  |
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 |  |  |  | 2 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 |  |  |  | 2 ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  | 1 ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 |  |  |  |  |  |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 |  |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  |  |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  |  |  |  |
