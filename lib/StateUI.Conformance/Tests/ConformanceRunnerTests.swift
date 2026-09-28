@@ -210,6 +210,23 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(lines, ["Conformance Nowhere · Handed/sums: failed"])
     }
 
+    /// A colour StateUI draws shows as the screen shows it: each channel a few steps off, as smoothing an edge leaves
+    /// it, is the colour; more is another, and nothing is none.
+    func testAColourShowsWithinTheStepsSmoothingTakes() {
+        let red = Color(red: 255, green: 0, blue: 0)
+        XCTAssertTrue(Session.shows(Color(red: 253, green: 0, blue: 0), red))
+        XCTAssertTrue(Session.shows(Color(red: 251, green: 4, blue: 0, alpha: 251), red))
+        XCTAssertFalse(Session.shows(Color(red: 250, green: 0, blue: 0), red))
+        XCTAssertFalse(Session.shows(Color(red: 255, green: 0, blue: 5), red))
+        XCTAssertFalse(Session.shows(nil, red))
+
+        run([ConformanceCase("paints", proves: [Covered(SwitchContract.isOn)]) { s in
+            s.expect(Color(red: 253, green: 0, blue: 0), shows: red)
+            s.expect(nil, shows: red, "on its outline")
+        }], on: RegisterOnly(realizing: [.complete("Switch", "isOn")]))
+        XCTAssertEqual(failures, ["Nowhere · paints: \(red) expected, nothing came - on its outline"])
+    }
+
     /// What a driver cannot do is a failure unless the driver says why it cannot; where it says why, the members stay
     /// empty with its words.
     func testADriverThatCannotSaysWhyOrFails() {

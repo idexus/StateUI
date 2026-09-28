@@ -103,6 +103,15 @@ holds, at most 150 steps, and sees that nothing happens by one turn of the
 pump alone. Motion is driven by a test clock and display frames, never by
 the time a machine takes.
 
+## A colour drawn
+
+A colour StateUI draws is read at a point of what it draws and held as a
+screen shows it: where the smoothing of an edge touches the pixel read, a
+colour drawn whole comes back a few steps off in a channel - at one pixel a
+DIP, the middle of a line four DIPs wide is a pixel or two. `Session.shows`
+and `expect(_:shows:)` take each channel within four steps of the colour;
+nothing drawn at the point shows no colour.
+
 ## The runner
 
 The runner runs a family on a host and says one line for each case - passed,

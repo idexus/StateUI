@@ -163,6 +163,12 @@
         try driver.color(of: element, at: point)
     }
 
+    /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
+    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    public func shows(_ color: Color, on element: MountedElement, at point: Point) throws -> Bool {
+        Self.shows(try self.color(of: element, at: point), color)
+    }
+
     /// Where `element` stands in its window, as the toolkit placed it.
     public func place(of element: MountedElement) throws -> Rect {
         try driver.place(of: element)
@@ -230,6 +236,27 @@
         if let actual, abs(actual - expected) <= tolerance { return }
         fail("\(expected) expected, \(actual.map { "\($0)" } ?? "nothing") came"
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
+    }
+
+    /// Expects `actual` to show `expected`, as a screen shows a colour StateUI draws.
+    public func expect(
+        _ actual: Color?, shows expected: Color, _ message: String = "", file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard !Self.shows(actual, expected) else { return }
+        fail("\(Self.said(expected)) expected, \(Self.said(actual as Any)) came"
+            + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
+    }
+
+    /// Whether `actual` is `expected` but for the last few steps of each channel, which smoothing an edge takes from
+    /// a colour drawn whole.
+    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    static func shows(_ actual: Color?, _ expected: Color) -> Bool {
+        guard case .color(let red, let green, let blue, let alpha)? = actual?.propValue,
+              case .color(let shownRed, let shownGreen, let shownBlue, let shownAlpha) = expected.propValue
+        else { return false }
+        return zip([red, green, blue, alpha], [shownRed, shownGreen, shownBlue, shownAlpha])
+            .allSatisfy { abs(Int($0) - Int($1)) <= 4 }
     }
 
     /// Reports a failure of the case at `file` and `line`.

@@ -96,13 +96,14 @@
             let probe = stroked ? Point(70, 35) : Point(75, 5)
             let fills = element == "Rectangle" || element == "Ellipse"
             let inside = stroked || fills ? Point(40, 20) : Point(55, 5)
-            try s.settle { try s.color(of: shape, at: inside) == .red }
+            try s.settle { try s.shows(.red, on: shape, at: inside) }
             s.expect(try s.color(of: shape, at: fills ? Point(40, 20) : probe), fills ? .red : nil,
                      fills ? "filling its room" : "fitted, its proportions kept")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.color(of: shape, at: fills ? Point(40, 20) : probe) == .red }
-            s.expect(try s.color(of: shape, at: fills ? Point(40, 20) : probe), .red, "stretched across its room")
+            let across = fills ? Point(40, 20) : probe
+            try s.settle { try s.shows(.red, on: shape, at: across) }
+            s.expect(try s.color(of: shape, at: across), shows: .red, "stretched across its room")
         }
     }
 
