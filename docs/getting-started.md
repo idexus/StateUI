@@ -86,6 +86,7 @@ The Command Palette offers the rest under **StateUI:**
 | Run Tests | the workspace's suites, run as the chosen host |
 | New Application in apps/ | a new application beside Gallery and HelloWorld, made by `.scripts/new-app.sh` |
 | Clean Index | removes the language server's index and builds it again |
+| Check Toolchain | what this machine has of what its hosts need, and what to install for the rest |
 
 The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
 them in detail.

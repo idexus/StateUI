@@ -23,6 +23,7 @@ import { StateUIApi } from "../Sources/extension";
 import { inAppsCommand, nameProblem } from "../Sources/newApplication";
 import { reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
+import { atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, newestIOSRuntime, report, xcodeVersion } from "../Sources/toolchain";
 
 const started = Date.now();
 
@@ -515,6 +516,30 @@ export async function run(): Promise<void> {
             check("the conformance rebuilds and the reinstall show in a StateUI checkout alone",
                 hidden("stateui.conformanceRebuildAll") && hidden("stateui.conformanceRebuildChanged")
                 && hidden("stateui.reinstallExtension"));
+        }
+        // 7d. StateUI: Check Toolchain says what this machine has of what its hosts need, and what to install for the
+        //     rest: its tools' words read, and on the machine running the suite, nothing missing.
+        {
+            check("Check Toolchain compares versions part by part and reads Xcode's, simctl's and a toolchain's words",
+                commands.includes("stateui.checkToolchain")
+                && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
+                && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
+                && isSwiftOrgBuild("Swift version 6.4 (swift-6.4-RELEASE)")
+                && !isSwiftOrgBuild("Apple Swift version 6.4 (swiftlang-6.4.0.1.2 clang-1700.0.1)")
+                && newestIOSRuntime(JSON.stringify({ runtimes: [
+                    { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
+                    { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
+                && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined);
+            const findings = await checkToolchain();
+            report(findings).forEach((line) => say(`     ${line}`));
+            const own: Record<string, string> = { linux: "GTK 4.14 or newer, with its headers", darwin: "Xcode 27 or newer",
+                win32: "Visual Studio 2026 with the C++ tools for this machine" };
+            const missing = findings.filter((each) => each.found === undefined).map((each) => each.component);
+            check(`Check Toolchain looks for Swift, this platform's own and lldb-dap, and finds them all here${
+                missing.length > 0 ? ` - not ${missing.join(", ")}` : ""}`,
+                findings[0]?.component === "Swift 6.4 or newer" && findings.some((each) => each.component === own[process.platform])
+                && findings.some((each) => each.component === "lldb-dap") && missing.length === 0
+                && findings.every((each) => each.advice.length > 0));
         }
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.

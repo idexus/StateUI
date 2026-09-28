@@ -19,6 +19,7 @@ import { findSuites, forDevice, runSuites } from "./tests";
 import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
 import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
 import { Rebuild, rebuildSteps } from "./conformance";
+import { checkToolchain, debuggerFinding, report } from "./toolchain";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -84,6 +85,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const deviceItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 48);
     deviceItem.command = "stateui.selectAndroidDevice";
     context.subscriptions.push(hostItem, applicationItem, deviceItem);
+
+    // What StateUI: Check Toolchain found, component by component.
+    const toolchain = vscode.window.createOutputChannel("StateUI Toolchain");
+    context.subscriptions.push(toolchain);
 
     const refresh = (): void => {
         const chosenHost = host();
@@ -336,6 +341,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 "StateUI: the extension is built and installed - reload the window to run it.", "Reload Window");
             if (answer) {
                 await vscode.commands.executeCommand("workbench.action.reloadWindow");
+            }
+        }),
+        vscode.commands.registerCommand("stateui.checkToolchain", async () => {
+            const findings = await vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, title: "StateUI: checking the toolchain" },
+                () => checkToolchain());
+            const types = vscode.extensions.all.flatMap((each) =>
+                ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
+            const all = [...findings, debuggerFinding(types)];
+            const served = availableHosts().map((each) => each.label).join(", ");
+            toolchain.clear();
+            toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);
+            report(all).forEach((line) => toolchain.appendLine(line));
+            toolchain.show(true);
+            const missing = all.filter((each) => each.found === undefined).length;
+            if (missing === 0) {
+                void vscode.window.showInformationMessage(`StateUI: everything ${served || "StateUI"} needs is here.`);
+            } else {
+                void vscode.window.showWarningMessage(
+                    `StateUI: ${missing} of ${all.length} components are missing - the output says what to install.`);
             }
         }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {

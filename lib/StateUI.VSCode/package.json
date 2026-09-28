@@ -85,6 +85,11 @@
         "command": "stateui.cleanIndex",
         "title": "Clean Index",
         "category": "StateUI"
+      },
+      {
+        "command": "stateui.checkToolchain",
+        "title": "Check Toolchain",
+        "category": "StateUI"
       }
     ],
     "debuggers": [
