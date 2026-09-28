@@ -90,9 +90,10 @@ final class GTKSplitViewTests: XCTestCase {
 }
 
 final class GTKTabbedViewTests: XCTestCase {
-    /// A tabbed view shown by the window stands in a frame whose header bar holds its switcher; the user's choice
-    /// reaches the selection, the pages hear it, and the header bar carries the chosen tab's actions.
-    func testTheSwitcherChoosesATabInTheHeaderBar() throws {
+    /// A tabbed view shown by the window stands in a frame whose switcher stands in a bar of its own beneath the
+    /// header bar, which carries the chosen tab's title; the user's choice reaches the selection, the pages hear it,
+    /// and the header bar carries the chosen tab's actions.
+    func testTheSwitcherChoosesATabBeneathTheHeaderBar() throws {
         try onUIThread {
             let tab = State(wrappedValue: "one")
             let log = Received<String>()
@@ -106,8 +107,10 @@ final class GTKTabbedViewTests: XCTestCase {
             }
             let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
             let frame = try XCTUnwrap(host.window?.pageFrame)
-            XCTAssertTrue(frame.chrome.titleView === tabs.switcher)
-            XCTAssertTrue(adw_header_bar_get_title_widget(frame.header.opaque) == tabs.switcher.widget)
+            XCTAssertTrue(frame.chrome.tabs === tabs.switcher)
+            XCTAssertEqual(frame.chrome.title, "One")
+            XCTAssertEqual(gtk_widget_is_ancestor(tabs.switcher.widget, frame.header), 0, "not in the header bar")
+            XCTAssertNotEqual(gtk_widget_is_ancestor(tabs.switcher.widget, frame.widget), 0, "but in the frame's bars")
 
             log.values = []
             tabs.selectByUser(1)
@@ -118,7 +121,7 @@ final class GTKTabbedViewTests: XCTestCase {
         }
     }
 
-    /// A tabbed view pushed on a stack is a page of it, in a frame whose header bar holds its switcher.
+    /// A tabbed view pushed on a stack is a page of it, in a frame holding its switcher beneath the header bar.
     func testATabbedViewPushedOnAStackStandsInAFrame() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -130,7 +133,7 @@ final class GTKTabbedViewTests: XCTestCase {
             }
             let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
             let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
-            XCTAssertTrue(navigation.frames.last?.chrome.titleView === tabs.switcher)
+            XCTAssertTrue(navigation.frames.last?.chrome.tabs === tabs.switcher)
         }
     }
 }

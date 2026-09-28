@@ -77,9 +77,11 @@ with the sidebar shown, said once GTK has laid the frame out.
 ## Tabs
 
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,
-and its `GtkStackSwitcher` stands in the middle of the header bar of the
-frame the tabbed view stands in: the captions joined in one control, which
-reads as one choice among several beside the bar's own buttons. The
+and its `GtkStackSwitcher` - the captions joined in one control - stands at
+the start of a bar of its own beneath the header bar of the frame the tabbed
+view stands in, painted as the header bar is. The header bar keeps its room
+for the chosen tab's title and actions and the window's buttons, and the
+tabs' bar scrolls them across where the page is narrower than they are. The
 switcher's choice is the user's: the pages hear it, then the selection's
 state, and the header bar follows the chosen tab whether or not the
 application renders again.

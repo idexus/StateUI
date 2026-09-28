@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A page as GNOME's applications stand one: an `AdwToolbarView` whose top bar is the page's own `AdwHeaderBar`
-/// over the page's view. In a navigation view the frame slides with its page, header bar and all.
+/// A page as GNOME's applications stand one: an `AdwToolbarView` whose top bar is the page's own `AdwHeaderBar` -
+/// and a tabbed view's tabs in a bar beneath it - over the page's view. In a navigation view the frame slides with its page, header bar and all.
 /// Design: docs/design/platforms/gtk/pages.md#a-page-and-its-header-bar
 @MainActor
 final class GTKPageFrame {
@@ -27,7 +27,10 @@ final class GTKPageFrame {
     private var overflowButton: GTKWidget?
     fileprivate var overflowPopover: GTKWidget?
 
-    /// The style sheet's class painting the header bar.
+    /// The bar beneath the header bar holding a tabbed view's switcher, where the page has one.
+    private var tabsBar: GTKWidget?
+
+    /// The style sheet's class painting the header bar, and the tabs' bar with it.
     private var barClass: String?
     private(set) var overflowButtons: [GTKButtonView] = []
 
@@ -69,6 +72,7 @@ final class GTKPageFrame {
         if chrome.offersBack != self.chrome.offersBack {
             adw_header_bar_set_show_back_button(header.opaque, chrome.offersBack ? 1 : 0)
         }
+        if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
@@ -81,9 +85,35 @@ final class GTKPageFrame {
     private func paintBar(background: HostValue?, foreground: HostValue?) {
         let painted = GTKStyleSheet.bar(
             background: GTKBrush(background).firstColor, foreground: foreground.flatMap(GTKBrush.rgba))
-        if let barClass { gtk_widget_remove_css_class(header, barClass) }
-        if let painted { gtk_widget_add_css_class(header, painted) }
+        for bar in [header] + (tabsBar.map { [$0] } ?? []) {
+            if let barClass { gtk_widget_remove_css_class(bar, barClass) }
+            if let painted { gtk_widget_add_css_class(bar, painted) }
+        }
         barClass = painted
+    }
+
+    /// The tabs' switcher at the start of a bar of its own beneath the header bar, which scrolls it across where the
+    /// page is narrower than its tabs: the header bar keeps its room for the title and the buttons.
+    /// Design: docs/design/platforms/gtk/pages.md#tabs
+    private func showTabs(_ tabs: GTKView?) {
+        if let tabsBar { adw_toolbar_view_remove(widget.opaque, tabsBar) }
+        tabsBar = nil
+        guard let tabs else { return }
+
+        if let row = gtk_widget_get_parent(tabs.widget),
+           g_type_check_instance_is_a(row.of(GTypeInstance.self), gtk_box_get_type()) != 0 {
+            gtk_box_remove(row.of(GtkBox.self), tabs.widget)
+        }
+        let row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0)!
+        gtk_widget_add_css_class(row, "toolbar")
+        gtk_box_append(row.of(GtkBox.self), tabs.widget)
+        let bar = gtk_scrolled_window_new()!
+        gtk_scrolled_window_set_policy(bar.opaque, GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER)
+        gtk_scrolled_window_set_propagate_natural_height(bar.opaque, 1)
+        gtk_scrolled_window_set_child(bar.opaque, row)
+        if let barClass { gtk_widget_add_css_class(bar, barClass) }
+        adw_toolbar_view_add_top_bar(widget.opaque, bar)
+        tabsBar = bar
     }
 
     /// The sidebar's toggle at the bar's start, pressed in while the sidebar shows, while the page offers it.

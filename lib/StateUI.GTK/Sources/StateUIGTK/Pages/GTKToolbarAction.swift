@@ -21,11 +21,14 @@ struct GTKToolbarAction {
 }
 
 /// What a page's header bar shows: the page's title or its title view, the page's actions, the overflow behind the
-/// bar's menu, whether the bar shows at all and whether it offers the way back.
+/// bar's menu, whether the bar shows at all and whether it offers the way back - and the tabs beneath it.
 @MainActor
 struct GTKPageChrome {
     var title = ""
     var titleView: GTKView?
+
+    /// A tabbed view's switcher, which stands in a bar of its own beneath the header bar; nil for none.
+    var tabs: GTKView?
     var actions: [GTKToolbarAction] = []
     var overflow: [GTKToolbarAction] = []
     var showsBar = true

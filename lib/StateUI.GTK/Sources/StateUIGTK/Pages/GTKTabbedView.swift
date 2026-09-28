@@ -6,7 +6,7 @@
 import CStateUIGTK
 
 /// A TabbedView: a `GtkStack` of its tabs, chosen by a `GtkStackSwitcher` - its tabs' captions joined in one
-/// control - which stands in the middle of the header bar of the frame the tabbed view stands in.
+/// control - which stands beneath the header bar of the frame the tabbed view stands in.
 /// Design: docs/design/platforms/gtk/pages.md#tabs
 @MainActor
 final class GTKTabbedView: GTKLayoutView {
@@ -16,7 +16,7 @@ final class GTKTabbedView: GTKLayoutView {
     /// What the view does when the user chooses a tab, handed the one it showed and the one it shows.
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
-    /// The switcher its frame's header bar shows in its middle.
+    /// The switcher its frame shows beneath its header bar.
     let switcher = GTKWidgetView { gtk_stack_switcher_new() }
 
     private let stack = GTKWidgetView { gtk_stack_new() }
