@@ -119,9 +119,13 @@ final class GTKItemsView: GTKLayoutView {
             gtk_orientable_set_orientation(
                 made.opaque, shape.isAcross ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL)
         }
-        // A row stands at its natural size: at its least, a StateUI panel's nothing, every row fits in view at once.
-        gtk_scrollable_set_hscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
-        gtk_scrollable_set_vscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
+        // A row stands at its natural length: at its least, a StateUI panel's nothing, every row fits in view at
+        // once. Across the list it stands at the list's own width.
+        if shape.isAcross {
+            gtk_scrollable_set_hscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
+        } else {
+            gtk_scrollable_set_vscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
+        }
         connectSignal(UnsafeMutableRawPointer(made), "activate", number: number) { (_: UnsafeMutableRawPointer?, place: UInt32, data: gpointer?) in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.activated(Int(place)) }
         }
