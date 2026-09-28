@@ -4,8 +4,8 @@
 [![AppKit](https://github.com/idexus/StateUI/actions/workflows/appkit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/appkit.yml?query=branch%3Amain)
 [![UIKit](https://github.com/idexus/StateUI/actions/workflows/uikit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/uikit.yml?query=branch%3Amain)
 [![Android](https://github.com/idexus/StateUI/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/android.yml?query=branch%3Amain)
-[![GTK](https://github.com/idexus/StateUI/actions/workflows/gtk.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/gtk.yml?query=branch%3Amain)
 [![WinUI](https://github.com/idexus/StateUI/actions/workflows/winui.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/winui.yml?query=branch%3Amain)
+[![GTK](https://github.com/idexus/StateUI/actions/workflows/gtk.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/gtk.yml?query=branch%3Amain)
 # StateUI
 
  **Native interfaces, written in Swift.**
@@ -14,13 +14,13 @@ identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
 Every host is Swift, in the application's own process, and all five native
-hosts are active on the same host contract: AppKit, UIKit, GTK 4 with
-libadwaita, Android Views and WinUI 3. What each realizes, element by element
+hosts are active on the same host contract: AppKit, UIKit, Android Views,
+WinUI 3 and GTK 4 with libadwaita. What each realizes, element by element
 and member by member, is the [platform contract](docs/platform-contract.md),
 rendered from each host's own test run. Web DOM/CSS comes after the native
 contract is settled.
 
-| AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | ☑️ | ☑️ | ☑️ | ☑️ | ☑️ | — |
 
