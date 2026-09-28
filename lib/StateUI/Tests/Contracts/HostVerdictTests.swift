@@ -31,7 +31,7 @@ final class HostVerdictTests: XCTestCase {
     /// A line that says no verdict is refused: a mark nobody can read is no mark.
     func testALineThatSaysNoVerdictIsRefused() {
         for line in ["Button.clicked", "Button.clicked: yes", "Button.clicked: ☑️ ", "Button.clicked: – ",
-                     "Button..clicked: ✅", ": ✅", "Button clicked: ✅", "Button.clicked.twice: ✅", "Button: waits on ", "Button: ❌ ", "Button: ◐ ", "Button: 🪞 "] {
+                     "Button..clicked: ✅", ": ✅", "Button clicked: ✅", "Button.clicked.twice: ✅", "Button: waits on ", "Button: ❌ ", "Button: ◐ ", "Button: 🔌 "] {
             XCTAssertNil(HostVerdict(line: line), line)
         }
         XCTAssertNil(HostVerdict.read("Button: ✅\nwhat?\n"))
@@ -71,7 +71,7 @@ final class HostVerdictTests: XCTestCase {
             Label: ✅
             Label.opacity: ◐ cannot read opacity of Label - No path.
             Label.tapped: ✅
-            Label.text: 🪞 read text of Label: kept
+            Label.text: 🔌 read text of Label: kept
             SplitView: ◐ waits on SplitView.isSidebarVisible
             Stepper: waits on Stepper.step
             Switch.isOn: ◐ cannot read isOn of Switch - Hidden.

@@ -50,7 +50,7 @@ struct ControlDictionary {
     /// What a mark means.
     static let legend = "✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what "
         + "is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ "
-        + "some of its tests proved it, another could not run or read · 🪞 proven only through the host's own entry or "
+        + "some of its tests proved it, another could not run or read · 🔌 proven only through the host's own entry or "
         + "record, not the toolkit's · · the driver cannot yet do or read what its "
         + "test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources "
         + "than these · empty: not realized, or no run - the note says which"
@@ -101,7 +101,7 @@ struct ControlDictionary {
             case .notPlanned(let reason)?: ("–", reason)
             case .failed(let message)?: ("❌", message)
             case .partly(let why)?: ("◐", why)
-            case .byHost(let why)?: ("🪞", "only through the host's own: \(why)")
+            case .byHost(let why)?: ("🔌", "only through the host's own: \(why)")
             case .cannot(let why)?: ("·", "cannot \(why)")
             case .waiting(let gap)?: ("⏸", "waits on \(gap), not realized yet")
             case .notRealized?: ("", "not realized")

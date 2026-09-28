@@ -1,8 +1,8 @@
 # inputs 4743f7a0442396c73d979658f725a5cee6451a87
 ActivityIndicator.isVisible: ✅
-ActivityIndicator.translationX: 🪞 read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
-Button.scale: 🪞 read scale of Button: the host's own transform, checked against the layer it composed itself
-Canvas.rotation: 🪞 read rotation of Canvas: the host's own transform, checked against the layer it composed itself
+ActivityIndicator.translationX: 🔌 read translationX of ActivityIndicator: the host's own transform, checked against the layer it composed itself
+Button.scale: 🔌 read scale of Button: the host's own transform, checked against the layer it composed itself
+Canvas.rotation: 🔌 read rotation of Canvas: the host's own transform, checked against the layer it composed itself
 CheckBox.layoutDirection: not realized
 ColorBox.isAccessibilityHidden: ✅
 DatePicker.accessibilityLabel: ✅
@@ -11,9 +11,9 @@ Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.width: ✅
 HStack.isVisible: ✅
-HStack.translationX: 🪞 read translationX of HStack: the host's own transform, checked against the layer it composed itself
-Image.scale: 🪞 read scale of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.rotation: 🪞 read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
+HStack.translationX: 🔌 read translationX of HStack: the host's own transform, checked against the layer it composed itself
+Image.scale: 🔌 read scale of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.rotation: 🔌 read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.layoutDirection: not realized
 Line.isAccessibilityHidden: ✅
 Map.accessibilityLabel: not realized
@@ -22,8 +22,8 @@ Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.width: ✅
 Polygon.isVisible: ✅
-Polygon.translationX: 🪞 read translationX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.scale: 🪞 read scale of Polyline: the host's own transform, checked against the layer it composed itself
+Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.scale: 🔌 read scale of Polyline: the host's own transform, checked against the layer it composed itself
 PositionIndicator.rotation: not realized
 ProgressBar.layoutDirection: not realized
 RadioButton.isAccessibilityHidden: ✅
@@ -33,9 +33,9 @@ SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.width: ✅
 Slider.isVisible: ✅
-Slider.translationX: 🪞 read translationX of Slider: the host's own transform, checked against the layer it composed itself
-Stepper.scale: 🪞 read scale of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.rotation: 🪞 read rotation of Switch: the host's own transform, checked against the layer it composed itself
+Slider.translationX: 🔌 read translationX of Slider: the host's own transform, checked against the layer it composed itself
+Stepper.scale: 🔌 read scale of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotation: 🔌 read rotation of Switch: the host's own transform, checked against the layer it composed itself
 TextEditor.layoutDirection: not realized
 TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅
@@ -45,4 +45,4 @@ VStack.height: ✅
 VStack.width: ✅
 WebView.isVisible: not realized
 WebView.translationX: not realized
-ZStack.scale: 🪞 read scale of ZStack: the host's own transform, checked against the layer it composed itself
+ZStack.scale: 🔌 read scale of ZStack: the host's own transform, checked against the layer it composed itself

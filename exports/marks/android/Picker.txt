@@ -5,7 +5,7 @@ Picker.closed: cannot open on Picker - Android's driver has no path for it yet
 Picker.frameChanged: ✅
 Picker.isOpen: cannot open on Picker - Android's driver has no path for it yet
 Picker.opened: cannot open on Picker - Android's driver has no path for it yet
-Picker.options: 🪞 read options of Picker: the rows the relay keeps, not the spinner's
+Picker.options: 🔌 read options of Picker: the rows the relay keeps, not the spinner's
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
-Picker.title: 🪞 read title of Picker: the rows the relay keeps, not the spinner's
+Picker.title: 🔌 read title of Picker: the rows the relay keeps, not the spinner's

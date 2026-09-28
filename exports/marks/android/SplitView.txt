@@ -1,5 +1,5 @@
 # inputs 9d3058c89793f6212a1c0902993f24136a66a4ac
 Label.frameChanged: ✅
 SplitView: ✅
-SplitView.isSidebarVisible: 🪞 read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it
-SplitView.isSidebarVisibleChanged: 🪞 toggle on SplitView: the host's own entry the scrim's tap and the bar's button call
+SplitView.isSidebarVisible: 🔌 read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it
+SplitView.isSidebarVisibleChanged: 🔌 toggle on SplitView: the host's own entry the scrim's tap and the bar's button call

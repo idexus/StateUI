@@ -1,5 +1,5 @@
 # inputs 4743f7a0442396c73d979658f725a5cee6451a87
-ToolbarItem: 🪞 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
-ToolbarItem.clicked: 🪞 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+ToolbarItem: 🔌 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
+ToolbarItem.clicked: 🔌 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
 ToolbarItem.placement: cannot read placement of ToolbarItem - AppKit's driver has no path for it yet
 ToolbarItem.priority: cannot read priority of ToolbarItem - AppKit's driver has no path for it yet

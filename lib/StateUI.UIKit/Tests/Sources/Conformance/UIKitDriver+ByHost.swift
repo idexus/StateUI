@@ -5,7 +5,7 @@
 
 /// What the UIKit driver reaches past UIKit: the acts it hands to the host's own entry, as UIKit lets a test send no
 /// touch and moves no scene, and the reads of what the host keeps. A member proven only that way is the host's own -
-/// 🪞.
+/// 🔌.
 /// Design: docs/design/platforms/uikit/conformance.md#what-goes-past-uikit
 extension UIKitDriver {
     func byHost(_ ability: String) -> String? {

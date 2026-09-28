@@ -2,5 +2,5 @@
 Label.frameChanged: ✅
 NavigationStack: ✅
 NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet
-NavigationStack.popped: 🪞 goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched
+NavigationStack.popped: 🔌 goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched
 Page.title: ✅

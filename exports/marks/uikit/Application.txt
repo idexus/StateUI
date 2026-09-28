@@ -1,14 +1,14 @@
 # inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 Application: ✅
-Application.alert: 🪞 read a question: the buttons' captions the host keeps
-Application.announce: 🪞 read what the screen reader said: the host's own list of what it announced
-Application.chooseAction: 🪞 read a question: the buttons' captions the host keeps
-Application.confirm: 🪞 read a question: the buttons' captions the host keeps
+Application.alert: 🔌 read a question: the buttons' captions the host keeps
+Application.announce: 🔌 read what the screen reader said: the host's own list of what it announced
+Application.chooseAction: 🔌 read a question: the buttons' captions the host keeps
+Application.confirm: 🔌 read a question: the buttons' captions the host keeps
 Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
 Application.persistSceneValue: not realized
 Application.persistValue: ✅
-Application.prompt: 🪞 read a question: the buttons' captions the host keeps
+Application.prompt: 🔌 read a question: the buttons' captions the host keeps
 Application.utcOffset: ✅

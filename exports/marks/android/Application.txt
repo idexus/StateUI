@@ -1,14 +1,14 @@
 # inputs 9d3058c89793f6212a1c0902993f24136a66a4ac
 Application: ✅
-Application.alert: 🪞 read a question: what the relay keeps of the dialog it showed
+Application.alert: 🔌 read a question: what the relay keeps of the dialog it showed
 Application.announce: cannot read what the screen reader said - Android's driver has no path for it yet
-Application.chooseAction: 🪞 read a question: what the relay keeps of the dialog it showed
-Application.confirm: 🪞 read a question: what the relay keeps of the dialog it showed
+Application.chooseAction: 🔌 read a question: what the relay keeps of the dialog it showed
+Application.confirm: 🔌 read a question: what the relay keeps of the dialog it showed
 Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: cannot read the log - Android's driver has no path for it yet
 Application.hideOnScreenKeyboard: cannot focus on TextField - Android's driver has no path for it yet
 Application.persistSceneValue: not realized
 Application.persistValue: cannot read what is kept - Android's driver has no path for it yet
-Application.prompt: 🪞 read a question: what the relay keeps of the dialog it showed
+Application.prompt: 🔌 read a question: what the relay keeps of the dialog it showed
 Application.utcOffset: ✅

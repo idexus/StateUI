@@ -7,5 +7,5 @@ Picker.isOpen: cannot read isOpen of Picker - AppKit's driver has no path for it
 Picker.opened: cannot read isOpen of Picker - AppKit's driver has no path for it yet
 Picker.options: ✅
 Picker.selectedIndex: ✅
-Picker.selectedIndexChanged: 🪞 choose on Picker: the host's action called, not the pop-up's
+Picker.selectedIndexChanged: 🔌 choose on Picker: the host's action called, not the pop-up's
 Picker.title: ✅

@@ -23,7 +23,7 @@
         case failed(String)
         /// ◐: some of its cases proved it, another could not run or read; why not.
         case partly(String)
-        /// 🪞: its cases passed only through the host's own entry or record - an act handed past the toolkit's
+        /// 🔌: its cases passed only through the host's own entry or record - an act handed past the toolkit's
         /// input, a read of what the host keeps rather than what the toolkit holds; which, and why.
         case byHost(String)
     }
@@ -60,7 +60,7 @@
         case .waiting(let gap): "\(subject): waits on \(gap)"
         case .failed(let message): "\(subject): ❌ \(message)"
         case .partly(let why): "\(subject): ◐ \(why)"
-        case .byHost(let why): "\(subject): 🪞 \(why)"
+        case .byHost(let why): "\(subject): 🔌 \(why)"
         }
     }
 
@@ -94,7 +94,7 @@
             mark = .failed(message)
         } else if let why = text(after: "◐"), !why.isEmpty {
             mark = .partly(why)
-        } else if let why = text(after: "🪞"), !why.isEmpty {
+        } else if let why = text(after: "🔌"), !why.isEmpty {
             mark = .byHost(why)
         } else {
             return nil

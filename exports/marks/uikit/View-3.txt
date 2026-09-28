@@ -7,10 +7,10 @@ Button.dragText: not realized
 Button.dropCompleted: not realized
 Button.frameChanged: ✅
 Button.margin: ✅
-Canvas.pinchUpdated: 🪞 pinch on Canvas: the view's listening handed the recognizer's states, no touch sent
-CheckBox.panYChannel: 🪞 pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
-ColorBox.tapCount: 🪞 tap on ColorBox: the view's listening handed the recognizer's states, no touch sent
-ColorBox.tapped: 🪞 tap on ColorBox: the view's listening handed the recognizer's states, no touch sent
+Canvas.pinchUpdated: 🔌 pinch on Canvas: the view's listening handed the recognizer's states, no touch sent
+CheckBox.panYChannel: 🔌 pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
+ColorBox.tapCount: 🔌 tap on ColorBox: the view's listening handed the recognizer's states, no touch sent
+ColorBox.tapped: 🔌 tap on ColorBox: the view's listening handed the recognizer's states, no touch sent
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
@@ -21,17 +21,17 @@ Ellipse.drop: not realized
 Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.verticalAlignment: ✅
-Grid.pointerEntered: 🪞 hover on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.pointerExited: 🪞 hover on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.pointerMoved: 🪞 hover on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.pointerPressed: 🪞 hover on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.pointerReleased: 🪞 hover on Grid: the view's listening handed the recognizer's states, no touch sent
-HStack.swipeDirection: 🪞 pan on HStack: the view's listening handed the recognizer's states, no touch sent
-HStack.swipeThreshold: 🪞 pan on HStack: the view's listening handed the recognizer's states, no touch sent
-HStack.swiped: 🪞 pan on HStack: the view's listening handed the recognizer's states, no touch sent
-Image.panTouchCount: 🪞 pan on Image: the view's listening handed the recognizer's states, no touch sent
-Image.panUpdated: 🪞 pan on Image: the view's listening handed the recognizer's states, no touch sent
-Image.panXChannel: 🪞 pan on Image: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerEntered: 🔌 hover on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerExited: 🔌 hover on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerMoved: 🔌 hover on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerPressed: 🔌 hover on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerReleased: 🔌 hover on Grid: the view's listening handed the recognizer's states, no touch sent
+HStack.swipeDirection: 🔌 pan on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.swipeThreshold: 🔌 pan on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.swiped: 🔌 pan on HStack: the view's listening handed the recognizer's states, no touch sent
+Image.panTouchCount: 🔌 pan on Image: the view's listening handed the recognizer's states, no touch sent
+Image.panUpdated: 🔌 pan on Image: the view's listening handed the recognizer's states, no touch sent
+Image.panXChannel: 🔌 pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
@@ -44,9 +44,9 @@ Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.margin: ✅
 Map.pinchUpdated: not realized
-Path.panYChannel: 🪞 pan on Path: the view's listening handed the recognizer's states, no touch sent
-Picker.tapCount: 🪞 tap on Picker: the view's listening handed the recognizer's states, no touch sent
-Picker.tapped: 🪞 tap on Picker: the view's listening handed the recognizer's states, no touch sent
+Path.panYChannel: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
+Picker.tapCount: 🔌 tap on Picker: the view's listening handed the recognizer's states, no touch sent
+Picker.tapped: 🔌 tap on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridRow: ✅
@@ -62,12 +62,12 @@ PositionIndicator.pointerExited: not realized
 PositionIndicator.pointerMoved: not realized
 PositionIndicator.pointerPressed: not realized
 PositionIndicator.pointerReleased: not realized
-ProgressBar.swipeDirection: 🪞 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.swipeThreshold: 🪞 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.swiped: 🪞 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panTouchCount: 🪞 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panUpdated: 🪞 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
-RadioButton.panXChannel: 🪞 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.swipeDirection: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.swipeThreshold: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.swiped: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+RadioButton.panTouchCount: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.panUpdated: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
+RadioButton.panXChannel: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
@@ -79,10 +79,10 @@ SearchField.dragText: not realized
 SearchField.dropCompleted: not realized
 SearchField.frameChanged: ✅
 SearchField.margin: ✅
-Slider.pinchUpdated: 🪞 pinch on Slider: the view's listening handed the recognizer's states, no touch sent
-Stepper.panYChannel: 🪞 pan on Stepper: the view's listening handed the recognizer's states, no touch sent
-Switch.tapCount: 🪞 tap on Switch: the view's listening handed the recognizer's states, no touch sent
-Switch.tapped: 🪞 tap on Switch: the view's listening handed the recognizer's states, no touch sent
+Slider.pinchUpdated: 🔌 pinch on Slider: the view's listening handed the recognizer's states, no touch sent
+Stepper.panYChannel: 🔌 pan on Stepper: the view's listening handed the recognizer's states, no touch sent
+Switch.tapCount: 🔌 tap on Switch: the view's listening handed the recognizer's states, no touch sent
+Switch.tapped: 🔌 tap on Switch: the view's listening handed the recognizer's states, no touch sent
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
@@ -93,17 +93,17 @@ TextField.drop: not realized
 TextField.frameChanged: ✅
 TextField.horizontalAlignment: ✅
 TextField.verticalAlignment: ✅
-TimePicker.pointerEntered: 🪞 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.pointerExited: 🪞 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.pointerMoved: 🪞 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.pointerPressed: 🪞 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.pointerReleased: 🪞 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerEntered: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerExited: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerMoved: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerPressed: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerReleased: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TitleBar.swipeDirection: not realized
 TitleBar.swipeThreshold: not realized
 TitleBar.swiped: not realized
-VStack.panTouchCount: 🪞 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.panUpdated: 🪞 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.panXChannel: 🪞 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.panTouchCount: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.panUpdated: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.panXChannel: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
 WebView.frameChanged: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅

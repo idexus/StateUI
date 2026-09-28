@@ -1,7 +1,7 @@
 # inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 Canvas: ✅
-Canvas.dragged: 🪞 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
+Canvas.dragged: 🔌 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.drawable: ✅
 Canvas.frameChanged: ✅
-Canvas.pressed: 🪞 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
-Canvas.released: 🪞 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
+Canvas.pressed: 🔌 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
+Canvas.released: 🔌 pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
