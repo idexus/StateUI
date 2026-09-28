@@ -18,6 +18,25 @@ extension MountedElement {
         }
     }
 
+    /// The page whose title names the window while this arrangement shows: the visible page, but tabs pushed onto a
+    /// stack keep the title of the page beneath them - their pages name their tabs alone; nil for none.
+    /// Design: docs/design/host/pages.md#the-windows-chrome
+    public var titledPage: MountedElement? {
+        switch type {
+        case .page: return self
+        case .navigationStack: return children.last?.titledPage
+        case .splitView: return children.dropFirst().first?.titledPage
+        case .tabbedView:
+            if let tab = selectedTab, tab.type != .page { return tab.titledPage }
+            if let stack = parent, stack.type == .navigationStack,
+               let place = stack.children.firstIndex(where: { $0 === self }), place > 0 {
+                return stack.children[place - 1].titledPage
+            }
+            return selectedTab
+        default: return nil
+        }
+    }
+
     /// The stack around the visible page, where the path has one.
     public var visibleNavigationStack: MountedElement? {
         switch type {

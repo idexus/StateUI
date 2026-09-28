@@ -74,10 +74,10 @@ struct SampleTabPage: ContentView {
                 .horizontalAlignment(.start)
         }
         // Dressed as every page of the gallery is, and named and pictured for
-        // its tab: the tab's caption and icon, the caption the window's title
-        // while the tab is chosen. What a sample adds to the bar it writes
-        // from its own `.onCreated`, which runs after this one, being further
-        // in.
+        // its tab: the tab's caption and icon. The window keeps the title of
+        // the page the sample was pushed from. What a sample adds to the bar
+        // it writes from its own `.onCreated`, which runs after this one,
+        // being further in.
         .onCreated {
             page.gallery(sample.caption(of: tab), scene: scene, nav: nav)
             page.icon = sample.icon(of: tab)

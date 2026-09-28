@@ -26,11 +26,13 @@ extension GTKElement {
 
     /// What a framed element's header bar shows. A page's own: its title or title view, its actions as the host layer
     /// orders them, whether its bar shows and whether it offers the way back. A tabbed view's: the chosen tab's
-    /// page's, its switcher beneath the bar.
+    /// page's, named by the page that names the window (`titledPage`), its switcher beneath the bar.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     var chrome: GTKPageChrome {
         if type == .tabbedView {
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()
+            chrome.title = element.titledPage?.value(.title)?.string
+                ?? element.enclosing(type: .window)?.value(.title)?.string ?? ""
             chrome.tabs = (view as? GTKTabbedView)?.switcher
             chrome.showsBar = value(.hasNavigationBar)?.bool != false
             chrome.offersBack = value(.hasBackButton)?.bool != false

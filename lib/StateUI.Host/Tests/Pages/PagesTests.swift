@@ -186,6 +186,30 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(chrome.sidebarToggle)
     }
 
+    /// Tabs pushed onto a stack keep the title of the page beneath them; tabs with nothing beneath name the window by
+    /// the chosen tab, and a stack in a tab by its top page.
+    func testTabsPushedOntoAStackKeepTheTitleBeneathThem() throws {
+        let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
+            node("stack", .navigationStack, children: [
+                node("group", .page, [.title: .string("Items and Cards")]),
+                node("tabs", .tabbedView, [.currentPage: .number(1)], children: [
+                    node("one", .page, [.title: .string("Example 1")]),
+                    node("two", .page, [.title: .string("Example 2")]),
+                ]),
+            ]),
+            node("alone", .tabbedView, children: [node("tab", .page, [.title: .string("Tab")])]),
+            node("stacked", .tabbedView, children: [
+                node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let title = { (id: String) in WindowChrome(window: root, arrangement: root.first(id: .manual(id))).title }
+
+        XCTAssertEqual(title("stack"), "Items and Cards", "the page the tabs were pushed onto")
+        XCTAssertEqual(title("alone"), "Tab", "the chosen tab, where nothing lies beneath")
+        XCTAssertEqual(title("stacked"), "Top", "a stack in a tab names the window by its top page")
+    }
+
     /// A menu walks its items, separators and submenus in order, each with its caption and whether it can be chosen;
     /// a bar holds only its menus.
     func testAMenuIsWalkedInOrder() throws {

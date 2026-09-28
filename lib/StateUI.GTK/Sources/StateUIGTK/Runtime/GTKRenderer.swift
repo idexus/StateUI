@@ -145,8 +145,8 @@ final class GTKRenderer {
         }
         arrangement?.composeChrome()
         adaptSplitViews(in: window)
-        let pageTitle = presentation.arrangement?.visiblePage?.value(.title)?.string
-        window.setTitle(pageTitle.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+        let title = WindowChrome(window: element.element, arrangement: presentation.arrangement).title
+        window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
     }
 
     /// Collapses the window's split view where the window is narrow.

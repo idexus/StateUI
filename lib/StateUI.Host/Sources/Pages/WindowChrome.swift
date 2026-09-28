@@ -8,7 +8,8 @@
 /// sidebar's toggle - elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
-    /// The visible page's title, else the window's; nil where neither names one, which leaves the host's own.
+    /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
+    /// which leaves the host's own.
     public var title: String?
 
     /// The stack whose top page the way back takes, and the way back's words.
@@ -45,7 +46,7 @@
     public init(window: MountedElement, arrangement: MountedElement?) {
         let page = arrangement?.visiblePage
         let titleBar = window.children.first { $0.type == .titleBar }
-        title = page?.value(.title)?.string ?? window.value(.title)?.string
+        title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
         back = arrangement?.visibleBackStack.map { stack in
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? "Back")
         }

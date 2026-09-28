@@ -108,7 +108,7 @@ final class GTKTabbedViewTests: XCTestCase {
             let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
             let frame = try XCTUnwrap(host.window?.pageFrame)
             XCTAssertTrue(frame.chrome.tabs === tabs.switcher)
-            XCTAssertEqual(frame.chrome.title, "One")
+            XCTAssertEqual(frame.chrome.title, "One", "nothing beneath: the chosen tab names the frame")
             XCTAssertEqual(gtk_widget_is_ancestor(tabs.switcher.widget, frame.header), 0, "not in the header bar")
             XCTAssertNotEqual(gtk_widget_is_ancestor(tabs.switcher.widget, frame.widget), 0, "but in the frame's bars")
 
@@ -121,7 +121,8 @@ final class GTKTabbedViewTests: XCTestCase {
         }
     }
 
-    /// A tabbed view pushed on a stack is a page of it, in a frame holding its switcher beneath the header bar.
+    /// A tabbed view pushed on a stack is a page of it, in a frame holding its switcher beneath the header bar, which
+    /// - and the window - keeps the title of the page beneath.
     func testATabbedViewPushedOnAStackStandsInAFrame() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -134,6 +135,8 @@ final class GTKTabbedViewTests: XCTestCase {
             let tabs = try XCTUnwrap(host.views(GTKTabbedView.self).first)
             let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
             XCTAssertTrue(navigation.frames.last?.chrome.tabs === tabs.switcher)
+            XCTAssertEqual(navigation.frames.last?.chrome.title, "Home")
+            XCTAssertEqual(host.windowTitle, "Home")
         }
     }
 }
