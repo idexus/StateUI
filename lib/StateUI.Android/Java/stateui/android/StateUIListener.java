@@ -85,11 +85,10 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
         StateUIHost.scrolled(view);
     }
 
-    /** Which gestures `touched`'s element listens for; see `StateUIGestures.configure`. */
-    void setGestures(View touched, float density, int taps, int panFingers, int swipeDirections,
-                     float swipeThreshold, boolean pinch, boolean pointer) {
+    /** What `touched`'s element listens for; see `StateUIGestures.configure`. */
+    void setGestures(View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer) {
         if (gestures == null) gestures = new StateUIGestures(touched, view, density);
-        gestures.configure(taps, panFingers, swipeDirections, swipeThreshold, pinch, pointer);
+        gestures.configure(countsTaps, drags, pinch, pointer);
     }
 
     /** Whether a gesture under way takes the rest of the touch from the view's own handling. */

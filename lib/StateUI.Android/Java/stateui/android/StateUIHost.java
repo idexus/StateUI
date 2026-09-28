@@ -87,11 +87,17 @@ final class StateUIHost {
     static native void answered(long ticket, boolean accepted, String words);
 
     /**
-     * A gesture on a view, as `StateUIGestures` numbers its kind: a tap; a pan's phase and its distance so far;
-     * a swipe's direction; a pinch's phase, its scale since the last and where it is centred; the pointer
-     * entering, moving, pressing, releasing or leaving, and where - all in points.
+     * What the user did to a view, as `StateUIGestures` numbers its kind: a tap and its place in its run; a pinch's
+     * phase, its scale since the last and where it is centred; the pointer entering, moving, pressing, releasing or
+     * leaving, and where - all in points.
      */
     static native void gestured(long view, int kind, int phase, float x, float y, float z);
+
+    /**
+     * A press on a view - down, moved, let go or taken away - at a point of the screen in points; whether it is a
+     * drag now, by the host layer's rule, which then takes the rest of the touch.
+     */
+    static native boolean pressed(long view, int phase, float x, float y);
 
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);

@@ -86,11 +86,14 @@ enum JavaNatives {
         let gestured: @convention(c) (Environment, jclass?, jlong, jint, jint, jfloat, jfloat, jfloat) -> Void = {
             _, _, number, kind, phase, x, y, z in
             MainActor.assumeIsolated {
-                guard let view = AndroidView.find(number),
-                      let gesture = AndroidView.Gesture(
-                        kind: kind, phase: phase, x: Double(x), y: Double(y), z: Double(z))
-                else { return }
-                view.onGesture?(gesture)
+                AndroidView.find(number)?.heard(kind: kind, phase: phase, x: Double(x), y: Double(y), z: Double(z))
+            }
+        }
+        let pressed: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat) -> jboolean = {
+            _, _, number, phase, x, y in
+            MainActor.assumeIsolated {
+                let dragging = AndroidView.find(number)?.heardPress(phase: phase, at: Point(x: Double(x), y: Double(y)))
+                return dragging == true ? 1 : 0
             }
         }
         let focusChanged: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, focused in
@@ -290,6 +293,7 @@ enum JavaNatives {
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
+            ("pressed", "(JIFF)Z", unsafeBitCast(pressed, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),

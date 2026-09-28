@@ -221,21 +221,25 @@ heading but not its level.
 
 ## Gestures
 
-A view has one listener, and the gestures its element listens for are told
-apart there from the touches and the hovering pointer the view gets: taps
-counted, a pan and the fingers it takes, a swipe, a pinch, and the pointer.
-Each reaches Swift through one native, in points. One tap is the view's click,
-which keeps what a click brings; two or more are counted from quick taps near
-each other. A pan is measured on the screen from where the finger went down,
-since a view that follows its pan moves where its own touches are measured;
-it starts past the platform's slop and, once started, takes the rest of the
-touch - the view's own press and click are called off. A view that listens for
-a pan, a swipe or a pinch keeps its touch from a scroller around it, so a drag
-that starts on it is its own. A swipe is the axis the finger moved most along,
-past its threshold, in a direction asked for. A pinch starts once Android
-tells it apart - past its own slop, as a pan does - scales from there, and ends
-where it was last centred. A view with no handling of its own is given the
-whole touch; a control keeps its own.
+A view has one listener, and what its element listens for (`MountedElement.
+hearing`) is told there from the touches and the hovering pointer the view
+gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
+taps, a press dragged, a pinch, and the pointer. One tap is the view's click,
+which keeps what a click brings; where more make one, the listener counts
+quick taps near each other as Android measures a double tap - Android counts
+no longer runs itself - and tells each with its place in its run. A press is
+told as it goes down, moves, lets go or is taken away, measured on the screen,
+since a view that follows its drag moves where its own touches are measured;
+it is a drag by the host layer's rule (`DragRecognition`) once it passes
+Android's touch slop, and the listener, told so at once, takes the rest of the
+touch - the view's own press and click are called off. A press of more than
+one finger is no drag, as the host layer's hearing says. A swipe is the
+drag's end, far enough, in a direction asked for - the host layer's too. A
+view that listens for a drag or a pinch keeps its touch from a scroller around
+it, so a drag that starts on it is its own. A pinch is Android's own: it
+starts once Android tells it apart, takes the press away, scales from there,
+and ends where it was last centred. A view with no handling of its own is
+given the whole touch; a control keeps its own.
 
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the

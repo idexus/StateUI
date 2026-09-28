@@ -85,11 +85,14 @@ class AndroidView {
     /// The one listener forwarding what the user does to this view, whichever of its interfaces a setter takes.
     private(set) lazy var listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
 
-    /// The gestures the view's element listens for, as last told to its listener.
-    var gestures = Gestures.none
+    /// What of the user's input the view's element listens for, as last told to its listener.
+    var listening = Listening.nothing
 
-    /// What the view does with a gesture its element listens for.
-    var onGesture: ((Gesture) -> Void)?
+    /// What hears the user's input the view heard.
+    var onHeard: ((HeardInput) -> Void)?
+
+    /// The press the view heard, on its way to a drag by the host layer's rule.
+    var press = DragRecognition(distance: .radius(0))
 
     /// What the view does when it takes the keyboard's focus or loses it; nil where nothing listens.
     private(set) var onFocusChanged: ((Bool) -> Void)?
@@ -320,7 +323,7 @@ class AndroidView {
         onTapped = nil
         onMenuOpening = nil
         onMenuChose = nil
-        onGesture = nil
+        onHeard = nil
         onFocusChanged = nil
     }
 

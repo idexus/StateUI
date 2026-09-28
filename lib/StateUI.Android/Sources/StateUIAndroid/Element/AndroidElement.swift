@@ -19,9 +19,6 @@ final class AndroidElement: NativeElement {
     /// Whether a label shows its spans' runs rather than its own words.
     var hasRuns = false
 
-    /// Where the states a pan carries stood as it started.
-    var panFrom = (x: 0.0, y: 0.0)
-
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host

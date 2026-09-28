@@ -384,7 +384,12 @@ enum JavaAPI {
 
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
-    static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FIIIFZZ)V")
+    static let setGestures = Java.method(listener, "setGestures", "(Landroid/view/View;FZZZZ)V")
+
+    static let viewConfiguration = Java.findClass("android/view/ViewConfiguration")
+    static let viewConfigurationOf = Java.staticMethod(
+        viewConfiguration, "get", "(Landroid/content/Context;)Landroid/view/ViewConfiguration;")
+    static let scaledTouchSlop = Java.method(viewConfiguration, "getScaledTouchSlop", "()I")
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
     static let clock = Java.staticMethod(environment, "clock", "()[I")
