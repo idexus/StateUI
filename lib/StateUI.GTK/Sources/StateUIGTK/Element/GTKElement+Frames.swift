@@ -12,10 +12,11 @@ extension GTKElement: FrameReporter {
         view != nil && element.readsOwnFrame
     }
 
-    /// Says where the element stands, where that changed (`MountedElement.reportFrame`).
+    /// Says where the element stands, where that changed (`MountedElement.reportFrame`); nothing while it stands
+    /// nowhere yet.
     func reportFrame() {
-        guard let host, let view else { return }
-        element.reportFrame(view.frameReport(), in: host.runtime)
+        guard let host, let numbers = view?.frameReport() else { return }
+        element.reportFrame(numbers, in: host.runtime)
     }
 }
 

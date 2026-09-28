@@ -152,15 +152,12 @@ class GTKView {
     }
 
     /// Where the view stands, in logical pixels: its frame in its parent, its place in the window, and that place
-    /// from the top left of its page's content, beneath the page's header bar.
+    /// from the top left of its page's content, beneath the page's header bar; nil while it stands in no window
+    /// or no layout has placed it yet.
     /// Design: docs/design/platforms/gtk/layout.md#where-a-view-stands
-    func frameReport() -> [Double] {
-        let place = placed ?? laidOutFrame
-        guard let root = gtk_widget_get_root(widget).map(GTKWidget.init) else {
-            return [place.x, place.y, place.width, place.height, place.x, place.y, place.x, place.y]
-        }
-        let corner = Self.origin(of: widget, in: root)
-        var page = (x: 0.0, y: 0.0)
+    func frameReport() -> [Double]? {
+        guard let root = gtk_widget_get_root(widget).map(GTKWidget.init), isLaidOut else { return nil }
+        var page = Point(x: 0, y: 0)
         var ancestor = gtk_widget_get_parent(widget)
         while let each = ancestor {
             if g_type_check_instance_is_a(each.of(GTypeInstance.self), adw_toolbar_view_get_type()) != 0,
@@ -170,14 +167,19 @@ class GTKView {
             }
             ancestor = gtk_widget_get_parent(each)
         }
-        return [place.x, place.y, place.width, place.height, corner.x, corner.y, corner.x - page.x, corner.y - page.y]
+        return MountedElement.frameNumbers(place: placedFrame, corner: Self.origin(of: widget, in: root), content: page)
     }
 
-    private static func origin(of widget: GTKWidget, in root: GTKWidget) -> (x: Double, y: Double) {
+    /// Whether a layout has placed the view: StateUI's, or GTK's allocation giving it a size.
+    private var isLaidOut: Bool {
+        placed != nil || gtk_widget_get_width(widget) > 0 || gtk_widget_get_height(widget) > 0
+    }
+
+    private static func origin(of widget: GTKWidget, in root: GTKWidget) -> Point {
         var from = graphene_point_t(x: 0, y: 0)
         var to = graphene_point_t()
-        guard gtk_widget_compute_point(widget, root, &from, &to) != 0 else { return (0, 0) }
-        return (Double(to.x), Double(to.y))
+        guard gtk_widget_compute_point(widget, root, &from, &to) != 0 else { return Point(x: 0, y: 0) }
+        return Point(x: Double(to.x), y: Double(to.y))
     }
 
     /// Where GTK laid the widget out in its parent, in logical pixels, its CSS box and transform included.

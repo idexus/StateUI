@@ -60,6 +60,25 @@ final class GTKFrameReportTests: XCTestCase {
         }
     }
 
+    /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
+    /// where it is laid out.
+    func testAViewSaysNothingBeforeItIsLaidOut() {
+        onUIThread {
+            let heard = Received<[Double]>()
+            let host = GTKRenderer.running {
+                VStack {
+                    ColorBox(.steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            host.settle { !heard.values.isEmpty }
+
+            XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 0, 120, 60])
+        }
+    }
+
     /// A view that moves says where it stands again, and one that stands still says nothing twice.
     func testAViewThatMovesSaysItAgain() throws {
         try onUIThread {
