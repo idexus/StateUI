@@ -13,43 +13,28 @@ what it proves apart from what it only needs - a button whose click makes the
 change - and its outcome is the verdict of what it proves alone. Nothing a
 host merely implements or declares by hand earns a mark.
 
-- ✅ means every test of the member that ran on that host passed.
-- ☑️ means the member is proven by its tests, but the host's register records
-  what is still missing; the element's page in
-  [the control dictionary](controls/README.md) names it.
-- – means the member will never be met by that host's family - a phone with no
-  menu bar, a desktop whose keyboard captions no return key, a view that takes
-  no keyboard focus - and meets the contract there: the host's register, or the
-  case that proved it absent, says why, and the Gallery shows that family no
-  example of it. The totals count a host's ✅ and – as met.
-- ❌ means a test of the member failed on that host's last run; the note gives
-  the first failure.
-- ◐ means some of its tests proved it and another could not run or read; the
-  note says which.
-- 🔌 means its tests passed only through the host's own entry or record - an
-  act the driver hands past the toolkit's input, a read of what the host keeps
-  rather than what the toolkit holds - which the driver names; it is not
-  counted as met.
-- · means the host realizes it, but its driver cannot yet do or read what the
-  test needs; ⏸ means its test waits on another member the host does not
-  realize.
-- ⌛ means the verdict was written at another revision of its family than it
-  stands at: each run writes its family's revision over its verdicts, and a
-  change that changes what a family's cases prove raises the family's in
-  `lib/StateUI.Conformance/revisions.txt`, so a verdict of another is stale
-  until the host's suite runs the family again. It carries no note: what that
-  run said is no verdict of the family as it stands.
-- An empty cell means not realized on that host, or no run of it; the note
-  says which. It is deliberately not an estimate of how difficult the work
-  will be.
-- An element's ✅ under [Control creation](#control-creation) means that host's
-  own test proved it makes the element. It does not imply that every member
-  has been completed; the member rows state that separately.
-- An element's row under [Contract members](#contract-members) counts its
-  members by mark. A tier's member and an act are marked only on the page of
-  each element that has it: one element may realize what another does not,
-  so no one mark says it for a host, and the tables naming them here carry
-  none.
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | Every test of the member that ran on that host passed. |
+| ☑️ | The member is proven by its tests, but the host's register records what is still missing; the element's page in [the control dictionary](controls/README.md) names it. |
+| – | The member will never be met by that host's family - a phone with no menu bar, a desktop whose keyboard captions no return key, a view that takes no keyboard focus - and meets the contract there: the host's register, or the case that proved it absent, says why, and the Gallery shows that family no example of it. |
+| ❌ | A test of the member failed on that host's last run; the note gives the first failure. |
+| ◐ | Some of its tests proved it and another could not run or read; the note says which. |
+| 🔌 | Its tests passed only through the host's own entry or record - an act the driver hands past the toolkit's input, a read of what the host keeps rather than what the toolkit holds - which the driver names; it is not counted as met. |
+| · | The host realizes it, but its driver cannot yet do or read what the test needs. |
+| ⏸ | Its test waits on another member the host does not realize. |
+| ⌛ | The verdict was written at another revision of its family than it stands at: each run writes its family's revision over its verdicts, and a change that changes what a family's cases prove raises the family's in `lib/StateUI.Conformance/revisions.txt`, so a verdict of another is stale until the host's suite runs the family again. It carries no note: what that run said is no verdict of the family as it stands. |
+| empty | Not realized on that host, or no run of it; the note says which. It is deliberately not an estimate of how difficult the work will be. |
+
+A host's totals count its ✅ and – as met. An element's ✅ under
+[Control creation](#control-creation) means that host's own test proved it
+makes the element. It does not imply that every member has been completed;
+the member rows state that separately.
+
+An element's row under [Contract members](#contract-members) counts its
+members by mark. A tier's member and an act are marked only on the page of
+each element that has it: one element may realize what another does not, so
+no one mark says it for a host, and the tables naming them here carry none.
 
 Member by member and element by element, the marks live in [the control
 dictionary](controls/README.md). Every table of marks here that a contract can
