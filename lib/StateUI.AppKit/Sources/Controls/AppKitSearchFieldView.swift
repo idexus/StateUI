@@ -13,7 +13,6 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     var onSubmitted: (() -> Void)?
     private(set) var maximumLength: Int?
 
-    private var writing = false
     private var spellChecking = true
     private var textPrediction = true
     private var cursorPosition: Int?
@@ -89,10 +88,10 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     func setText(_ text: String) {
         guard stringValue != text else { return }
-        writing = true
-        stringValue = text
-        currentEditor()?.string = text
-        writing = false
+        ProgramWrite.perform {
+            stringValue = text
+            currentEditor()?.string = text
+        }
     }
 
     func controlTextDidBeginEditing(_ notification: Notification) {
@@ -100,17 +99,17 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     }
 
     func controlTextDidChange(_ notification: Notification) {
-        guard !writing else { return }
+        guard !ProgramWrite.isWriting else { return }
         let typed = InputWords.cut(stringValue, toBound: maximumLength) ?? stringValue
 
         if typed != stringValue {
-            writing = true
-            stringValue = typed
-            if let editor = currentEditor() {
-                editor.string = typed
-                editor.selectedRange = NSRange(location: typed.utf16.count, length: 0)
+            ProgramWrite.perform {
+                stringValue = typed
+                if let editor = currentEditor() {
+                    editor.string = typed
+                    editor.selectedRange = NSRange(location: typed.utf16.count, length: 0)
+                }
             }
-            writing = false
         }
 
         onTextChanged?(typed)

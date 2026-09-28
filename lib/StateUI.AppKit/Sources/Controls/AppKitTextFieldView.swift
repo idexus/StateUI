@@ -17,7 +17,6 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     var onTextChanged: ((String) -> Void)?
     var onSubmitted: (() -> Void)?
 
-    private var writing = false
     private var spellChecking = true
     private var textPrediction = true
     private var cursorPosition: Int?
@@ -111,14 +110,14 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     func setText(_ text: String) {
         guard textField.stringValue != text else { return }
 
-        writing = true
-        textField.stringValue = text
+        ProgramWrite.perform {
+            textField.stringValue = text
 
-        if let editor = textField.currentEditor() {
-            editor.string = text
+            if let editor = textField.currentEditor() {
+                editor.string = text
+            }
+
         }
-
-        writing = false
         invalidateMeasurements()
     }
 
@@ -127,20 +126,20 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     }
 
     func controlTextDidChange(_ notification: Notification) {
-        guard !writing else { return }
+        guard !ProgramWrite.isWriting else { return }
 
         let typed = InputWords.cut(textField.stringValue, toBound: maximumLength) ?? textField.stringValue
 
         if typed != textField.stringValue {
-            writing = true
-            textField.stringValue = typed
+            ProgramWrite.perform {
+                textField.stringValue = typed
 
-            if let editor = textField.currentEditor() {
-                editor.string = typed
-                editor.selectedRange = NSRange(location: typed.utf16.count, length: 0)
+                if let editor = textField.currentEditor() {
+                    editor.string = typed
+                    editor.selectedRange = NSRange(location: typed.utf16.count, length: 0)
+                }
+
             }
-
-            writing = false
         }
 
         onTextChanged?(typed)

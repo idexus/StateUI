@@ -16,7 +16,6 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     var onTextChanged: ((String) -> Void)?
     private(set) var maximumLength: Int?
 
-    private var writing = false
     private var growsWithText = false
     private var cursorPosition: Int?
     private var selectionLength: Int?
@@ -140,22 +139,22 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
 
     func setText(_ text: String) {
         guard textView.string != text else { return }
-        writing = true
-        textView.string = text
-        writing = false
+        ProgramWrite.perform {
+            textView.string = text
+        }
         updatePlaceholder()
         invalidateMeasurements()
     }
 
     func textDidChange(_ notification: Notification) {
-        guard !writing else { return }
+        guard !ProgramWrite.isWriting else { return }
         let typed = InputWords.cut(textView.string, toBound: maximumLength) ?? textView.string
 
         if typed != textView.string {
-            writing = true
-            textView.string = typed
-            textView.selectedRange = NSRange(location: typed.utf16.count, length: 0)
-            writing = false
+            ProgramWrite.perform {
+                textView.string = typed
+                textView.selectedRange = NSRange(location: typed.utf16.count, length: 0)
+            }
         }
 
         updatePlaceholder()
