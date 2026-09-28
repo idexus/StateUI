@@ -5,9 +5,41 @@ import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
+import StateUIConformance
 import XCTest
 
+/// A field and an editor sharing words a button rewrites, each telling what it hears.
+private struct RewrittenPage: ContentView {
+    @State private var words = "one"
+    let heard: Received<String>
+
+    var content: any View {
+        let heard = self.heard
+        return VStack {
+            TextField($words).onTextChanged { heard.values.append("field \($0)") }
+            TextEditor($words).onTextChanged { heard.values.append("editor \($0)") }
+            Button("Rewrite").onClicked { words = "two" }
+        }
+    }
+}
+
 final class GTKInputViewTests: XCTestCase {
+    /// Words the program writes into a field or an editor stand there and are heard by nobody: only the user's are.
+    func testTheProgramsWordsAreHeardByNobody() throws {
+        try onUIThread {
+            let heard = Received<String>()
+            let host = GTKRenderer.running { RewrittenPage(heard: heard) }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { field.text == "two" && editor.text == "two" }
+
+            XCTAssertEqual([field.text, editor.text], ["two", "two"])
+            XCTAssertEqual(heard.values, [], "heard by nobody")
+        }
+    }
+
     /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centred, hidden,
     /// and its caret and selection where they were put; GTK's own where the tree says nothing.
     func testAFieldTakesWordsAsTheTreeSays() {
