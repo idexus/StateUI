@@ -62,7 +62,9 @@ $StateUIPackages = [ordered]@{
 }
 
 $StateUIPackageRoot = if ($env:NUGET_PACKAGES) { $env:NUGET_PACKAGES } else { Join-Path $env:USERPROFILE '.nuget\packages' }
-$StateUIArchitecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
+# The machine's own, which the toolchain builds for: a PowerShell an emulated shell starts runs as x64 on an ARM64
+# machine, and would lay x64 libraries beside ARM64 executables.
+$StateUIArchitecture = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq 'Arm64') { 'arm64' } else { 'x64' }
 
 # One package's folder, fetched from nuget.org first where it is missing - its
 # SHA-512 checked against the catalog's before a byte of it is unpacked.
