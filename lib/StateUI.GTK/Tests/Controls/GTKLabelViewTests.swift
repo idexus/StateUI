@@ -72,8 +72,8 @@ final class GTKLabelViewTests: XCTestCase {
     }
 
     /// A label's box takes its background, and its words stand down its height where the tree says.
-    func testALabelsBackgroundFillsItsBoxAndItsWordsStandDownIt() throws {
-        try onUIThread {
+    func testALabelsBackgroundFillsItsBoxAndItsWordsStandDownIt() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     Label("7").background(Color("#FF0000")).verticalTextAlignment(.end).width(60).height(72)
