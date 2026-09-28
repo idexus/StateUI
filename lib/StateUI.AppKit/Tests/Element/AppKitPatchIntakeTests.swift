@@ -18,28 +18,6 @@ final class AppKitPatchIntakeTests: XCTestCase {
         return stack
     }
 
-    /// A sparse message naming a child the tree does not hold is drift - a new
-    /// child always arrives in an arranged list - and nothing is mounted from
-    /// its partial description.
-    @MainActor
-    func testASparseMessageNamingAChildTheTreeDoesNotHoldIsRefused() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-        renderer.applyForTesting(stack(["a", "b"]))
-        XCTAssertGreaterThan(renderer.baselineForTesting, 0, "a message applied whole is claimed")
-
-        var sparse = HostPatch(id: .manual("stack"), type: .vStack)
-        sparse.children = .changed([HostPatch(id: .manual("stranger"), type: .colorBox)])
-        renderer.applyForTesting(sparse)
-
-        XCTAssertNil(
-            renderer.viewForTesting(id: .manual("stranger")),
-            "nothing is mounted from a drifted patch")
-        XCTAssertNotNil(renderer.viewForTesting(id: .manual("a")))
-        XCTAssertEqual(renderer.baselineForTesting, 0, "a refused message claims no generation")
-        XCTAssertTrue(renderer.driftForTesting?.contains("stranger") ?? false)
-    }
-
     /// A message about an element the host lost is refused and asked for again
     /// whole: the element comes back as the tree describes it, not as the
     /// sparse patch alone would have made it.

@@ -68,8 +68,6 @@ extension AppKitRenderer {
 
     var animatingForTesting: Bool { runtime.animator.isMoving }
 
-    var channelCountForTesting: Int { runtime.stateChannels.count }
-
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         present(states: [state: value], properties: [:])
     }
