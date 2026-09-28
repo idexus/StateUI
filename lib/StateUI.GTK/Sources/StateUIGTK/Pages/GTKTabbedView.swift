@@ -33,8 +33,8 @@ final class GTKTabbedView: GTKLayoutView {
         }
     }
 
-    /// The tab the view shows, as an index into its tabs.
-    var shownIndex: Int { choice.shown }
+    /// The tab the view shows among its tabs (`TabChoice.shown(among:)`); nil while it has none.
+    var shownIndex: Int? { choice.shown(among: tabs.count) }
 
     /// The tabs: each a view of the stack, named as its title.
     @discardableResult
@@ -74,8 +74,8 @@ final class GTKTabbedView: GTKLayoutView {
     }
 
     private func showSelected() {
-        guard !tabs.isEmpty else { return }
-        gtk_stack_set_visible_child(stack.widget.opaque, tabs[min(max(shownIndex, 0), tabs.count - 1)].widget)
+        guard let shownIndex else { return }
+        gtk_stack_set_visible_child(stack.widget.opaque, tabs[shownIndex].widget)
     }
 
     /// The switcher showed another tab: the user chose it.
