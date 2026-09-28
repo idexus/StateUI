@@ -59,9 +59,9 @@ enum GTKStyleSheet {
         }
         if var fill {
             let alpha = fill.alpha
-            fill.alpha = alpha * 0.9
+            fill.alpha = alpha * Float(PressedFill.underPointer)
             states += ".\(name):hover { background: \(css(fill)); }\n"
-            fill.alpha = alpha * 0.8
+            fill.alpha = alpha * Float(PressedFill.pressed)
             states += ".\(name):active { background: \(css(fill)); }\n"
         }
         write(name, body, states: states)
