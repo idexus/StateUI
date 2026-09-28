@@ -56,6 +56,15 @@ and their look, an icon beside them, the box behind them - its colour, its
 outline and its shape, an oval a capsule - and the room inside it.
 
 
+## Accessibility
+
+What VoiceOver meets of a view is what the tree says of it - its label, hint
+and heading, whether it is met - over what the view says of itself. A view
+holding no children of the tree's - a date or time picker, a spinner - is one
+thing to the user, though UIKit offers VoiceOver the parts inside it: hidden,
+it hides them too. A layout hidden keeps its children met; only a layout
+hidden with its children hides them.
+
 ## A web view
 
 A WebView is WebKit's own web view. A page at an address is loaded; a
