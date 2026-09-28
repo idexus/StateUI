@@ -60,7 +60,6 @@ enum GTKEnvironment {
         let height = Double(area.height) * scale
         core.setDisplayInfo(HostDisplayInfo(
             width: width, height: height, density: scale,
-            orientation: width >= height ? .landscape : .portrait, rotation: .rotation0,
             refreshRate: Double(gdk_monitor_get_refresh_rate(monitor)) / 1_000))
     }
 
