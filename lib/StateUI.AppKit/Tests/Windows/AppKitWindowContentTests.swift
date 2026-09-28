@@ -92,10 +92,11 @@ final class AppKitWindowContentTests: XCTestCase {
         let panelView = try XCTUnwrap(renderer.viewForTesting(id: .manual("panel")))
         let panelLayout = try XCTUnwrap(panelView as? AppKitGridView)
         let button = try XCTUnwrap(renderer.viewForTesting(id: .manual("action")))
-        content.frame = NSRect(x: 0, y: 0, width: 300, height: 180)
+        window.setContentSize(NSSize(width: 300, height: 180))
         content.layoutSubtreeIfNeeded()
 
-        let backgroundPoint = content.convert(NSPoint(x: 10, y: 10), to: content.superview)
+        // A corner of the page, which stands in the safe area below the title bar.
+        let backgroundPoint = body.convert(NSPoint(x: 10, y: 10), to: content.superview)
         let backgroundHit = content.hitTest(backgroundPoint)
         let actionPoint = button.convert(
             NSPoint(x: button.bounds.midX, y: button.bounds.midY),
