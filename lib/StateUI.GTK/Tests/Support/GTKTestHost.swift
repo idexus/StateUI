@@ -63,9 +63,9 @@ enum GTKTestHost {
         }
     }
 
-    /// Emits `signal` of `instance` as GTK does, handing it `numbers` in order - each parameter an integer or a
-    /// double, and nothing for a parameter GTK hands by address.
-    static func emit(_ instance: OpaquePointer, _ signal: String, _ numbers: [Double] = []) {
+    /// Emits `signal` of `instance` as GTK does, handing it `numbers` in order - each parameter an integer, an
+    /// enumeration's case or a double - and `words` for a parameter of words; nothing for one GTK hands by address.
+    static func emit(_ instance: OpaquePointer, _ signal: String, _ numbers: [Double] = [], words: String? = nil) {
         let type = UnsafeMutablePointer<GTypeInstance>(instance).pointee.g_class.pointee.g_type
         let id = g_signal_lookup(signal, type)
         precondition(id != 0, "no signal \(signal)")
@@ -83,6 +83,8 @@ enum GTKTestHost {
             case g_type_from_name("gint"): g_value_set_int(&values[index + 1], Int32(number))
             case g_type_from_name("guint"): g_value_set_uint(&values[index + 1], UInt32(number))
             case g_type_from_name("gdouble"): g_value_set_double(&values[index + 1], number)
+            case g_type_from_name("GEnum"): g_value_set_enum(&values[index + 1], Int32(number))
+            case g_type_from_name("gchararray"): g_value_set_string(&values[index + 1], words)
             default: break
             }
         }

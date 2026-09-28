@@ -59,10 +59,10 @@ final class GTKDriver: HostDriver {
         case (.enterWords(let words), let stepper as GTKStepperView):
             gtk_editable_set_text(stepper.widget.opaque, words)
             gtk_spin_button_update(stepper.widget.opaque)
-        case (.type(let words), let field as GTKTextFieldView): gtk_editable_set_text(field.widget.opaque, words)
+        case (.type(let words), let field as GTKTextFieldView):
+            type(words, into: field, keys: gtk_editable_get_delegate(field.widget.opaque))
         case (.type(let words), let editor as GTKTextEditorView):
-            let text = gtk_scrolled_window_get_child(editor.widget.opaque)!
-            gtk_text_buffer_set_text(gtk_text_view_get_buffer(text.of()), words, -1)
+            type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         default: throw DriverCannot(act, on: element)
@@ -94,5 +94,18 @@ final class GTKDriver: HostDriver {
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// Types `words` into `input` as the keyboard leaves them - what does not lead to them chosen and deleted, the
+    /// rest typed after what does - through the key bindings' signals of `keys`, which a read-only field refuses.
+    private func type(_ words: String, into input: any GTKInputView, keys: OpaquePointer) {
+        let kept = words.hasPrefix(input.text) ? input.text : ""
+        if kept.isEmpty && !input.text.isEmpty {
+            input.select(start: 0, length: input.text.unicodeScalars.count)
+            GTKTestHost.emit(keys, "delete-from-cursor", [Double(GTK_DELETE_CHARS.rawValue), 1])
+        } else {
+            input.select(start: kept.unicodeScalars.count, length: 0)
+        }
+        GTKTestHost.emit(keys, "insert-at-cursor", words: String(words.dropFirst(kept.count)))
     }
 }
