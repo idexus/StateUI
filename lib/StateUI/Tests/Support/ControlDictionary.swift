@@ -52,8 +52,8 @@ struct ControlDictionary {
         + "is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ "
         + "some of its tests proved it, another could not run or read · 🔌 proven only through the host's own entry or "
         + "record, not the toolkit's · · the driver cannot yet do or read what its "
-        + "test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources "
-        + "than these · empty: not realized, or no run - the note says which"
+        + "test needs · ⏸ its test waits on a member the host does not realize · ⌛ said at another revision of its "
+        + "family than it stands at · empty: not realized, or no run - the note says which"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's "
@@ -71,7 +71,7 @@ struct ControlDictionary {
     }
 
     /// One host's column: what its runs of the conformance families said, subject by subject, and which of it
-    /// was said of other sources than the ones the repository holds now.
+    /// was said at another revision of its family than it stands at.
     struct Column {
         /// The host, as its column is headed.
         let host: String
@@ -79,11 +79,11 @@ struct ControlDictionary {
         /// Each verdict its runs wrote, by what it is about: "Button.clicked", "Button".
         let verdicts: [String: HostVerdict]
 
-        /// The subjects a verdict of which came from a run of other sources - or of sources no run named.
+        /// The subjects a verdict of which was said at another revision of its family - or at none.
         let stale: Set<String>
 
         /// The mark and the note `member` of `element` has on this host - or `element` itself, where `member` is
-        /// nil: what its runs said, or ⌛ with no note where a run of other sources said it.
+        /// nil: what its runs said, or ⌛ with no note where it was said at another revision.
         /// Design: docs/design/contracts/dictionary.md#marks
         func mark(of member: String?, on element: String) -> (mark: String, note: String) {
             let subject = member.map { "\(element).\($0)" } ?? element
@@ -630,17 +630,20 @@ struct ControlDictionary {
     ]
 
     /// Every host's column: what its runs' verdicts said, each subject once, the worst its cases gave; stale where a
-    /// verdict came from a run of other sources than the repository holds now. A host none of whose runs wrote a
+    /// verdict's file names another revision than its family stands at, or none. A host none of whose runs wrote a
     /// verdict has an empty column.
+    /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
     static func columns() throws -> [Column] {
-        try folders.sorted { $0.key < $1.key }.map { host, folder in
-            let current = try? MarkInputs.digest(of: folder)
+        let revisions = Self.revisions
+        return try folders.sorted { $0.key < $1.key }.map { host, folder in
             var verdicts: [String: HostVerdict] = [:]
             var stale: Set<String> = []
             var all: [HostVerdict] = []
-            for (read, inputs) in try Self.verdicts(folder) {
-                all += read
-                if inputs == nil || inputs != current { stale.formUnion(read.map(\.subject)) }
+            for file in try Self.verdicts(folder) {
+                all += file.verdicts
+                if HostVerdict.isStale(file.text, family: file.family, on: folder, in: revisions) {
+                    stale.formUnion(file.verdicts.map(\.subject))
+                }
             }
             for verdict in HostVerdict.merged(all) {
                 verdicts[verdict.subject] = verdict
@@ -649,21 +652,36 @@ struct ControlDictionary {
         }
     }
 
-    /// The verdicts the runs of the host whose folder is `folder` wrote, file by file, each with the inputs its run
-    /// was made of.
-    static func verdicts(_ folder: String) throws -> [(verdicts: [HostVerdict], inputs: String?)] {
+    /// `.scripts/Marks/revisions.txt`: the revision each family's verdicts stand at.
+    static var revisions: String {
+        let url = SourceTree.repository.appendingPathComponent(".scripts/Marks/revisions.txt")
+        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+    }
+
+    /// The verdicts the runs of the host whose folder is `folder` wrote, file by file: the family's name - a part's
+    /// file, `ItemsView-2.txt`, is its family's - what the file holds, and its verdicts.
+    static func verdicts(_ folder: String) throws -> [(family: String, text: String, verdicts: [HostVerdict])] {
         let url = SourceTree.repository.appendingPathComponent("exports/marks/\(folder)")
         guard FileManager.default.fileExists(atPath: url.path) else { return [] }
-        var files: [(verdicts: [HostVerdict], inputs: String?)] = []
+        var files: [(family: String, text: String, verdicts: [HostVerdict])] = []
         for file in try SourceTree.files(under: url, entering: { _ in false }).sorted() where file.hasSuffix(".txt") {
             let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
             guard let read = HostVerdict.read(text) else {
                 throw Unreadable(description: "exports/marks/\(folder)/\(file) holds a line that is no verdict. "
                     + "Write it again with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it.")
             }
-            files.append((read, HostVerdict.inputs(of: text)))
+            files.append((family(ofFile: file), text, read))
         }
         return files
+    }
+
+    /// The family a verdict file is of: its name, a part's number dropped - `ItemsView-2.txt` is `ItemsView`'s.
+    static func family(ofFile file: String) -> String {
+        let name = file.hasSuffix(".txt") ? String(file.dropLast(4)) : file
+        guard let dash = name.lastIndex(of: "-"), name[name.index(after: dash)...].allSatisfy(\.isNumber),
+              name.index(after: dash) != name.endIndex
+        else { return name }
+        return String(name[..<dash])
     }
 
     /// The `on…` modifier each event is heard through, read from the sources

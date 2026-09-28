@@ -1,4 +1,3 @@
-# inputs 4743f7a0442396c73d979658f725a5cee6451a87
 ActivityIndicator.pivotY: 🔌 read pivotY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Canvas.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level

@@ -1,4 +1,4 @@
-# inputs 8db4bb9866bd95b1c7987ac988249ece1075cf5a
+# revision 1.1
 ActivityIndicator.allowDrop: not realized
 ActivityIndicator.dragLeave: not realized
 ActivityIndicator.dragOver: not realized

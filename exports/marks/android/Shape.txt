@@ -1,4 +1,3 @@
-# inputs 9d3058c89793f6212a1c0902993f24136a66a4ac
 Ellipse.aspect: ◐ cannot read aspect of Ellipse - Android's driver has no path for it yet
 Ellipse.fill: ◐ cannot read fill of Ellipse - Android's driver has no path for it yet
 Ellipse.renderTransform: ◐ cannot read renderTransform of Ellipse - Android's driver has no path for it yet

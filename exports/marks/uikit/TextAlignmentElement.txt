@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 Label.horizontalTextAlignment: cannot read horizontalTextAlignment of Label - UIKit's driver has no path for it yet
 Label.verticalTextAlignment: cannot read verticalTextAlignment of Label - UIKit's driver has no path for it yet
 Picker.horizontalTextAlignment: not realized

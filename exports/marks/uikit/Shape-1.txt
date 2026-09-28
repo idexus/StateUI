@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 Ellipse.aspect: cannot read aspect of Ellipse - UIKit's driver has no path for it yet
 Ellipse.fill: ✅
 Ellipse.renderTransform: ✅

@@ -18,6 +18,26 @@ enum AppKitExports {
         .deletingLastPathComponent()    // the repository
         .appendingPathComponent("exports")
 
+    /// The revision `family`'s verdicts on this host stand at, as `.scripts/Marks/revisions.txt` says.
+    /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
+    static func revision(of family: String) -> String {
+        HostVerdict.revision(of: family, on: "appkit", in: revisions)
+    }
+
+    /// Whether the run leaves `family` out: it is asked for the stale families alone (STATEUI_STALE_ONLY=1), and
+    /// the verdict file at `path` under `exports` stands at the family's revision.
+    static func skips(_ family: String, at path: String) -> Bool {
+        guard ProcessInfo.processInfo.environment["STATEUI_STALE_ONLY"] == "1" else { return false }
+        let held = try? String(contentsOf: folder.appendingPathComponent(path), encoding: .utf8)
+        return !HostVerdict.isStale(held, family: family, on: "appkit", in: revisions)
+    }
+
+    /// `.scripts/Marks/revisions.txt`, beside `exports`.
+    private static var revisions: String {
+        let url = folder.deletingLastPathComponent().appendingPathComponent(".scripts/Marks/revisions.txt")
+        return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+    }
+
     /// Holds `text` to `path` under `exports` - or writes it there, where the run is asked to.
     static func hold(_ text: String, at path: String, file: StaticString = #filePath, line: UInt = #line) throws {
         let url = folder.appendingPathComponent(path)
@@ -26,10 +46,10 @@ enum AppKitExports {
             try text.write(to: url, atomically: true, encoding: .utf8)
             return
         }
-        // The inputs a run was made of are the run's own: two runs of other sources compare by their verdicts.
+        // The revision a run was made at is the run's own: two runs at other revisions compare by their verdicts.
         let held = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
         XCTAssertEqual(
-            HostVerdict.withoutInputs(text), HostVerdict.withoutInputs(held),
+            HostVerdict.withoutRevision(text), HostVerdict.withoutRevision(held),
             "exports/\(path) says otherwise: what this run says changed - run the suite again with "
                 + "STATEUI_UPDATE_EXPORTS=1 and read the diff - or something stopped working.",
             file: file, line: line)

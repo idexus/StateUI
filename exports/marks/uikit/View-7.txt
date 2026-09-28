@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 ActivityIndicator.panTouchCount: 🔌 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panUpdated: 🔌 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent
 ActivityIndicator.panXChannel: 🔌 pan on ActivityIndicator: the view's listening handed the recognizer's states, no touch sent

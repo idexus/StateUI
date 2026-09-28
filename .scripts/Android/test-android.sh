@@ -26,9 +26,6 @@ repository_dir="$(cd "$script_dir/../.." && pwd)"
 # shellcheck source=tools.sh
 source "$script_dir/tools.sh"
 
-# The sources as they stand before the build: what the run's verdicts are of, written over each verdict file.
-inputs="$("$repository_dir/.scripts/Marks/inputs.sh" android)"
-
 tests_dir="$repository_dir/lib/StateUI.Android/Tests"
 runner="$tests_dir/Sources/Support/AndroidTestRunner.swift"
 
@@ -107,12 +104,16 @@ held="$declared/marks"
 marks="$repository_dir/exports/marks/android"
 mkdir -p "$held"
 for name in $("$ADB" -s "$serial" exec-out run-as "$package" ls files/marks/android | tr -d '\r'); do
-  { echo "# inputs $inputs"; "$ADB" -s "$serial" exec-out run-as "$package" cat "files/marks/android/$name"; } > "$held/$name"
+  # The revision its family stands at, written over each verdict file: the device reads no repository.
+  family="${name%.txt}"
+  revision="$("$repository_dir/.scripts/Marks/revision.sh" android "${family%-[0-9]*}")"
+  { echo "# revision $revision"; "$ADB" -s "$serial" exec-out run-as "$package" cat "files/marks/android/$name"; } \
+    > "$held/$name"
 done
-# Two runs of other sources compare by their verdicts, the line naming the inputs aside.
+# Two runs at other revisions compare by their verdicts, the line naming the revision aside.
 verdicts_alone () {
   mkdir -p "$2"
-  for file in "$1"/*.txt; do [[ -e "$file" ]] && grep -v '^# inputs ' "$file" > "$2/$(basename "$file")"; done
+  for file in "$1"/*.txt; do [[ -e "$file" ]] && grep -v '^# revision ' "$file" > "$2/$(basename "$file")"; done
 }
 if [[ "${STATEUI_UPDATE_EXPORTS:-}" == 1 ]]; then
   rm -rf "$marks"

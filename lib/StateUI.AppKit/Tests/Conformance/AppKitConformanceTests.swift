@@ -129,13 +129,14 @@ final class AppKitConformanceTests: XCTestCase {
     /// family runs in parts, each a test of its own, so a part can be run alone and the parts side by side.
     @MainActor
     private func conform(_ family: any ConformanceFamily.Type, part: Conformance.Part = .whole) {
+        let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
+        guard !AppKitExports.skips(family.name, at: "marks/appkit/\(file).txt") else { return }
         let driver = AppKitDriver()
         defer { driver.renderer?.closeForTesting() }
         let verdicts = Conformance.run(
             family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
-        let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         XCTAssertNoThrow(try AppKitExports.hold(
-            HostVerdict.text(verdicts, inputs: ProcessInfo.processInfo.environment["STATEUI_MARKS_INPUTS"]),
+            HostVerdict.text(verdicts, revision: AppKitExports.revision(of: family.name)),
             at: "marks/appkit/\(file).txt"))
     }
 }

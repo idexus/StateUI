@@ -16,7 +16,7 @@
 # runner is given the Windows App SDK first, as an application is - WinUI's
 # classes are found through the runner's manifest.
 #
-#   .\test-winui.ps1 [-Filter <test>] [-Conformance] [-ScratchPath <dir>]
+#   .\test-winui.ps1 [-Filter <test>] [-Conformance | -Stale] [-ScratchPath <dir>]
 #
 # Alone it runs the host's own tests, in one process. -Conformance runs the
 # contract's families, whose verdicts are WinUI's column of the dictionary -
@@ -26,18 +26,21 @@
 # request. A filter runs the tests it names, each in a process of its own.
 #
 # The tests are built, the Windows App SDK laid beside the runner, and the run
-# skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes over each verdict
-# file the digest of the sources its verdicts rest on, taken before the build.
+# skips the build. A run with STATEUI_UPDATE_EXPORTS=1 writes each verdict file
+# under the revision its family stands at (.scripts/Marks/revisions.txt);
+# -Stale runs only the conformance families whose verdicts stand at another
+# revision, or at none - each other one's process ends at once.
 # ---------------------------------------------------------------------------
 param(
     [string]$Filter,
     [switch]$Conformance,
+    [switch]$Stale,
     [string]$ScratchPath
 )
 . (Join-Path $PSScriptRoot 'tools.ps1')
 
 Initialize-StateUIProjection
-$env:STATEUI_MARKS_INPUTS = Get-StateUIMarkInputs -For 'winui'
+$env:STATEUI_STALE_ONLY = if ($Stale) { '1' } else { '' }
 $scratch = @()
 if ($ScratchPath) { $scratch = @('--scratch-path', $ScratchPath) }
 
@@ -52,7 +55,7 @@ Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWi
 # A variable's name is its parameter's whatever the case, so the arguments have one of their own.
 $apart = @('--parallel', '--num-workers', '1')
 $narrowing = if ($Filter) { @('--filter', $Filter) + $apart }
-    elseif ($Conformance) { @('--filter', 'WinUIConformanceTests') + $apart }
+    elseif ($Conformance -or $Stale) { @('--filter', 'WinUIConformanceTests') + $apart }
     else { @('--skip', 'WinUIConformanceTests') }
 swift test --package-path $StateUIWinUIHost @scratch --skip-build @narrowing
 exit $LASTEXITCODE

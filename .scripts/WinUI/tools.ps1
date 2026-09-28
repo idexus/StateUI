@@ -26,32 +26,6 @@ $ErrorActionPreference = 'Continue'
 $StateUIRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $StateUIWinUIHost = Join-Path $StateUIRepository 'lib\StateUI.WinUI'
 
-# The digest of the sources a host's conformance verdicts rest on, as .scripts/Marks/inputs.sh works it out: the git
-# tree of the folders .scripts/Marks/inputs.txt names for every host and for this one, in the working tree.
-function Get-StateUIMarkInputs([string]$For) {
-    $folders = @()
-    foreach ($line in Get-Content (Join-Path $StateUIRepository '.scripts\Marks\inputs.txt')) {
-        $words = @($line.Trim() -split '\s+')
-        if ($line.StartsWith('#') -or $words.Count -lt 2) { continue }
-        if ($words[0] -ne 'every' -and $words[0] -ne $For) { continue }
-        foreach ($folder in $words[1..($words.Count - 1)]) {
-            if (Test-Path (Join-Path $StateUIRepository $folder)) { $folders += $folder }
-        }
-    }
-    $scratch = Join-Path ([IO.Path]::GetTempPath()) ('stateui-marks-' + [Guid]::NewGuid())
-    New-Item -ItemType Directory $scratch | Out-Null
-    $previous = $env:GIT_INDEX_FILE
-    try {
-        $env:GIT_INDEX_FILE = Join-Path $scratch 'index'
-        git -C $StateUIRepository add -A -- @folders
-        if ($LASTEXITCODE) { throw 'git could not read the sources the verdicts rest on' }
-        (git -C $StateUIRepository write-tree).Trim()
-    } finally {
-        $env:GIT_INDEX_FILE = $previous
-        Remove-Item -Recurse -Force $scratch
-    }
-}
-
 # The packages, pinned: the WebView2 is the one WinUI's nuspec names.
 $StateUIPackages = [ordered]@{
     'microsoft.windows.cppwinrt'                   = '3.0.260818.1'

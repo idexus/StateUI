@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 ActivityIndicator.opacity: ✅
 ActivityIndicator.translationY: 🔌 read translationY of ActivityIndicator: the host's own transform, checked against the layer it composed itself
 Button.scaleX: 🔌 read scaleX of Button: the host's own transform, checked against the layer it composed itself

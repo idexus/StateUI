@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 SearchField.cursorPosition: ✅
 SearchField.inputPurpose: cannot read inputPurpose of SearchField - UIKit's driver has no path for it yet
 SearchField.isEnabled: ✅

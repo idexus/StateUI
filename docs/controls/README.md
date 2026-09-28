@@ -15,41 +15,41 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 <!-- controls:begin -->
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  |  |  |  |  |
-| [Button](Button.md) | 86 |  |  |  |  |  |  |
-| [Canvas](Canvas.md) | 70 |  |  |  |  |  |  |
-| [CheckBox](CheckBox.md) | 69 |  |  |  |  |  |  |
-| [ColorBox](ColorBox.md) | 68 |  |  |  |  |  |  |
-| [DatePicker](DatePicker.md) | 80 |  |  |  |  |  |  |
-| [Ellipse](Ellipse.md) | 76 |  |  |  |  |  |  |
-| [Grid](Grid.md) | 77 |  |  |  |  |  |  |
-| [HStack](HStack.md) | 74 |  |  |  |  |  |  |
-| [Image](Image.md) | 69 |  |  |  |  |  |  |
-| [ItemsView](ItemsView.md) | 76 |  |  |  |  |  |  |
-| [Label](Label.md) | 81 |  |  |  |  |  |  |
-| [Line](Line.md) | 80 |  |  |  |  |  |  |
+| [ActivityIndicator](ActivityIndicator.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
+| [Button](Button.md) | 86 |  |  |  | 66 ✅ |  |  |
+| [Canvas](Canvas.md) | 70 |  |  |  | 52 ✅ · 3 – |  |  |
+| [CheckBox](CheckBox.md) | 69 |  |  |  | 56 ✅ |  |  |
+| [ColorBox](ColorBox.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
+| [DatePicker](DatePicker.md) | 80 |  |  |  | 63 ✅ · 1 ☑️ |  |  |
+| [Ellipse](Ellipse.md) | 76 |  |  |  | 58 ✅ · 3 – |  |  |
+| [Grid](Grid.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
+| [HStack](HStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
+| [Image](Image.md) | 69 |  |  |  | 50 ✅ · 3 – |  |  |
+| [ItemsView](ItemsView.md) | 76 |  |  |  | 60 ✅ |  |  |
+| [Label](Label.md) | 81 |  |  |  | 63 ✅ · 3 – |  |  |
+| [Line](Line.md) | 80 |  |  |  | 62 ✅ · 3 – |  |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
-| [Path](Path.md) | 77 |  |  |  |  |  |  |
-| [Picker](Picker.md) | 82 |  |  |  |  |  |  |
-| [Polygon](Polygon.md) | 78 |  |  |  |  |  |  |
-| [Polyline](Polyline.md) | 78 |  |  |  |  |  |  |
+| [Path](Path.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
+| [Picker](Picker.md) | 82 |  |  |  | 65 ✅ |  |  |
+| [Polygon](Polygon.md) | 78 |  |  |  | 60 ✅ · 3 – |  |  |
+| [Polyline](Polyline.md) | 78 |  |  |  | 60 ✅ · 3 – |  |  |
 | [PositionIndicator](PositionIndicator.md) | 74 |  |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 68 |  |  |  |  |  |  |
-| [RadioButton](RadioButton.md) | 81 |  |  |  |  |  |  |
-| [Rectangle](Rectangle.md) | 77 |  |  |  |  |  |  |
-| [ScrollView](ScrollView.md) | 77 |  |  |  |  |  |  |
-| [SearchField](SearchField.md) | 89 |  |  |  |  |  |  |
-| [Slider](Slider.md) | 73 |  |  |  |  |  |  |
-| [Stepper](Stepper.md) | 71 |  |  |  |  |  |  |
-| [Switch](Switch.md) | 69 |  |  |  |  |  |  |
-| [TextEditor](TextEditor.md) | 87 |  |  |  |  |  |  |
-| [TextField](TextField.md) | 90 |  |  |  |  |  |  |
-| [TimePicker](TimePicker.md) | 78 |  |  |  |  |  |  |
+| [ProgressBar](ProgressBar.md) | 68 |  |  |  | 50 ✅ · 3 – |  |  |
+| [RadioButton](RadioButton.md) | 81 |  |  |  | 63 ✅ |  |  |
+| [Rectangle](Rectangle.md) | 77 |  |  |  | 59 ✅ · 3 – |  |  |
+| [ScrollView](ScrollView.md) | 77 |  |  |  | 60 ✅ · 3 – |  |  |
+| [SearchField](SearchField.md) | 89 |  |  |  | 63 ✅ |  |  |
+| [Slider](Slider.md) | 73 |  |  |  | 57 ✅ |  |  |
+| [Stepper](Stepper.md) | 71 |  |  |  | 57 ✅ |  |  |
+| [Switch](Switch.md) | 69 |  |  |  | 56 ✅ |  |  |
+| [TextEditor](TextEditor.md) | 87 |  |  |  | 70 ✅ |  |  |
+| [TextField](TextField.md) | 90 |  |  |  | 68 ✅ |  |  |
+| [TimePicker](TimePicker.md) | 78 |  |  |  | 58 ✅ |  |  |
 | [TitleBar](TitleBar.md) | 70 |  |  |  |  |  |  |
-| [VStack](VStack.md) | 74 |  |  |  |  |  |  |
+| [VStack](VStack.md) | 74 |  |  |  | 56 ✅ · 3 – |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
-| [ZStack](ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
+| [ZStack](ZStack.md) | 73 |  |  |  | 55 ✅ · 3 – |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 1812 of 2591 met |  |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -59,30 +59,30 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 12 |  |  |  |  |  |  |
+| [Application](Application.md) | 12 |  |  |  | 12 ✅ |  |  |
 | [Content](Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](Menu.md) | 2 |  |  |  |  |  |  |
+| [Menu](Menu.md) | 2 |  |  |  | 2 ✅ |  |  |
 | [MenuBar](MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 |  |  |  |  |  |  |
+| [MenuItem](MenuItem.md) | 6 |  |  |  | 4 ✅ |  |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |
-| [NavigationStack](NavigationStack.md) | 6 |  |  |  |  |  |  |
+| [NavigationStack](NavigationStack.md) | 6 |  |  |  | 3 ✅ |  |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](Page.md) | 12 |  |  |  |  |  |  |
+| [Page](Page.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](Scene.md) | 6 |  |  |  |  |  |  |
-| [Span](Span.md) | 12 |  |  |  |  |  |  |
+| [Scene](Scene.md) | 6 |  |  |  | 6 ✅ |  |  |
+| [Span](Span.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 5 |  |  |  |  |  |  |
-| [TabbedView](TabbedView.md) | 6 |  |  |  |  |  |  |
+| [SplitView](SplitView.md) | 5 |  |  |  | 4 ✅ |  |  |
+| [TabbedView](TabbedView.md) | 6 |  |  |  | 4 ✅ |  |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 |  |  |  |  |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 |  |  |  | 7 ✅ |  |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
+| [Window](Window.md) | 23 |  |  |  | 23 ✅ |  |  |
+| **Met** - ✅ and – | 104 |  |  |  | 83 of 104 met |  |  |
 <!-- structure:end -->
 
 ## Tiers

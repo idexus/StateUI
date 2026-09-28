@@ -99,26 +99,35 @@ reason, an unrealized one on a tier.
   –    never on that host's family; its register or an absence case says why
   ❌   a test of it failed; ◐ some tests proved it, another could not
   ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
-  ⌛   said by a run of other sources than these (Fresh verdicts)
+  ⌛   said at another revision of its family than it stands at (Fresh verdicts)
        (empty) not realized, or no run - the note says which
 ```
 
 ## Fresh verdicts
 
-A verdict is true of the sources it ran on. Each host's run writes, over each
-verdict file it writes, the digest of the sources its verdicts rest on: the git
-tree of the folders `.scripts/Marks/inputs.txt` names for every host and for
-this one - the core, the host layer, the conformance families, the host with
-its relay, its driver and the support its suite drives with - as they stood in
-the working tree before the build. The host's test script works it out
-(`.scripts/Marks/inputs.sh`, `Get-StateUIMarkInputs` on Windows) and hands it
-to the run in `STATEUI_MARKS_INPUTS`; Android's script writes it over the files
-it pulls from the device. The renderer works the digest out again the same way
-(`MarkInputs`), and a verdict whose file names another digest, or none, is
-shown ⌛ with no note: what it said is no verdict of these sources, and a note
-repeating it on every stale cell of every host only hides the notes that
-count. A run of the current sources makes it fresh again; nothing a person
-remembers does.
+A verdict stands until a change changes what its family's cases prove, and
+the one who makes such a change says so: `.scripts/Marks/revisions.txt` holds
+the revision each family stands at - a line naming the family alone on every
+host, a line naming a host and the family on that host alone, 1 where no line
+names it (`HostVerdict.revision`). A change to the cases, or to what every host
+decides alike, raises the family's own; a change one host alone makes raises
+that host's. Any other change of the sources - a comment, a sign, a rule no
+case proves - raises nothing and leaves every mark standing.
+
+Each host's run writes, over each verdict file it writes, the revision its
+family stands at: `# revision 1.1`, every host's, then its own. A host that
+reads the repository takes it from the file (`<Host>Exports.revision`);
+Android's script writes it over the files it takes off the device
+(`.scripts/Marks/revision.sh`). The renderer shows a verdict whose file names
+another revision, or none, ⌛ with no note: what it said is no verdict of the
+family as it stands, and a note repeating it on every stale cell of every host
+only hides the notes that count. A run of the family makes it fresh again;
+nothing a person remembers does.
+
+A run asked for the stale families alone - `STATEUI_STALE_ONLY=1`, `-Stale` on
+Windows, `StateUI: Conformance - Rebuild changed` in the editor - runs only the
+families whose file names another revision, or none, or has no file yet; the
+others end at once, their files left as they stand.
 
 A case's outcome is the verdict of what it proves, never of what it only
 needs: `needs:` holds the button whose click makes the change, and the case

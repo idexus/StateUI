@@ -165,30 +165,51 @@
         return chosen.values.sorted { $0.subject < $1.subject }
     }
 
-    /// The line over a run's verdicts naming the inputs the run was made of.
-    static let inputsLine = "# inputs "
+    /// The line over a run's verdicts naming the revision of its family the run was made at.
+    static let revisionLine = "# revision "
 
-    /// The text a run writes: the inputs it was made of where they are known, then one verdict a subject, a line
-    /// each, sorted.
-    public static func text(_ verdicts: some Sequence<HostVerdict>, inputs: String? = nil) -> String {
+    /// The text a run writes: the revision of its family it was made at, where it is known, then one verdict a
+    /// subject, a line each, sorted.
+    public static func text(_ verdicts: some Sequence<HostVerdict>, revision: String? = nil) -> String {
         let lines = merged(verdicts).map(\.description)
-        return ((inputs.map { [inputsLine + $0] } ?? []) + lines).joined(separator: "\n") + "\n"
+        return ((revision.map { [revisionLine + $0] } ?? []) + lines).joined(separator: "\n") + "\n"
     }
 
-    /// A run's text without the line naming its inputs: what two runs of other sources compare by.
-    public static func withoutInputs(_ text: String) -> String {
-        guard text.hasPrefix(inputsLine), let end = text.firstIndex(of: "\n") else {
-            return text.hasPrefix(inputsLine) ? "" : text
+    /// A run's text without the line naming its revision: what two runs at other revisions compare by.
+    public static func withoutRevision(_ text: String) -> String {
+        guard text.hasPrefix(revisionLine), let end = text.firstIndex(of: "\n") else {
+            return text.hasPrefix(revisionLine) ? "" : text
         }
         return String(text[text.index(after: end)...])
     }
 
-    /// The inputs a run's text says it was made of; nil where it says none.
-    public static func inputs(of text: String) -> String? {
-        guard let first = text.split(separator: "\n").first, first.hasPrefix(inputsLine) else { return nil }
-        var inputs = String(first.dropFirst(inputsLine.count))
-        if inputs.hasSuffix("\r") { inputs.removeLast() }
-        return inputs.isEmpty ? nil : inputs
+    /// The revision a run's text says it was made at; nil where it says none.
+    public static func revision(of text: String) -> String? {
+        guard let first = text.split(separator: "\n").first, first.hasPrefix(revisionLine) else { return nil }
+        var revision = String(first.dropFirst(revisionLine.count))
+        if revision.hasSuffix("\r") { revision.removeLast() }
+        return revision.isEmpty ? nil : revision
+    }
+
+    /// The revision `family`'s verdicts on `host` stand at, as `revisions` - the text of
+    /// `.scripts/Marks/revisions.txt` - says: the family's own on every host, then the host's own, each 1 where no
+    /// line names it - `1.1`.
+    /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
+    public static func revision(of family: String, on host: String, in revisions: String) -> String {
+        var every = 1
+        var own = 1
+        for line in revisions.split(whereSeparator: \.isNewline) where !line.hasPrefix("#") {
+            let words = line.split(separator: " ")
+            if words.count == 2, words[0] == family, let number = Int(words[1]) { every = number }
+            if words.count == 3, words[0] == host, words[1] == family, let number = Int(words[2]) { own = number }
+        }
+        return "\(every).\(own)"
+    }
+
+    /// Whether `held` - a verdict file of `family` on `host`, nil where there is none - is stale: it names another
+    /// revision than `revisions` says the family stands at, or none.
+    public static func isStale(_ held: String?, family: String, on host: String, in revisions: String) -> Bool {
+        held.flatMap { revision(of: $0) } != revision(of: family, on: host, in: revisions)
     }
 
     /// The verdicts a run's text holds; nil where a line says none.
@@ -196,7 +217,7 @@
         var verdicts: [HostVerdict] = []
         for (index, line) in text.split(separator: "\n").enumerated() {
             let line = line.hasSuffix("\r") ? String(line.dropLast()) : String(line)
-            if index == 0, line.hasPrefix(inputsLine) { continue }
+            if index == 0, line.hasPrefix(revisionLine) { continue }
             guard let verdict = HostVerdict(line: line) else { return nil }
             verdicts.append(verdict)
         }

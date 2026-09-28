@@ -8,14 +8,14 @@ Layer: `provider`. An optional provider supplies it: a package, or the applicati
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
 
-Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🔌 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said by a run of other sources than these · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
+Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ some of its tests proved it, another could not run or read · 🔌 proven only through the host's own entry or record, not the toolkit's · · the driver cannot yet do or read what its test needs · ⏸ its test waits on a member the host does not realize · ⌛ said at another revision of its family than it stands at · empty: not realized, or no run - the note says which. See [the dictionary](README.md).
 
 | Host | Created | Members (74) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ⌛ |  | `MKMapView` / `MKAnnotation` |  |
 | UIKit | ⌛ |  | `MKMapView` / `MKAnnotation` |  |
 | Android Views | ⌛ |  | Google Play services `MapView` / `Marker` (?) |  |
-| WinUI 3 | ⌛ |  | `MapControl` (?) |  |
+| WinUI 3 |  |  | `MapControl` (?) | not realized |
 | GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | no run of it on these sources |
 | Web |  |  | no honest native counterpart | no host yet |
 
@@ -25,14 +25,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/MapContract.swift`.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isScrollEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isTrafficEnabled` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isZoomEnabled` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onMapClicked` (`mapClicked`) | event | `Location` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `mapType` | property | `MapType` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `region` | property | `MapRegion` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `showsUserLocation` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `isScrollEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isTrafficEnabled` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isZoomEnabled` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onMapClicked` (`mapClicked`) | event | `Location` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `mapType` | property | `MapType` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `region` | property | `MapRegion` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `showsUserLocation` | property | `Bool` | provider | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -40,7 +40,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -48,39 +48,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `accessibilityHint` | property | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `accessibilityLabel` | property | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `automationExcludedWithChildren` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `background` | property | `Background` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `focus` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `frame` | property | `Rect` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `height` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `ignoresInput` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isFocusedChanged` | event | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `isVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `layoutDirection` | property | `LayoutDirection` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `maximumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `maximumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `minimumHeight` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `minimumWidth` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `opacity` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `pivotX` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `pivotY` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `rotation` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `rotationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `rotationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `scale` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `scaleX` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `scaleY` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `style` | property | `Name` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `translationX` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `translationY` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `unfocus` | act | `() -> Void` |  | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `width` | property | `Double` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `zIndex` | property | `Int` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
 
 ## From [View](tiers/View.md)
 
@@ -88,35 +88,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |  |
+| `allowDrop` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `area` | property | `Area` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `canDrag` | property | `Bool` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onDragLeave` (`dragLeave`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onDragOver` (`dragOver`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `dragStarting` | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `gridRowSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `horizontalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `margin` | property | `Insets` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `panTouchCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `panXChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `panYChannel` | property | `Int` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPointerExited` (`pointerExited`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `swipeDirection` | property | `SwipeDirection` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `swipeThreshold` | property | `Double` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `tapCount` | property | `Int` | structure | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `onTapped` (`tapped`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
+| `verticalAlignment` | property | `Alignment` | native | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |

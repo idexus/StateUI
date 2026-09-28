@@ -14,7 +14,9 @@
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one
 # of the names, split at commas. STATEUI_UPDATE_EXPORTS=1 writes what the run
 # says into exports/ instead of holding it to them, each verdict file under the
-# digest of the sources its verdicts rest on (.scripts/Marks/inputs.sh).
+# revision its family stands at (.scripts/Marks/revisions.txt);
+# STATEUI_STALE_ONLY=1 runs only the conformance families whose verdicts stand
+# at another revision, or at none.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,9 +26,6 @@ package="$repository_dir/lib/StateUI.UIKit/Tests"
 scratch="$package/.build"
 product="StateUIUIKitTests"
 identifier="com.stateui.uikit.tests"
-
-# The sources as they stand before the build: what the run's verdicts are of.
-inputs="$("$repository_dir/.scripts/Marks/inputs.sh" uikit)"
 
 read -r kind device _ <<< "$(uikit_destination "${1:-}")"
 [[ -n "$kind" ]] || exit 1
@@ -54,7 +53,7 @@ xcrun simctl install "$device" "$bundle"
 output="$(mktemp)"
 trap 'rm -f "$output"' EXIT
 SIMCTL_CHILD_STATEUI_FILTER="${STATEUI_FILTER:-}" SIMCTL_CHILD_STATEUI_UPDATE_EXPORTS="${STATEUI_UPDATE_EXPORTS:-}" \
-SIMCTL_CHILD_STATEUI_MARKS_INPUTS="$inputs" \
+SIMCTL_CHILD_STATEUI_STALE_ONLY="${STATEUI_STALE_ONLY:-}" \
   xcrun simctl launch --console-pty --terminate-running-process "$device" "$identifier" 2>&1 | tee "$output"
 
 summary="$(tr -d '\r' < "$output" | grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' | tail -n 1)"

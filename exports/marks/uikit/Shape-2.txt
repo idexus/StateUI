@@ -1,4 +1,3 @@
-# inputs 6c5504f20e4598c9c5a5e3210861ec223c5e5d5f
 Ellipse.fill: cannot read fill of Ellipse - UIKit's driver has no path for it yet
 Ellipse.renderTransform: cannot read renderTransform of Ellipse - UIKit's driver has no path for it yet
 Ellipse.stroke: ✅

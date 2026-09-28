@@ -1,4 +1,4 @@
-# inputs 8db4bb9866bd95b1c7987ac988249ece1075cf5a
+# revision 1.1
 ActivityIndicator.accessibilityHeadingLevel: ✅
 ActivityIndicator.focus: – ActivityIndicator takes no keyboard focus here: it refuses it, and nothing is heard
 ActivityIndicator.frameChanged: ✅

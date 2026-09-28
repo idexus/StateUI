@@ -193,22 +193,51 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(column.mark(of: nil, on: "Label").note, "")
     }
 
-    /// The renderer's digest of a host's sources is the one `.scripts/Marks/inputs.sh` prints, which every host's
-    /// run writes over its verdicts: the two ways of working it out are one.
-    func testTheDigestIsTheScriptsOwn() throws {
+    /// The revision the renderer reads a family at is the one `.scripts/Marks/revision.sh` prints, which Android's
+    /// script writes over the verdicts it takes off the device: the two ways of reading it are one.
+    func testTheRevisionIsTheScriptsOwn() throws {
         let bash = URL(fileURLWithPath: "/bin/bash")
         guard FileManager.default.fileExists(atPath: bash.path) else { throw XCTSkip("no /bin/bash here") }
+        let families = try ControlDictionary.folders.values.flatMap { try ControlDictionary.verdicts($0).map(\.family) }
         for host in ControlDictionary.folders.values.sorted() {
-            let process = Process()
-            process.executableURL = bash
-            process.arguments = [SourceTree.repository.appendingPathComponent(".scripts/Marks/inputs.sh").path, host]
-            let output = Pipe()
-            process.standardOutput = output
-            try process.run()
-            let printed = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-            process.waitUntilExit()
-            XCTAssertEqual(try MarkInputs.digest(of: host), printed.trimmingCharacters(in: .whitespacesAndNewlines), host)
+            for family in Set(families + ["Slider"]).sorted() {
+                let process = Process()
+                process.executableURL = bash
+                process.arguments = [
+                    SourceTree.repository.appendingPathComponent(".scripts/Marks/revision.sh").path, host, family,
+                ]
+                let output = Pipe()
+                process.standardOutput = output
+                try process.run()
+                let printed = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+                process.waitUntilExit()
+                XCTAssertEqual(
+                    HostVerdict.revision(of: family, on: host, in: ControlDictionary.revisions),
+                    printed.trimmingCharacters(in: .whitespacesAndNewlines), "\(host) \(family)")
+            }
         }
+    }
+
+    /// Every line of `.scripts/Marks/revisions.txt` raises a family a contract declares - on every host, or on one
+    /// host a column names - to a whole number above 1: a line that raises nothing is no revision.
+    func testEveryRevisionRaisesAFamily() throws {
+        let hosts = Set(ControlDictionary.folders.values)
+        var families = Set(LibraryContracts.elements.map { $0.nodeType.name })
+        for folder in hosts { families.formUnion(try ControlDictionary.verdicts(folder).map(\.family)) }
+        for line in ControlDictionary.revisions.split(whereSeparator: \.isNewline) where !line.hasPrefix("#") {
+            let words = line.split(separator: " ").map(String.init)
+            let raised = words.last.flatMap(Int.init).map { $0 > 1 } ?? false
+            let named = words.count == 2 ? families.contains(words[0])
+                : words.count == 3 && hosts.contains(words[0]) && families.contains(words[1])
+            XCTAssertTrue(raised && named, "`\(line)` in .scripts/Marks/revisions.txt raises no family")
+        }
+    }
+
+    /// A part's verdict file is its family's: `ItemsView-2.txt` is `ItemsView`'s, `Button.txt` is `Button`'s.
+    func testAPartsFileIsItsFamilys() {
+        XCTAssertEqual(ControlDictionary.family(ofFile: "ItemsView-2.txt"), "ItemsView")
+        XCTAssertEqual(ControlDictionary.family(ofFile: "VisualElement-10.txt"), "VisualElement")
+        XCTAssertEqual(ControlDictionary.family(ofFile: "Button.txt"), "Button")
     }
 
     /// The counts say each mark's number, and what is not planned meets the contract.

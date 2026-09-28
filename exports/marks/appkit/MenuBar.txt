@@ -1,4 +1,3 @@
-# inputs 4743f7a0442396c73d979658f725a5cee6451a87
 Menu.text: 🔌 read the menu of Window: menu items built from the tree at the read, not the main menu
 MenuBar: ✅
 MenuItem.clicked: ✅
