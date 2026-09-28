@@ -47,13 +47,25 @@ struct ControlDictionary {
     /// Every host the matrix has a column for, in the columns' order.
     static let platforms = ["AppKit", "UIKit", "Android Views", "WinUI 3", "GTK 4", "Web"]
 
-    /// What a mark means.
-    static let legend = "✅ proven by every test of it that ran on that host · ☑️ proven, the host recording what "
-        + "is missing · – never on that host's family, which meets the contract there · ❌ a test of it failed · ◐ "
-        + "some of its tests proved it, another could not run or read · 🔌 proven only through the host's own entry or "
-        + "record, not the toolkit's · · the driver cannot yet do or read what its "
-        + "test needs · ⏸ its test waits on a member the host does not realize · ⌛ said at another revision of its "
-        + "family than it stands at · empty: not realized, or no run - the note says which"
+    /// What each mark means, in the legend's order.
+    static let legend: [(mark: String, meaning: String)] = [
+        ("✅", "Proven by every test of it that ran on that host."),
+        ("☑️", "Proven, the host recording what is missing."),
+        ("–", "Never on that host's family, which meets the contract there."),
+        ("❌", "A test of it failed."),
+        ("◐", "Some of its tests proved it, another could not run or read."),
+        ("🔌", "Proven only through the host's own entry or record, not the toolkit's."),
+        ("·", "The driver cannot yet do or read what its test needs."),
+        ("⏸", "Its test waits on a member the host does not realize."),
+        ("⌛", "Said at another revision of its family than it stands at."),
+        ("empty", "Not realized, or no run - the note says which."),
+    ]
+
+    /// The legend as a table: each mark and what it means.
+    static var legendTable: String {
+        (["| Mark | Meaning |", "| :---: | --- |"] + legend.map { "| \($0.mark) | \($0.meaning) |" })
+            .joined(separator: "\n")
+    }
 
     /// The line over every page: that it is rendered, and how it is rendered again.
     static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's "
@@ -248,7 +260,8 @@ struct ControlDictionary {
                 ? "Inherits nothing: every member below is its own."
                 : "Inherits: " + worn.map { "[\($0.name)](tiers/\($0.name).md)" }.joined(separator: " · "),
             "",
-            "Marks: \(Self.legend). See [the dictionary](README.md).", "",
+            Self.legendTable, "",
+            "See [the dictionary](README.md) for how a mark is given.", "",
         ] + hosts(of: name, members: members, marks: marks) + [
             "",
             "Declared in `lib/StateUI/Sources/\(declared[ObjectIdentifier(element)] ?? "")`.", "",
@@ -366,6 +379,7 @@ struct ControlDictionary {
             "tiers": tiers.map { "- [\($0.name)](tiers/\($0.name).md) - " + Self.firstSentence(doc(of: $0)) }
                 .joined(separator: "\n"),
             "layers": layers.map { "- `\($0.name)` - \($0.meaning)" }.joined(separator: "\n"),
+            "legend": Self.legendTable,
         ]
     }
 
