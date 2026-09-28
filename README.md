@@ -26,9 +26,22 @@ contract is settled.
 
 ## In Action
 
-One application, described once in Swift. The AppKit host draws it with macOS
-controls, in the same process as the application module - here the Gallery's
-Metal sample: the cube
+<p align="center">
+  <img src="docs/assets/winui.jpg" alt="The Gallery's home page on WinUI 3" height="360">
+  <img src="docs/assets/uikit.jpg" alt="The Gallery's home page on UIKit, on an iPhone" height="360">
+</p>
+<p align="center">
+  <img src="docs/assets/gtk.jpg" alt="The Gallery's Grid sample on GTK 4 with libadwaita" height="360">
+  <img src="docs/assets/android.jpg" alt="The Gallery's Grid sample on Android Views" height="360">
+</p>
+
+The same Gallery - one Swift module - on WinUI 3, UIKit, GTK 4 and Android
+Views: each host draws it with its own toolkit's controls, its window chrome
+and its navigation, while the pages, the state and the samples are the
+application's, written once.
+
+The AppKit host draws it with macOS controls, in the same process as the
+application module - here the Gallery's Metal sample: the cube
 is an `MTKView` the application registers with the host, and its size, colour
 and spin are described from StateUI. The edge is handed over as a state, so
 dragging the slider rebuilds nothing:
