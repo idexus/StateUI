@@ -74,8 +74,11 @@ struct EngineDeclaration {
     let run: (EngineCycle) -> EngineAnswer
 }
 
-/// One registered engine and everything the board remembers about it.
-final class EngineEntry {
+/// One registered engine and everything the board remembers about it: a value in
+/// the board's book, so its reasons to run are read and written under the board's
+/// hold alone.
+/// Design: docs/design/core/cycle.md#the-board
+struct EngineEntry {
     /// What the differ registered it under, which is also its tie-break.
     let id: Int
 
@@ -122,7 +125,7 @@ final class EngineEntry {
     /// Takes the states a render named, forgetting every stamp where they differ from
     /// those followed.
     /// Design: docs/design/core/cycle.md#what-wakes-an-engine
-    func follow(_ named: [any FollowedState]) {
+    mutating func follow(_ named: [any FollowedState]) {
         guard named.count != follows.count
             || zip(named, follows).contains(where: { $0 !== $1 })
         else { return }
@@ -131,16 +134,22 @@ final class EngineEntry {
         seen.removeAll()
     }
 
-    /// Whether anything it follows has been written since it last ran.
-    func stirred() -> Bool {
-        follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
+    /// Whether it has a reason to run: a render armed it, its last answer was
+    /// `.again`, or anything it follows has been written since it last ran.
+    var due: Bool {
+        armed || awake || follows.contains { seen[ObjectIdentifier($0)] != $0.stamp }
     }
 
-    /// Notes where everything it follows stands, now that it has run.
-    func noticed() {
+    /// Notes that it ran at `now` and what it answered, and where everything it
+    /// follows stands - after the run, so its own writes are no reason to run again.
+    mutating func ran(at now: Double, answering answer: EngineAnswer) {
         for storage in follows {
             seen[ObjectIdentifier(storage)] = storage.stamp
         }
+
+        lastRan = now
+        armed = false
+        awake = answer == .again
     }
 }
 

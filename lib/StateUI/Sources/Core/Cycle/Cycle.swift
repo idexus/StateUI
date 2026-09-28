@@ -30,18 +30,8 @@ final class CycleBoard: @unchecked Sendable {
     /// Which clock this board runs on.
     let sync: Sync
 
-    private let guarded = Lock()
-
-    /// Every storage of this board, weakly: a state belongs to its view.
-    private var storages: [WeakStorage] = []
-
-    /// The engines in running order: ascending priority, then registration.
-    private var engines: [EngineEntry] = []
-
-    /// Whether a cycle is between its latch and its publish - which decides where a
-    /// write lands and what a read answers.
-    /// Design: docs/design/core/cycle.md#three-copies-of-a-value
-    private var cycling = false
+    /// What the host's doorbell asks about from its own thread, behind the hold.
+    private let book = Guarded(Book())
 
     /// When the last cycle ran, on the clock the host hands in.
     private var last: Double = 0
@@ -56,7 +46,7 @@ final class CycleBoard: @unchecked Sendable {
     /// Gives a storage a new shape - a plain value a slider now animates as a
     /// journey - before the host has its number.
     func reshape(_ storage: HostStorage, to bytes: [UInt8]) {
-        guarded.withLock {
+        book.withLock { _ in
             storage.image = bytes
             storage.published = bytes
             storage.pending = nil
@@ -68,16 +58,16 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
-        guarded.withLock {
-            storages.removeAll { $0.storage == nil }
-            storages.append(WeakStorage(storage: storage))
+        book.withLock { book in
+            book.storages.removeAll { $0.storage == nil }
+            book.storages.append(WeakStorage(storage: storage))
         }
     }
 
     /// What a value stands at: the running cycle's image inside a cycle, the newest
     /// write or the last published picture outside one.
     func read(_ storage: HostStorage, lanes: Int) -> StateCarried {
-        let bytes = guarded.withLock { cycling ? storage.image : (storage.pending ?? storage.published) }
+        let bytes = book.withLock { $0.cycling ? storage.image : (storage.pending ?? storage.published) }
 
         return StateImage.carried(of: bytes, lanes: lanes)
     }
@@ -87,10 +77,10 @@ final class CycleBoard: @unchecked Sendable {
     /// where the bytes did not move.
     /// Design: docs/design/core/cycle.md#where-a-write-lands
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
-        let waiting: Bool = guarded.withLock {
+        let waiting: Bool = book.withLock { book in
             storage.stamp &+= 1
 
-            if cycling {
+            if book.cycling {
                 storage.dirty |= HostStorage.lay(bytes, into: &storage.image) | forced
                 return false
             }
@@ -121,10 +111,10 @@ final class CycleBoard: @unchecked Sendable {
             }
         }
 
-        guarded.withLock {
+        book.withLock { book in
             storage.stamp &+= 1
 
-            if cycling {
+            if book.cycling {
                 lay(into: &storage.image)
                 storage.dirty &= ~mask
                 return
@@ -143,10 +133,10 @@ final class CycleBoard: @unchecked Sendable {
     /// per-frame read. The bits answered are cleared.
     /// Design: docs/design/core/cycle.md#the-per-frame-read
     func dirty() -> [(number: Int32, mask: UInt64, bytes: [UInt8])] {
-        guarded.withLock {
+        book.withLock { book in
             var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
-            for held in storages {
+            for held in book.storages {
                 guard let storage = held.storage, storage.dirty != 0,
                       let number = storage.number else { continue }
 
@@ -161,8 +151,8 @@ final class CycleBoard: @unchecked Sendable {
     /// One state whole, nothing cleared - what a registration reads; nil where no
     /// state rides that number.
     func whole(_ number: Int32) -> [UInt8]? {
-        guarded.withLock {
-            for held in storages where held.storage?.number == number {
+        book.withLock { book in
+            for held in book.storages where held.storage?.number == number {
                 return held.storage?.crossing()
             }
 
@@ -175,15 +165,15 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Registers an engine, which runs from the next cycle.
     func arm(_ entry: EngineEntry) {
-        guarded.withLock {
-            engines.append(entry)
-            engines.sort { ($0.priority, $0.id) < ($1.priority, $1.id) }
+        book.withLock { book in
+            book.engines.append(entry)
+            book.engines.sort { ($0.priority, $0.id) < ($1.priority, $1.id) }
         }
     }
 
     /// Forgets an engine - the view that declared it has gone.
     func disarm(_ id: Int) {
-        guarded.withLock { engines.removeAll { $0.id == id } }
+        book.withLock { $0.engines.removeAll { $0.id == id } }
     }
 
     /// Hands an engine a fresh render's closure and followed states, and arms it.
@@ -194,34 +184,28 @@ final class CycleBoard: @unchecked Sendable {
         following follows: [any FollowedState],
         with run: @escaping (EngineCycle) -> EngineAnswer
     ) -> Bool {
-        guarded.withLock {
-            guard let entry = engines.first(where: { $0.id == id }) else { return false }
+        book.withLock { book in
+            guard let place = book.place(of: id) else { return false }
 
-            entry.run = run
-            entry.follow(follows)
-            entry.armed = true
+            book.engines[place].run = run
+            book.engines[place].follow(follows)
+            book.engines[place].armed = true
             return true
         }
     }
 
     /// Whether this board holds an engine under that number - what a test asks.
     func holds(_ id: Int) -> Bool {
-        guarded.withLock { engines.contains { $0.id == id } }
+        book.withLock { $0.place(of: id) != nil }
     }
 
     /// Whether anything at all is waiting for a cycle.
     var awake: Bool {
-        guarded.withLock {
-            stirring || storages.contains {
+        book.withLock { book in
+            book.stirring || book.storages.contains {
                 $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0
             }
         }
-    }
-
-    /// Whether any engine has a reason to run - asked with the hold taken. A latching
-    /// cycle counts it too, so the clock is not let go with work piled up.
-    private var stirring: Bool {
-        engines.contains { $0.armed || $0.awake || $0.stirred() }
     }
 
     /// One cycle: what was written latched, the engines with a reason run, and what
@@ -235,10 +219,10 @@ final class CycleBoard: @unchecked Sendable {
 
         count &+= 1
 
-        let running: [EngineEntry] = guarded.withLock {
-            cycling = true
+        let order: [Int] = book.withLock { book in
+            book.cycling = true
 
-            for held in storages {
+            for held in book.storages {
                 guard let storage = held.storage, let pending = storage.pending else { continue }
 
                 storage.image = pending
@@ -248,43 +232,49 @@ final class CycleBoard: @unchecked Sendable {
                 report.latched += 1
             }
 
-            return engines
-        }
-
-        // A start moves every engine's clock to now, without noting where values stand.
-        for entry in running where started {
-            entry.lastRan = now
-        }
-
-        if !started {
-            for entry in running {
-                guard entry.armed || entry.awake || entry.stirred() else {
-                    report.skipped += 1
-                    continue
-                }
-
-                let elapsed = min(max(now - entry.lastRan, 0), EngineCycle.mostElapsed)
-                let cycle = EngineCycle(
-                    sync: sync,
-                    now: now,
-                    elapsed: elapsed,
-                    count: count,
-                    reducesMotion: reducesMotion)
-
-                let answer = entry.run(cycle)
-
-                // Noticed after the run, so the engine's own writes are no reason to run again.
-                // Design: docs/design/core/cycle.md#what-wakes-an-engine
-                entry.noticed()
-                entry.lastRan = now
-                entry.armed = false
-                entry.awake = answer == .again
-                report.ran += 1
+            // A start moves every engine's clock to now, without noting where values stand.
+            guard !started else {
+                for place in book.engines.indices { book.engines[place].lastRan = now }
+                return []
             }
+
+            return book.engines.map(\.id)
         }
 
-        guarded.withLock {
-            for held in storages {
+        // Each engine is asked for its reason just before its turn, so a write an earlier one
+        // made wakes it in the same cycle; it runs outside the hold.
+        for id in order {
+            let turn = book.withLock { book -> (run: (EngineCycle) -> EngineAnswer, lastRan: Double)? in
+                guard let place = book.place(of: id), book.engines[place].due else { return nil }
+
+                return (book.engines[place].run, book.engines[place].lastRan)
+            }
+
+            guard let turn else {
+                report.skipped += 1
+                continue
+            }
+
+            let elapsed = min(max(now - turn.lastRan, 0), EngineCycle.mostElapsed)
+            let answer = turn.run(EngineCycle(
+                sync: sync,
+                now: now,
+                elapsed: elapsed,
+                count: count,
+                reducesMotion: reducesMotion))
+
+            // Design: docs/design/core/cycle.md#what-wakes-an-engine
+            book.withLock { book in
+                guard let place = book.place(of: id) else { return }
+
+                book.engines[place].ran(at: now, answering: answer)
+            }
+
+            report.ran += 1
+        }
+
+        book.withLock { book in
+            for held in book.storages {
                 guard let storage = held.storage else { continue }
 
                 storage.published = storage.image
@@ -294,8 +284,8 @@ final class CycleBoard: @unchecked Sendable {
                 }
             }
 
-            cycling = false
-            report.awake = stirring
+            book.cycling = false
+            report.awake = book.stirring
         }
 
         report.written.sort()
@@ -307,13 +297,30 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Forgets everything - a fresh process's board, for a test.
     func clear() {
-        guarded.withLock {
-            storages.removeAll()
-            engines.removeAll()
-            cycling = false
-            last = 0
-            count = 0
-        }
+        book.withLock { $0 = Book() }
+        last = 0
+        count = 0
+    }
+
+    /// Everything of the board its hold guards.
+    private struct Book {
+        /// Every storage of this board, weakly: a state belongs to its view.
+        var storages: [WeakStorage] = []
+
+        /// The engines in running order: ascending priority, then registration.
+        var engines: [EngineEntry] = []
+
+        /// Whether a cycle is between its latch and its publish - which decides where a
+        /// write lands and what a read answers.
+        /// Design: docs/design/core/cycle.md#three-copies-of-a-value
+        var cycling = false
+
+        /// Whether any engine has a reason to run. A latching cycle counts it too, so
+        /// the clock is not let go with work piled up.
+        var stirring: Bool { engines.contains { $0.due } }
+
+        /// Where the engine registered under `id` stands in the running order.
+        func place(of id: Int) -> Int? { engines.firstIndex { $0.id == id } }
     }
 
     /// A storage this board holds, weakly.

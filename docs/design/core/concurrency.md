@@ -130,6 +130,11 @@ It is not reentrant: a body that asks for the same lock again deadlocks. So what
 a body takes out - a continuation to resume, a handler to call - runs after
 `withLock` returns, and a wake only signals outside every lock.
 
+Where the guarded state is the lock owner's own, it stands inside the lock:
+`Guarded` (Guarded.swift) holds a value that `withLock` alone reaches, as
+`inout`, so a read or a write without the lock does not compile. A board's
+book is one (cycle.md, The board): the doorbell reads it from its own thread.
+
 ## Lock order
 
 ```text

@@ -8,6 +8,7 @@
 // cycle, exactly as `HostBoundary.cycle` hands it one, so every number below
 // is exact and none of it depends on a frame ever arriving.
 
+import Synchronization
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -242,6 +243,38 @@ private struct Borrowing: ContentView {
         Label("borrowing").engine(following: $step) { cycle in
             ran.note("borrowing \(step)", cycle)
         }
+    }
+}
+
+/// A followed state with nothing behind it but its count, written by the test.
+private final class Stamped: FollowedState {
+    private let written = Atomic(0)
+
+    var stamp: Int { written.load(ordering: .relaxed) }
+
+    func write() { written.add(1, ordering: .relaxed) }
+}
+
+/// The host's doorbell in miniature: a thread of its own asking a board whether anything is awake, over and over,
+/// until it is told to stop.
+private final class Doorbell: @unchecked Sendable {
+    private let stopped = Atomic(false)
+    private let finished = DispatchSemaphore(value: 0)
+    let asked = Atomic(0)
+
+    init(asking board: CycleBoard) {
+        Thread {
+            while !self.stopped.load(ordering: .relaxed) {
+                _ = board.awake
+                self.asked.add(1, ordering: .relaxed)
+            }
+            self.finished.signal()
+        }.start()
+    }
+
+    func stop() {
+        stopped.store(true, ordering: .relaxed)
+        finished.wait()
     }
 }
 
@@ -936,5 +969,36 @@ final class CycleTests: XCTestCase {
             and a state the body DOES read rebuilds the view, which is what \
             arms the engine again
             """)
+    }
+
+    // MARK: - Asked from another thread
+
+    /// THE DOORBELL ASKS WHILE A CYCLE RUNS. The host's doorbell thread asks the board whether anything is awake
+    /// while the UI thread runs its cycles, and each engine's reasons to run - what it saw of what it follows,
+    /// whether it is armed or awake - are written under the board's hold, so the question never meets them half
+    /// written.
+    ///
+    /// Measured live before it was written down: dragging a slider on a page with an engine, or walking a journey
+    /// back and forth, crashed the application on every platform - the doorbell read an engine's stamps while
+    /// the cycle wrote them.
+    func testTheDoorbellAsksWhileACycleNotesWhatItsEnginesSaw() {
+        let board = CycleBoard(sync: .display)
+        let followed = (0..<16).map { _ in Stamped() }
+
+        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: followed) { _ in .wait })
+        board.cycle(now: 0, reducesMotion: false)
+
+        let doorbell = Doorbell(asking: board)
+        var ran = 0
+
+        for turn in 1...20_000 {
+            followed[turn % followed.count].write()
+            ran += board.cycle(now: Double(turn) * 16, reducesMotion: false).ran
+        }
+
+        doorbell.stop()
+
+        XCTAssertEqual(ran, 20_000, "each write woke the engine once")
+        XCTAssertGreaterThan(doorbell.asked.load(ordering: .relaxed), 0, "the doorbell asked while the cycles ran")
     }
 }

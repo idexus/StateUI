@@ -35,6 +35,16 @@ the host's report and an engine's arithmetic cannot tear one another. The hold
 is never held while an engine runs: an engine reads and writes states, and a
 lock held across the call would be a lock the engine asks for again.
 
+What the board keeps - its storages, its engines, whether a cycle is running -
+stands in its book, a `Guarded` value reached only with the hold taken. The
+host's doorbell asks the board from a thread of its own whether anything is
+awake, and that question reads every engine's reasons to run: what it saw of
+what it follows, whether it is armed or awake. So an engine is a value in the
+book, not an object the cycle holds beside it: the cycle takes each engine's
+closure out under the hold, runs it outside, and notes what it answered under
+the hold again. Written beside the hold, those reasons would be read half
+written, and the process would crash on a torn dictionary.
+
 ## Three copies of a value
 
 ```text
