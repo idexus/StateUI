@@ -39,9 +39,11 @@ The host builds on macOS, for Android 9 (API 28) or newer:
   Android of the same release, installed with `swift sdk install`. Xcode's own
   Swift 6.4 is a different build and cannot read the SDK's modules;
   `build-swift.sh` finds the matching toolchain by itself;
-- the Android NDK r30, found in the Android SDK or named by `ANDROID_NDK_HOME`;
-- the Android SDK with platform 36, and JDK 21 for Gradle. The scripts fetch
-  Gradle itself the first time.
+- the Android NDK r30 or newer: the one `ANDROID_NDK_HOME` names, else the
+  one the Swift SDK's setup linked into its bundle, else the Android SDK's
+  newest;
+- the Android SDK with platform 36 and its build tools, and JDK 21 for
+  Gradle. The scripts fetch Gradle itself the first time.
 
 ## The head
 

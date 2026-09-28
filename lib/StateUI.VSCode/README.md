@@ -156,8 +156,9 @@ JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
 Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
 for this extension's own build. The **StateUI Toolchain** output lists each
-with what was found, and for each missing what to install. It finds; it
-installs nothing.
+with what was found - a version older than the least said as too old - and
+for each not found what to install. It looks where the build scripts look
+(the NDK as `build-swift.sh` finds it); it installs nothing.
 
 ## The extension itself
 
@@ -189,8 +190,8 @@ launch file at all:
   and runs the head; Swift 6.4 from swift.org with the
   [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
-  SDK, in `ANDROID_HOME` or `~/Library/Android/sdk`. The scripts fetch Gradle
-  themselves.
+  SDK with platform 36 and its build tools, in `ANDROID_HOME` or
+  `~/Library/Android/sdk`. The scripts fetch Gradle themselves.
 - For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
   head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
   SDK; and the `lldb-dap` extension. The scripts fetch C++/WinRT and the

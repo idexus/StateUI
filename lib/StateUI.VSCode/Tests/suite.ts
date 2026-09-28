@@ -24,7 +24,8 @@ import { inAppsCommand, nameProblem } from "../Sources/newApplication";
 import { reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
-    atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, newestIOSRuntime, report, svgLoaderIn, xcodeVersion,
+    atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
+    xcodeVersion,
 } from "../Sources/toolchain";
 
 const started = Date.now();
@@ -529,7 +530,8 @@ export async function run(): Promise<void> {
                 ...(svg ? ['"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so"',
                     '"svg" 6 "gdk-pixbuf" "Scalable Vector Graphics" "LGPL"', '"image/svg+xml" "image/svg" ""', ""] : []),
             ].join("\n");
-            check("Check Toolchain compares versions part by part and reads Xcode's, simctl's, a toolchain's and gdk-pixbuf's words",
+            check("Check Toolchain compares versions part by part, reads Xcode's, simctl's, a toolchain's, an NDK's and "
+                + "gdk-pixbuf's words, and says a version too old",
                 commands.includes("stateui.checkToolchain")
                 && atLeast("6.4.1", "6.4") && atLeast("26", "26.0") && !atLeast("6.3.9", "6.4") && !atLeast("4.13", "4.14")
                 && xcodeVersion("Xcode 27.0\nBuild version 27A123") === "27.0"
@@ -539,7 +541,10 @@ export async function run(): Promise<void> {
                     { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
                     { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
                 && svgLoaderIn(loaders(true)) === "libpixbufloader-svg.so" && svgLoaderIn(loaders(false)) === undefined
-                && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined);
+                && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
+                && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
+                && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]
+                    === "✗ Node.js 20 or newer - 19.4.0 found, too old [it]. Install it.");
             const findings = await checkToolchain();
             report(findings).forEach((line) => say(`     ${line}`));
             const own: Record<string, string> = { linux: "GTK 4.14 or newer, with its headers", darwin: "Xcode 27 or newer",

@@ -23,8 +23,16 @@ export interface Finding {
     /** What was found - its version, where it stands; undefined where nothing serves. */
     readonly found?: string;
 
+    /** The version found that does not serve, older than the least the component names; undefined where none was. */
+    readonly tooOld?: string;
+
     /** How to get it, where it is missing. */
     readonly advice: string;
+}
+
+/** A version found that does not serve: older than the least a component names. */
+class TooOld {
+    constructor(readonly version: string) {}
 }
 
 /** One component's check: what it is, who needs it, how to look for it, and how to get it. */
@@ -32,7 +40,7 @@ interface Check {
     readonly component: string;
     readonly neededBy: string;
     readonly advice: string;
-    readonly look: () => Promise<string | undefined>;
+    readonly look: () => Promise<string | TooOld | undefined>;
 }
 
 /** Below 0, 0 or above 0 as version `a` is older than, the same as or newer than `b`, part by part. */
@@ -119,9 +127,17 @@ export function onPath(name: string, platform: NodeJS.Platform = process.platfor
     return undefined;
 }
 
-/** A found version where it is `minimum` or newer, said with where it was found. */
-function served(version: string | undefined, minimum: string, where?: string): string | undefined {
-    return version !== undefined && atLeast(version, minimum) ? (where ? `${version} (${where})` : version) : undefined;
+/** A found version where it is `minimum` or newer, said with where it was found; one older, as too old. */
+function served(version: string | undefined, minimum: string, where?: string): string | TooOld | undefined {
+    if (version === undefined) {
+        return undefined;
+    }
+    return atLeast(version, minimum) ? (where ? `${version} (${where})` : version) : new TooOld(version);
+}
+
+/** An NDK's release in its `source.properties`: "30.0.16248370". */
+export function ndkRevisionIn(properties: string): string | undefined {
+    return properties.match(/^Pkg\.Revision\s*=\s*(\S+)/m)?.[1];
 }
 
 /** Swift 6.4 or newer, as `swift --version` says. */
@@ -205,6 +221,56 @@ function swiftOrgToolchains(): string[] {
     return [...found, path.join(os.homedir(), ".swiftly", "bin", "swift")].filter((each) => fs.existsSync(each));
 }
 
+/** The first swift.org toolchain of 6.4 or newer with a Swift SDK for Android of its own release, and that SDK's id. */
+async function androidSwift(): Promise<{ swift: string; sdk: string } | undefined> {
+    for (const candidate of swiftOrgToolchains()) {
+        const text = (await run(candidate, ["--version"])) ?? "";
+        const release = swiftRelease(text);
+        if (!isSwiftOrgBuild(text) || release === undefined || !atLeast(release, "6.4")) {
+            continue;
+        }
+        const sdk = swiftSDKOf(release, (await run(candidate, ["sdk", "list"])) ?? "", "android");
+        if (sdk) {
+            return { swift: candidate, sdk };
+        }
+    }
+    return undefined;
+}
+
+/**
+ * The NDK the Android build takes, where build-swift.sh looks and in its order: the one ANDROID_NDK_ROOT or
+ * ANDROID_NDK_HOME names, the one the setup of the Swift SDK for Android `sdk` linked into its bundle, else the
+ * Android SDK's newest.
+ */
+function ndkTheBuildTakes(sdk: string | undefined): string | undefined {
+    const isNDK = (folder: string) => fs.existsSync(path.join(folder, "toolchains", "llvm", "prebuilt"));
+    const named = [process.env.ANDROID_NDK_ROOT, process.env.ANDROID_NDK_HOME]
+        .find((each): each is string => each !== undefined && each.length > 0 && isNDK(each));
+    if (named) {
+        return named;
+    }
+    const roots = [path.join(os.homedir(), "Library", "org.swift.swiftpm", "swift-sdks"), path.join(os.homedir(), ".swiftpm", "swift-sdks")];
+    const bundles = roots
+        .flatMap((root) => fs.existsSync(root)
+            ? fs.readdirSync(root).filter((each) => each.endsWith(".artifactbundle")).map((each) => path.join(root, each))
+            : [])
+        .filter((bundle) => sdk !== undefined && fs.existsSync(path.join(bundle, "info.json"))
+            && fs.readFileSync(path.join(bundle, "info.json"), "utf8").includes(`"${sdk}"`));
+    for (const bundle of bundles) {
+        const include = path.join(bundle, "swift-android", "ndk-sysroot", "usr", "include");
+        if (fs.existsSync(include) && fs.lstatSync(include).isSymbolicLink()) {
+            const prebuilt = ["", "toolchains", "llvm", "prebuilt", ""].join(path.sep);
+            const linked = fs.readlinkSync(include).split(prebuilt)[0];
+            if (isNDK(linked)) {
+                return linked;
+            }
+        }
+    }
+    const folder = path.join(androidSDK(), "ndk");
+    const newest = fs.existsSync(folder) ? fs.readdirSync(folder).sort(compareVersions).pop() : undefined;
+    return newest && isNDK(path.join(folder, newest)) ? path.join(folder, newest) : undefined;
+}
+
 /** What AppKit, UIKit and Android need on macOS. */
 function macChecks(): Check[] {
     return [
@@ -227,39 +293,33 @@ function macChecks(): Check[] {
             advice: "Install the swift.org toolchain and its SDK: "
                 + "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
             look: async () => {
-                for (const candidate of swiftOrgToolchains()) {
-                    const text = (await run(candidate, ["--version"])) ?? "";
-                    const release = swiftRelease(text);
-                    if (!isSwiftOrgBuild(text) || release === undefined || !atLeast(release, "6.4")) {
-                        continue;
-                    }
-                    const sdk = swiftSDKOf(release, (await run(candidate, ["sdk", "list"])) ?? "", "android");
-                    if (sdk) {
-                        return `${sdk} (${candidate})`;
-                    }
-                }
-                return undefined;
+                const found = await androidSwift();
+                return found && `${found.sdk} (${found.swift})`;
             },
         },
         {
-            component: "the Android SDK with platform 36", neededBy: "Android",
+            component: "the Android SDK with platform 36 and its build tools", neededBy: "Android",
             advice: "Install it with Android Studio's SDK Manager, and set ANDROID_HOME where it is not ~/Library/Android/sdk.",
             look: async () => {
                 const sdk = androidSDK();
+                const tools = path.join(sdk, "build-tools");
+                const aapt2 = fs.existsSync(tools)
+                    && fs.readdirSync(tools).some((each) => fs.existsSync(path.join(tools, each, "aapt2")));
                 return fs.existsSync(path.join(sdk, "platform-tools")) && fs.existsSync(path.join(sdk, "platforms", "android-36"))
-                    ? sdk : undefined;
+                    && aapt2 ? sdk : undefined;
             },
         },
         {
             component: "the Android NDK r30 or newer", neededBy: "Android",
             advice: "Install it with Android Studio's SDK Manager, or name one with ANDROID_NDK_HOME.",
             look: async () => {
-                const named = process.env.ANDROID_NDK_ROOT ?? process.env.ANDROID_NDK_HOME;
-                const folder = path.join(androidSDK(), "ndk");
-                const newest = fs.existsSync(folder)
-                    ? fs.readdirSync(folder).filter((each) => atLeast(each, "30")).sort(compareVersions).pop()
-                    : undefined;
-                return named && fs.existsSync(named) ? named : newest ? path.join(folder, newest) : undefined;
+                const ndk = ndkTheBuildTakes((await androidSwift())?.sdk);
+                if (ndk === undefined) {
+                    return undefined;
+                }
+                const properties = path.join(ndk, "source.properties");
+                const revision = fs.existsSync(properties) ? ndkRevisionIn(fs.readFileSync(properties, "utf8")) : undefined;
+                return served(revision, "30", ndk);
             },
         },
         {
@@ -321,13 +381,15 @@ function checks(platform: NodeJS.Platform): Check[] {
 export async function checkToolchain(platform: NodeJS.Platform = process.platform): Promise<Finding[]> {
     const findings: Finding[] = [];
     for (const each of checks(platform)) {
-        let found: string | undefined;
+        let looked: string | TooOld | undefined;
         try {
-            found = await each.look();
+            looked = await each.look();
         } catch {
-            found = undefined;
+            looked = undefined;
         }
-        findings.push({ component: each.component, neededBy: each.neededBy, found, advice: each.advice });
+        const found = typeof looked === "string" ? looked : undefined;
+        const tooOld = looked instanceof TooOld ? looked.version : undefined;
+        findings.push({ component: each.component, neededBy: each.neededBy, found, tooOld, advice: each.advice });
     }
     return findings;
 }
@@ -340,9 +402,10 @@ export function debuggerFinding(types: readonly string[]): Finding {
     };
 }
 
-/** The findings as the output shows them: a line each, found or missing, and what to install for each missing. */
+/** The findings as the output shows them: a line each, found, too old or missing, and what to install for each not found. */
 export function report(findings: readonly Finding[]): string[] {
     return findings.map((each) => each.found !== undefined
         ? `✓ ${each.component} - ${each.found} [${each.neededBy}]`
-        : `✗ ${each.component} - not found [${each.neededBy}]. ${each.advice}`);
+        : `✗ ${each.component} - ${each.tooOld !== undefined ? `${each.tooOld} found, too old` : "not found"} [${
+            each.neededBy}]. ${each.advice}`);
 }
