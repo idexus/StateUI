@@ -69,9 +69,7 @@ extension WinUIElement {
             case .isVisible: view.setShown(isShown)
             case .background: (view as? WinUILayoutView)?.setBackground(value(.background))
             case .padding where type == .page:
-                let sides = value(.padding)?.numbers ?? []
-                (view as? WinUISingleChildView)?.padding =
-                    sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
+                (view as? WinUISingleChildView)?.padding = element.insets(.padding)
             default: break
             }
         }

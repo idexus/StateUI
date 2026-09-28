@@ -57,9 +57,7 @@ extension UIKitElement {
                 case .isVisible: view.isHidden = !element.standsShown
                 case .background: view.backgroundColor = value(.background).flatMap(UIColor.init(stateUI:))
                 case .padding where type == .page:
-                    let sides = value(.padding)?.numbers ?? []
-                    (view as? UIKitSingleChildView)?.padding =
-                        sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
+                    (view as? UIKitSingleChildView)?.padding = element.insets(.padding)
                 default: break
                 }
             }

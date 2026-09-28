@@ -63,9 +63,7 @@ extension AndroidElement {
                 case .isVisible: view.setShown(isShown)
                 case .background: view.setBackground(value(.background))
                 case .padding where type == .page:
-                    let sides = value(.padding)?.numbers ?? []
-                    (view as? AndroidSingleChildView)?.padding =
-                        sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
+                    (view as? AndroidSingleChildView)?.padding = element.insets(.padding)
                 default: break
                 }
             }

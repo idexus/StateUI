@@ -319,12 +319,8 @@ extension AppKitElement {
     }
 
     func insets(_ property: Prop) -> NSEdgeInsets {
-        guard let numbers = value(property)?.numbers, numbers.count >= 4 else {
-            return NSEdgeInsets()
-        }
-
-        return NSEdgeInsets(
-            top: numbers[1], left: numbers[0], bottom: numbers[3], right: numbers[2])
+        let sides = element.insets(property)
+        return NSEdgeInsets(top: sides.top, left: sides.left, bottom: sides.bottom, right: sides.right)
     }
 
     /// A negative request is StateUI's explicit "measure me" sentinel. Keep

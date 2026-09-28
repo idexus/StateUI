@@ -61,9 +61,7 @@ extension GTKElement {
             case .isVisible: view.setShown(isShown)
             case .background: (view as? GTKLayoutView)?.setBackground(value(.background))
             case .padding where type == .page:
-                let sides = value(.padding)?.numbers ?? []
-                (view as? GTKSingleChildView)?.padding =
-                    sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
+                (view as? GTKSingleChildView)?.padding = element.insets(.padding)
             default: break
             }
         }

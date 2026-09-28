@@ -259,6 +259,21 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
     }
 
+    /// Four sides are read once for every host: leading, top, trailing, bottom, as the tree gives them; nothing all
+    /// round where it gives none, or fewer than four.
+    @MainActor
+    func testFourSidesAreReadAsTheTreeGivesThem() throws {
+        let (tree, _) = Self.tree(viewless: [])
+        var page = HostPatch(id: .manual("page"), type: .page)
+        page.properties = [.padding: .numbers([1, 2, 3, 4]), .margin: .numbers([5, 6])]
+        tree.apply(page, complete: true)
+        let element = try XCTUnwrap(tree.root)
+
+        XCTAssertEqual(element.insets(.padding), Insets(1, 2, 3, 4))
+        XCTAssertEqual(element.insets(.margin), Insets(0), "fewer than four")
+        XCTAssertEqual(element.insets(Prop("sides")), Insets(0), "none given")
+    }
+
     /// What a frame asks is the host layer's, the same on every host: a colour moved presents the element alone, a
     /// width moved arranges its parent too, and a bar's colour moved composes the window's chrome again.
     @MainActor
