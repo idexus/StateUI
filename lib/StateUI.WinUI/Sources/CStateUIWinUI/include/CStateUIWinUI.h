@@ -520,6 +520,12 @@ void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf
 void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bool spellChecked, bool predicted,
                                        int32_t purpose);
 
+/// The case a field's or an editor's typing takes (StateUI's `TextCase`).
+void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
+
+/// How a search box takes words: read only, and the case its typing takes (StateUI's `TextCase`).
+void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase);
+
 /// Its words across it (StateUI's `TextAlignment`) and its placeholder's colour, the platform's where not
 /// `placeholderColored`.
 void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uint32_t placeholderArgb,
@@ -528,7 +534,7 @@ void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uin
 /// Puts the caret `start` characters in and selects `length` from it, both kept inside the words.
 void stateui_winui_field_select(StateUIObjectRef field, int32_t start, int32_t length);
 
-/// What a test reads of a field or an editor: read only, spell checked, predicting, its input scope's first name
+/// What a test reads of a field, an editor or a search box's text box: read only, spell checked, predicting, its input scope's first name
 /// (-1 for none), its words' alignment, its selection's start and length, whether its placeholder is coloured,
 /// whether Enter starts a new line - nine values.
 void stateui_winui_field_facts(StateUIObjectRef field, int32_t *facts);

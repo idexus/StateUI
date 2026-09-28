@@ -232,9 +232,10 @@ extension WinUIDriver {
         case "isPassword": return (try read(view, "password") == "1").propValue
         default: break
         }
-        guard !(view is WinUISearchFieldView) else { return nil }
         var facts = [Int32](repeating: 0, count: 9)
         stateui_winui_field_facts(view.handle, &facts)
+        // A search box's own text box takes no more than whether it is read only.
+        if view is WinUISearchFieldView { return name == "isReadOnly" ? (facts[0] != 0).propValue : nil }
         switch name {
         case "isReadOnly": return (facts[0] != 0).propValue
         case "isSpellCheckEnabled": return (facts[1] != 0).propValue

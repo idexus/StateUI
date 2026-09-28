@@ -184,9 +184,12 @@ differ from the field's own, so the render a keystroke causes leaves the
 user's words and caret alone. Words the program writes put the caret after
 them.
 
-`maximumLength` counts characters, as the contract does. The field keeps the
-first characters that fit and writes them back, as the program, when typing
-goes past the bound. An editor's `TextBox` ends each line with a carriage
+`maximumLength` counts characters, as the contract does - WinUI's own bound
+counts UTF-16 units, so the host keeps none there. The field keeps the first
+characters that fit and writes them back, as the program, when typing goes
+past the bound. A `textCase` puts every letter typed in its case through the
+text box's `CharacterCasing`, and the host writes the program's words in it
+too. An editor's `TextBox` ends each line with a carriage
 return, where StateUI's words end it with a line feed: the host reads and
 hears every line's end as a line feed.
 
@@ -228,7 +231,11 @@ layout gives it is the room it scrolls in.
 
 A SearchField is WinUI's `AutoSuggestBox` with its search glyph: its words and
 placeholder are the box's, its query - Enter or the glyph - submits, and only
-a change the box calls the user's is reported.
+a change the box calls the user's is reported. The box types in the text box
+its template holds, which the box styles: its `TextBoxStyle` - WinUI's own,
+with the case the typing takes and whether it is read only - reaches that text
+box whenever it stands, before its template does or after. A test types in a
+read-only one no more than the keyboard does.
 
 ## Pictures
 

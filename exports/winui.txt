@@ -217,9 +217,11 @@ SearchField
   fontFamily
   fontSize
   isEnabled
+  isReadOnly
   maximumLength
   placeholder
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -260,6 +262,7 @@ TextEditor
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   textChanged()
 TextField
@@ -278,6 +281,7 @@ TextField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()

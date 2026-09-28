@@ -58,6 +58,7 @@ enum WinUIRealization {
         .complete("Span", "fontFamily"),
         .complete("Span", "fontSize"),
         .complete("Span", "text"),
+        .complete("Span", "textCase"),
         .complete("Span", "textColor"),
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),

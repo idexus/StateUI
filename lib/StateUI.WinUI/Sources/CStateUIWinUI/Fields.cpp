@@ -16,6 +16,7 @@
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Windows.UI.Xaml.Interop.h>
 
 using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
@@ -29,6 +30,20 @@ namespace {
             auto bytes = winrt::to_string(sender.Text());
             callbacks.textChanged(view, bytes.c_str());
         });
+    }
+
+    /// The case a text box puts typed letters in for StateUI's `TextCase`: upper, lower, or as typed.
+    controls::CharacterCasing casing(int32_t textCase) {
+        return textCase == 3   ? controls::CharacterCasing::Upper
+               : textCase == 2 ? controls::CharacterCasing::Lower
+                               : controls::CharacterCasing::Normal;
+    }
+
+    /// The text box a field or an editor is, or the one a search box's template holds; null before it stands.
+    controls::TextBox boxOf(StateUIObjectRef handle) {
+        auto control = as<IInspectable>(handle);
+        if (auto search = control.try_as<controls::AutoSuggestBox>()) return first<controls::TextBox>(search);
+        return control.as<controls::TextBox>();
     }
 }
 
@@ -120,6 +135,29 @@ extern "C" void stateui_winui_field_set_behaviour(
     }
 }
 
+extern "C" void stateui_winui_field_set_casing(StateUIObjectRef handle, int32_t textCase) {
+    try {
+        borrow<controls::TextBox>(handle).CharacterCasing(casing(textCase));
+    } catch (...) {
+        report("setting the case a field's typing takes");
+    }
+}
+
+extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readOnly, int32_t textCase) {
+    try {
+        // The box types in the text box its template holds, which takes the style the box gives it: WinUI's own,
+        // with the case typing takes and whether it is read only.
+        xaml::Style style{winrt::xaml_typename<controls::TextBox>()};
+        auto own = xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AutoSuggestBoxTextBoxStyle"));
+        if (own) style.BasedOn(own.as<xaml::Style>());
+        style.Setters().Append(xaml::Setter(controls::TextBox::CharacterCasingProperty(), winrt::box_value(casing(textCase))));
+        style.Setters().Append(xaml::Setter(controls::TextBox::IsReadOnlyProperty(), winrt::box_value(readOnly)));
+        borrow<controls::AutoSuggestBox>(handle).TextBoxStyle(style);
+    } catch (...) {
+        report("setting how a search box takes words");
+    }
+}
+
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
         auto field = borrow<controls::TextBox>(handle);
@@ -150,7 +188,7 @@ extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t star
 
 extern "C" void stateui_winui_field_facts(StateUIObjectRef handle, int32_t *facts) {
     try {
-        auto field = borrow<controls::TextBox>(handle);
+        auto field = boxOf(handle);
         auto names = field.InputScope() ? field.InputScope().Names() : nullptr;
         int32_t const read[] = {
             field.IsReadOnly(), field.IsSpellCheckEnabled(), field.IsTextPredictionEnabled(),

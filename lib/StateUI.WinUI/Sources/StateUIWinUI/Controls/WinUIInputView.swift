@@ -49,6 +49,11 @@ class WinUIInputView: WinUIView {
         stateui_winui_field_set_behaviour(handle, readOnly, spellChecked, predicted, purpose?.rawValue ?? 0)
     }
 
+    /// The case typing takes: WinUI puts each letter typed in it.
+    func setCasing(_ textCase: TextCase) {
+        stateui_winui_field_set_casing(handle, textCase.rawValue)
+    }
+
     /// The words across the view, and the placeholder's colour; nil for the platform's.
     func setLook(alignment: TextAlignment, placeholderColor: HostValue?) {
         let argb = placeholderColor?.argb

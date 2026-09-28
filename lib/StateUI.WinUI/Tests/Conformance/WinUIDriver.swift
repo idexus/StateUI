@@ -100,6 +100,7 @@ final class WinUIDriver: HostDriver {
             stateui_winui_stepper_enter_as_user(stepper.handle, words)
         case (.type(let words), let search as WinUISearchFieldView):
             // A search box tells the words a moment after it takes them, as a key is told before the next is typed.
+            guard takesTyping(search) else { break }
             search.type(words)
             for _ in 0..<150 where element.value(.text)?.string != words { step() }
         case (.type(let words), let field as WinUIInputView): type(words, into: field)
@@ -267,10 +268,15 @@ final class WinUIDriver: HostDriver {
     /// the keyboard's `TextChanging`; a box WinUI holds read only takes none, as its keyboard takes none.
     /// Design: docs/design/platforms/winui/conformance.md#typing
     private func type(_ words: String, into field: WinUIInputView) {
+        guard takesTyping(field) else { return }
+        stateui_winui_field_set_text(field.handle, words)
+    }
+
+    /// Whether the keyboard reaches `field`: none reaches a text box WinUI holds read only.
+    private func takesTyping(_ field: WinUIInputView) -> Bool {
         var facts = [Int32](repeating: 0, count: 9)
         stateui_winui_field_facts(field.handle, &facts)
-        guard facts[0] == 0 else { return }
-        stateui_winui_field_set_text(field.handle, words)
+        return facts[0] == 0
     }
 
     /// The folder the host keeps the application's values in while a test drives it, its own and empty at each start.
