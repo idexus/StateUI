@@ -60,7 +60,7 @@ final class UIKitDriver: HostDriver {
     /// The host the driver started last.
     private(set) var renderer: UIKitRenderer?
 
-    /// What the hosts wrote to their log since the last started.
+    /// What the hosts wrote to their log since the last one started.
     private let written = UIKitLogLines()
 
     /// The press a finger holds down between the acts that put it down, drag it and lift it.

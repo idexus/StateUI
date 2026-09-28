@@ -5,13 +5,10 @@ Swift, in the application's own process, beside the application module and the
 library: it applies the typed sparse patches of the
 [host contract](../internals/host-contract.md) directly and calls the views through JNI.
 
-It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
-`CheckBox`, `Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,
-`ColorBox`, `VStack`, `HStack`, `Grid`, `ZStack` and
-`ScrollView` - and the pages of a `NavigationStack`, a `SplitView` and a
-`TabbedView`, over the runtime every host shares, and
-shows any other control's name in red where the control belongs, so a gap is
-visible rather than silent.
+It presents StateUI's controls, arrangements and pages over the runtime every
+host shares - the [platform contract](../platform-contract.md) says which,
+member by member - and shows any other control's name in red where the control
+belongs, so a gap is visible rather than silent.
 
 ```text
 lib/StateUI.Android/
@@ -39,7 +36,8 @@ The host builds on macOS, for Android 9 (API 28) or newer:
   Android of the same release, installed with `swift sdk install`. Xcode's own
   Swift 6.4 is a different build and cannot read the SDK's modules;
   `build-swift.sh` finds the matching toolchain by itself;
-- the Android NDK r30 or newer: the one `ANDROID_NDK_HOME` names, else the
+- the Android NDK r30 or newer: the one `ANDROID_NDK_ROOT` or
+  `ANDROID_NDK_HOME` names, else the
   one the Swift SDK's setup linked into its bundle, else the Android SDK's
   newest;
 - the Android SDK with platform 36 and its build tools, and JDK 21 for

@@ -26,11 +26,11 @@ final class StateUIBrush {
      * The brush: its kind, its stops' colours and offsets, its points in fractions of the shape and a radial
      * one's reach in pixels.
      */
-    void set(int brush, int[] stopColors, float[] stopOffsets, float[] fractions) {
+    void set(int brush, int[] stopColors, float[] stopOffsets, float[] geometry) {
         kind = brush;
         colors = stopColors;
         offsets = stopOffsets;
-        geometry = fractions;
+        this.geometry = geometry;
     }
 
     /**
@@ -53,7 +53,7 @@ final class StateUIBrush {
                     bounds.left + width * geometry[2], bounds.top + height * geometry[3],
                     colors, offsets, Shader.TileMode.CLAMP);
         } else if (kind == RADIAL && colors.length > 1 && geometry.length >= 3) {
-            // The reach in pixels, as the Swift host worked it out; a radial shader takes no radius of nothing.
+            // The reach in pixels, as the Swift host works it out; a radial shader takes no radius of nothing.
             float radius = Math.max(geometry[2], 0.001f);
             shader = new RadialGradient(
                     bounds.left + width * geometry[0], bounds.top + height * geometry[1],

@@ -29,9 +29,9 @@ jobs:
     # default that changed underneath.
     container: swift:6.4.0-noble
     steps:
-      # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI, for the reason
-      # tests.yml carries: a bare "StateUI" dependency is matched against the
-      # package identity, which for a path dependency is the directory's name.
+      # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI: a bare "StateUI"
+      # dependency is matched against the package identity, which for a path
+      # dependency is the directory's name.
       - uses: actions/checkout@v7.0.1
 
       - name: Report the toolchain

@@ -59,7 +59,7 @@ enum AppKitRegistrations {
         return numbers.count == components.count ? numbers : nil
     }
 
-    /// The words to put on a field: NONE where the host carries the text in,
+    /// The words to put on a field: nil where the host carries the text in,
     /// since the control is the source there and the tree describes it only to
     /// read back - and otherwise what the tree says in its case, which is empty
     /// where the tree took the words away, so clearing a field clears the

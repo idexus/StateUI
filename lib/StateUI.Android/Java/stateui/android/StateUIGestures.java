@@ -150,8 +150,8 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
     }
 
     /**
-     * One more tap in the run where it is near the last and soon after it, as Android measures a double tap - it
-     * counts no longer runs itself; each tap is told with its place in the run.
+     * One more tap in the run where it is near the last and soon after it, as Android measures a double tap, which
+     * itself counts no run past two; each tap is told with its place in the run.
      */
     private void tap(MotionEvent event) {
         long now = event.getEventTime();

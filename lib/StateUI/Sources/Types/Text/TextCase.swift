@@ -6,9 +6,8 @@
 
 /// Whether the text is drawn as written, or in one case throughout.
 ///
-/// The letters the user sees change; the value behind them does not - a
-/// `TextField` set to `.uppercase` still reports what was typed, so this is a
-/// look rather than an edit.
+/// A label draws its letters in the case. A field holds its words in it: what
+/// the user types is turned into the case, and reported so.
 public enum TextCase: Int32, Sendable {
     /// As written.
     case none = 0

@@ -231,8 +231,8 @@ the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
 Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
 the host layer and the conformance runner, and on macOS the Gallery), and one
 for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
-**Android** (the test APK built on macOS, run on a Linux emulator), **GTK**
-and **WinUI**.
+**Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**
+and **GTK**.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
 written again on that platform's machine.

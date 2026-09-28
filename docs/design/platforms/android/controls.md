@@ -221,13 +221,13 @@ heading but not its level.
 
 ## Gestures
 
-A view has one listener, and what its element listens for (`MountedElement.
-hearing`) is told there from the touches and the hovering pointer the view
+A view has one listener, and what its element listens for
+(`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
 gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
 taps, a press dragged, a pinch, and the pointer. One tap is the view's click,
 which keeps what a click brings; where more make one, the listener counts
-quick taps near each other as Android measures a double tap - Android counts
-no longer runs itself - and tells each with its place in its run. A press is
+quick taps near each other as Android measures a double tap - Android itself
+counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,
 since a view that follows its drag moves where its own touches are measured;
 it is a drag by the host layer's rule (`DragRecognition`) once it passes
@@ -243,6 +243,6 @@ given the whole touch; a control keeps its own.
 
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the
-hovering first, before the parts do (`StateUIWatch`): a pan or a pinch under
+hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
 way takes the rest of the touch from the parts, which are told it was called
 off, and a touch no part takes stays the view's where its element listens.

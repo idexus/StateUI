@@ -62,8 +62,8 @@ What VoiceOver meets of a view is what the tree says of it - its label, hint
 and heading, whether it is met - over what the view says of itself. A view
 holding no children of the tree's - a date or time picker, a spinner - is one
 thing to the user, though UIKit offers VoiceOver the parts inside it: hidden,
-it hides them too. A layout hidden keeps its children met; only a layout
-hidden with its children hides them.
+it hides them too. A layout hidden from VoiceOver keeps its children met; only
+a layout hidden with its children hides them.
 
 ## A web view
 

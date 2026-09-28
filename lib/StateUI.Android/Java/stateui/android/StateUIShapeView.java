@@ -91,8 +91,8 @@ final class StateUIShapeView extends View {
      * The brush: its kind, its stops' colours and offsets, its points in fractions of the view and a radial
      * one's reach in pixels.
      */
-    void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] fractions) {
-        brush.set(kind, stopColors, stopOffsets, fractions);
+    void setFill(int kind, int[] stopColors, float[] stopOffsets, float[] geometry) {
+        brush.set(kind, stopColors, stopOffsets, geometry);
         invalidate();
     }
 

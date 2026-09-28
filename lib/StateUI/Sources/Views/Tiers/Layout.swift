@@ -31,10 +31,12 @@ extension LayoutProperties {
     ///
     ///     VStack { … }.avoidsSafeArea(.none)    // edge to edge
     ///
-    /// iOS is where it shows; the other platforms have no unsafe strip and
-    /// ignore it. A layout that stays clear of the strip is inset by it, so a
-    /// header meant to reach the top edge wants `.none`: its content then sits
-    /// where its padding says, and its frame fits that content.
+    /// A page's own layout is the one that lets itself under the strip; a
+    /// layout deeper in stands where its page puts it, and a window with no
+    /// unsafe strip changes nothing. A layout that stays clear of the strip is
+    /// inset by it, so a header meant to reach the top edge wants `.none`: its
+    /// content then sits where its padding says, and its frame fits that
+    /// content.
     public func avoidsSafeArea(_ value: SafeArea) -> Modified {
         setValue(LayoutContract.avoidsSafeArea, .uniform(value))
     }

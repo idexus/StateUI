@@ -169,8 +169,8 @@ On the system's material both keep the system's colours.
 `ItemsView` is the native virtualized collection. It presents identified
 items as a list, a row or a grid, and StateUI builds an item only when the
 platform's collection shows it. Its host adapters map to `NSCollectionView`,
-`UICollectionView`, `GtkListView` or `GtkGridView`, `RecyclerView`, WinUI
-`ItemsView`, and a semantic DOM list/grid; each member's mark is its case's
+`UICollectionView`, `RecyclerView`, WinUI `ItemsView`, `GtkListView` or
+`GtkGridView`, and a semantic DOM list/grid; each member's mark is its case's
 verdict on that host, as for every element.
 
 `ForEach`, `FrameReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
@@ -194,8 +194,8 @@ may still choose another class that preserves the same contract.
 | `Window` | `NSWindow` | `UIWindow` | `Activity` | `Window` | `GtkApplicationWindow` | browser `window` |
 | `Page` | custom `NSView` | `UIViewController` | custom `ViewGroup` | `Page` | custom `GtkWidget` | `<section>` |
 | `NavigationStack` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | custom `ViewGroup` stack + `Toolbar` | `Frame` | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | History API |
-| `TabbedView` | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it | `UITabBarController` | Material Components `BottomNavigationView` (?) | `NavigationView` with a top pane | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | ARIA `tablist` |
-| `SplitView` | `NSSplitViewController` | `UISplitViewController` | AndroidX `DrawerLayout` | `SplitView` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | `<aside>` |
+| `TabbedView` | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it | `UITabBarController` | custom `LinearLayout` tab row | `NavigationView` with a top pane | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | ARIA `tablist` |
+| `SplitView` | `NSSplitViewController` | `UISplitViewController` | custom `ViewGroup`: a drawer where narrow, beside where wide | `SplitView` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | `<aside>` |
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | full-screen `Dialog` (?) | `ContentDialog` (?) | modal `GtkWindow`; libadwaita `AdwDialog` | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | `GtkOverlay` | positioned element above the page |
 | `TitleBar` | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | — | — | `TitleBar` | `GtkHeaderBar` | — |

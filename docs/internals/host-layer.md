@@ -347,6 +347,10 @@ measures only its native views.
   `drawnOpacity` and `drawnShade` say where a placing run stands a ZStack's
   children, how opaque it draws them, and in what order.
   ([A placing run](../design/host/layout.md#a-placing-run))
+- **`SafeAreaArithmetic`** gives the room a page's content stands in
+  (`room`): the safe area, reaching the window's edge on each edge its own
+  layout lets under the bars; `underTheBars` says which a value lets under.
+  ([The safe area](../design/host/layout.md#the-safe-area))
 - **`RowEdge`** stands an arrangement's own row - a tabbed view's tabs -
   across the top or the bottom of its room, the page taking the rest.
   ([A row beside a page](../design/host/layout.md#a-row-beside-a-page))
@@ -443,8 +447,9 @@ host.
   frame, and when it rests, timed on the frame clock. The host tells it the
   user's moves and holds; the scrolling itself is the toolkit's.
   ([A scroller's movement](../design/host/runtime.md#a-scrollers-movement))
-- **`InputWords`** cuts words to a field's bound in characters (`cut`) and
-  gives a caret or a selection in the UTF-16 units a toolkit counts
+- **`InputWords`** cuts words to a field's bound in characters (`cut`), holds
+  what the user typed in the field's case within its bound (`held`) and gives
+  a caret or a selection in the UTF-16 units a toolkit counts
   (`utf16Selection`). ([Typed words](../design/host/runtime.md#typed-words))
 - **`PickerChoices`** writes a picker's choices where they changed, and its
   choice only where the tree changed it or the choices.

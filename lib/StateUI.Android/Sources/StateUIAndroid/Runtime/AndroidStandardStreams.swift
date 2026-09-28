@@ -4,7 +4,8 @@
 import Android
 import CStateUIAndroid
 
-/// An Android application's stdout and stderr go nowhere; this sends them to logcat a line at a time.
+/// Logcat for an Android application, a line at a time: the host's log, and its stdout and stderr, which otherwise go
+/// nowhere.
 /// Design: docs/design/platforms/android/runtime.md#print-reaches-logcat
 enum AndroidStandardStreams {
     /// The tag every line of the host's log and of the application's `print` carries.

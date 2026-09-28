@@ -72,7 +72,7 @@ final class AppKitDriver: HostDriver {
     /// The preferences the driver's hosts keep their values in, apart from the machine's own.
     let store = UserDefaults(suiteName: "StateUI.AppKitConformance")!
 
-    /// What the hosts wrote to their log since the last started.
+    /// What the hosts wrote to their log since the last one started.
     let written = AppKitLogLines()
 
     /// What the system restores at the next launch: the windows open when the last host ended, each as its delegate

@@ -63,7 +63,7 @@ final class AndroidDriver: HostDriver {
     /// The host the driver started last.
     private(set) var renderer: AndroidRenderer?
 
-    /// What the hosts wrote to their log since the last started.
+    /// What the hosts wrote to their log since the last one started.
     private let written = AndroidLogLines()
 
     var register: HostRegister { AndroidRealization.register }
@@ -103,13 +103,13 @@ final class AndroidDriver: HostDriver {
         renderer.runtime.frames.laidOut()
     }
 
-    /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
-    /// an activity's end does: each case starts in a window as a new activity's.
     /// What the hosts wrote to their log since the driver last started one.
     func logged() throws -> [String] {
         written.lines
     }
 
+    /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
+    /// an activity's end does: each case starts in a window as a new activity's.
     func finish() {
         Java.callStatic(Self.dialogs, Self.dismissAll)
         if let root = renderer?.root.reference {

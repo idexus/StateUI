@@ -5,7 +5,7 @@
 # on purpose.
 #
 # TWO MACHINES. The APK is built on macOS, where the build draws the pictures
-# and the icon (`xcrun swiftc`); an emulator runs only where the runner can
+# (`xcrun swiftc`); an emulator runs only where the runner can
 # virtualize - GitHub's Linux runners with KVM, not its Apple silicon ones - so
 # the APK is built for x86_64 and handed over.
 #
@@ -74,8 +74,8 @@ jobs:
             --checksum "$ANDROID_SDK_CHECKSUM"
           swift sdk list
 
-      # SwiftPM finds the NDK by ANDROID_NDK_HOME; the SDK's own setup script
-      # is not needed (platform-traps.md).
+      # build-swift.sh finds the NDK ANDROID_NDK_HOME names; the SDK's own
+      # setup script is not needed (platform-traps.md).
       - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
         run: |
           set -euo pipefail
@@ -123,7 +123,7 @@ jobs:
 
       # Android 14 as the Pixel 3a the suite is walked on stands, its animations
       # left on: the host reads the system's animator scale as the user's wish
-      # for less motion, and the verdicts were written with it on.
+      # for less motion, and the verdicts are written with them on.
       - name: Android host tests, every verdict held
         uses: reactivecircus/android-emulator-runner@v2
         with:

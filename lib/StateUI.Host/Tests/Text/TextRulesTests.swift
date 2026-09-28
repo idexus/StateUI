@@ -61,7 +61,7 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(InputWords.held("Mixed", in: .lowercase, toBound: 3), "mix")
         XCTAssertEqual(InputWords.held("Mixed", in: nil, toBound: 3), "Mix")
         XCTAssertNil(InputWords.held("MIXED", in: .uppercase, toBound: 5))
-        XCTAssertNil(InputWords.held("Mixed", in: .none, toBound: nil))
+        XCTAssertNil(InputWords.held("Mixed", in: TextCase.none, toBound: nil))
     }
 
     /// Words going into a field before they stand there - where a toolkit asks before it inserts - are cut to the

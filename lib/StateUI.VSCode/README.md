@@ -156,7 +156,7 @@ JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
 Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
 Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
 for this extension's own build. The **StateUI Toolchain** output lists each
-with what was found - a version older than the least said as too old - and
+with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the build scripts look
 (the NDK as `build-swift.sh` finds it); it installs nothing.
 

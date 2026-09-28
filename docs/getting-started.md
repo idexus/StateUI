@@ -5,10 +5,11 @@ platform-neutral Swift module. A small native executable imports that module
 and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
-Two hosts are active: AppKit on macOS, and Android Views - each Swift, in the
-application's own process. The supported setup today is a StateUI checkout:
-each host is a sibling Swift package whose manifest uses a local dependency on
-the repository root. Neither host has a published package route yet.
+Five native hosts are active - AppKit, UIKit, Android Views, WinUI 3 and
+GTK 4 - each Swift, in the application's own process. The supported setup is a
+StateUI checkout: each host is a sibling Swift package whose manifest uses a
+local dependency on the repository root. No host has a published package route
+yet.
 
 ## Requirements
 
