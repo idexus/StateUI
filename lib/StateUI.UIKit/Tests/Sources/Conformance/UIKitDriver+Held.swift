@@ -30,9 +30,10 @@ extension UIKitDriver {
         case .fontSize, .fontAttributes, .fontFamily, .textColor, .characterSpacing, .lineHeight, .textDecorations:
             return try words(property, view)
         case .background:
+            if let held = try controlHolds(property, view) { return held }
             return view.backgroundColor.map { Background.color(color($0)).propValue }
         default:
-            return nil
+            return try controlHolds(property, view)
         }
     }
 
@@ -55,12 +56,14 @@ extension UIKitDriver {
     /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their colour.
     private static func words(_ property: Prop, _ view: UIView) throws -> HostValue? {
         view.layoutIfNeeded()
-        let written = (view as? UILabel)?.attributedText
+        let written = (view as? UILabel)?.attributedText ?? (view as? UIButton)?.titleLabel?.attributedText
+            ?? (view as? UITextView)?.attributedText
         let first = written.flatMap { $0.length > 0 ? $0.attributes(at: 0, effectiveRange: nil) : nil }
         let drawn: (font: UIFont?, color: UIColor?) = switch view {
         case let label as UILabel:
             (first?[.font] as? UIFont ?? label.font, first?[.foregroundColor] as? UIColor ?? label.textColor)
         case let field as UITextField: (field.font, field.textColor)
+        case let editor as UITextView: (editor.font, editor.textColor)
         case let button as UIButton: (button.titleLabel?.font, button.titleLabel?.textColor)
         default: (nil, nil)
         }

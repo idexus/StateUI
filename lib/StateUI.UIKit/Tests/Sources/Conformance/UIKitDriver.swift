@@ -13,7 +13,43 @@ import UIKit
 @MainActor
 final class UIKitDriver: HostDriver {
     let host = "UIKit"
-    let cannot: [String: String] = [:]
+    let cannot = [
+        "read the line of a shape drawing no outline":
+            "UIKit draws no outline for a shape given no stroke, and holds none of its line",
+        "read verticalScrollBarVisibility of ScrollView":
+            "UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike",
+        "read horizontalScrollBarVisibility of ScrollView":
+            "UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike",
+    ]
+    let platformHasNone = UIKitDriver.none()
+
+    /// What UIKit holds none of: a shape's figure placed and moved by StateUI into its path, a layout's outline held
+    /// as a path, where StateUI's layout places the children and what StateUI measures - each proven by its effect
+    /// in another case.
+    private static func none() -> [String: String] {
+        var none = [
+            "read growsWithText of TextEditor":
+                "an editor's growing is StateUI's measuring, which no property of UIKit's holds; its frames prove it",
+        ]
+        for shape in ["Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
+            for member in ["aspect", "renderTransform"] {
+                none["read \(member) of \(shape)"] =
+                    "StateUI places and moves a shape's figure into its layer's path, which holds no \(member); its drawing proves it"
+            }
+        }
+        for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
+            none["read shape of \(layout)"] =
+                "UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it"
+            for member in ["padding", "avoidsSafeArea"] {
+                none["read \(member) of \(layout)"] =
+                    "UIKit's view places its children where StateUI's layout says; their frames prove it"
+            }
+        }
+        for stack in ["HStack", "VStack"] {
+            none["read spacing of \(stack)"] = "UIKit's view places its children where StateUI's layout says; their frames prove it"
+        }
+        return none
+    }
 
     /// What the families ask of a driver that UIKit's has no path for yet says so, and stays empty in UIKit's column
     /// with why, rather than failing.

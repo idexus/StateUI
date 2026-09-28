@@ -55,6 +55,15 @@ and is read only while they can select it and not edit it. A colour at a point i
 screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
 window's own hit testing at that point.
 
+A layout's box and a shape's paint are layers UIKit holds: a box's fill and
+outline layers, a shape's colour layers cut by the shape layers that draw its
+line, whose dashes UIKit keeps in points and the driver reads back in the
+line's widths. A shape given no stroke draws no line, and holds none of it.
+A button's box, icon and breaking are its configuration's. What UIKit holds
+none of - a shape's figure placed and moved into its path, a layout's outline
+held as a path, where StateUI's layout places the children, what StateUI
+measures - does not apply here, its effect proven by another case.
+
 ## What goes past UIKit
 
 UIKit lets a test send no touch and moves no scene, so the driver hands some
