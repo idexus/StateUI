@@ -93,6 +93,41 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// Tabs pushed onto a stack keep the title of the page beneath them, in the chrome and in the window's own name:
+    /// their pages name their tabs alone.
+    func testTabsPushedOntoAStackKeepTheTitleBeneathThem() throws {
+        try onUIThread {
+            let path = State(wrappedValue: [Int]())
+            let host = WinUIRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Items and Cards")
+                } destination: { _ in
+                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { Self.words(window.titleBar, "title") == "Items and Cards" }
+
+            path.wrappedValue = [1]
+            host.settle { host.views(WinUITabbedView.self).first?.titles == ["Example 1", "Example 2"] }
+            XCTAssertEqual(host.views(WinUITabbedView.self).first?.titles, ["Example 1", "Example 2"], "pushed")
+            XCTAssertEqual(Self.words(window.titleBar, "title"), "Items and Cards", "the chrome's title")
+            var bytes = [CChar](repeating: 0, count: 64)
+            let length = stateui_winui_window_system_title(window.handle, &bytes, Int32(bytes.count))
+            XCTAssertEqual(
+                String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self),
+                "Items and Cards", "the window's own name")
+        }
+    }
+
+    /// What the relay reads of `view` as `what`.
+    @MainActor
+    private static func words(_ view: WinUIView, _ what: String) -> String {
+        var bytes = [CChar](repeating: 0, count: 128)
+        let length = stateui_winui_read(view.handle, what, &bytes, Int32(bytes.count))
+        return String(decoding: bytes.prefix(Int(max(length, 0))).map { UInt8(bitPattern: $0) }, as: UTF8.self)
+    }
+
     /// The place of the tab a row marks; -1 for none.
     @MainActor
     private static func selected(_ row: WinUIView) -> Int {
