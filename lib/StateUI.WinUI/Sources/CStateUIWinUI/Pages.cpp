@@ -11,11 +11,51 @@
 #include <winrt/Microsoft.UI.Xaml.Automation.h>
 #include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Microsoft.UI.Content.h>
+#include <winrt/Microsoft.UI.Windowing.h>
 
 using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
+    /// The columns WinUI's TitleBar keeps at its edges for the window's own buttons, and the room those take in
+    /// DIPs; null columns where the bar stands in no window yet.
+    struct CaptionRoom {
+        controls::ColumnDefinition leading{nullptr};
+        controls::ColumnDefinition trailing{nullptr};
+        double leadingRoom = 0;
+        double trailingRoom = 0;
+    };
+
+    CaptionRoom captionRoom(controls::TitleBar const &bar) {
+        CaptionRoom found;
+        auto root = bar.XamlRoot();
+        auto grid = first<controls::Grid>(bar);
+        if (!root || !grid) return found;
+        auto window = winrt::Microsoft::UI::Windowing::AppWindow::GetFromWindowId(
+            root.ContentIslandEnvironment().AppWindowId());
+        if (!window) return found;
+        auto column = [&](wchar_t const *name) {
+            auto named = grid.FindName(name);
+            return named ? named.try_as<controls::ColumnDefinition>() : nullptr;
+        };
+        found.leading = column(L"LeftPaddingColumn");
+        found.trailing = column(L"RightPaddingColumn");
+        auto scale = root.RasterizationScale();
+        found.leadingRoom = window.TitleBar().LeftInset() / scale;
+        found.trailingRoom = window.TitleBar().RightInset() / scale;
+        return found;
+    }
+
+    /// Caps the room the bar keeps for the window's own buttons at theirs: WinUI keeps it in pixels, unscaled
+    /// (microsoft-ui-xaml #10344), and a cap leaves a room WinUI keeps right as it is.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    void capCaptionRoom(controls::TitleBar const &bar) {
+        auto found = captionRoom(bar);
+        if (found.leading) found.leading.MaxWidth(found.leadingRoom);
+        if (found.trailing) found.trailing.MaxWidth(found.trailingRoom);
+    }
+
     /// Whether the program is setting a row of tabs: a selection it makes - a tab chosen, or the row's own after
     /// the chosen tab is taken away - is heard by nobody.
     bool settingTabs = false;
@@ -44,6 +84,12 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
         bar.PaneToggleRequested([view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -2); });
         bar.LeftHeader(controls::ContentControl());
         bar.Content(controls::ContentControl());
+        bar.Loaded([](IInspectable const &sender, xaml::RoutedEventArgs const &) {
+            capCaptionRoom(sender.as<controls::TitleBar>());
+        });
+        bar.SizeChanged([](IInspectable const &sender, xaml::SizeChangedEventArgs const &) {
+            capCaptionRoom(sender.as<controls::TitleBar>());
+        });
 
         controls::CommandBar actions;
         actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
@@ -79,6 +125,16 @@ extern "C" void stateui_winui_title_bar_set(
         if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
     } catch (...) {
         report("setting a title bar");
+    }
+}
+
+extern "C" void stateui_winui_title_bar_caption_room(StateUIObjectRef handle, double *kept, double *room) {
+    try {
+        auto found = captionRoom(borrow<controls::TitleBar>(handle));
+        *kept = found.trailing ? found.trailing.ActualWidth() : -1;
+        *room = found.trailingRoom;
+    } catch (...) {
+        report("reading the room a title bar keeps");
     }
 }
 

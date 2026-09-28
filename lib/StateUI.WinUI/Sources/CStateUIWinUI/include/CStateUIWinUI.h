@@ -667,6 +667,10 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
 
 /// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
+
+/// What a test reads: the room a title bar keeps at its trailing edge, and the room the window's own buttons there
+/// take, both in DIPs; -1 kept where the bar stands in no window.
+void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room);
 void stateui_winui_title_bar_set_slots(StateUIObjectRef bar, StateUIObjectRef leading, StateUIObjectRef center,
                                        StateUIObjectRef trailing);
 

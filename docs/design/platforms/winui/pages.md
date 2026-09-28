@@ -39,6 +39,14 @@ that the application may not render for - a tab chosen, the sidebar shown:
 A page that hides its navigation bar puts neither the way back nor its
 actions on the chrome.
 
+WinUI's `TitleBar` keeps a column at each edge for the window's own buttons,
+as wide as the window's insets - which it takes in pixels as though they were
+DIPs (microsoft-ui-xaml #10344): at 200% the actions stand a caption's width
+short of the bar's end. The relay caps each column at the inset over the
+window's scale, whenever the bar is loaded or changes size; a column WinUI
+sizes right stays as it is. The drag column WinUI keeps beside the buttons
+stays too.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below
