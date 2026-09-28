@@ -10,7 +10,7 @@ import XCTest
 /// WinUI's own ItemsView under the host: a list measured in the room it stands in.
 final class WinUIItemsViewTests: XCTestCase {
     /// A list whose window is widened and narrowed stands at each new width: a layout WinUI cannot settle ends the
-    /// process.
+    /// process. Every width fits a screen of 1024 x 768, where a larger window is cut to the screen.
     func testAListWhoseWindowChangesItsWidthSettles() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
@@ -32,7 +32,7 @@ final class WinUIItemsViewTests: XCTestCase {
             let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
             let window = try XCTUnwrap(host.window)
 
-            for (width, height) in [(750.0, 700.0), (1200.0, 750.0), (650.0, 600.0), (1300.0, 800.0)] {
+            for (width, height) in [(750.0, 600.0), (1000.0, 700.0), (650.0, 500.0), (900.0, 650.0)] {
                 window.request(WindowFrame(width: width, height: height))
                 host.settle(until: { abs(list.laidOutFrame.width - width) < 0.5 })
                 XCTAssertEqual(list.laidOutFrame.width, width, accuracy: 0.5, "the list stands as wide as its window")

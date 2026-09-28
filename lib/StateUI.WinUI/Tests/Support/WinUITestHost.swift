@@ -29,8 +29,19 @@ enum WinUITestHost {
         stateui_winui_pump(seconds)
     }
 
+    /// The room a test's window stands in whatever the screen - Windows gives a window three quarters of it -
+    /// as AppKit's and GTK's windows open.
+    static let room = LayoutSize(width: 560, height: 440)
+
+    /// A room where a split view's sidebar stands beside its detail, which a screen of 1024 x 768 holds.
+    @MainActor static let wideRoom = LayoutSize(width: WinUISidebarView.expandsAt + 8, height: 700)
+
     /// The window a bare host's root stands in, made once.
-    @MainActor static let window = WinUIWindow()
+    @MainActor static let window: WinUIWindow = {
+        let window = WinUIWindow()
+        window.request(WindowFrame(width: room.width, height: room.height))
+        return window
+    }()
 }
 
 extension XCTestCase {
@@ -43,20 +54,26 @@ extension XCTestCase {
 }
 
 extension WinUIRenderer {
-    /// A host showing `page` in a window of its own, laid out, on `clock` where one is given.
+    /// A host showing `page` in a window of its own, laid out in `room`, on `clock` where one is given.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+        clock: TestClock? = nil, reducesMotion: Bool = false, room: LayoutSize = WinUITestHost.room,
+        _ page: @escaping @Sendable () -> any Page
     ) -> WinUIRenderer {
-        running(clock: clock, reducesMotion: reducesMotion, application: { OneWindowApplication(page: page) })
+        running(
+            clock: clock, reducesMotion: reducesMotion, room: room,
+            application: { OneWindowApplication(page: page) })
     }
 
-    /// A host running `application`, its window laid out, on `clock` where one is given.
+    /// A host running `application`, its window laid out in `room` from the first layout, on `clock` where one is
+    /// given.
     static func running(
-        clock: TestClock? = nil, reducesMotion: Bool = false, application: @escaping @Sendable () -> any Application
+        clock: TestClock? = nil, reducesMotion: Bool = false, room: LayoutSize = WinUITestHost.room,
+        application: @escaping @Sendable () -> any Application
     ) -> WinUIRenderer {
         stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
+        renderer.window?.request(WindowFrame(width: room.width, height: room.height))
         renderer.waitForFirstLayout()
         return renderer
     }

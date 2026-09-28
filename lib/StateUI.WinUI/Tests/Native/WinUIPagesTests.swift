@@ -14,7 +14,7 @@ final class WinUIPagesTests: XCTestCase {
     func testADetailBesideTheSidebarTakesTheRoomBesideIt() throws {
         try onUIThread {
             let open = State(wrappedValue: false)
-            let host = WinUIRenderer.running {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView(open.projectedValue) {
                     TitledPage(title: "Menu")
                 } detail: {
@@ -46,7 +46,7 @@ final class WinUIPagesTests: XCTestCase {
     func testTheSidebarsFooterStandsInTheWindowFromTheFirstStart() throws {
         try onUIThread {
             let open = State(wrappedValue: true)
-            let host = WinUIRenderer.running {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView(open.projectedValue) {
                     Grid {
                         ScrollView {
@@ -148,7 +148,7 @@ final class WinUIPagesTests: XCTestCase {
     /// holds.
     func testASidebarTallerThanTheWindowScrolls() throws {
         try onUIThread {
-            let host = WinUIRenderer.running {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
                 SplitView(State(wrappedValue: true).projectedValue) {
                     ScrollView {
                         VStack { ForEach(Array(0..<100), id: \.self) { number in Label("Row \(number)") } }

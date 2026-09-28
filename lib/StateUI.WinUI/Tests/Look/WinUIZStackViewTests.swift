@@ -68,9 +68,11 @@ final class WinUIZStackViewTests: XCTestCase {
             XCTAssertTrue(holders[0].frame == (10, 20, 30, 40), "\(holders[0].frame)")
             XCTAssertTrue(holders[1].frame == (0, 0, 50, 50), "\(holders[1].frame)")
             XCTAssertEqual(holders[1].drawnOpacity, 0.5, accuracy: 0.001)
-            XCTAssertEqual(
-                layout.pixels(at: [(20, 30), (45, 10)]), [red, 0x7F00_007F],
-                "the higher rank drawn over the half-opaque lower one")
+            let drawn = layout.pixels(at: [(20, 30), (45, 10)])
+            XCTAssertEqual(drawn[0], red, "the higher rank drawn over the lower one")
+            XCTAssertTrue(
+                [0x7F00_007F, 0x8000_0080].contains(drawn[1]),
+                "the lower one half opaque - a GPU rounds the half down, WARP up: \(String(drawn[1], radix: 16))")
         }
     }
 

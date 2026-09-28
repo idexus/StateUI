@@ -32,6 +32,18 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
+    /// A test's window stands in the tests' room whatever the screen: Windows gives a window three quarters of it,
+    /// and a runner's screen of 1024 x 768 stood the split view's sidebar over its detail.
+    func testATestsWindowStandsInItsRoomWhateverTheScreen() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { CounterPage() }
+            var frame = [Double](repeating: 0, count: 13)
+            stateui_winui_window_frame(try XCTUnwrap(host.window).handle, &frame)
+            XCTAssertEqual(frame[2], WinUITestHost.room.width, accuracy: 0.5)
+            XCTAssertEqual(frame[3], WinUITestHost.room.height, accuracy: 0.5)
+        }
+    }
+
     /// The proof of the host's spine: the click reaches the handler, the state it wrote renders, and the patch
     /// reaches WinUI.
     func testAClickRendersWhatItsHandlerChanged() throws {
