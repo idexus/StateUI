@@ -356,7 +356,12 @@ extern "C" void stateui_winui_hear_focus(StateUIObjectRef handle, int64_t view, 
 }
 
 extern "C" int32_t stateui_winui_hung_handlers(void) {
-    return hung;
+    try {
+        return hung;
+    } catch (...) {
+        report("counting the handlers hung");
+        return 0;
+    }
 }
 
 extern "C" int32_t stateui_winui_listeners(void) {
