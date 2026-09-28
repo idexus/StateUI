@@ -189,8 +189,9 @@ stands a page's content clear of them, in the safe area. Where the content's
 own layout lets itself under them on an edge - `.none`, edge to edge, or
 `.keyboard`, clear of the keyboard alone - its page reaches out to the
 screen's edge there (`SafeAreaArithmetic.room`), so a background or a
-gradient runs behind the status bar. The page's background stands behind the
-bars either way. A desktop window has no safe area: its content stands in its
+gradient runs behind the status bar. A bar of the page's own - a stack's, the
+tabs - is no part of the safe area to give: content never runs under one. The
+page's background stands behind the bars either way. A desktop window has no safe area: its content stands in its
 whole room.
 
 ## Words on a painted band
