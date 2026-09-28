@@ -361,6 +361,13 @@ class AndroidView {
         laidOut.map { ($0.right - $0.left, $0.bottom - $0.top) }
     }
 
+    /// Whether a layout has placed the view: StateUI's, or Android's giving it a size.
+    var isLaidOut: Bool {
+        guard laidOut == nil else { return true }
+        let standing = standingFrame
+        return standing.width > 0 || standing.height > 0
+    }
+
     /// Hands the view to a container of Android's own, which places it: its place is read from Android from now on.
     func forgetPlace() {
         laidOut = nil

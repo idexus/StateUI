@@ -73,4 +73,6 @@ view holds it (`getLeft`, `getTop`, `getRight`, `getBottom`), its place in the
 window, and that place from the safe area's corner, all in points. The host hears every layout pass and scroll of the window once, and
 asks only the views that are read; a view that did not move says nothing. A
 view reports on a frame rather than inside Android's layout pass, so what a
-handler renders is laid out in a pass of its own.
+handler renders is laid out in a pass of its own. A view no layout has placed
+yet - StateUI's, or Android's giving it a size - says nothing, so its first
+report is where it is laid out.
