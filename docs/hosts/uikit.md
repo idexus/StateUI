@@ -6,6 +6,11 @@ module and the library: it applies the typed sparse patches of the
 [host contract](../internals/host-contract.md) directly, over the runtime every host
 shares.
 
+It presents StateUI's controls, arrangements and pages - the
+[platform contract](../platform-contract.md#control-creation) says which, member by
+member - and shows any other control's name in red where the control belongs,
+so a gap is visible rather than silent.
+
 ```text
 lib/StateUI.UIKit/
   Sources/    StateUIUIKit: the renderer, scenes and windows, pages, controls and the registry

@@ -6,8 +6,8 @@ library: it applies the typed sparse patches of the
 [host contract](../internals/host-contract.md) directly and calls the views through JNI.
 
 It presents StateUI's controls, arrangements and pages over the runtime every
-host shares - the [platform contract](../platform-contract.md) says which,
-member by member - and shows any other control's name in red where the control
+host shares - the [platform contract](../platform-contract.md#control-creation) says
+which, member by member - and shows any other control's name in red where the control
 belongs, so a gap is visible rather than silent.
 
 ```text

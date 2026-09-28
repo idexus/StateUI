@@ -13,9 +13,9 @@ title, the way back, the sidebar's toggle and the page's actions. A
 WinUI's navigation pane, beside the detail in a wide window and over it in a
 narrow one; a `TabbedView`'s tabs stand beneath the title bar.
 
-It presents `Label`, `Button`, `Switch`, `Slider`, `TextField`, `ColorBox`,
-`VStack`, `HStack`, `Grid`, `ZStack` and `ScrollView` in a window's page,
-over the runtime every host shares: a layout paints its box - its background,
+It presents StateUI's controls, arrangements and pages over the runtime every
+host shares - the [platform contract](../platform-contract.md#control-creation) says
+which, member by member. A layout paints its box - its background,
 outline and shape - and cuts what it holds to it; a scroller reports where the
 user moved it on the display's frames and moves where its state says; a state's journey moves every control
 tied to it on the display's frames, a property's transition and a layout's
