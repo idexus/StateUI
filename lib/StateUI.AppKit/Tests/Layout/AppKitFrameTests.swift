@@ -6,9 +6,63 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+import StateUIConformance
 import XCTest
 
 final class AppKitFrameTests: XCTestCase {
+    /// Turns the host until `done` holds: its jobs, its pump, and a display frame each turn.
+    @MainActor
+    private func settle(_ renderer: AppKitRenderer, until done: () -> Bool) {
+        for _ in 0..<150 where !done() {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+            renderer.runtime.pump.turn()
+            renderer.displayFrameForTesting()
+        }
+    }
+
+    /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
+    /// where it is laid out.
+    @MainActor
+    func testAViewSaysNothingBeforeItIsLaidOut() {
+        let heard = Received<[Double]>()
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ColorBox(.steelBlue).width(120).height(60)
+                    .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        settle(renderer) { !heard.values.isEmpty }
+
+        XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 0, 120, 60])
+    }
+
+    /// A view that joins a shown page says nothing before its layout either: a display frame comes before the
+    /// layout pass that places it.
+    @MainActor
+    func testAViewThatJoinsSaysNothingBeforeItIsLaidOut() {
+        let heard = Received<[Double]>()
+        let shown = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Label("above").height(20)
+                if shown.wrappedValue {
+                    ColorBox(.steelBlue).width(120).height(60)
+                        .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
+                }
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        defer { renderer.closeForTesting() }
+        shown.wrappedValue = true
+        settle(renderer) { heard.values.count >= 2 || heard.values.first?[2] == 120 }
+
+        XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 20, 120, 60])
+    }
+
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)

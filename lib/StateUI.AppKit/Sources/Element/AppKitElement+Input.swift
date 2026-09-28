@@ -161,9 +161,11 @@ extension AppKitElement {
     }
 
     /// Where the view stands now, as a frame report says it: in its parent, in its window, and from the window's
-    /// content clear of its chrome - each from the top left; nil for a view in no window.
+    /// content clear of its chrome - each from the top left; nil for a view in no window, or one no layout placed yet
+    /// - StateUI's, or AppKit's giving it a size.
+    /// Design: docs/design/platforms/appkit/input.md#where-a-view-stands
     func frameNumbers() -> [Double]? {
-        guard let view, let content = view.window?.contentView else { return nil }
+        guard let view, let content = view.window?.contentView, isPlaced || view.frame.size != .zero else { return nil }
 
         let parentFrame = topLeftFrame(view.frame, in: view.superview)
         let windowFrame = topLeftFrame(view.convert(view.bounds, to: content), in: content)

@@ -204,7 +204,10 @@ final class AppKitRenderer: @unchecked Sendable {
 extension AppKitElement: PlacedView {
     var placedFrame: Rect {
         get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
-        set { view?.frame = NSRect(placed: newValue) }
+        set {
+            view?.frame = NSRect(placed: newValue)
+            isPlaced = true
+        }
     }
 }
 

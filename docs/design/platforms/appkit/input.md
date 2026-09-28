@@ -93,5 +93,8 @@ any ancestor up to its window's content, watched through their frame and
 bounds notifications, a scroller's clip among them - and the host layer asks
 each follower on the display's next frame, in the order they were made, as one
 of the user's transactions. The view says its place in its parent, its corner
-in its window and from the window's content, each from the top left.
+in its window and from the window's content, each from the top left. It says
+nothing while it stands in no window or before a layout placed it - StateUI's,
+or AppKit's giving it a size: a view that joins a shown page meets a display
+frame before its layout, and its first report is where it is laid out.
 

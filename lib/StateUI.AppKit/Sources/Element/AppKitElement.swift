@@ -30,6 +30,9 @@ final class AppKitElement: NSObject, NativeElement {
     var observesFrame = false
     var frameObservedViews: [NSView] = []
 
+    /// Whether a layout of StateUI's has placed the view.
+    var isPlaced = false
+
     /// The focus this element last reported, where it follows its focus.
     var reportedFocus = false
 
