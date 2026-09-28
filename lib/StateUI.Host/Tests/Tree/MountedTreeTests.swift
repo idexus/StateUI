@@ -259,6 +259,39 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
     }
 
+    /// A row says what it holds in reading order: each element's words apart by commas, a label's runs whole, a label
+    /// of its own standing for all it holds, and nothing of what is hidden.
+    @MainActor
+    func testARowSaysWhatItHoldsInReadingOrder() throws {
+        func label(_ id: String, _ words: String) -> HostPatch {
+            var patch = HostPatch(id: .manual(id), type: .label)
+            patch.properties = [.text: .string(words)]
+            return patch
+        }
+        var hidden = label("hidden", "gone")
+        hidden.properties[.isVisible] = .bool(false)
+        var first = HostPatch(id: .manual("first"), type: .span)
+        first.properties = [.text: .string("Big ")]
+        var second = HostPatch(id: .manual("second"), type: .span)
+        second.properties = [.text: .string("news")]
+        var spans = HostPatch(id: .manual("spans"), type: .spans)
+        spans.children = .arranged([first, second])
+        var runs = label("runs", "")
+        runs.children = .arranged([spans])
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.children = .arranged([label("number", "5"), hidden, label("square", "25"), runs])
+        let (tree, _) = Self.tree(viewless: [])
+        tree.apply(row, complete: true)
+        let element = try XCTUnwrap(tree.root)
+
+        XCTAssertEqual(element.spokenWords, "5, 25, Big news")
+
+        var named = HostPatch(id: .manual("row"), type: .hStack)
+        named.properties = [.accessibilityLabel: .string("Row five")]
+        tree.apply(named, complete: false)
+        XCTAssertEqual(element.spokenWords, "Row five", "its own label stands for all it holds")
+    }
+
     /// Four sides are read once for every host: leading, top, trailing, bottom, as the tree gives them; nothing all
     /// round where it gives none, or fewer than four.
     @MainActor

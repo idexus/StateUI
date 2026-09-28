@@ -640,6 +640,12 @@ bool stateui_winui_items_invoke_as_user(StateUIObjectRef cell);
 /// What a test does as the user scrolls the list to `x`, `y` DIPs, at once.
 void stateui_winui_items_scroll_as_user(StateUIObjectRef items, double x, double y);
 
+/// Names the row holding the cell numbered `cell` `words`: what Narrator reads of it, which reads no further.
+void stateui_winui_items_name(StateUIObjectRef items, int64_t cell, char const *words);
+
+/// What a test reads: what Narrator calls the row holding the cell numbered `cell`; the length it needs.
+int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char *utf8, int32_t capacity);
+
 /// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions on it or
 /// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.

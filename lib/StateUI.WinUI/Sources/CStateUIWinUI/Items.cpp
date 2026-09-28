@@ -49,6 +49,7 @@ namespace {
         struct Made {
             int64_t number;
             int32_t kind;
+            winrt::weak_ref<controls::ItemContainer> container;
         };
         std::unordered_map<void *, Made> made;
         std::vector<controls::ItemContainer> aside[2];
@@ -118,7 +119,7 @@ namespace {
             auto panel = callbacks.itemCell(view, kind, &number);
             controls::ItemContainer container;
             if (panel) container.Child(as<xaml::UIElement>(panel));
-            made[winrt::get_abi(container)] = {number, kind};
+            made[winrt::get_abi(container)] = {number, kind, container};
             return container;
         }
 
@@ -137,6 +138,14 @@ namespace {
                 owner.LayoutUpdated(token);
                 if (!self->released) tellShowing(owner, self->view);
             });
+        }
+
+        /// The container holding the cell numbered `number`; null where there is none.
+        controls::ItemContainer holding(int64_t number) {
+            for (auto const &[_, each] : made) {
+                if (each.number == number) return each.container.get();
+            }
+            return nullptr;
         }
 
         /// Runs `apply` now, or once the list is done asking for cells, after everything waiting before it.
@@ -432,5 +441,31 @@ extern "C" void stateui_winui_items_scroll_as_user(StateUIObjectRef handle, doub
         scroller.ScrollTo(x, y, controls::ScrollingScrollOptions(controls::ScrollingAnimationMode::Disabled));
     } catch (...) {
         report("scrolling an ItemsView as the user");
+    }
+}
+
+extern "C" void stateui_winui_items_name(StateUIObjectRef handle, int64_t cell, char const *words) {
+    try {
+        auto container = cellsOf(borrow<controls::ItemsView>(handle))->holding(cell);
+        if (container) xaml::Automation::AutomationProperties::SetName(container, text(words));
+    } catch (...) {
+        report("naming an ItemsView's row");
+    }
+}
+
+extern "C" int32_t stateui_winui_items_row_name(StateUIObjectRef handle, int64_t cell, char *utf8, int32_t capacity) {
+    try {
+        auto container = cellsOf(borrow<controls::ItemsView>(handle))->holding(cell);
+        auto peer = container ? peers::FrameworkElementAutomationPeer::CreatePeerForElement(container) : nullptr;
+        auto words = peer ? winrt::to_string(peer.GetName()) : std::string();
+        if (utf8 && capacity > 0) {
+            auto count = std::min<size_t>(words.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, words.data(), count);
+            utf8[count] = 0;
+        }
+        return static_cast<int32_t>(words.size());
+    } catch (...) {
+        report("reading an ItemsView's row name");
+        return 0;
     }
 }

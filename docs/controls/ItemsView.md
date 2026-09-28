@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | `NSCollectionView` / `NSTableView` | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UICollectionView` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | AndroidX `RecyclerView` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | `ItemsView` | a run of other sources said: ✅ |
+| WinUI 3 | ✅ | 11 ✅ | `ItemsView` |  |
 | GTK 4 |  |  | `GtkListView` / `GtkGridView` | no run of it on these sources |
 | Web |  |  | semantic list or grid | no host yet |
 
@@ -25,16 +25,16 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `items` | property | `ItemsEntries` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `itemsLayout` | property | `ItemsLayout` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `selectionMode` | property | `SelectionMode` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: 🪞 only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack; WinUI 3: a run of other sources said: ✅ |
-| `selectedItems` | property | `[String]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `selectionChanged` | event | `[String]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `itemActivated` | event | `String` | adaptive | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `endReachedWithin` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `endReached` | event |  | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `realizedChanged` | event | `[String]` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `items` | property | `ItemsEntries` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `itemsLayout` | property | `ItemsLayout` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `selectionMode` | property | `SelectionMode` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: 🪞 only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack |
+| `selectedItems` | property | `[String]` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅ |
+| `selectionChanged` | event | `[String]` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅ |
+| `itemActivated` | event | `String` | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no click; UIKit: a run of other sources said: 🪞 only through the host's own: activate on an item of ItemsView: the collection's delegate told, no touch; Android Views: a run of other sources said: ✅ |
+| `endReachedWithin` | property | `Int` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `endReached` | event |  | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `realizedChanged` | event | `[String]` | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `scrollTo` | act | `(String, ScrollAnchor) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -99,7 +99,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `dragText` | property | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
 | `onDrop` (`drop`) | event | `String` | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
 | `onDropCompleted` (`dropCompleted`) | event |  | native | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: not realized; UIKit: a run of other sources said: not realized; Android Views: a run of other sources said: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `gridColumn` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `gridColumnSpan` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
 | `gridRow` | property | `Int` | stateUI | ⌛ | ⌛ | ⌛ |  |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |

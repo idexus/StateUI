@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import CStateUIWinUI
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIWinUI
@@ -37,5 +38,38 @@ final class WinUIItemsViewTests: XCTestCase {
                 XCTAssertEqual(list.laidOutFrame.width, width, accuracy: 0.5, "the list stands as wide as its window")
             }
         }
+    }
+
+    /// Narrator reads a row by its container's name alone: each row is named by what its item says, and named again
+    /// as that changes.
+    func testARowIsNamedByWhatItsItemSays() throws {
+        try onUIThread {
+            let doubled = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                ItemsView(0..<50) { number in
+                    HStack {
+                        Label("\(number)")
+                        Label("\(doubled.wrappedValue ? number * 2 : number * number)")
+                    }
+                }
+                .height(300)
+            }
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            host.settle { Self.rowName(list, 3) == "3, 9" }
+            XCTAssertEqual(Self.rowName(list, 3), "3, 9")
+
+            doubled.wrappedValue = true
+            host.settle { Self.rowName(list, 3) == "3, 6" }
+            XCTAssertEqual(Self.rowName(list, 3), "3, 6", "named again")
+        }
+    }
+
+    /// What Narrator calls the row holding the item of `identity`; nil where no cell holds it.
+    @MainActor
+    private static func rowName(_ list: WinUIItemsView, _ identity: Int) -> String? {
+        guard let cell = list.cells.holding(of: "\(identity)") as? WinUIItemCell else { return nil }
+        var bytes = [CChar](repeating: 0, count: 256)
+        let length = stateui_winui_items_row_name(list.list.handle, cell.number, &bytes, Int32(bytes.count))
+        return String(decoding: bytes.prefix(Int(max(length, 0))).map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 }

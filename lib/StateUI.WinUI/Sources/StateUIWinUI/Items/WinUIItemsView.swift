@@ -124,6 +124,7 @@ final class WinUIItemsView: WinUILayoutView {
     func makeCell(item: Bool) -> WinUIItemCell {
         let cell = WinUIItemCell()
         cell.across = shape.isAcross
+        cell.owner = self
         made.append(cell)
         return cell
     }

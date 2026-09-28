@@ -52,6 +52,14 @@ room of a row: measured of nothing, every cell would fit in view at once and
 the list would ask for every entry. An entry whose size changes is measured
 again by the cell holding it; the list's own size never follows its items.
 
+## What Narrator reads
+
+Narrator reads a row by its `ItemContainer`'s name alone - with none given it
+says "ItemContainer" - so each row is named by what its entry says, the host
+layer's words for it (`spokenWords`, [what assistive technology
+meets](../../host/tree.md#what-assistive-technology-meets)), and named again
+whenever its cell is arranged saying something else.
+
 ## Changes wait for the list
 
 WinUI asks for cells while it measures, and a cell asked for makes the tree

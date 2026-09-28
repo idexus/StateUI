@@ -114,7 +114,7 @@ of its members each meets, and why a cell is empty.
 | [Grid](controls/Grid.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [HStack](controls/HStack.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Image](controls/Image.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| [ItemsView](controls/ItemsView.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| [ItemsView](controls/ItemsView.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
 | [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [LeadingContent](controls/LeadingContent.md) | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | [Line](controls/Line.md) | stateUI | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
@@ -336,7 +336,7 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 | `persistValue` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | `prompt` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | `utcOffset` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `scrollTo` | [ItemsView](controls/ItemsView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| `scrollTo` | [ItemsView](controls/ItemsView.md) | ⌛ | ⌛ | ⌛ | ✅ |  |  |
 | `moveToRegion` | [Map](controls/Map.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | `evaluateJavaScript` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
 | `goBack` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
@@ -405,7 +405,7 @@ their own, so they carry no mark:
 | `dragText` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
 | `onDrop` (`drop`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event |  |  |  | ✅ |  |  |
 | `gridColumn` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
 | `gridColumnSpan` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
 | `gridRow` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
@@ -449,7 +449,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Grid](controls/Grid.md) | 77 |  |  |  |  |  |  |
 | [HStack](controls/HStack.md) | 74 |  |  |  |  |  |  |
 | [Image](controls/Image.md) | 69 |  |  |  |  |  |  |
-| [ItemsView](controls/ItemsView.md) | 76 |  |  |  |  |  |  |
+| [ItemsView](controls/ItemsView.md) | 76 |  |  |  | 11 ✅ |  |  |
 | [Label](controls/Label.md) | 81 |  |  |  |  |  |  |
 | [Line](controls/Line.md) | 80 |  |  |  |  |  |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
@@ -473,7 +473,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](controls/WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](controls/ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 11 of 2591 met |  |  |
 
 ### Application structure
 
@@ -520,7 +520,7 @@ contract's page in [the control dictionary](controls/README.md).
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |  |  |  |  |  |  |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 |  |  |  |  |  |  |
-| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |  |  |  |  |  |  |
+| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |  |  |  | 1 ✅ |  |  |
 | [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |  |  |  |  |  |  |
 | [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |  |  |  |  |  |  |
 | [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |  |  |  |  |  |  |
@@ -546,7 +546,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 |  |  |  |  |  |  |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 |  |  |  |  |  |  |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 |  |  |  |  |  |  |
-| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 |  |  |  |  |  |  |
+| [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 |  |  |  | 9 ✅ |  |  |
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 |  |  |  |  |  |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 |  |  |  |  |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |

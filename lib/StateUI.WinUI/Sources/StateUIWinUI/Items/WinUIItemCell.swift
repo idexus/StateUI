@@ -19,6 +19,12 @@ final class WinUIItemCell: WinUISingleChildView, ItemsHolding {
     /// Whether the cell is as tall as the list, and asks for its width - in a row.
     var across = false
 
+    /// The list the cell stands in, which names its row.
+    weak var owner: WinUIItemsView?
+
+    /// What the row was last named.
+    private var named: String?
+
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
         guard item !== shown || items.isEmpty != (item == nil) else { return }
@@ -30,6 +36,16 @@ final class WinUIItemCell: WinUISingleChildView, ItemsHolding {
         identity = nil
         shown = nil
         setItems([])
+    }
+
+    /// Arranges the entry, and names the row by what it says, where that changed: Narrator reads a row by its
+    /// container's name alone (`MountedElement.spokenWords`).
+    override func arrange(in bounds: Rect) {
+        super.arrange(in: bounds)
+        let words = shown?.spokenWords ?? ""
+        guard words != named, let owner else { return }
+        named = words
+        stateui_winui_items_name(owner.list.handle, number, words)
     }
 
     /// In a row a cell is as tall as the row: WinUI's stack stands each cell at the height it asks.

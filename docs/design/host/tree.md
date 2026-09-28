@@ -176,3 +176,9 @@ where it says it is not hidden, and as its view is of itself where it says
 nothing. A host puts those words on its view in its platform's terms, and puts
 them again whenever any of them changes.
 
+Where a toolkit's screen reader reads a row by its name alone - a list's
+container - the row is named by what its entry says (`spokenWords`): an
+element's label stands for all it holds; else its own words, a label's runs
+whole, then its children's, apart by commas; what is left out or hidden says
+nothing.
+
