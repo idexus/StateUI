@@ -85,6 +85,20 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
     }
 
+    /// A page's background stands behind the whole screen, the strip under the home indicator and the bars
+    /// included - never the system's white there.
+    @MainActor
+    func testAPagesBackgroundStandsBehindTheWholeScreen() throws {
+        let host = UIKitRenderer.running { PaintedPage() }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.backgroundColor != .systemBackground }
+        var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
+        controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [247, 245, 252])
+    }
+
     /// The first tabbed view in `element`'s tree.
     @MainActor
     private static func tabbedView(in element: MountedElement) -> MountedElement? {
@@ -108,5 +122,15 @@ private struct TitledPage: ContentView {
         let title = self.title
         let page = self.page
         return Label(title).onCreated { page.title = title }
+    }
+}
+
+/// A page whose background the page itself says, as the Gallery's pages do.
+private struct PaintedPage: ContentView {
+    @Environment private var page: PageSession
+
+    var content: any View {
+        let page = self.page
+        return Label("Painted").onCreated { page.background = Color("#F7F5FC") }
     }
 }
