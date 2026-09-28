@@ -1,6 +1,11 @@
 [![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
-[![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
 [![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
+[![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
+[![AppKit](https://github.com/idexus/StateUI/actions/workflows/appkit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/appkit.yml?query=branch%3Amain)
+[![UIKit](https://github.com/idexus/StateUI/actions/workflows/uikit.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/uikit.yml?query=branch%3Amain)
+[![Android](https://github.com/idexus/StateUI/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/android.yml?query=branch%3Amain)
+[![GTK](https://github.com/idexus/StateUI/actions/workflows/gtk.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/gtk.yml?query=branch%3Amain)
+[![WinUI](https://github.com/idexus/StateUI/actions/workflows/winui.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/winui.yml?query=branch%3Amain)
 # StateUI
 
  **Native interfaces, written in Swift.**

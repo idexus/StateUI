@@ -1,3 +1,7 @@
+# The core's suites on macOS - the library, the host layer and the conformance
+# runner - and the Gallery's, with the starter application built, since no
+# suite compiles it. Each host's own suite runs in a workflow of its own.
+
 name: Tests
 
 on:
@@ -29,19 +33,10 @@ jobs:
         run: swift test
       - name: Test StateUI.Host
         run: swift test --package-path lib/StateUI.Host
-
-  appkit:
-    name: StateUI.AppKit
-    runs-on: xcode-27
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - name: Use Xcode 27.0
-        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
-      - name: Report the toolchain
-        run: swift --version
-      - name: Test StateUI.AppKit
-        run: swift test --package-path lib/StateUI.AppKit
+      # The conformance runner's own rules and every contract's family complete,
+      # pure Swift: no host runs here, so no verdict is read or written.
+      - name: Test StateUI.Conformance
+        run: swift test --package-path lib/StateUI.Conformance
 
   gallery:
     name: Gallery
@@ -55,3 +50,5 @@ jobs:
         run: swift --version
       - name: Test Gallery
         run: swift test --package-path apps/Gallery
+      - name: Build HelloWorld
+        run: swift build --package-path apps/HelloWorld

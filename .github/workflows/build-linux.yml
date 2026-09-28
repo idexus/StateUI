@@ -1,9 +1,7 @@
-# The core's suite on Linux, and the GTK host's.
+# The core's suites on Linux; the GTK host's stands in gtk.yml.
 #
 # The container is swift.org's own image, so the library compiles with the
-# release it is written against. The GTK job runs the host's suite - its own
-# tests and every conformance family, each verdict held to the marks under
-# exports/marks/gtk - on a screen with no monitor.
+# release it is written against.
 
 name: Linux
 
@@ -49,30 +47,3 @@ jobs:
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Conformance runner tests
         run: swift test --package-path lib/StateUI.Conformance
-
-  # GTK 4 and libadwaita as Ubuntu 24.04 has them, the versions the host is
-  # written against, drawn on Xvfb with a session bus. A label is measured in
-  # the font GNOME gives this platform's desktop, so a verdict that reads a
-  # frame holds here as it was written. gdk-pixbuf reads an SVG only through
-  # librsvg's loader, which an install without recommends leaves out.
-  gtk:
-    name: GTK
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    container: swift:6.4.0-noble
-    steps:
-      - uses: actions/checkout@v7.0.1
-
-      - name: GTK 4, libadwaita, a screen and the desktop's font
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev \
-            librsvg2-common xvfb xauth dbus fonts-ubuntu
-          mkdir -p "$HOME/.config/gtk-4.0"
-          printf '[Settings]\ngtk-font-name=Ubuntu Sans 11\n' > "$HOME/.config/gtk-4.0/settings.ini"
-
-      - name: Report the toolchain
-        run: swift --version
-
-      - name: GTK host tests, every verdict held
-        run: dbus-run-session -- xvfb-run -a env GDK_BACKEND=x11 .scripts/GTK/test-gtk.sh

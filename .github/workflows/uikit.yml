@@ -1,0 +1,67 @@
+# The UIKit host's suite, an application of tests on an iOS simulator - an
+# iPhone and an iPad, whose windows are scene sessions: its own tests, then
+# every conformance family on UIKit, each verdict held to the marks under
+# exports/marks/uikit. CI never writes the marks, so a family whose verdicts
+# changed fails here and its marks are written again on a Mac, on purpose.
+
+name: UIKit
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  uikit:
+    name: UIKit on the ${{ matrix.family }}
+    runs-on: xcode-27
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [iPhone, iPad]
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Use Xcode 27.0
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+      - name: Report the toolchain
+        run: swift --version
+
+      # The image names its simulators by the devices of its day, so one of the
+      # family on the newest iOS is found rather than named: an iPhone Pro and
+      # an iPad Air, as the suite is walked on, where the image has them (an
+      # iPad Pro simulator has drawn nothing - build-run-device.md).
+      - name: The ${{ matrix.family }} simulator
+        id: simulator
+        run: |
+          udid="$(xcrun simctl list devices available -j | python3 -c '
+          import json, re, sys
+          family = sys.argv[1]
+          liked = {"iPhone": lambda name: name.endswith(" Pro"), "iPad": lambda name: name.startswith("iPad Air")}
+          version = lambda runtime: [int(part) for part in re.findall(r"\d+", runtime.split(".")[-1])]
+          found = sorted(
+              ((version(runtime), liked[family](device["name"]), device)
+               for runtime, devices in json.load(sys.stdin)["devices"].items()
+               if "iOS" in runtime for device in devices if device["name"].startswith(family + " ")),
+              key=lambda each: each[:2])
+          print(found[-1][2]["udid"] if found else "")
+          ' "${{ matrix.family }}")"
+          if [[ -z "$udid" ]]; then
+            xcrun simctl list devices available
+            echo "::error::no ${{ matrix.family }} simulator on this image"
+            exit 1
+          fi
+          xcrun simctl list devices available | grep "$udid"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: UIKit host tests, every verdict held
+        run: .scripts/UIKit/test-uikit.sh "${{ steps.simulator.outputs.udid }}"

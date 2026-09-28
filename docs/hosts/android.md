@@ -242,3 +242,9 @@ instrumentation:
 The suite is XCTest. With no discovery on Android, each test case lists its
 tests in `allTests` and the runner lists the cases; `test-android.sh` refuses
 to run while a test or a case is listed nowhere.
+
+The test APK can be built on one machine and run on another:
+`test-android.sh --build x86_64` builds it for that ABI with no device and
+prints where it is, and `STATEUI_TEST_APK=<apk> test-android.sh` installs
+that APK instead of building one. CI builds on macOS, where the build draws
+the pictures, and runs the suite on a Linux emulator.

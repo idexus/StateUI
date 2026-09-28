@@ -7,6 +7,11 @@
 #
 # USAGE:
 #   test-android.sh [serial]
+#   test-android.sh --build <abi>
+#
+# --build builds the test APK for <abi> (arm64-v8a, x86_64) with no device, prints where it is, and runs nothing;
+# STATEUI_TEST_APK=<apk> then installs that APK instead of building one - CI builds on macOS, where the pictures are
+# drawn, and runs it on a Linux emulator.
 #
 # STATEUI_FILTER=<names> runs only the tests whose "Case.test" name holds one of the names, split at commas
 # ("testPicker,AndroidColorBoxViewTests"), and then holds nothing to exports/: a part of the suite proves only part
@@ -42,11 +47,16 @@ while IFS= read -r file; do
 done < <(find "$tests_dir/Sources" -name '*.swift')
 [[ -z "$unlisted" ]] || { echo "ERROR: listed nowhere, so never run:$unlisted"; exit 1; }
 
+if [[ "${1:-}" == --build ]]; then
+  build_head "$tests_dir" StateUIAndroidTests debug "${2:?an ABI: arm64-v8a or x86_64}"
+  exit
+fi
+
 serial="$(device_serial "${1:-${ANDROID_SERIAL:-}}")"
 abi="$(device_abi "$serial")"
 echo "device:     $serial ($abi)"
 
-apk="$(build_head "$tests_dir" StateUIAndroidTests debug "$abi")"
+apk="${STATEUI_TEST_APK:-$(build_head "$tests_dir" StateUIAndroidTests debug "$abi")}"
 package="$("$AAPT2" dump packagename "$apk")"
 "$ADB" -s "$serial" install -r "$apk" >/dev/null
 # The verdicts of a run before this one stay in the APK's files: none may stand for this run's.

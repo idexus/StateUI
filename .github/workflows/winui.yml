@@ -1,0 +1,84 @@
+# The WinUI host's own tests, then the contract's families on WinUI, each test
+# in a process of its own, every verdict held to exports/marks/winui: CI never
+# writes the dictionary's marks, so a family whose verdicts changed fails here
+# and its marks are written again on a Windows machine, on purpose.
+#
+# The runner has Visual Studio and no Swift; build-windows.yml says how both
+# are set up, and why in pwsh.
+
+name: WinUI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  winui:
+    name: WinUI
+    runs-on: windows-2025
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Visual Studio developer environment
+        uses: compnerd/gha-setup-vsdevenv@v7
+
+      - name: Install Swift
+        uses: compnerd/gha-setup-swift@v0.4.0
+        with:
+          swift-version: swift-6.4.0-release
+          swift-build: 6.4.0-RELEASE
+
+      # THE ACTION ADDS WHERE IT EXPECTS THE TOOLCHAIN TO BE, not where the
+      # installer put it (build-windows.yml says what that cost): the toolchain
+      # is found, and its directory put on PATH.
+      - name: Find and report the toolchain
+        run: |
+          $roots = @(
+            "$env:USERPROFILE\AppData\Local\Programs\Swift",
+            "$env:LOCALAPPDATA\Programs\Swift",
+            "$env:ProgramFiles\Swift",
+            "C:\Library"
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -Unique
+
+          Write-Host "PATH says: $((Get-Command swift -ErrorAction SilentlyContinue).Source)"
+          Write-Host "Looking under: $($roots -join ', ')"
+
+          $swift = if ($roots) {
+            Get-ChildItem -Path $roots -Filter swift.exe -Recurse -ErrorAction SilentlyContinue |
+              Sort-Object { $_.FullName -notlike "*Toolchains*" } |
+              Select-Object -First 1
+          }
+
+          if (-not $swift) {
+            Write-Host "No swift.exe anywhere. What the install left behind:"
+            Get-ChildItem -Path "$env:USERPROFILE\AppData\Local\Programs", "$env:ProgramFiles" `
+                          -Depth 2 -ErrorAction SilentlyContinue |
+              ForEach-Object { Write-Host "  $($_.FullName)" }
+            throw "the install step left no toolchain"
+          }
+
+          Write-Host "swift.exe: $($swift.FullName)"
+          Add-Content -Path $env:GITHUB_PATH -Value $swift.Directory.FullName
+
+          & $swift.FullName --version
+
+      - name: WinUI host tests
+        run: .scripts/WinUI/test-winui.ps1
+
+      - name: WinUI conformance, every verdict held
+        run: .scripts/WinUI/test-winui.ps1 -Conformance
