@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUIHost
 import CStateUIGTK
 
 /// The application's pictures: the files of the `Images` folder beside the executable, found by the name the tree
@@ -11,11 +12,9 @@ enum GTKPictures {
     /// The folder pictures are read from.
     static var folder = besideExecutable()
 
-    /// The file `name` names; a PNG the folder holds as an SVG is the SVG. Nil for none.
+    /// The file `name` names (`PictureArithmetic.files`): a PNG the folder holds as an SVG is the SVG. Nil for none.
     static func path(of name: String) -> String? {
-        var names = [name]
-        if name.lowercased().hasSuffix(".png") { names.append(String(name.dropLast(4)) + ".svg") }
-        return names.map { folder + "/" + $0 }.first { g_file_test($0, G_FILE_TEST_IS_REGULAR) != 0 }
+        PictureArithmetic.files(for: name).map { folder + "/" + $0 }.first { g_file_test($0, G_FILE_TEST_IS_REGULAR) != 0 }
     }
 
     /// An image showing the picture `name` names as an icon `size` logical pixels across, which GTK draws at the

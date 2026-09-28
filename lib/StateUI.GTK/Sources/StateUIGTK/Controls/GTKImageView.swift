@@ -88,19 +88,9 @@ final class GTKImageView: GTKPanelView {
         gtk_widget_queue_draw(widget)
     }
 
-    /// Where the picture stands in a room at the origin, as the aspect says.
+    /// Where the picture stands in a room at the origin, as the aspect says (`PictureArithmetic.place`).
     private func place(in room: LayoutSize) -> Rect {
-        let across = room.width / size.width
-        let down = room.height / size.height
-        let scale: Double = switch aspect {
-        case .fit: min(across, down)
-        case .fill: max(across, down)
-        case .stretch, .center: 1
-        }
-        guard aspect != .stretch else { return Rect(x: 0, y: 0, width: room.width, height: room.height) }
-        let width = size.width * scale
-        let height = size.height * scale
-        return Rect(x: (room.width - width) / 2, y: (room.height - height) / 2, width: width, height: height)
+        PictureArithmetic.place(size, in: room, aspect: aspect)
     }
 
     override func draw(_ snapshot: OpaquePointer, width: Double, height: Double) {
