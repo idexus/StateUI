@@ -15,7 +15,7 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 | AppKit | ⌛ |  | custom `NSView` drawing | a run of other sources said: ✅ |
 | UIKit | ⌛ |  | `UIView` `draw(_:)` | a run of other sources said: ✅ |
 | Android Views | ⌛ |  | `View` `onDraw(Canvas)` | a run of other sources said: ✅ |
-| WinUI 3 | ⌛ |  | Direct2D in a `SurfaceImageSource` | a run of other sources said: ✅ |
+| WinUI 3 | ✅ | 4 ✅ | Direct2D in a `SurfaceImageSource` |  |
 | GTK 4 |  |  | `GtkDrawingArea` | no run of it on these sources |
 | Web |  |  | `<canvas>` | no host yet |
 
@@ -25,10 +25,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Shapes/CanvasContract.swift`
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onDragged` (`dragged`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `drawable` | property | `[DrawCommand]` | structure | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onPressed` (`pressed`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
-| `onReleased` (`released`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ⌛ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅; WinUI 3: a run of other sources said: ✅ |
+| `onDragged` (`dragged`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅ |
+| `drawable` | property | `[DrawCommand]` | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: ✅; UIKit: a run of other sources said: ✅; Android Views: a run of other sources said: ✅ |
+| `onPressed` (`pressed`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅ |
+| `onReleased` (`released`) | event | `Point` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  | a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent; UIKit: a run of other sources said: 🪞 only through the host's own: pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent; Android Views: a run of other sources said: ✅ |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

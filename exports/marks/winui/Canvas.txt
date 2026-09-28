@@ -1,6 +1,7 @@
-Button.clicked: ✅
+# inputs dc4edb4f6c1531422b3b2d8657f5b9f3c1a8b2f1
 Canvas: ✅
 Canvas.dragged: ✅
 Canvas.drawable: ✅
+Canvas.frameChanged: ✅
 Canvas.pressed: ✅
 Canvas.released: ✅

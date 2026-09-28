@@ -2,12 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) @testable import StateUI
+@_spi(Host) @testable import StateUIHost
 import XCTest
 
 final class HostDrawingTests: XCTestCase {
     /// Each instruction lays its kind and whole numbers, its numbers and its text out in the three lists, in the
-    /// order the drawing wrote them.
+    /// order the drawing wrote them - an arc as the path the host layer works out for it.
     func testEachInstructionLaysItsValuesOutInTheThreeLists() {
+        let outline = CanvasArithmetic.arc(
+            in: Rect(x: 0, y: 0, width: 10, height: 20), start: 0, end: 90, clockwise: true, closed: false, wedge: false)
+        let wedge = CanvasArithmetic.arc(
+            in: Rect(x: 0, y: 0, width: 10, height: 20), start: 90, end: 0, clockwise: false, closed: true, wedge: true)
         let drawing = HostDrawing([
             Draw.fillColor(Color(red: 255, green: 0, blue: 0)),
             Draw.strokeWidth(2),
@@ -25,8 +30,8 @@ final class HostDrawingTests: XCTestCase {
             0, Int32(bitPattern: 0xFFFF_0000),
             3,
             13,
-            10, 1, 0,
-            15, 0,
+            11, Int32(outline.count),
+            16, Int32(wedge.count),
             17, TextAlignment.center.rawValue, TextAlignment.start.rawValue, 0,
             21,
             18,
@@ -36,8 +41,7 @@ final class HostDrawingTests: XCTestCase {
         XCTAssertEqual(drawing.numbers, [
             2,
             1, 2, 30, 40, 5,
-            0, 0, 10, 20, 0, 90,
-            0, 0, 10, 20, 90, 0,
+        ] + outline.flatMap(\.numbers) + wedge.flatMap(\.numbers) + [
             0, 0, 50, 20,
             3, 4,
             5, 6, 7, 8,
@@ -62,13 +66,14 @@ final class HostDrawingTests: XCTestCase {
         XCTAssertEqual(drawing.strings, [])
     }
 
-    /// A path crosses as the count of its curves, and each curve as its kind and points - an arc as cubics.
+    /// A path crosses as the count of its curves, and each curve as its kind and points - an arc as cubics; words
+    /// that are no path are left out, as every record that does not read whole.
     func testAPathCrossesAsItsCurves() throws {
         let data = "M 0 0 L 10 0 A 10 10 0 0 1 20 10 Z"
         let curves = try XCTUnwrap(HostPath(svg: data)).arcsAsCubics
         let drawing = HostDrawing([Draw.fillPath(data), Draw.drawPath("not a path")])
 
-        XCTAssertEqual(drawing.ints, [16, Int32(curves.count), 11, 0])
+        XCTAssertEqual(drawing.ints, [16, Int32(curves.count)])
         XCTAssertEqual(Array(drawing.numbers.prefix(6)), [0, 0, 0, 1, 10, 0])
         XCTAssertEqual(drawing.numbers[6], 2, "the arc, as a cubic")
         XCTAssertEqual(drawing.numbers.last, 4)

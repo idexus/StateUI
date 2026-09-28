@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <numbers>
 #include <string>
 #include <vector>
 
@@ -139,36 +138,6 @@ namespace {
     D2D1_RECT_F box(double const *at) {
         return D2D1::RectF(static_cast<float>(at[0]), static_cast<float>(at[1]), static_cast<float>(at[0] + at[2]),
                            static_cast<float>(at[1] + at[3]));
-    }
-
-    /// Part of the ellipse the box `at` holds, from `at[4]` to `at[5]` degrees - 0 to the right, the way `clockwise`
-    /// says down the screen - its ends joined where `closed`, and through its middle where it is a wedge.
-    winrt::com_ptr<ID2D1PathGeometry> arc(double const *at, bool clockwise, bool closed, bool wedge) {
-        double start = at[4], end = at[5];
-        if (clockwise && end < start) end += 360 * std::ceil((start - end) / 360);
-        if (!clockwise && end > start) end -= 360 * std::ceil((end - start) / 360);
-        double sweep = std::clamp(end - start, -360.0, 360.0);
-        double rx = at[2] / 2, ry = at[3] / 2, cx = at[0] + rx, cy = at[1] + ry;
-        auto on = [&](double degrees) {
-            double radians = degrees * std::numbers::pi / 180;
-            return point(cx + rx * std::cos(radians), cy + ry * std::sin(radians));
-        };
-
-        winrt::com_ptr<ID2D1PathGeometry> geometry;
-        winrt::com_ptr<ID2D1GeometrySink> sink;
-        winrt::check_hresult(devices.factory->CreatePathGeometry(geometry.put()));
-        winrt::check_hresult(geometry->Open(sink.put()));
-        sink->BeginFigure(wedge ? point(cx, cy) : on(start), D2D1_FIGURE_BEGIN_FILLED);
-        if (wedge) sink->AddLine(on(start));
-        // A quarter turn at most to an arc: no two ends meet, and none is ambiguous.
-        auto pieces = std::max(1, static_cast<int>(std::ceil(std::abs(sweep) / 90)));
-        auto radii = D2D1::SizeF(static_cast<float>(std::abs(rx)), static_cast<float>(std::abs(ry)));
-        auto turning = sweep < 0 ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE;
-        for (int piece = 1; piece <= pieces; ++piece)
-            sink->AddArc(D2D1::ArcSegment(on(start + sweep * piece / pieces), radii, 0, turning, D2D1_ARC_SIZE_SMALL));
-        sink->EndFigure(closed || wedge ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
-        winrt::check_hresult(sink->Close());
-        return geometry;
     }
 
     /// The next `count` curves - each its kind, 0 move, 1 line, 2 cubic, 3 quadratic, 4 close, then its points -
@@ -313,13 +282,6 @@ namespace {
                                           static_cast<float>(at[3] / 2));
                 if (kind == FillEllipse) context->FillEllipse(oval, paint(pen.fill));
                 else if (pen.width > 0) context->DrawEllipse(oval, paint(pen.stroke), pen.width);
-                break;
-            }
-            case DrawArc:
-            case FillArc: {
-                bool clockwise = reader.integer() != 0;
-                bool closed = kind == FillArc || reader.integer() != 0;
-                if ((at = reader.numbers(6))) shape(arc(at, clockwise, closed, kind == FillArc).get(), kind == FillArc);
                 break;
             }
             case DrawPath:

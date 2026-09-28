@@ -35,6 +35,29 @@
                 s.expect(try s.color(of: canvas, at: Point(60, 20)), .blue, "the later fill over it")
                 s.expect(try s.color(of: canvas, at: Point(95, 20)), nil, "nothing past both")
             },
+            ConformanceCase("aWholeTurnFillsTheWholeOval", proves: [Covered(CanvasContract.drawable)]) { s in
+                s.start {
+                    VStack {
+                        Canvas {
+                            Draw.fillColor(.red)
+                            Draw.fillArc(
+                                x: 0, y: 0, width: 40, height: 40, startAngle: 0, endAngle: 360, clockwise: false)
+                            Draw.fillArc(
+                                x: 50, y: 0, width: 40, height: 40, startAngle: 90, endAngle: -270, clockwise: true)
+                        }
+                        .width(90).height(40).id("canvas")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let canvas = try s.element("canvas")
+
+                try s.settle { try s.color(of: canvas, at: Point(20, 20)) == .red }
+                for point in [Point(20, 20), Point(20, 4), Point(4, 20), Point(70, 20), Point(70, 36)] {
+                    s.expect(try s.color(of: canvas, at: point), .red, "a whole turn, at \(point.x), \(point.y)")
+                }
+                s.expect(try s.color(of: canvas, at: Point(2, 2)), nil, "the oval's corner stands empty")
+            },
             ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", proves: [
                 Covered(CanvasContract.drawable),
             ], needs: [Covered(ButtonContract.clicked)]) { s in

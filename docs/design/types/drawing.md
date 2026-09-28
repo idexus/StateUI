@@ -53,7 +53,10 @@ holds, as `HostDrawing` lays it out in three flat lists:
 ```
 
 A path's arcs arrive as the shared parser's cubic curves, so no relay parses
-SVG. An instruction whose values do not read whole is left out on this side,
+SVG; an arc or a wedge of an oval arrives as a path, its curves the host
+layer's (`CanvasArithmetic.arc` - a turn or more the whole oval), so no relay
+works out an arc. The records are read once, as every host drawing in Swift
+reads them (`CanvasInstruction`), and the lists are the host layer's. An instruction whose values do not read whole is left out on this side,
 and the relay reads each kind's values in the fixed order above: it trusts
 the lists' shape and still stops at the first record that runs past their
 ends.

@@ -388,7 +388,12 @@ host that draws them.
 - **`PictureArithmetic`** gives the files a picture's name stands for, in the
   order a host looks for them, and where the picture stands in its room by its
   aspect. ([A picture](../design/host/layout.md#a-picture))
-- **`PropValue.argb`** is a colour as one ARGB number, for a relay.
+- **`CanvasInstruction`** reads a canvas's records once, `CanvasPen` holds
+  its settings until changed and saved, and `CanvasArithmetic` gives an arc
+  of an oval as curves, a turn or more the whole oval; **`HostDrawing`**
+  lays a drawing out in three flat lists for a relay, an arc among its
+  paths. ([Three lists for a
+  relay](../design/types/drawing.md#three-lists-for-a-relay))
 
 ## Text
 

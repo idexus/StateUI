@@ -515,13 +515,11 @@ values ([core link](../design/host/runtime.md#core-link)). The
 - **Realization.** `setRealization(_:)` says what the host realizes, which
   `realizes(_:)` answers; the registrations stand in
   [`Core/Realization/`](#realization).
-- **Drawing.** `HostDrawing` is a canvas drawing as three flat lists,
-  `HostPath` a path's SVG text parsed once for every host - with
-  `HostCurveCommand` for a toolkit with no arc - `HostDrawingTransform` and
-  `HostMatrix` how a view is drawn over its place, and `PropValue.argb` a
+- **Drawing.** `HostPath` is a path's SVG text parsed once for every host -
+  with `HostCurveCommand` for a toolkit with no arc - `HostDrawingTransform`
+  and `HostMatrix` how a view is drawn over its place, and `PropValue.argb` a
   colour as one number for a relay.
-  ([Three lists for a relay](../design/types/drawing.md#three-lists-for-a-relay),
-  [canvas and path](../design/views/controls.md#canvas-and-path))
+  ([canvas and path](../design/views/controls.md#canvas-and-path))
 - **Diagnostics.** `tally` is a `HostTally`; `inspecting`,
   `takeInspectionLog()` and `inspected(generation:scenes:apply:nodes:made:)`
   exchange the inspector's record.

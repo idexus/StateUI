@@ -98,9 +98,11 @@ itself - its root's scale, the surfaces' loss - it hears for as long as it
 lives, through references that do not hold it.
 
 The replay keeps the colours, the widths, the text size, the opacity and the
-transform as the instructions set them, a saved set on a stack. A wedge and
-an arc of an oval are Direct2D arcs of a quarter turn at most; a path is the
-core's curves, filled by the nonzero rule. Text is DirectWrite's, in the
+transform as the instructions set them, a saved set on a stack. A wedge, an
+arc of an oval and a path each arrive as curves - an arc as the host layer
+works it out, a whole turn the whole oval ([three lists for a
+relay](../../types/drawing.md#three-lists-for-a-relay)) - filled by the
+nonzero rule. Text is DirectWrite's, in the
 system's family - Segoe UI Variable where Windows has it - at 14 until the
 drawing says otherwise, wrapped in its box, set in it by the two alignments,
 and cut at its edges by a layer, which cuts a turned box exactly where a clip
