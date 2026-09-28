@@ -82,7 +82,10 @@ own input path, and what a native control holds of a member, as the contract
 writes the value. A driver reads through the element a case found by its
 `.id()`, and names no widget to the case. What a driver cannot read or do
 throws; where the driver says why it cannot, the case says so and does not
-fail, and otherwise it fails - a nil never stands for "unknown". Besides a
+fail, and otherwise it fails - a nil never stands for "unknown". What its
+platform holds nothing of - a value no control of it keeps, its effect proven
+by another case - the driver lists apart (`platformHasNone`, or a read's
+`because:`): a case needing it does not apply there. Besides a
 member's value a driver reads a view's menu, whether it holds the keyboard,
 what a press at a point reaches, the question the window shows, what the
 screen reader was told, the colour StateUI draws at a point - never a native
@@ -121,7 +124,7 @@ A run gives a verdict on every member its cases cover, one line each under
 `exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ☑️ with
 what the host's register says is missing, – with why where the host's family
-never has it, and - empty in the dictionary - "not realized" or what the
+never has it or a case proved it absent, and - empty in the dictionary - "not realized" or what the
 driver cannot do and why. A member of a failing case gets no verdict from it.
 Those files are every mark a host's column shows: nothing a host implements
 or declares by hand is marked until its own run says so. A test of a host's

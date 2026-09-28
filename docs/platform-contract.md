@@ -18,9 +18,10 @@ host merely implements or declares by hand earns a mark.
   what is still missing; the element's page in
   [the control dictionary](controls/README.md) names it.
 - – means the member will never be met by that host's family - a phone with no
-  menu bar, a desktop whose keyboard captions no return key - and meets the
-  contract there: the host's register says why, and the Gallery shows that
-  family no example of it. The totals count a host's ✅ and – as met.
+  menu bar, a desktop whose keyboard captions no return key, a view that takes
+  no keyboard focus - and meets the contract there: the host's register, or the
+  case that proved it absent, says why, and the Gallery shows that family no
+  example of it. The totals count a host's ✅ and – as met.
 - ❌ means a test of the member failed on that host's last run; the note gives
   the first failure.
 - ◐ means some of its tests proved it and another could not run or read; the

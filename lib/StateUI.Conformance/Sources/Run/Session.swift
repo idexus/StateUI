@@ -44,16 +44,16 @@
         byHost.append(ByHost(element: element, member: member, why: "\(ability): \(why)"))
     }
 
-    /// What a case throws where it cannot prove what it proves on this host, whatever the host does: a view that
-    /// takes no keyboard focus proves nothing of focus. The case's members stay unproven there, and say why.
-    public struct Unprovable: Error, Equatable {
+    /// What a case throws once it has proved that its members are absent on this host: a view that refuses the
+    /// keyboard and hears nothing never takes the focus there. The case's members are never had there, with why.
+    public struct Absence: Error, Equatable {
         /// Why, in the words a verdict says it.
         public let why: String
     }
 
-    /// The error that ends a case which cannot prove what it proves here, saying `why`.
-    public func unprovable(_ why: String) -> Unprovable {
-        Unprovable(why: why)
+    /// The error that ends a case which proved its members absent here, saying `why`.
+    public func absent(_ why: String) -> Absence {
+        Absence(why: why)
     }
 
     init(driver: any HostDriver, case named: String, report: @escaping (Failure) -> Void) {

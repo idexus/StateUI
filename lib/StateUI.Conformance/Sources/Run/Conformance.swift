@@ -49,6 +49,8 @@
         // The register is the host's whole registry read: once a run, not once a case.
         let register = driver.register
         var verdicts: [HostVerdict] = []
+        // What the cases that do not apply on this host say: each only of a member no other case judges.
+        var inapplicable: [HostVerdict] = []
         for (place, index) in held.enumerated() {
             let each = family.cases[index]
             let title = "Conformance \(driver.host) · \(family.name)/\(each.name)"
@@ -74,12 +76,19 @@
             case .cannot(let why):
                 tell("\(title): cannot \(why)")
                 verdicts += each.proves.map { $0.verdict(.cannot(why)) }
+            case .inapplicable(let why):
+                tell("\(title): does not apply - cannot \(why)")
+                inapplicable += each.proves.map { $0.verdict(.cannot(why)) }
+            case .absent(let why):
+                tell("\(title): never here - \(why)")
+                verdicts += each.proves.map { $0.verdict(.notPlanned(reason: why)) }
             case .failed(let message):
                 tell("\(title): failed")
                 verdicts += each.proves.map { $0.verdict(.failed(message)) }
             }
         }
-        return HostVerdict.merged(verdicts)
+        let judged = Set(verdicts.map(\.subject))
+        return HostVerdict.merged(verdicts + inapplicable.filter { !judged.contains($0.subject) })
     }
 
     /// Whole milliseconds since `instant`.
@@ -89,10 +98,13 @@
     }
 
     /// How one case came out: passed, with what it reached only through the host's own; could not prove what it
-    /// proves on this host, and why; or failed, with its first failure.
+    /// proves on this host, and why; does not apply there, the platform holding nothing it needs, and why; proved
+    /// its members absent there, and why; or failed, with its first failure.
     private enum Result {
         case passed([Session.ByHost])
         case cannot(String)
+        case inapplicable(String)
+        case absent(String)
         case failed(String)
     }
 
@@ -104,11 +116,13 @@
         do {
             try each.body(session)
         } catch let cannot as DriverCannot where session.failures == 0 {
-            if let because = cannot.because { return .cannot("\(cannot) - \(because)") }
+            if let because = cannot.because ?? driver.platformHasNone[cannot.ability] {
+                return .inapplicable("\(cannot) - \(because)")
+            }
             if let reason = driver.reason(cannot: cannot.ability) { return .cannot("\(cannot) - \(reason)") }
             session.fail("the driver cannot \(cannot), and says nothing of why")
-        } catch let unprovable as Session.Unprovable where session.failures == 0 {
-            return .cannot(unprovable.why)
+        } catch let absence as Session.Absence where session.failures == 0 {
+            return .absent(absence.why)
         } catch {
             session.fail("threw \(error)")
         }

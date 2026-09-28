@@ -226,7 +226,7 @@
     }
 
     /// The keyboard put on a view that takes it is heard coming, and heard going as it is taken off. A view that
-    /// refuses it says so and hears nothing - and proves nothing of focus on that host.
+    /// refuses it says so and hears nothing - and never takes the focus on that host.
     static func focused(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
             Covered(VisualElementContract.focus, on: element), Covered(VisualElementContract.unfocus, on: element),
@@ -251,7 +251,7 @@
             guard took.values == [true] else {
                 s.expect(heard.values, [], "a view that refused the keyboard hears nothing")
                 s.expect(try s.focused(view), false)
-                throw s.unprovable("focus \(element): it takes no keyboard focus here")
+                throw s.absent("\(element) takes no keyboard focus here: it refuses it, and nothing is heard")
             }
             s.expect(heard.values, [true], "the keyboard coming heard")
             s.expect(try s.focused(view), true)

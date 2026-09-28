@@ -12,6 +12,7 @@ private final class RegisterOnly: HostDriver {
     let host = "Nowhere"
     let register: HostRegister
     var cannot: [String: String] = [:]
+    var platformHasNone: [String: String] = [:]
     var otherwise: String?
 
     init(realizing records: [HostRecord], unrealized: Set<String> = [], notPlanned: [String: String] = [:]) {
@@ -121,7 +122,7 @@ final class ConformanceRunnerTests: XCTestCase {
     }
 
     /// A case says nothing of what it only needs, a failing one fails what it proves with its first failure, and one
-    /// that cannot prove it here says why.
+    /// that proved its members absent here marks them never had, with why.
     func testACaseJudgesWhatItProvesAlone() {
         let verdicts = run([
             ConformanceCase("passes", proves: [Covered(SwitchContract.isOn)], needs: [Covered(SwitchContract.toggled)]) { _ in },
@@ -129,13 +130,13 @@ final class ConformanceRunnerTests: XCTestCase {
                 s.fail("true expected, false came")
                 s.fail("a second")
             },
-            ConformanceCase("unprovable", proves: [Covered(SwitchContract.self)]) { s in
-                throw s.unprovable("focus Switch: it takes no keyboard focus here")
+            ConformanceCase("absent", proves: [Covered(SwitchContract.self)]) { s in
+                throw s.absent("Switch takes no keyboard focus here: it refuses it, and nothing is heard")
             },
         ], on: RegisterOnly(realizing: [.complete("Switch", "isOn"), .complete("Switch", "toggled")]))
 
         XCTAssertEqual(HostVerdict.text(verdicts), """
-            Switch: cannot focus Switch: it takes no keyboard focus here
+            Switch: – Switch takes no keyboard focus here: it refuses it, and nothing is heard
             Switch.isOn: ✅
             Switch.toggled: ❌ true expected, false came
 
@@ -241,5 +242,34 @@ final class ConformanceRunnerTests: XCTestCase {
 
         XCTAssertEqual(failures, [])
         XCTAssertEqual(HostVerdict.text(verdicts), "Switch.isOn: cannot read isOn of Switch - No path yet.\n")
+    }
+
+    /// A case needing what the platform holds nothing of does not apply there: another case's verdict on a member
+    /// stands alone, and a member no other case judges stays empty with why - whether the driver lists it or its
+    /// read says so.
+    func testACaseThePlatformHoldsNothingForDoesNotApply() {
+        let driver = RegisterOnly(realizing: [.complete("Switch", "isOn"), .complete("Switch", "toggled")])
+        driver.platformHasNone = ["read isOn of Switch": "The toolkit keeps no such value; its effect proves it."]
+        let verdicts = run([
+            ConformanceCase("reads", proves: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)]) { _ in
+                throw DriverCannot("read isOn of Switch")
+            },
+            ConformanceCase("sees", proves: [Covered(SwitchContract.isOn)]) { _ in },
+        ], on: driver)
+
+        XCTAssertEqual(failures, [])
+        XCTAssertEqual(HostVerdict.text(verdicts), """
+            Switch.isOn: ✅
+            Switch.toggled: cannot read isOn of Switch - The toolkit keeps no such value; its effect proves it.
+
+            """)
+
+        let said = run([
+            ConformanceCase("marks", proves: [Covered(SwitchContract.isOn)]) { _ in
+                throw DriverCannot("read a level", because: "The toolkit marks no level.")
+            },
+            ConformanceCase("sees", proves: [Covered(SwitchContract.isOn)]) { _ in },
+        ], on: driver)
+        XCTAssertEqual(HostVerdict.text(said), "Switch.isOn: ✅\n")
     }
 }

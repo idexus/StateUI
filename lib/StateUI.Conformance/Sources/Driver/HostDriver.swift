@@ -18,6 +18,10 @@
     /// What this driver cannot do on its host yet, each with why: a case needing it is not run, and says so.
     var cannot: [String: String] { get }
 
+    /// What its platform holds nothing of - a value no control of it keeps, its effect proven by another case - each
+    /// with why: a case needing it does not apply on this host, and the member's other cases judge it.
+    var platformHasNone: [String: String] { get }
+
     /// Why this driver cannot do `ability` - what `cannot` says of it, unless the driver says more; nil where it says
     /// nothing, and the case needing it fails.
     func reason(cannot ability: String) -> String?
@@ -95,6 +99,10 @@
 extension HostDriver {
     public func reason(cannot ability: String) -> String? {
         cannot[ability]
+    }
+
+    public var platformHasNone: [String: String] {
+        [:]
     }
 
     public func byHost(_ ability: String) -> String? {

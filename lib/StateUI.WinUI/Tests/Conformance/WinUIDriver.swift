@@ -17,6 +17,8 @@ final class WinUIDriver: HostDriver {
     let cannot = [
         "submit on TextField":
             "WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field",
+    ]
+    let platformHasNone = [
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read aspect of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
@@ -33,9 +35,12 @@ final class WinUIDriver: HostDriver {
         "read renderTransform of Polyline": "WinUI folds a shape's transform into its figure; its drawing proves it",
         "read format of TimePicker":
             "WinUI's time picker holds no format: it writes hours and minutes in the user's own clock",
-        "read maximumLength of TextField": "WinUI's text box holds no bound: the host cuts what is typed; typing proves it",
-        "read maximumLength of TextEditor": "WinUI's text box holds no bound: the host cuts what is typed; typing proves it",
-        "read maximumLength of SearchField": "WinUI's search box holds no bound: the host cuts what is typed; typing proves it",
+        "read maximumLength of TextField":
+            "WinUI bounds UTF-16 units, not characters, so the host cuts what is typed; typing proves it",
+        "read maximumLength of TextEditor":
+            "WinUI bounds UTF-16 units, not characters, so the host cuts what is typed; typing proves it",
+        "read maximumLength of SearchField":
+            "WinUI bounds UTF-16 units, not characters, so the host cuts what is typed; typing proves it",
         "read padding of Grid": "WinUI's panel places its children where StateUI's layout says; their frames prove it",
         "read padding of HStack": "WinUI's panel places its children where StateUI's layout says; their frames prove it",
         "read padding of VStack": "WinUI's panel places its children where StateUI's layout says; their frames prove it",

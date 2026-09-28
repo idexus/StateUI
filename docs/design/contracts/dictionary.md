@@ -96,7 +96,7 @@ reason, an unrealized one on a tier.
 ```text
   ✅   proven by every test of it that ran on that host
   ☑️   proven, but the host records what is missing
-  –    never on that host's family; its register says why
+  –    never on that host's family; its register or an absence case says why
   ❌   a test of it failed; ◐ some tests proved it, another could not
   ·    the driver cannot yet do or read what its test needs; ⏸ its test waits
   ⌛   said by a run of other sources than these (Fresh verdicts)
@@ -123,9 +123,13 @@ needs: `needs:` holds the button whose click makes the change, and the case
 runs only where the host realizes it too. The verdicts of one subject from all
 its cases combine into the worst: a failure over everything, a proof beside a
 case that could not run or read into ◐, a proof whole only where every case
-proved it. A case that cannot prove its members on a host whatever the host
-does - a view that takes no keyboard focus - ends with `unprovable`, and its
-members stay unproven there with why.
+proved it. A case that proves its members absent on a host - a
+view that refuses the keyboard and hears nothing never takes the focus there
+- ends with `absent`, and they are – there with why. A case needing what the
+platform holds nothing of - a value no control of it keeps, which the driver
+lists in `platformHasNone` or its read throws with `because:` - does not
+apply there: the member's other cases judge it, and only a member no other
+case judges stays empty with why.
 
 ## Rendering again
 
