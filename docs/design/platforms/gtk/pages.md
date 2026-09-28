@@ -69,8 +69,10 @@ window's, as GNOME's applications collapse theirs, the window then saying the
 smallest size GNOME's windows keep. Whether the sidebar shows is StateUI's
 binding: the program's write shows or hides it, and GTK's own change - a click
 beside a sidebar over the detail, a swipe - and the detail's toggle report
-back into it. A window wide enough for both panes opens with the sidebar
-shown, said once GTK has laid the window out.
+back into it. The split's first room wider than nothing decides, by the host
+layer's rule ([a sidebar on the first room](../../host/pages.md#a-sidebar-on-the-first-room)):
+wide enough for both panes - 400sp at the desktop's text scale - it opens
+with the sidebar shown, said once GTK has laid the frame out.
 
 ## Tabs
 

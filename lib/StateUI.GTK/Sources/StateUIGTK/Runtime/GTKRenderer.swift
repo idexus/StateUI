@@ -43,9 +43,6 @@ final class GTKRenderer {
     /// Whether the screen the window stands on has been told.
     private var reportedDisplay = false
 
-    /// Whether the window's split view has been opened wide, once.
-    private var openedWide = false
-
     /// A runtime whose windows belong to `application`, on GLib's monotonic clock or on `clock`, with the motion
     /// `reducesMotion` allows.
     init(
@@ -152,19 +149,12 @@ final class GTKRenderer {
         window.setTitle(pageTitle.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
     }
 
-    /// Collapses the window's split view where the window is narrow, and opens it wide with its sidebar shown once
-    /// the window first stands - said in the next turn, as the user's.
+    /// Collapses the window's split view where the window is narrow.
     private func adaptSplitViews(in window: GTKWindow) {
         guard let split = presentation.arrangement?.gtk, split.type == .splitView, let view = split.view as? GTKSplitView
         else { return }
 
         view.adapt(in: window.widget)
-        guard !openedWide else { return }
-        openedWide = true
-        GTKDoorbell.afterLayout { [weak split] in
-            guard let split, let view = split.view as? GTKSplitView, view.openWide() else { return }
-            split.sidebarChanged(to: true)
-        }
     }
 
     /// Goes the way back the arrangement the window shows offers, as the user does - a stack's top page going;

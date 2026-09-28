@@ -32,6 +32,11 @@ final class GTKSplitView: GTKLayoutView {
     private let split = GTKWidgetView { adw_overlay_split_view_new() }
     private var panes: [GTKView] = []
     private var adapted = false
+    private var adaptation = SidebarAdaptation()
+
+    /// Where GNOME's applications collapse a split, in scale-independent pixels: logical pixels at the desktop's
+    /// own text scale.
+    private static let collapsesAt = 400.0
 
     override init() {
         super.init()
@@ -87,7 +92,7 @@ final class GTKSplitView: GTKLayoutView {
         guard !adapted else { return }
         adapted = true
 
-        let breakpoint = adw_breakpoint_new(adw_breakpoint_condition_parse("max-width: 400sp"))!
+        let breakpoint = adw_breakpoint_new(adw_breakpoint_condition_parse("max-width: \(Int(Self.collapsesAt))sp"))!
         var collapsed = GValue()
         g_value_init(&collapsed, g_type_from_name("gboolean"))
         g_value_set_boolean(&collapsed, 1)
@@ -96,11 +101,26 @@ final class GTKSplitView: GTKLayoutView {
         adw_application_window_add_breakpoint(window.of(AdwApplicationWindow.self), breakpoint)
     }
 
-    /// Opens a split wide enough for both panes with its sidebar shown, once; whether it did.
-    func openWide() -> Bool {
-        guard !isPresented, !isCollapsed, gtk_widget_get_width(widget) > 0 else { return false }
-        present(true)
-        return true
+    /// The host's one adaptation (`SidebarAdaptation`): a split first given room wide enough for both panes opens
+    /// with its sidebar shown, and says so - once GTK has laid the frame out, not inside its allocation.
+    private func adaptToFirstRoom(width: Double) {
+        guard adaptation.room(width, breakpoint: Self.breakpoint, shown: isPresented) else { return }
+        GTKDoorbell.afterLayout { [weak self] in
+            guard let self, !isPresented else { return }
+            present(true)
+            onPresentationChanged?(true)
+        }
+    }
+
+    /// The breakpoint in logical pixels: a scale-independent pixel follows the desktop's text scale.
+    private static var breakpoint: Double {
+        guard let settings = gtk_settings_get_default() else { return collapsesAt }
+        var value = GValue()
+        g_value_init(&value, g_type_from_name("gint"))
+        defer { g_value_unset(&value) }
+        g_object_get_property(UnsafeMutablePointer<GObject>(settings), "gtk-xft-dpi", &value)
+        let dpi = Double(g_value_get_int(&value))
+        return dpi > 0 ? collapsesAt * dpi / (96 * 1024) : collapsesAt
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -109,6 +129,7 @@ final class GTKSplitView: GTKLayoutView {
 
     override func arrange(in bounds: Rect) {
         split.layout(bounds)
+        adaptToFirstRoom(width: bounds.width)
     }
 
     override func detach() {
