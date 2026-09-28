@@ -73,16 +73,10 @@ extension GTKRegistrations {
                 purpose: values[InputViewContract.inputPurpose])
             view.setBehaviour(readOnly: values[InputViewContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
         }
-        if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
-            || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
-            || values.changed(InputViewContract.placeholderColor) {
-            var look = TextLook()
-            look.size = values[FontElementContract.fontSize]
-            look.attributes = values[FontElementContract.fontAttributes] ?? .none
-            look.family = values[FontElementContract.fontFamily]?.text
-            look.color = values[TextStyleElementContract.textColor]?.propValue
+        if TextMembers.look(values) != nil || values.changed(InputViewContract.placeholderColor) {
             view.setWordsClass(GTKStyleSheet.words(
-                look, placeholder: values[InputViewContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) }))
+                TextMembers.look(of: values),
+                placeholder: values[InputViewContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) }))
         }
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

@@ -9,7 +9,7 @@ import XCTest
 /// letters, words typed past their bound, a selection in a toolkit's units, and a picker's choice.
 final class TextRulesTests: XCTestCase {
     /// The words are given in their case where the words or the case changed, and the look where the font or the
-    /// colour did; nothing where nothing of them changed.
+    /// colour did; nothing where nothing of them changed - though the whole look is there to read.
     func testAnElementsWordsAndLookAreReadWhereTheyChanged() throws {
         let held: [Prop: HostValue] = [
             .text: .string("Save"), .textCase: TextCase.uppercase.propValue, .fontSize: .number(17),
@@ -24,6 +24,7 @@ final class TextRulesTests: XCTestCase {
         let still = ElementValues<LabelContract>(changed: [.padding], reading: { held[$0] })
         XCTAssertNil(TextMembers.words(still))
         XCTAssertNil(TextMembers.look(still))
+        XCTAssertEqual(TextMembers.look(of: still), look, "the whole look, changed or not")
     }
 
     /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.

@@ -9,7 +9,7 @@ extension GTKRegistrations {
     /// letters and the lines, and what fills its box.
     static func text(_ registry: Registry<GTKView>) {
         registry.add(LabelContract.self, create: { _ in GTKLabelView() }) { label in
-            label.applies(textMembers) { view, values in applyText(view, values) }
+            label.applies(TextMembers.members) { view, values in applyText(view, values) }
             label.applies([LabelContract.lineBreak, LabelContract.maximumLines]) { view, values in
                 view.setLines(
                     breaking: values[LabelContract.lineBreak] ?? .wordWrap,
@@ -36,27 +36,16 @@ extension GTKRegistrations {
         }
     }
 
-    /// What every element showing words takes: the words in their case, the font, their colour, and the room
-    /// around them.
-    static let textMembers: [any ContractMember] = [
-        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
-        PaddingElementContract.padding,
-    ]
-
-    /// Puts `textMembers` on a label or a button.
+    /// Puts the text tiers' members (`TextMembers`) on a label, a button or a radio button: the words in their case,
+    /// the font and the colour, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
-        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
-            let text = values[TextElementContract.text] ?? ""
-            view.setText(values[TextElementContract.textCase]?.applied(to: text) ?? text)
-        }
-        if values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
-            || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor) {
-            view.setLook { look in
-                look.size = values[FontElementContract.fontSize]
-                look.attributes = values[FontElementContract.fontAttributes] ?? .none
-                look.family = values[FontElementContract.fontFamily]?.text
-                look.color = values[TextStyleElementContract.textColor]?.propValue
+        if let words = TextMembers.words(values) { view.setText(words) }
+        if let look = TextMembers.look(values) {
+            view.setLook { shown in
+                shown.size = look.size
+                shown.attributes = look.attributes
+                shown.family = look.family
+                shown.color = look.color
             }
         }
         if values.changed(PaddingElementContract.padding) {

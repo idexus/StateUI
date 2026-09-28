@@ -31,7 +31,7 @@ extension GTKRegistrations {
             radio.onToggled = { on in reports.report(RadioButtonContract.isOn, on, as: RadioButtonContract.toggled) }
             return radio
         }, members: { radio in
-            radio.applies(textMembers) { view, values in applyText(view, values) }
+            radio.applies(TextMembers.members) { view, values in applyText(view, values) }
             radio.property(RadioButtonContract.isOn) { view, on in view.setOn(on ?? false) }
             radio.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             radio.raises(RadioButtonContract.toggled)

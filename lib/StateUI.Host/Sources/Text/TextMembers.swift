@@ -29,6 +29,11 @@
         guard values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
             || values.changed(FontElementContract.fontFamily) || values.changed(TextStyleElementContract.textColor)
         else { return nil }
+        return look(of: values)
+    }
+
+    /// The look the font and the colour give the words, whether or not they changed.
+    public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.size = values[FontElementContract.fontSize]
         look.attributes = values[FontElementContract.fontAttributes] ?? .none

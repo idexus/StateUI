@@ -12,7 +12,7 @@ extension GTKRegistrations {
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             return button
         }, members: { button in
-            button.applies(textMembers) { view, values in applyText(view, values) }
+            button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.applies([
                 VisualElementContract.background,
                 BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
