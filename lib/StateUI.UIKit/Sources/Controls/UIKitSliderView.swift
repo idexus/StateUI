@@ -29,10 +29,10 @@ final class UIKitSliderView: UISlider {
         fatalError("UIKitSliderView is made in code")
     }
 
-    /// The range, and the value where the tree wrote one.
+    /// The range, its lower end first (`ValueArithmetic.range`), and the value where the tree wrote one.
     func apply(value: Double?, minimum: Double, maximum: Double) {
-        minimumValue = Float(minimum)
-        maximumValue = Float(max(minimum, maximum))
+        let (lower, upper) = ValueArithmetic.range(minimum, maximum)
+        (minimumValue, maximumValue) = (Float(lower), Float(upper))
         if let value { self.value = Float(value) }
     }
 }

@@ -24,11 +24,10 @@ final class UIKitStepperView: UIStepper {
         fatalError("UIKitStepperView is made in code")
     }
 
-    /// The range and the step, and the value where the tree wrote one.
+    /// The range, its lower end first, a step that moves (`ValueArithmetic`), and the value where the tree wrote one.
     func apply(value: Double?, minimum: Double, maximum: Double, step: Double) {
-        minimumValue = minimum
-        maximumValue = max(minimum, maximum)
-        stepValue = step > 0 ? step : 1
+        (minimumValue, maximumValue) = ValueArithmetic.range(minimum, maximum)
+        stepValue = ValueArithmetic.step(step)
         if let value { self.value = value }
     }
 }
