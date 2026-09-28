@@ -8,7 +8,9 @@ answers ([the C API](c-api.md#a-subclass-from-swift)).
 
 A layout draws its own box in its snapshot, before its children: the fill -
 a colour, or a linear or radial gradient over the box in fractions of its
-size - inside the outline, then the outline's stroke inside its edge, so the
+size, a radial one a circle reaching as far across as down
+([brushes](../../types/brushes.md#geometry-in-fractions)) - inside the
+outline, then the outline's stroke inside its edge, so the
 stroke never spills over the place the layout was given. The outline is a
 rectangle, a rectangle with rounded corners, or an ellipse, each GSK's
 rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.

@@ -47,7 +47,9 @@ enum GTKBrush: Equatable {
             blue: Float(channels.blue) / 255, alpha: Float(channels.alpha) / 255)
     }
 
-    /// Paints `bounds` with the brush.
+    /// Paints `bounds` with the brush: a radial gradient is a circle, its radius the one reach (`HostBrush.reach`)
+    /// across and down.
+    /// Design: docs/design/types/brushes.md#geometry-in-fractions
     func paint(_ snapshot: OpaquePointer, _ bounds: graphene_rect_t) {
         var bounds = bounds
         let (x, y) = (Double(bounds.origin.x), Double(bounds.origin.y))
@@ -70,11 +72,11 @@ enum GTKBrush: Equatable {
             }
         case .radial(let center, let radius, let stops):
             var middle = point(center)
+            let reach = Float(HostBrush.reach(of: radius, width: width, height: height))
             let native = stops.map(\.native)
             native.withUnsafeBufferPointer {
                 gtk_snapshot_append_radial_gradient(
-                    snapshot, &bounds, &middle, Float(radius * width), Float(radius * height), 0, 1,
-                    $0.baseAddress, gsize($0.count))
+                    snapshot, &bounds, &middle, reach, reach, 0, 1, $0.baseAddress, gsize($0.count))
             }
         }
     }
