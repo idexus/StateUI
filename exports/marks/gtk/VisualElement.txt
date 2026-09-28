@@ -2,14 +2,14 @@
 ActivityIndicator.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ActivityIndicator - GTK's driver has no path for it yet
 ActivityIndicator.accessibilityHint: cannot read accessibilityHint of ActivityIndicator - GTK's driver has no path for it yet
 ActivityIndicator.accessibilityLabel: cannot read accessibilityLabel of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.automationExcludedWithChildren: not realized
+ActivityIndicator.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ActivityIndicator - GTK's driver has no path for it yet
 ActivityIndicator.background: not realized
 ActivityIndicator.focus: waits on ActivityIndicator.isFocusedChanged
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.isAccessibilityHidden: not realized
+ActivityIndicator.isAccessibilityHidden: cannot read isAccessibilityHidden of ActivityIndicator - GTK's driver has no path for it yet
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: not realized
 ActivityIndicator.isVisible: ✅
@@ -36,14 +36,14 @@ ActivityIndicator.zIndex: not realized
 Button.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Button - GTK's driver has no path for it yet
 Button.accessibilityHint: cannot read accessibilityHint of Button - GTK's driver has no path for it yet
 Button.accessibilityLabel: cannot read accessibilityLabel of Button - GTK's driver has no path for it yet
-Button.automationExcludedWithChildren: not realized
+Button.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Button - GTK's driver has no path for it yet
 Button.background: cannot read background of Button - GTK's driver has no path for it yet
 Button.focus: waits on Button.isFocusedChanged
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
-Button.isAccessibilityHidden: not realized
+Button.isAccessibilityHidden: cannot read isAccessibilityHidden of Button - GTK's driver has no path for it yet
 Button.isEnabled: ✅
 Button.isFocusedChanged: not realized
 Button.isVisible: ✅
@@ -104,14 +104,14 @@ Canvas.zIndex: not realized
 CheckBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of CheckBox - GTK's driver has no path for it yet
 CheckBox.accessibilityHint: cannot read accessibilityHint of CheckBox - GTK's driver has no path for it yet
 CheckBox.accessibilityLabel: cannot read accessibilityLabel of CheckBox - GTK's driver has no path for it yet
-CheckBox.automationExcludedWithChildren: not realized
+CheckBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of CheckBox - GTK's driver has no path for it yet
 CheckBox.background: not realized
 CheckBox.focus: waits on CheckBox.isFocusedChanged
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
-CheckBox.isAccessibilityHidden: not realized
+CheckBox.isAccessibilityHidden: cannot read isAccessibilityHidden of CheckBox - GTK's driver has no path for it yet
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: not realized
 CheckBox.isVisible: ✅
@@ -138,14 +138,14 @@ CheckBox.zIndex: not realized
 ColorBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ColorBox - GTK's driver has no path for it yet
 ColorBox.accessibilityHint: cannot read accessibilityHint of ColorBox - GTK's driver has no path for it yet
 ColorBox.accessibilityLabel: cannot read accessibilityLabel of ColorBox - GTK's driver has no path for it yet
-ColorBox.automationExcludedWithChildren: not realized
+ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - GTK's driver has no path for it yet
 ColorBox.background: not realized
 ColorBox.focus: waits on ColorBox.isFocusedChanged
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
-ColorBox.isAccessibilityHidden: not realized
+ColorBox.isAccessibilityHidden: cannot read isAccessibilityHidden of ColorBox - GTK's driver has no path for it yet
 ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: not realized
 ColorBox.isVisible: ✅
@@ -206,14 +206,14 @@ DatePicker.zIndex: not realized
 Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - GTK's driver has no path for it yet
 Ellipse.accessibilityHint: cannot read accessibilityHint of Ellipse - GTK's driver has no path for it yet
 Ellipse.accessibilityLabel: cannot read accessibilityLabel of Ellipse - GTK's driver has no path for it yet
-Ellipse.automationExcludedWithChildren: not realized
+Ellipse.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Ellipse - GTK's driver has no path for it yet
 Ellipse.background: not realized
 Ellipse.focus: waits on Ellipse.isFocusedChanged
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.isAccessibilityHidden: not realized
+Ellipse.isAccessibilityHidden: cannot read isAccessibilityHidden of Ellipse - GTK's driver has no path for it yet
 Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: not realized
 Ellipse.isVisible: ✅
@@ -240,14 +240,14 @@ Ellipse.zIndex: not realized
 Grid.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Grid - GTK's driver has no path for it yet
 Grid.accessibilityHint: cannot read accessibilityHint of Grid - GTK's driver has no path for it yet
 Grid.accessibilityLabel: cannot read accessibilityLabel of Grid - GTK's driver has no path for it yet
-Grid.automationExcludedWithChildren: not realized
+Grid.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Grid - GTK's driver has no path for it yet
 Grid.background: cannot read background of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 Grid.focus: waits on Grid.isFocusedChanged
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: cannot read what reaches Grid - GTK's driver has no path for it yet
-Grid.isAccessibilityHidden: not realized
+Grid.isAccessibilityHidden: cannot read isAccessibilityHidden of Grid - GTK's driver has no path for it yet
 Grid.isEnabled: ✅
 Grid.isFocusedChanged: not realized
 Grid.isVisible: ✅
@@ -274,14 +274,14 @@ Grid.zIndex: not realized
 HStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of HStack - GTK's driver has no path for it yet
 HStack.accessibilityHint: cannot read accessibilityHint of HStack - GTK's driver has no path for it yet
 HStack.accessibilityLabel: cannot read accessibilityLabel of HStack - GTK's driver has no path for it yet
-HStack.automationExcludedWithChildren: not realized
+HStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of HStack - GTK's driver has no path for it yet
 HStack.background: cannot read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 HStack.focus: waits on HStack.isFocusedChanged
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: cannot read what reaches HStack - GTK's driver has no path for it yet
-HStack.isAccessibilityHidden: not realized
+HStack.isAccessibilityHidden: cannot read isAccessibilityHidden of HStack - GTK's driver has no path for it yet
 HStack.isEnabled: ✅
 HStack.isFocusedChanged: not realized
 HStack.isVisible: ✅
@@ -308,14 +308,14 @@ HStack.zIndex: not realized
 Image.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Image - GTK's driver has no path for it yet
 Image.accessibilityHint: cannot read accessibilityHint of Image - GTK's driver has no path for it yet
 Image.accessibilityLabel: cannot read accessibilityLabel of Image - GTK's driver has no path for it yet
-Image.automationExcludedWithChildren: not realized
+Image.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Image - GTK's driver has no path for it yet
 Image.background: not realized
 Image.focus: waits on Image.isFocusedChanged
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
-Image.isAccessibilityHidden: not realized
+Image.isAccessibilityHidden: cannot read isAccessibilityHidden of Image - GTK's driver has no path for it yet
 Image.isEnabled: ✅
 Image.isFocusedChanged: not realized
 Image.isVisible: ✅
@@ -342,14 +342,14 @@ Image.zIndex: not realized
 ItemsView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ItemsView - GTK's driver has no path for it yet
 ItemsView.accessibilityHint: cannot read accessibilityHint of ItemsView - GTK's driver has no path for it yet
 ItemsView.accessibilityLabel: cannot read accessibilityLabel of ItemsView - GTK's driver has no path for it yet
-ItemsView.automationExcludedWithChildren: not realized
+ItemsView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ItemsView - GTK's driver has no path for it yet
 ItemsView.background: not realized
 ItemsView.focus: waits on ItemsView.isFocusedChanged
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
-ItemsView.isAccessibilityHidden: not realized
+ItemsView.isAccessibilityHidden: cannot read isAccessibilityHidden of ItemsView - GTK's driver has no path for it yet
 ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: not realized
 ItemsView.isVisible: ✅
@@ -376,14 +376,14 @@ ItemsView.zIndex: not realized
 Label.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Label - GTK's driver has no path for it yet
 Label.accessibilityHint: cannot read accessibilityHint of Label - GTK's driver has no path for it yet
 Label.accessibilityLabel: cannot read accessibilityLabel of Label - GTK's driver has no path for it yet
-Label.automationExcludedWithChildren: not realized
+Label.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Label - GTK's driver has no path for it yet
 Label.background: cannot read background of Label - GTK's driver has no path for it yet
 Label.focus: waits on Label.isFocusedChanged
 Label.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.ignoresInput: not realized
-Label.isAccessibilityHidden: not realized
+Label.isAccessibilityHidden: cannot read isAccessibilityHidden of Label - GTK's driver has no path for it yet
 Label.isEnabled: ✅
 Label.isFocusedChanged: not realized
 Label.isVisible: ✅
@@ -410,14 +410,14 @@ Label.zIndex: not realized
 Line.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Line - GTK's driver has no path for it yet
 Line.accessibilityHint: cannot read accessibilityHint of Line - GTK's driver has no path for it yet
 Line.accessibilityLabel: cannot read accessibilityLabel of Line - GTK's driver has no path for it yet
-Line.automationExcludedWithChildren: not realized
+Line.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Line - GTK's driver has no path for it yet
 Line.background: not realized
 Line.focus: waits on Line.isFocusedChanged
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
-Line.isAccessibilityHidden: not realized
+Line.isAccessibilityHidden: cannot read isAccessibilityHidden of Line - GTK's driver has no path for it yet
 Line.isEnabled: ✅
 Line.isFocusedChanged: not realized
 Line.isVisible: ✅
@@ -478,14 +478,14 @@ Map.zIndex: not realized
 Path.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Path - GTK's driver has no path for it yet
 Path.accessibilityHint: cannot read accessibilityHint of Path - GTK's driver has no path for it yet
 Path.accessibilityLabel: cannot read accessibilityLabel of Path - GTK's driver has no path for it yet
-Path.automationExcludedWithChildren: not realized
+Path.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Path - GTK's driver has no path for it yet
 Path.background: not realized
 Path.focus: waits on Path.isFocusedChanged
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
-Path.isAccessibilityHidden: not realized
+Path.isAccessibilityHidden: cannot read isAccessibilityHidden of Path - GTK's driver has no path for it yet
 Path.isEnabled: ✅
 Path.isFocusedChanged: not realized
 Path.isVisible: ✅
@@ -512,14 +512,14 @@ Path.zIndex: not realized
 Picker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Picker - GTK's driver has no path for it yet
 Picker.accessibilityHint: cannot read accessibilityHint of Picker - GTK's driver has no path for it yet
 Picker.accessibilityLabel: cannot read accessibilityLabel of Picker - GTK's driver has no path for it yet
-Picker.automationExcludedWithChildren: not realized
+Picker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Picker - GTK's driver has no path for it yet
 Picker.background: not realized
 Picker.focus: waits on Picker.isFocusedChanged
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
-Picker.isAccessibilityHidden: not realized
+Picker.isAccessibilityHidden: cannot read isAccessibilityHidden of Picker - GTK's driver has no path for it yet
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: not realized
 Picker.isVisible: ✅
@@ -546,14 +546,14 @@ Picker.zIndex: not realized
 Polygon.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polygon - GTK's driver has no path for it yet
 Polygon.accessibilityHint: cannot read accessibilityHint of Polygon - GTK's driver has no path for it yet
 Polygon.accessibilityLabel: cannot read accessibilityLabel of Polygon - GTK's driver has no path for it yet
-Polygon.automationExcludedWithChildren: not realized
+Polygon.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polygon - GTK's driver has no path for it yet
 Polygon.background: not realized
 Polygon.focus: waits on Polygon.isFocusedChanged
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
-Polygon.isAccessibilityHidden: not realized
+Polygon.isAccessibilityHidden: cannot read isAccessibilityHidden of Polygon - GTK's driver has no path for it yet
 Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: not realized
 Polygon.isVisible: ✅
@@ -580,14 +580,14 @@ Polygon.zIndex: not realized
 Polyline.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polyline - GTK's driver has no path for it yet
 Polyline.accessibilityHint: cannot read accessibilityHint of Polyline - GTK's driver has no path for it yet
 Polyline.accessibilityLabel: cannot read accessibilityLabel of Polyline - GTK's driver has no path for it yet
-Polyline.automationExcludedWithChildren: not realized
+Polyline.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polyline - GTK's driver has no path for it yet
 Polyline.background: not realized
 Polyline.focus: waits on Polyline.isFocusedChanged
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
-Polyline.isAccessibilityHidden: not realized
+Polyline.isAccessibilityHidden: cannot read isAccessibilityHidden of Polyline - GTK's driver has no path for it yet
 Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: not realized
 Polyline.isVisible: ✅
@@ -648,14 +648,14 @@ PositionIndicator.zIndex: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.accessibilityHint: cannot read accessibilityHint of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.accessibilityLabel: cannot read accessibilityLabel of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.automationExcludedWithChildren: not realized
+ProgressBar.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.background: not realized
 ProgressBar.focus: waits on ProgressBar.isFocusedChanged
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
-ProgressBar.isAccessibilityHidden: not realized
+ProgressBar.isAccessibilityHidden: cannot read isAccessibilityHidden of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: not realized
 ProgressBar.isVisible: ✅
@@ -682,14 +682,14 @@ ProgressBar.zIndex: not realized
 RadioButton.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of RadioButton - GTK's driver has no path for it yet
 RadioButton.accessibilityHint: cannot read accessibilityHint of RadioButton - GTK's driver has no path for it yet
 RadioButton.accessibilityLabel: cannot read accessibilityLabel of RadioButton - GTK's driver has no path for it yet
-RadioButton.automationExcludedWithChildren: not realized
+RadioButton.automationExcludedWithChildren: cannot read automationExcludedWithChildren of RadioButton - GTK's driver has no path for it yet
 RadioButton.background: not realized
 RadioButton.focus: waits on RadioButton.isFocusedChanged
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
-RadioButton.isAccessibilityHidden: not realized
+RadioButton.isAccessibilityHidden: cannot read isAccessibilityHidden of RadioButton - GTK's driver has no path for it yet
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: not realized
 RadioButton.isVisible: ✅
@@ -716,14 +716,14 @@ RadioButton.zIndex: not realized
 Rectangle.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Rectangle - GTK's driver has no path for it yet
 Rectangle.accessibilityHint: cannot read accessibilityHint of Rectangle - GTK's driver has no path for it yet
 Rectangle.accessibilityLabel: cannot read accessibilityLabel of Rectangle - GTK's driver has no path for it yet
-Rectangle.automationExcludedWithChildren: not realized
+Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - GTK's driver has no path for it yet
 Rectangle.background: not realized
 Rectangle.focus: waits on Rectangle.isFocusedChanged
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.isAccessibilityHidden: not realized
+Rectangle.isAccessibilityHidden: cannot read isAccessibilityHidden of Rectangle - GTK's driver has no path for it yet
 Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: not realized
 Rectangle.isVisible: ✅
@@ -750,14 +750,14 @@ Rectangle.zIndex: not realized
 ScrollView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ScrollView - GTK's driver has no path for it yet
 ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - GTK's driver has no path for it yet
 ScrollView.accessibilityLabel: cannot read accessibilityLabel of ScrollView - GTK's driver has no path for it yet
-ScrollView.automationExcludedWithChildren: not realized
+ScrollView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ScrollView - GTK's driver has no path for it yet
 ScrollView.background: cannot read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ScrollView.focus: waits on ScrollView.isFocusedChanged
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
-ScrollView.isAccessibilityHidden: not realized
+ScrollView.isAccessibilityHidden: cannot read isAccessibilityHidden of ScrollView - GTK's driver has no path for it yet
 ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: not realized
 ScrollView.isVisible: ✅
@@ -784,14 +784,14 @@ ScrollView.zIndex: not realized
 SearchField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of SearchField - GTK's driver has no path for it yet
 SearchField.accessibilityHint: cannot read accessibilityHint of SearchField - GTK's driver has no path for it yet
 SearchField.accessibilityLabel: cannot read accessibilityLabel of SearchField - GTK's driver has no path for it yet
-SearchField.automationExcludedWithChildren: not realized
+SearchField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of SearchField - GTK's driver has no path for it yet
 SearchField.background: not realized
 SearchField.focus: waits on SearchField.isFocusedChanged
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
-SearchField.isAccessibilityHidden: not realized
+SearchField.isAccessibilityHidden: cannot read isAccessibilityHidden of SearchField - GTK's driver has no path for it yet
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: not realized
 SearchField.isVisible: ✅
@@ -818,14 +818,14 @@ SearchField.zIndex: not realized
 Slider.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Slider - GTK's driver has no path for it yet
 Slider.accessibilityHint: cannot read accessibilityHint of Slider - GTK's driver has no path for it yet
 Slider.accessibilityLabel: cannot read accessibilityLabel of Slider - GTK's driver has no path for it yet
-Slider.automationExcludedWithChildren: not realized
+Slider.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Slider - GTK's driver has no path for it yet
 Slider.background: not realized
 Slider.focus: waits on Slider.isFocusedChanged
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
-Slider.isAccessibilityHidden: not realized
+Slider.isAccessibilityHidden: cannot read isAccessibilityHidden of Slider - GTK's driver has no path for it yet
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: not realized
 Slider.isVisible: ✅
@@ -852,14 +852,14 @@ Slider.zIndex: not realized
 Stepper.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Stepper - GTK's driver has no path for it yet
 Stepper.accessibilityHint: cannot read accessibilityHint of Stepper - GTK's driver has no path for it yet
 Stepper.accessibilityLabel: cannot read accessibilityLabel of Stepper - GTK's driver has no path for it yet
-Stepper.automationExcludedWithChildren: not realized
+Stepper.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Stepper - GTK's driver has no path for it yet
 Stepper.background: not realized
 Stepper.focus: waits on Stepper.isFocusedChanged
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
-Stepper.isAccessibilityHidden: not realized
+Stepper.isAccessibilityHidden: cannot read isAccessibilityHidden of Stepper - GTK's driver has no path for it yet
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: not realized
 Stepper.isVisible: ✅
@@ -886,14 +886,14 @@ Stepper.zIndex: not realized
 Switch.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Switch - GTK's driver has no path for it yet
 Switch.accessibilityHint: cannot read accessibilityHint of Switch - GTK's driver has no path for it yet
 Switch.accessibilityLabel: cannot read accessibilityLabel of Switch - GTK's driver has no path for it yet
-Switch.automationExcludedWithChildren: not realized
+Switch.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Switch - GTK's driver has no path for it yet
 Switch.background: not realized
 Switch.focus: waits on Switch.isFocusedChanged
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
-Switch.isAccessibilityHidden: not realized
+Switch.isAccessibilityHidden: cannot read isAccessibilityHidden of Switch - GTK's driver has no path for it yet
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: not realized
 Switch.isVisible: ✅
@@ -920,14 +920,14 @@ Switch.zIndex: not realized
 TextEditor.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextEditor - GTK's driver has no path for it yet
 TextEditor.accessibilityHint: cannot read accessibilityHint of TextEditor - GTK's driver has no path for it yet
 TextEditor.accessibilityLabel: cannot read accessibilityLabel of TextEditor - GTK's driver has no path for it yet
-TextEditor.automationExcludedWithChildren: not realized
+TextEditor.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextEditor - GTK's driver has no path for it yet
 TextEditor.background: not realized
 TextEditor.focus: waits on TextEditor.isFocusedChanged
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
-TextEditor.isAccessibilityHidden: not realized
+TextEditor.isAccessibilityHidden: cannot read isAccessibilityHidden of TextEditor - GTK's driver has no path for it yet
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: not realized
 TextEditor.isVisible: ✅
@@ -954,14 +954,14 @@ TextEditor.zIndex: not realized
 TextField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextField - GTK's driver has no path for it yet
 TextField.accessibilityHint: cannot read accessibilityHint of TextField - GTK's driver has no path for it yet
 TextField.accessibilityLabel: cannot read accessibilityLabel of TextField - GTK's driver has no path for it yet
-TextField.automationExcludedWithChildren: not realized
+TextField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextField - GTK's driver has no path for it yet
 TextField.background: not realized
 TextField.focus: waits on TextField.isFocusedChanged
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
-TextField.isAccessibilityHidden: not realized
+TextField.isAccessibilityHidden: cannot read isAccessibilityHidden of TextField - GTK's driver has no path for it yet
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: not realized
 TextField.isVisible: ✅
@@ -1056,14 +1056,14 @@ TitleBar.zIndex: not realized
 VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - GTK's driver has no path for it yet
 VStack.accessibilityHint: cannot read accessibilityHint of VStack - GTK's driver has no path for it yet
 VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - GTK's driver has no path for it yet
-VStack.automationExcludedWithChildren: not realized
+VStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of VStack - GTK's driver has no path for it yet
 VStack.background: cannot read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 VStack.focus: waits on VStack.isFocusedChanged
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: cannot read what reaches VStack - GTK's driver has no path for it yet
-VStack.isAccessibilityHidden: not realized
+VStack.isAccessibilityHidden: cannot read isAccessibilityHidden of VStack - GTK's driver has no path for it yet
 VStack.isEnabled: ✅
 VStack.isFocusedChanged: not realized
 VStack.isVisible: ✅
@@ -1124,14 +1124,14 @@ WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ZStack - GTK's driver has no path for it yet
 ZStack.accessibilityHint: cannot read accessibilityHint of ZStack - GTK's driver has no path for it yet
 ZStack.accessibilityLabel: cannot read accessibilityLabel of ZStack - GTK's driver has no path for it yet
-ZStack.automationExcludedWithChildren: not realized
+ZStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ZStack - GTK's driver has no path for it yet
 ZStack.background: cannot read background of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ZStack.focus: waits on ZStack.isFocusedChanged
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: cannot read what reaches ZStack - GTK's driver has no path for it yet
-ZStack.isAccessibilityHidden: not realized
+ZStack.isAccessibilityHidden: cannot read isAccessibilityHidden of ZStack - GTK's driver has no path for it yet
 ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: not realized
 ZStack.isVisible: ✅

@@ -57,13 +57,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHeadingLevel of ProgressBar - GTK's driver has no path for it yet |
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHint of ProgressBar - GTK's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityLabel of ProgressBar - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of ProgressBar - GTK's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
 | `focus` | act | `() -> Bool` |  |  |  |  | – | ⏸ |  | WinUI 3: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on ProgressBar.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure |  |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of ProgressBar - GTK's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native |  |  |  | – |  |  | WinUI 3: ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
 | `isVisible` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |

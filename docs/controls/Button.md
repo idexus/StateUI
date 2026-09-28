@@ -63,13 +63,13 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHeadingLevel of Button - GTK's driver has no path for it yet |
 | `accessibilityHint` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityHint of Button - GTK's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native |  |  |  | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Button - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of Button - GTK's driver has no path for it yet |
 | `background` | property | `Background` | native |  |  |  | ✅ | · |  | GTK 4: cannot read background of Button - GTK's driver has no path for it yet |
 | `focus` | act | `() -> Bool` |  |  |  |  | ✅ | ⏸ |  | GTK 4: waits on Button.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure |  |  |  | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native |  |  |  | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  |  | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Button - GTK's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native |  |  |  | ✅ |  |  | GTK 4: not realized |
 | `isVisible` | property | `Bool` | native |  |  |  | ✅ | ✅ |  |  |
