@@ -1,0 +1,140 @@
+# The Android Views host's suite, in the test APK's own process on an emulator:
+# its own tests, then every conformance family on Android, each verdict held to
+# the marks under exports/marks/android. CI never writes the marks, so a family
+# whose verdicts changed fails here and its marks are written again on a Mac,
+# on purpose.
+#
+# TWO MACHINES. The APK is built on macOS, where the build draws the pictures
+# (`xcrun swiftc`); an emulator runs only where the runner can
+# virtualize - GitHub's Linux runners with KVM, not its Apple silicon ones - so
+# the APK is built for x86_64 and handed over.
+#
+# THE TOOLCHAIN IS swift.org's, not Xcode's: the Swift SDK for Android ships
+# its Foundation as binary modules only the compiler that wrote them reads
+# (platform-traps.md). build-swift.sh finds the toolchain whose build matches
+# the SDK's and names the SDK by its id.
+
+name: Android
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # One release, named once; `swift sdk install` verifies the bundle against the
+  # checksum swift.org publishes beside it, so a stale pair fails loudly.
+  SWIFT_TAG: swift-6.4.0-RELEASE
+  SWIFT_CHANNEL: swift-6.4.0-release
+  ANDROID_SDK_CHECKSUM: 21fb555122a3d801ad943d48df7ebffdd8824de61c25c180bb792d3edaee0b43
+  ANDROID_NDK_VERSION: 30.0.16248370
+
+jobs:
+  build:
+    name: Build the test APK
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Install the swift.org toolchain
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o "$RUNNER_TEMP/swift.pkg" \
+            "https://download.swift.org/$SWIFT_CHANNEL/xcode/$SWIFT_TAG/$SWIFT_TAG-osx.pkg"
+          installer -pkg "$RUNNER_TEMP/swift.pkg" -target CurrentUserHomeDirectory
+          echo "$HOME/Library/Developer/Toolchains/$SWIFT_TAG.xctoolchain/usr/bin" >> "$GITHUB_PATH"
+
+      # The build in the parentheses, not the version, tells swift.org's
+      # toolchain from Xcode's.
+      - name: Check which Swift is first on PATH
+        run: |
+          set -euo pipefail
+          swift --version
+          release="${SWIFT_TAG#swift-}"; release="${release%-RELEASE}"; release="${release%.0}"
+          swift --version 2>&1 | grep -q "(swift-$release-RELEASE" || {
+            echo "::error::PATH resolves to Xcode's Swift, not swift.org's $SWIFT_TAG."
+            exit 1
+          }
+
+      - name: Install the Swift SDK for Android
+        run: |
+          set -euo pipefail
+          swift sdk install \
+            "https://download.swift.org/$SWIFT_CHANNEL/android-sdk/$SWIFT_TAG/${SWIFT_TAG}_android.artifactbundle.tar.gz" \
+            --checksum "$ANDROID_SDK_CHECKSUM"
+          swift sdk list
+
+      # build-swift.sh reads ANDROID_NDK_ROOT before ANDROID_NDK_HOME, and the
+      # image names its own older NDK there: both name this one. The SDK's own
+      # setup script is not needed (platform-traps.md).
+      - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
+        run: |
+          # No pipefail: the runner ignores SIGPIPE, so `yes` fails on the broken pipe once
+          # sdkmanager stops reading. The pipe's status is sdkmanager's own.
+          set -eu
+          yes 2> /dev/null | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ANDROID_NDK_VERSION" > /dev/null
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
+
+      # Gradle and the Android plugin take JDK 21.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build the test APK for x86_64
+        run: |
+          set -euo pipefail
+          apk="$(.scripts/Android/test-android.sh --build x86_64 | tail -n 1)"
+          cp "$apk" "$RUNNER_TEMP/StateUIAndroidTests.apk"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: android-tests
+          path: ${{ runner.temp }}/StateUIAndroidTests.apk
+          retention-days: 3
+
+  test:
+    name: Android
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/download-artifact@v6
+        with:
+          name: android-tests
+          path: ${{ runner.temp }}/android-tests
+
+      # The emulator needs KVM, which the runner has but does not open to its user.
+      - name: Open KVM to the runner
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Android 14 as the Pixel 3a the suite is walked on stands, its animations
+      # left on: the host reads the system's animator scale as the user's wish
+      # for less motion, and the verdicts are written with them on.
+      - name: Android host tests, every verdict held
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: STATEUI_TEST_APK="${{ runner.temp }}/android-tests/StateUIAndroidTests.apk" .scripts/Android/test-android.sh

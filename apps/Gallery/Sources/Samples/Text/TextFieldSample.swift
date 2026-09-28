@@ -40,10 +40,12 @@ struct TextFieldSample: SampleContent, ExampleContent {
             Label("return pressed \\(done)x")
 
             // A field for something that is not prose: the platform's
-            // underline and its next-word guesses only get in the way, and the
-            // caret can be put where the reader did not.
+            // underline and its next-word guesses only get in the way, the
+            // caret can be put where the user did not, and every letter
+            // typed stands in capitals, as a serial number's do.
             TextField($code)
                 .placeholder("a serial number")
+                .textCase(.uppercase)
                 .isSpellCheckEnabled(false)
                 .isTextPredictionEnabled(false)
                 .cursorPosition(selectAll ? 0 : code.count)
@@ -101,12 +103,14 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             // A field for something that is not prose: the platform's
-            // underline and its next-word guesses only get in the way, and
-            // the caret can be put where the reader did not.
+            // underline and its next-word guesses only get in the way, the
+            // caret can be put where the user did not, and every letter
+            // typed stands in capitals, as a serial number's do.
             TextField($code)
                 .accessibilityIdentifier("entry.code")
                 .accessibilityLabel("Serial number")
                 .placeholder("a serial number")
+                .textCase(.uppercase)
                 .isSpellCheckEnabled(false)
                 .isTextPredictionEnabled(false)
                 .cursorPosition(selectAll ? 0 : code.count)

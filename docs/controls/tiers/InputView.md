@@ -1,8 +1,8 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # InputView
 
-What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
+What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 
 Wears: [View](View.md)
 

@@ -6,9 +6,9 @@ struct AnimationSample: SampleContent, ExampleContent {
 
     /// The four values the card is drawn from, one per thing a button moves.
     ///
-    /// Each is DRIVEN on the Border below - the property is read off the state
+    /// Each is DRIVEN on the card below - the property is read off the state
     /// on the host's own frames rather than described - so a four-hundred
-    /// millisecond journey costs no renders at all. A Border that names none
+    /// millisecond journey costs no renders at all. A card that names none
     /// of them has nothing to move.
     @State private var fade = 1.0
     @State private var shift = 0.0
@@ -36,9 +36,10 @@ struct AnimationSample: SampleContent, ExampleContent {
             // and the four journeys are the host's - so this stands at one.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Animate me")
             }
+            .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
             // of them is on any message after the registration.
             .opacity($fade)
@@ -84,7 +85,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             // Whichever of them is moving; a state standing still is
             // unaffected. Each stop leaves the value where it had got to, so
-            // the card stays exactly where the reader saw it stop.
+            // the card stays exactly where the user saw it stop.
             Button("Stop").onClicked {
                 $fade.journey.stop()
                 $shift.journey.stop()
@@ -108,12 +109,13 @@ struct AnimationSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Animate me")
                     .fontSize(17)
                     .textColor(Palette.onBrand)
                     .padding(24, 16)
             }
+            .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
             // of them is on any message after the registration.
             .opacity($fade)
@@ -168,7 +170,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             // Whichever of them is moving; a state standing still is
             // unaffected. Each stop leaves the value where it had got to, so
-            // the card stays exactly where the reader saw it stop.
+            // the card stays exactly where the user saw it stop.
             button("Stop") {
                 $fade.journey.stop()
                 $shift.journey.stop()
@@ -209,7 +211,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 + "must: a card left at 60 stays at 60, the state holding it and "
                 + "no render being needed to say so. Stop is the other half - it "
                 + "leaves the value exactly where it stood, so a movement broken "
-                + "off halfway leaves the card where the reader saw it.")
+                + "off halfway leaves the card where the user saw it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

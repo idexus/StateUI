@@ -8,10 +8,10 @@ enum Shade: String, PersistentValue {
 }
 
 extension PersistentKey {
-    /// How many times the reader has pressed the button, ever.
+    /// How many times the user has pressed the button, ever.
     static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
 
-    /// What the reader is called.
+    /// What the user is called.
     static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
 
     /// Whether the panel below paints loudly.
@@ -130,16 +130,16 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             HStack {
                 Button("Press")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .onClicked { visits += 1 }
 
                 Button("Start over")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .isEnabled(visits != 0)
                     .onClicked { visits = 0 }
@@ -163,11 +163,11 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Button(shade == .quiet ? "quiet" : "bold")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked { shade = shade == .quiet ? .bold : .quiet }
             }

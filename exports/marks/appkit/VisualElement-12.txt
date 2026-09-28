@@ -1,0 +1,39 @@
+# revision 1.1
+ActivityIndicator.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Button.style: ✅
+Canvas.ignoresInput: ✅
+CheckBox.isEnabled: ✅
+CheckBox.zIndex: not realized
+ColorBox.scaleY: 🔌 read scaleY of ColorBox: the host's own transform, checked against the layer it composed itself
+DatePicker.rotationY: 🔌 read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
+Ellipse.pivotY: 🔌 read pivotY of Ellipse: the host's own transform, checked against the layer it composed itself
+Grid.background: ✅
+HStack.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Image.style: ✅
+ItemsView.ignoresInput: ✅
+Label.isEnabled: not realized
+Label.zIndex: not realized
+Line.scaleY: 🔌 read scaleY of Line: the host's own transform, checked against the layer it composed itself
+Map.rotationY: not realized
+Path.pivotY: 🔌 read pivotY of Path: the host's own transform, checked against the layer it composed itself
+Picker.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Polygon.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Polyline.style: ✅
+PositionIndicator.ignoresInput: not realized
+ProgressBar.isEnabled: not realized
+ProgressBar.zIndex: not realized
+RadioButton.scaleY: 🔌 read scaleY of RadioButton: the host's own transform, checked against the layer it composed itself
+Rectangle.rotationY: 🔌 read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
+ScrollView.pivotY: 🔌 read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Slider.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
+Stepper.style: ✅
+Switch.ignoresInput: ✅
+TextEditor.isEnabled: ✅
+TextEditor.zIndex: not realized
+TextField.scaleY: 🔌 read scaleY of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.rotationY: 🔌 read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
+TitleBar.pivotY: not realized
+VStack.background: ✅
+WebView.accessibilityHeadingLevel: not realized
+ZStack.style: ✅

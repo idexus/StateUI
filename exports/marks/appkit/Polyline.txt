@@ -1,0 +1,5 @@
+# revision 1.1
+Polyline: ✅
+Polyline.fillRule: ✅
+Polyline.frameChanged: ✅
+Polyline.points: ✅

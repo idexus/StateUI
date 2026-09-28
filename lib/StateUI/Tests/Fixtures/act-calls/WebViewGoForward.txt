@@ -1,2 +1,0 @@
-goForward completion=-1
-  string "browser"

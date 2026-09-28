@@ -1,0 +1,130 @@
+# Drawing on Android
+
+How the Android Views host paints what a view is drawn with rather than what
+it holds: a shape and the brush that fills it, a layout's own box, a
+child an engine places, and the application's pictures.
+
+## A shape and its brush
+
+A layout's own box, a ColorBox and any background that is not one plain colour are
+drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
+rectangle with rounded corners, or an ellipse, filled with a brush and
+outlined in one colour. The Swift host tells it every part as the host layer
+reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
+corner's width and height in pixels, the brush's kind, its stops' colours and
+offsets and its whole geometry, the outline's colour and width - and it
+builds the gradient for the bounds it is drawn at, so a gradient's points stay
+in fractions of the thing painted, as
+[brushes](../../types/brushes.md#geometry-in-fractions) says. A radial
+gradient's reach is the host layer's circle, worked out in Swift for the size
+the drawable is drawn at and told again as that size changes - whether Swift
+or Android placed the view. A plain colour
+stays the view's own colour background; a background cleared gives back the
+one the view was made with.
+
+A corner rounds no more than half the side it rounds within the outline,
+so a radius wider than a short box rounds it in a quarter of an ellipse.
+Swift fits the corners to the size its view is placed at, and again each
+time that size changes; the drawable draws them as given. A view clipping
+to the shape cuts with one radius, the top left corner's narrower way, as an
+outline takes it.
+
+## A layout's own box
+
+A stack, a grid or a ZStack paints its own box. A plain colour with no
+outline, shape or cut is the view's plain background, as on any view. An
+outline, a shape or a cut gives the layout a shape drawable instead, made
+the first time one is said: the background fills the shape, the outline is
+drawn inside the bounds, half its width either side of the shape's edge
+being inside, and never pushes a child in - that is the padding's work.
+With `clipsContent` the view clips to the drawable's outline, so a picture in
+a rounded card has rounded corners; without it nothing is cut, the shape
+drawn all the same.
+
+## A placed child
+
+An engine's placement run stands each child of a ZStack at a
+rectangle of its own and draws it moved, turned, scaled and faded about its
+centre, over whatever the child's own properties say. Android keeps one
+translation, rotation and scale per view, so the host composes the two:
+rotations add, scales multiply, and the view's own translation is turned and
+scaled by the placement's before the placement's is added. That is exact
+while the scales are the same on both axes, which is what a placement draws.
+The opacities multiply, and the view's own opacity is still what its
+animations start from.
+
+A higher rank is drawn over a lower one because the layout draws its
+children in that order, back to front, which is also the order a touch
+reaches them in; nothing is moved in the group, so nothing is laid out again
+for it. The order is set when a run or the children change, never while
+Android lays the layout out. A run that follows another stands its children
+at once, without laying out anything around the layout: its places need no
+room. The shade a placed layout lays over a card is the holder's
+second child, drawn at the run's shade.
+
+## Pictures
+
+A picture crosses as a file name, and the files are the application's
+`Resources/Images`. Android draws no SVG, so the build draws each SVG three
+times over, in sRGB, as `<name>@3x.png`, and copies every other picture as it
+is, into the APK's `images` assets; only what changed is drawn again. At run
+time a name finds its drawing three times over first, then a file of its
+own name, which is kept at one pixel a point.
+
+An image is measured at its picture's own size in points, read from the
+file's header alone: the size is at the display's density, and Android's own
+measure would scale it a second time. The four aspects are Android's four
+scale types, and an image cuts what it draws to its bounds, since a StateUI
+layout does not. A picture is read, measured and drawn at the host's own
+density: its drawable targets that density, where Android's would take the
+system's.
+
+A picture's pixels are read when its view is placed, at the fewest the view
+needs: one pixel in two, four, up to sixteen across and down, while that
+still covers the view, scaled to the display's density as it is read. A card
+showing a picture three times smaller than it was drawn holds a quarter of
+its pixels, in memory and on the GPU alike. A StateUI layout measures a
+height it has not settled yet, so the size a view is placed at is the one
+that decides; a size given whole by a parent of Android's decides as well.
+The bitmap says the density a whole one would have, so Android draws it at
+the picture's own size. It is read again only for more pixels, never for
+fewer, so a size in motion does not read it every frame, and a picture
+shown centred, at its own size, is read whole. Views showing the same
+picture at the same thinning share one bitmap, and the last to leave lets it
+go; only a bar's and a tab's icons are kept for as long as the host runs.
+
+A colour box has nothing to show but its colour: it takes the room its layout
+gives it and asks for none of its own.
+
+## Shapes
+
+A shape is one view of the host's, drawn on its own canvas: a rectangle or an
+ellipse fills the view, inset by half its outline so the outline stays
+inside, and is moved by its render transform; a line, a path, a polygon or a
+polyline is its own geometry, placed in the view by the host layer's rule
+([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)) from
+the bounds Android measures it at, then moved by the transform. Swift works
+the six numbers out each time the room changes, and the view draws by them.
+A path's arcs come as the shared parser's cubic curves. The geometry crosses
+as one array of commands in pixels, and the brush, the outline, a
+rectangle's corners - fitted as a box's are - and the six numbers one call
+each. The fill is the brush
+every shape of the host's paints with; the outline is a colour - a gradient's
+first - and its dashes count in the outline's width, as StateUI's do. A
+shape asks for no room of its own.
+
+## A canvas
+
+A canvas is one view of the host's that replays the drawing's instructions on
+its own canvas, in the order they were written, inside its bounds, in points:
+the canvas is scaled once by the display's density. The whole drawing
+crosses in one call - each instruction's kind, colours, flags and the index
+of its text as ints, its numbers as floats, its text as strings - so a
+drawing of a thousand instructions is one crossing, not a thousand. The three
+lists are the host layer's
+([three lists for a relay](../../types/drawing.md#three-lists-for-a-relay)):
+a record that does not read whole is left out, as every host leaves it out,
+and a path's arcs and an arc of an ellipse come as the curves they run along,
+so a whole turn fills the whole oval. Text wraps within its rectangle, stands across and down it as the
+instruction says, and is cut at its edges. A finger's press, drag and release
+come back in points; the canvas asks for no room of its own.

@@ -132,7 +132,7 @@ struct SearchSample: SampleContent, ExampleContent {
     ///
     /// `hasPrefix` rather than `contains`, which is a choice about the RESULT
     /// and not about what compiles: matching from the start makes a short list
-    /// of names narrow predictably as the reader types, where a substring
+    /// of names narrow predictably as the user types, where a substring
     /// match keeps rows whose beginning bears no relation to the query.
     private var matches: [String] {
         query.isEmpty

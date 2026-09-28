@@ -1,5 +1,0 @@
-environment battery
-  number 0.87
-  enum 1
-  enum 2
-  enum 1

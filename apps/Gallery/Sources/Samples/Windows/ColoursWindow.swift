@@ -29,7 +29,7 @@ struct ColoursPage: ContentView {
                     .fontSize(15)
                     .textColor(.white)
                     .background(accent.color)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked { style.accent = accent }
             }

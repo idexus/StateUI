@@ -1,0 +1,12 @@
+# revision 1.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: not realized
+Page.background: not realized
+Page.disappearing: ✅
+Page.hasBackButton: not realized
+Page.hasNavigationBar: cannot read hasNavigationBar of Page - GTK's driver has no path for it yet
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.padding: not realized

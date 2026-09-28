@@ -1,0 +1,7 @@
+# revision 1.1
+SearchField: ✅
+SearchField.frameChanged: ✅
+SearchField.returnKey: not realized
+SearchField.submitted: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅

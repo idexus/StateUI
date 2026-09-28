@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Scene
 
@@ -8,27 +8,39 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | Proven by every test of it that ran on that host. |
+| ☑️ | Proven, the host recording what is missing. |
+| – | Never on that host's family, which meets the contract there. |
+| ❌ | A test of it failed. |
+| ◐ | Some of its tests proved it, another could not run or read. |
+| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
+| · | The driver cannot yet do or read what its test needs. |
+| ⏸ | Its test waits on a member the host does not realize. |
+| ⌛ | Said at another revision of its family than it stands at. |
+| empty | Not realized, or no run - the note says which. |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/SceneContract.swift`.
+See [the dictionary](README.md) for how a mark is given.
+
+| Host | Created | Members (6) | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 6 ✅ | `NSApplication` / structure |  |
+| UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
+| Android Views | ✅ | 4 ✅ | `Application` / structure |  |
+| WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
+| GTK 4 | ✅ |  | `GtkApplication` / structure |  |
+| Web |  |  | `document` / structure | no host yet |
+
+Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
 
 ## Scene's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `deactivated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `destroying` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `stopped` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `windowClosed` | event | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-
-Realization:
-
-- **MAUI**: `Application` / structure
-- **AppKit**: `NSApplication` / structure
-- **UIKit**: `UIApplication` / `UIWindowScene`
-- **GTK 4**: `GtkApplication` / structure
-- **Android Views**: `Application` / structure
-- **WinUI 3**: `Application` / structure
-- **Web**: `document` / structure
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `activated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `deactivated` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ |  |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized; GTK 4: not realized |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |

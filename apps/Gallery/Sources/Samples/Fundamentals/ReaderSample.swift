@@ -157,7 +157,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                 Label("outside the braces: " + BuildCount.of(debugInfo()))
                     .fontSize(12)
                     .textColor(Palette.accent)
-                Border {
+                ZStack {
                     VStack {
                         Label("inside: \(percent(value))")
                             .fontSize(15)
@@ -165,6 +165,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                     }
                     .spacing(4)
                 }
+                .style("Card")
                 .padding(8)
                 .shape(.roundedRectangle(6))
                 .stroke(Palette.outline)
@@ -219,7 +220,7 @@ struct ReaderSample: SampleContent, ExampleContent {
     /// reading taken inside the content is that stack's and nobody else's,
     /// and the caption around it is never built again.
     private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
-        Border {
+        ZStack {
             VStack {
                 Label(caption)
                     .fontSize(11)
@@ -230,6 +231,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
             .spacing(6)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -255,7 +257,7 @@ private struct Reading: ContentView {
     @Binding var value: Double
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 Label("5 · a child that reads the value it borrowed")
                     .fontSize(11)
@@ -266,6 +268,7 @@ private struct Reading: ContentView {
             }
             .spacing(4)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -281,7 +284,7 @@ private struct Holding: ContentView {
     @Binding var value: Double
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 Label("6 · a child that only hands the binding on")
                     .fontSize(11)
@@ -296,6 +299,7 @@ private struct Holding: ContentView {
             }
             .spacing(4)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -310,7 +314,7 @@ private struct Pulsed: ContentView {
     @State private var said = "pulses · 0"
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 Label("7 · a state by binding")
                     .fontSize(11)
@@ -322,6 +326,7 @@ private struct Pulsed: ContentView {
             }
             .spacing(4)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

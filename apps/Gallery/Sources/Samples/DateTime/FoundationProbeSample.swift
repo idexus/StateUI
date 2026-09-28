@@ -6,7 +6,7 @@ import Android
 #endif
 
 // What Foundation answers on this platform, measured live rather than
-// remembered. The LIBRARY never imports Foundation - a date on the wire stays
+// remembered. The LIBRARY never imports Foundation - a date in it stays
 // three integers - but an APPLICATION may: on Apple the system's Foundation,
 // on Android the Swift-rewritten one, whose Internationalization half carries
 // its own, namespaced ICU, and on Windows FoundationEssentials alone, with no

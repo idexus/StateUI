@@ -33,7 +33,7 @@ struct HiddenPage: ContentView {
                 Button("Back to the Navigation samples")
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }

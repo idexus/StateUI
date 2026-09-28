@@ -12,53 +12,85 @@ From a StateUI checkout, with Node.js 20 or newer:
 cd lib/StateUI.VSCode
 npm ci
 npm run package
-code --install-extension stateui-*.vsix
+code --install-extension ../../artifacts/stateui-*.vsix
 ```
 
-`npm run package` compiles the extension, copies in the template it carries,
-and writes `stateui-<version>.vsix`. **Extensions: Install from VSIX…** installs
-that file without the `code` command.
+`npm run package` compiles the extension and writes `stateui-<version>.vsix` into
+`artifacts/` at the repository root.
+**Extensions: Install from VSIX…** installs that file without the `code`
+command.
 
 ## A new application
 
-- **StateUI: New Application in apps/** - in a StateUI checkout, asks for a
-  name and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
-  `new-app.ps1` on Windows). The application is then chosen, so **StateUI:
-  Debug** runs it.
-- **StateUI: New Application from Template** - an application in a directory
-  of its own. It asks where, for the name, and what StateUI it is built
-  against:
-  - **a StateUI checkout** - both halves by path, from the checkout's own
-    template, so the application matches the library on disk. On macOS it
-    also offers an AppKit head. The checkout's directory is named `StateUI`:
-    SwiftPM names a package on disk after its directory.
-  - **a release** - `StateUI.Maui` from NuGet and the Swift half by the
-    repository's tag of the same version. Only a version with both is offered.
-
-The application is written by this extension from the StateUIStarter template
-- a checkout's, or the copy the extension carries - and is what `dotnet new
-stateui-maui` writes with the same options. Nothing needs to be installed
-first, and no template package of another release is picked up.
+**StateUI: New Application in apps/** - in a StateUI checkout, asks for a name
+and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
+`new-app.ps1` on Windows), which makes HelloWorld under that name. The
+application is then chosen, so **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
-directory, the MAUI project, the process and the Swift module (`<Name>UI`).
+directory, the process, the package identifier and the Swift module
+(`<Name>UI`).
 
 ## The host
 
-The status bar shows the host - **AppKit** or **.NET MAUI**. Click it, or run
-**StateUI: Select Host**. AppKit is offered on macOS alone; on Windows and Linux
-the host is .NET MAUI.
+The status bar shows the host - **AppKit**, **UIKit**, **Android**, **WinUI** or
+**GTK**. Click it, or run **StateUI: Select Host**. AppKit, UIKit and Android are
+offered on macOS, UIKit and Android where an application has their head
+(`Platforms/UIKit`, `Platforms/Android`); WinUI on Windows; GTK on Linux. On a machine that runs no host the status bar
+says **no host**, a launch says why it runs nothing, and the editor and
+**StateUI: Run Tests** work as plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
   head belongs to its package only then. Switching restarts the Swift language
-  server; the window does not reload and no settings file is written.
+  server; the window does not reload and no settings file is written. As
+  Android the server compiles for Android - the Swift SDK for Android of the
+  toolchain's release, `aarch64-unknown-linux-android28` - so code under
+  `#if ANDROID` and `Platforms/Android/Swift` resolve. With no such SDK
+  installed it compiles for this Mac, and a warning says so. As UIKit it
+  compiles for the iOS simulator - `arm64-apple-ios26.0-simulator` against
+  Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
+  resolve.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the application's
   head is built - with its bundling script where it has one, with SwiftPM
-  otherwise - and started under `lldb-dap`. On .NET MAUI the debugger chosen
-  below decides the launch; with C# on macOS and Windows it is the MAUI
-  extension's launch of the chosen application, on the device that extension's
-  picker chose.
+  otherwise - and started under `lldb-dap`. On Android
+  `.scripts/Android/run-app.sh` builds the head, installs it on the device
+  chosen below and starts it, and its terminal then follows the application's
+  log, in colour, until the task is stopped. StateUI:
+  Debug then attaches `lldb-dap` to the application through the NDK's
+  `lldb-server`, which the script starts in the application's sandbox: a
+  breakpoint is reached from the moment it attaches. StateUI: Release, and Run
+  Without Debugging, run it without a debugger. A second launch stops the first
+  one's log before it starts again. On UIKit `.scripts/UIKit/run-app.sh`
+  builds the head, installs it on the iPhone, iPad or simulator chosen below -
+  a simulator booted first, a device's build signed for it - and starts it, and
+  its terminal follows what the application prints. StateUI: Debug starts it
+  held until `lldb-dap` attaches - to a simulator's process, one of this Mac's,
+  or through the device - and a breakpoint holds from the first line. On WinUI `.scripts/WinUI/run-app.ps1`
+  builds the head, stopping a running copy first, and lays the Windows App SDK
+  beside it, and `lldb-dap` starts it: a breakpoint holds from the first line.
+  On GTK `.scripts/GTK/run-app.sh` builds the head, stopping a running copy
+  first, and `lldb-dap` starts it: a breakpoint holds from the first line.
+
+## The Android device
+
+While the host is Android, a third status bar item shows the device - click it,
+or run **StateUI: Select Android Device**. It offers the devices attached and
+the emulators set up; picking an emulator starts it and waits until it has
+booted. The device is remembered for the workspace, so a launch or a run of the
+tests asks only when none is chosen or the one chosen is no longer attached.
+
+## The UIKit device
+
+While the host is UIKit, the third status bar item shows the iPhone or iPad a
+launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
+the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
+of iOS 26 or later, the newest runtime first. It is remembered for the
+workspace, so a launch or a run of the tests asks only when none is chosen or
+the one chosen is gone. A device runs with Developer Mode on, and its build is
+signed with a development profile of this Mac's that provisions it - Xcode
+makes one for a team once the device is added. The host's own tests run on a
+simulator.
 
 ## The application
 
@@ -68,31 +100,6 @@ It is remembered for the workspace, so a launch asks only when nothing is
 chosen yet, or when the chosen application has no head for the host. A launch
 configuration naming `"application": "Gallery"` runs that one instead.
 
-## The debugger
-
-For a .NET MAUI head, **StateUI: Select Debugger** chooses how it is debugged,
-and the host item in the status bar shows the choice:
-
-| Debugger | What a launch does | On |
-| --- | --- | --- |
-| C# | the MAUI extension's launch, on the device its picker chose | macOS, Windows |
-| C# | `dotnet build`, then `coreclr` on the Linux head | Linux |
-| Swift · iOS Simulator | `run-app.sh ios`, then lldb-dap attaches | macOS |
-| Swift · Mac Catalyst | `run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
-| C# + Swift · Mac Catalyst | the C# launch, and lldb-dap attaches beside it once the app runs | macOS |
-| Swift | `run-app.ps1`, then lldb-dap attaches | Windows |
-| Swift | `dotnet build`, then lldb-dap launches the head | Linux |
-
-`run-app.sh` and `run-app.ps1` are part of the StateUI build the application's
-project imports - a checkout's `.scripts/Maui`, or the StateUI.Maui package's
-`buildTransitive/Maui` - found by asking MSBuild for the launched framework, so
-they always belong to the library the application builds.
-
-C# on iOS, Android and Mac Catalyst needs the MAUI extension's debugger: those
-heads run on Mono. Swift attaches only to a process this machine runs, and on the
-iOS Simulator only after the app has started, because the simulator's watchdog
-kills an app a debugger holds stopped.
-
 ## Tests
 
 **StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs
@@ -100,18 +107,66 @@ them AS THE HOST, one after another, each in a terminal of its own:
 
 - **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
   AppKit build (`STATEUI_APPKIT=1`, on `.build-appkit`).
-- **.NET MAUI**: the library and each application under `-Xswiftc -DMAUI`, on
-  `.build-maui`, and the C# suites.
+- **UIKit**: the library and each application as plain Swift, and the UIKit
+  host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
+  on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
+- **Android**: the library and each application as plain Swift - an Android
+  build runs only on a device - and the Android host's own tests,
+  `lib/StateUI.Android/Tests`, built into a test APK and run on the device
+  chosen by `.scripts/Android/test-android.sh`.
+- **WinUI**: the library and each application as plain Swift, and the WinUI
+  host's own package, `lib/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
+  which lays the Windows App SDK beside its test runner first.
+- **GTK**: the library and each application as plain Swift, and the GTK host's
+  own package, `lib/StateUI.GTK`, by `swift test`, its windows on the
+  desktop's display.
+- **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
 failed.
 
+## The conformance marks
+
+In a StateUI checkout, **StateUI: Conformance - Rebuild all** runs every
+conformance family as the host chosen, writing its verdicts into
+`exports/marks/<host>`, then renders the control dictionary and
+`docs/platform-contract.md` from them again. **StateUI: Conformance - Rebuild
+changed** does the same for the families whose verdicts stand at another
+revision than `lib/StateUI.Conformance/revisions.txt` says, or have none;
+every other family's run ends at once. UIKit runs on the simulator chosen and Android on
+the device chosen, where Android rebuilds all only, its device reading no
+repository. Neither command shows outside a checkout: an application's
+workspace holds no marks.
+
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build` or `.build-maui/index-build`, set in the
-application's `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
+own, `.build-appkit/index-build`, `.build-uikit/index-build`, `.build-android/index-build`,
+`.build-winui/index-build` or `.build-gtk/index-build` - with no
+host SwiftPM's own `.build/index-build` - set in the application's
+`.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
+
+## The toolchain
+
+**StateUI: Check Toolchain** looks for what this machine needs to build and run
+the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
+say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
+JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
+Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
+Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
+for this extension's own build. The **StateUI Toolchain** output lists each
+with what was found - a version older than the one required marked as too old - and
+for each not found what to install. It looks where the build scripts look
+(the NDK as `build-swift.sh` finds it); it installs nothing.
+
+## The extension itself
+
+In a StateUI checkout, **StateUI: Reinstall VS Code Extension** builds the
+extension from `lib/StateUI.VSCode` - compiled and packed into
+`artifacts/stateui-<version>.vsix` by `npm run package` - and installs it with
+`--force` through the command line of the VS Code that runs it, then offers to
+reload the window, where the new build runs.
 
 ## Launches
 
@@ -126,8 +181,26 @@ launch file at all:
 ## Requirements
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
-- For AppKit: macOS 14 or newer and the `lldb-dap` extension.
-- For .NET MAUI: the .NET MAUI extension and the .NET 10 SDK.
+- For AppKit: macOS 26 or newer and the `lldb-dap` extension.
+- For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
+  builds and runs the head, the `lldb-dap` extension, and an iOS 26 or newer
+  simulator or device - a device with Developer Mode on and a development
+  profile of this Mac's that provisions it.
+- For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds
+  and runs the head; Swift 6.4 from swift.org with the
+  [Swift SDK for Android](https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html)
+  of the same release; the Android NDK r30 or newer; JDK 21; and the Android
+  SDK with platform 36 and its build tools, in `ANDROID_HOME` or
+  `~/Library/Android/sdk`. The scripts fetch Gradle themselves.
+- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
+  head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
+  SDK; and the `lldb-dap` extension. The scripts fetch C++/WinRT and the
+  Windows App SDK themselves.
+- For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
+  Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
+  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
+  loader (`librsvg2-common`); and the `lldb-dap` extension.
 
-Do not set `STATEUI_APPKIT` in `swift.swiftEnvironmentVariables`: that setting
-is laid over the host chosen here, and the extension offers to remove it.
+Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
+`swift.swiftEnvironmentVariables`: that setting is laid over the host chosen
+here, and the extension offers to remove it.

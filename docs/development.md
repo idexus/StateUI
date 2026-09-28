@@ -3,36 +3,44 @@
 ## Repository layout
 
 ```text
-Package.swift                     StateUI core package and core tests
-StateUI.slnx                      the .NET solution: MAUI heads and host projects
-lib/StateUI/Sources/              platform-neutral StateUI
-lib/StateUI/Tests/                core tests, fixtures, and shared test support
-lib/StateUI.AppKit/               independent AppKit host package and tests
-lib/StateUI.Maui/Sources/         .NET MAUI host (StateUI.Maui)
-lib/StateUI.Maui/Linux/           its Linux platform over GTK 4 (StateUI.Maui.Linux)
-lib/StateUI.Maui/Tests/           MAUI host tests
-lib/StateUI.Maui/Template/        `dotnet new stateui-maui` template
-.scripts/AppKit/                  AppKit Gallery bundling
-.scripts/Maui/                    MSBuild targets and per-platform Swift builds
-apps/Gallery/Sources/             platform-neutral Gallery application
-apps/Gallery/Platforms/AppKit/    Gallery AppKit entry point
-apps/Gallery/Platforms/Maui/      Gallery MAUI head
-apps/Gallery/Tests/               Gallery acceptance tests
-apps/HelloWorld/Sources/          small platform-neutral example application
-apps/HelloWorld/Platforms/AppKit/ HelloWorld AppKit entry point
-apps/HelloWorld/Platforms/Maui/   HelloWorld MAUI head
+Package.swift                      StateUI core package and core tests
+lib/StateUI/Sources/               platform-neutral StateUI
+lib/StateUI/Tests/                 core tests and shared test support
+lib/StateUI.Host/                  the host layer every host stands on, and its tests
+lib/StateUI.Conformance/           the conformance suite every host's tests run
+lib/StateUI.AppKit/                independent AppKit host package and tests
+lib/StateUI.Android/               Android Views host package, its Java layer and tests
+lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
+lib/StateUI.GTK/                   GTK host package, Swift over GTK's C API, and tests
+lib/StateUI.VSCode/                the editor extension
+.scripts/AppKit/                   AppKit Gallery bundling
+.scripts/Android/                  Android Views builds, runs, devices and tests
+.scripts/WinUI/                    WinUI builds, runs and tests, and the Windows App SDK
+.scripts/GTK/                      GTK builds and runs
+apps/Gallery/Sources/              platform-neutral Gallery application
+apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
+apps/Gallery/Platforms/Android/    Gallery Android head
+apps/Gallery/Platforms/WinUI/      Gallery WinUI head
+apps/Gallery/Platforms/GTK/        Gallery GTK head
+apps/Gallery/Tests/                Gallery acceptance tests
+apps/HelloWorld/Sources/           small platform-neutral example application
+apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
+apps/HelloWorld/Platforms/Android/ HelloWorld Android head
+apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
+apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
 ```
 
-The core never imports Foundation or a platform UI framework. Application code
-may import Foundation. Platform frameworks remain inside host packages and
+The core and the host layer never import Foundation or a platform UI
+framework. Application code may import Foundation. Platform frameworks remain inside host packages and
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
-`#if MAUI`, which every MAUI build of a Swift module defines with
-`-Xswiftc -DMAUI`, and `#if APPKIT`, which every AppKit build of an application
-defines through its manifest. `NativeProjectTests`
-refuses any other mention of either host in the library and in the
-applications' `Sources/`.
+`#if APPKIT`, `#if ANDROID`, `#if WINUI` and `#if GTK`, which every build of an
+application for that host defines through its manifest, from
+`STATEUI_APPKIT=1`, `STATEUI_ANDROID=1`, `STATEUI_WINUI=1` and
+`STATEUI_GTK=1`. `NativeProjectTests` refuses
+any other mention of a host in the library and in the applications'
+`Sources/`.
 
 `STATEUI_APPKIT=1` is what makes a build an AppKit one. An application's
 manifest reads it and then declares the `Platforms/AppKit` target, the product
@@ -92,17 +100,21 @@ Treat one control, property, event, or host action as one vertical change:
 2. Add or change the public Swift declaration and its `///` documentation.
 3. Declare the member in its element's contract - its name, its value's type
    and its layer; its host-SPI token follows from the member.
-4. Implement every host claimed by the change, keeping native adapters thin.
-5. Add focused core tests and direct native-host tests.
+4. Decide what of it every host shares and write that part in the host layer
+   first, with its pure tests ([host layer](internals/host-layer.md)); then implement
+   every host claimed by the change, keeping native adapters thin.
+5. Add focused core tests and direct native-host tests, and a conformance case
+   where executing the contract shows the effect.
 6. Add or update the smallest Gallery demonstration and handbook section.
 7. Let the host say what it realizes, only after its tests pass. A member a
-   MAUI registration takes or raises records itself: `STATEUI_UPDATE_EXPORTS=1
-   dotnet test lib/StateUI.Maui/Tests` writes `exports/maui.bin` and its
-   readable sidecar, and the contracts name each member's owner when the
-   documents are rendered. What a registry cannot know stays written by hand -
-   an element the renderer serves itself, and every judgement: a partial record
-   saying what is missing, what a host realizes none of, and what it presents
-   with no view of its own. `AppKitRealization` is written that way in full.
+   registration takes or raises records itself: with `STATEUI_UPDATE_EXPORTS=1`,
+   `swift test --package-path lib/StateUI.AppKit` and
+   `.scripts/Android/test-android.sh <serial>` write `exports/appkit.txt` and
+   `android.txt`, and the contracts name each member's owner when the
+   documents are rendered. What a registry cannot know stays written by hand,
+   in `AppKitRealization` and `AndroidRealization` - every judgement: a partial
+   record saying what is missing, what a host realizes none of, and what it
+   presents with no view of its own.
    Then `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests`
    writes `docs/controls/` and the tables of `platform-contract.md`.
 
@@ -113,7 +125,7 @@ contract.
 
 ## Build
 
-The AppKit host requires macOS 14 or newer and a Swift 6 toolchain from Xcode.
+The AppKit host requires macOS 26 or newer and Xcode 27, with its Swift 6.4.
 
 Build the runnable Gallery bundle:
 
@@ -133,17 +145,34 @@ chosen in its status bar, on the host chosen there; installing it is under
 [Working in VS Code](getting-started.md#working-in-vs-code). The Gallery's
 build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
-The MAUI host requires the .NET 10 SDK and, except on Linux, the MAUI workload.
-A head compiles the library and its application's Swift module for the
-platform it builds:
+The Android Views host builds on macOS with the swift.org toolchain, the Swift
+SDK for Android, the NDK r30 and JDK 21. An application's Android head is
+built, installed and started on a device by one script:
 
 ```bash
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-android -t:Run
+.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
 ```
 
-[MAUI host](maui-host.md) lists every platform, how each is debugged, and the
-tasks.
+[Android Views host](hosts/android.md) lists what it needs and what it builds.
+
+The WinUI host builds on Windows with the swift.org toolchain and Visual
+Studio's C++ tools; its script fetches C++/WinRT and the Windows App SDK
+itself. An application's WinUI head is built and started by one script:
+
+```powershell
+.scripts\WinUI\run-app.ps1 -App apps\HelloWorld
+```
+
+[WinUI host](hosts/winui.md) lists what it needs and what it builds.
+
+The GTK host builds on Linux with the swift.org toolchain, GTK 4 and
+libadwaita. An application's GTK head is built and started by one script:
+
+```bash
+.scripts/GTK/run-app.sh apps/HelloWorld
+```
+
+[GTK host](hosts/gtk.md) lists what it needs and what it builds.
 
 ## Test
 
@@ -151,48 +180,72 @@ Each suite lives beside the package whose behavior it verifies:
 
 ```bash
 swift test
+swift test --package-path lib/StateUI.Host
+swift test --package-path lib/StateUI.Conformance
 swift test --package-path lib/StateUI.AppKit
 swift test --package-path apps/Gallery
-dotnet test lib/StateUI.Maui/Tests
 ```
 
-`.scripts/test-native.sh` runs the three Swift suites, then the library and the
-Gallery again as MAUI builds (`-Xswiftc -DMAUI`) and the Gallery as an AppKit
-build (`STATEUI_APPKIT=1`), each on a build directory of its own:
+`.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
+AppKit build (`STATEUI_APPKIT=1`), on a build directory of its own:
 
 ```bash
 .scripts/test-native.sh
 ```
 
-The first suite covers core semantics and typed and Wire boundaries. The second
-drives native AppKit objects. The third treats Gallery as application behavior
-and compiles the documentation examples. The fourth drives MAUI controls as
-ordinary .NET objects over the fixtures the first writes; it needs the .NET 10
-SDK and, except on Linux, the MAUI workload, and runs its classes one at a
-time. In VS Code, **StateUI: Run Tests** runs them as the chosen host.
+The first suite covers core semantics and the typed boundary. The host
+layer's suite proves the rules every host shares, pure, with no toolkit. The
+conformance package's own tests prove its runner and that every member has
+its case; each host's suite runs the cases themselves. The AppKit suite drives
+native AppKit objects. The Gallery's treats Gallery as application behavior
+and compiles the documentation examples. In VS Code, **StateUI: Run Tests**
+runs them as the chosen host.
+
+The Android Views host's suite runs on a device, in a test APK:
+
+```bash
+.scripts/Android/test-android.sh emulator-5554
+```
+
+The WinUI host's suite runs on Windows, the Windows App SDK laid beside its
+test runner first:
+
+```powershell
+.scripts\WinUI\test-winui.ps1
+```
+
+The GTK host's suite runs on Linux, in a desktop session whose display shows
+its windows:
+
+```bash
+swift test --package-path lib/StateUI.GTK
+```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a
 user-visible change in the running Gallery on the affected platform. Run only
 one application build at a time because Swift build directories are shared by
 the package graph.
 
-## Fixtures
+On GitHub each suite has a workflow of its own, so each shows its own state,
+the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
+Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
+the host layer and the conformance runner, and on macOS the Gallery), and one
+for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
+**Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**
+and **GTK**.
+A host's workflow holds every conformance verdict to its marks and never
+writes them: a family whose verdicts changed fails there, and its marks are
+written again on that platform's machine.
 
-Binary fixtures under `lib/StateUI/Tests/Fixtures/` pin the deterministic Wire
-contract. Each `.bin` has a readable `.txt` sidecar. When a deliberate protocol
-change makes a fixture test fail, regenerate both with:
+## What the tests hold
 
-```bash
-STATEUI_UPDATE_FIXTURES=1 swift test
-```
+The core's tests assert on the typed patch a host is handed, each by the rule
+it keeps - one changed number sends one property of one label, every control
+carries only the members its contract declares - rather than comparing it
+with a stored copy. A failing assertion names what changed and why it
+matters; a deliberate change updates the assertion that states it.
 
-Review the binary and text diffs before accepting them, then run the ordinary
-suite again without the environment variable, and `dotnet test
-lib/StateUI.Maui/Tests`, which applies the same files. The VS Code task "Test
-(update wire fixtures)" regenerates them and runs the C# suite in one step.
-Never update fixtures merely to make an unexplained failure green.
-
-The documentation examples are another executable fixture. Every exact
+The documentation examples are another executable check. Every exact
 `swift` fence in `README.md` and `docs/` is type-checked by Gallery tests.
 Mark a deliberately partial declaration or manifest as `swift quote`; keep
 copyable application examples as plain `swift` so API drift fails visibly.
@@ -206,7 +259,8 @@ package uses the root checkout as a local dependency; the complete remote
 library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.
 
-The MAUI host is three NuGet packages, `StateUI.Maui`, `StateUI.Maui.Linux`,
-and `StateUI.Maui.Template`, whose versions move with the Swift package's tag.
-None is published yet; [MAUI host](maui-host.md#publishing-the-packages) says
-how they are packed and tried locally.
+A release has one version, stated in the editor extension's
+`lib/StateUI.VSCode/package.json`. Every other place that names it - the
+published-package line in each `Package.swift`, each Android head's version,
+the Gallery's AppKit bundle, the bug report's example - names the same one, and
+`ReleaseTests` holds them to it.

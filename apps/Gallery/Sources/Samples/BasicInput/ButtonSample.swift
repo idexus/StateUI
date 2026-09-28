@@ -23,8 +23,8 @@ struct ButtonSample: SampleContent, ExampleContent {
 
             Button("Outlined")
                 .background(.transparent)
-                .borderColor(Palette.accent)
-                .borderWidth(1)
+                .stroke(Palette.accent)
+                .strokeWidth(1)
                 .onClicked { counter += 1 }
 
             Button("Disabled")
@@ -39,7 +39,7 @@ struct ButtonSample: SampleContent, ExampleContent {
             Button("Increment")
                 .background(Palette.accent)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
@@ -51,9 +51,9 @@ struct ButtonSample: SampleContent, ExampleContent {
             Button("Outlined")
                 .background(.transparent)
                 .textColor(Palette.accent)
-                .borderColor(Palette.accent)
-                .borderWidth(1)
-                .cornerRadius(8)
+                .stroke(Palette.accent)
+                .strokeWidth(1)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }

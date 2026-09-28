@@ -130,16 +130,16 @@ struct StateClassSample: SampleContent, ExampleContent {
                 Button("Add")
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .onClicked { basket.items.append("Item \(basket.items.count + 1)") }
 
                 Button("Remove")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .isEnabled(!basket.items.isEmpty)
                     .onClicked { basket.items.removeLast() }
@@ -150,11 +150,11 @@ struct StateClassSample: SampleContent, ExampleContent {
             NoteRow(basket: $basket)
 
             Button("Tap a plain property (\(basket.plainTaps))")
-                .borderColor(Palette.outline)
-                .borderWidth(1)
+                .stroke(Palette.outline)
+                .strokeWidth(1)
                 .background(.transparent)
                 .textColor(Palette.subtle)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .onClicked { basket.plainTaps += 1 }
 

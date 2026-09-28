@@ -1,0 +1,36 @@
+# The AppKit host's suite: its own tests, then every conformance family on
+# AppKit, each verdict held to the marks under exports/marks/appkit. CI never
+# writes the marks, so a family whose verdicts changed fails here and its marks
+# are written again on a Mac, on purpose.
+
+name: AppKit
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  appkit:
+    name: AppKit
+    # Xcode 27 stands only on GitHub's `xcode-27` image (platform-traps.md,
+    # "GitHub has Xcode 27 only on its own image").
+    runs-on: xcode-27
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Use Xcode 27.0
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+      - name: Report the toolchain
+        run: swift --version
+      - name: AppKit host tests, every verdict held
+        run: .scripts/AppKit/test-appkit.sh

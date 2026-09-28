@@ -1,0 +1,15 @@
+# revision 1.1
+Button.text: ✅
+Button.textCase: ✅
+Label.text: ✅
+Label.textCase: ✅
+RadioButton.text: ✅
+RadioButton.textCase: ✅
+SearchField.text: ✅
+SearchField.textCase: ✅
+Span.text: cannot read text of Span - UIKit's driver has no path for it yet
+Span.textCase: cannot read text of Span - UIKit's driver has no path for it yet
+TextEditor.text: ✅
+TextEditor.textCase: ✅
+TextField.text: ✅
+TextField.textCase: ✅

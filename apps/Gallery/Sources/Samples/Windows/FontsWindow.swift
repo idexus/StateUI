@@ -34,9 +34,9 @@ struct FontsPage: ContentView {
                     .fontSize(15)
                     .textColor(chosen ? .white : Palette.text)
                     .background(chosen ? style.accent.color : .transparent)
-                    .borderColor(Palette.subtle)
-                    .borderWidth(chosen ? 0 : 1)
-                    .cornerRadius(8)
+                    .stroke(Palette.subtle)
+                    .strokeWidth(chosen ? 0 : 1)
+                    .shape(.roundedRectangle(8))
                     .padding(14, 8)
                     .onClicked { style.font = family }
 

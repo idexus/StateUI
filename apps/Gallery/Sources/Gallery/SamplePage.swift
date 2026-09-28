@@ -25,12 +25,15 @@ struct SamplePage: ContentView {
     /// The page a sample is shown on: this scrolling page, or - for a sample
     /// whose examples hold the page still - its tabs, which a window shows as
     /// its own, on a bar in `bar`, the colour of the stack they are pushed onto.
+    /// The tabs carry the sample's name, which names the window while they are
+    /// the stack's last place; their pages name the tabs alone.
     static func shown(_ sample: Sample, nav: Navigation, bar: Color) -> any Page {
         guard !sample.scrolls else { return SamplePage(sample: sample, nav: nav) }
 
         return TabbedView(sample.tabs) { tab in
             SampleTabPage(sample: sample, tab: tab, nav: nav)
         }
+        .title(sample.title)
         .barBackgroundColor(bar)
     }
 
@@ -87,12 +90,11 @@ struct SamplePage: ContentView {
 
             Self.section(example.codeHeading, CodeBlock(example.code))
 
-            // The far side of the example, where it has one - under the
-            // heading the example gives it.
-            if !example.hostCode.isEmpty {
+            // The far side of the example, where it has one: a section per
+            // language its host's half is written in.
+            example.hostCode.listings.map { listing -> Element in
                 Self.section(
-                    example.hostCode.heading,
-                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+                    example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
         }
         .spacing(16)
@@ -111,7 +113,7 @@ struct SamplePage: ContentView {
     }
 
     /// An example is a view like any other, so it is placed like any other -
-    /// inside a Border that marks where it begins.
+    /// inside a card that marks where it begins.
     ///
     /// An example that FILLS is wrapped in a Grid rather than a VStack: a stack
     /// gives each child the height it asks for, so a list inside one is
@@ -120,8 +122,8 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter view: the example itself.
     /// - Parameter fills: whether the example takes the whole cell.
-    static func boxed(_ view: Element, fills: Bool = false) -> Border {
-        Border {
+    static func boxed(_ view: Element, fills: Bool = false) -> ZStack {
+        ZStack {
             if fills {
                 Grid {
                     view
@@ -134,6 +136,7 @@ struct SamplePage: ContentView {
                 .padding(16)
             }
         }
+        .style("Card")
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(10))

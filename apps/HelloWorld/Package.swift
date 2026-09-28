@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.4
 import Foundation
 import PackageDescription
 
@@ -23,11 +23,33 @@ import PackageDescription
 // and never the manifest describing them, so an AppKit build says so here.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 
+// WHETHER THIS BUILD HAS AN ANDROID HEAD - the same question for the Android
+// Views host, asked by .scripts/Android/build-swift.sh.
+let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
+
+// WHETHER THIS BUILD HAS A WINUI HEAD - the same question for the WinUI 3
+// host, asked by .scripts/WinUI/run-app.ps1.
+let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
+
+// WHETHER THIS BUILD HAS A GTK HEAD - the same question for the GTK 4 host,
+// asked by .scripts/GTK/run-app.sh.
+let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
+
+// WHETHER THIS BUILD HAS A UIKIT HEAD - the same question for the UIKit host
+// on iOS and iPadOS, asked by .scripts/UIKit/build-app.sh.
+let hasUIKitHead = ProcessInfo.processInfo.environment["STATEUI_UIKIT"] == "1"
+
 // What every module of the application is compiled with - in an AppKit build
-// including APPKIT, defined here and nowhere else. See apps/Gallery/Package.swift.
+// including APPKIT, in an Android Views build ANDROID, in a WinUI build WINUI,
+// in a GTK build GTK, in a UIKit build UIKIT, each defined here and nowhere
+// else. See apps/Gallery/Package.swift.
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasUIKitHead ? [.define("UIKIT")] : [])
+    + (hasAndroidHead ? [.define("ANDROID")] : [])
+    + (hasWinUIHead ? [.define("WINUI")] : [])
+    + (hasGTKHead ? [.define("GTK")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -44,7 +66,7 @@ var dependencies: [Package.Dependency] = [
     // manifest lives. An app outside this repository writes the published
     // package instead, and changes nothing else:
     //
-    //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.1")
+    //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")
     .package(path: "../.."),
 ]
 
@@ -96,15 +118,115 @@ if hasAppKitHead {
         ))
 }
 
+if hasUIKitHead {
+    // The same Swift application, an executable its UIKit host runs on iOS and
+    // iPadOS: its main names the application to the host and hands it the
+    // process; the script makes it an application bundle.
+    products.append(
+        .executable(
+            name: "HelloWorldUIKit",
+            targets: ["HelloWorldUIKit"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIUIKit", path: "../../lib/StateUI.UIKit"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldUIKit",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIUIKit", package: "StateUIUIKit"),
+            ],
+            path: "Platforms/UIKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasAndroidHead {
+    // The same Swift application, loaded by Android as a library: its
+    // JNI_OnLoad names the application to the Android Views host.
+    products.append(
+        .library(
+            name: "HelloWorldAndroid",
+            type: .dynamic,
+            targets: ["HelloWorldAndroid"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIAndroid", path: "../../lib/StateUI.Android"))
+
+    targets.append(
+        .target(
+            name: "HelloWorldAndroid",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIAndroid", package: "StateUIAndroid"),
+            ],
+            path: "Platforms/Android/Swift",
+            swiftSettings: settings
+        ))
+}
+
+if hasWinUIHead {
+    // The same Swift application, an executable its WinUI host runs on
+    // Windows: its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "HelloWorldWinUI",
+            targets: ["HelloWorldWinUI"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldWinUI",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIWinUI", package: "StateUIWinUI"),
+            ],
+            path: "Platforms/WinUI",
+            swiftSettings: settings,
+            // A windowed application: started by itself it opens no console, and started from one it writes there.
+            linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
+        ))
+}
+
+if hasGTKHead {
+    // The same Swift application, an executable its GTK host runs on Linux:
+    // its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "HelloWorldGTK",
+            targets: ["HelloWorldGTK"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
+
+    targets.append(
+        .executableTarget(
+            name: "HelloWorldGTK",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIGTK", package: "StateUIGTK"),
+            ],
+            path: "Platforms/GTK",
+            swiftSettings: settings
+        ))
+}
+
 let package = Package(
     name: "HelloWorldUI",
     // The same floor StateUI declares. SwiftPM refuses a package that depends
     // on one requiring more than it does, so these move together - see the note
-    // in ../../Package.swift for what fixes them at 17.
+    // in ../../Package.swift for what fixes them at 26.
     platforms: [
-        .iOS(.v17),
-        .macCatalyst(.v17),
-        .macOS(.v14),
+        .iOS(.v26),
+        .macCatalyst(.v26),
+        .macOS(.v26),
     ],
     products: products,
     dependencies: dependencies,

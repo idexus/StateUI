@@ -186,7 +186,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             Button("Open another gallery")
                 .background(style.accent.color)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
@@ -227,7 +227,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         Button(caption)
             .background(style.accent.color)
             .textColor(.white)
-            .cornerRadius(8)
+            .shape(.roundedRectangle(8))
             .padding(20, 8)
             .accessibilityIdentifier(handle("window.open", caption))
             .onClicked { await open(type, caption) }
@@ -281,7 +281,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         Button("Swatch \(number)")
             .background(SwatchPage.colour(of: number))
             .textColor(.white)
-            .cornerRadius(8)
+            .shape(.roundedRectangle(8))
             .padding(16, 8)
             .accessibilityIdentifier("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }

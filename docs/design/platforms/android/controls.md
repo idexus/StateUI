@@ -1,0 +1,248 @@
+# Controls on Android
+
+How the Android Views host presents the controls a user changes - a switch, a
+slider, a field - and hears what the user does to them. The value a control
+carries belongs to a state; the host writes the control where the tree
+changed that value and reports the user's change back
+([patches](../../host/patches.md)).
+
+## One listener a view
+
+Android tells a view's owner what its user did through listener interfaces:
+a click, a turn, a thumb moved, words typed, a Return. The Java layer has one
+listener class for all of them, `StateUIListener`, made for one view with that
+view's number, which forwards each call to Swift by the number
+([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
+field's typing and its Return reach the same Swift view.
+
+## Nothing the program writes is heard
+
+Every native write of an element - a patch applied, a display frame presented
+- runs inside `ProgramWrite`. Android calls a switch's, a slider's and a
+field's listener while the value is being set, so the listener's call during
+that write is the write's echo, and the element reports nothing. A control
+does not keep a flag of its own.
+
+## A slider in steps
+
+`SeekBar` moves in whole steps from zero. The host gives it ten thousand steps
+across the range and turns a step into a value and back, so a value the user
+reports has the range's ten-thousandth as its finest step. A new range keeps
+the value the thumb stands at, inside the range, unless the tree wrote a new
+value with it: a hand on the thumb is never argued with.
+
+## A field and its words
+
+A field reports all its words after every change, and a report comes back as
+the value of the state it carries: the host writes the words only where they
+differ from the field's own, so the render a keystroke causes leaves the
+user's words and caret alone. Words the program writes put the caret after
+them.
+
+`maximumLength` counts characters, as the contract does. The field keeps the
+first characters that fit and writes them back, as the program, when typing
+goes past the bound.
+
+A password field is a field whose input type hides what is typed. Android
+resets the typeface when the input type changes, so the field puts its weight
+back after it.
+
+A text field, a search field and a text editor are one `EditText` of three
+kinds. A search field is a field whose keyboard's return key is captioned for
+a search; a text field's is the platform's until the tree names one. An
+editor takes several lines, standing from its top, and Return starts a new
+one. One that does not grow with its words is one line tall where nothing
+gives it room, and scrolls within the room it is given; one that grows is as
+tall as its lines.
+
+## An editor a line tall
+
+An editor that does not grow stands a line tall where the tree states no
+height, whatever its words hold, and scrolls within that line. Android's text
+layout gives the last of its lines the font's padding below it, so the first
+of several lines stands lower than a line laid out alone: an editor limited to
+one line would shrink as a second line arrives. The host measures such an
+editor at a line alone - the font's full height, its padding included where
+the view includes it, and the view's own padding - and a height the tree
+states still wins.
+
+## Return, once
+
+A keyboard's action reaches the listener with no key event; a hardware Return
+reaches it as the key goes down and again as it comes up. The listener
+submits on the action and on the key going down, and takes the key's release
+itself, so one Return is one submission.
+
+## The background a view is made with
+
+A button, a field, a switch and a slider draw their own background. A colour
+the tree describes replaces it, and a colour the tree takes away gives back
+the background the view was made with, read before the first change.
+
+A background brings its own padding - the room a button's drawing leaves
+around its words - and Android takes the view's padding from each new one. A
+padding the tree describes is put back over it, so a button with a colour and
+a padding keeps its room; one whose padding is taken away gives back the
+padding it was made with.
+
+## A layout does not delay a press
+
+A layout that does not scroll tells its children to show a press at once.
+Android's default holds a press back in case the touch becomes a scroll,
+which makes a slider inside a layout wait for the finger to move before its
+thumb follows.
+
+## A tap on any view
+
+A view with a tap handler is given the same listener a button has, and a
+click on it is its tap: Android's own touch handling decides what a tap is,
+and a drag that becomes a scroll is no tap. A view whose handler goes away is
+no longer clickable, so it stops taking touches. A StateUI layout that
+ignores input takes no touch at all, and the touch goes to whatever stands
+behind it.
+
+## A label's words
+
+A label's words are one text, or the runs its spans describe as the host
+layer reads them (`textRuns`), laid down as one spanned text: each run in its
+own colour, size, weight, background and decorations where it has its own.
+A run's size is in points the user's font scale applies to, as the label's
+is. The label's letter spacing is in points and Android counts it in the
+text's own size, so it is worked out again whenever the size changes; a
+run's own spacing is not drawn. A line that is
+cut or truncated is one line and only a truncated one says so; otherwise the
+label wraps, to at most as many lines as it allows. A stated width is the
+width a view is measured at, so wrapped words are as tall as they will stand.
+
+## A button's size
+
+A button is as big as its words and its padding. Android's theme gives every
+button a least size of its own - 88 by 48 density-independent pixels - which
+would widen a short caption and push a row of buttons past a phone's edge;
+the host takes that floor away as it makes the button, and a least size is
+then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
+stepper's buttons keep a square of 48 points, the room a finger needs, as
+the stepper's own choice.
+
+## A button's look
+
+A button says nothing of its look and keeps its theme's: a background with
+its own pressed ripple. A fill, an outline or corners make it one shape -
+the host's shape drawable - under Android's pressed ripple in the theme's
+highlight colour, kept within the same shape, so a drawn button still
+answers a finger as the platform's do. The shape dims while the button is
+disabled, to the theme's `disabledAlpha`, and so do words in a colour the
+tree gave, as the theme's own colours do.
+
+An icon beside words is a compound drawable at the picture's own size,
+before, after, above or below them, the icon spacing apart or the
+platform's gap. With no words it stands alone in the middle of the button,
+over its background, sized to the room inside the padding: fitted, as `.fit`
+and `.fill` both say - a button has no covering scale - stretched, or at its
+own size for `.center`. That size is worked out as the button is placed, and
+sent again only when the room changes.
+
+## A picker
+
+A picker is Android's dropdown spinner. A spinner always shows one of its
+rows, and StateUI's choice may be none, so the first row is the title: the
+closed field shows it, in the theme's hint colour, while nothing is chosen,
+and the open list leaves it out; a choice is the row after its index. Android
+tells a spinner's selection as it next measures or lays the spinner out -
+the row it started on, then the program's - when the program's write is long
+over, so the picker itself knows the row the program's choice stands on, and
+a report of that row, or of the title's, is no change. The picker is given
+its options where they changed and the choice only where the tree changed it
+or them (`PickerChoices`): a new title leaves the user's choice standing.
+
+The list opens on the user's tap, which is reported, or on `isOpen`, which
+is not. It takes the window's focus while it shows, and the focus coming back
+is the list closing - Android has no call for it. Nor does it let a program
+close the list: `isOpen` set to false leaves it to the user.
+
+## A day and a time
+
+A date picker and a time picker are one field of the host's, showing the day
+or the time in the user's locale - "D" and "d" the long and short day, "T" and
+"t" the long and short time, which follows the user's choice of a 24-hour
+clock, any other text a pattern - and opening the platform's own calendar or
+clock, within the bounds the tree gave. The user's choice is written into the
+field and reported; the program's day or time is only written. The dialog
+opening on the user's tap and it closing are reported; the program opening or
+closing it is not, and a field that leaves closes its dialog.
+
+## Work under way
+
+A progress bar is Android's horizontal bar, the share done in 10 000 steps.
+An activity indicator is Android's turning bar: it is drawn only while it
+runs, and keeps its room while it does not, so starting the work moves
+nothing around it; hidden, it takes no room.
+
+## A stepper
+
+Android has no stepper, so the host builds one from its own buttons: one a
+step down, one a step up, side by side, each off at its end of the range. A
+step is the user's report, held in the range; the value the tree writes is
+put where it said, within it.
+
+## A web view
+
+A WebView is Android's own web view, standing in a holder. Where its web
+process dies - a crash, or the system reclaiming memory - Android leaves the
+view unusable: the holder makes it again, blank, and the element hears the
+process ended; a reload shows the page again. A navigation is reported as it
+starts and as it ends, with why it happened - a new page, back, forward, a
+reload, as the act that caused it said - and how it ended: an error on the
+page itself makes it a failure, a timeout its own. A page crosses with the
+name the view asks by, the name written first: written while a page loads,
+Android leaves that page out of the history, and there is no way back to it. Whether there is a page
+behind and ahead is said when it changes. A script runs in the page and
+answers later, by ticket, with its value as text: a string as itself, none
+for null, anything else as JSON writes it. The web view runs scripts and
+keeps the page's storage, as a browser does, and lets go of its page and its
+web process when its element leaves.
+
+## The keyboard's focus
+
+`focus` answers whether the view took the keyboard; a view laid out with no
+room refuses it, as Android refuses it. A web view's page takes the keyboard,
+not the frame holding it, so what hears the frame's focus hears the page's.
+
+## What assistive technology meets
+
+A view's accessibility crosses in one call: the name a test finds it by, the
+words read for it in place of its own and the hint read after them, whether
+it is a heading, and whether it - or it with everything in it - is met at
+all. The name and the hint are the view's node's, written as the node is
+made; the rest are the view's own. A view the element says nothing of is as
+it is of itself: a text is met, a layout as Android decides, so its own
+presence is read once, before the element first says. Android marks a
+heading but not its level.
+
+## Gestures
+
+A view has one listener, and what its element listens for
+(`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
+gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
+taps, a press dragged, a pinch, and the pointer. One tap is the view's click,
+which keeps what a click brings; where more make one, the listener counts
+quick taps near each other as Android measures a double tap - Android itself
+counts no run past two - and tells each with its place in its run. A press is
+told as it goes down, moves, lets go or is taken away, measured on the screen,
+since a view that follows its drag moves where its own touches are measured;
+it is a drag by the host layer's rule (`DragRecognition`) once it passes
+Android's touch slop, and the listener, told so at once, takes the rest of the
+touch - the view's own press and click are called off. A press of more than
+one finger is no drag, as the host layer's hearing says. A swipe is the
+drag's end, far enough, in a direction asked for - the host layer's too. A
+view that listens for a drag or a pinch keeps its touch from a scroller around
+it, so a drag that starts on it is its own. A pinch is Android's own: it
+starts once Android tells it apart, takes the press away, scales from there,
+and ends where it was last centred. A view with no handling of its own is
+given the whole touch; a control keeps its own.
+
+A view made of parts - a stepper's two buttons, a web view's page - would hand
+its listener only what no part takes, so its gestures see the touches and the
+hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
+way takes the rest of the touch from the parts, which are told it was called
+off, and a touch no part takes stays the view's where its element listens.

@@ -1,0 +1,6 @@
+# revision 1.1
+Label.frameChanged: ✅
+NavigationStack: ✅
+NavigationStack.barForegroundColor: not realized
+NavigationStack.popped: ✅
+Page.title: ✅

@@ -1,9 +1,8 @@
 Build/**
 Sources/**
 Tests/**
-out/Tests/**
-**/*.map
+out/**
+!out/Sources/*.js
 tsconfig.json
 .gitignore
 node_modules/**
-out/Build/**

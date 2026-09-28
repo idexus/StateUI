@@ -1,0 +1,9 @@
+# revision 1.1
+Button.padding: cannot read padding of Button - GTK's driver has no path for it yet
+Grid.padding: ✅
+HStack.padding: ✅
+Label.padding: cannot read padding of Label - GTK's driver has no path for it yet
+RadioButton.padding: cannot read padding of RadioButton - GTK's driver has no path for it yet
+ScrollView.padding: ✅
+VStack.padding: ✅
+ZStack.padding: ✅

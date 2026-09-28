@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What every field a reader types into has: the text's limits and caret, the
+/// What every field a user types into has: the text's limits and caret, the
 /// keyboard it asks for, and the placeholder shown while it is empty.
 public enum InputViewContract: Contract {
     /// The tier's name.
@@ -41,7 +41,7 @@ public enum InputViewContract: Contract {
     public static let selectionLength = ElementProperty<Self, Int>(
         "selectionLength", layer: .native, travels: false)
 
-    /// The reader changed the text, with the text it now holds.
+    /// The user changed the text, with the text the field holds.
     public static let textChanged = ElementEvent<Self, String>("textChanged", layer: .native)
 
     /// The tier's own members.

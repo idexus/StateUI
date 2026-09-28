@@ -1,0 +1,6 @@
+# revision 1.1
+RadioButton: ✅
+RadioButton.frameChanged: ✅
+RadioButton.groupName: ✅
+RadioButton.isOn: ✅
+RadioButton.toggled: ✅

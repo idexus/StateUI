@@ -60,7 +60,7 @@ struct ModalSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("modal.present")
                 .background(Palette.accent)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }

@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.4
 import PackageDescription
 
 // The StateUI library.
@@ -12,7 +12,7 @@ import PackageDescription
 // package's manifest from the root of the checkout and nowhere else, so this is
 // the one place it can sit if anybody is to write
 //
-//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.1")
+//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")
 //
 // The code stays under lib/StateUI/ regardless, which is what the paths below
 // say. Native host packages remain siblings so their platform dependencies do
@@ -22,12 +22,12 @@ import PackageDescription
 // scripts glob the same tree. A new .swift file is picked up by both.
 let package = Package(
     name: "StateUI",
-    // A custom SerialExecutor in Core/MainThread.swift uses APIs introduced in
-    // iOS 17 to return resumed handlers to the platform UI thread.
+    // iOS 26, Mac Catalyst 26 and macOS 26: the releases StateUI is built and
+    // tested against, with Xcode 27.
     platforms: [
-        .iOS(.v17),
-        .macCatalyst(.v17),
-        .macOS(.v14),
+        .iOS(.v26),
+        .macCatalyst(.v26),
+        .macOS(.v26),
     ],
     products: [
         .library(
@@ -37,7 +37,7 @@ let package = Package(
         ),
     ],
     // NO DEPENDENCIES, and it is worth a sentence: everything here is this
-    // library's own code - state, the differ, the wire, the views. A class's
+    // library's own code - state, the differ, the typed boundary, the views. A class's
     // properties are state by wearing `@State`, which is a property wrapper
     // like the one a view uses and needs no compiler plugin, so a cold build
     // compiles this package and nothing else.
@@ -66,8 +66,6 @@ let package = Package(
             name: "StateUITests",
             dependencies: ["StateUI"],
             path: "lib/StateUI/Tests",
-            exclude: ["Fixtures"],
-            sources: ["StateUITests", "Support"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

@@ -1,0 +1,3 @@
+# revision 1.1
+Button.aspect: not realized
+Image.aspect: cannot read aspect of Image - GTK's driver has no path for it yet

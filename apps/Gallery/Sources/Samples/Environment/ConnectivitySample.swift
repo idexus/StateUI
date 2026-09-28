@@ -61,7 +61,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                 .isEnabled(connectivity.networkAccess == .internet)
                 .background(Palette.accent)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
         }

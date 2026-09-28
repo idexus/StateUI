@@ -1,34 +1,47 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The extension: a host and an application chosen once, the editor working as
-// that host, one Debug and one Release that run the application on it, and
-// the suites run as it.
+// The extension: a host and an application chosen once - and for Android a
+// device, for UIKit an iPhone, an iPad or a simulator - the editor working as that host, one Debug and
+// one Release that run the application on it, and the suites run as it.
 
-import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, findApplications } from "./applications";
-import { configurations, StateUIDebugConfigurationProvider } from "./debug";
+import { Application, findApplications, hasHead } from "./applications";
+import { configurations, noHost, StateUIDebugConfigurationProvider } from "./debug";
+import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
-import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
-import { runTask } from "./tasks";
-import { findSuites, runSuites } from "./tests";
-import { carriedTemplate, checkoutProblem, inAppsCommand, isCheckout, nameProblem, pinnedRelease, releases, Starter, StarterSource, writeStarter } from "./newApplication";
+import { availableHosts, describe, Host } from "./hosts";
+import { askForUIKitDevice, chooseListedUIKitDevice, chosenUIKitDevice, uiKitDeviceToRunOn } from "./uiKitDevices";
+import { readyWhen, runTask, startTask } from "./tasks";
+import { findSuites, forDevice, runSuites } from "./tests";
+import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
+import { editorCommandLine, hasExtensionSources, reinstallSteps } from "./reinstall";
+import { Rebuild, rebuildSteps } from "./conformance";
+import { checkToolchain, debuggerFinding, report } from "./toolchain";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
-    host(): Host;
+    host(): Host | undefined;
     selectHost(host: Host): Promise<void>;
     application(): string | undefined;
     selectApplication(name: string): Promise<void>;
-    selectDebugger(chosen: MauiDebugger): Promise<void>;
+    /** Chooses the iPhone, iPad or simulator listed by `wanted` - its id or its name - and answers its name. */
+    selectUIKitDevice(wanted: string): Promise<string | undefined>;
 }
 
 const hostKey = "stateui.host";
 const applicationKey = "stateui.application";
-const debuggerKey = "stateui.debugger";
+
+/** What gives an application each host's head. */
+const heads: Record<Host, string> = {
+    appkit: "an AppKit head (Platforms/AppKit/main.swift)",
+    uikit: "a UIKit head (Platforms/UIKit/main.swift)",
+    android: "an Android head (Platforms/Android/build.gradle.kts)",
+    winui: "a WinUI head (Platforms/WinUI/main.swift)",
+    gtk: "a GTK head (Platforms/GTK/main.swift)",
+};
 
 export async function activate(context: vscode.ExtensionContext): Promise<StateUIApi> {
     const state = context.workspaceState;
@@ -37,50 +50,80 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         (vscode.workspace.workspaceFolders ?? []).flatMap((folder) => findApplications(folder.uri.fsPath));
 
     /** The applications that have a head for `host`. */
-    const runnable = (host: Host): Application[] =>
-        applications().filter((each) => (host === "appkit" ? each.hasAppKitHead : each.mauiProject !== undefined));
+    const runnable = (host: Host): Application[] => applications().filter((each) => hasHead(each, host));
 
     // The packages whose manifest reads a host's variable: the applications.
     const roots = (): string[] => applications().map((each) => each.directory);
 
-    // The one chosen, where this machine runs it; else AppKit where there is a
-    // head to run on this machine, MAUI otherwise.
-    const host = (): Host => {
+    // The one chosen, where this machine runs it; else the first this machine
+    // runs that an application here has a head for; none where it runs none.
+    const host = (): Host | undefined => {
+        const available = availableHosts();
         const stored = state.get<Host>(hostKey);
-        if (availableHosts().some((each) => each.id === stored)) {
-            return stored!;
+        if (available.some((each) => each.id === stored)) {
+            return stored;
         }
-        return availableHosts().some((each) => each.id === "appkit") && applications().some((each) => each.hasAppKitHead) ? "appkit" : "maui";
+        return (available.find((each) => runnable(each.id).length > 0) ?? available[0])?.id;
     };
 
-    /** How a MAUI head is debugged: the one chosen, where this machine offers it, else C#. */
-    const mauiDebugger = (): MauiDebugger => {
-        const stored = state.get<MauiDebugger>(debuggerKey);
-        return availableMauiDebuggers().some((each) => each.id === stored) ? stored! : "csharp";
+    /** What the suites and the editor run as: the host chosen, or plain Swift. */
+    const runningAs = (): string => {
+        const chosenHost = host();
+        return chosenHost ? describe(chosenHost).label : "plain Swift";
     };
 
     /** The chosen application, where it still has a head for the chosen host. */
-    const chosen = (): Application | undefined =>
-        runnable(host()).find((each) => each.name === state.get<string>(applicationKey));
+    const chosen = (): Application | undefined => {
+        const chosenHost = host();
+        return chosenHost ? runnable(chosenHost).find((each) => each.name === state.get<string>(applicationKey)) : undefined;
+    };
 
     const hostItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
     hostItem.command = "stateui.selectHost";
     const applicationItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 49);
     applicationItem.command = "stateui.selectApplication";
-    context.subscriptions.push(hostItem, applicationItem);
+    const deviceItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 48);
+    deviceItem.command = "stateui.selectAndroidDevice";
+    context.subscriptions.push(hostItem, applicationItem, deviceItem);
+
+    // What StateUI: Check Toolchain found, component by component.
+    const toolchain = vscode.window.createOutputChannel("StateUI Toolchain");
+    context.subscriptions.push(toolchain);
 
     const refresh = (): void => {
-        const described = describe(host());
-        const debuggerLabel = mauiDebuggers.find((each) => each.id === mauiDebugger())?.label;
-        hostItem.text = `$(server-environment) StateUI: ${described.label}${described.id === "maui" ? ` · ${debuggerLabel}` : ""}`;
+        const chosenHost = host();
+        if (!chosenHost) {
+            hostItem.text = "$(server-environment) StateUI: no host";
+            hostItem.tooltip = `StateUI: ${noHost} StateUI: Run Tests and the editor work as plain Swift.`;
+            hostItem.show();
+            applicationItem.hide();
+            deviceItem.hide();
+            return;
+        }
+
+        const described = describe(chosenHost);
+        hostItem.text = `$(server-environment) StateUI: ${described.label}`;
         hostItem.tooltip = `StateUI: Debug, StateUI: Release, StateUI: Run Tests and the editor work as ${described.label} - ${described.detail}. Click to change.`;
         hostItem.show();
 
-        const candidates = runnable(host());
+        const candidates = runnable(chosenHost);
         const application = chosen() ?? (candidates.length === 1 ? candidates[0] : undefined);
         applicationItem.text = `$(window) ${application?.name ?? "Select Application"}`;
         applicationItem.tooltip = `The application StateUI: Debug and StateUI: Release run on ${described.label}. Click to change.`;
         candidates.length > 0 ? applicationItem.show() : applicationItem.hide();
+
+        if (described.id === "uikit") {
+            const device = chosenUIKitDevice(state);
+            deviceItem.command = "stateui.selectUIKitDevice";
+            deviceItem.text = `$(device-mobile) ${device?.name ?? "Select UIKit Device"}`;
+            deviceItem.tooltip = `The iPhone, iPad or simulator StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${device ? ` - ${device.id}` : ""}. Click to change.`;
+        } else {
+            const device = chosenDevice(state);
+            deviceItem.command = "stateui.selectAndroidDevice";
+            deviceItem.text = `$(device-mobile) ${device?.name ?? "Select Android Device"}`;
+            deviceItem.tooltip = `The Android device StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${device ? ` - ${device.serial}` : ""}. Click to change.`;
+        }
+        described.id === "android" || described.id === "uikit" ? deviceItem.show() : deviceItem.hide();
     };
 
     const selectHost = async (picked: Host): Promise<void> => {
@@ -92,11 +135,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         }
     };
 
-    const selectDebugger = async (picked: MauiDebugger): Promise<void> => {
-        await state.update(debuggerKey, picked);
-        refresh();
-    };
-
     const selectApplication = async (name: string): Promise<void> => {
         await state.update(applicationKey, name);
         refresh();
@@ -106,8 +144,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const askForApplication = async (forHost: Host): Promise<Application | undefined> => {
         const candidates = runnable(forHost);
         if (candidates.length === 0) {
-            const head = forHost === "appkit" ? "an AppKit head (Platforms/AppKit/main.swift)" : "a MAUI head (Platforms/Maui/*.csproj)";
-            void vscode.window.showErrorMessage(`StateUI: no application here has ${head}.`);
+            void vscode.window.showErrorMessage(`StateUI: no application here has ${heads[forHost]}.`);
             return undefined;
         }
 
@@ -128,10 +165,61 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return picked?.application;
     };
 
+    /** The Android device a launch or a suite runs on - asked for where none chosen is attached. */
+    const androidDevice = async (root: string): Promise<string | undefined> => {
+        const serial = await deviceToRunOn(root, state);
+        refresh();
+        return serial;
+    };
+
+    /** The iPhone, iPad or simulator a UIKit launch or suite runs on - asked for where none chosen is listed. */
+    const uiKitDevice = async (): Promise<string | undefined> => {
+        const id = await uiKitDeviceToRunOn(state);
+        refresh();
+        return id;
+    };
+
+    /** The chosen host's marks made again in the checkout - `rebuild` says which families - and the documents rendered. */
+    const rebuildConformance = async (rebuild: Rebuild): Promise<void> => {
+        const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => isCheckout(each.uri.fsPath));
+        const chosen = host();
+        if (!folder || !chosen) {
+            void vscode.window.showErrorMessage(`StateUI: the marks are made in a StateUI checkout, as the host chosen - ${folder ? noHost : "no folder here is one"}.`);
+            return;
+        }
+        if (chosen === "android" && rebuild === "changed") {
+            void vscode.window.showInformationMessage("StateUI: Android's device reads no repository, so its marks are made again whole - Conformance - Rebuild all.");
+            return;
+        }
+        const device = chosen === "uikit" ? await uiKitDevice() : chosen === "android" ? await androidDevice(folder.uri.fsPath) : undefined;
+        const steps = rebuildSteps(folder.uri.fsPath, chosen, rebuild, device);
+        if (!steps) {
+            return;
+        }
+        for (const step of steps) {
+            const task = new vscode.Task({ type: "stateui", suite: `conformance ${rebuild}` }, folder,
+                `Conformance - Rebuild ${rebuild}: ${path.basename(step.args.find((each) => each.includes(path.sep)) ?? step.command)}`, "StateUI",
+                new vscode.ShellExecution(step.command, [...step.args], { cwd: step.cwd, env: step.env }), []);
+            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+            if ((await runTask(task)) !== 0) {
+                void vscode.window.showErrorMessage(`StateUI: ${describe(chosen).label}'s marks were not made again - the terminal says why.`);
+                return;
+            }
+        }
+        void vscode.window.showInformationMessage(`StateUI: ${describe(chosen).label}'s marks are made again, and the documents rendered from them.`);
+    };
+
     context.subscriptions.push(
+        vscode.commands.registerCommand("stateui.conformanceRebuildAll", () => rebuildConformance("all")),
+        vscode.commands.registerCommand("stateui.conformanceRebuildChanged", () => rebuildConformance("changed")),
         vscode.commands.registerCommand("stateui.selectHost", async () => {
+            if (availableHosts().length === 0) {
+                void vscode.window.showInformationMessage(`StateUI: ${noHost}`);
+                return;
+            }
             const picked = await vscode.window.showQuickPick(
-                availableHosts().map((each) => ({
+                // Android and UIKit are offered where an application has their head.
+                availableHosts().filter((each) => (each.id !== "android" && each.id !== "uikit") || runnable(each.id).length > 0).map((each) => ({
                     label: each.label,
                     description: each.id === host() ? "current" : undefined,
                     detail: each.detail,
@@ -142,41 +230,58 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 await selectHost(picked.id);
             }
         }),
-        vscode.commands.registerCommand("stateui.selectApplication", () => askForApplication(host())),
-        vscode.commands.registerCommand("stateui.selectDebugger", async () => {
-            const picked = await vscode.window.showQuickPick(
-                availableMauiDebuggers().map((each) => ({
-                    label: each.label,
-                    description: each.id === mauiDebugger() ? "current" : undefined,
-                    detail: each.detail,
-                    id: each.id,
-                })),
-                { placeHolder: "How does StateUI: Debug debug a .NET MAUI head?" });
-            if (picked) {
-                await selectDebugger(picked.id);
+        vscode.commands.registerCommand("stateui.selectApplication", async () => {
+            const chosenHost = host();
+            if (!chosenHost) {
+                void vscode.window.showInformationMessage(`StateUI: ${noHost}`);
+                return undefined;
             }
+            return askForApplication(chosenHost);
+        }),
+        vscode.commands.registerCommand("stateui.selectAndroidDevice", async () => {
+            const root = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath)
+                .find((directory) => fs.existsSync(androidScript(directory, "devices.sh")));
+            if (!root) {
+                void vscode.window.showErrorMessage("StateUI: Android devices are listed by a StateUI checkout's .scripts/Android/devices.sh, which no folder here has.");
+                return;
+            }
+            await askForDevice(root, state);
+            refresh();
+        }),
+        vscode.commands.registerCommand("stateui.selectUIKitDevice", async () => {
+            await askForUIKitDevice(state);
+            refresh();
         }),
         vscode.commands.registerCommand("stateui.runTests", async () => {
             const folder = vscode.workspace.workspaceFolders?.[0];
             const suites = folder ? findSuites(folder.uri.fsPath, host()) : [];
             if (!folder || suites.length === 0) {
-                void vscode.window.showInformationMessage(`StateUI: no test suite here runs on ${describe(host()).label}.`);
+                void vscode.window.showInformationMessage(`StateUI: no test suite here runs as ${runningAs()}.`);
                 return;
             }
 
             const picked = await vscode.window.showQuickPick(
                 suites.map((suite) => ({ label: suite.label, detail: suite.detail, picked: true, suite })),
-                { canPickMany: true, placeHolder: `The suites to run as ${describe(host()).label}` });
+                { canPickMany: true, placeHolder: `The suites to run as ${runningAs()}` });
             if (!picked || picked.length === 0) {
                 return;
             }
 
-            const failed = await runSuites(folder, picked.map((each) => each.suite));
+            let chosenSuites = picked.map((each) => each.suite);
+            if (chosenSuites.some((each) => each.onDevice)) {
+                const serial = host() === "uikit" ? await uiKitDevice() : await androidDevice(folder.uri.fsPath);
+                if (!serial) {
+                    return;
+                }
+                chosenSuites = chosenSuites.map((each) => forDevice(each, serial));
+            }
+
+            const failed = await runSuites(folder, chosenSuites);
             if (failed.length === 0) {
-                void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed on ${describe(host()).label}.`);
+                void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed as ${runningAs()}.`);
             } else {
                 void vscode.window.showErrorMessage(
-                    `StateUI: ${failed.length} of ${picked.length} suites failed on ${describe(host()).label}: ${failed.join(", ")}. Their output is in the terminal.`);
+                    `StateUI: ${failed.length} of ${picked.length} suites failed as ${runningAs()}: ${failed.join(", ")}. Their output is in the terminal.`);
             }
         }),
         vscode.commands.registerCommand("stateui.newApplicationInApps", async () => {
@@ -192,7 +297,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             const apps = path.join(folder.uri.fsPath, "apps");
             const name = await vscode.window.showInputBox({
                 title: "New Application in apps/",
-                prompt: "The application's name: its directory, MAUI project, process and Swift module (<Name>UI).",
+                prompt: "The application's name: its directory, process and Swift module (<Name>UI).",
                 placeHolder: "MyApp",
                 ignoreFocusOut: true,
                 validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(apps, value)) ? `apps/${value} already exists.` : undefined),
@@ -215,53 +320,61 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await applyEditorMode(host(), roots());
             void vscode.window.showInformationMessage(`StateUI: apps/${name} is made and chosen - StateUI: Debug runs it.`);
         }),
-        vscode.commands.registerCommand("stateui.newApplication", () => newApplication(context.extensionPath)),
+        vscode.commands.registerCommand("stateui.reinstallExtension", async () => {
+            const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => hasExtensionSources(each.uri.fsPath));
+            if (!folder) {
+                void vscode.window.showErrorMessage("StateUI: the extension is built from a StateUI checkout's lib/StateUI.VSCode, which no folder here has.");
+                return;
+            }
+            for (const step of reinstallSteps(folder.uri.fsPath, editorCommandLine(vscode.env.appRoot))) {
+                const task = new vscode.Task({ type: "stateui", step: path.basename(step.command) }, folder,
+                    `Reinstall the extension: ${path.basename(step.command)} ${step.args[0]}`, "StateUI",
+                    new vscode.ShellExecution({ value: step.command, quoting: vscode.ShellQuoting.Strong },
+                        step.args.map((each) => ({ value: each, quoting: vscode.ShellQuoting.Strong })), { cwd: step.cwd }), []);
+                task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+                if ((await runTask(task)) !== 0) {
+                    void vscode.window.showErrorMessage(`StateUI: the extension was not reinstalled - the terminal says why.`);
+                    return;
+                }
+            }
+            const answer = await vscode.window.showInformationMessage(
+                "StateUI: the extension is built and installed - reload the window to run it.", "Reload Window");
+            if (answer) {
+                await vscode.commands.executeCommand("workbench.action.reloadWindow");
+            }
+        }),
+        vscode.commands.registerCommand("stateui.checkToolchain", async () => {
+            const findings = await vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, title: "StateUI: checking the toolchain" },
+                () => checkToolchain());
+            const types = vscode.extensions.all.flatMap((each) =>
+                ((each.packageJSON?.contributes?.debuggers ?? []) as { type?: string }[]).map((debug) => debug.type ?? ""));
+            const all = [...findings, debuggerFinding(types)];
+            const served = availableHosts().map((each) => each.label).join(", ");
+            toolchain.clear();
+            toolchain.appendLine(`What ${served || "StateUI"} needs on this machine (${process.platform}, ${process.arch}):`);
+            report(all).forEach((line) => toolchain.appendLine(line));
+            toolchain.show(true);
+            const missing = all.filter((each) => each.found === undefined).length;
+            if (missing === 0) {
+                void vscode.window.showInformationMessage(`StateUI: everything ${served || "StateUI"} needs is here.`);
+            } else {
+                void vscode.window.showWarningMessage(
+                    `StateUI: ${missing} of ${all.length} components are missing - the output says what to install.`);
+            }
+        }),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
             await cleanIndex(roots());
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
         }));
 
-    // The C# sessions that lldb-dap attaches beside once they have started the
-    // application: session name -> process name.
-    const pendingSwift = new Map<string, string>();
-
-    context.subscriptions.push(vscode.debug.onDidStartDebugSession(async (session) => {
-        const processName = session.type === "maui" ? pendingSwift.get(session.name) : undefined;
-        if (processName === undefined) {
-            return;
-        }
-        pendingSwift.delete(session.name);
-
-        // The C# session builds before it starts anything, so the process is
-        // waited for rather than timed - found by its EXACT name, never by a
-        // command line a build also carries.
-        const status = vscode.window.setStatusBarMessage(`$(sync~spin) StateUI: waiting for ${processName} to attach Swift`);
-        const deadline = Date.now() + 600_000;
-        let running = false;
-        while (!running && Date.now() < deadline && vscode.debug.activeDebugSession !== undefined) {
-            running = await new Promise<boolean>((resolve) => execFile("pgrep", ["-x", processName], (error) => resolve(error === null)));
-            if (!running) {
-                await new Promise((resume) => setTimeout(resume, 1000));
-            }
-        }
-        status.dispose();
-
-        if (!running) {
-            void vscode.window.showErrorMessage(`StateUI: ${processName} never started, so Swift was not attached.`);
-            return;
-        }
-
-        await vscode.debug.startDebugging(session.workspaceFolder, {
-            type: "lldb-dap", request: "attach", name: `${session.name} (Swift)`, stopOnEntry: false,
-            attachCommands: [`process attach --name ${processName}`],
-        }, { parentSession: session, lifecycleManagedByParent: true });
-    }));
-
     const provider = new StateUIDebugConfigurationProvider({
         host,
-        debugger: mauiDebugger,
         run: runTask,
-        attachSwiftWhenStarted: (sessionName, processName) => { pendingSwift.set(sessionName, processName); },
+        start: startTask,
+        ready: (file, task) => readyWhen(file, task),
+        device: (folder) => androidDevice(folder.uri.fsPath),
+        uiKitDevice,
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);
 
@@ -318,129 +431,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     refresh();
     await applyEditorMode(host(), roots());
 
-    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectDebugger };
-}
+    const selectUIKitDevice = async (wanted: string): Promise<string | undefined> => {
+        const name = await chooseListedUIKitDevice(state, wanted);
+        refresh();
+        return name;
+    };
 
-/**
- * StateUI: New Application from Template - where, what it is called, and
- * what StateUI it is built against; then the application is written and
- * offered to open.
- */
-async function newApplication(extensionPath: string): Promise<void> {
-    const title = "New Application from Template";
-    const workspace = vscode.workspace.workspaceFolders?.[0]?.uri;
-
-    const parent = (await vscode.window.showOpenDialog({
-        title: `${title}: the directory the application's own directory is made in`,
-        canSelectFiles: false, canSelectFolders: true, canSelectMany: false, openLabel: "Create Here",
-        defaultUri: workspace ? vscode.Uri.file(path.dirname(workspace.fsPath)) : undefined,
-    }))?.[0]?.fsPath;
-    if (!parent) {
-        return;
-    }
-
-    const name = await vscode.window.showInputBox({
-        title,
-        prompt: `The application's name: its directory in ${parent}, MAUI project, process and Swift module (<Name>UI).`,
-        placeHolder: "MyApp",
-        ignoreFocusOut: true,
-        validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(parent, value)) ? `${path.join(parent, value)} already exists.` : undefined),
-    });
-    if (!name) {
-        return;
-    }
-
-    const carried = carriedTemplate(extensionPath);
-    const workspaceCheckouts = (vscode.workspace.workspaceFolders ?? [])
-        .map((folder) => folder.uri.fsPath)
-        .filter((directory) => checkoutProblem(directory) === undefined);
-    type Choice = { label: string; description?: string; detail?: string; source: "checkout" | "another" | "release"; checkout?: string };
-    const choice = await vscode.window.showQuickPick<Choice>([
-        ...workspaceCheckouts.map((checkout): Choice => ({
-            label: "$(repo) This StateUI checkout", detail: `${checkout} - both halves by path, as they are on disk`, source: "checkout", checkout,
-        })),
-        { label: "$(folder-opened) A StateUI checkout…", detail: "Both halves from a checkout on disk, by path", source: "another" },
-        { label: "$(package) A release", detail: "StateUI.Maui from NuGet, and the Swift half by the repository's tag of the same version", source: "release" },
-    ], { title, placeHolder: `What StateUI is ${name} built against?`, ignoreFocusOut: true });
-    if (!choice) {
-        return;
-    }
-
-    let source: StarterSource;
-    let templateRoot: string;
-    if (choice.source === "release") {
-        let found: string[];
-        try {
-            found = await vscode.window.withProgress(
-                { location: vscode.ProgressLocation.Notification, title: "StateUI: reading NuGet's versions and the repository's tags" },
-                () => releases());
-        } catch (error) {
-            void vscode.window.showErrorMessage(`StateUI: the releases could not be read - ${error instanceof Error ? error.message : String(error)}`);
-            return;
-        }
-        if (found.length === 0) {
-            void vscode.window.showErrorMessage("StateUI: no release has both StateUI.Maui on NuGet and its tag in the repository yet. Build against a checkout instead.");
-            return;
-        }
-
-        const written = pinnedRelease(carried);
-        const version = await vscode.window.showQuickPick(
-            found.map((each) => ({
-                label: each,
-                description: each === written ? "the release this template is written for" : undefined,
-            })),
-            { title, placeHolder: "Which release?", ignoreFocusOut: true });
-        if (!version) {
-            return;
-        }
-        source = { kind: "release", version: version.label };
-        templateRoot = carried;
-    } else {
-        let checkout = choice.checkout;
-        if (choice.source === "another") {
-            checkout = (await vscode.window.showOpenDialog({
-                title: `${title}: the StateUI checkout`, canSelectFiles: false, canSelectFolders: true, canSelectMany: false, openLabel: "Build Against It",
-            }))?.[0]?.fsPath;
-        }
-        if (!checkout) {
-            return;
-        }
-        const problem = checkoutProblem(checkout);
-        if (problem) {
-            void vscode.window.showErrorMessage(`StateUI: ${problem}`);
-            return;
-        }
-        source = { kind: "checkout", checkout };
-        // The checkout's own template, so the application matches the library it is built against.
-        templateRoot = checkout;
-    }
-
-    // The AppKit host is a package of the checkout's, so only a checkout offers it.
-    let appKit = false;
-    if (source.kind === "checkout" && process.platform === "darwin") {
-        const heads = await vscode.window.showQuickPick(
-            [{ label: "MAUI and AppKit", detail: "A .NET MAUI head, and a native macOS head in Platforms/AppKit", appKit: true },
-             { label: "MAUI", detail: "A .NET MAUI head for Android, iOS, Mac Catalyst, Windows and Linux", appKit: false }],
-            { title, placeHolder: `Which heads does ${name} have?`, ignoreFocusOut: true });
-        if (!heads) {
-            return;
-        }
-        appKit = heads.appKit;
-    }
-
-    const starter: Starter = { name, parent, source, appKit };
-    let made: string;
-    try {
-        made = writeStarter(starter, templateRoot);
-    } catch (error) {
-        void vscode.window.showErrorMessage(`StateUI: ${name} was not made - ${error instanceof Error ? error.message : String(error)}`);
-        return;
-    }
-
-    const open = await vscode.window.showInformationMessage(`StateUI: ${made} is made.`, "Open", "Open in New Window");
-    if (open) {
-        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(made), { forceNewWindow: open === "Open in New Window" });
-    }
+    return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectUIKitDevice };
 }
 
 export function deactivate(): void {}

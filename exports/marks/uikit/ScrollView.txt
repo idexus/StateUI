@@ -1,0 +1,10 @@
+# revision 1.1
+ScrollView: ✅
+ScrollView.frameChanged: ✅
+ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: ✅
+ScrollView.scrollXChanged: ✅
+ScrollView.scrollYChanged: ✅
+ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike

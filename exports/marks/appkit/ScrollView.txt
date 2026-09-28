@@ -1,0 +1,10 @@
+# revision 1.1
+ScrollView: ✅
+ScrollView.frameChanged: ✅
+ScrollView.horizontalScrollBarVisibility: ✅
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: 🔌 scroll on ScrollView: the host's movement moved, not the clip view
+ScrollView.scrollXChanged: 🔌 scroll on ScrollView: the host's movement moved, not the clip view
+ScrollView.scrollYChanged: ✅
+ScrollView.verticalScrollBarVisibility: ✅

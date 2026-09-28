@@ -1,8 +1,8 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit and .NET MAUI.",
-  "version": "0.3.1",
+  "description": "Build, run and debug StateUI applications on AppKit, UIKit, Android, WinUI and GTK.",
+  "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",
@@ -23,7 +23,10 @@
   "main": "./out/Sources/extension.js",
   "activationEvents": [
     "workspaceContains:**/Platforms/AppKit/main.swift",
-    "workspaceContains:**/Platforms/Maui/*.csproj",
+    "workspaceContains:**/Platforms/UIKit/main.swift",
+    "workspaceContains:**/Platforms/Android/build.gradle.kts",
+    "workspaceContains:**/Platforms/WinUI/main.swift",
+    "workspaceContains:**/Platforms/GTK/main.swift",
     "onDebugResolve:stateui",
     "onDebugDynamicConfigurations:stateui"
   ],
@@ -40,8 +43,13 @@
         "category": "StateUI"
       },
       {
-        "command": "stateui.selectDebugger",
-        "title": "Select Debugger",
+        "command": "stateui.selectAndroidDevice",
+        "title": "Select Android Device",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.selectUIKitDevice",
+        "title": "Select UIKit Device",
         "category": "StateUI"
       },
       {
@@ -51,9 +59,10 @@
         "enablement": "stateui.hasCheckout"
       },
       {
-        "command": "stateui.newApplication",
-        "title": "New Application from Template",
-        "category": "StateUI"
+        "command": "stateui.reinstallExtension",
+        "title": "Reinstall VS Code Extension",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
       },
       {
         "command": "stateui.runTests",
@@ -61,8 +70,25 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.conformanceRebuildAll",
+        "title": "Conformance - Rebuild all",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
+        "command": "stateui.conformanceRebuildChanged",
+        "title": "Conformance - Rebuild changed",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
         "command": "stateui.cleanIndex",
         "title": "Clean Index",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.checkToolchain",
+        "title": "Check Toolchain",
         "category": "StateUI"
       }
     ],
@@ -135,7 +161,7 @@
         "properties": {
           "application": {
             "type": "string",
-            "description": "The application whose AppKit head is built."
+            "description": "The application whose head is built or run."
           },
           "configuration": {
             "type": "string",
@@ -147,6 +173,10 @@
           "suite": {
             "type": "string",
             "description": "The test suite run."
+          },
+          "device": {
+            "type": "string",
+            "description": "The serial of the Android device the head runs on."
           }
         }
       }
@@ -156,12 +186,24 @@
         {
           "command": "stateui.newApplicationInApps",
           "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.reinstallExtension",
+          "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.conformanceRebuildAll",
+          "when": "stateui.hasCheckout"
+        },
+        {
+          "command": "stateui.conformanceRebuildChanged",
+          "when": "stateui.hasCheckout"
         }
       ]
     }
   },
   "scripts": {
-    "compile": "tsc -p . && node out/Build/bundleTemplate.js",
+    "compile": "node -e \"require('fs').rmSync('out', { recursive: true, force: true })\" && tsc -p .",
     "test": "npm run compile && node out/Tests/run.js",
     "package": "npm run compile && node out/Build/package.js"
   },

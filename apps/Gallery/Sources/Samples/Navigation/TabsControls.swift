@@ -1,7 +1,7 @@
 import StateUI
 
 /// The panel every tab of the demonstration carries: what the tab list is, what
-/// the selection puts on the wire, and the buttons that change that list while a
+/// the selection sends the host, and the buttons that change that list while a
 /// tab is showing.
 ///
 /// It is on EVERY tab page rather than on one of them, because what is being
@@ -26,7 +26,7 @@ struct TabsControls: ContentView {
             }
             .spacing(4)
 
-            Label("currentPage on the wire · \(onTheWire)")
+            Label("currentPage sent to the host · \(sentToTheHost)")
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
@@ -109,7 +109,7 @@ struct TabsControls: ContentView {
             .onClicked(act)
     }
 
-    /// The index `TabbedView.selection` puts on the wire for this selection -
+    /// The index `TabbedView.selection` sends the host for this selection -
     /// the same line the library runs, repeated here so that the number is on
     /// screen.
     ///
@@ -117,7 +117,7 @@ struct TabsControls: ContentView {
     /// this number alone sends nothing at all and the tab bar is rebuilt
     /// underneath a selection nobody restated. That is the case `Reverse the
     /// tabs` makes, from the middle of three.
-    private var onTheWire: String {
+    private var sentToTheHost: String {
         guard let index = nav.tabs.firstIndex(of: nav.tab) else {
             return "nothing - the selection names no tab"
         }

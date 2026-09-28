@@ -70,7 +70,11 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     func testEveryDocumentationExampleCompiles() throws {
-        let examples = try Self.documents().flatMap { document, url in
+        let documents = try Self.documents()
+        for topic in ["concepts", "interface", "internals", "hosts"] {
+            XCTAssertTrue(documents.contains { $0.0.hasPrefix("docs/\(topic)/") }, "docs/\(topic) was not read")
+        }
+        let examples = try documents.flatMap { document, url in
             Self.swiftBlocks(
                 in: try String(contentsOf: url, encoding: .utf8),
                 document: document)
@@ -78,7 +82,8 @@ final class DocumentationExamplesTests: XCTestCase {
         XCTAssertGreaterThan(examples.count, 4, "the handbook has lost its examples")
 
         guard let module = Self.builtModuleDirectory() else {
-            throw XCTSkip("no StateUI.swiftmodule under apps/Gallery/.build - build the package first")
+            // Never a skip: a check that did not run reads as one that passed.
+            return XCTFail("no StateUI.swiftmodule beside the test bundle - no example was compiled")
         }
         let sdk = try Self.sdkPath()
         let scratch = FileManager.default.temporaryDirectory
@@ -151,14 +156,28 @@ final class DocumentationExamplesTests: XCTestCase {
         return examples
     }
 
-    /// README followed by every Markdown document in name order.
+    /// README followed by every handbook document in path order: docs and each
+    /// of its topics' folders - not the design notes or the rendered control
+    /// dictionary, which hold no application code.
     private static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
         let directory = repository.appendingPathComponent("docs")
-        let names = try FileManager.default.contentsOfDirectory(atPath: directory.path)
-            .filter { $0.hasSuffix(".md") }
-            .sorted()
-        found += names.map { ("docs/\($0)", directory.appendingPathComponent($0)) }
+        var pending = [""]
+        var names: [String] = []
+        while let folder = pending.popLast() {
+            let url = folder.isEmpty ? directory : directory.appendingPathComponent(folder)
+            for name in try FileManager.default.contentsOfDirectory(atPath: url.path) {
+                let relative = folder.isEmpty ? name : "\(folder)/\(name)"
+                var isFolder: ObjCBool = false
+                FileManager.default.fileExists(atPath: url.appendingPathComponent(name).path, isDirectory: &isFolder)
+                if isFolder.boolValue {
+                    if !["design", "controls", "assets"].contains(relative) { pending.append(relative) }
+                } else if name.hasSuffix(".md") {
+                    names.append(relative)
+                }
+            }
+        }
+        found += names.sorted().map { ("docs/\($0)", directory.appendingPathComponent($0)) }
         return found
     }
 
@@ -199,20 +218,22 @@ final class DocumentationExamplesTests: XCTestCase {
 
     /// Where the build that made THIS test put the library's module, or nil.
     ///
-    /// The Modules folder beside the test bundle - inside it, where the bundle
-    /// is the folder the test executable stands in. The listings are checked
-    /// with the compiler running them, against what that compiler wrote: a walk
-    /// of .build meets every triple built there, and an application's Android
-    /// build writes its own module there with another compiler.
+    /// Beside the test bundle: in the folder the bundle stands in, where Swift
+    /// Build puts every product (`out/Products/Debug`), or in a Modules folder
+    /// there - inside the bundle too, where the bundle is the folder the test
+    /// executable stands in. The listings are checked with the compiler running
+    /// them, against what that compiler wrote: a walk of .build meets every
+    /// triple built there, and an application's Android build writes its own
+    /// module there with another compiler.
     static func builtModuleDirectory() -> URL? {
         let bundle = Bundle(for: DocumentationExamplesTests.self).bundleURL
 
         for folder in [bundle, bundle.deletingLastPathComponent()] {
-            let modules = folder.appendingPathComponent("Modules")
-
-            if FileManager.default.fileExists(
-                atPath: modules.appendingPathComponent("StateUI.swiftmodule").path) {
-                return modules
+            for modules in [folder, folder.appendingPathComponent("Modules")] {
+                if FileManager.default.fileExists(
+                    atPath: modules.appendingPathComponent("StateUI.swiftmodule").path) {
+                    return modules
+                }
             }
         }
 
@@ -242,12 +263,6 @@ final class DocumentationExamplesTests: XCTestCase {
     static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
         var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
         if let sdk { arguments += ["-sdk", sdk] }
-        // The condition this test was compiled with reaches the listings too: a
-        // run under the MAUI condition checks the examples written for that
-        // host, which a plain run compiles out.
-        #if MAUI
-        arguments += ["-D", "MAUI"]
-        #endif
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
         // `/usr/bin/env` on Windows and Foundation's `Process` resolves
         // nothing itself - it opens exactly the path it is given - so a

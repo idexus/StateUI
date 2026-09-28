@@ -2,13 +2,13 @@
 
 import StateUI
 
-/// An option a reader turns on and off, written as the control that means
+/// An option a user turns on and off, written as the control that means
 /// exactly that: a caption beside a `Switch`.
 ///
 ///     SwitchRow("Runs sideways", $sideways)
 ///
 /// A BUTTON IS NOT AN OPTION. A button whose caption changes to say what it
-/// would do next - "Lock swiping" / "Unlock swiping" - makes the reader work
+/// would do next - "Lock swiping" / "Unlock swiping" - makes the user work
 /// out which of the two words is the state and which is the offer, and a page
 /// of them reads as a row of unrelated actions. A switch shows the state and
 /// the offer at once, which is what it is for. A button is for something that
@@ -34,7 +34,7 @@ struct SwitchRow: ContentView {
 
             Switch(value)
                 // The caption is a Label BESIDE the switch, and no platform
-                // ties the two together on its own: a reader who cannot see
+                // ties the two together on its own: a user who cannot see
                 // the row is handed a switch with no name. The same words say
                 // it, and the handle is worked out from them - Handle.swift.
                 .accessibilityIdentifier(handle("switch", text))

@@ -1,0 +1,12 @@
+# revision 1.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: not realized
+Page.background: ✅
+Page.disappearing: ✅
+Page.hasBackButton: ✅
+Page.hasNavigationBar: ✅
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.padding: ✅

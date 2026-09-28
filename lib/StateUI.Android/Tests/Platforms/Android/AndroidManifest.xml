@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The host reports the network to the application's views. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application
+        android:label="StateUI Android host tests"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <!-- The window the conformance families show their pages in, as an application's activity does. -->
+        <activity
+            android:name="stateui.android.test.TestActivity"
+            android:exported="false" />
+    </application>
+
+    <instrumentation
+        android:name="stateui.android.test.StateUITestRunner"
+        android:targetPackage="com.stateui.androidtests" />
+</manifest>

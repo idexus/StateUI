@@ -13,7 +13,7 @@
 // Building the tree is the whole test harness: `GalleryScene().windows.main.body` produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
-// tested by firing the handler a reader would touch and reading the boxes it
+// tested by firing the handler a user would touch and reading the boxes it
 // wrote, with no acts, no host and nothing to await.
 
 import Foundation
@@ -81,9 +81,9 @@ private struct TwoSided: SampleContent, ExampleContent {
     static let code = "Label(\"row\")"
 
     static let hostCode = HostCode(
-        heading: "In the host",
-        language: .csharp,
-        code: "var row = new Label();")
+        in: "the host",
+        .swift("let row = HostRow()"),
+        .java("Row row = new Row(context);"))
 
     var content: any View {
         Label("row")
@@ -98,7 +98,7 @@ private extension Sample {
     var code: String { examples.map(\.code).joined(separator: "\n\n") }
 }
 
-/// The headings a tree shows, in order - what a reader moving by heading
+/// The headings a tree shows, in order - what a user moving by heading
 /// lands on.
 private func headings(in node: Node) -> [String] {
     var found: [String] = []
@@ -240,7 +240,7 @@ private func settle(
     rendering renders: Renders? = nil,
     _ tree: (() -> Node)? = nil
 ) async {
-    _ = StateUIHost.takeActCalls()
+    _ = HostBoundary.takeActCalls()
     Renderer.shared.start(handler)
 
     // Bounded rather than "until nothing is asked": a handler that asks for
@@ -268,13 +268,13 @@ private func settle(
             }
         }
 
-        let taken = StateUIHost.takeActCalls()
+        let taken = HostBoundary.takeActCalls()
 
         guard !taken.isEmpty || carried else { break }
 
         for act in taken {
             guard let id = act.completion else { continue }
-            _ = StateUIHost.complete(id, succeeded: true)
+            _ = HostBoundary.complete(id, succeeded: true)
         }
 
         // The job a resume produces DOES NOT EXIST YET when the completion is
@@ -284,7 +284,7 @@ private func settle(
         let deadline = Date().addingTimeInterval(0.5)
 
         while Date() < deadline {
-            if StateUIHost.runJobs() > 0 { break }
+            if HostBoundary.runJobs() > 0 { break }
 
             try? await Task.sleep(nanoseconds: 100_000)
         }
@@ -581,7 +581,7 @@ final class CatalogTests: XCTestCase {
         Renderer.shared.clearInvalidation()
         Renderer.shared.setApplication(OneWindow(window: window))
 
-        return StateUIHost.render(baseline: 0).root
+        return HostBoundary.render(baseline: 0).root
             .children[0].children[0]
     }
 
@@ -618,9 +618,9 @@ final class CatalogTests: XCTestCase {
     func testASampleAboutDesktopChromeIsListedOnlyOnADesktop() throws {
         let catalog = catalog()
 
-        // The samples about desktop chrome: the window's own title bar and a
-        // pointer-oriented context menu.
-        let desktopOnly: Set<String> = ["titleBar", "contextMenu"]
+        // The sample about desktop chrome: the window's own title bar. A
+        // context menu opens with a long press on a phone as well.
+        let desktopOnly: Set<String> = ["titleBar"]
 
         for id in desktopOnly {
             let sample = try XCTUnwrap(catalog.sample(id: id))
@@ -707,9 +707,9 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(verticalScrollers(in: page), 1, "a scroller inside the page's scroller")
     }
 
-    /// An example with a half on the host shows it after its Swift, under the
-    /// heading the example itself gives it - on the scrolling page and on a
-    /// held sample's code tab alike.
+    /// An example with a half on the host shows it after its Swift, a section
+    /// per language, each headed by the host and the language - on the
+    /// scrolling page and on a held sample's code tab alike.
     ///
     /// This is the guard that was missing: the section was taken out and every
     /// suite stayed green, because nothing here asked whether the page drew
@@ -719,10 +719,10 @@ final class CatalogTests: XCTestCase {
         let sample = Sample(TwoSided())
 
         let page = SamplePage(sample: sample, nav: Place().nav).body.built
-        XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host"])
+        XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host - Swift", "In the host - Java"])
 
         let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
-        XCTAssertEqual(headings(in: tab), ["In Swift", "In the host"])
+        XCTAssertEqual(headings(in: tab), ["In Swift", "In the host - Swift", "In the host - Java"])
 
         let plain = SamplePage(sample: Sample(Filling()), nav: Place().nav).body.built
         XCTAssertEqual(
@@ -730,46 +730,30 @@ final class CatalogTests: XCTestCase {
             "an example written in Swift alone draws no second section")
     }
 
-    #if MAUI
-    /// Every interop example shows both halves: the Swift a reader writes, and
-    /// what answers it on the host.
-    ///
-    /// The interop group is the only one whose examples have a second half, so
-    /// losing it would show up nowhere else.
-    func testEveryInteropExampleShowsItsHostHalf() throws {
-        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "interop" })
 
-        for sample in interop.samples {
-            for (index, example) in sample.examples.enumerated() {
-                XCTAssertFalse(
-                    example.hostCode.isEmpty,
-                    "\(sample.id) example \(index + 1) shows no host half")
-            }
-        }
-    }
-    #endif
-
-    #if APPKIT
-    /// Every example of the AppKit interop group shows both halves, and names
-    /// them by what they ARE.
-    ///
-    /// Both halves are Swift on this host, so "In Swift" would tell a reader
-    /// nothing: the application's half is "In StateUI" and the host's is "In
-    /// AppKit". Nothing else in the gallery asks that, so a heading lost here
-    /// would show up nowhere else - which is exactly how the C# half went
-    /// missing once.
-    func testEveryAppKitInteropExampleShowsBothHalves() throws {
-        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "appKitInterop" })
+    #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+    /// Every example of this host's interop group shows both halves, named by
+    /// what they ARE: the application's half "In StateUI", and the host's in
+    /// each language it is written in - its Swift first, then the relay
+    /// beneath it where the host has one. Nothing else in the gallery asks
+    /// that, so a section lost here would show up nowhere else.
+    func testEveryInteropExampleShowsBothHalves() throws {
+        let interop = try XCTUnwrap(catalog().groups.first { $0.route == InteropHost.key + "Interop" })
 
         XCTAssertFalse(interop.samples.isEmpty, "the group lists nothing")
 
         for sample in interop.samples {
             for (index, example) in sample.examples.enumerated() {
                 let where_ = "\(sample.id) example \(index + 1)"
+                let languages = example.hostCode.listings.map(\.language)
 
                 XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
-                XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
-                XCTAssertEqual(example.hostCode.heading, "In AppKit", "\(where_) heads the far side")
+                XCTAssertEqual(example.hostCode.host, InteropHost.name, "\(where_) names its host")
+                XCTAssertEqual(languages.first, .swift, "\(where_) shows the host's Swift first")
+                if let relay = InteropHost.relay {
+                    XCTAssertTrue(languages.contains(relay), "\(where_) shows no \(relay.name) beneath the host")
+                }
+                XCTAssertTrue(example.hostCode.listings.allSatisfy { !$0.code.isEmpty }, "\(where_) shows an empty listing")
             }
         }
     }
@@ -850,9 +834,9 @@ final class CatalogTests: XCTestCase {
 
     /// The code beside an example is REAL code, not a sketch of one.
     ///
-    /// What a reader sees under "In Swift" is the example's own view code with
+    /// What a user sees under "In Swift" is the example's own view code with
     /// the decoration taken out - the layout and the meaning of the example,
-    /// nothing invented. A sketch is what that rots into: `Border { … }`,
+    /// nothing invented. A sketch is what that rots into: `ZStack { … }`,
     /// `VStack { ... }`, a structure that stops halfway, a type the sample does
     /// not use. None of it would compile if it were pasted back, and nothing
     /// else here would notice.
@@ -937,7 +921,7 @@ final class CatalogTests: XCTestCase {
     /// it sits is the whole of what it measures: one inside a container's
     /// THE GALLERY CARRIES ITS SEMANTICS AND ITS LISTINGS DO NOT.
     ///
-    /// Every control the gallery hands a reader says what it is - so a screen
+    /// Every control the gallery hands a user says what it is - so a screen
     /// reader has something to read and a script, a test or an agent has
     /// something to ask for by name instead of a coordinate off a picture.
     /// None of it belongs in a sample's `code`: a listing is there to show how
@@ -968,7 +952,7 @@ final class CatalogTests: XCTestCase {
     }
 
     /// braces counts that container, and one outside them counts a description
-    /// that a read deeper down never reaches. A reader looking at the example
+    /// that a read deeper down never reaches. A user looking at the example
     /// therefore has to be able to see the place, which is what the `code`
     /// listing is - so the two are held to the same number here.
     ///
@@ -993,7 +977,7 @@ final class CatalogTests: XCTestCase {
             XCTAssertEqual(
                 taken, shown,
                 "\(path) takes \(taken) build readings and shows \(shown) in its code - "
-                + "a reading whose place a reader cannot see says nothing about what "
+                + "a reading whose place a user cannot see says nothing about what "
                 + "is being measured")
         }
 
@@ -1019,7 +1003,7 @@ final class CatalogTests: XCTestCase {
         func walk(_ node: Node, within: [String]?) {
             let node = node.built
             let name = node.type.name
-            let inside = within ?? (name == "Border" ? [] : nil)
+            let inside = within ?? (name == "ZStack" ? [] : nil)
 
             if name == "ScrollView", let inside {
                 carriers = inside
@@ -1040,7 +1024,7 @@ final class CatalogTests: XCTestCase {
 
     /// An example shows no paragraphs: its words are declared as `notes`.
     ///
-    /// The example is what a reader tries; the words about it sit under
+    /// The example is what a user tries; the words about it sit under
     /// "Notes", where there is room for them - on a held page, whose one screen
     /// the example needs for itself, on the code tab.
     ///
@@ -1199,7 +1183,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(presented.children.count, 0, "the gallery opens with nothing over it")
         XCTAssertNotNil(shown.events?[.modalPopped],
-                        "a sheet the reader drags down would not reach the array")
+                        "a sheet the user drags down would not reach the array")
     }
 
     /// Presenting and closing are the array growing and shrinking - the same
@@ -1235,7 +1219,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(windows.main is MainWindow)
     }
 
-    /// The whole application is that scene - as many galleries as the reader
+    /// The whole application is that scene - as many galleries as the user
     /// opens, and nothing else.
     func testTheApplicationIsItsGallery() {
         XCTAssertTrue(GalleryApp().scene is GalleryScene)
@@ -1244,7 +1228,7 @@ final class CatalogTests: XCTestCase {
     /// The menu lists Home, every group, and the one row that performs an act.
     ///
     /// The menu is a page the app wrote, so this walks that page - which is
-    /// what the reader taps.
+    /// what the user taps.
     func testTheMenuHasARowForHomeEveryGroupAndTheActAtTheEnd() {
         let catalog = catalog()
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
@@ -1515,7 +1499,7 @@ final class CatalogTests: XCTestCase {
         let first = renders.render(page.body)
         let before = renders.builds
 
-        // What the reader does: the arrow under the run, which writes the
+        // What the user does: the arrow under the run, which writes the
         // position through the binding the page lends it.
         let forward = try XCTUnwrap(
             buttons(in: first).first { $0.props[.text] == .string("›") })
@@ -1589,7 +1573,7 @@ final class CatalogTests: XCTestCase {
 
         // TWO rooms: the page's own, which that height is arithmetic over, and
         // the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "AbsoluteLayout"],
+        XCTAssertEqual(rooms, ["Grid", "ZStack"],
                        "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
@@ -1624,13 +1608,13 @@ final class CatalogTests: XCTestCase {
     /// Finds what answers a tap and insists there is one per thing listed, each
     /// on the CARD.
     ///
-    /// Counts the handlers rather than the Borders, and says what carries each.
+    /// Counts the handlers rather than the cards, and says what carries each.
     /// Both halves matter and they are the two ways this has been wrong: too few
     /// handlers is a row that does not answer, and a handler on anything but the
-    /// Border is the original defect - the chevron carried it, so the row looked
-    /// tappable and only that one glyph was.
+    /// card's ZStack is the original defect - the chevron carried it, so the row
+    /// looked tappable and only that one glyph was.
     ///
-    /// A Border is not by itself a card. The home page opens with one that is a
+    /// A card's ZStack is not by itself a card. The home page opens with one that is a
     /// PANEL - the mark and the name on the identity gradient - and counting
     /// shapes rather than handlers made a decoration look like a missing row.
     private func assertEveryCardIsTappable(
@@ -1655,7 +1639,7 @@ final class CatalogTests: XCTestCase {
                        "the page answers a tap in something other than \(count) places",
                        file: file, line: line)
 
-        XCTAssertEqual(Set(carriers), ["Border"],
+        XCTAssertEqual(Set(carriers), ["ZStack"],
                        "a tap is answered by \(Set(carriers).sorted()) rather than by the card",
                        file: file, line: line)
     }
@@ -1665,7 +1649,7 @@ final class CatalogTests: XCTestCase {
     /// A ScrollView claims a drag before the view under it hears about it: a pan
     /// inside one reports nothing vertically, and a swipe up or down never
     /// arrives at all. The page therefore holds the example still and scrolls
-    /// the code instead, which is the part a reader needs to move.
+    /// the code instead, which is the part a user needs to move.
     func testAGestureSampleIsNotShownInsideAScroller() throws {
         let group = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" })
 

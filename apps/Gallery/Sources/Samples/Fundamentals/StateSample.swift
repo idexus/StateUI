@@ -14,10 +14,10 @@ struct StateSample: SampleContent, ExampleContent {
         @State private var counter = 0
         @State private var name = ""
 
-        // A BORDER ROUND EACH CLOSURE, so what a write rebuilds is a rectangle
-        // you can see. The borders are drawing and nothing else: the reader of
+        // AN OUTLINE ROUND EACH CLOSURE, so what a write rebuilds is a rectangle
+        // you can see. The outlines are drawing and nothing else: the reader of
         // a value is the VStack whose braces the get sits in, either way.
-        Border {
+        ZStack {
             VStack {
                 // THIS closure reads `counter`, so a write to it rebuilds THIS
                 // closure - and the reading says `for counter`.
@@ -35,7 +35,7 @@ struct StateSample: SampleContent, ExampleContent {
                         .onClicked { counter = 0 }
                 }
 
-                Border {
+                ZStack {
                     VStack {
                         // And this closure reads `name` alone. Typing rebuilds
                         // it and leaves the one around it standing still;
@@ -49,21 +49,23 @@ struct StateSample: SampleContent, ExampleContent {
                         Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
                     }
                 }
+                .style("Card")
                 .stroke(Palette.accent)
                 .shape(.roundedRectangle(10))
             }
         }
+        .style("Card")
         .stroke(Palette.accent)
         .shape(.roundedRectangle(12))
         """
 
     var content: any View {
-        // THE TWO CLOSURES ARE DRAWN, each inside a border of its own, because
+        // THE TWO CLOSURES ARE DRAWN, each inside an outline of its own, because
         // what a write rebuilds is easier to believe as a rectangle than as a
-        // rule. The borders are decoration: the reader of a value is the VStack
+        // rule. The outlines are decoration: the reader of a value is the VStack
         // whose braces the get sits in, and that is where each reading is
         // taken.
-        Border {
+        ZStack {
             VStack {
                 Label("This closure reads `counter`")
                     .fontSize(11)
@@ -79,16 +81,16 @@ struct StateSample: SampleContent, ExampleContent {
                 HStack {
                     Button("Increment")
                         .background(Palette.accent)
-                        .cornerRadius(8)
+                        .shape(.roundedRectangle(8))
                         .padding(20, 10)
                         .onClicked { counter += 1 }
 
                     Button("Reset")
-                        .borderColor(Palette.outline)
-                        .borderWidth(1)
+                        .stroke(Palette.outline)
+                        .strokeWidth(1)
                         .background(.transparent)
                         .textColor(Palette.subtle)
-                        .cornerRadius(8)
+                        .shape(.roundedRectangle(8))
                         .padding(20, 10)
                         .isEnabled(counter != 0)
                         .onClicked { counter = 0 }
@@ -96,7 +98,7 @@ struct StateSample: SampleContent, ExampleContent {
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                Border {
+                ZStack {
                     VStack {
                         Label("And this one reads `name`")
                             .fontSize(11)
@@ -116,6 +118,7 @@ struct StateSample: SampleContent, ExampleContent {
                     }
                     .spacing(14)
                 }
+                .style("Card")
                 .padding(14)
                 .stroke(Palette.accent)
                 .strokeWidth(1)
@@ -123,6 +126,7 @@ struct StateSample: SampleContent, ExampleContent {
             }
             .spacing(14)
         }
+        .style("Card")
         .padding(14)
         .stroke(Palette.accent)
         .strokeWidth(1)
@@ -144,7 +148,7 @@ struct StateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The two rectangles are those two closures drawn. The borders are "
+            Label("The two rectangles are those two closures drawn. The outlines are "
                 + "decoration: the reader is the VStack whose braces the get sits in. "
                 + "Increment rebuilds the outer closure and the inner one goes with it, "
                 + "which is what `with its parent` means; typing rebuilds the inner "

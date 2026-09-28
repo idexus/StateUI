@@ -1,0 +1,4 @@
+# revision 1.1
+Span: ✅
+Span.background: ✅
+Span.text: ✅

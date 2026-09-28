@@ -8,7 +8,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications } from "./applications";
-import { environment, Host } from "./hosts";
+import { androidScript } from "./devices";
+import { describe, environment, Host } from "./hosts";
+import { uiKitScript } from "./uiKitDevices";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */
@@ -18,20 +20,37 @@ export interface Suite {
     readonly command: string;
     readonly args: readonly string[];
     readonly env: Record<string, string>;
+
+    /**
+     * Whether it runs on the host's device - an Android device, a simulator for UIKit - whose serial or UDID ends
+     * its arguments once one is chosen.
+     */
+    readonly onDevice?: boolean;
 }
 
 /**
  * The suites under `root` for `host`, in the order they are best run: the
  * library first, the hosts' packages next, the applications last.
  *
- * - A Swift package with a test target runs with `swift test`. An
- *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build-appkit`, or
- *   `-Xswiftc -DMAUI` on `.build-maui` - and so does the library, whose code
- *   under `#if MAUI` compiles only in a MAUI run.
+ * - A Swift package with a test target runs with `swift test`. For AppKit an
+ *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build-appkit`.
  * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
- * - A C# test project - `lib/StateUI.Maui/Tests` - runs for the MAUI host.
+ * - For the Android host an application runs as plain Swift, its Android build
+ *   running only on a device, and the host's own tests -
+ *   `lib/StateUI.Android/Tests` - run on the device chosen, by
+ *   `.scripts/Android/test-android.sh`.
+ * - For the UIKit host an application runs as plain Swift, and the host's own
+ *   tests - an application, `lib/StateUI.UIKit/Tests` - run on the simulator
+ *   chosen, by `.scripts/UIKit/test-uikit.sh`.
+ * - For the WinUI host an application runs as plain Swift, and the host's own
+ *   package runs by `.scripts/WinUI/test-winui.ps1`, which lays the Windows
+ *   App SDK beside its test runner first.
+ * - For the GTK host an application runs as plain Swift, and the host's own
+ *   package with `swift test`, its windows on the desktop's display.
+ * - With no host - a machine that runs none - every package but the hosts'
+ *   own runs as plain Swift.
  */
-export function findSuites(root: string, host: Host): Suite[] {
+export function findSuites(root: string, host: Host | undefined): Suite[] {
     const suites: Suite[] = [];
     const applications = new Set(findApplications(root).map((each) => each.directory));
     const appKitEnvironment = Object.fromEntries(
@@ -44,21 +63,23 @@ export function findSuites(root: string, host: Host): Suite[] {
             continue;
         }
 
-        const name = directory === root ? path.basename(root) : path.relative(root, directory);
-        const hostPackage = path.basename(directory).match(/\.(AppKit|Maui)$/)?.[1]?.toLowerCase();
+        // A label reads the same on every platform: a path written with forward slashes.
+        const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
+        const hostPackage = path.basename(directory).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
 
         const base = ["test", "--package-path", directory];
-        if (hostPackage) {
-            suites.push({ label: name, detail: `swift test - ${host === "appkit" ? "the AppKit" : "the MAUI"} host's own package`, command: "swift", args: base, env: {} });
-        } else if (host === "maui") {
+        const winUITests = path.join(root, ".scripts", "WinUI", "test-winui.ps1");
+        if (hostPackage === "winui" && fs.existsSync(winUITests)) {
             suites.push({
-                label: name, detail: "swift test -Xswiftc -DMAUI, on .build-maui", command: "swift",
-                args: [...base, "--scratch-path", path.join(directory, ".build-maui"), "-Xswiftc", "-DMAUI"], env: {},
+                label: name, detail: "test-winui.ps1 - the WinUI host's own package, the Windows App SDK beside its runner",
+                command: "powershell", args: ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", winUITests], env: {},
             });
-        } else if (applications.has(directory)) {
+        } else if (hostPackage && host) {
+            suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
+        } else if (host === "appkit" && applications.has(directory)) {
             suites.push({
                 label: name, detail: "swift test as an AppKit build, on .build-appkit", command: "swift",
                 args: [...base, "--scratch-path", path.join(directory, ".build-appkit")], env: appKitEnvironment,
@@ -68,16 +89,28 @@ export function findSuites(root: string, host: Host): Suite[] {
         }
     }
 
-    if (host === "maui") {
-        for (const directory of children(path.join(root, "lib"))) {
-            const tests = path.join(directory, "Tests");
-            if (fs.existsSync(tests) && fs.readdirSync(tests).some((entry) => entry.endsWith(".csproj"))) {
-                suites.push({ label: path.relative(root, tests), detail: "dotnet test", command: "dotnet", args: ["test", tests], env: {} });
-            }
-        }
+    const testScript = androidScript(root, "test-android.sh");
+    if (host === "android" && fs.existsSync(testScript)) {
+        suites.push({
+            label: "lib/StateUI.Android/Tests", detail: "test-android.sh - the Android host's own tests, on the device chosen",
+            command: "bash", args: [testScript], env: {}, onDevice: true,
+        });
+    }
+
+    const uiKitTests = uiKitScript(root, "test-uikit.sh");
+    if (host === "uikit" && fs.existsSync(uiKitTests)) {
+        suites.push({
+            label: "lib/StateUI.UIKit/Tests", detail: "test-uikit.sh - the UIKit host's own tests, on the simulator chosen",
+            command: "bash", args: [uiKitTests], env: {}, onDevice: true,
+        });
     }
 
     return suites;
+}
+
+/** `suite` run on the device `serial` - an Android device's serial, a simulator's UDID - where it runs on one. */
+export function forDevice(suite: Suite, serial: string): Suite {
+    return suite.onDevice ? { ...suite, args: [...suite.args, serial] } : suite;
 }
 
 function children(directory: string): string[] {

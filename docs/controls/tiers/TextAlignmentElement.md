@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # TextAlignmentElement
 
@@ -8,7 +8,7 @@ Wears: [VisualElement](VisualElement.md)
 
 Worn by: [Label](../Label.md) · [Picker](../Picker.md) · [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/TextAlignmentElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/TextAlignmentElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

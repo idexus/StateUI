@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.4
 import Foundation
 import PackageDescription
 
@@ -34,6 +34,22 @@ import PackageDescription
 // - through the definition below - completes the code inside `#if APPKIT`.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 
+// And the same for Platforms/Android, the Android Views head:
+// .scripts/Android/build-swift.sh sets STATEUI_ANDROID.
+let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
+
+// And for Platforms/WinUI, the WinUI 3 head: .scripts/WinUI/run-app.ps1 sets
+// STATEUI_WINUI.
+let hasWinUIHead = ProcessInfo.processInfo.environment["STATEUI_WINUI"] == "1"
+
+// And for Platforms/GTK, the GTK 4 head: .scripts/GTK/run-app.sh sets
+// STATEUI_GTK.
+let hasGTKHead = ProcessInfo.processInfo.environment["STATEUI_GTK"] == "1"
+
+// And for Platforms/UIKit, the UIKit head on iOS and iPadOS:
+// .scripts/UIKit/build-app.sh sets STATEUI_UIKIT.
+let hasUIKitHead = ProcessInfo.processInfo.environment["STATEUI_UIKIT"] == "1"
+
 // What every module of the application is compiled with. In an AppKit build
 // that includes APPKIT, the condition Swift written for that host alone stands
 // under - defined HERE rather than by a compiler flag, so the one variable
@@ -42,6 +58,10 @@ let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasUIKitHead ? [.define("UIKIT")] : [])
+    + (hasAndroidHead ? [.define("ANDROID")] : [])
+    + (hasWinUIHead ? [.define("WINUI")] : [])
+    + (hasGTKHead ? [.define("GTK")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -58,7 +78,7 @@ var dependencies: [Package.Dependency] = [
     // manifest lives. An app outside this repository writes the published
     // package instead, and changes nothing else:
     //
-    //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.1")
+    //     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")
     .package(path: "../.."),
 ]
 
@@ -118,17 +138,141 @@ if hasAppKitHead {
         ))
 }
 
+if hasUIKitHead {
+    // The same gallery module, an executable its UIKit host runs on iOS and
+    // iPadOS; the script makes it an application bundle.
+    products.append(
+        .executable(
+            name: "GalleryUIKit",
+            targets: ["GalleryUIKit"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIUIKit", path: "../../lib/StateUI.UIKit"))
+
+    targets.append(
+        .executableTarget(
+            name: "GalleryUIKit",
+            dependencies: [
+                "GalleryUI",
+                .product(name: "StateUIUIKit", package: "StateUIUIKit"),
+            ],
+            path: "Platforms/UIKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasAndroidHead {
+    // The same gallery module, loaded by Android as a library: its
+    // JNI_OnLoad names the application to the Android Views host.
+    products.append(
+        .library(
+            name: "GalleryAndroid",
+            type: .dynamic,
+            targets: ["GalleryAndroid"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIAndroid", path: "../../lib/StateUI.Android"))
+
+    targets.append(
+        .target(
+            name: "GalleryAndroid",
+            dependencies: [
+                "GalleryUI",
+                "CGalleryGLES",
+                .product(name: "StateUIAndroid", package: "StateUIAndroid"),
+            ],
+            path: "Platforms/Android/Swift",
+            swiftSettings: settings
+        ))
+    // OpenGL ES 3.0 for the gallery's cube: EGL, GLES3 and the NDK's window of a Java Surface.
+    targets.append(.systemLibrary(name: "CGalleryGLES", path: "Platforms/Android/GLES"))
+}
+
+if hasWinUIHead {
+    // The same gallery module, an executable its WinUI host runs on Windows:
+    // its main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "GalleryWinUI",
+            targets: ["GalleryWinUI"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIWinUI", path: "../../lib/StateUI.WinUI"))
+
+    targets.append(contentsOf: [
+        .executableTarget(
+            name: "GalleryWinUI",
+            dependencies: [
+                "GalleryUI",
+                "CGalleryWinUI",
+                .product(name: "StateUIWinUI", package: "StateUIWinUI"),
+            ],
+            path: "Platforms/WinUI",
+            exclude: ["Relay"],
+            swiftSettings: settings,
+            // A windowed application: started by itself it opens no console, and started from one it writes there.
+            linkerSettings: [.unsafeFlags(["-Xlinker", "/SUBSYSTEM:WINDOWS", "-Xlinker", "/ENTRY:mainCRTStartup"])]
+        ),
+        // The gallery's own WinUI elements, C++/WinRT behind C functions: the traffic light, the rating bar, the
+        // cube Direct3D 11.1 draws, and the battery. It includes the projection the WinUI host generated.
+        .target(
+            name: "CGalleryWinUI",
+            path: "Platforms/WinUI/Relay",
+            cxxSettings: [
+                .unsafeFlags(["-I", Context.packageDirectory + "/../../lib/StateUI.WinUI/.projection"]),
+            ],
+            linkerSettings: [
+                .linkedLibrary("d3d11"), .linkedLibrary("dxgi"), .linkedLibrary("d3dcompiler"),
+                .linkedLibrary("powrprof"),
+            ]
+        ),
+    ])
+}
+
+if hasGTKHead {
+    // The same gallery module, an executable its GTK host runs on Linux: its
+    // main names the application to the host and hands it the thread.
+    products.append(
+        .executable(
+            name: "GalleryGTK",
+            targets: ["GalleryGTK"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIGTK", path: "../../lib/StateUI.GTK"))
+
+    targets.append(contentsOf: [
+        .executableTarget(
+            name: "GalleryGTK",
+            dependencies: [
+                "GalleryUI",
+                "CGalleryOpenGL",
+                .product(name: "StateUIGTK", package: "StateUIGTK"),
+            ],
+            path: "Platforms/GTK",
+            exclude: ["OpenGL"],
+            swiftSettings: settings
+        ),
+        // OpenGL for the head's cube, through libepoxy - the loader GTK itself draws with.
+        .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
+    ])
+}
+
 let package = Package(
     name: "GalleryUI",
     // The same floor StateUI declares. SwiftPM refuses a package that depends
     // on one requiring more than it does, so these move together - see the note
-    // in ../../Package.swift for what fixes them at 17.
+    // in ../../Package.swift for what fixes them at 26.
     platforms: [
-        .iOS(.v17),
-        .macCatalyst(.v17),
-        .macOS(.v14),
+        .iOS(.v26),
+        .macCatalyst(.v26),
+        .macOS(.v26),
     ],
     products: products,
     dependencies: dependencies,
-    targets: targets
+    targets: targets,
+    cxxLanguageStandard: .cxx20
 )

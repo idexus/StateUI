@@ -20,18 +20,20 @@ struct TapSample: SampleContent, ExampleContent {
             // The count is read here, so every tap builds this closure.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Tap anywhere on this box")
                     .padding(24)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
-            Border {
+            ZStack {
                 Label("Double-tap this one to reset")
                     .padding(24)
             }
+            .style("Card")
             .stroke(Palette.outline)
             .shape(.roundedRectangle(10))
             .onTapped(count: 2) { taps = 0 }
@@ -44,23 +46,25 @@ struct TapSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Tap anywhere on this box")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
-            Border {
+            ZStack {
                 Label("Double-tap this one to reset")
                     .fontSize(15)
                     .padding(24)
                     .horizontalTextAlignment(.center)
             }
+            .style("Card")
             .stroke(Palette.outline)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))

@@ -1,0 +1,10 @@
+# revision 1.1
+ScrollView: ✅
+ScrollView.frameChanged: ✅
+ScrollView.horizontalScrollBarVisibility: ✅
+ScrollView.orientation: ✅
+ScrollView.scrollOffset: ✅
+ScrollView.scrollStopped: ✅
+ScrollView.scrollXChanged: ✅
+ScrollView.scrollYChanged: ✅
+ScrollView.verticalScrollBarVisibility: ✅

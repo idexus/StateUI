@@ -1,0 +1,10 @@
+# revision 1.1
+ScrollView: ✅
+ScrollView.frameChanged: ✅
+ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - GTK's driver has no path for it yet
+ScrollView.orientation: ◐ cannot scroll on ScrollView - GTK's driver has no path for it yet
+ScrollView.scrollOffset: cannot read scrollOffset of ScrollView - GTK's driver has no path for it yet
+ScrollView.scrollStopped: cannot scroll on ScrollView - GTK's driver has no path for it yet
+ScrollView.scrollXChanged: cannot scroll on ScrollView - GTK's driver has no path for it yet
+ScrollView.scrollYChanged: cannot read scrollOffset of ScrollView - GTK's driver has no path for it yet
+ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - GTK's driver has no path for it yet

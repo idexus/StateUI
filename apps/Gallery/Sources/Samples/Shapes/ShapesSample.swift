@@ -72,12 +72,22 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .width(56)
                     .height(56)
 
-                // A transform on the GEOMETRY, which is not what
-                // .transform does: a lean draws here, and the stroke
-                // follows the shape it makes.
+                // A transform on the GEOMETRY - the same ViewTransform
+                // every view takes, drawn whole: a lean draws here, and the
+                // stroke follows the shape it makes. On any shape, not only
+                // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
                     .renderTransform(.skew(20, 0))
+                    .width(56)
+                    .height(56)
+
+                Rectangle()
+                    .fill(Palette.accent)
+                    .cornerRadius(14)
+                    .renderTransform(.skew(20, 0))
+                    .width(56)
+                    .height(56)
 
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
@@ -214,6 +224,13 @@ struct ShapesSample: SampleContent, ExampleContent {
                 // a Path.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
+                    .renderTransform(.skew(20, 0))
+                    .width(56)
+                    .height(56)
+
+                Rectangle()
+                    .fill(Palette.accent)
+                    .cornerRadius(14)
                     .renderTransform(.skew(20, 0))
                     .width(56)
                     .height(56)

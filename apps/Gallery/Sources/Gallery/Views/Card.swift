@@ -6,12 +6,12 @@ import StateUI
 ///
 /// The WHOLE card answers a tap: a view with `.onTapped` on it, not a button
 /// with something around it. The chevron is a chevron - it says where the row goes and nothing more.
-/// And because a tapped Border shows nothing where a Button would, the card
+/// And because a tapped ZStack shows nothing where a Button would, the card
 /// says the press back itself: a quick dip in scale before the action runs.
 ///
 /// A FILL and a hairline, which is what makes it read as raised on the tinted
-/// page behind it - see `Palette.surface`. Both come from the implicit
-/// `Style<Border>`, so nothing here says what a card looks like.
+/// page behind it - see `Palette.surface`. Both come from the "Card" style,
+/// so nothing here says what a card looks like.
 ///
 /// It is shaped the way every control in the library is, and that shape is the
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -
@@ -64,19 +64,14 @@ struct Card: ContentView {
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
     var content: any View {
-        // Copies for the handler to capture - and NOT a capture list, which
-        // looks equivalent and is not: a closure with an explicit capture
-        // list, written in a content getter, is moved off this library's
-        // executor by the compiler (Swift 6.3) - the host sees no job and no
-        // pending resume, and the press froze until the NEXT event reached
-        // the app; on Android it would never resume at all. The locals keep
-        // `self` out of the closure, and a BINDING is copied like anything
-        // else the handler holds. Measured both ways; ConcurrencyTests pins
-        // this shape.
+        // Copies for the handler to capture. The locals keep `self` out of
+        // the closure, and a BINDING is copied like anything else the
+        // handler holds. ConcurrencyTests pins this shape on the library's
+        // executor.
         let dip = $dip
         let action = self.action
 
-        return Border {
+        return ZStack {
             Grid {
                 Image(picture)
                     .width(24)
@@ -108,15 +103,16 @@ struct Card: ContentView {
             .columnSpacing(14)
             // The TEXT is the star column. An Auto column measures a Label at
             // the width it would like - the whole summary on one line - so the
-            // text ran under the chevron and out through the border, with an
+            // text ran under the chevron and out through the outline, with an
             // empty star column beside it holding the space it needed. A star
             // column is given what the others left, and a Label given a width
             // wraps to it.
             .columns(.auto, .fill, .auto)
             .padding(16, 14)
         }
-        // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a
-        // control at all: the reader who cannot see it would be handed a
+        .style("Card")
+        // A CARD IS A ZSTACK WITH A TAP ON IT, which no platform reads as a
+        // control at all: the user who cannot see it would be handed a
         // picture, two Labels and a chevron with nothing saying they act
         // together. So the card says what it is and where it goes, and the
         // handle is worked out from the title rather than written per card -
@@ -125,7 +121,7 @@ struct Card: ContentView {
         .accessibilityLabel(title)
         .accessibilityHint(summary)
         .scale($dip)
-        // The press, said back: a Border with a TapGestureRecognizer draws
+        // The press, said back: a ZStack with a TapGestureRecognizer draws
         // nothing on its own, unlike a Button, so without this a tap shows
         // nothing until the page changes. The DIP runs to the end before the
         // action starts - it is the feedback, and a navigation's page build

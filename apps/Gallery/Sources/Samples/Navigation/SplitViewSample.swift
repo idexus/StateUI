@@ -3,7 +3,7 @@ import StateUI
 /// A native split view whose sidebar is an ordinary StateUI page.
 struct SplitViewSample: SampleContent, ExampleContent {
     /// Where the gallery is: this sample opens and closes the menu, and sends
-    /// the reader to the section the menu does not always list.
+    /// the user to the section the menu does not always list.
     let nav: Navigation
 
     static let id = "splitview"
