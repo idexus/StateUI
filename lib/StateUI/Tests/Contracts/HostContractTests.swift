@@ -242,7 +242,7 @@ final class HostContractTests: XCTestCase {
         for host in ["AppKit", "UIKit", "Android Views", "WinUI 3", "GTK 4", "Web"] {
             XCTAssertTrue(document.contains(host), "platform contract does not name \(host)")
         }
-        XCTAssertTrue(document.contains("✅ means"), "platform contract does not define completion")
+        XCTAssertTrue(document.contains("| ✅ | "), "platform contract does not define completion in its legend")
     }
 
     /// The scroller is the platform's: no grid to settle on, no momentum to
