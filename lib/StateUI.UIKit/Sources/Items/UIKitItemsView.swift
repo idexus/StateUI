@@ -226,22 +226,26 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
 
     // MARK: - Acts
 
-    /// Scrolls until the item of `identity` stands where `anchor` says; nearest scrolls only where it is not wholly
-    /// in view, the shorter way.
+    /// Scrolls until the item of `identity` stands where `anchor` says, by the host layer's rule
+    /// (`ScrollAnchor.place`), within the room the collection's insets leave and within its reach.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
-        guard let indexPath = source.indexPath(for: identity) else { return }
+        guard let indexPath = source.indexPath(for: identity),
+              let item = collection.layoutAttributesForItem(at: indexPath)?.frame
+        else { return }
         let across = layout.isAcross
-        let position: UICollectionView.ScrollPosition
-        switch anchor {
-        case .start: position = across ? .left : .top
-        case .center: position = across ? .centeredHorizontally : .centeredVertically
-        case .end: position = across ? .right : .bottom
-        case .nearest:
-            if let cell = collection.cellForItem(at: indexPath), collection.bounds.contains(cell.frame) { return }
-            let first = collection.indexPathsForVisibleItems.min() ?? indexPath
-            position = indexPath < first ? (across ? .left : .top) : (across ? .right : .bottom)
-        }
-        collection.scrollToItem(at: indexPath, at: position, animated: !reducesMotion())
+        let insets = collection.adjustedContentInset
+        let (before, after) = across ? (insets.left, insets.right) : (insets.top, insets.bottom)
+        let (bounds, size, standing) = (collection.bounds, collection.contentSize, collection.contentOffset)
+        let (start, length, side, content, now) = across
+            ? (item.minX, item.width, bounds.width, size.width, standing.x)
+            : (item.minY, item.height, bounds.height, size.height, standing.y)
+        let room = side - before - after
+        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return }
+        let offset = min(max(-before, place - before), max(-before, content + after - side))
+        var point = collection.contentOffset
+        if across { point.x = offset } else { point.y = offset }
+        collection.setContentOffset(point, animated: !reducesMotion())
     }
 
     // MARK: - For the tests
