@@ -33,10 +33,15 @@ extension UIKitElement {
     // MARK: - The bar
 
     /// What a page's bar shows: its title or title view, its actions as the host layer orders them, whether the bar
-    /// shows and offers the way back, and its colours. A tabbed view's: its chosen tab's page's.
+    /// shows and offers the way back, and its colours. A tabbed view's: its chosen tab's page's, titled as the host
+    /// layer names it (`titledPage`) - tabs on a stack by their own title, else by the page beneath.
     /// Design: docs/design/platforms/uikit/pages.md#the-bar
     var chrome: UIKitPageChrome {
-        if type == .tabbedView { return element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome() }
+        if type == .tabbedView {
+            var chrome = element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome()
+            chrome.title = element.titledPage?.value(.title)?.string ?? ""
+            return chrome
+        }
 
         var chrome = UIKitPageChrome()
         chrome.title = value(.title)?.string ?? ""

@@ -56,7 +56,7 @@ final class UIKitWindowController {
         }
         presentation.arrangement?.uiKit.composeChrome()
         presentation.sheets.forEach { $0.uiKit.composeChrome() }
-        let title = presentation.arrangement?.visiblePage?.value(.title)?.string
+        let title = presentation.arrangement?.titledPage?.value(.title)?.string
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
     }
 

@@ -103,8 +103,9 @@ extension AndroidElement {
 
     // MARK: - A stack's bar
 
-    /// Shows on a stack's bar what its visible page says: the title - or the view standing in for it - the
-    /// colours, the way back or to the sidebar, and the page's actions in their order.
+    /// Shows on a stack's bar what its visible page says: the title - the page's the host layer names it by
+    /// (`titledPage`), or the view standing in for it - the colours, the way back or to the sidebar, and the page's
+    /// actions in their order.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
@@ -114,7 +115,7 @@ extension AndroidElement {
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
-        content.title = page?.value(.title)?.string ?? ""
+        content.title = element.titledPage?.value(.title)?.string ?? ""
         content.background = colors.background
         content.foreground = colors.foreground
         content.actions = shown.map { item in

@@ -15,8 +15,10 @@ pop changes which page the stack holds; nothing is built again for it.
 
 ## The bar
 
-A stack's bar is Android's own toolbar. It carries the visible page's title -
-or its title view, standing across the room between the navigation button and
+A stack's bar is Android's own toolbar. It carries the title of the page the
+window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome))
+- tabs pushed onto a stack by their own title, else by the page beneath - or
+the visible page's title view, standing across the room between the navigation button and
 the actions in the title's place - the stack's bar colours, and the page's
 actions: the primary ones beside
 the title, by priority and then in their order, the rest behind the

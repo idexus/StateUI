@@ -11,6 +11,7 @@ final class AndroidPagesTests: XCTestCase {
     static var allTests: [(String, (AndroidPagesTests) -> () throws -> Void)] {
         [
             ("testAStackShowsItsTopPageUnderItsBarAndGoesBack", testAStackShowsItsTopPageUnderItsBarAndGoesBack),
+            ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
@@ -53,6 +54,28 @@ final class AndroidPagesTests: XCTestCase {
             XCTAssertTrue(host.goBack())
             XCTAssertEqual(path.wrappedValue, [])
             XCTAssertEqual(navigation.bar.content.title, "Root")
+        }
+    }
+
+    /// Tabs pushed onto a stack are its last place and name the bar by their own title - never by what they show:
+    /// their pages name their tabs alone.
+    func testTabsOnAStackNameTheBarByTheirOwnTitle() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [Int]())
+            let host = AndroidRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    TitledPage(title: "Items and Cards")
+                } destination: { _ in
+                    TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                }
+            }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(navigation.bar.content.title, "Items and Cards")
+
+            path.wrappedValue = [1]
+            host.runtime.pump.turn()
+            XCTAssertEqual(navigation.bar.content.title, "ItemsView")
         }
     }
 
