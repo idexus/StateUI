@@ -75,8 +75,10 @@ page, laid out in the window at a size - and an arrangement of pages one
 that shows its first page; a case that proves the element together with a
 member proves it too, and the weightiest verdict stands. So a member the
 host does not realize, or its driver cannot read, never hides that the host
-makes the element. A tier's row groups the elements wearing the tier
-that the host's run judged - made, or never had.
+makes the element. A tier's member and an act are marked only on the page
+of each element that has it: one element may realize what another does not,
+so the platform contract names them with no mark rather than one that says
+both.
 
 A tier's record reaches every element wearing the tier, and what the
 host's shared machinery realizes becomes one: it serves each view the host

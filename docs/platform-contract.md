@@ -43,11 +43,11 @@ host merely implements or declares by hand earns a mark.
 - An element's ✅ under [Control creation](#control-creation) means that host's
   own test proved it makes the element. It does not imply that every member
   has been completed; the member rows state that separately.
-- A row naming several members receives ✅ only when every one is proven or
-  not planned, – when none is planned, and ☑️ when every one is judged and
-  some are proven with something missing. A tier's member is counted on every
-  element wearing the tier that the host's run judged, made or never had, and
-  under [Shared view members](#shared-view-members) on every view.
+- An element's row under [Contract members](#contract-members) counts its
+  members by mark. A tier's member and an act are marked only on the page of
+  each element that has it: one element may realize what another does not,
+  so no one mark says it for a host, and the tables naming them here carry
+  none.
 
 Member by member and element by element, the marks live in [the control
 dictionary](controls/README.md). Every table of marks here that a contract can
@@ -317,31 +317,33 @@ nothing; an element's act aims at one element of its kind. Calendar values are
 portable StateUI values; reading the current clock or time zone is a host act
 because the host owns the active locale and zone database - `currentTime` is
 `ClockTime.now()`, `currentTimeZone` is `TimeZoneInfo.local()`, and `utcOffset`
-is `TimeZoneInfo.utcOffset(of:on:)`.
+is `TimeZoneInfo.utcOffset(of:on:)`. The table names each act; its marks are
+on the page of its element - a tier's act on the page of each element wearing
+the tier.
 
 <!-- acts:begin -->
-| Act | Contract | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `focus` | [VisualElement](controls/tiers/VisualElement.md) |  |  |  |  |  |  |
-| `unfocus` | [VisualElement](controls/tiers/VisualElement.md) |  |  |  |  |  |  |
-| `alert` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `announce` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `chooseAction` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `confirm` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `currentTime` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `currentTimeZone` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `handlerFailed` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `hideOnScreenKeyboard` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `persistSceneValue` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `persistValue` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `prompt` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `utcOffset` | [Application](controls/Application.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `scrollTo` | [ItemsView](controls/ItemsView.md) | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| `moveToRegion` | [Map](controls/Map.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `evaluateJavaScript` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `goBack` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `goForward` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
-| `reload` | [WebView](controls/WebView.md) | ⌛ | ⌛ | ⌛ | ⌛ |  |  |
+| Act | Contract |
+| --- | --- |
+| `focus` | [VisualElement](controls/tiers/VisualElement.md) |
+| `unfocus` | [VisualElement](controls/tiers/VisualElement.md) |
+| `alert` | [Application](controls/Application.md) |
+| `announce` | [Application](controls/Application.md) |
+| `chooseAction` | [Application](controls/Application.md) |
+| `confirm` | [Application](controls/Application.md) |
+| `currentTime` | [Application](controls/Application.md) |
+| `currentTimeZone` | [Application](controls/Application.md) |
+| `handlerFailed` | [Application](controls/Application.md) |
+| `hideOnScreenKeyboard` | [Application](controls/Application.md) |
+| `persistSceneValue` | [Application](controls/Application.md) |
+| `persistValue` | [Application](controls/Application.md) |
+| `prompt` | [Application](controls/Application.md) |
+| `utcOffset` | [Application](controls/Application.md) |
+| `scrollTo` | [ItemsView](controls/ItemsView.md) |
+| `moveToRegion` | [Map](controls/Map.md) |
+| `evaluateJavaScript` | [WebView](controls/WebView.md) |
+| `goBack` | [WebView](controls/WebView.md) |
+| `goForward` | [WebView](controls/WebView.md) |
+| `reload` | [WebView](controls/WebView.md) |
 <!-- acts:end -->
 
 ## Shared view members
@@ -349,11 +351,10 @@ is `TimeZoneInfo.utcOffset(of:on:)`.
 A property or event of the three tiers every view wears -
 [PropertyContainer](controls/tiers/PropertyContainer.md),
 [VisualElement](controls/tiers/VisualElement.md) and
-[View](controls/tiers/View.md) - is marked for a host only when every view
-that host realizes with a view of its own has it, even where one control
-already realizes it. The core view members are StateUI's own API, which a
-host serves without a member of its own; no case gives them a verdict of
-their own, so they carry no mark:
+[View](controls/tiers/View.md) - is named here and marked on the page of each
+view: every view realizes it apart, and one may have what another lacks. The
+core view members are StateUI's own API, which a host serves without a member
+of its own; no case gives them a verdict of their own, so no page marks them:
 
 - identity: `id`
 - aimed control methods: `aim`
@@ -362,72 +363,72 @@ their own, so they carry no mark:
 - focus feed: `isFocused`
 
 <!-- shared:begin -->
-| Member | Tier | Kind | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
-| --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property |  |  |  |  |  |  |
-| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `background` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `frame` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `height` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event |  |  |  |  |  |  |
-| `isVisible` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `layoutDirection` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `maximumHeight` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `maximumWidth` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `minimumHeight` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `minimumWidth` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `opacity` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `pivotX` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `pivotY` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `rotation` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `rotationX` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `rotationY` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `scale` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `scaleX` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `scaleY` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `style` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `translationX` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `translationY` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `width` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `zIndex` | [VisualElement](controls/tiers/VisualElement.md) | property |  |  |  |  |  |  |
-| `allowDrop` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `area` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `canDrag` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onDragLeave` (`dragLeave`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onDragOver` (`dragOver`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `dragStarting` | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `dragText` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onDrop` (`drop`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event |  |  |  | ✅ |  |  |
-| `gridColumn` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `gridColumnSpan` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `gridRow` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `gridRowSpan` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `horizontalAlignment` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `margin` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `panTouchCount` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `panXChannel` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `panYChannel` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `swipeDirection` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `swipeThreshold` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `tapCount` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | [View](controls/tiers/View.md) | event |  |  |  |  |  |  |
-| `verticalAlignment` | [View](controls/tiers/View.md) | property |  |  |  |  |  |  |
+| Member | Tier | Kind |
+| --- | --- | --- |
+| `accessibilityIdentifier` | [PropertyContainer](controls/tiers/PropertyContainer.md) | property |
+| `accessibilityHeadingLevel` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `accessibilityHint` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `accessibilityLabel` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `automationExcludedWithChildren` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `background` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `frame` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `height` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `isAccessibilityHidden` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `isEnabled` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `isFocusedChanged` | [VisualElement](controls/tiers/VisualElement.md) | event |
+| `isVisible` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `layoutDirection` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `maximumHeight` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `maximumWidth` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `minimumHeight` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `minimumWidth` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `opacity` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `pivotX` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `pivotY` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `rotation` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `rotationX` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `rotationY` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `scale` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `scaleX` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `scaleY` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `style` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `translationX` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `translationY` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `width` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `zIndex` | [VisualElement](controls/tiers/VisualElement.md) | property |
+| `allowDrop` | [View](controls/tiers/View.md) | property |
+| `area` | [View](controls/tiers/View.md) | property |
+| `canDrag` | [View](controls/tiers/View.md) | property |
+| `onDragLeave` (`dragLeave`) | [View](controls/tiers/View.md) | event |
+| `onDragOver` (`dragOver`) | [View](controls/tiers/View.md) | event |
+| `dragStarting` | [View](controls/tiers/View.md) | event |
+| `dragText` | [View](controls/tiers/View.md) | property |
+| `onDrop` (`drop`) | [View](controls/tiers/View.md) | event |
+| `onDropCompleted` (`dropCompleted`) | [View](controls/tiers/View.md) | event |
+| `onFrameChanged` (`frameChanged`) | [View](controls/tiers/View.md) | event |
+| `gridColumn` | [View](controls/tiers/View.md) | property |
+| `gridColumnSpan` | [View](controls/tiers/View.md) | property |
+| `gridRow` | [View](controls/tiers/View.md) | property |
+| `gridRowSpan` | [View](controls/tiers/View.md) | property |
+| `horizontalAlignment` | [View](controls/tiers/View.md) | property |
+| `margin` | [View](controls/tiers/View.md) | property |
+| `panTouchCount` | [View](controls/tiers/View.md) | property |
+| `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event |
+| `panXChannel` | [View](controls/tiers/View.md) | property |
+| `panYChannel` | [View](controls/tiers/View.md) | property |
+| `onPinchUpdated` (`pinchUpdated`) | [View](controls/tiers/View.md) | event |
+| `onPointerEntered` (`pointerEntered`) | [View](controls/tiers/View.md) | event |
+| `onPointerExited` (`pointerExited`) | [View](controls/tiers/View.md) | event |
+| `onPointerMoved` (`pointerMoved`) | [View](controls/tiers/View.md) | event |
+| `onPointerPressed` (`pointerPressed`) | [View](controls/tiers/View.md) | event |
+| `onPointerReleased` (`pointerReleased`) | [View](controls/tiers/View.md) | event |
+| `swipeDirection` | [View](controls/tiers/View.md) | property |
+| `swipeThreshold` | [View](controls/tiers/View.md) | property |
+| `onSwiped` (`swiped`) | [View](controls/tiers/View.md) | event |
+| `tapCount` | [View](controls/tiers/View.md) | property |
+| `onTapped` (`tapped`) | [View](controls/tiers/View.md) | event |
+| `verticalAlignment` | [View](controls/tiers/View.md) | property |
 <!-- shared:end -->
 
 ## Control dictionary
@@ -510,34 +511,41 @@ Every control, and every part an application, its windows and its pages are made
 A row per contract with properties or events - the tiers, then the elements -
 naming them: a property by its modifier's name, an event with the `on…`
 modifier it is heard through beside it. "Count" is how many members the row
-names, and each host's cell counts them by mark; a tier's member counts only
-where every element wearing it that the host makes has it. A contract's acts are under [Host
-acts](#host-acts); each member's own mark, its value and its layer are on the
-contract's page in [the control dictionary](controls/README.md).
+names. An element's row counts them by mark on each host; a tier's carries no
+mark, its members marked on the page of each element wearing it. A contract's
+acts are under [Host acts](#host-acts); each member's own mark, its value and
+its layer are on the element's page in [the control dictionary](controls/README.md).
 
 <!-- members:begin -->
-| Contract | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
+### Tiers
+
+| Tier | Members | Count |
+| --- | --- | --- |
+| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |
+| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 |
+| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |
+| [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
+| [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |
+| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
+| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 10 |
+| [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |
+| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |
+| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |
+| [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |
+| [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |
+| [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | 1 |
+| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | 1 |
+| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` | 3 |
+| [ImageElement](controls/tiers/ImageElement.md) | `aspect` | 1 |
+| [TintElement](controls/tiers/TintElement.md) | `tint` | 1 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | 1 |
+| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` | 5 |
+| [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
+
+### Elements
+
+| Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [PropertyContainer](controls/tiers/PropertyContainer.md) | `accessibilityIdentifier` | 1 |  |  |  |  |  |  |
-| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityLabel`, `automationExcludedWithChildren`, `background`, `frame`, `height`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isFocusedChanged`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `translationX`, `translationY`, `width`, `zIndex` | 31 |  |  |  |  |  |  |
-| [View](controls/tiers/View.md) | `allowDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `onDropCompleted` (`dropCompleted`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 32 |  |  |  | 1 ✅ |  |  |
-| [Layout](controls/tiers/Layout.md) | `avoidsSafeArea`, `clipsContent`, `letsInputThrough` | 3 |  |  |  |  |  |  |
-| [StackBase](controls/tiers/StackBase.md) | `spacing` | 1 |  |  |  |  |  |  |
-| [InputView](controls/tiers/InputView.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |  |  |  |  |  |  |
-| [Shape](controls/tiers/Shape.md) | `aspect`, `fill`, `renderTransform`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` | 10 |  |  |  |  |  |  |
-| [TextElement](controls/tiers/TextElement.md) | `text`, `textCase` | 2 |  |  |  |  |  |  |
-| [TextStyleElement](controls/tiers/TextStyleElement.md) | `characterSpacing`, `textColor` | 2 |  |  |  |  |  |  |
-| [FontElement](controls/tiers/FontElement.md) | `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize` | 4 |  |  |  |  |  |  |
-| [TextAlignmentElement](controls/tiers/TextAlignmentElement.md) | `horizontalTextAlignment`, `verticalTextAlignment` | 2 |  |  |  |  |  |  |
-| [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | 1 |  |  |  |  |  |  |
-| [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | 1 |  |  |  |  |  |  |
-| [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | 1 |  |  |  |  |  |  |
-| [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` | 3 |  |  |  |  |  |  |
-| [ImageElement](controls/tiers/ImageElement.md) | `aspect` | 1 |  |  |  |  |  |  |
-| [TintElement](controls/tiers/TintElement.md) | `tint` | 1 |  |  |  |  |  |  |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | 1 |  |  |  |  |  |  |
-| [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` | 5 |  |  |  |  |  |  |
-| [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |  |  |  |  |  |  |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | 1 |  |  |  |  |  |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) | 7 |  |  |  |  |  |  |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 |  |  |  |  |  |  |

@@ -108,16 +108,6 @@ struct ControlDictionary {
             case nil: ("", "")
             }
         }
-
-        /// Whether the host's run of these sources judged `element` itself: made by the host, or never had by its
-        /// family.
-        func judges(_ element: String) -> Bool {
-            guard !stale.contains(element) else { return false }
-            switch verdicts[element]?.mark {
-            case .proven?, .partial?, .notPlanned?: return true
-            case .notRealized?, .cannot?, .waiting?, .failed?, .partly?, .byHost?, nil: return false
-            }
-        }
     }
 
     /// What one element's page says, and what its marks add up to.
@@ -166,11 +156,11 @@ struct ControlDictionary {
     /// Where each contract is declared, under lib/StateUI/Sources, by the contract.
     private let declared: [ObjectIdentifier: String]
 
-    /// The dictionary as everything it is rendered from stands now.
-    init() throws {
+    /// The dictionary as everything it is rendered from stands now, or with `columns` for the hosts' verdicts.
+    init(columns: [Column]? = nil) throws {
         elements = LibraryContracts.elements.sorted { $0.name < $1.name }
         tiers = LibraryContracts.tiers
-        columns = try Self.columns()
+        self.columns = try columns ?? Self.columns()
         spellings = try Self.handlerSpellings()
         mapping = try Self.nativeMapping()
         layers = try Self.layers()
@@ -413,33 +403,42 @@ struct ControlDictionary {
         return lines.joined(separator: "\n")
     }
 
-    /// A row per contract with properties or events - the tiers, then the
-    /// elements - naming them, marked by the rule for a row naming several.
-    /// Its acts are the act table's.
+    /// A row per contract with properties or events, naming them: the tiers
+    /// with no mark - each element wearing one realizes its members apart,
+    /// marked on its own page - then the elements, each host's cell counting
+    /// theirs by mark. Their acts are the act table's.
     func memberTable() -> String {
-        var lines = [Self.header("Contract", "Members", "Count"), Self.rule(leading: 3)]
+        var tierLines = [Self.row(["Tier", "Members", "Count"]), Self.row(["---", "---", "---"])]
+        var elementLines = [Self.header("Element", "Members", "Count"), Self.rule(leading: 3)]
 
         for contract in contracts {
             let described = Self.described(by: contract)
 
             guard !described.isEmpty else { continue }
 
-            let marks = Self.platforms.map { platform in
-                Self.tallied(described.map { mark(of: $0, declaredIn: contract, on: platform) })
+            let cells = [
+                "[\(contract.name)](\(Self.page(of: contract)))",
+                described.map { describe($0)[0] }.joined(separator: ", "), "\(described.count)",
+            ]
+
+            guard let element = contract as? any ElementContract.Type else {
+                tierLines.append(Self.row(cells))
+                continue
             }
 
-            lines.append(Self.row(
-                ["[\(contract.name)](\(Self.page(of: contract)))",
-                 described.map { describe($0)[0] }.joined(separator: ", "), "\(described.count)"] + marks))
+            elementLines.append(Self.row(cells + Self.platforms.map { platform in
+                Self.tallied(described.map { column(of: platform)?.mark(of: $0.name, on: element.name).mark ?? "" })
+            }))
         }
 
-        return lines.joined(separator: "\n")
+        return "### Tiers\n\n" + tierLines.joined(separator: "\n")
+            + "\n\n### Elements\n\n" + elementLines.joined(separator: "\n")
     }
 
-    /// A row per property and event of the three tiers every view wears,
-    /// marked across the views.
+    /// A row per property and event of the three tiers every view wears, with
+    /// no mark: each view realizes them apart, marked on its own page.
     func sharedTable() -> String {
-        var lines = [Self.header("Member", "Tier", "Kind"), Self.rule(leading: 3)]
+        var lines = [Self.row(["Member", "Tier", "Kind"]), Self.row(["---", "---", "---"])]
         let everyView: [any Contract.Type] = [
             PropertyContainerContract.self, VisualElementContract.self, ViewContract.self,
         ]
@@ -448,24 +447,21 @@ struct ControlDictionary {
             for member in Self.described(by: tier) {
                 let cells = describe(member)
 
-                lines.append(Self.row(
-                    [cells[0], "[\(tier.name)](\(Self.page(of: tier)))", cells[1]]
-                        + Self.platforms.map { mark(of: member, declaredIn: tier, on: $0, amongViews: true) }))
+                lines.append(Self.row([cells[0], "[\(tier.name)](\(Self.page(of: tier)))", cells[1]]))
             }
         }
 
         return lines.joined(separator: "\n")
     }
 
-    /// A row per act of every contract.
+    /// A row per act of every contract, with no mark: an act is marked on the
+    /// page of each element that has it.
     func actTable() -> String {
-        var lines = [Self.header("Act", "Contract"), Self.rule(leading: 2)]
+        var lines = [Self.row(["Act", "Contract"]), Self.row(["---", "---"])]
 
         for contract in contracts {
             for member in contract.members where (member as? any DeclaredMember)?.facts.kind == .act {
-                lines.append(Self.row(
-                    ["`\(member.name)`", "[\(contract.name)](\(Self.page(of: contract)))"]
-                        + Self.platforms.map { mark(of: member, declaredIn: contract, on: $0) }))
+                lines.append(Self.row(["`\(member.name)`", "[\(contract.name)](\(Self.page(of: contract)))"]))
             }
         }
 
@@ -502,41 +498,6 @@ struct ControlDictionary {
     /// The column of one host, where it has one.
     func column(of platform: String) -> Column? {
         columns.first { $0.host == platform }
-    }
-
-    /// One member's mark on one host: on the element declaring it, or - for a
-    /// tier's member - across the elements wearing the tier that the host's run
-    /// judged, made or never had, and only the views among them `amongViews`.
-    func mark(
-        of member: any ContractMember, declaredIn contract: any Contract.Type, on platform: String,
-        amongViews: Bool = false
-    ) -> String {
-        guard let column = column(of: platform) else { return "" }
-
-        if let element = contract as? any ElementContract.Type {
-            return column.mark(of: member.name, on: element.name).mark
-        }
-
-        let view = ObjectIdentifier(ViewContract.self)
-        let wearers = elements.filter { element in
-            element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) }
-                && (!amongViews || element.worn.contains { ObjectIdentifier($0) == view })
-                && column.judges(element.name)
-        }
-
-        return Self.grouped(wearers.map { column.mark(of: member.name, on: $0.name).mark })
-    }
-
-    /// The mark of a row naming several members, or of one member across
-    /// several elements: – when none is planned, ✅ when every one is realized
-    /// in full or not planned, ☑️ when every one is judged and some are
-    /// realized only in part, and nothing otherwise - or where there is nothing
-    /// to count.
-    static func grouped(_ marks: [String]) -> String {
-        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "☑️" || $0 == "–" }) else { return "" }
-
-        if marks.allSatisfy({ $0 == "–" }) { return "–" }
-        return marks.contains("☑️") ? "☑️" : "✅"
     }
 
     /// Marks counted, each kind in the legend's order: "28 ✅ · 1 ☑️"; nothing where none is proven or planned.

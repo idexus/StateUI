@@ -89,6 +89,31 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
+    /// A tier's member and an act are marked only on the page of each element that has it: where a host proves
+    /// every member of every element, the platform contract's rows of tiers and of acts still carry no mark - one
+    /// element may realize what another does not, and no one mark says both.
+    func testATiersMemberAndAnActAreMarkedOnlyOnAnElementsPage() throws {
+        var verdicts: [String: HostVerdict] = [:]
+        for element in LibraryContracts.elements {
+            verdicts[element.name] = HostVerdict(element: element.name, member: nil, mark: .proven)
+            for contract in [element as any Contract.Type] + element.worn {
+                for member in contract.members {
+                    verdicts["\(element.name).\(member.name)"] = HostVerdict(
+                        element: element.name, member: member.name, mark: .proven)
+                }
+            }
+        }
+        let blocks = try ControlDictionary(columns: [.init(host: "WinUI 3", verdicts: verdicts, stale: [])])
+            .contractBlocks()
+        let members = try XCTUnwrap(blocks["members"]).components(separatedBy: "### Elements")
+
+        XCTAssertEqual(members.count, 2, "the members' tables: the tiers, then the elements")
+        for (name, block) in [("shared", blocks["shared"]), ("acts", blocks["acts"]), ("tiers", members.first)] {
+            XCTAssertFalse(try XCTUnwrap(block).contains("✅"), "the \(name) table carries a mark")
+        }
+        XCTAssertTrue(members.last?.contains("✅") == true, "an element's row counts what its host proved")
+    }
+
     /// The native control mapping names every element exactly once - every
     /// page takes its native counterparts from it - and names nothing else.
     func testTheNativeMappingNamesEveryElementOnce() throws {
@@ -139,7 +164,7 @@ final class ControlDictionaryTests: XCTestCase {
 
     /// A mark is the run's alone, each verdict its own sign: proven ✅, never –, failed ❌, partly ◐, the driver
     /// unable ·, waiting ⏸, and nothing for a cell a run gave no verdict or said is not realized; a verdict a run of
-    /// other sources gave is ⌛, what it said kept in the note, and judges no element.
+    /// other sources gave is ⌛, what it said kept in the note.
     func testAMarkIsTheRunsVerdictAlone() {
         let column = ControlDictionary.Column(host: "WinUI 3", verdicts: [
             "Button": HostVerdict(element: "Button", member: nil, mark: .proven),
@@ -166,10 +191,6 @@ final class ControlDictionaryTests: XCTestCase {
         XCTAssertEqual(column.mark(of: nil, on: "Map").mark, "–")
         XCTAssertEqual(column.mark(of: nil, on: "Label").mark, "⌛")
         XCTAssertEqual(column.mark(of: nil, on: "Label").note, "a run of other sources said: ✅")
-        XCTAssertTrue(column.judges("Button"))
-        XCTAssertTrue(column.judges("Map"))
-        XCTAssertFalse(column.judges("Label"), "a run of other sources judges nothing")
-        XCTAssertFalse(column.judges("TextField"), "a run that made no verdict of the element itself judged it not")
     }
 
     /// The renderer's digest of a host's sources is the one `.scripts/Marks/inputs.sh` prints, which every host's
@@ -190,13 +211,8 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
-    /// A row whose members are all realized or not planned is met, one of which none is planned is –, and the
-    /// counts say each mark's number.
+    /// The counts say each mark's number, and what is not planned meets the contract.
     func testNotPlannedMeetsTheContractInARow() {
-        XCTAssertEqual(ControlDictionary.grouped(["✅", "–"]), "✅")
-        XCTAssertEqual(ControlDictionary.grouped(["–", "–"]), "–")
-        XCTAssertEqual(ControlDictionary.grouped(["☑️", "–"]), "☑️")
-        XCTAssertEqual(ControlDictionary.grouped(["✅", ""]), "")
         XCTAssertEqual(ControlDictionary.counted(.init(done: 3, partial: 1, notPlanned: 2)), "3 ✅ · 1 ☑️ · 2 –")
         XCTAssertEqual(ControlDictionary.Marks(done: 3, partial: 1, notPlanned: 2).met, 5)
     }
