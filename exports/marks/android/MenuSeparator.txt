@@ -1,1 +1,0 @@
-MenuSeparator: cannot read the menu of Label - Android's driver has no path for it yet

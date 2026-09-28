@@ -1,2 +1,0 @@
-Label.lineHeight: ✅
-Span.lineHeight: not realized

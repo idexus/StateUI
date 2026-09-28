@@ -1,4 +1,0 @@
-Menu.text: 🔌 read the menu of Window: the host's menu bar entries, not UIKit's main menu
-MenuBar: ✅
-MenuItem.clicked: ✅
-MenuItem.isEnabled: 🔌 read the menu of Window: the host's menu bar entries, not UIKit's main menu

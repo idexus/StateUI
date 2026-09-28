@@ -1,4 +1,0 @@
-ModalStack: ◐ cannot goBack on Window - Android's driver has no path for it yet
-Page.appearing: cannot goBack on Window - Android's driver has no path for it yet
-Page.disappearing: ✅
-Window.modalPopped: cannot goBack on Window - Android's driver has no path for it yet

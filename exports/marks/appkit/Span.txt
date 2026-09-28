@@ -1,3 +1,0 @@
-Span: ✅
-Span.background: not realized
-Span.text: ✅

@@ -1,8 +1,0 @@
-Label.text: ✅
-TextField: ✅
-TextField.frameChanged: ✅
-TextField.isPassword: cannot read isPassword of TextField - AppKit's driver has no path for it yet
-TextField.returnKey: not realized
-TextField.showsClearButton: not realized
-TextField.submitted: ✅
-TextField.text: ◐ cannot read isPassword of TextField - AppKit's driver has no path for it yet

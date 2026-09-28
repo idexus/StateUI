@@ -1,2 +1,0 @@
-Label.lineHeight: cannot read lineHeight of Label - AppKit's driver has no path for it yet
-Span.lineHeight: not realized

@@ -1,3 +1,0 @@
-ProgressBar: ✅
-ProgressBar.frameChanged: ✅
-ProgressBar.progress: ✅

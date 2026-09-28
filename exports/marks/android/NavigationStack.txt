@@ -1,5 +1,0 @@
-Label.frameChanged: ✅
-NavigationStack: ✅
-NavigationStack.barForegroundColor: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet
-NavigationStack.popped: cannot goBack on NavigationStack - Android's driver has no path for it yet
-Page.title: cannot read title of Window - Android's driver has no path for it yet

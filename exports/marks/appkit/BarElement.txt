@@ -1,2 +1,0 @@
-NavigationStack.barBackgroundColor: cannot read barBackgroundColor of NavigationStack - AppKit's driver has no path for it yet
-TabbedView.barBackgroundColor: cannot read barBackgroundColor of TabbedView - AppKit's driver has no path for it yet

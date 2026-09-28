@@ -1,4 +1,0 @@
-CheckBox: ✅
-CheckBox.frameChanged: ✅
-CheckBox.isOn: ✅
-CheckBox.toggled: ✅

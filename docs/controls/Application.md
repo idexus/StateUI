@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (12) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSApplication` / structure |  |
-| UIKit | ⌛ |  | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ⌛ |  | `Application` / structure |  |
+| AppKit |  |  | `NSApplication` / structure | no run of it on these sources |
+| UIKit |  |  | `UIApplication` / `UIWindowScene` | no run of it on these sources |
+| Android Views |  |  | `Application` / structure | no run of it on these sources |
 | WinUI 3 | ✅ | 12 ✅ | `Application` / structure |  |
 | GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
 | Web |  |  | `document` / structure | no host yet |
@@ -25,15 +25,15 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/ApplicationContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `announce` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `currentTime` | act | `() -> [Double]` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `currentTimeZone` | act | `() -> String` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `handlerFailed` | act | `(String) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `persistValue` | act | `(Name, PropValue) -> Void` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  |  |  |  | ✅ |  |  |  |
+| `announce` | act | `(String) -> Void` |  |  |  |  | ✅ |  |  |  |
+| `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  | ✅ |  |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  | ✅ |  |  |  |
+| `currentTime` | act | `() -> [Double]` |  |  |  |  | ✅ |  |  |  |
+| `currentTimeZone` | act | `() -> String` |  |  |  |  | ✅ |  |  |  |
+| `handlerFailed` | act | `(String) -> Void` |  |  |  |  | ✅ |  |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  |  |  | ✅ |  |  |  |
+| `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  |  |  |  | ✅ |  |  |  |
+| `persistValue` | act | `(Name, PropValue) -> Void` |  |  |  |  | ✅ |  |  |  |
+| `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  | ✅ |  |  |  |
+| `utcOffset` | act | `(String?, CalendarDate?) -> Int` |  |  |  |  | ✅ |  |  |  |

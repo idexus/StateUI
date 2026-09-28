@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | sheet `NSWindow` |  |
-| UIKit | ⌛ |  | `present(_:animated:)` |  |
-| Android Views | ⌛ |  | full-screen `Dialog` (?) |  |
+| AppKit |  |  | sheet `NSWindow` | no run of it on these sources |
+| UIKit |  |  | `present(_:animated:)` | no run of it on these sources |
+| Android Views |  |  | full-screen `Dialog` (?) | no run of it on these sources |
 | WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
 | GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | no run of it on these sources |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |

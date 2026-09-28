@@ -1,4 +1,0 @@
-ColorBox: ✅
-ColorBox.color: ✅
-ColorBox.cornerRadius: ✅
-ColorBox.frameChanged: ✅

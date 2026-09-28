@@ -1,3 +1,0 @@
-Path: ✅
-Path.data: ✅
-Path.frameChanged: ✅

@@ -1,2 +1,0 @@
-NavigationStack.barBackgroundColor: ✅
-TabbedView.barBackgroundColor: ✅

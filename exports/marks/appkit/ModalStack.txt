@@ -1,4 +1,0 @@
-ModalStack: ✅
-Page.appearing: ✅
-Page.disappearing: ✅
-Window.modalPopped: 🔌 goBack on Window: the host's toolbar or sheet entry called, no toolbar item or sheet touched

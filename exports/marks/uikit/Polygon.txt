@@ -1,4 +1,0 @@
-Polygon: ✅
-Polygon.fillRule: ✅
-Polygon.frameChanged: ✅
-Polygon.points: ✅

@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (5) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSSplitViewController` |  |
-| UIKit | ⌛ |  | `UISplitViewController` |  |
-| Android Views | ⌛ |  | AndroidX `DrawerLayout` |  |
+| AppKit |  |  | `NSSplitViewController` | no run of it on these sources |
+| UIKit |  |  | `UISplitViewController` | no run of it on these sources |
+| Android Views |  |  | AndroidX `DrawerLayout` | no run of it on these sources |
 | WinUI 3 | ✅ | 4 ✅ | `SplitView` |  |
 | GTK 4 |  |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` | no run of it on these sources |
 | Web |  |  | `<aside>` | no host yet |
@@ -25,8 +25,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `isSidebarVisible` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -34,7 +34,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -42,5 +42,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
-| `title` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
+| `title` | property | `String` | native |  |  |  | ✅ |  |  |  |

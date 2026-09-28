@@ -1,9 +1,0 @@
-ScrollView: ✅
-ScrollView.frameChanged: ✅
-ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet
-ScrollView.orientation: ✅
-ScrollView.scrollOffset: ✅
-ScrollView.scrollStopped: ✅
-ScrollView.scrollXChanged: ✅
-ScrollView.scrollYChanged: ✅
-ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - UIKit's driver has no path for it yet

@@ -1,5 +1,0 @@
-Label.frameChanged: ✅
-NavigationStack: ✅
-NavigationStack.barForegroundColor: ✅
-NavigationStack.popped: ✅
-Page.title: ✅

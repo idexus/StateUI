@@ -1,9 +1,0 @@
-ScrollView: ✅
-ScrollView.frameChanged: ✅
-ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet
-ScrollView.orientation: ✅
-ScrollView.scrollOffset: ◐ cannot read scrollOffset of ScrollView - AppKit's driver has no path for it yet
-ScrollView.scrollStopped: 🔌 scroll on ScrollView: the host's movement moved, not the clip view
-ScrollView.scrollXChanged: 🔌 scroll on ScrollView: the host's movement moved, not the clip view
-ScrollView.scrollYChanged: ◐ cannot read scrollOffset of ScrollView - AppKit's driver has no path for it yet
-ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - AppKit's driver has no path for it yet

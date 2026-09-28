@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSTextField` label; `NSAttributedString` runs |  |
-| UIKit | ⌛ |  | `UILabel`; `NSAttributedString` runs |  |
-| Android Views | ⌛ |  | `TextView`; `SpannableString` spans |  |
+| AppKit |  |  | `NSTextField` label; `NSAttributedString` runs | no run of it on these sources |
+| UIKit |  |  | `UILabel`; `NSAttributedString` runs | no run of it on these sources |
+| Android Views |  |  | `TextView`; `SpannableString` spans | no run of it on these sources |
 | WinUI 3 | ✅ |  | `TextBlock`; `Run` inlines |  |
 | GTK 4 |  |  | `GtkLabel`; `PangoAttrList` runs | no run of it on these sources |
 | Web |  |  | text element; `<span>` runs | no host yet |

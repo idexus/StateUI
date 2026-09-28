@@ -1,6 +1,0 @@
-Canvas: ✅
-Canvas.dragged: ✅
-Canvas.drawable: ✅
-Canvas.frameChanged: ✅
-Canvas.pressed: ✅
-Canvas.released: ✅

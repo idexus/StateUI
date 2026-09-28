@@ -1,4 +1,0 @@
-ToolbarItem: ✅
-ToolbarItem.clicked: ✅
-ToolbarItem.placement: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet
-ToolbarItem.priority: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet

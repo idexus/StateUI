@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSApplication` / structure |  |
-| UIKit | ⌛ |  | `UIApplication` / `UIWindowScene` |  |
-| Android Views | ⌛ |  | `Application` / structure |  |
+| AppKit |  |  | `NSApplication` / structure | no run of it on these sources |
+| UIKit |  |  | `UIApplication` / `UIWindowScene` | no run of it on these sources |
+| Android Views |  |  | `Application` / structure | no run of it on these sources |
 | WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
 | GTK 4 |  |  | `GtkApplication` / structure | no run of it on these sources |
 | Web |  |  | `document` / structure | no host yet |
@@ -25,9 +25,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `deactivated` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `destroying` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `stopped` | event |  | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `windowClosed` | event | `String` | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `windowRestored` | event | `(String, String?)` | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `activated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
+| `deactivated` | event |  | adaptive |  |  |  | ✅ |  |  |  |
+| `destroying` | event |  | adaptive |  |  |  | ✅ |  |  |  |
+| `stopped` | event |  | adaptive |  |  |  | ✅ |  |  |  |
+| `windowClosed` | event | `String` | adaptive |  |  |  | ✅ |  |  |  |
+| `windowRestored` | event | `(String, String?)` | adaptive |  |  |  | ✅ |  |  |  |

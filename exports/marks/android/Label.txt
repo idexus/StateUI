@@ -1,5 +1,0 @@
-Label: ✅
-Label.frameChanged: ✅
-Label.lineBreak: ◐ cannot read lineBreak of Label - Android's driver has no path for it yet
-Label.maximumLines: ◐ cannot read maximumLines of Label - Android's driver has no path for it yet
-Label.text: ✅

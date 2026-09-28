@@ -1,2 +1,0 @@
-Button.aspect: cannot read aspect of Button - AppKit's driver has no path for it yet
-Image.aspect: ◐ cannot read aspect of Image - AppKit's driver has no path for it yet

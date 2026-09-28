@@ -1,6 +1,0 @@
-TextEditor: ✅
-TextEditor.frameChanged: ✅
-TextEditor.growsWithText: ◐ cannot read growsWithText of TextEditor - Android's driver has no path for it yet
-TextEditor.maximumLength: ✅
-TextEditor.text: ✅
-TextEditor.textChanged: ✅

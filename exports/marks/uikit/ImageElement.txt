@@ -1,2 +1,0 @@
-Button.aspect: not realized
-Image.aspect: ◐ cannot read aspect of Image - UIKit's driver has no path for it yet

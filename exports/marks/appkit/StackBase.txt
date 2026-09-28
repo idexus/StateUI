@@ -1,2 +1,0 @@
-HStack.spacing: ◐ cannot read spacing of HStack - AppKit's driver has no path for it yet
-VStack.spacing: ◐ cannot read spacing of VStack - AppKit's driver has no path for it yet

@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | structure |  |
-| UIKit | ⌛ |  | structure |  |
-| Android Views | ⌛ |  | structure |  |
+| AppKit |  |  | structure | no run of it on these sources |
+| UIKit |  |  | structure | no run of it on these sources |
+| Android Views |  |  | structure | no run of it on these sources |
 | WinUI 3 | ✅ |  | structure |  |
 | GTK 4 |  |  | structure | no run of it on these sources |
 | Web |  |  | structure | no host yet |

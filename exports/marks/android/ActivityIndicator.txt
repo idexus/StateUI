@@ -1,3 +1,0 @@
-ActivityIndicator: ✅
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.isRunning: ✅

@@ -1,2 +1,0 @@
-MenuItem: cannot activate on MenuItem - Android's driver has no path for it yet
-MenuItem.clicked: cannot activate on MenuItem - Android's driver has no path for it yet

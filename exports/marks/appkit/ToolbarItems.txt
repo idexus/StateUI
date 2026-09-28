@@ -1,2 +1,0 @@
-ToolbarItem.clicked: 🔌 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
-ToolbarItems: ✅

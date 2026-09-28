@@ -1,9 +1,0 @@
-ScrollView: ✅
-ScrollView.frameChanged: ✅
-ScrollView.horizontalScrollBarVisibility: cannot read horizontalScrollBarVisibility of ScrollView - Android's driver has no path for it yet
-ScrollView.orientation: ◐ cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollOffset: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet
-ScrollView.scrollStopped: cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollXChanged: cannot scroll on ScrollView - Android's driver has no path for it yet
-ScrollView.scrollYChanged: cannot read scrollOffset of ScrollView - Android's driver has no path for it yet
-ScrollView.verticalScrollBarVisibility: cannot read verticalScrollBarVisibility of ScrollView - Android's driver has no path for it yet

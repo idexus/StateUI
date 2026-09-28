@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (6) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSMenu` / `NSMenuItem` |  |
-| UIKit | ⌛ |  | `UIMenu` / `UIAction` |  |
-| Android Views | ⌛ |  | `PopupMenu` / `MenuItem`; no menu bar |  |
+| AppKit |  |  | `NSMenu` / `NSMenuItem` | no run of it on these sources |
+| UIKit |  |  | `UIMenu` / `UIAction` | no run of it on these sources |
+| Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | no run of it on these sources |
 | WinUI 3 | ✅ | 4 ✅ | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | no run of it on these sources |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
@@ -31,7 +31,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native |  |  |  | ✅ |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `icon` | property | `ImageSource` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
-| `isDestructive` | property | `Bool` | adaptive | ⌛ | ⌛ | ⌛ |  |  |  | WinUI 3: not realized |
-| `isEnabled` | property | `Bool` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
-| `text` | property | `String` | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |  |
+| `onClicked` (`clicked`) | event |  | native |  |  |  | ✅ |  |  |  |
+| `icon` | property | `ImageSource` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
+| `isDestructive` | property | `Bool` | adaptive |  |  |  |  |  |  | WinUI 3: not realized |
+| `isEnabled` | property | `Bool` | native |  |  |  | ✅ |  |  |  |
+| `text` | property | `String` | native |  |  |  | ✅ |  |  |  |

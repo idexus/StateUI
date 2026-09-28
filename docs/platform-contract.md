@@ -103,63 +103,63 @@ of its members each meets, and why a cell is empty.
 <!-- creation:begin -->
 | Element | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [ActivityIndicator](controls/ActivityIndicator.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Application](controls/Application.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Button](controls/Button.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Canvas](controls/Canvas.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [CheckBox](controls/CheckBox.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ColorBox](controls/ColorBox.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Content](controls/Content.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
-| [ContextMenu](controls/ContextMenu.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [DatePicker](controls/DatePicker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Ellipse](controls/Ellipse.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Grid](controls/Grid.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [HStack](controls/HStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Image](controls/Image.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ItemsView](controls/ItemsView.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Label](controls/Label.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [LeadingContent](controls/LeadingContent.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
-| [Line](controls/Line.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Map](controls/Map.md) | provider | ⌛ | ⌛ | ⌛ |  |  |  |
-| [Menu](controls/Menu.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [MenuBar](controls/MenuBar.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [MenuItem](controls/MenuItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [MenuSeparator](controls/MenuSeparator.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ModalStack](controls/ModalStack.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [NavigationStack](controls/NavigationStack.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Overlay](controls/Overlay.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Page](controls/Page.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Path](controls/Path.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Picker](controls/Picker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Pin](controls/Pin.md) | provider | ⌛ | ⌛ | ⌛ |  |  |  |
-| [Polygon](controls/Polygon.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Polyline](controls/Polyline.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [PositionIndicator](controls/PositionIndicator.md) | stateUI | ⌛ | ⌛ | ⌛ |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Rectangle](controls/Rectangle.md) | stateUI | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Scene](controls/Scene.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ScrollView](controls/ScrollView.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [SearchField](controls/SearchField.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Slider](controls/Slider.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Span](controls/Span.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Spans](controls/Spans.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [SplitView](controls/SplitView.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Stepper](controls/Stepper.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [Switch](controls/Switch.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TabbedView](controls/TabbedView.md) | adaptive | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TextEditor](controls/TextEditor.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TextField](controls/TextField.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TimePicker](controls/TimePicker.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TitleBar](controls/TitleBar.md) | adaptive | ⌛ | ⌛ | ⌛ |  |  |  |
-| [TitleView](controls/TitleView.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ToolbarItems](controls/ToolbarItems.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [TrailingContent](controls/TrailingContent.md) | structure | ⌛ | ⌛ | ⌛ |  |  |  |
-| [VStack](controls/VStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [WebView](controls/WebView.md) | native | ⌛ | ⌛ | ⌛ |  |  |  |
-| [Window](controls/Window.md) | structure | ⌛ | ⌛ | ⌛ | ✅ |  |  |
-| [ZStack](controls/ZStack.md) | native | ⌛ | ⌛ | ⌛ | ✅ |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | native |  |  |  | ✅ |  |  |
+| [Application](controls/Application.md) | structure |  |  |  | ✅ |  |  |
+| [Button](controls/Button.md) | native |  |  |  | ✅ |  |  |
+| [Canvas](controls/Canvas.md) | native |  |  |  | ✅ |  |  |
+| [CheckBox](controls/CheckBox.md) | stateUI |  |  |  | ✅ |  |  |
+| [ColorBox](controls/ColorBox.md) | native |  |  |  | ✅ |  |  |
+| [Content](controls/Content.md) | structure |  |  |  |  |  |  |
+| [ContextMenu](controls/ContextMenu.md) | structure |  |  |  | ✅ |  |  |
+| [DatePicker](controls/DatePicker.md) | native |  |  |  | ✅ |  |  |
+| [Ellipse](controls/Ellipse.md) | stateUI |  |  |  | ✅ |  |  |
+| [Grid](controls/Grid.md) | stateUI |  |  |  | ✅ |  |  |
+| [HStack](controls/HStack.md) | native |  |  |  | ✅ |  |  |
+| [Image](controls/Image.md) | native |  |  |  | ✅ |  |  |
+| [ItemsView](controls/ItemsView.md) | native |  |  |  | ✅ |  |  |
+| [Label](controls/Label.md) | native |  |  |  | ✅ |  |  |
+| [LeadingContent](controls/LeadingContent.md) | structure |  |  |  |  |  |  |
+| [Line](controls/Line.md) | stateUI |  |  |  | ✅ |  |  |
+| [Map](controls/Map.md) | provider |  |  |  |  |  |  |
+| [Menu](controls/Menu.md) | structure |  |  |  | ✅ |  |  |
+| [MenuBar](controls/MenuBar.md) | structure |  |  |  | ✅ |  |  |
+| [MenuItem](controls/MenuItem.md) | structure |  |  |  | ✅ |  |  |
+| [MenuSeparator](controls/MenuSeparator.md) | structure |  |  |  | ✅ |  |  |
+| [ModalStack](controls/ModalStack.md) | structure |  |  |  | ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | adaptive |  |  |  | ✅ |  |  |
+| [Overlay](controls/Overlay.md) | structure |  |  |  | ✅ |  |  |
+| [Page](controls/Page.md) | adaptive |  |  |  | ✅ |  |  |
+| [Path](controls/Path.md) | stateUI |  |  |  | ✅ |  |  |
+| [Picker](controls/Picker.md) | native |  |  |  | ✅ |  |  |
+| [Pin](controls/Pin.md) | provider |  |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | stateUI |  |  |  | ✅ |  |  |
+| [Polyline](controls/Polyline.md) | stateUI |  |  |  | ✅ |  |  |
+| [PositionIndicator](controls/PositionIndicator.md) | stateUI |  |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | native |  |  |  | ✅ |  |  |
+| [RadioButton](controls/RadioButton.md) | stateUI |  |  |  | ✅ |  |  |
+| [Rectangle](controls/Rectangle.md) | stateUI |  |  |  | ✅ |  |  |
+| [Scene](controls/Scene.md) | structure |  |  |  | ✅ |  |  |
+| [ScrollView](controls/ScrollView.md) | native |  |  |  | ✅ |  |  |
+| [SearchField](controls/SearchField.md) | native |  |  |  | ✅ |  |  |
+| [Slider](controls/Slider.md) | native |  |  |  | ✅ |  |  |
+| [Span](controls/Span.md) | structure |  |  |  | ✅ |  |  |
+| [Spans](controls/Spans.md) | structure |  |  |  | ✅ |  |  |
+| [SplitView](controls/SplitView.md) | adaptive |  |  |  | ✅ |  |  |
+| [Stepper](controls/Stepper.md) | native |  |  |  | ✅ |  |  |
+| [Switch](controls/Switch.md) | native |  |  |  | ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | adaptive |  |  |  | ✅ |  |  |
+| [TextEditor](controls/TextEditor.md) | native |  |  |  | ✅ |  |  |
+| [TextField](controls/TextField.md) | native |  |  |  | ✅ |  |  |
+| [TimePicker](controls/TimePicker.md) | native |  |  |  | ✅ |  |  |
+| [TitleBar](controls/TitleBar.md) | adaptive |  |  |  |  |  |  |
+| [TitleView](controls/TitleView.md) | structure |  |  |  | ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure |  |  |  | ✅ |  |  |
+| [ToolbarItems](controls/ToolbarItems.md) | structure |  |  |  | ✅ |  |  |
+| [TrailingContent](controls/TrailingContent.md) | structure |  |  |  |  |  |  |
+| [VStack](controls/VStack.md) | native |  |  |  | ✅ |  |  |
+| [WebView](controls/WebView.md) | native |  |  |  |  |  |  |
+| [Window](controls/Window.md) | structure |  |  |  | ✅ |  |  |
+| [ZStack](controls/ZStack.md) | native |  |  |  | ✅ |  |  |
 <!-- creation:end -->
 
 The AppKit split view uses `NSSplitViewController`.

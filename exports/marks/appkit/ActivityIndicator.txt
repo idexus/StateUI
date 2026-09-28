@@ -1,3 +1,0 @@
-ActivityIndicator: ✅
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.isRunning: 🔌 read isRunning of ActivityIndicator: the host's own flag; the indicator holds none to read

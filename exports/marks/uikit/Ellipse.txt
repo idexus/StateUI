@@ -1,3 +1,0 @@
-Ellipse: ✅
-Ellipse.fill: ✅
-Ellipse.frameChanged: ✅

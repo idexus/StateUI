@@ -1,2 +1,0 @@
-ToolbarItem.clicked: cannot activate on ToolbarItem - Android's driver has no path for it yet
-ToolbarItems: cannot activate on ToolbarItem - Android's driver has no path for it yet

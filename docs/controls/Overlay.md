@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | pass-through `NSView` above the page |  |
-| UIKit | ⌛ |  | pass-through `UIView` above the page |  |
-| Android Views | ⌛ |  | top child of a `FrameLayout` |  |
+| AppKit |  |  | pass-through `NSView` above the page | no run of it on these sources |
+| UIKit |  |  | pass-through `UIView` above the page | no run of it on these sources |
+| Android Views |  |  | top child of a `FrameLayout` | no run of it on these sources |
 | WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
 | GTK 4 |  |  | `GtkOverlay` | no run of it on these sources |
 | Web |  |  | positioned element above the page | no host yet |

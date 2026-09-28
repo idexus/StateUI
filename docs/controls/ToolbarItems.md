@@ -12,9 +12,9 @@ Marks: ✅ proven by every test of it that ran on that host · ☑️ proven, th
 
 | Host | Created | Members (0) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ⌛ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
-| UIKit | ⌛ |  | `UIBarButtonItem` |  |
-| Android Views | ⌛ |  | `Toolbar` `MenuItem` |  |
+| AppKit |  |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow | no run of it on these sources |
+| UIKit |  |  | `UIBarButtonItem` | no run of it on these sources |
+| Android Views |  |  | `Toolbar` `MenuItem` | no run of it on these sources |
 | WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
 | GTK 4 |  |  | `GtkButton` in `GtkHeaderBar` | no run of it on these sources |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |

@@ -1,2 +1,0 @@
-ZStack: ◐ cannot read what reaches ColorBox - Android's driver has no path for it yet
-ZStack.frameChanged: ✅
