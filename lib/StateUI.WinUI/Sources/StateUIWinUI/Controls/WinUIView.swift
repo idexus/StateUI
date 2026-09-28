@@ -4,7 +4,6 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
-import ucrt
 
 /// A WinUI element Swift holds, and the number the relay calls back with.
 /// Design: docs/design/platforms/winui/relay.md#a-view-and-its-number
@@ -112,22 +111,10 @@ class WinUIView {
         writeTransform()
     }
 
-    /// Writes the view's own transform, with a placing layout's over it, about its pivot in the size the view was
-    /// last placed at - the centre under a placing layout's drawing.
+    /// Writes the view's own transform, with a placing layout's over it (`HostDrawingTransform.under`), about its
+    /// pivot in the size the view was last placed at.
     private func writeTransform() {
-        var drawn = transform
-        if let placed = placedDrawing {
-            let angle = placed.rotation * .pi / 180
-            let x = transform.translationX * placed.scaleX
-            let y = transform.translationY * placed.scaleY
-            drawn.translationX = placed.translationX + x * cos(angle) - y * sin(angle)
-            drawn.translationY = placed.translationY + x * sin(angle) + y * cos(angle)
-            drawn.rotation += placed.rotation
-            drawn.scaleX *= placed.scaleX
-            drawn.scaleY *= placed.scaleY
-            drawn.pivotX = 0.5
-            drawn.pivotY = 0.5
-        }
+        let drawn = transform.under(placedDrawing)
         let size = placed ?? Rect(x: 0, y: 0, width: 0, height: 0)
         stateui_winui_set_transform(
             handle, drawn.translationX, drawn.translationY, drawn.rotation,

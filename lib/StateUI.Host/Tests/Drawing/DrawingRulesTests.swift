@@ -92,4 +92,21 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(BandWords.light(on: .color(red: 240, green: 240, blue: 240, alpha: 255)), false, "light grey")
         XCTAssertNil(BandWords.light(on: .number(1)))
     }
+
+    /// A view's own move, turn and scale drawn under a placing run's: the move turned and scaled by the run's, the
+    /// turns added and the scales multiplied, about the centre; with no run, the view's own.
+    func testAPlacedChildIsDrawnUnderItsRunsTransform() {
+        let own = HostDrawingTransform(translationX: 10, rotation: 15, scaleX: 2, scaleY: 2, pivotX: 0, pivotY: 1)
+        let run = HostDrawingTransform(translationX: 100, translationY: 50, rotation: 90, scaleX: 3, scaleY: 3)
+        let drawn = own.under(run)
+
+        XCTAssertEqual(drawn.translationX, 100, accuracy: 1e-9)
+        XCTAssertEqual(drawn.translationY, 50 + 30, accuracy: 1e-9, "the move turned a quarter and made three times")
+        XCTAssertEqual(drawn.rotation, 105, accuracy: 1e-9)
+        XCTAssertEqual(drawn.scaleX, 6, accuracy: 1e-9)
+        XCTAssertEqual(drawn.scaleY, 6, accuracy: 1e-9)
+        XCTAssertEqual(drawn.pivotX, 0.5)
+        XCTAssertEqual(drawn.pivotY, 0.5, "about the centre")
+        XCTAssertEqual(own.under(nil), own)
+    }
 }

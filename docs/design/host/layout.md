@@ -129,6 +129,16 @@ where the run says, no size below nothing, drawn at the run's opacity within
 among equals, the children it places none of after them in their order
 (`ZStackArithmetic.drawingOrder`, `HostPlacement.place`, `drawnOpacity`).
 
+## A placed child
+
+A child a run places is drawn moved, turned and scaled by the run over what
+its own properties say, and a toolkit keeping one translation, rotation and
+scale for a view takes the two composed, the same on every host
+(`HostDrawingTransform.under`): the turns add, the scales multiply, and the
+child's own move is turned and scaled by the run's before the run's is
+added, all about the child's centre. That is exact while a run's scales are
+the same on both axes, which is what a run draws.
+
 ## Drawing order
 
 A grid's and a ZStack's children can overlap, so their order is

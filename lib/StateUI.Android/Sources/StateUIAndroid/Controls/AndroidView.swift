@@ -147,21 +147,10 @@ class AndroidView {
         setOpacity(ownOpacity)
     }
 
-    /// Writes the view's own transform, with a placing layout's over it.
+    /// Writes the view's own transform, with a placing layout's over it (`HostDrawingTransform.under`).
     private func applyTransform() {
-        var drawn = own
-        if let placed {
-            let angle = placed.rotation * .pi / 180
-            let x = own.translationX * placed.scaleX
-            let y = own.translationY * placed.scaleY
-            drawn.translationX = placed.translationX + x * cos(angle) - y * sin(angle)
-            drawn.translationY = placed.translationY + x * sin(angle) + y * cos(angle)
-            drawn.rotation += placed.rotation
-            drawn.scaleX *= placed.scaleX
-            drawn.scaleY *= placed.scaleY
-        }
-
-        pivot = placed == nil ? (drawn.pivotX, drawn.pivotY) : (0.5, 0.5)
+        let drawn = own.under(placed)
+        pivot = (drawn.pivotX, drawn.pivotY)
 
         // A pivot off the centre is in pixels of the size the view was last placed at; at the centre, Android's own.
         let size = laidOut.map { (Double($0.right - $0.left), Double($0.bottom - $0.top)) } ?? (0, 0)
