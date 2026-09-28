@@ -32,7 +32,7 @@ final class GTKItemsView: GTKLayoutView {
     private var width = 0.0
 
     /// Every cell set up, by its list item.
-    private var made: [OpaquePointer: GTKItemCell] = [:]
+    private(set) var made: [OpaquePointer: GTKItemCell] = [:]
 
     /// How deep the list is in binding its rows, and what waits for it to be done.
     private var binding = 0
@@ -265,6 +265,7 @@ final class GTKItemsView: GTKLayoutView {
     private func setUp(_ row: UnsafeMutableRawPointer?) {
         guard let row, !released else { return }
         let cell = GTKItemCell()
+        cell.row = OpaquePointer(row)
         cell.across = shape.isAcross
         made[OpaquePointer(row)] = cell
         gtk_list_item_set_child(OpaquePointer(row), cell.widget)

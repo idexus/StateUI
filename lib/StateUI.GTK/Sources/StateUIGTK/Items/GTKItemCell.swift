@@ -23,6 +23,10 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
     /// The entry's place in the list, as its list item last said.
     var place: Int?
 
+    /// The list item the cell stands in, which the screen reader names the row by.
+    var row: OpaquePointer?
+    private var named = ""
+
     func hold(_ identity: String, _ item: MountedElement?) {
         self.identity = identity
         guard item !== shown || items.isEmpty != (item == nil) else { return }
@@ -34,6 +38,16 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
         identity = nil
         shown = nil
         setItems([])
+    }
+
+    /// Arranges the entry, and names the row by what it says, where that changed: the screen reader reads a row by
+    /// its name alone (`MountedElement.spokenWords`).
+    override func arrange(in bounds: Rect) {
+        super.arrange(in: bounds)
+        let words = shown?.spokenWords ?? ""
+        guard words != named, let row else { return }
+        named = words
+        gtk_list_item_set_accessible_label(row, words)
     }
 
     /// The room around the entry, in the reading direction.

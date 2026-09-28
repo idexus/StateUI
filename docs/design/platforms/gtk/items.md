@@ -40,7 +40,10 @@ scrollable's natural policy): at its least, a panel's nothing, every row
 would stand in view at once. A cell whose entry is still on its way keeps the room
 of a row: measured of nothing, every cell would fit in view at once and the
 list would bind every entry. An entry whose size changes is measured again
-by the cell holding it; the list's own size never follows its items.
+by the cell holding it; the list's own size never follows its items. The
+cell names its list item by what its entry says (`spokenWords`,
+`gtk_list_item_set_accessible_label`): the screen reader reads a row by its
+name alone.
 
 ## Changes wait for the list
 

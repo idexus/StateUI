@@ -25,6 +25,27 @@ final class GTKItemsViewTests: XCTestCase {
     }
 }
 
+extension GTKItemsViewTests {
+    /// A row is named by what its entry says (`MountedElement.spokenWords`): the screen reader reads a row by its
+    /// name alone.
+    func testARowIsNamedByWhatItsEntrySays() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack { ItemsView(0..<3) { Label("Item \($0)").padding(12) }.width(300).height(300) }
+            }
+            let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
+            let names = {
+                list.made.compactMap { row, cell in
+                    cell.identity.map { _ in gtk_list_item_get_accessible_label(row).map { String(cString: $0) } ?? "" }
+                }.sorted()
+            }
+            host.settle { names() == ["Item 0", "Item 1", "Item 2"] }
+
+            XCTAssertEqual(names(), ["Item 0", "Item 1", "Item 2"])
+        }
+    }
+}
+
 private extension GTKItemsView {
     /// The heights of the rows GTK shows, in order.
     var shownRows: [Int32] {
