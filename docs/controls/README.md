@@ -25,7 +25,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Grid](Grid.md) | 77 |  |  |  |  |  |  |
 | [HStack](HStack.md) | 74 |  |  |  |  |  |  |
 | [Image](Image.md) | 69 |  |  |  |  |  |  |
-| [ItemsView](ItemsView.md) | 76 |  |  |  |  |  |  |
+| [ItemsView](ItemsView.md) | 76 |  |  |  | 11 ✅ |  |  |
 | [Label](Label.md) | 81 |  |  |  |  |  |  |
 | [Line](Line.md) | 80 |  |  |  |  |  |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
@@ -49,7 +49,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 |  |  |  |  |  |  |
 | [WebView](WebView.md) | 77 |  |  |  |  |  |  |
 | [ZStack](ZStack.md) | 73 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 2591 |  |  |  |  |  |  |
+| **Met** - ✅ and – | 2591 |  |  |  | 11 of 2591 met |  |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -59,7 +59,7 @@ The scene, the window and the page an application is made of, the arrangements a
 <!-- structure:begin -->
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Application](Application.md) | 12 |  |  |  |  |  |  |
+| [Application](Application.md) | 12 |  |  |  | 12 ✅ |  |  |
 | [Content](Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |
@@ -72,7 +72,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](Page.md) | 12 |  |  |  |  |  |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
-| [Scene](Scene.md) | 6 |  |  |  |  |  |  |
+| [Scene](Scene.md) | 6 |  |  |  | 6 ✅ |  |  |
 | [Span](Span.md) | 12 |  |  |  |  |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
 | [SplitView](SplitView.md) | 5 |  |  |  |  |  |  |
@@ -82,7 +82,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 |  |  |  |  |  |  |
-| **Met** - ✅ and – | 104 |  |  |  |  |  |  |
+| **Met** - ✅ and – | 104 |  |  |  | 18 of 104 met |  |  |
 <!-- structure:end -->
 
 ## Tiers

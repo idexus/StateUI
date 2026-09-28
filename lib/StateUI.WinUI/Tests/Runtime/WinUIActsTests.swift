@@ -46,4 +46,64 @@ final class WinUIActsTests: XCTestCase {
             XCTAssertEqual(WinUIPersistence.read(), kept, "the old store stands")
         }
     }
+
+    /// A question stands over the window the user is in - the one activated last - not over the application's first.
+    func testAQuestionStandsInTheWindowTheUserIsIn() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(application: { AskingApplication() })
+            stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).first).handle)
+            for _ in 0..<30 where host.windows.count < 2 { host.step() }
+            XCTAssertEqual(host.windows.count, 2)
+            let (main, tool) = (host.windows[0].window, host.windows[1].window)
+            WinUICallbacks.table.windowStateChanged(main.number, false, false)
+            WinUICallbacks.table.windowStateChanged(tool.number, false, true)
+            host.step()
+
+            stateui_winui_button_invoke(try XCTUnwrap(host.views(WinUIButtonView.self).last).handle)
+            host.settle(until: { Self.asks(tool) || Self.asks(main) })
+            XCTAssertTrue(Self.asks(tool), "over the window the user is in")
+            XCTAssertFalse(Self.asks(main))
+
+            for window in [main, tool] where Self.asks(window) {
+                _ = stateui_winui_answer(try XCTUnwrap(window.content).handle, 1, nil)
+            }
+            host.settle(until: { !Self.asks(tool) && !Self.asks(main) })
+        }
+    }
+
+    /// Whether a question stands over `window`'s content.
+    @MainActor
+    private static func asks(_ window: WinUIWindow) -> Bool {
+        window.content.map { stateui_winui_question($0.handle, nil, 0) >= 0 } ?? false
+    }
+}
+
+/// An application whose main window opens a tool window, which asks the user something.
+private struct AskingApplication: Application {
+    var scene: any Scene { AskingScene() }
+}
+
+private struct AskingScene: Scene {
+    var windows: Windows {
+        Windows({ WindowGroup(WindowType("acts.tool")) { AskingToolWindow() } }, main: { AskingMainWindow() })
+    }
+}
+
+private struct AskingMainWindow: Window {
+    var page: any Page { AskingOpeningPage() }
+}
+
+private struct AskingOpeningPage: ContentView {
+    @Environment private var scene: SceneSession
+
+    var content: any View {
+        let scene = self.scene
+        return Button("Tool").onClicked { try await scene.openWindow(WindowType("acts.tool")) }
+    }
+}
+
+private struct AskingToolWindow: Window {
+    var page: any Page {
+        Button("Ask").onClicked { try await Dialogs.alert("Saved", message: "The draft is safe") }
+    }
 }

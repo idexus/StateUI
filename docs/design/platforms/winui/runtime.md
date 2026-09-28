@@ -151,11 +151,13 @@ UI thread, and the host tells the core again and renders what it changed.
 
 The acts the application calls are performed after each turn's render and
 answered, a reply or a failure with its reason, so no caller waits on an act
-nobody performs. The time of day is the system's local time; the zone is the
+nobody performs - by the host layer's performer, WinUI's part its toolkit's
+(`WinUIActToolkit`, [acts](../../host/runtime.md#acts)). The time of day is the system's local time; the zone is the
 one the locale reports, an IANA name; a zone's distance from UTC on a day is
 ICU's - the ICU Windows carries - taken at the day's noon, so the day decides
 summer time, and a zone ICU does not know fails the act. The screen reader is
-told through the window's content, cutting off what it was saying. The focus
+told through the content of the window the user is in, cutting off what it
+was saying. The focus
 is put on the view the act names, or the first control in it that takes it;
 WinUI has no way to leave the focus nowhere, so taking it off lends it to the
 window's content for a moment, as no control, and the on-screen keyboard goes
@@ -164,7 +166,8 @@ with a field that loses it.
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
-WinUI's own dialog, over the window, and its call waits under a ticket the
+WinUI's own dialog, over the window the user is in when its turn comes - the
+one activated last, else the first - and its call waits under a ticket the
 dialog hands back as the user answers; a ticket is one number across the
 process, so an answer that arrives after its renderer has gone answers
 nothing of another's. Questions are asked one at a time, in the order the

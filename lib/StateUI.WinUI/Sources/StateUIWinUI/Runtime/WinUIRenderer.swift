@@ -29,8 +29,13 @@ final class WinUIRenderer {
     /// What is kept of the scenes for the next start: Windows restores no windows.
     let scenes = SceneKeeper()
 
-    /// What performs the acts the application calls, and answers them.
-    private(set) lazy var acts = WinUIActPerformer(core: runtime.core, scenes: scenes)
+    /// WinUI's part of the acts: the clock, the dialogs, Narrator, the focus, the store.
+    private(set) lazy var actToolkit = WinUIActToolkit(renderer: self)
+
+    /// What performs the acts the application calls, and answers them, by the host layer's rules.
+    private(set) lazy var acts = HostActPerformer(
+        toolkit: actToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree },
+        answered: { [unowned self] in runtime.pump.turn() })
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()
@@ -40,9 +45,15 @@ final class WinUIRenderer {
         roster.controllers
     }
 
-    /// The first window - the scene's main one, where the application's questions stand; nil before there is one.
+    /// The first window - the scene's main one; nil before there is one.
     var window: WinUIWindow? {
         windows.first?.window
+    }
+
+    /// The window the user is in: the one activated last, else the first.
+    var userWindow: WinUIWindow? {
+        let front = runtime.lifecycle.activatedLast(among: roster.windows.map(\.0))
+        return front.flatMap { controller(of: $0)?.window } ?? window
     }
 
     /// A runtime on the performance counter and WinUI's frames, or on `clock` and the frames its owner gives, with
@@ -83,8 +94,7 @@ final class WinUIRenderer {
 
     /// The user answered a question put under `ticket`: its caller hears the answer, and what it changes renders.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        acts.answered(ticket: ticket, accepted: accepted, words: words)
-        runtime.pump.turn()
+        actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
     }
 
     /// Windows said the theme, the power or the network changed: the core hears it, and renders what it changed.
@@ -160,7 +170,7 @@ extension WinUIRenderer: TurnPresenter {
     }
 
     func perform(_ call: HostActCall) {
-        acts.perform(call, in: runtime.tree, window: window)
+        acts.perform(call)
     }
 }
 
