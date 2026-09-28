@@ -28,6 +28,28 @@ final class LayoutMotionTests: XCTestCase {
         XCTAssertFalse(layout.animator.isMoving)
     }
 
+    /// A child whose place travels is told where it is bound as it sets out - a view laying out words lays them out
+    /// at that size, never at the widths it passes through - and bound nowhere once it lands or merely arrives.
+    func testATravellingChildIsToldWhereItIsBound() {
+        let layout = HandWoundLayout()
+        let words = Placed()
+        let narrow = Rect(x: 0, y: 0, width: 94, height: 21)
+        let wide = Rect(x: 0, y: 0, width: 100, height: 21)
+        layout.arrange([(words, 2, narrow)], measured: [2])
+        XCTAssertNil(words.bound, "an arrival is bound nowhere")
+
+        layout.arrange([(words, 2, wide)], measured: [2])
+        XCTAssertEqual(words.placedFrame.width, 94, "its width travels")
+        XCTAssertEqual(words.bound, wide)
+
+        layout.frame(at: 100)
+        XCTAssertEqual(words.bound, wide, "the whole way")
+
+        layout.frame(at: 200)
+        XCTAssertEqual(words.placedFrame, wide)
+        XCTAssertNil(words.bound, "and nowhere once it stands")
+    }
+
     /// A child that joins a standing layout is at its place at once and fades in under the layout's law; the
     /// children of a first arrangement are simply there.
     func testAChildThatJoinsAStandingLayoutFadesIn() {
@@ -202,6 +224,13 @@ final class LayoutMotionTests: XCTestCase {
 @MainActor
 private final class Placed: PlacedView {
     var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
+
+    /// Where its place travels, as it was last told.
+    private(set) var bound: Rect?
+
+    func travels(to destination: Rect?) {
+        bound = destination
+    }
 }
 
 /// One layout on a hand-wound clock: its arrangements, each after a patch unless it says otherwise, and its frames.
@@ -226,19 +255,20 @@ private final class HandWoundLayout {
         places.motion = said
     }
 
-    /// An arrangement `width` wide, after a patch where `patched`; every child states its width of 100, and the
-    /// heights `heights` gives by mount.
+    /// An arrangement `width` wide, after a patch where `patched`; every child states its width of 100 but the
+    /// `measured`, and the heights `heights` gives by mount.
     func arrange(
         _ children: [(view: Placed, mount: UInt64, place: Rect)],
         width: Double = 300,
         patched: Bool = true,
-        heights: [UInt64: Double] = [:]
+        heights: [UInt64: Double] = [:],
+        measured: Set<UInt64> = []
     ) {
         if patched { places.patchArrived() }
         places.begin(width: width)
         for child in children {
             var values = LayoutValues()
-            values.width = 100
+            values.width = measured.contains(child.mount) ? nil : 100
             values.height = heights[child.mount]
             places.place(child.view, mount: child.mount, at: child.place, values: values) { [unowned self] law in
                 self.fades[child.mount] = law

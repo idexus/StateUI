@@ -11,7 +11,8 @@ extension GTKView {
     static var allocating = 0
 
     /// Places the widget at `place` in its parent: at once inside an allocation, and between allocations by asking
-    /// the layout for one. The size is whole pixels, no smaller than the widget's least.
+    /// the layout for one. The size is whole pixels, no smaller than the widget's least - its words' room while its
+    /// place travels.
     /// Design: docs/design/platforms/gtk/layout.md#a-place-between-passes
     func layout(_ place: Rect) {
         placed = place
@@ -20,12 +21,13 @@ extension GTKView {
             return
         }
 
+        let room = wordsRoom ?? place
         var least: Int32 = 0
         var natural: Int32 = 0
         gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, -1, &least, &natural, nil, nil)
-        let width = max(least, Int32(place.width.rounded()))
+        let width = max(least, Int32(room.width.rounded()))
         gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, width, &least, &natural, nil, nil)
-        let height = max(least, Int32(place.height.rounded()))
+        let height = max(least, Int32(room.height.rounded()))
         gtk_widget_allocate(widget, width, height, -1, allocation(at: place, width: Double(width), height: Double(height)))
     }
 

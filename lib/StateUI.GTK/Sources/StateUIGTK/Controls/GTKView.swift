@@ -137,6 +137,12 @@ class GTKView {
         gtk_widget_queue_resize(widget)
     }
 
+    /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
+    func travels(to destination: Rect?) {}
+
+    /// The room the view's words stand in while its place travels; nil where they stand in its place.
+    var wordsRoom: Rect? { nil }
+
     /// The widget's size for the room offered, in logical pixels; nil offers any. Its natural width, no wider
     /// than offered nor narrower than its least, and its natural height for that width.
     /// Design: docs/design/platforms/gtk/layout.md#measuring-a-widget

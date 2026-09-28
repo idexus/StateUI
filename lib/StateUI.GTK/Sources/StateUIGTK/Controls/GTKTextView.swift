@@ -17,6 +17,10 @@ class GTKTextView: GTKView {
     private var runs: [TextRun]?
     private var fillClass: String?
 
+    /// Where the label's place travels: its words stand at that size meanwhile.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    private var bound: Rect?
+
     init() {
         super.init { _ in gtk_label_new(nil) }
         setLines(breaking: .wordWrap, maximum: nil)
@@ -111,6 +115,12 @@ class GTKTextView: GTKView {
     func setAlignment(vertical: TextAlignment) {
         gtk_label_set_yalign(widget.opaque, vertical == .start ? 0 : vertical == .center ? 0.5 : 1)
     }
+
+    override func travels(to destination: Rect?) {
+        bound = destination
+    }
+
+    override var wordsRoom: Rect? { bound }
 
     /// What fills the label's box: a colour, or a brush's first colour; nil for nothing.
     func setBackground(_ value: HostValue?) {

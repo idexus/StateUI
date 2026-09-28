@@ -19,6 +19,12 @@ last wrote, the value a slider's thumb shows. GTK keeps a widget's opacity in
 256 steps, so what it draws is the nearest step; the animation runs on the
 host's own number, exactly.
 
+A label whose place travels is allocated at the size it is bound for, its
+place travelling around it: GTK breaks a label's words at the width it is
+allocated, so at the widths the place passes through words that fit the
+destination on one line would stand on two
+([words at their destination](../../host/motion.md#words-at-their-destination)).
+
 ## Moved, turned and scaled
 
 A widget's transform is part of its allocation: its parent hands GTK the place

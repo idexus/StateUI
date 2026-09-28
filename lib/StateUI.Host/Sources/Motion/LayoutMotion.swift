@@ -7,6 +7,16 @@
 @_spi(Host) @MainActor public protocol PlacedView: AnyObject {
     /// The rectangle the view stands at.
     var placedFrame: Rect { get set }
+
+    /// Where the view's place travels, told as it sets out, and nil once it stands: a view laying out words lays
+    /// them out at that size while its place travels, never at the sizes it passes through.
+    /// Design: docs/design/host/motion.md#words-at-their-destination
+    func travels(to destination: Rect?)
+}
+
+extension PlacedView {
+    /// Nothing of the view's own follows where its place travels.
+    public func travels(to destination: Rect?) {}
 }
 
 /// How one arrangement of a layout places its children.
@@ -132,6 +142,7 @@
         let standing = Self.rect(start)
         animator.start(animation, for: key)
         seats[mount]?.standing = standing
+        view.travels(to: target)
         view.placedFrame = standing
         onStart()
     }
@@ -143,6 +154,7 @@
 
             let standing = Self.rect(step.value)
             seats[mount]?.standing = step.rested ? nil : standing
+            if step.rested { seats[mount]?.view?.travels(to: nil) }
             seats[mount]?.view?.placedFrame = standing
         }
     }
@@ -156,6 +168,7 @@
     private func arrive(_ view: any PlacedView, at target: Rect, mount: UInt64) {
         animator.halt(.placed(mount))
         seats[mount]?.standing = nil
+        view.travels(to: nil)
         view.placedFrame = target
     }
 

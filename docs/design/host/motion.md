@@ -87,6 +87,16 @@ again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. A layout's children hold no strong
 reference: a view the tree dropped is not kept alive for its place.
 
+## Words at their destination
+
+A child whose place travels is told where it is bound as it sets out
+(`PlacedView.travels(to:)`), and that it is bound nowhere once it lands or
+arrives. A view that lays out words lays them out at the size it is bound
+for, its place travelling around them: at the widths the place passes
+through, words that fit the destination on one line would break onto two
+for as long as the place travels. Every other view stands at each size it
+passes through.
+
 ## Showing and hiding
 
 An element's showing moves by one rule on every host (`MountedElement`'s

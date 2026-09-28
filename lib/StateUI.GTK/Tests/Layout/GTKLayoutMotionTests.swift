@@ -4,11 +4,49 @@
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
+import CStateUIGTK
 import StateUIConformance
 import XCTest
 
+/// A caption whose words a button lengthens, in a stack 300 wide travelling on a 200 ms linear law.
+private struct LengtheningPage: ContentView {
+    @State private var long = false
+
+    var content: any View {
+        VStack {
+            Label(long ? "Text & typing" : "Text").horizontalAlignment(.start)
+            Button("Longer").onClicked { long = true }
+        }
+        .motion(.eased(200, .linear))
+        .width(300)
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 final class GTKLayoutMotionTests: XCTestCase {
+    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
+    /// there, never breaking at the widths its place passes through.
+    func testALabelsWordsStandAtTheWidthItTravelsTo() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let host = GTKRenderer.running(clock: clock) { LengtheningPage() }
+            let label = try XCTUnwrap(host.views(GTKLabelView.self).first)
+
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.runtime.pump.turn()
+            host.layOut()
+            clock.now += 100
+            host.frame()
+
+            var natural: Int32 = 0
+            gtk_widget_measure(label.widget, GTK_ORIENTATION_HORIZONTAL, -1, nil, &natural, nil, nil)
+            XCTAssertLessThan(label.placedFrame.width, Double(natural) - 1, "its place on its way")
+            XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "its words at the width it is bound for")
+        }
+    }
+
     /// A vertical stack of 100 x 40 labels in `order`, travelling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
