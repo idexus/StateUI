@@ -77,9 +77,8 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.placeholderAttributedString = nil
 
         if let placeholderColor, let placeholder {
-            textField.placeholderAttributedString = NSAttributedString(
-                string: placeholder,
-                attributes: [.foregroundColor: placeholderColor])
+            textField.placeholderAttributedString = .placeholder(
+                placeholder, color: placeholderColor, alignment: alignment(horizontalAlignment))
         } else {
             textField.placeholderString = placeholder
         }

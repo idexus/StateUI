@@ -10,6 +10,24 @@ import StateUIConformance
 import XCTest
 
 final class AppKitSearchFieldViewTests: XCTestCase {
+    /// A coloured placeholder stands and is set as the search's words would be: centred where they are, at their
+    /// size.
+    @MainActor
+    func testAColouredPlaceholderStandsAsTheWordsWould() throws {
+        let search = AppKitSearchFieldView()
+        search.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
+        search.apply(
+            text: "", writeText: true, placeholder: "WWW", placeholderColor: .red, foregroundColor: .textColor,
+            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: 1, enabled: true,
+            readOnly: false, maximumLength: nil, spellChecking: false, textPrediction: false, cursorPosition: nil,
+            selectionLength: nil, writeSelection: false)
+        search.layoutSubtreeIfNeeded()
+
+        let ink = try XCTUnwrap(try inkBounds(of: search, where: isRed), "the placeholder is drawn")
+        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+        XCTAssertGreaterThan(ink.height, 14, "at the search's 22 points")
+    }
+
     @MainActor
     func testSearchUsesNativeFieldProperties() {
         let search = AppKitSearchFieldView()

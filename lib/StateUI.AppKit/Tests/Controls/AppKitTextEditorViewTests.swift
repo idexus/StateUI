@@ -10,6 +10,22 @@ import StateUIConformance
 import XCTest
 
 final class AppKitTextEditorViewTests: XCTestCase {
+    /// An editor's placeholder stands across it where the words would: centred where they are.
+    @MainActor
+    func testThePlaceholderStandsAsTheWordsWould() throws {
+        let editor = AppKitTextEditorView()
+        editor.frame = NSRect(x: 0, y: 0, width: 300, height: 80)
+        editor.apply(
+            text: "", writeText: true, placeholder: "WWW", placeholderColor: .red, foregroundColor: .textColor,
+            backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: 1, enabled: true,
+            readOnly: false, maximumLength: nil, spellChecking: false, textPrediction: false, cursorPosition: nil,
+            selectionLength: nil, writeSelection: false, growsWithText: false)
+        editor.layoutSubtreeIfNeeded()
+
+        let ink = try XCTUnwrap(try inkBounds(of: editor, where: isRed), "the placeholder is drawn")
+        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+    }
+
     @MainActor
     func testEditorUsesNativeMultilineTextViewAndScrollView() {
         let editor = AppKitTextEditorView()

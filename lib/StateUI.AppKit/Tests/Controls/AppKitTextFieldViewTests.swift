@@ -73,6 +73,21 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertEqual(view.maximumLength, 12)
     }
 
+    /// A coloured placeholder stands and is set as the field's words would be: centred where they are, at their size.
+    @MainActor
+    func testAColouredPlaceholderStandsAsTheWordsWould() throws {
+        let view = AppKitTextFieldView()
+        view.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
+        apply(
+            view, text: "", placeholder: "WWW", placeholderColor: .red, backgroundColor: .white,
+            font: .systemFont(ofSize: 22), horizontalAlignment: 1)
+        view.layoutSubtreeIfNeeded()
+
+        let ink = try XCTUnwrap(try inkBounds(of: view, where: isRed), "the placeholder is drawn")
+        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+        XCTAssertGreaterThan(ink.height, 14, "at the field's 22 points")
+    }
+
     @MainActor
     func testPasswordChangesTheNativeEditorWithoutLosingText() {
         let view = AppKitTextFieldView()

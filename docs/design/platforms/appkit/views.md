@@ -66,3 +66,13 @@ the radio buttons of one superview sharing one action turn each other off as
 one is clicked, whatever sets StateUI put them in. So the host's radio button
 takes a turn only from StateUI's own writes and from a click on itself, which
 its cell makes; AppKit's turning off of the others is refused.
+
+## A field's placeholder
+
+A text field's, a search field's and an editor's placeholder stands where the
+field's own words would: across the field as `horizontalTextAlignment` says,
+in the field's font. A placeholder in a colour of its own is attributed text,
+which takes no alignment from its field as a plain one does, so it carries the
+field's alignment itself. An editor's placeholder is a label over the text
+view, as wide as the text view's room, so the alignment has room to move it.
+

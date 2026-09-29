@@ -139,6 +139,33 @@ func firstInkColumn(of view: NSView) throws -> Int {
     return bitmap.pixelsWide
 }
 
+/// Where `view` puts ink that `holds` says is its own, drawn WITH everything under it, in points from its top
+/// left; nil where it draws none - where a placeholder's glyphs landed, told apart by their colour.
+@MainActor
+func inkBounds(of view: NSView, where holds: (NSColor) -> Bool) throws -> NSRect? {
+    let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+    view.cacheDisplay(in: view.bounds, to: bitmap)
+
+    var (left, top, right, bottom) = (Int.max, Int.max, -1, -1)
+    for x in 0..<bitmap.pixelsWide {
+        for y in 0..<bitmap.pixelsHigh {
+            guard let pixel = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.sRGB), holds(pixel) else { continue }
+            (left, top, right, bottom) = (min(left, x), min(top, y), max(right, x), max(bottom, y))
+        }
+    }
+    guard right >= 0 else { return nil }
+
+    let scale = CGFloat(bitmap.pixelsWide) / max(view.bounds.width, 1)
+    return NSRect(
+        x: CGFloat(left) / scale, y: CGFloat(top) / scale,
+        width: CGFloat(right - left + 1) / scale, height: CGFloat(bottom - top + 1) / scale)
+}
+
+/// Whether `pixel` is plainly red: a red placeholder's glyphs, not their blended edge.
+func isRed(_ pixel: NSColor) -> Bool {
+    pixel.redComponent > 0.8 && pixel.greenComponent < 0.35 && pixel.blueComponent < 0.35
+}
+
 /// The first row of `view` holding ink, drawn WITH everything under it.
 ///
 /// The other half of `firstInkColumn(of:)`, for the question of where words sit

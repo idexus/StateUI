@@ -65,9 +65,8 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         placeholderString = nil
         placeholderAttributedString = nil
         if let placeholderColor, let placeholder {
-            placeholderAttributedString = NSAttributedString(
-                string: placeholder,
-                attributes: [.foregroundColor: placeholderColor])
+            placeholderAttributedString = .placeholder(
+                placeholder, color: placeholderColor, alignment: nativeAlignment(horizontalAlignment))
         } else {
             placeholderString = placeholder
         }

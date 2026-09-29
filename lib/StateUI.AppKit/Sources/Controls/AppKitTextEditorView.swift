@@ -56,7 +56,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
             scrollView.topAnchor.constraint(equalTo: topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
             placeholder.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            placeholder.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -8),
+            placeholder.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
             placeholder.topAnchor.constraint(equalTo: topAnchor, constant: 7),
         ])
     }
