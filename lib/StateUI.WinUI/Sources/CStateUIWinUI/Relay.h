@@ -15,6 +15,8 @@
 #include <cstdio>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -49,8 +51,13 @@ namespace stateui {
     /// Whether the keyboard's focus is on `element` or on what stands in it.
     bool holdsFocus(xaml::UIElement const &element);
 
-    /// Reads the control's theme again, so its template takes the resources written into the control.
-    void readThemeAgain(xaml::FrameworkElement const &control);
+    /// Writes `brushes` into the control's own resources under the names its template reads - lightweight styling;
+    /// a null brush takes its name away. A solid brush standing there takes the new colour in place, which what it
+    /// paints follows; one that comes, goes or is of another kind has the control's theme read again, as its template
+    /// takes such a resource only then.
+    /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
+    void writeResources(xaml::FrameworkElement const &control,
+                        std::vector<std::pair<std::wstring, xaml::Media::Brush>> const &brushes);
 
     /// The words a label shows - the text block its border holds - or `element` itself where it is a text block;
     /// null for any other element.

@@ -94,9 +94,20 @@ for the control - `CheckBoxCheckBackgroundFillChecked`, `ToggleSwitchFillOn`,
 `SliderTrackValueFill` and their kin - so the tint is written into the
 control's own resources under those names, the colour itself and fainter
 under the pointer and pressed, by the host layer's shares ([a
-box](../../host/layout.md#a-box)), as WinUI's accent brushes are. A template reads its resources as its theme is read, so the control
-reads its theme again at once; a tint changed after the control is drawn is
-drawn. No tint takes the names away, and the system's accent returns.
+box](../../host/layout.md#a-box)), as WinUI's accent brushes are - WinUI's
+lightweight styling, the same road a toggle's background and a search box's
+placeholder colour take.
+
+A new colour takes the brushes standing under those names in place, and what
+they paint follows it: a tint travelling frame by frame changes colours, not
+templates. A template reads a resource that comes or goes only as its theme is
+read, so a first colour after the control is drawn, and one taken away, have
+the control read its theme again at once - its theme set to the other and
+back, the one road WinUI's public surface offers; no tint takes the names
+away, and the system's accent returns. A control's own resources are found by
+walking them: `HasKey` and `Lookup` look on into the application's theme,
+whose brushes every control shares, and a brush found that way painted over
+is every control's.
 
 ## A picker
 
@@ -221,8 +232,8 @@ A search box is WinUI's `AutoSuggestBox` as it is: the text box its template
 holds takes the box's style, which carries whether it is read only, the case
 typing takes and the words typed across it. The template reads the
 placeholder's colour from theme resources, which the box's own resources name
-again - at rest, under the pointer, focused and disabled - and its theme is
-read again ([a control's accent](#a-controls-accent)). It stands the
+again - at rest, under the pointer, focused and disabled - as a control's
+accent is ([a control's accent](#a-controls-accent)). It stands the
 placeholder at the start whatever the text box says, so the register records
 the alignment in part: the host reaches into no template's parts.
 

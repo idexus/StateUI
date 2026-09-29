@@ -381,6 +381,10 @@ void stateui_winui_button_invoke(StateUIObjectRef button);
 void stateui_winui_set_tint(StateUIObjectRef control, uint32_t argb, bool tinted, double underPointer,
                             double pressed);
 
+/// What a test reads: how many times a control's theme was read again, so its template took resources written into
+/// the control.
+int32_t stateui_winui_themes_read_again(void);
+
 /// A sheet: a card over a veil across its window, holding a presented page under its title; a window's sheets, the
 /// last on top. Escape takes the top one away, chosen on the window's chrome as -3.
 StateUIObjectRef stateui_winui_sheet_make(void);
