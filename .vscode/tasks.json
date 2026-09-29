@@ -63,6 +63,8 @@
         "build",
         "--package-path",
         "${workspaceFolder}/apps/HelloWorld",
+        "--scratch-path",
+        "${workspaceFolder}/apps/HelloWorld/.build/appkit",
         "--configuration",
         "debug",
         "--product",
@@ -70,7 +72,7 @@
       ],
       // What makes this an AppKit build: the manifest declares the head and
       // defines APPKIT only then - see apps/Gallery/Package.swift.
-      "options": { "env": { "STATEUI_APPKIT": "1" } },
+      "options": { "env": { "STATEUI_HOST": "appkit" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
@@ -82,12 +84,14 @@
         "build",
         "--package-path",
         "${workspaceFolder}/apps/HelloWorld",
+        "--scratch-path",
+        "${workspaceFolder}/apps/HelloWorld/.build/appkit",
         "--configuration",
         "release",
         "--product",
         "HelloWorldAppKit"
       ],
-      "options": { "env": { "STATEUI_APPKIT": "1" } },
+      "options": { "env": { "STATEUI_HOST": "appkit" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     }

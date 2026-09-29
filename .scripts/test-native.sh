@@ -15,7 +15,7 @@ swift test --package-path "$repository_dir/apps/Gallery"
 swift test --package-path "$repository_dir/apps/HelloWorld"
 
 # And Swift written for the AppKit host alone stands under `#if APPKIT`, so the
-# Gallery runs once more as an AppKit build - STATEUI_APPKIT, which its
+# Gallery runs once more as an AppKit build - STATEUI_HOST=appkit, which its
 # manifest reads to define that condition - on the directory that build keeps.
-STATEUI_APPKIT=1 swift test --package-path "$repository_dir/apps/Gallery" \
+STATEUI_HOST=appkit swift test --package-path "$repository_dir/apps/Gallery" \
   --scratch-path "$repository_dir/apps/Gallery/.build/appkit"

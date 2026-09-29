@@ -42,7 +42,7 @@ executable="$scratch/$configuration/$product"
 # The executable is written again; a running copy goes first, found by its path.
 pkill -f "^$executable( |$)" 2>/dev/null && sleep 0.3 || true
 
-STATEUI_GTK=1 swift build \
+STATEUI_HOST=gtk swift build \
   --package-path "$app_dir" \
   --scratch-path "$scratch" \
   --configuration "$configuration" \

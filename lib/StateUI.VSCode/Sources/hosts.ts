@@ -14,12 +14,6 @@ export interface HostDescription {
     readonly detail: string;
 
     /**
-     * The variable an application's manifest reads to declare this host's head
-     * and define its compilation condition.
-     */
-    readonly variable: string;
-
-    /**
      * Where the language server keeps its index while the editor works as this
      * host, relative to each package: the build directory the host's own builds
      * already keep apart. One index for two hosts is two differently
@@ -51,22 +45,22 @@ export interface HostDescription {
 
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
-    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build/appkit/index-build", platforms: ["darwin"] },
+    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", indexPath: ".build/appkit/index-build", platforms: ["darwin"] },
     {
-        id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process", variable: "STATEUI_UIKIT",
+        id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process",
         indexPath: ".build/uikit/index-build", platforms: ["darwin"],
         target: { triple: "arm64-apple-ios26.0-simulator", xcodeSDK: "iphonesimulator" },
     },
     {
-        id: "android", label: "Android", detail: "Android Views, in the application's own process", variable: "STATEUI_ANDROID",
+        id: "android", label: "Android", detail: "Android Views, in the application's own process",
         indexPath: ".build/android/index-build", platforms: ["darwin"],
         target: {
             triple: "aarch64-unknown-linux-android28", swiftSDK: "android",
             swiftSDKGuide: "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
         },
     },
-    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", variable: "STATEUI_WINUI", indexPath: ".build/winui/index-build", platforms: ["win32"] },
-    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", variable: "STATEUI_GTK", indexPath: ".build/gtk/index-build", platforms: ["linux"] },
+    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", indexPath: ".build/winui/index-build", platforms: ["win32"] },
+    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", indexPath: ".build/gtk/index-build", platforms: ["linux"] },
 ];
 
 /**
@@ -86,16 +80,13 @@ export function describe(host: Host): HostDescription {
 }
 
 /**
- * The environment that makes a process work as `host`: that host's variable
- * set, and every other host's variable absent - every one of them, with no
- * host. At most one at a time, so a manifest is never asked to be two hosts.
+ * The variable a build names its host by - `STATEUI_HOST=appkit` - which an
+ * application's manifest reads to declare that host's head and define its
+ * condition. One variable holds one host, so no build is two hosts' at once.
  */
+export const hostVariable = "STATEUI_HOST";
+
+/** The environment that makes a process work as `host`: the variable naming it, and absent with no host. */
 export function environment(host: Host | undefined): Record<string, string | undefined> {
-    const values: Record<string, string | undefined> = {};
-
-    for (const each of hosts) {
-        values[each.variable] = each.id === host ? "1" : undefined;
-    }
-
-    return values;
+    return { [hostVariable]: host };
 }

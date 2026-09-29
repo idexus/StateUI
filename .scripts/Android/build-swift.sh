@@ -22,7 +22,7 @@
 #   ANDROID_NDK_ROOT=<path>      the NDK, 30 or newer, where it is not found on its own
 #   ANDROID_NDK_HOME=<path>      the same, read after ANDROID_NDK_ROOT
 #
-# The application's manifest reads STATEUI_ANDROID to declare its Android
+# The application's manifest reads STATEUI_HOST=android to declare its Android
 # head; the caller sets it for an Android Views build.
 set -euo pipefail
 

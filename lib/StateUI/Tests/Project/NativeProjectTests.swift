@@ -541,7 +541,7 @@ final class NativeProjectTests: XCTestCase {
     /// Every application DEFINES ITS HOST'S CONDITION IN ITS MANIFEST, for
     /// every module it compiles, exactly when a build says it is for that host.
     ///
-    /// One variable says both things - `STATEUI_APPKIT=1` gives the build an
+    /// One variable says both things - `STATEUI_HOST=appkit` gives the build an
     /// AppKit head and compiles the code under `#if APPKIT` - so a build and an
     /// editor that set it agree, and the editor completes that code like any
     /// other. The flag it replaced, `-Xswiftc -DAPPKIT`, is refused wherever a
@@ -557,7 +557,7 @@ final class NativeProjectTests: XCTestCase {
             let manifest = try text(relative)
 
             for shape in [
-                "Context.environment[\"STATEUI_\\($0.uppercased())\"] == \"1\"", ".define($0.uppercased())",
+                "$0.lowercased() == Context.environment[\"STATEUI_HOST\"]", ".define($0.uppercased())",
             ] {
                 XCTAssertTrue(manifest.contains(shape), "\(relative) does not say \(shape)")
             }
@@ -619,7 +619,7 @@ final class NativeProjectTests: XCTestCase {
     /// one.
     ///
     /// An application declares that target, the product it makes and the
-    /// StateUIAppKit dependency only when `STATEUI_APPKIT` is set, so that
+    /// StateUIAppKit dependency only when `STATEUI_HOST` is `appkit`, so that
     /// `swift test` compiles no part of one host's half. A build that leaves
     /// the variable out asks for a product the manifest never declared, and a
     /// page that leaves it out hands a reader a command that cannot work.
@@ -637,7 +637,7 @@ final class NativeProjectTests: XCTestCase {
             "docs/development.md", "docs/getting-started.md",
         ] {
             XCTAssertTrue(
-                try text(relative).contains("STATEUI_APPKIT=1"),
+                try text(relative).contains("STATEUI_HOST=appkit"),
                 "\(relative) builds an AppKit head without telling the manifest there is one")
         }
 
@@ -653,9 +653,35 @@ final class NativeProjectTests: XCTestCase {
 
         for task in tasks {
             XCTAssertTrue(
-                task.contains("\"STATEUI_APPKIT\": \"1\""),
+                task.contains("\"STATEUI_HOST\": \"appkit\""),
                 ".vscode/tasks.json builds an AppKit head without telling the manifest there is one")
         }
+    }
+
+    /// A build names its host by ONE variable, `STATEUI_HOST=<host>`. The five
+    /// it replaced, one a host and each set to 1, let a build be two hosts at
+    /// once - an inherited one beside a script's own - and the manifests took
+    /// the first. No script, manifest, page, task or editor source writes one
+    /// again.
+    func testABuildNamesItsHostByOneVariable() throws {
+        let removed = try NSRegularExpression(pattern: "STATEUI_(APP" + "KIT|UI" + "KIT|AND" + "ROID|WIN" + "UI|G" + "TK)(?![A-Z_])")
+        let kinds: Set<String> = ["swift", "md", "yml", "sh", "ps1", "json", "kts", "ts"]
+        let skipped: Set<String> = [
+            ".build", ".git", ".gradle", ".sourcekit-lsp", "node_modules", "out", "exports", "bin", "obj", "artifacts",
+        ]
+        let files = try SourceTree.files(under: SourceTree.repository, entering: { relative in
+            !skipped.contains(String(relative.split(separator: "/").last ?? ""))
+        }).filter { kinds.contains(URL(fileURLWithPath: $0).pathExtension) }
+        XCTAssertGreaterThan(files.count, 100, "the walk read almost no file")
+
+        var offenders: [String] = []
+        for relative in files {
+            let text = try String(contentsOf: SourceTree.repository.appendingPathComponent(relative), encoding: .utf8)
+            if removed.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil {
+                offenders.append(relative)
+            }
+        }
+        XCTAssertEqual(offenders, [], "these name a host by a variable of its own, not STATEUI_HOST")
     }
 
     /// Every Android head shows the application's icon: the launcher's adaptive icon, drawn from

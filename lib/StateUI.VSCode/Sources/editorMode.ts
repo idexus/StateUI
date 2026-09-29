@@ -47,7 +47,7 @@ import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { describe, environment, Host, hosts, plainIndexPath } from "./hosts";
+import { describe, environment, Host, hostVariable, hosts, plainIndexPath } from "./hosts";
 
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -134,15 +134,14 @@ export async function cleanIndex(roots: readonly string[]): Promise<void> {
 }
 
 /**
- * The host variables a settings file sets. The setting is laid over this
- * process's environment, so a variable found there decides the editor's mode
- * whatever host is chosen.
+ * The host variable, where a settings file sets it. The setting is laid over
+ * this process's environment, so the variable found there decides the editor's
+ * mode whatever host is chosen.
  */
 export function variablesInSettings(): string[] {
     const settings = vscode.workspace.getConfiguration("swift").get<Record<string, string>>("swiftEnvironmentVariables") ?? {};
-    const known = new Set(hosts.flatMap((each) => (each.variable ? [each.variable] : [])));
 
-    return Object.keys(settings).filter((variable) => known.has(variable));
+    return Object.keys(settings).filter((variable) => variable === hostVariable);
 }
 
 /** What the language server is told about one host, under `swiftPM`. */

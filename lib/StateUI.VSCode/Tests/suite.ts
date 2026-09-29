@@ -5,7 +5,7 @@
 //
 // The editor's host is asked of the LANGUAGE SERVER, which cannot be faked: a
 // symbol under `#if APPKIT` resolves only while SourceKit-LSP runs with
-// STATEUI_APPKIT, and a symbol under no condition resolves in either mode -
+// STATEUI_HOST=appkit, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
 import { execSync } from "child_process";
@@ -164,15 +164,10 @@ export async function run(): Promise<void> {
         // 6. Android: the environment, the language server's file, the
         //    devices, and the commands a launch and a suite run - captured,
         //    not run.
-        check("each host's environment sets its own variable alone and clears every other - STATEUI_ANDROID for Android",
-            hosts.every((host) => {
-                const values = environment(host.id);
-                const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
-                return JSON.stringify(Object.keys(values).sort())
-                    === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_GTK", "STATEUI_UIKIT", "STATEUI_WINUI"])
-                    && JSON.stringify(set) === JSON.stringify([[host.variable, "1"]]);
-            }) && environment("android").STATEUI_ANDROID === "1"
-            && Object.values(environment(undefined)).every((value) => value === undefined));
+        check("each host's environment names it in one variable - STATEUI_HOST=android for Android - and no host clears it",
+            hosts.every((host) => JSON.stringify(environment(host.id)) === JSON.stringify({ STATEUI_HOST: host.id }))
+            && environment("android").STATEUI_HOST === "android"
+            && JSON.stringify(Object.entries(environment(undefined))) === JSON.stringify([["STATEUI_HOST", undefined]]));
         {
             const sdk = "swift-6.4.0-RELEASE_android";
             const android = serverConfig(
@@ -497,11 +492,11 @@ export async function run(): Promise<void> {
             const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
-                + "stateui.checkout is this machine's, stateui.minimumRelease 0.4.0",
+                + "stateui.checkout is this machine's, stateui.minimumRelease 0.4.1",
                 commands.includes("stateui.newProjectGroup")
                 && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
                     each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasApps")
-                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.4.0");
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.4.1");
             check("an application's Package.swift names its checkout: HelloWorld's ../.. is this one",
                 fs.realpathSync(checkoutNamedBy(path.join(apps, "HelloWorld")) ?? "/") === fs.realpathSync(root.uri.fsPath)
                 && findApplications(root.uri.fsPath).every((each) => each.checkout !== undefined));
@@ -581,20 +576,30 @@ export async function run(): Promise<void> {
             })();
             check(`Notes' example test passes as ${testHost ?? "plain Swift"}`, passes);
 
-            const releases = await listReleases("https://github.com/idexus/StateUI.git", "0.4.0");
-            check("GitHub lists the release 0.4.0, and nothing older is offered",
-                releases.releases.includes("0.4.0") && releases.releases.every((each) => each !== "0.3.1"));
-            const release = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
-                { location, name: "ReleaseGroup", release: "0.4.0", application: "Notes" });
-            const releaseNotes = path.join(release ?? "", "apps", "Notes");
-            check("with a release it is cloned into the group's StateUI/ at that tag, and the application names ../../StateUI",
-                release === path.join(location, "ReleaseGroup")
-                && execSync("git describe --tags", { cwd: releaseDirectory(release) }).toString().trim() === "0.4.0"
-                && same(checkoutNamedBy(releaseNotes), releaseDirectory(release)) && wired(releaseNotes)
-                && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('.package(path: "../../StateUI")'));
-            const more = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: release, name: "Tasks" });
-            check("New Application in apps/ in that group names its release", same(checkoutNamedBy(more), releaseDirectory(release!)));
-            check("the release group's application builds", builds(releaseNotes));
+            // A release is offered from minimumRelease on - the first whose scripts build as this extension does.
+            const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"))
+                .contributes.configuration.properties["stateui.minimumRelease"].default;
+            const every = await listReleases("https://github.com/idexus/StateUI.git", "0.0.0");
+            const offered = await listReleases("https://github.com/idexus/StateUI.git", minimum);
+            check(`GitHub lists its releases, and none older than ${minimum} is offered - 0.4.0 builds differently`,
+                every.releases.includes("0.4.0") && !offered.releases.includes("0.4.0")
+                && offered.releases.every((each) => every.releases.includes(each)));
+            const newest = offered.releases[0];
+            if (!newest) {
+                say(`skip a group of a release: none ${minimum} or newer is published yet`);
+            } else {
+                const release = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
+                    { location, name: "ReleaseGroup", release: newest, application: "Notes" });
+                const releaseNotes = path.join(release ?? "", "apps", "Notes");
+                check(`with a release it is cloned into the group's StateUI/ at ${newest}, and the application names ../../StateUI`,
+                    release === path.join(location, "ReleaseGroup")
+                    && execSync("git describe --tags", { cwd: releaseDirectory(release) }).toString().trim() === newest
+                    && same(checkoutNamedBy(releaseNotes), releaseDirectory(release)) && wired(releaseNotes)
+                    && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('.package(path: "../../StateUI")'));
+                const more = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: release, name: "Tasks" });
+                check("New Application in apps/ in that group names its release", same(checkoutNamedBy(more), releaseDirectory(release!)));
+                check("the release group's application builds", builds(releaseNotes));
+            }
             if (!process.env.STATEUI_TEST_GROUPS) {
                 fs.rmSync(location, { recursive: true, force: true });
             }

@@ -57,10 +57,10 @@ The name is the one the desktop knows the application by. GTK keeps one
 instance of it: launched again, the running application brings its window
 forward.
 
-`STATEUI_GTK=1` is what makes a build a GTK one: the application's manifest
-reads it, declares the `Platforms/GTK` target, the executable it makes and the
-`StateUIGTK` dependency, and defines the `GTK` compilation condition for every
-module of the application. Swift written for this host alone stands under
+`STATEUI_HOST=gtk` is what makes a build a GTK one: the application's
+manifest reads it, declares its `Platforms/GTK` head, the executable it makes,
+and defines the `GTK` compilation condition for every module of the
+application; `lib/StateUI.Head` brings the `StateUIGTK` host to the head. Swift written for this host alone stands under
 `#if GTK`.
 
 A new application made in `apps/` - `.scripts/new-app.sh` - has a GTK head,

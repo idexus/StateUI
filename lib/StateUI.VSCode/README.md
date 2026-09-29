@@ -55,13 +55,13 @@ that StateUI's `.scripts/`; the group copies none of them.
 command its `.gitignore` names:
 
 ```bash
-git clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git StateUI
+git clone --depth 1 --branch <release> https://github.com/idexus/StateUI.git StateUI
 ```
 
 | Setting | What it holds |
 | --- | --- |
 | `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
-| `stateui.minimumRelease` | the oldest release offered, `0.4.0` |
+| `stateui.minimumRelease` | the oldest release offered, `0.4.1` - the first that builds into `.build/<host>` and reads `STATEUI_HOST`, as the extension does; until it is published, a group builds with the local checkout |
 
 ## The host
 
@@ -138,7 +138,7 @@ configuration naming `"application": "Gallery"` runs that one instead.
 them AS THE HOST, one after another, each in a terminal of its own:
 
 - **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
-  AppKit build (`STATEUI_APPKIT=1`, on `.build/appkit`).
+  AppKit build (`STATEUI_HOST=appkit`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
@@ -233,6 +233,5 @@ launch file at all:
   headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
   loader (`librsvg2-common`); and the `lldb-dap` extension.
 
-Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
-`swift.swiftEnvironmentVariables`: that setting is laid over the host chosen
-here, and the extension offers to remove it.
+Do not set `STATEUI_HOST` in `swift.swiftEnvironmentVariables`: that setting
+is laid over the host chosen here, and the extension offers to remove it.

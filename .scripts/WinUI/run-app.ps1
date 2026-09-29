@@ -47,7 +47,7 @@ if ($running) {
 $global:LASTEXITCODE = 0
 
 Initialize-StateUIProjection
-$env:STATEUI_WINUI = '1'
+$env:STATEUI_HOST = 'winui'
 Write-Host "building ${name}WinUI, $Configuration - SwiftPM reads the packages first, printing nothing"
 Write-StateUIEditorBuilds
 swift build --package-path $application -c $Configuration --product "${name}WinUI" --scratch-path $scratch

@@ -19,7 +19,7 @@ scratch_dir="$gallery_dir/.build/appkit"
 # dependency - and defines APPKIT for every module of the application. A
 # manifest cannot read a compiler flag, so it is told this way, and no flag is
 # given beside it. See apps/Gallery/Package.swift.
-export STATEUI_APPKIT=1
+export STATEUI_HOST=appkit
 
 swift build \
     --package-path "$gallery_dir" \

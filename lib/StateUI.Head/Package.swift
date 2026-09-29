@@ -3,14 +3,13 @@ import PackageDescription
 
 // What every application's head is built with: the host its build is for.
 //
-// A build names its host by one variable - STATEUI_APPKIT, STATEUI_UIKIT,
-// STATEUI_ANDROID, STATEUI_WINUI or STATEUI_GTK - which its script or the
-// editor sets. This manifest reads it once for every application: it depends
-// on that host's package, and StateUIHead re-exports it. An application's
-// manifest declares its head in Platforms/<Host> and names StateUIHead there,
-// with no host package of its own.
+// A build names its host by one variable, STATEUI_HOST - appkit, uikit,
+// android, winui or gtk - which its script or the editor sets. This manifest
+// reads it once for every application: it depends on that host's package, and
+// StateUIHead re-exports it. An application's manifest declares its head in
+// Platforms/<Host> and names StateUIHead there, with no host package of its own.
 let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
-    .first { Context.environment["STATEUI_\($0.uppercased())"] == "1" }
+    .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
 let package = Package(
     name: "StateUIHead",

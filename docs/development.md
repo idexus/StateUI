@@ -37,14 +37,15 @@ framework. Application code may import Foundation. Platform frameworks remain in
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
-`#if APPKIT`, `#if ANDROID`, `#if WINUI` and `#if GTK`, which every build of an
-application for that host defines through its manifest, from
-`STATEUI_APPKIT=1`, `STATEUI_ANDROID=1`, `STATEUI_WINUI=1` and
-`STATEUI_GTK=1`. `NativeProjectTests` refuses
+`#if APPKIT`, `#if UIKIT`, `#if ANDROID`, `#if WINUI` and `#if GTK`, which
+every build of an application for that host defines through its manifest,
+from the one variable a build names its host by: `STATEUI_HOST=appkit`,
+`uikit`, `android`, `winui` or `gtk`. One variable holds one host, so no build
+is two hosts' at once. `NativeProjectTests` refuses
 any other mention of a host in the library and in the applications'
 `Sources/`.
 
-`STATEUI_APPKIT=1` is what makes a build an AppKit one. An application's
+`STATEUI_HOST=appkit` is what makes a build an AppKit one. An application's
 manifest reads it, declares its `Platforms/AppKit` head and defines `APPKIT`
 for every module of the application. The head depends on
 `lib/StateUI.Head`, whose manifest reads the same variable once for every
@@ -140,7 +141,7 @@ Build the runnable Gallery bundle:
 Build the smaller example:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
+STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
   --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
@@ -193,7 +194,7 @@ swift test --package-path apps/HelloWorld
 ```
 
 `.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
-AppKit build (`STATEUI_APPKIT=1`), on a build directory of its own:
+AppKit build (`STATEUI_HOST=appkit`), on a build directory of its own:
 
 ```bash
 .scripts/test-native.sh

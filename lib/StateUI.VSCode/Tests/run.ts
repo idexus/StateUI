@@ -22,11 +22,7 @@ const results = path.join(profile, "results.txt");
 
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results };
 // The suite starts from no host at all; an inherited one would decide the first answer.
-delete env.STATEUI_APPKIT;
-delete env.STATEUI_UIKIT;
-delete env.STATEUI_ANDROID;
-delete env.STATEUI_WINUI;
-delete env.STATEUI_GTK;
+delete env.STATEUI_HOST;
 delete env.ELECTRON_RUN_AS_NODE;
 
 const child = spawn(code, [

@@ -67,12 +67,13 @@ needs no Java of its own. Its `build.gradle.kts` depends on AndroidX's
 keeps their Java beside the head, in `Java/`, and may extend the activity,
 declaring its own class in the manifest instead.
 
-`STATEUI_ANDROID=1` is what makes a build an Android Views one: the
-application's manifest reads it, declares the `Platforms/Android/Swift` target,
-the library it makes and the `StateUIAndroid` dependency, and defines the
-`ANDROID` compilation condition for every module of the application. Swift
-written for this host alone stands under `#if ANDROID`. `build-swift.sh` sets
-nothing else: the library itself is built as every host builds it.
+`STATEUI_HOST=android` is what makes a build an Android Views one: the
+application's manifest reads it, declares its `Platforms/Android/Swift` head
+and the library it makes, and defines the `ANDROID` compilation condition for
+every module of the application; `lib/StateUI.Head` brings the
+`StateUIAndroid` host to the head. Swift written for this host alone stands
+under `#if ANDROID`. `build-swift.sh` sets nothing else: the library itself is
+built as every host builds it.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or
 `.scripts/new-app.sh` - has an Android head, as HelloWorld does, and runs and

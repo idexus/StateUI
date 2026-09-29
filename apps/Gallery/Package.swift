@@ -6,13 +6,13 @@ import PackageDescription
 // package holds, so the editor completes the application through this
 // manifest as well.
 
-// The host a build is for: the STATEUI_ variable its script or the editor sets,
-// or none for plain Swift - and then `swift test` compiles no line of any
-// host's half. The application's Swift for that host alone stands under its
+// The host a build is for: STATEUI_HOST - appkit, uikit, android, winui or gtk -
+// which its script or the editor sets, or none for plain Swift - and then
+// `swift test` compiles no line of any host's half. The application's Swift for that host alone stands under its
 // condition - `#if APPKIT` - and ../../lib/StateUI.Head brings the host itself
 // to the head.
 let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
-    .first { Context.environment["STATEUI_\($0.uppercased())"] == "1" }
+    .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
 // NonisolatedNonsendingByDefault is the one setting an application must not
 // leave out; see the note in ../../Package.swift.

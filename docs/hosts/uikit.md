@@ -67,10 +67,10 @@ StateUI libraries in `Frameworks/`. Its icon is drawn from
 and `appicon_mark.svg` in its middle, opaque, which iOS rounds itself. Its
 `Info.plist` says the application supports many scenes.
 
-`STATEUI_UIKIT=1` is what makes a build a UIKit one: the application's
-manifest reads it, declares the `Platforms/UIKit` target and its
-`StateUIUIKit` dependency, and defines the `UIKIT` compilation condition for
-every module of the application. Swift written for this host alone stands
+`STATEUI_HOST=uikit` is what makes a build a UIKit one: the application's
+manifest reads it, declares its `Platforms/UIKit` head, and defines the
+`UIKIT` compilation condition for every module of the application;
+`lib/StateUI.Head` brings the `StateUIUIKit` host to the head. Swift written for this host alone stands
 under `#if UIKIT`.
 
 A new application made in `apps/` - **StateUI: New Application in apps/**, or

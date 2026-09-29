@@ -42,9 +42,9 @@
         },
         "stateui.minimumRelease": {
           "type": "string",
-          "default": "0.4.0",
+          "default": "0.4.1",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group."
+          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group: the first whose scripts build into `.build/<host>` and name the host by `STATEUI_HOST`, as this extension does."
         }
       }
     },

@@ -105,7 +105,7 @@ Every launch has a command-line equivalent. Build HelloWorld's AppKit head from
 the repository root:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
+STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
   --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 

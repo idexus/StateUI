@@ -53,7 +53,7 @@ build_head () {
 
   # A command substitution runs this function without `set -e`, so every
   # step that can fail says so: a failed build must never package the last one.
-  STATEUI_ANDROID=1 SWIFT_CONFIG="$configuration" ABIS="$abi" \
+  STATEUI_HOST=android SWIFT_CONFIG="$configuration" ABIS="$abi" \
     "$script_dir/build-swift.sh" "$app" "$product" "$build" >&2 || return 1
 
   # Android draws no SVG: the application's pictures are drawn for it, into the APK's assets.

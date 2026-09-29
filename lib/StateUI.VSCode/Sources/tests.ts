@@ -33,7 +33,7 @@ export interface Suite {
  * library first, the hosts' packages next, the applications last.
  *
  * - A Swift package with a test target runs with `swift test`. For AppKit an
- *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build/appkit`.
+ *   APPLICATION runs as the host - `STATEUI_HOST=appkit` on `.build/appkit`.
  * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -

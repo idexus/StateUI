@@ -415,9 +415,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                     const listed = await vscode.window.withProgress(
                         { location: vscode.ProgressLocation.Notification, title: `StateUI: reading the releases of ${repository}` },
                         () => listReleases(repository, minimum));
+                    if (listed.problem) {
+                        scaffolder.appendLine(listed.problem);
+                        reportFailure(`the releases of ${repository} were not read`);
+                        return undefined;
+                    }
                     if (listed.releases.length === 0) {
-                        scaffolder.appendLine(listed.problem ?? `${repository} lists no release ${minimum} or newer.`);
-                        reportFailure(`no release ${minimum} or newer was read from ${repository}`);
+                        void vscode.window.showWarningMessage(
+                            `StateUI: no release ${minimum} or newer is published yet - an older one builds differently from this extension. The local checkout builds with it.`);
                         return undefined;
                     }
                     release = await vscode.window.showQuickPick(listed.releases, {
