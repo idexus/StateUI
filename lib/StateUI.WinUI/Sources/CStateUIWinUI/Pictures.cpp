@@ -162,6 +162,21 @@ xaml::Media::ImageSource stateui::pictureSource(std::wstring const &file) {
     return imaging::BitmapImage(address(path));
 }
 
+controls::ImageIcon stateui::pictureIcon(char const *names) {
+    auto file = pictureFile(names);
+    if (file.empty()) return nullptr;
+    controls::ImageIcon icon;
+    icon.Source(pictureSource(file));
+    icon.Tag(winrt::box_value(winrt::hstring(file)));
+    return icon;
+}
+
+std::wstring stateui::iconFile(controls::IconElement const &icon) {
+    auto pictured = icon ? icon.try_as<controls::ImageIcon>() : nullptr;
+    if (!pictured || !pictured.Tag()) return {};
+    return std::wstring(winrt::unbox_value_or<winrt::hstring>(pictured.Tag(), L""));
+}
+
 extern "C" void stateui_winui_set_pictures(char const *utf8) {
     try {
         folder = winrt::to_hstring(std::string_view(utf8 ? utf8 : "")).c_str();

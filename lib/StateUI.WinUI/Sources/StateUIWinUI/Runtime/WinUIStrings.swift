@@ -12,6 +12,11 @@ enum WinUIStrings {
         return body(copies.map { $0.map { UnsafePointer($0) } })
     }
 
+    /// A list as the relay takes it in one string: each entry ended by a line feed.
+    static func lines(_ entries: [String]) -> String {
+        entries.map { $0 + "\n" }.joined()
+    }
+
     /// Words the relay writes into a buffer the caller hands it, answering how long they are: asked once for the
     /// length, then written.
     static func read(_ fill: (UnsafeMutablePointer<CChar>?, Int32) -> Int32) -> String {

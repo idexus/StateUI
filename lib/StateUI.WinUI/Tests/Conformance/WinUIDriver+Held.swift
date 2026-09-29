@@ -378,11 +378,18 @@ extension WinUIDriver {
         switch name {
         case "text": return .string(shown[place].caption)
         case "isEnabled": return shown[place].enabled.propValue
-        case "accessibilityIdentifier" where kind == .menuItem:
-            let identifiers = WinUIStrings.read { stateui_winui_menus_identifiers(owner.handle, $0, $1) }
-                .split(separator: ";", omittingEmptySubsequences: false)
+        case "accessibilityIdentifier", "icon", "isDestructive":
+            guard kind == .menuItem else { return nil }
+            let what = name == "icon" ? "icon" : name == "isDestructive" ? "destructive" : "identifier"
+            let items = WinUIStrings.read { stateui_winui_menus_items(owner.handle, what, $0, $1) }
+                .split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             let index = menuPlace(of: element)?.index ?? 0
-            return identifiers.indices.contains(index) ? .string(String(identifiers[index])) : nil
+            guard items.indices.contains(index) else { return nil }
+            switch name {
+            case "icon": return Self.picture(items[index], named: element)
+            case "isDestructive": return (items[index] == "1").propValue
+            default: return .string(items[index])
+            }
         default: return nil
         }
     }
@@ -401,20 +408,26 @@ extension WinUIDriver {
         case "isEnabled": return (!row[index].hasPrefix("!")).propValue
         case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
         case "priority": return index.propValue
-        case "accessibilityIdentifier", "icon":
-            let read = name == "icon" ? "actionIcons" : "actionIdentifiers"
+        case "accessibilityIdentifier", "icon", "isDestructive":
+            let read = ["icon": "actionIcons", "isDestructive": "actionDestructive"][name] ?? "actionIdentifiers"
             let rows = try self.read(window().titleBar, read).split(separator: "|", omittingEmptySubsequences: false)
             let values = (row == bar ? rows.first : rows.last).map {
                 $0.split(separator: ";", omittingEmptySubsequences: false).map(String.init)
             } ?? []
             guard values.indices.contains(index) else { return nil }
-            guard name == "icon" else { return .string(values[index]) }
-            // The file shown is the picture the tree named where it is one of the files that name stands for.
-            let named = element.value(.icon)?.string ?? ""
-            let shown = values[index]
-            return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
+            switch name {
+            case "icon": return Self.picture(values[index], named: element)
+            case "isDestructive": return (values[index] == "1").propValue
+            default: return .string(values[index])
+            }
         default: return nil
         }
+    }
+
+    /// The picture a file shown stands for: the one the tree named where it is one of the files that name stands for.
+    static func picture(_ shown: String, named element: MountedElement) -> HostValue {
+        let named = element.value(.icon)?.string ?? ""
+        return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
     }
 
     /// The place of the toolbar's item among the actions the chrome shows, as its chrome chooses them.

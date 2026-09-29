@@ -21,17 +21,7 @@ final class WinUIMenuBarView: WinUIView {
         guard !menu.draws(like: shown) else { return }
 
         shown = menu
-        WinUIStrings.withCStrings(menu.titles) { titles in
-            WinUIStrings.withCStrings(menu.identifiers) { identifiers in
-                menu.kinds.withUnsafeBufferPointer { kinds in
-                    menu.enabled.withUnsafeBufferPointer { enabled in
-                        stateui_winui_menu_bar_set(
-                            handle, number, kinds.baseAddress, titles, enabled.baseAddress, identifiers,
-                            Int32(kinds.count))
-                    }
-                }
-            }
-        }
+        menu.relayed { stateui_winui_menu_bar_set(handle, number, $0, $1, $2, $3, $4, $5, $6) }
     }
 
     override func detach() {

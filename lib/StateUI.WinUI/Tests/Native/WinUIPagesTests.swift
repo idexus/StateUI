@@ -178,6 +178,34 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A destructive action stands in the critical colour of its bar's own theme - lighter on a dark bar - whatever
+    /// colour the bar's words take: its words' brush follows the theme, which a brush looked up once would not.
+    func testADestructiveActionStandsInTheCriticalColourOfItsBarsTheme() throws {
+        try onUIThread {
+            var reds: [(red: UInt32, green: UInt32, blue: UInt32)] = []
+            for background in [Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 255, blue: 224)] {
+                let host = WinUIRenderer.running {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(
+                            title: "Notes", actions: [ToolbarItem("Scan"), ToolbarItem("Delete").isDestructive(true)])
+                    } destination: { _ in Label("Pushed") }
+                        .barBackgroundColor(background)
+                        .barForegroundColor(Color(red: 255, green: 230, blue: 0))
+                }
+                let bar = try XCTUnwrap(host.window).titleBar
+                host.settle { Self.words(bar, "actions") == "Scan;Delete|" }
+                let words = Self.words(bar, "actionWords").split(separator: ";").map(String.init)
+                XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' colour")
+                let argb = try XCTUnwrap(words.count == 2 ? UInt32(words[1].dropFirst(), radix: 16) : nil)
+                let red = (red: argb >> 16 & 0xFF, green: argb >> 8 & 0xFF, blue: argb & 0xFF)
+                XCTAssertNotEqual(words[1], "#FFFFE600", "the destructive one keeps its own colour")
+                XCTAssertTrue(red.red > red.green && red.red > red.blue, "the destructive one is red: \(words[1])")
+                reds.append(red)
+            }
+            XCTAssertGreaterThan(reds[0].green, reds[1].green, "lighter on the dark bar than on the light one")
+        }
+    }
+
     /// The chrome keeps the window's own buttons their room once, at the scale the window stands at: WinUI's title
     /// bar keeps it in pixels as though they were DIPs, which at 200% stands its actions a caption's width short of
     /// the bar's end.

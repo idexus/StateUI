@@ -216,18 +216,21 @@ namespace {
                     colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
             return colours;
         }
-        if (what == "actionIcons") {
+        if (what == "actionIcons" || what == "actionDestructive") {
             auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
-            auto listed = [](auto const &commands) {
-                std::string files;
+            bool icons = what == "actionIcons";
+            auto listed = [icons](auto const &commands) {
+                std::string held;
+                bool first = true;
                 for (auto const &command : commands) {
                     auto button = command.template try_as<controls::AppBarButton>();
                     if (!button) continue;
-                    auto icon = button.Icon().template try_as<controls::ImageIcon>();
-                    auto file = icon && icon.Tag() ? winrt::unbox_value<winrt::hstring>(icon.Tag()) : winrt::hstring();
-                    files += (files.empty() ? "" : ";") + narrow(file);
+                    held += first ? "" : ";";
+                    first = false;
+                    held += icons ? winrt::to_string(iconFile(button.Icon()))
+                                  : isDestructive(button, L"AppBarButtonForeground") ? "1" : "0";
                 }
-                return files;
+                return held;
             };
             return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
         }

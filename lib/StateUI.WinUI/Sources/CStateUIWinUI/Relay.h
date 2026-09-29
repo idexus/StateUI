@@ -59,6 +59,10 @@ namespace stateui {
     void writeResources(xaml::FrameworkElement const &control,
                         std::vector<std::pair<std::wstring, xaml::Media::Brush>> const &brushes);
 
+    /// The brush `resources` itself holds under `name`; null for none. `HasKey` and `Lookup` look on into the
+    /// application's theme, whose brushes every control shares: only a walk of the dictionary finds its own.
+    xaml::Media::Brush ownBrush(xaml::ResourceDictionary const &resources, std::wstring const &name);
+
     /// The words a label shows - the text block its border holds - or `element` itself where it is a text block;
     /// null for any other element.
     controls::TextBlock wordsOf(IInspectable const &element);
@@ -75,6 +79,22 @@ namespace stateui {
 
     /// A source drawing the application's picture `file` - a bitmap, or an SVG - at its own proportions.
     xaml::Media::ImageSource pictureSource(std::wstring const &file);
+
+    /// An icon showing the first of the files `names` lists that the pictures hold, keeping that file for a test to
+    /// read (`iconFile`); null for none.
+    controls::ImageIcon pictureIcon(char const *names);
+
+    /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
+    std::wstring iconFile(controls::IconElement const &icon);
+
+    /// Marks an entry whose choice destroys something: its words' brushes `names` - at rest, under the pointer and
+    /// pressed - take the theme's critical colour, light or dark as the entry's own theme is. Written before the
+    /// entry stands, as its template reads them then.
+    /// Design: docs/design/platforms/winui/pages.md#a-destructive-entry
+    void markDestructive(xaml::FrameworkElement const &entry, std::vector<std::wstring> const &names);
+
+    /// Whether the entry is marked so: its own theme dictionaries name its words' brush `name`.
+    bool isDestructive(xaml::FrameworkElement const &entry, wchar_t const *name);
 
     /// Paints a panel clear while its view listens for the user or offers a context menu, so it is hit across its
     /// bounds and not only where its children stand; takes that away once neither holds. An author's background

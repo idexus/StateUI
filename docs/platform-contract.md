@@ -473,7 +473,7 @@ Every control, and every part an application, its windows and its pages are made
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  | 2 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 1 – | 4 ✅ |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 1 – | 6 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 3 ✅ |  |  |
@@ -486,11 +486,11 @@ Every control, and every part an application, its windows and its pages are made
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 4 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 7 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 8 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 104 | 48 of 104 met | 55 of 104 met | 21 of 104 met | 83 of 104 met | 6 of 104 met |  |
+| **Met** - ✅ and – | 104 | 48 of 104 met | 55 of 104 met | 21 of 104 met | 86 of 104 met | 6 of 104 met |  |
 <!-- dictionary:end -->
 
 ## Contract members

@@ -70,8 +70,8 @@ namespace {
         return bar.RightHeader().as<controls::StackPanel>();
     }
 
-    /// The actions on the bar stand in its words' colour where the tree gives one, "more" among them; an action
-    /// behind "more" keeps the menu's colours, on the menu's own background.
+    /// The actions on the bar stand in its words' colour where the tree gives one, "more" among them; a destructive
+    /// one keeps the theme's critical colour, and one behind "more" the menu's colours, on the menu's own background.
     void paintActions(controls::TitleBar const &bar) {
         auto actions = rightHeader(bar).Children().GetAt(0).as<controls::CommandBar>();
         bool given = bar.ReadLocalValue(controls::Control::ForegroundProperty()) != xaml::DependencyProperty::UnsetValue();
@@ -81,7 +81,9 @@ namespace {
         };
         paint(actions);
         for (auto const &command : actions.PrimaryCommands())
-            if (auto button = command.try_as<controls::AppBarButton>()) paint(button);
+            if (auto button = command.try_as<controls::AppBarButton>();
+                button && !isDestructive(button, L"AppBarButtonForeground"))
+                paint(button);
     }
 
     /// A place on the bar an authored view stands in: no stop of Tab's itself, as the view in it may be.
@@ -191,7 +193,7 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
-    bool const *overflows, bool const *enabled, int32_t count
+    bool const *destructive, bool const *overflows, bool const *enabled, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -207,14 +209,14 @@ extern "C" void stateui_winui_title_bar_set_actions(
                 xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifiers[index]));
             }
             // An action with a picture shows the picture alone; its words name it to Narrator and in its tip.
-            if (auto file = pictureFile(icons[index]); !file.empty()) {
-                controls::ImageIcon icon;
-                icon.Source(pictureSource(file));
-                icon.Tag(winrt::box_value(winrt::hstring(file)));
+            if (auto icon = pictureIcon(icons[index])) {
                 button.Icon(icon);
                 button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
                 controls::ToolTipService::SetToolTip(button, winrt::box_value(text(texts[index])));
             }
+            if (destructive[index])
+                markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",
+                                         L"AppBarButtonForegroundPressed"});
             button.Click([view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
             });

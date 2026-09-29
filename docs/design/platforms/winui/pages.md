@@ -27,11 +27,13 @@ that the application may not render for - a tab chosen, the sidebar shown:
   bar's own "more"; an action with a picture shows the picture alone - the
   first of the files its name stands for that the application's pictures
   hold ([pictures](controls.md#pictures)) - its words naming it to Narrator
-  and in its tip;
+  and in its tip; a destructive one stands in the theme's critical colour
+  ([a destructive entry](#a-destructive-entry));
 - the page's title view stands at the chrome's centre, where an application
   puts its search;
 - an authored `TitleBar` adds its leading, centre and trailing content, and
-  the bars' colours paint the chrome: its title and the actions on it stand
+  the bars' colours paint the chrome: its title and the actions on it, a
+  destructive one excepted, stand
   in the colour written for what stands on the bars, else white on a dark
   band and black on a light one ([words on a painted
   band](../../host/layout.md#words-on-a-painted-band)); the chrome takes the
@@ -169,13 +171,39 @@ long press open it where the user asked, and on a view that holds the
 keyboard, the menu key and Shift+F10 too. Its items
 are `MenuFlyoutItem`s, its separators `MenuFlyoutSeparator`s and its submenus
 `MenuFlyoutSubItem`s, one level inside another as the tree nests them; an
-entry that cannot be chosen is shown dimmed. The host hands the relay the
-menu flat - an item, a separator, a submenu opening and closing, each with its
-caption - and hears a choice by the item's place among the items, submenus'
-included; the item's own handler runs. A bar's menus are written the same
-way. Any entry the tree changes, adds or
-removes gives the view its menu again, and a menu with no entries is none.
+entry that cannot be chosen is shown dimmed. An item with a picture shows it
+before its words, as the item's `ImageIcon` - the first of the files its name
+stands for that the application's pictures hold ([pictures](controls.md#pictures)) -
+and WinUI keeps every item's words in line beside it; a destructive item's
+words stand in the theme's critical colour ([a destructive
+entry](#a-destructive-entry)). The host hands the relay the menu flat - an
+item, a separator, a submenu opening and closing, each with its caption, an
+item with its picture and its mark - and hears a choice by the item's place
+among the items, submenus' included; the item's own handler runs. A bar's
+menus are written the same way. Any entry the tree changes, adds or removes
+gives the view its menu again, and a menu with no entries is none.
 
 A stack with a menu is hit across its bounds, as a listening one is
 ([listening](input.md#listening)): a right click anywhere across it opens the
 menu, not only on its children.
+
+## A destructive entry
+
+A menu's item or a bar's action whose choice destroys something says so in
+the theme's critical colour, the one Windows gives an error. Its words'
+brushes - at rest, under the pointer and pressed - are named again in the
+entry's own resources, as lightweight styling names them
+(`MenuFlyoutItemForeground`, `AppBarButtonForeground` and their states); one
+out of reach keeps the theme's dimmed words. Each brush takes its colour
+from the theme resource `SystemFillColorCritical`, in a theme dictionary for
+the light theme and one for the dark, so it follows the entry's own theme: a
+bar the tree paints dark stands its destructive action in the dark theme's
+lighter red. A brush looked up from code, or an alias of the theme's brush,
+keeps the colour of the application's theme at the moment it is written.
+The entry is marked before it stands, so its template reads the brushes as
+it first draws.
+
+The bar's words' colour paints every action on the bar but a destructive
+one. Whether an entry is marked is read from its own theme dictionaries,
+walked: `HasKey` and `Lookup` look on into the application's theme
+([a control's accent](controls.md#a-controls-accent)).

@@ -72,15 +72,6 @@ extern "C" void stateui_winui_set_tint(
 namespace {
     int32_t themesReadAgain = 0;
 
-    /// The brush the control's own resources hold under `name`; null for none. `HasKey` and `Lookup` look on into
-    /// the application's theme, whose brushes every control shares: only a walk of the dictionary finds its own.
-    xaml::Media::Brush own(xaml::ResourceDictionary const &resources, std::wstring const &name) {
-        for (auto const &pair : resources)
-            if (winrt::unbox_value_or<winrt::hstring>(pair.Key(), L"") == name)
-                return pair.Value().try_as<xaml::Media::Brush>();
-        return nullptr;
-    }
-
     /// Reads the control's theme again, so its template takes the resources written into the control.
     void readThemeAgain(xaml::FrameworkElement const &control) {
         ++themesReadAgain;
@@ -89,6 +80,13 @@ namespace {
                                                                                : xaml::ElementTheme::Dark);
         control.RequestedTheme(requested);
     }
+}
+
+xaml::Media::Brush stateui::ownBrush(xaml::ResourceDictionary const &resources, std::wstring const &name) {
+    for (auto const &pair : resources)
+        if (winrt::unbox_value_or<winrt::hstring>(pair.Key(), L"") == name)
+            return pair.Value().try_as<xaml::Media::Brush>();
+    return nullptr;
 }
 
 extern "C" int32_t stateui_winui_themes_read_again(void) {
@@ -106,7 +104,7 @@ void stateui::writeResources(xaml::FrameworkElement const &control,
     bool read = false;
     for (auto const &[name, brush] : brushes) {
         auto key = winrt::box_value(winrt::hstring(name));
-        auto held = own(resources, name);
+        auto held = ownBrush(resources, name);
         auto standing = held ? held.try_as<media::SolidColorBrush>() : nullptr;
         auto solid = brush ? brush.try_as<media::SolidColorBrush>() : nullptr;
         if (standing && solid) {

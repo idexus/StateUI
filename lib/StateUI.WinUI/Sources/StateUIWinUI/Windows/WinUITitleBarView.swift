@@ -42,10 +42,10 @@ final class WinUITitleBarView: WinUIView {
             || !zip(actions, drawn).allSatisfy({ $0.draws(like: $1) }) {
             WinUIStrings.withCStrings(actions.map(\.title)) { titles in
                 WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
-                    WinUIStrings.withCStrings(actions.map { $0.icon.map { $0 + "\n" }.joined() }) { icons in
+                    WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
                         stateui_winui_title_bar_set_actions(
-                            handle, titles, identifiers, icons, overflows, actions.map(\.isEnabled),
-                            Int32(actions.count))
+                            handle, titles, identifiers, icons, actions.map(\.isDestructive), overflows,
+                            actions.map(\.isEnabled), Int32(actions.count))
                     }
                 }
             }

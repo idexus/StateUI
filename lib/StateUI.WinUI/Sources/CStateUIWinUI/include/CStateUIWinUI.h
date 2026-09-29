@@ -399,16 +399,18 @@ void stateui_winui_window_set_overlay(StateUIObjectRef window, StateUIObjectRef 
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);
 
 /// A view's context menu: `count` entries, each `kinds`' 0 an item, 1 a separator, 2 a submenu opening, 3 it closing,
-/// with its caption, whether it can be chosen and the identifier automation finds it by (empty for none); an item's
-/// choice told through `menuChosen` by its place among the items. None takes the menu away.
+/// with its caption, whether it can be chosen, the identifier automation finds it by (empty for none), the files its
+/// picture may stand in - each ended by a line feed, empty for none - and whether choosing it destroys something; an
+/// item's choice told through `menuChosen` by its place among the items. None takes the menu away.
 void stateui_winui_set_context_menu(StateUIObjectRef element, int64_t view, int32_t const *kinds,
                                     char const *const *titles, bool const *enabled, char const *const *identifiers,
-                                    int32_t count);
+                                    char const *const *icons, bool const *destructive, int32_t count);
 
 /// A window's menu bar: WinUI's MenuBar, written as a context menu is, each menu at the top one of the bar's own.
 StateUIObjectRef stateui_winui_menu_bar_make(int64_t view);
 void stateui_winui_menu_bar_set(StateUIObjectRef bar, int64_t view, int32_t const *kinds, char const *const *titles,
-                                bool const *enabled, char const *const *identifiers, int32_t count);
+                                bool const *enabled, char const *const *identifiers, char const *const *icons,
+                                bool const *destructive, int32_t count);
 
 /// A view's context menu, or a bar's menus, as a test reads them: items by caption, "!" before one that cannot be
 /// chosen, "-" a separator, a submenu's entries - and a bar's menu's - in brackets after its caption, ";" between -
@@ -418,9 +420,10 @@ int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capaci
 /// Chooses the item at `index` among those menus' items, submenus' included, as assistive technology does.
 void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 
-/// The identifiers of those menus' items, submenus' included, in their order, ";" between, in UTF-8 - what a test
-/// reads; the length it needs.
-int32_t stateui_winui_menus_identifiers(StateUIObjectRef element, char *utf8, int32_t capacity);
+/// What those menus' items, submenus' included, hold of `what` - "identifier" the one automation finds each by, "icon"
+/// the file its picture shows, "destructive" 1 where its words stand in the theme's critical colour - in their
+/// order, ";" between, in UTF-8: what a test reads; the length it needs.
+int32_t stateui_winui_menus_items(StateUIObjectRef element, char const *what, char *utf8, int32_t capacity);
 
 /// A picker: WinUI's ComboBox - its choices, the one chosen (-1 for none, written only where `writeSelected`) told
 /// through `chosen`, its placeholder while none is, its choices across it (StateUI's `TextAlignment`), and its list
@@ -677,11 +680,12 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool b
                                  bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground,
                                  int32_t words);
 /// The page's actions on a window's chrome: each one's words, the identifier automation finds it by (empty for
-/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether it stands in the
-/// overflow, and whether it can be chosen.
+/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether choosing it
+/// destroys something, whether it stands in the overflow, and whether it can be chosen.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons,
-                                         bool const *overflows, bool const *enabled, int32_t count);
+                                         bool const *destructive, bool const *overflows, bool const *enabled,
+                                         int32_t count);
 
 /// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
