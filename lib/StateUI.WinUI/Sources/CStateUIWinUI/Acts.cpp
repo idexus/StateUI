@@ -172,6 +172,20 @@ extern "C" bool stateui_winui_focused(StateUIObjectRef handle) {
     }
 }
 
+extern "C" int32_t stateui_winui_tab(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        input::FindNextElementOptions options;
+        options.SearchRoot(element.XamlRoot().Content());
+        input::FocusManager::TryMoveFocus(input::FocusNavigationDirection::Next, options);
+        auto now = focused(element);
+        return hand(now ? winrt::to_string(winrt::get_class_name(now)) : std::string(), utf8, capacity);
+    } catch (...) {
+        report("moving the focus as Tab does");
+        return hand({}, utf8, capacity);
+    }
+}
+
 extern "C" bool stateui_winui_hide_keyboard(StateUIObjectRef handle) {
     try {
         auto held = focused(as<xaml::UIElement>(handle));

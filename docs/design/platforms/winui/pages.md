@@ -51,6 +51,11 @@ window's scale, whenever the bar is loaded or changes size; a column WinUI
 sizes right stays as it is. The drag column WinUI keeps beside the buttons
 stays too.
 
+The leading, centre and trailing places are content controls, which Tab
+stops at by default though they show nothing of their own: each is no stop,
+so Tab walks the chrome's buttons and what the places hold, and never lands
+where nothing shows.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below
@@ -77,7 +82,12 @@ loaded that row takes the pane's room, and the row of the items the view
 holds none of takes only theirs. The row exists only once WinUI has measured
 the view, so the sidebar has been laid out in it by then; everything in the
 pane is measured again, or a layout inside keeps the places that first layout
-gave it - a footer under a scroller stood below the window.
+gave it - a footer under a scroller stood below the window. A closed pane
+beside the detail stands there at no width, where the keyboard's Tab and
+Narrator would still reach what it holds - a sign-out button among them - so
+the sidebar is collapsed while its pane is closed: shown as the pane starts to
+open, collapsed once a pane over the detail has closed, and at once beside
+it, where WinUI tells no closing.
 
 Whether the sidebar shows is StateUI's binding, which follows what WinUI
 shows: the pane opening or closing of WinUI's accord - a click beside it, the

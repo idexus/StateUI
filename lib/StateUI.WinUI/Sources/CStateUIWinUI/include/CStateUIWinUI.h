@@ -776,6 +776,10 @@ bool stateui_winui_focus(StateUIObjectRef element, bool focus);
 /// Whether `element`, or something inside it, holds the keyboard's focus.
 bool stateui_winui_focused(StateUIObjectRef element);
 
+/// What a test reads: moves the focus in `element`'s window to its next stop, as Tab does, and names the class of
+/// what holds it then; empty for nothing.
+int32_t stateui_winui_tab(StateUIObjectRef element, char *utf8, int32_t capacity);
+
 /// Takes the focus off a field typed into in `element`'s window, so the on-screen keyboard goes; whether one was.
 bool stateui_winui_hide_keyboard(StateUIObjectRef element);
 

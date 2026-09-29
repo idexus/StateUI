@@ -237,6 +237,58 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// A closed sidebar holds nothing the keyboard or assistive technology reaches, beside the detail or over it:
+    /// its button refuses the focus until the sidebar opens, and again once it has closed.
+    func testAClosedSidebarHoldsNothingTheKeyboardReaches() throws {
+        try onUIThread {
+            for room in [WinUITestHost.room, WinUITestHost.wideRoom] {
+                let open = State(wrappedValue: false)
+                let host = WinUIRenderer.running(room: room) {
+                    SplitView(open.projectedValue) {
+                        Button("Sign out")
+                    } detail: {
+                        Label("Detail")
+                    }
+                }
+                let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+                let takes = { stateui_winui_focus(button.handle, true) }
+                open.wrappedValue = false
+                for _ in 0..<50 { host.step() }
+                XCTAssertFalse(takes(), "closed, \(room.width) wide")
+
+                open.wrappedValue = true
+                for _ in 0..<50 { host.step() }
+                XCTAssertTrue(takes(), "open, \(room.width) wide")
+
+                open.wrappedValue = false
+                for _ in 0..<50 { host.step() }
+                XCTAssertFalse(takes(), "closed again, \(room.width) wide")
+            }
+        }
+    }
+
+    /// Tab walks what the window shows and comes back: the chrome's places nothing is written in are no stops.
+    func testTabStopsOnlyWhereSomethingShows() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TextField(State(wrappedValue: "").projectedValue)
+                } destination: { _ in Label("Pushed") }
+            }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertTrue(stateui_winui_focus(field.handle, true))
+
+            var stops: [String] = []
+            repeat {
+                var bytes = [CChar](repeating: 0, count: 128)
+                let length = stateui_winui_tab(field.handle, &bytes, Int32(bytes.count))
+                stops.append(String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self))
+            } while stops.count < 8 && !stateui_winui_focused(field.handle)
+            XCTAssertTrue(stateui_winui_focused(field.handle), "Tab comes back to the field: \(stops)")
+            XCTAssertFalse(stops.contains("Microsoft.UI.Xaml.Controls.ContentControl"), "\(stops)")
+        }
+    }
+
     /// A sign-in's field on a stack, then a split view whose stack's page aims at its field.
     private static func signIn(_ signedIn: State<Bool>) -> any Page {
         guard signedIn.wrappedValue else {
