@@ -140,6 +140,12 @@ namespace {
         auto box = object.try_as<controls::TextBox>();
         if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             if (what == "placeholder") return narrow(search.PlaceholderText());
+            // Its placeholder's colour stands in its resources, under the name its text box's template reads.
+            if (what == "placeholderForeground") {
+                auto key = winrt::box_value(L"TextControlPlaceholderForeground");
+                auto resources = search.Resources();
+                return resources.HasKey(key) ? colour(resources.Lookup(key).as<media::Brush>()) : "";
+            }
             box = first<controls::TextBox>(search);
         }
         if (auto password = object.try_as<controls::PasswordBox>()) {

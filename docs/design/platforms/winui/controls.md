@@ -219,10 +219,12 @@ only where the tree changed them.
 
 A search box is WinUI's `AutoSuggestBox` as it is: the text box its template
 holds takes the box's style, which carries whether it is read only, the case
-typing takes and the words typed across it. That template stands the
-placeholder at the start, in the theme's colour, whatever the text box says,
-so the register records the alignment in part and no placeholder colour -
-the host reworks no template.
+typing takes and the words typed across it. The template reads the
+placeholder's colour from theme resources, which the box's own resources name
+again - at rest, under the pointer, focused and disabled - and its theme is
+read again ([a control's accent](#a-controls-accent)). It stands the
+placeholder at the start whatever the text box says, so the register records
+the alignment in part: the host reaches into no template's parts.
 
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and

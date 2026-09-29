@@ -9,8 +9,27 @@ import StateUIConformance
 import XCTest
 
 final class WinUIInputViewTests: XCTestCase {
+    /// A search box draws its placeholder in a colour of its own, through the theme resources its template reads;
+    /// the template stands it at the start (`WinUIRealization`).
+    func testASearchBoxDrawsItsPlaceholderInItsColour() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    SearchField(State(wrappedValue: "").projectedValue)
+                        .placeholder("MMMM")
+                        .placeholderColor(Color(red: 255, green: 0, blue: 0))
+                        .width(300)
+                }
+            }
+            host.layOut()
+
+            let search = try XCTUnwrap(host.views(WinUISearchFieldView.self).first)
+            XCTAssertNotNil(Self.redInk(in: search), "the placeholder drawn red")
+        }
+    }
+
     /// A placeholder in a colour of its own stands where the words do: in the middle of a field whose words stand
-    /// centred. A search box's template stands its own at the start, in the theme's colour (`WinUIRealization`).
+    /// centred.
     func testAColouredPlaceholderStandsWhereTheWordsDo() throws {
         try onUIThread {
             let host = WinUIRenderer.running {

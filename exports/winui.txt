@@ -223,6 +223,7 @@ SearchField
   isReadOnly
   maximumLength
   placeholder
+  placeholderColor
   text
   textCase
   textColor

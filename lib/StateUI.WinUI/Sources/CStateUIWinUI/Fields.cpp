@@ -160,7 +160,7 @@ extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readO
     try {
         // The box types in the text box its template holds, which takes the style the box gives it: WinUI's own,
         // with the case typing takes, whether it is read only and the words typed across it - its template stands
-        // the placeholder at the start, in the theme's colour, whatever the text box says.
+        // the placeholder at the start whatever the text box says.
         xaml::Style style{winrt::xaml_typename<controls::TextBox>()};
         auto own = xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AutoSuggestBoxTextBoxStyle"));
         if (own) style.BasedOn(own.as<xaml::Style>());
@@ -171,6 +171,24 @@ extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readO
         borrow<controls::AutoSuggestBox>(handle).TextBoxStyle(style);
     } catch (...) {
         report("setting how a search box takes words");
+    }
+}
+
+extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef handle, uint32_t argb, bool colored) {
+    try {
+        // The template reads its placeholder's colour from these theme resources - at rest, under the pointer,
+        // focused and disabled - which the box's own resources name again, and its theme is read again.
+        auto search = borrow<controls::AutoSuggestBox>(handle);
+        auto resources = search.Resources();
+        for (auto name : {L"TextControlPlaceholderForeground", L"TextControlPlaceholderForegroundPointerOver",
+                          L"TextControlPlaceholderForegroundFocused", L"TextControlPlaceholderForegroundDisabled"}) {
+            auto key = winrt::box_value(winrt::hstring(name));
+            if (colored) resources.Insert(key, brush(argb));
+            else if (resources.HasKey(key)) resources.Remove(key);
+        }
+        readThemeAgain(search);
+    } catch (...) {
+        report("colouring a search box's placeholder");
     }
 }
 

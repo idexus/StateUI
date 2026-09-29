@@ -41,6 +41,7 @@ extension WinUIRegistrations {
             search.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
             }
+            search.property(InputViewContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
             search.raises(InputViewContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })

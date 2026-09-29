@@ -534,6 +534,9 @@ void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 /// across it as `stateui_winui_field_set_look` has them.
 void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment);
 
+/// A search box's placeholder in `argb` where `colored`, else the theme's.
+void stateui_winui_search_set_placeholder_color(StateUIObjectRef search, uint32_t argb, bool colored);
+
 /// Its words across it (StateUI's `TextAlignment`) and its placeholder's colour, the platform's where not
 /// `placeholderColored`.
 void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uint32_t placeholderArgb,
