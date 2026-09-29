@@ -29,6 +29,9 @@ extension WinUIDriver {
             throw cannot
         case .page, .navigationStack, .splitView, .tabbedView:
             if let held = try pageHolds(property.name, element, view) { return held }
+        case .button where property.name == "icon":
+            guard let view else { throw cannot }
+            return Self.picture(try read(view, "icon"), named: element)
         default: break
         }
         guard let view else { throw cannot }
@@ -279,8 +282,11 @@ extension WinUIDriver {
             return .string(try read(picker, "longDate") == "1" ? "D" : "d")
         case ("time", let picker as WinUITimePickerView): return picker.time?.propValue
         case ("source", let image as WinUIImageView): return ImageSource(try read(image, "source")).propValue
-        case ("aspect", let image as WinUIImageView):
-            let stretch = Int(try read(image, "stretch")) ?? 2
+        case ("iconPosition", let button as WinUIButtonView):
+            return IconPosition(rawValue: Int32(try read(button, "iconPosition")) ?? 0)?.propValue
+        case ("iconSpacing", let button as WinUIButtonView): return Double(try read(button, "iconSpacing"))?.propValue
+        case ("aspect", _) where view is WinUIImageView || view is WinUIButtonView:
+            let stretch = Int(try read(view, "stretch")) ?? 2
             let aspect: Aspect = stretch == 3 ? .fill : stretch == 1 ? .stretch : stretch == 0 ? .center : .fit
             return aspect.propValue
         case ("scrollOffset", let scroll as WinUIScrollView): return scroll.offset.propValue

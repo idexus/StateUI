@@ -1,11 +1,12 @@
-// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-FileCopyrightText: 2026 PaweÅ‚ KrzywdziÅ„ski and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A WinUI `Button`: its caption, its look, whether it takes a press, and the click it raises.
+/// A WinUI `Button`: its caption and its picture, its look, whether it takes a press, and the click it raises.
+/// Design: docs/design/platforms/winui/controls.md#a-button
 @MainActor
 final class WinUIButtonView: WinUIView {
     /// What the button does when the user clicks it, holds it down and lets it go.
@@ -13,13 +14,71 @@ final class WinUIButtonView: WinUIView {
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
 
+    /// What the button shows, as it was last written, and the height its picture beside the words was bounded to.
+    private var shown: Shown?
+    private var bounded: Double?
+    private var words = ""
+    private var look = Shown()
+
     init() {
         super.init { number in stateui_winui_button_make(number) }
     }
 
     /// The caption.
     func setText(_ text: String) {
-        stateui_winui_set_caption(handle, text)
+        words = text
+        show()
+    }
+
+    /// The picture beside the caption - the files it may stand in (`PictureArithmetic.files`), none for none -
+    /// where it stands, how far from the words (nil for WinUI's own gap), and how it fills the button alone.
+    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: Aspect) {
+        look.icon = icon
+        look.position = position
+        look.spacing = spacing
+        look.aspect = aspect
+        show()
+    }
+
+    /// How a caption too long for the button breaks; nil for WinUI's own, one line.
+    func setLineBreak(_ lineBreak: LineBreak?) {
+        look.lineBreak = lineBreak
+        show()
+    }
+
+    /// Writes what the button shows: all of it where its shape changed, else the words in their place.
+    private func show() {
+        var next = look
+        next.hasWords = !words.isEmpty
+        guard next != shown else {
+            stateui_winui_button_set_words(handle, words)
+            return
+        }
+        shown = next
+        bounded = nil
+        stateui_winui_button_set_content(
+            handle, words, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
+            next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
+    }
+
+    /// A picture beside the words stands no taller than the button's place leaves it.
+    /// Design: docs/design/platforms/winui/controls.md#a-button
+    override func layout(_ place: Rect) {
+        if let shown, shown.hasWords, !shown.icon.isEmpty, bounded != place.height {
+            bounded = place.height
+            stateui_winui_button_set_room(handle, place.height)
+        }
+        super.layout(place)
+    }
+
+    /// The shape of what a button shows: whether it has words, and its picture and how it stands.
+    private struct Shown: Equatable {
+        var hasWords = false
+        var icon: [String] = []
+        var position = IconPosition.leading
+        var spacing: Double?
+        var aspect = Aspect.fit
+        var lineBreak: LineBreak?
     }
 
     /// The caption the button shows now, read back from WinUI.

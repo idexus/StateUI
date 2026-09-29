@@ -372,6 +372,19 @@ void stateui_winui_set_caption(StateUIObjectRef control, char const *utf8);
 void stateui_winui_button_set_look(StateUIObjectRef button, StateUIBrush background, StateUIBrush stroke,
                                    double strokeWidth, double cornerRadius, double underPointer, double pressed);
 
+/// What a button shows: its words - wrapped onto more lines or cut short with an ellipsis where they do not fit,
+/// else on one line - and the picture the first of the files `icons` names that the pictures hold (each ended by
+/// a line feed, empty for none): beside the words - StateUI's IconPosition, `spacing` DIPs apart, a negative one
+/// WinUI Gallery's gap - at its own size, or alone, filling the room inside the padding as StateUI's Aspect says.
+void stateui_winui_button_set_content(StateUIObjectRef button, char const *words, char const *icons,
+                                      int32_t position, double spacing, int32_t aspect, bool wraps, bool trims);
+/// Bounds the picture beside a button's words to the room a button `height` DIPs tall keeps for it, inside its
+/// padding and outline; no bound for 0. WinUI arranges a button at no less than it measured, and StateUI measures
+/// it with no bound on its height: a button placed lower than its picture would show the words cut.
+void stateui_winui_button_set_room(StateUIObjectRef button, double height);
+/// Puts other words on a button that shows some, in the place they stand.
+void stateui_winui_button_set_words(StateUIObjectRef button, char const *words);
+
 /// Presses a button as UI Automation does, which raises its Click.
 void stateui_winui_button_invoke(StateUIObjectRef button);
 

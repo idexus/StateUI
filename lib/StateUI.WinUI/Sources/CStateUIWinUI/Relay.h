@@ -70,6 +70,10 @@ namespace stateui {
     /// The text block of the label `handle` names; throws for any other element.
     controls::TextBlock labelWords(StateUIObjectRef handle);
 
+    /// The words a button shows: its content, or the text block beside its picture; null for none, and for any
+    /// other element.
+    controls::TextBlock captionOf(IInspectable const &element);
+
     /// What assistive technology meets of an element: a label's words, or the element itself.
     xaml::UIElement metOf(IInspectable const &element);
 
@@ -83,6 +87,10 @@ namespace stateui {
     /// An icon showing the first of the files `names` lists that the pictures hold, keeping that file for a test to
     /// read (`iconFile`); null for none.
     controls::ImageIcon pictureIcon(char const *names);
+
+    /// An image showing that picture at its own size - an SVG at the size it declares, which WinUI takes for
+    /// thousands of pixels - keeping its file as its tag; null for none.
+    controls::Image pictureImage(char const *names);
 
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);

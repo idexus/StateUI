@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Button: its caption and its look, whether it takes a press, and the click.
+    /// A Button: its caption, its picture and its look, whether it takes a press, and the click.
     static func buttons(_ registry: Registry<WinUIView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = WinUIButtonView()
@@ -25,6 +25,16 @@ extension WinUIRegistrations {
                     strokeWidth: values[BorderElementContract.strokeWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
+            button.applies([
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                ImageElementContract.aspect,
+            ]) { view, values in
+                view.setIcon(
+                    values[ButtonContract.icon].flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0.file) } ?? [],
+                    position: values[ButtonContract.iconPosition] ?? .leading,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
+            }
+            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }

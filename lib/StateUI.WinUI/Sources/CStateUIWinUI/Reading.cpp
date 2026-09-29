@@ -94,6 +94,42 @@ namespace {
         return std::nullopt;
     }
 
+    /// What a button shows: how its words break, and its picture - the file, where it stands beside the words
+    /// (StateUI's IconPosition), how far from them, and how it fills the room alone (WinUI's Stretch).
+    std::optional<std::string> button(IInspectable const &object, std::string_view what) {
+        auto shown = object.try_as<controls::Button>();
+        if (!shown) return std::nullopt;
+        if (what == "captionBottom") {
+            auto caption = captionOf(object);
+            if (!caption) return std::string();
+            auto bottom = caption.TransformToVisual(shown).TransformPoint({0, static_cast<float>(caption.ActualHeight())});
+            return number(bottom.Y);
+        }
+        if (what == "wrapping" || what == "trimming") {
+            auto caption = captionOf(object);
+            if (!caption) return std::string();
+            return number(what == "wrapping" ? static_cast<int32_t>(caption.TextWrapping())
+                                             : static_cast<int32_t>(caption.TextTrimming()));
+        }
+        auto content = shown.Content();
+        auto both = content.try_as<controls::StackPanel>();
+        auto box = content.try_as<controls::Viewbox>();
+        if (both)
+            for (auto const &child : both.Children())
+                if (auto found = child.try_as<controls::Viewbox>()) box = found;
+        auto picture = box ? box.Child().try_as<controls::Image>() : nullptr;
+        if (what == "icon") return picture ? narrow(winrt::unbox_value_or<winrt::hstring>(picture.Tag(), L"")) : "";
+        if (what == "stretch") return box ? number(static_cast<int32_t>(box.Stretch())) : "";
+        if (what == "iconSpacing") return both ? number(both.Spacing()) : "";
+        if (what == "iconPosition") {
+            if (!both) return std::string("0");
+            auto first = both.Children().GetAt(0).try_as<controls::Viewbox>() != nullptr;
+            auto across = both.Orientation() == controls::Orientation::Horizontal;
+            return number(across ? (first ? 0 : 2) : (first ? 1 : 3));
+        }
+        return std::nullopt;
+    }
+
     /// What a text block alone holds; its runs' words, each ended by the unit separator but the last.
     std::optional<std::string> block(controls::TextBlock const &text, std::string_view what) {
         if (what == "runs") {
@@ -309,6 +345,7 @@ namespace {
                 return number(chosen ? static_cast<double>(index) : -1);
             }
         }
+        if (auto found = button(object, what)) return found;
         if (auto found = font(object, what)) return found;
         if (auto text = wordsOf(object)) {
             if (auto found = block(text, what)) return found;

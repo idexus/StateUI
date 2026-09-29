@@ -31,6 +31,85 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
+    /// A button is named by its words, alone or beside a picture: its content is a text block, not the words.
+    func testAButtonIsNamedByItsWords() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Go")
+                    Button("Send").icon("test_wide.png").iconPosition(.trailing)
+                }
+            }
+            let buttons = host.views(WinUIButtonView.self)
+            XCTAssertEqual(buttons.map(\.automationWords.name), ["Go", "Send"])
+        }
+    }
+
+    /// A picture beside a button's words stands at its own size - an SVG at the size it declares, which WinUI takes
+    /// for thousands of pixels - so the button stays a button's size.
+    func testAPictureBesideTheWordsStandsAtItsOwnSize() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack { Button("Go").icon("test_wide.png").horizontalAlignment(.start) }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            host.settle { button.frame.width > 0 }
+            XCTAssertLessThan(button.frame.width, 150, "\(button.frame)")
+            XCTAssertLessThan(button.frame.height, 60, "\(button.frame)")
+        }
+    }
+
+    /// A button placed lower than the picture beside its words shows its words whole: the picture stands no taller
+    /// than the room the place leaves it. WinUI arranges a button at no less than it measured, and StateUI measures
+    /// it with no bound on its height.
+    func testAButtonLowerThanItsPictureShowsItsWordsWhole() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Go").icon("test_wide.png").fontSize(6).padding(4, 0).height(12).horizontalAlignment(.start)
+                }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            host.settle { (Double(Self.read(button, "captionBottom")) ?? 99) <= 12 }
+            XCTAssertLessThanOrEqual(Double(Self.read(button, "captionBottom")) ?? 99, 12, "the words' bottom")
+        }
+    }
+
+    @MainActor private static func read(_ view: WinUIView, _ what: String) -> String {
+        WinUIStrings.read { stateui_winui_read(view.handle, what, $0, $1) }
+    }
+
+    /// A picture alone fills its button as its aspect says - fitted whole, or covering it - and is cut at the
+    /// button's edge: nothing of it stands beside the button.
+    func testAPictureAloneFillsItsButtonAsItsAspectSays() throws {
+        try onUIThread {
+            for (aspect, drawn, empty) in [
+                (Aspect.fit, [(20.0, 20.0)], [(20.0, 5.0), (60.0, 20.0)]),
+                (Aspect.fill, [(20.0, 5.0), (20.0, 35.0), (2.0, 20.0)], [(60.0, 20.0)]),
+            ] {
+                let host = WinUIRenderer.running {
+                    HStack {
+                        Button(icon: "test_wide.png")
+                            .aspect(aspect)
+                            .background(.transparent)
+                            .strokeWidth(0)
+                            .padding(0, 0)
+                            .width(40)
+                            .height(40)
+                        Label("").width(40).height(40)
+                    }
+                    .spacing(0)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let row = try XCTUnwrap(host.views(WinUIStackView.self).first)
+                host.settle { row.pixels(at: drawn).allSatisfy { $0 == 0xFF33_6699 } }
+                XCTAssertEqual(row.pixels(at: drawn), drawn.map { _ in 0xFF33_6699 }, "\(aspect): the picture")
+                XCTAssertEqual(row.pixels(at: empty), empty.map { _ in 0 }, "\(aspect): nothing of it")
+            }
+        }
+    }
+
     /// A button nothing styles is WinUI's own: the platform's fill, not the application's.
     func testAButtonNothingStylesIsWinUIsOwn() throws {
         try onUIThread {

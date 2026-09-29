@@ -171,6 +171,26 @@ controls::ImageIcon stateui::pictureIcon(char const *names) {
     return icon;
 }
 
+controls::Image stateui::pictureImage(char const *names) {
+    auto file = pictureFile(names);
+    if (file.empty()) return nullptr;
+    controls::Image image;
+    image.Tag(winrt::box_value(winrt::hstring(file)));
+    auto path = pictures() + file;
+    auto dot = file.find_last_of(L'.');
+    if (dot == std::wstring::npos || file.substr(dot) != L".svg") {
+        image.Source(imaging::BitmapImage(address(path)));
+        return image;
+    }
+    auto text = contents(path);
+    if (auto own = declared(text); own.Width > 0) {
+        image.Width(own.Width);
+        image.Height(own.Height);
+    }
+    image.Source(drawing(text));
+    return image;
+}
+
 std::wstring stateui::iconFile(controls::IconElement const &icon) {
     auto pictured = icon ? icon.try_as<controls::ImageIcon>() : nullptr;
     if (!pictured || !pictured.Tag()) return {};

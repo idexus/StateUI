@@ -8,6 +8,7 @@
 #include "Automation.h"
 
 #include <algorithm>
+#include <limits>
 
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.h>
@@ -33,6 +34,17 @@ controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
     auto words = wordsOf(as<IInspectable>(handle));
     if (!words) winrt::throw_hresult(E_INVALIDARG);
     return words;
+}
+
+controls::TextBlock stateui::captionOf(IInspectable const &element) {
+    auto button = element.try_as<controls::Button>();
+    if (!button) return nullptr;
+    auto content = button.Content();
+    if (auto block = content.try_as<controls::TextBlock>()) return block;
+    if (auto both = content.try_as<controls::StackPanel>())
+        for (auto const &child : both.Children())
+            if (auto block = child.try_as<controls::TextBlock>()) return block;
+    return nullptr;
 }
 
 xaml::UIElement stateui::metOf(IInspectable const &element) {
@@ -151,6 +163,99 @@ extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *u
         as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
     } catch (...) {
         report("setting a caption");
+    }
+}
+
+extern "C" void stateui_winui_button_set_content(
+    StateUIObjectRef handle, char const *words, char const *icons, int32_t position, double spacing, int32_t aspect,
+    bool wraps, bool trims
+) {
+    try {
+        auto button = borrow<controls::Button>(handle);
+        auto picture = pictureImage(icons);
+        auto caption = text(words);
+        controls::TextBlock block{nullptr};
+        if (!caption.empty() || !picture) {
+            block = controls::TextBlock();
+            block.Text(caption);
+            block.TextWrapping(wraps ? xaml::TextWrapping::Wrap : xaml::TextWrapping::NoWrap);
+            block.TextTrimming(trims ? xaml::TextTrimming::CharacterEllipsis : xaml::TextTrimming::None);
+        }
+        auto alone = picture && !block;
+        // Words beside a picture are no content WinUI names the button by: they label it.
+        if (picture && block) xaml::Automation::AutomationProperties::SetLabeledBy(button, block);
+        else button.ClearValue(xaml::Automation::AutomationProperties::LabeledByProperty());
+        if (alone) {
+            button.HorizontalContentAlignment(xaml::HorizontalAlignment::Stretch);
+            button.VerticalContentAlignment(xaml::VerticalAlignment::Stretch);
+        } else {
+            button.ClearValue(controls::Control::HorizontalContentAlignmentProperty());
+            button.ClearValue(controls::Control::VerticalContentAlignmentProperty());
+        }
+        if (!picture) {
+            button.Content(block);
+            return;
+        }
+        // Alone, the picture fills the room inside the padding as StateUI's Aspect says: fit, fill, stretch,
+        // centre. Beside words it stands at its own size, smaller where the button is.
+        controls::Viewbox box;
+        box.Child(picture);
+        if (alone) {
+            box.Stretch(aspect == 1 ? xaml::Media::Stretch::UniformToFill
+                        : aspect == 2 ? xaml::Media::Stretch::Fill
+                        : aspect == 3 ? xaml::Media::Stretch::None : xaml::Media::Stretch::Uniform);
+            button.Content(box);
+            return;
+        }
+        box.StretchDirection(controls::StretchDirection::DownOnly);
+        // StateUI's IconPosition: before the words (0), above (1), after (2), below (3), apart by the spacing given
+        // or WinUI Gallery's 8.
+        auto across = position == 0 || position == 2;
+        controls::StackPanel both;
+        both.Orientation(across ? controls::Orientation::Horizontal : controls::Orientation::Vertical);
+        both.Spacing(spacing >= 0 ? spacing : 8);
+        for (xaml::FrameworkElement part : {xaml::FrameworkElement(box), xaml::FrameworkElement(block)}) {
+            if (across) part.VerticalAlignment(xaml::VerticalAlignment::Center);
+            else part.HorizontalAlignment(xaml::HorizontalAlignment::Center);
+        }
+        auto after = position == 2 || position == 3;
+        both.Children().Append(after ? xaml::UIElement(block) : xaml::UIElement(box));
+        both.Children().Append(after ? xaml::UIElement(box) : xaml::UIElement(block));
+        button.Content(both);
+    } catch (...) {
+        report("setting what a button shows");
+    }
+}
+
+extern "C" void stateui_winui_button_set_room(StateUIObjectRef handle, double height) {
+    try {
+        auto button = borrow<controls::Button>(handle);
+        auto both = button.Content().try_as<controls::StackPanel>();
+        if (!both) return;
+        controls::Viewbox box{nullptr};
+        for (auto const &child : both.Children())
+            if (auto found = child.try_as<controls::Viewbox>()) box = found;
+        if (!box) return;
+        // The room inside the padding and the outline, less the words' line where the picture stands above or
+        // below them.
+        auto padding = button.Padding();
+        auto border = button.BorderThickness();
+        auto room = height - padding.Top - padding.Bottom - border.Top - border.Bottom;
+        if (both.Orientation() == controls::Orientation::Vertical) {
+            if (auto caption = captionOf(button)) room -= caption.DesiredSize().Height + both.Spacing();
+        }
+        auto bound = height > 0 ? std::max(0.0, room) : std::numeric_limits<double>::infinity();
+        if (box.MaxHeight() != bound) box.MaxHeight(bound);
+    } catch (...) {
+        report("bounding a button's picture");
+    }
+}
+
+extern "C" void stateui_winui_button_set_words(StateUIObjectRef handle, char const *words) {
+    try {
+        if (auto block = captionOf(as<IInspectable>(handle))) block.Text(text(words));
+    } catch (...) {
+        report("setting a button's words");
     }
 }
 

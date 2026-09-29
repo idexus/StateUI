@@ -2,11 +2,16 @@ ActivityIndicator
   isRunning
   tint
 Button
+  aspect
   background
   fontAttributes
   fontFamily
   fontSize
+  icon
+  iconPosition
+  iconSpacing
   isEnabled
+  lineBreak
   padding
   shape
   stroke

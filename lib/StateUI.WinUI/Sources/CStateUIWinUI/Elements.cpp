@@ -260,6 +260,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
             words = box.Text();
         } else if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             words = search.Text();
+        } else if (auto caption = captionOf(object)) {
+            words = caption.Text();
         } else if (auto content = object.try_as<controls::ContentControl>()) {
             words = winrt::unbox_value_or<winrt::hstring>(content.Content(), L"");
         }

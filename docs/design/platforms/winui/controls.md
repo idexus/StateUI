@@ -31,6 +31,26 @@ four thirds of it. The lines a label's break allows are the host layer's
 short only at their end, so a label cut at its start or in its middle is cut
 at its end.
 
+## A button
+
+A button's words are a `TextBlock` of its content, which takes the button's
+font and colour: wrapped or cut short at their end as the tree's break says,
+and on one line where it says nothing, as WinUI's own buttons stand. With a
+picture the content is composed as WinUI Gallery composes it: a `StackPanel`
+holding the picture and the words, across them or down them as the icon's
+position says - before, above, after or below - the icon spacing apart, else
+WinUI Gallery's 8 DIPs. The picture stands at its own size
+([pictures](#pictures)) in a `Viewbox` that makes it smaller, never larger,
+where the button is lower than the picture: a chip in the chrome shows it at
+the chip's height. WinUI arranges a button at no less than it measured, and
+StateUI measures it with no bound on its height, so the picture is bounded
+as the button is placed - to the room its place leaves inside the padding
+and the outline, less the words' line where it stands above or below them -
+and the words stand whole ([no room asked](layout.md#no-room-asked)). With no words the picture stands alone in a `Viewbox`
+filling the room inside the padding as its aspect says - fitted, covering it,
+stretched across it, or at its own size in the middle. Only the words
+changing writes them again in their place.
+
 A button drawn in the application's colours keeps them under the pointer and
 pressed: its fill is drawn a little fainter each time, as WinUI's own buttons
 are, its words and outline as they are - WinUI's template otherwise draws
