@@ -17,7 +17,7 @@
 #
 #   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]
 #
-# It makes apps/HelloWorld under another name: Package.swift, Sources/,
+# It makes apps/HelloWorld under another name: Package.swift, Sources/, Tests/,
 # Resources/, Platforms/AppKit/, Platforms/UIKit/, Platforms/Android/, Platforms/WinUI/ and Platforms/GTK/.
 # What HelloWorld's builds wrote is left behind.
 # ---------------------------------------------------------------------------
@@ -52,7 +52,7 @@ if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a
 $lower = $Name.ToLowerInvariant()
 
 New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Android") -Force | Out-Null
-foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit", "Platforms/UIKit", "Platforms/WinUI", "Platforms/GTK")) {
+foreach ($item in @("Package.swift", "Sources", "Tests", "Resources", "Platforms/AppKit", "Platforms/UIKit", "Platforms/WinUI", "Platforms/GTK")) {
     Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
 }
 

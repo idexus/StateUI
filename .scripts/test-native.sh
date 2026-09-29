@@ -12,6 +12,7 @@ swift test --package-path "$repository_dir/lib/StateUI.Host"
 swift test --package-path "$repository_dir/lib/StateUI.Conformance"
 swift test --package-path "$repository_dir/lib/StateUI.AppKit"
 swift test --package-path "$repository_dir/apps/Gallery"
+swift test --package-path "$repository_dir/apps/HelloWorld"
 
 # And Swift written for the AppKit host alone stands under `#if APPKIT`, so the
 # Gallery runs once more as an AppKit build - STATEUI_APPKIT, which its

@@ -127,8 +127,9 @@ Build the signed Gallery bundle with its resources and icon:
 ```
 
 A new application is HelloWorld under another name, with every head
-HelloWorld has. This makes `apps/Notes` (`.scripts/new-app.ps1 -Name Notes`
-on Windows):
+HelloWorld has and its example test in `Tests/`, which `swift test` and
+**StateUI: Run Tests** run. This makes `apps/Notes`
+(`.scripts/new-app.ps1 -Name Notes` on Windows):
 
 ```bash
 .scripts/new-app.sh Notes

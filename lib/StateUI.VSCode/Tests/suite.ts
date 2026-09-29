@@ -152,6 +152,10 @@ export async function run(): Promise<void> {
         check("appkit runs the core, StateUI.AppKit and the Gallery, and no device",
             appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI.AppKit")
             && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests")));
+        check("HelloWorld's example test runs with the rest - as an AppKit build on its .build-appkit, or as plain Swift",
+            findSuites(root.uri.fsPath, "appkit").some((each) => each.label === "apps/HelloWorld"
+                && each.args.join(" ").endsWith(`--scratch-path ${path.join(root.uri.fsPath, "apps", "HelloWorld", ".build-appkit")}`))
+            && plainSuites.some((each) => each.label === "apps/HelloWorld"));
         check("with no host the core and the Gallery run as plain Swift, and no host's own package",
             plainSuites.some((each) => each.label === "StateUI") && plainSuites.some((each) => each.label === "apps/Gallery")
             && plainSuites.every((each) => each.command === "swift" && Object.keys(each.env).length === 0 && !each.onDevice)
@@ -557,6 +561,24 @@ export async function run(): Promise<void> {
             check("New Application in apps/ in that group names the same checkout", tasks === path.join(local!, "apps", "Tasks")
                 && same(checkoutNamedBy(tasks), root.uri.fsPath) && wired(tasks));
             check("the local group's application builds", builds(localNotes));
+            // StateUI: Run Tests in the group: each application's example test, run as the command runs it.
+            const testHost = process.platform === "darwin" ? "appkit" : undefined;
+            const groupSuites = findSuites(local!, testHost);
+            const notesSuite = groupSuites.find((each) => each.label === "apps/Notes");
+            check("Run Tests in a group finds each application's tests",
+                groupSuites.map((each) => each.label).join(" ") === "apps/Notes apps/Tasks" && notesSuite !== undefined);
+            const passes = (() => {
+                try {
+                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(testHost), ...notesSuite!.env })
+                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
+                    execSync([notesSuite!.command, ...notesSuite!.args].map((each) => `"${each}"`).join(" "), { cwd: local, env, stdio: "pipe" });
+                    return true;
+                } catch (error) {
+                    say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
+                    return false;
+                }
+            })();
+            check(`Notes' example test passes as ${testHost ?? "plain Swift"}`, passes);
 
             const releases = await listReleases("https://github.com/idexus/StateUI.git", "0.4.0");
             check("GitHub lists the release 0.4.0, and nothing older is offered",

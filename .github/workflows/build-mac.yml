@@ -50,5 +50,5 @@ jobs:
         run: swift --version
       - name: Test Gallery
         run: swift test --package-path apps/Gallery
-      - name: Build HelloWorld
-        run: swift build --package-path apps/HelloWorld
+      - name: Test HelloWorld
+        run: swift test --package-path apps/HelloWorld

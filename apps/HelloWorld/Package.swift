@@ -23,9 +23,9 @@ var products: [Product] = [
 ]
 
 var targets: [Target] = [
-    // "StateUI" is named without `package:`, which would tie this manifest to
-    // the checkout's folder being called StateUI.
     .target(name: "HelloWorldUI", dependencies: ["StateUI"], path: "Sources", swiftSettings: settings),
+    // The application's tests - `swift test`, or StateUI: Run Tests.
+    .testTarget(name: "HelloWorldTests", dependencies: ["HelloWorldUI"], path: "Tests", swiftSettings: settings),
 ]
 
 // The head in Platforms/<Host>: an executable its host runs, and on Android a

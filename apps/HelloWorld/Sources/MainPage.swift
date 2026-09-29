@@ -28,7 +28,7 @@ struct MainPage: ContentView {
                 .maximumLength(40)
                 .width(240)
 
-            Button(count == 0 ? "Click me" : "Clicked \(count) time\(count == 1 ? "" : "s")")
+            Button(Self.caption(clicks: count))
                 .onClicked { count += 1 }
                 .horizontalAlignment(.center)
                 .margin(20)
@@ -37,5 +37,10 @@ struct MainPage: ContentView {
         .verticalAlignment(.center)
         .padding(30)
         .onCreated { page.title = "HelloWorld" }
+    }
+
+    /// What the button says once it has been clicked `count` times.
+    static func caption(clicks count: Int) -> String {
+        count == 0 ? "Click me" : "Clicked \(count) time\(count == 1 ? "" : "s")"
     }
 }

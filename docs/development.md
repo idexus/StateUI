@@ -25,6 +25,7 @@ apps/Gallery/Platforms/WinUI/      Gallery WinUI head
 apps/Gallery/Platforms/GTK/        Gallery GTK head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
+apps/HelloWorld/Tests/             its example test, which every new application starts with
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
@@ -187,6 +188,7 @@ swift test --package-path lib/StateUI.Host
 swift test --package-path lib/StateUI.Conformance
 swift test --package-path lib/StateUI.AppKit
 swift test --package-path apps/Gallery
+swift test --package-path apps/HelloWorld
 ```
 
 `.scripts/test-native.sh` runs these Swift suites, then the Gallery again as an
@@ -201,7 +203,8 @@ layer's suite proves the rules every host shares, pure, with no toolkit. The
 conformance package's own tests prove its runner and that every member has
 its case; each host's suite runs the cases themselves. The AppKit suite drives
 native AppKit objects. The Gallery's treats Gallery as application behavior
-and compiles the documentation examples. In VS Code, **StateUI: Run Tests**
+and compiles the documentation examples. HelloWorld's holds one example test
+of the application's own logic, which a new application starts with. In VS Code, **StateUI: Run Tests**
 runs them as the chosen host.
 
 The Android Views host's suite runs on a device, in a test APK:

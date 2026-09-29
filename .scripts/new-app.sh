@@ -27,9 +27,10 @@
 # WHAT IT MAKES is apps/HelloWorld under another name - the worked example of
 # the layout every application in apps/ has:
 #
-#     Package.swift         the application's Swift module and the heads Swift
-#                           builds
+#     Package.swift         the application's Swift module, its tests and the
+#                           heads Swift builds
 #     Sources/              the application, its page, and Styles/
+#     Tests/                an example test of the application's own logic
 #     Resources/            the artwork
 #     Platforms/AppKit/     the macOS head
 #     Platforms/UIKit/      the iOS and iPadOS head, run on a simulator
@@ -77,7 +78,7 @@ APP="$APPS_DIR/$NAME"
 LOWER="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
 
 mkdir -p "$APP/Platforms/Android"
-for item in Package.swift Sources Resources Platforms/AppKit Platforms/UIKit Platforms/WinUI Platforms/GTK; do
+for item in Package.swift Sources Tests Resources Platforms/AppKit Platforms/UIKit Platforms/WinUI Platforms/GTK; do
   cp -R "$MODEL/$item" "$APP/$item"
 done
 

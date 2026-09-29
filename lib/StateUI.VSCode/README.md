@@ -25,8 +25,9 @@ command.
 **StateUI: New Application in apps/** - in a StateUI checkout or a project
 group, asks for a name and runs the scaffolder of the checkout the folder's
 applications build with, `.scripts/new-app.sh` (or `new-app.ps1` on Windows),
-which makes HelloWorld under that name. The application is then chosen, so
-**StateUI: Debug** runs it.
+which makes HelloWorld under that name - its example test in `Tests/`
+included, which **StateUI: Run Tests** runs. The application is then chosen,
+so **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
