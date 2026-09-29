@@ -28,6 +28,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testAPasswordHidesTheWordsAndKeepsThem", testAPasswordHidesTheWordsAndKeepsThem),
             ("testReturnSubmitsOnce", testReturnSubmitsOnce),
             ("testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt", testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt),
+            ("testAHardwareReturnStartsANewLineInAnEditor", testAHardwareReturnStartsANewLineInAnEditor),
             ("testAReturnKeyIsCaptionedAsTheTreeSays", testAReturnKeyIsCaptionedAsTheTreeSays),
             ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
             ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
@@ -178,6 +179,21 @@ final class AndroidTextFieldViewTests: XCTestCase {
             XCTAssertTrue(
                 Java.callBool(field.reference, TestJava.hasFocus), "the field the page aimed at, not \(TestWindow.focused)")
             XCTAssertFalse(Java.callBool(below.reference, TestJava.hasFocus), "the button below it")
+        }
+    }
+
+    /// A hardware Return in an editor starts a new line, as the keyboard's does.
+    func testAHardwareReturnStartsANewLineInAnEditor() throws {
+        try onMainActor {
+            let draft = State(wrappedValue: "")
+            let host = AndroidRenderer.running { TextEditor(draft.projectedValue) }
+            let editor = try XCTUnwrap(host.views(AndroidTextFieldView.self).first)
+
+            editor.type("one")
+            editor.press(key: 66)
+            editor.type("two")
+
+            XCTAssertEqual(draft.wrappedValue, "one\ntwo")
         }
     }
 

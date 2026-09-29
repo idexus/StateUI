@@ -77,7 +77,8 @@ itself, so one Return is one submission. A Return submitted as it went down
 would leave its release to the view the submission put the focus on - a field
 of the page it showed - and out of touch mode Android takes a Return released
 on a one-line field it did not see go down for a move to the view below it:
-a scanner's Enter would press the button there.
+a scanner's Enter would press the button there. An editor's hardware Return
+is its own and starts a new line.
 
 ## The background a view is made with
 

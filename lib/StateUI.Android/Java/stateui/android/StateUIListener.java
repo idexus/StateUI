@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -71,7 +72,7 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
 
     /**
      * Once per Return: the keyboard's action, or a hardware key as it is let go - its release then reaches no field
-     * the submission put the focus on.
+     * the submission put the focus on. An editor's hardware Return starts a new line.
      */
     @Override
     public boolean onEditorAction(TextView field, int action, KeyEvent event) {
@@ -79,6 +80,7 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
             StateUIHost.submitted(view);
             return false;
         }
+        if ((field.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0) return false;
         if (event.getAction() == KeyEvent.ACTION_UP) StateUIHost.submitted(view);
         return true;
     }
