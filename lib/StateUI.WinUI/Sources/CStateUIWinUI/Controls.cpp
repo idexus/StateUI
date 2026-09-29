@@ -259,6 +259,15 @@ extern "C" void stateui_winui_button_set_words(StateUIObjectRef handle, char con
     }
 }
 
+extern "C" bool stateui_winui_go_to_state(StateUIObjectRef handle, char const *state) {
+    try {
+        return xaml::VisualStateManager::GoToState(as<controls::Control>(handle), text(state), false);
+    } catch (...) {
+        report("putting a control in a visual state");
+        return false;
+    }
+}
+
 extern "C" void stateui_winui_button_invoke(StateUIObjectRef handle) {
     try {
         pattern<provider::IInvokeProvider>(borrow<controls::Button>(handle), PatternInterface::Invoke).Invoke();

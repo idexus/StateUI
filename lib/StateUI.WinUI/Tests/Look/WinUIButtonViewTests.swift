@@ -31,9 +31,38 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// A button is named by its words, alone or beside a picture: its content is a text block, not the words.
-    func testAButtonIsNamedByItsWords() throws {
+    /// A fill and words' colour the tree changes after the button is drawn stand under the pointer too, the fill a
+    /// little fainter: the template takes those states' brushes from the button's own resources as they are now.
+    func testAColourChangedLaterStandsUnderThePointer() throws {
         try onUIThread {
+            let blue = State(wrappedValue: false)
+            let host = WinUIRenderer.running {
+                VStack {
+                    Button("Go")
+                        .background(Color(blue.wrappedValue ? "#0000FF" : "#FF0000"))
+                        .textColor(Color(blue.wrappedValue ? "#00FF00" : "#FFFF00"))
+                        .strokeWidth(0)
+                        .width(120)
+                        .height(40)
+                        .horizontalAlignment(.start)
+                }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            host.settle { button.pixels(at: [(60, 3)]) == [0xFFFF_0000] }
+
+            blue.wrappedValue = true
+            host.settle { button.pixels(at: [(60, 3)]) == [0xFF00_00FF] }
+            XCTAssertTrue(stateui_winui_go_to_state(button.handle, "PointerOver"))
+            host.layOut()
+            let fill = button.pixels(at: [(60, 3)])[0]
+            XCTAssertNotEqual(fill, 0xFF00_00FF, "drawn fainter under the pointer")
+            XCTAssertTrue(fill & 0xFF > 0 && (fill >> 16) & 0xFF == 0, "blue under the pointer: \(String(fill, radix: 16))")
+        }
+    }
+
+    /// A button is named by its words, alone or beside a picture: its content is a text block, not the words.
+    func testAButtonIsNamedByItsWords() {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
