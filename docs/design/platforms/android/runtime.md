@@ -32,13 +32,15 @@ asserts that isolation rather than assuming a thread.
 
 ## A later activity
 
-Back finishes the activity while the process lives on, and the launcher then
-starts another. The application's scene is connected once, by the first
-activity: every connection makes another independent scene. A later activity
-therefore takes over the scene the one before showed, with its state: the
-previous tree leaves, letting go of the old activity's views, and a renderer
-of the new activity's own, whose intake holds no message yet, asks for the
-whole tree.
+The process outlives its activity. Android makes an activity again - for a
+new configuration - while the scene stands, and every connection makes
+another independent scene, so a later activity takes over the scene the one
+before showed, with its state: the previous tree leaves, letting go of the
+old activity's views, and a renderer of the new activity's own, whose intake
+holds no message yet, asks for the whole tree. Back finishes the activity and
+ends its scene - its window, then the scene, hear they are going - and the
+launcher's next activity finds none standing: it connects a new scene, as the
+first activity did.
 
 ## The doorbell
 

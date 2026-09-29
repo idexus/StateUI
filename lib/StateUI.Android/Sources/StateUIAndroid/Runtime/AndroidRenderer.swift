@@ -71,11 +71,13 @@ final class AndroidRenderer {
     }
 
     /// Starts the host in an activity's root, then rings the doorbell for everything after its first render.
-    /// An activity after the first takes over the scene the one before showed, rendered whole.
+    /// An activity after the first takes over the scene the one before showed, rendered whole; where Back ended
+    /// that scene, it connects a new one, as the first activity did.
     /// Design: docs/design/platforms/android/runtime.md#a-later-activity
     @discardableResult
     static func start(context: JavaObject, root: JavaObject, density: Double) -> AndroidRenderer {
         let previous = shared
+        let sceneStands = previous?.runtime.tree.root?.children.contains { $0.type == .scene } == true
         previous?.runtime.tree.root?.leave()
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
@@ -85,7 +87,7 @@ final class AndroidRenderer {
         core.setRealization(AndroidRegistrations.registry.realization, unrealized: AndroidRealization.unrealized)
         AndroidEnvironment.report(to: core, activity: context.reference)
         if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
-        renderer.show(connectingScene: previous == nil)
+        renderer.show(connectingScene: !sceneStands)
         AndroidDoorbell.install { AndroidRenderer.shared?.runtime.pump.turn() }
         return renderer
     }

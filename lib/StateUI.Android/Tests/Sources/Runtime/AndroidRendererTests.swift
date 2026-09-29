@@ -41,7 +41,8 @@ final class AndroidRendererTests: XCTestCase {
             ("testThePageShowsItsControlsInTheRoot", testThePageShowsItsControlsInTheRoot),
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
-            ("testASecondActivityShowsTheSceneTheFirstShowed", testASecondActivityShowsTheSceneTheFirstShowed),
+            ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
@@ -79,9 +80,9 @@ final class AndroidRendererTests: XCTestCase {
         }
     }
 
-    /// The process outlives its activity - Back finishes it, the launcher starts another - and the next
-    /// activity shows the scene the first showed, with its state, rather than a second scene.
-    func testASecondActivityShowsTheSceneTheFirstShowed() throws {
+    /// Android makes an activity again - a new configuration - while its scene stands: the next activity shows
+    /// the scene the first showed, with its state, rather than a second scene.
+    func testAnActivityMadeAgainShowsTheSceneWithItsState() throws {
         try onMainActor {
             let first = AndroidRenderer.running { CounterPage() }
             try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
@@ -90,6 +91,22 @@ final class AndroidRendererTests: XCTestCase {
 
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 1"])
+            XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
+        }
+    }
+
+    /// The process outlives its activity: Back finishes it, and its window and scene hear they are going. The
+    /// launcher's next activity shows a new scene, as the first one did, not an empty window.
+    func testAnActivityAfterBackShowsANewScene() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { CounterPage() }
+            try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
+            first.destroying()
+
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+
+            XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
+            XCTAssertEqual(second.views(AndroidLabelView.self).map(\.text), ["count 0"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
         }
     }
