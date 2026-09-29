@@ -90,4 +90,14 @@ final class WinUITintTests: XCTestCase {
             XCTAssertEqual(box.pixels(at: [(4, 10)]), accent, "the accent again")
         }
     }
+
+    /// A control the tree tints nothing reads as tinted with nothing - not with the theme's accent, which its own
+    /// resources do not hold.
+    func testAControlTintedWithNothingReadsNoTint() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { VStack { CheckBox(true) } }
+            let box = try XCTUnwrap(host.views(WinUICheckBoxView.self).first)
+            XCTAssertEqual(WinUIStrings.read { stateui_winui_read(box.handle, "tint", $0, $1) }, "")
+        }
+    }
 }

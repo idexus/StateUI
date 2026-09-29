@@ -298,10 +298,8 @@ namespace {
                                                                       : nullptr;
         auto element = object.try_as<xaml::FrameworkElement>();
         if (!key || !element) return std::nullopt;
-        auto name = winrt::box_value(winrt::hstring(key));
-        auto resources = element.Resources();
-        if (!resources.HasKey(name)) return std::string();
-        return colour(resources.Lookup(name).try_as<media::Brush>());
+        auto own = ownBrush(element.Resources(), key);
+        return own ? colour(own) : std::string();
     }
 
     /// What a field is for, as StateUI's InputPurpose numbers it: the input scope's first name, found in the
