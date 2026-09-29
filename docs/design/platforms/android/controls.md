@@ -134,7 +134,10 @@ the host's shape drawable - under Android's pressed ripple in the theme's
 highlight colour, kept within the same shape, so a drawn button still
 answers a finger as the platform's do. The shape dims while the button is
 disabled, to the theme's `disabledAlpha`, and so do words in a colour the
-tree gave, as the theme's own colours do.
+tree gave, as the theme's own colours do. The theme lifts a button, and its
+shadow falls under the whole outline: a shape the page shows through - a
+see-through fill, an outline alone - says its outline is clear, as Android's
+own drawables do, so no grey shadow shows inside it.
 
 An icon beside words is a compound drawable at the picture's own size,
 before, after, above or below them, the icon spacing apart or the

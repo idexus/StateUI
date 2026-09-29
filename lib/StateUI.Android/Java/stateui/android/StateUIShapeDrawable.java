@@ -120,7 +120,9 @@ final class StateUIShapeDrawable extends Drawable {
 
     /**
      * The shape as the view's outline, which is what a view clipping its content cuts to: one radius for every
-     * corner, the top left's narrower way, as an outline takes it.
+     * corner, the top left's narrower way, as an outline takes it. The outline's opacity is its shadow's: a
+     * shadow falls under the whole shape, so only one the page cannot see through casts it, as Android's own
+     * drawables do.
      */
     @Override
     public void getOutline(Outline outline) {
@@ -135,6 +137,8 @@ final class StateUIShapeDrawable extends Drawable {
             default:
                 outline.setRect(bounds);
         }
+        boolean opaque = brush.isOpaque() && (strokeWidth <= 0 || strokeColor >>> 24 == 0xFF);
+        outline.setAlpha(opaque ? alpha / 255f : 0);
     }
 
     @Override

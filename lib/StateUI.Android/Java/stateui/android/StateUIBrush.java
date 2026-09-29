@@ -33,6 +33,16 @@ final class StateUIBrush {
         this.geometry = geometry;
     }
 
+    /** Whether the brush covers what it paints with no colour the page shows through; none covers nothing. */
+    boolean isOpaque() {
+        if (kind == NONE || colors.length == 0) return false;
+        int stops = kind == SOLID ? 1 : colors.length;
+        for (int stop = 0; stop < stops; stop++) {
+            if (colors[stop] >>> 24 != 0xFF) return false;
+        }
+        return true;
+    }
+
     /**
      * Puts the brush's colour or shader for `bounds` on `paint`; false when there is nothing to paint. The Swift
      * host gives a gradient two stops or more and its whole geometry.

@@ -102,6 +102,8 @@ enum TestJava {
     static let outline = Java.findClass("android/graphics/Outline")
     static let newOutline = Java.method(outline, "<init>", "()V")
     static let getRadius = Java.method(outline, "getRadius", "()F")
+    static let getOutlineAlpha = Java.method(outline, "getAlpha", "()F")
+    static let setOutlineAlpha = Java.method(outline, "setAlpha", "(F)V")
     static let bitmap = Java.findClass("android/graphics/Bitmap")
     static let bitmapConfig = Java.findClass("android/graphics/Bitmap$Config")
     static let createBitmap = Java.staticMethod(
@@ -295,6 +297,20 @@ extension AndroidView {
             return withExtendedLifetime(outline) {
                 Java.call(background, TestJava.getOutline, .object(outline.reference))
                 return Java.callFloat(outline.reference, TestJava.getRadius)
+            }
+        }
+    }
+
+    /// How opaque the outline the view's background gives it is, which is how dark its shadow falls: asked as the
+    /// view asks it, from an outline at 1.
+    var outlineAlpha: Float {
+        Java.frame {
+            let outline = Java.new(TestJava.outline, TestJava.newOutline)
+            let background = Java.callObject(reference, TestJava.getBackground)!
+            return withExtendedLifetime(outline) {
+                Java.call(outline.reference, TestJava.setOutlineAlpha, .float(1))
+                Java.call(background, TestJava.getOutline, .object(outline.reference))
+                return Java.callFloat(outline.reference, TestJava.getOutlineAlpha)
             }
         }
     }

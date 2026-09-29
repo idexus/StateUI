@@ -15,6 +15,7 @@ final class AndroidButtonViewTests: XCTestCase {
             ("testAnIconAloneFitsTheRoomInsideThePadding", testAnIconAloneFitsTheRoomInsideThePadding),
             ("testAnIconBesideWordsStandsWhereItsPositionSays", testAnIconBesideWordsStandsWhereItsPositionSays),
             ("testALookIsOneShapeUnderThePlatformsRipple", testALookIsOneShapeUnderThePlatformsRipple),
+            ("testALookThePageShowsThroughCastsNoShadow", testALookThePageShowsThroughCastsNoShadow),
             ("testADisabledLookDimsAsTheThemesControlsDo", testADisabledLookDimsAsTheThemesControlsDo),
             ("testAFingerDownAndUpArePressedAndReleased", testAFingerDownAndUpArePressedAndReleased),
             ("testAFamilyChangesTheTypeface", testAFamilyChangesTheTypeface),
@@ -91,6 +92,24 @@ final class AndroidButtonViewTests: XCTestCase {
             XCTAssertEqual(Self.underTheRipple(of: buttons[1]), "stateui.android.StateUIShapeDrawable")
             XCTAssertEqual(Self.underTheRipple(of: buttons[2]), "stateui.android.StateUIShapeDrawable")
             XCTAssertNotEqual(Self.underTheRipple(of: buttons[0]), "stateui.android.StateUIShapeDrawable")
+        }
+    }
+
+    /// A look the page shows through casts no shadow: the theme lifts a button, and the shadow of a shape seen
+    /// through its fill reads as a grey fill. Only an opaque fill keeps the theme's shadow.
+    func testALookThePageShowsThroughCastsNoShadow() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Quiet").background(.transparent).stroke(.navy).strokeWidth(1.5)
+                        .shape(.roundedRectangle(10))
+                    Button("Outlined").stroke(.navy)
+                    Button("Drawn").background(.firebrick).shape(.roundedRectangle(8))
+                }
+            }
+            host.layOut()
+
+            XCTAssertEqual(host.views(AndroidButtonView.self).map(\.outlineAlpha), [0, 0, 1])
         }
     }
 
