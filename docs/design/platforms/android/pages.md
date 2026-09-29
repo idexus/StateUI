@@ -43,7 +43,9 @@ wider, the sidebar stands beside the detail while it shows. The slide is
 Android's own animation, so the system's "remove animations" setting takes
 it away. Opening the drawer lays the page out again - the bar changes - and a
 layout leaves a sliding drawer sliding: only a new room, the drawer wider or
-beside the detail, puts it in place at once. Whether the sidebar shows is the split's binding: the user's
+beside the detail, puts it in place at once. A closed drawer holds nothing
+the keyboard or assistive technology reaches: it stands invisible once it has
+slid away, and shows as it starts to slide open. Whether the sidebar shows is the split's binding: the user's
 opening and closing are reported into it, and a value the tree writes moves
 the drawer. The first room at least 720 points wide shows the sidebar, said as
 the user's ([a sidebar on the first

@@ -16,6 +16,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
+            ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
@@ -194,6 +195,29 @@ final class AndroidPagesTests: XCTestCase {
 
             XCTAssertTrue(split.isPresented)
             XCTAssertEqual(Java.callFloat(drawer.reference, TestJava.getTranslationX), closed)
+        }
+    }
+
+    /// A closed drawer holds nothing the keyboard or assistive technology reaches: it stands invisible, shows as it
+    /// slides open, and stands invisible again once it has slid away.
+    func testAClosedDrawerStandsInvisible() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
+            }
+            host.layOut()
+            let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
+            let drawer = try XCTUnwrap(split.heldViews().last)
+            let visibility = { Java.callInt(drawer.reference, TestJava.getVisibility) }
+            XCTAssertEqual(visibility(), ViewConstants.invisible)
+
+            try XCTUnwrap(host.views(AndroidNavigationView.self).first).bar.clicked()
+            XCTAssertEqual(visibility(), ViewConstants.visible, "shown as it slides open")
+
+            XCTAssertTrue(host.goBack())
+            XCTAssertEqual(visibility(), ViewConstants.visible, "shown while it slides away")
+            TestWindow.run(for: AndroidSplitView.slide + 250)
+            XCTAssertEqual(visibility(), ViewConstants.invisible)
         }
     }
 
@@ -578,6 +602,19 @@ private struct SheetsPage: ContentView {
             window.modalStack = ModalStack(sheets.projectedValue) { number in
                 TitledPage(title: "Sheet \(number)", log: log)
             }
+        }
+    }
+}
+
+/// A split whose sidebar slides over a stack, as on a phone.
+private func drawerOverStack(sidebar: any Page) -> any Page {
+    SplitView(State(wrappedValue: false).projectedValue) {
+        sidebar
+    } detail: {
+        NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+            TitledPage(title: "Home")
+        } destination: { _ in
+            TitledPage(title: "Deeper")
         }
     }
 }

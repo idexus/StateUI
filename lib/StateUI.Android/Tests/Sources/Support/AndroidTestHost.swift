@@ -25,6 +25,15 @@ extension XCTestCase {
     }
 }
 
+/// The activity's window as a test drives it: its UI thread's messages.
+@MainActor
+enum TestWindow {
+    /// Runs the UI thread's own messages for `millis` milliseconds: an animation's frames, a posted callback.
+    static func run(for millis: Int64) {
+        Java.callStatic(AndroidDriver.looper, AndroidDriver.runLooperFor, .long(millis))
+    }
+}
+
 /// The Java a test reads back: where a view stands, and what a group holds.
 @MainActor
 enum TestJava {
@@ -117,6 +126,7 @@ enum TestJava {
     static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
     static let getLetterSpacing = Java.method(JavaAPI.textView, "getLetterSpacing", "()F")
     static let getLineCount = Java.method(JavaAPI.textView, "getLineCount", "()I")
+    static let getVisibility = Java.method(JavaAPI.view, "getVisibility", "()I")
 
     /// An empty root, as an activity's content is.
     static func root() -> JavaObject {

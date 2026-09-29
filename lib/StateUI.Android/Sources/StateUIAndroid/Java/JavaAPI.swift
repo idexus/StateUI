@@ -438,7 +438,7 @@ enum JavaAPI {
         views, "textColors", "(Landroid/content/Context;I)Landroid/content/res/ColorStateList;")
     static let setIcon = Java.staticMethod(views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIII)V")
     static let transformView = Java.staticMethod(views, "transform", "(Landroid/view/View;FFFFFFFFF)V")
-    static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJ)V")
+    static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJI)V")
 
     static let tabs = Java.findClass("stateui/android/StateUITabs")
     static let newTabs = Java.method(tabs, "<init>", "(Landroid/content/Context;J)V")

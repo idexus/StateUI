@@ -96,22 +96,26 @@ final class AndroidSplitView: AndroidLayoutView {
         if newRoom { showDrawer(animated: false) }
     }
 
-    /// Stands the drawer and the shade where the sidebar's state puts them. The shade takes a tap only while the
-    /// drawer is open over the detail; otherwise every touch goes through it.
+    /// Stands the drawer and the shade where the sidebar's state puts them. A closed drawer holds nothing the
+    /// keyboard or assistive technology reaches: invisible once it has slid away, gone beside the detail. The
+    /// shade takes a tap only while the drawer is open over the detail; otherwise every touch goes through it.
+    /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func showDrawer(animated: Bool) {
         let duration = animated ? Self.slide : 0
-        drawer.setShown(overlays || isPresented)
-        slide(drawer, to: overlays && !isPresented ? -drawerWidth : 0, alpha: 1, duration: duration)
+        let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
+        slide(
+            drawer, to: overlays && !isPresented ? -drawerWidth : 0, alpha: 1, visibility: visibility,
+            duration: duration)
 
         let shaded = overlays && isPresented
-        slide(scrim, to: 0, alpha: shaded ? 1 : 0, duration: duration)
+        slide(scrim, to: 0, alpha: shaded ? 1 : 0, visibility: ViewConstants.visible, duration: duration)
         scrim.setTapped(shaded ? { [weak self] in self?.onScrimTapped?() } : nil)
     }
 
-    private func slide(_ view: AndroidView, to points: Double, alpha: Float, duration: Int64) {
+    private func slide(_ view: AndroidView, to points: Double, alpha: Float, visibility: Int32, duration: Int64) {
         Java.callStatic(
             JavaAPI.views, JavaAPI.slideView, .object(view.reference),
-            .float(Float(points * density)), .float(alpha), .long(duration))
+            .float(Float(points * density)), .float(alpha), .long(duration), .int(visibility))
     }
 
     override func detach() {
