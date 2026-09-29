@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Path;
@@ -14,6 +15,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ActionMenuView;
+import android.widget.TextView;
 import android.widget.Toolbar;
 
 /**
@@ -30,6 +33,9 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
 
     /** The page's title, shown while no view stands in for it. */
     private String title = "";
+
+    /** The colour the bar's words and actions stand in; 0 for Android's own. */
+    private int foreground;
     private View titleView;
 
     StateUIBar(Context context, long view) {
@@ -42,6 +48,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         this.title = title;
         setTitle(titleView == null ? title : null);
         if (background != 0) setBackgroundColor(background); else setBackground(null);
+        this.foreground = foreground;
         if (foreground != 0) {
             setTitleTextColor(foreground);
             Drawable overflow = getOverflowIcon();
@@ -106,7 +113,26 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     void setActions(int[] entries, String[] texts, Bitmap[] pictures) {
         Menu menu = getMenu();
         menu.clear();
-        StateUIMenus.fill(getContext(), menu, view, entries, texts, pictures);
+        StateUIMenus.fill(getContext(), menu, view, entries, texts, pictures, foreground);
+    }
+
+    /** The actions Android stood on the bar are laid out: their words take the bar's words' colour. */
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (foreground == 0) return;
+
+        ColorStateList colours = StateUIViews.textColors(getContext(), foreground);
+        for (int index = 0; index < getChildCount(); index++) {
+            if (!(getChildAt(index) instanceof ActionMenuView)) continue;
+            ActionMenuView actions = (ActionMenuView) getChildAt(index);
+            for (int place = 0; place < actions.getChildCount(); place++) {
+                View action = actions.getChildAt(place);
+                if (action instanceof TextView && !colours.equals(((TextView) action).getTextColors())) {
+                    ((TextView) action).setTextColor(colours);
+                }
+            }
+        }
     }
 
     @Override

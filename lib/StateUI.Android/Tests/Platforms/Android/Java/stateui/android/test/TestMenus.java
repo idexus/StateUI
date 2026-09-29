@@ -5,12 +5,19 @@ package stateui.android.test;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ActionMenuView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 /** A menu read back as words, and an item chosen by its words - what a test of the host's menus asks. */
 public final class TestMenus {
@@ -58,6 +65,42 @@ public final class TestMenus {
             }
         }
         return false;
+    }
+
+    /**
+     * The actions standing on `bar`, as it lays them out: each one's words and the colour they are drawn in, or
+     * "picture" and the colour at the middle of its picture as drawn - ARGB in hexadecimal, ", " between them.
+     */
+    public static String onBar(ViewGroup bar) {
+        StringBuilder words = new StringBuilder();
+        for (int index = 0; index < bar.getChildCount(); index++) {
+            if (!(bar.getChildAt(index) instanceof ActionMenuView)) continue;
+            ActionMenuView actions = (ActionMenuView) bar.getChildAt(index);
+            for (int place = 0; place < actions.getChildCount(); place++) {
+                if (!(actions.getChildAt(place) instanceof TextView)) continue;
+                TextView action = (TextView) actions.getChildAt(place);
+                Drawable picture = action.getCompoundDrawables()[0];
+                if (words.length() > 0) words.append(", ");
+                if (action.getText().length() > 0) {
+                    words.append(action.getText()).append(" #").append(Integer.toHexString(action.getCurrentTextColor()));
+                } else if (picture != null) {
+                    words.append("picture #").append(Integer.toHexString(middle(picture)));
+                }
+            }
+        }
+        return words.toString();
+    }
+
+    /** The colour `picture` draws at its middle. */
+    private static int middle(Drawable picture) {
+        int width = Math.max(1, picture.getIntrinsicWidth());
+        int height = Math.max(1, picture.getIntrinsicHeight());
+        Bitmap drawn = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Rect bounds = picture.copyBounds();
+        picture.setBounds(0, 0, width, height);
+        picture.draw(new Canvas(drawn));
+        picture.setBounds(bounds);
+        return drawn.getPixel(width / 2, height / 2);
     }
 
     private static int colour(CharSequence words) {

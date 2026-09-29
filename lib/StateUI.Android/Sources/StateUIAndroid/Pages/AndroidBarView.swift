@@ -58,7 +58,7 @@ final class AndroidBarView: AndroidView {
         if previous?.navigation != content.navigation || previous?.foreground != content.foreground {
             showNavigation(content.navigation, tint: content.foreground.flatMap(Self.argb) ?? 0)
         }
-        if previous?.actions != content.actions {
+        if previous?.actions != content.actions || previous?.foreground != content.foreground {
             showActions(content.actions)
         }
     }

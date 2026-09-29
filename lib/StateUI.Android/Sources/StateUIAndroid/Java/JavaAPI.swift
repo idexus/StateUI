@@ -420,7 +420,7 @@ enum JavaAPI {
     static let menus = Java.findClass("stateui/android/StateUIMenus")
     static let fillMenu = Java.staticMethod(
         menus, "fill",
-        "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
+        "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;I)V")
 
     static let androidActivity = Java.findClass("android/app/Activity")
     static let activity = Java.findClass("stateui/android/StateUIActivity")

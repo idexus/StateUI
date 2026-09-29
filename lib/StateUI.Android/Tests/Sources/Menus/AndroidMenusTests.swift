@@ -75,6 +75,13 @@ enum TestMenus {
         owner, "describe", "(Landroid/content/Context;Landroid/view/Menu;)Ljava/lang/String;")
     private static let chooseItem = Java.staticMethod(owner, "choose", "(Landroid/view/Menu;Ljava/lang/String;)Z")
     static let getMenu = Java.method(Java.findClass("android/widget/Toolbar"), "getMenu", "()Landroid/view/Menu;")
+    private static let barActions = Java.staticMethod(owner, "onBar", "(Landroid/view/ViewGroup;)Ljava/lang/String;")
+
+    /// The actions standing on `bar` as it lays them out: each one's words, or "picture", and the colour it is
+    /// drawn in, as ARGB in hexadecimal.
+    static func onBar(_ bar: AndroidView) -> String {
+        Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
+    }
 
     /// An empty menu, as a context menu is before its view writes it.
     static func empty() -> JavaObject {

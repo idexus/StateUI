@@ -21,6 +21,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testTheBarsActionsStandInItsWordsColour", testTheBarsActionsStandInItsWordsColour),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
             ("testTabsOfStacksOnAStackStandUnderOneBar", testTabsOfStacksOnAStackStandUnderOneBar),
@@ -310,6 +311,29 @@ final class AndroidPagesTests: XCTestCase {
 }
 
 extension AndroidPagesTests {
+    /// The actions standing on a painted bar stand in its words' colour, their words and their pictures alike, as
+    /// its title does.
+    func testTheBarsActionsStandInItsWordsColour() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [
+                        ToolbarItem("Scan").priority(0),
+                        ToolbarItem("Save").priority(1).icon("test_wide.png"),
+                    ])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+                .barBackgroundColor(.purple)
+                .barForegroundColor(.white)
+            }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+
+            XCTAssertEqual(TestMenus.onBar(navigation.bar), "Scan #ffffffff, picture #ffffffff")
+        }
+    }
+
     /// A page's title view stands in the bar in place of its title; a page pushed over it, with none, shows
     /// its own title and the view leaves the bar; back, and it stands there again.
     func testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle() throws {

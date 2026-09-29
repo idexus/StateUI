@@ -34,9 +34,10 @@ final class StateUIMenus {
     /**
      * Adds the entries to `menu`: a submenu's entries follow it up to its END, and a separator starts a new
      * group, a line drawn between groups. `pictures` may be null; the picture of an item that cannot be chosen
-     * is dimmed as the theme dims what is disabled, which Android does not do for a menu's picture.
+     * is dimmed as the theme dims what is disabled, which Android does not do for a menu's picture. A bar's
+     * actions standing on it take `bar`, the bar's words' colour, for their pictures; 0 leaves them as drawn.
      */
-    static void fill(Context context, Menu menu, long view, int[] entries, String[] texts, Bitmap[] pictures) {
+    static void fill(Context context, Menu menu, long view, int[] entries, String[] texts, Bitmap[] pictures, int bar) {
         int error = errorColor(context);
         int dimmed = Math.round(255 * StateUIViews.disabledAlpha(context));
         ArrayDeque<Menu> outerMenus = new ArrayDeque<>();
@@ -55,11 +56,13 @@ final class StateUIMenus {
                     text++;
                     if (picture != null) {
                         BitmapDrawable drawable = StateUIViews.glyph(context.getResources(), picture);
-                        if ((entry & DISABLED) != 0) {
-                            drawable.setAlpha(dimmed);
-                        } else if ((entry & DESTRUCTIVE) != 0) {
+                        boolean destructive = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
+                        if (destructive) {
                             drawable.setTint(error);
+                        } else if (bar != 0 && (entry & ON_BAR) != 0) {
+                            drawable.setTint(bar);
                         }
+                        if ((entry & DISABLED) != 0) drawable.setAlpha(dimmed);
                         added.setIcon(drawable);
                     }
                     added.setEnabled((entry & DISABLED) == 0);
