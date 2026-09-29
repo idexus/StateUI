@@ -51,14 +51,9 @@ final class AndroidPickerView: AndroidView {
             let style = look.attributes.rawValue & 3
             let face = Java.callStaticObject(
                 JavaAPI.typeface, JavaAPI.createTypeface, .object(look.family.flatMap(Java.string)), .int(style))
-            let across: Int32 = switch alignment {
-            case .start: 0x0080_0003
-            case .center: 0x01
-            case .end: 0x0080_0005
-            }
             Java.call(
                 reference, JavaAPI.setPickerLook, .float(Float(size.map { $0 * density } ?? 0)),
-                .int(color.flatMap(Self.argb) ?? 0), .object(face), .int(across))
+                .int(color.flatMap(Self.argb) ?? 0), .object(face), .int(ViewConstants.gravity(across: alignment)))
         }
     }
 

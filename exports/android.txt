@@ -217,6 +217,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  horizontalTextAlignment
   isEnabled
   maximumLength
   placeholder
@@ -254,6 +255,7 @@ TextEditor
   fontFamily
   fontSize
   growsWithText
+  horizontalTextAlignment
   isEnabled
   maximumLength
   placeholder
@@ -268,6 +270,7 @@ TextField
   fontAttributes
   fontFamily
   fontSize
+  horizontalTextAlignment
   isEnabled
   isPassword
   maximumLength

@@ -14,3 +14,4 @@
 
 TextEditor 2
 SplitView 2
+android TextAlignmentElement 2

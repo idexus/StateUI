@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 46 ✅ · 1 ☑️ | `NSTextView` in an `NSScrollView` |  |
 | UIKit | ✅ | 46 ✅ | `UITextView` |  |
-| Android Views | ✅ | 62 ✅ · 1 ☑️ | multi-line `EditText` |  |
+| Android Views | ✅ | 63 ✅ · 1 ☑️ | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
@@ -179,5 +179,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ |  | ✅ | · |  | Android Views: not realized; GTK 4: cannot read horizontalTextAlignment of TextEditor - GTK's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read horizontalTextAlignment of TextEditor - GTK's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |

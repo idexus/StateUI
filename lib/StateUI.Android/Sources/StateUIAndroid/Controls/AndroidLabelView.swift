@@ -76,17 +76,9 @@ final class AndroidLabelView: AndroidTextView {
 
     /// Where the words stand in the label's room, across and down.
     func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
-        let across: Int32 = switch horizontal {
-        case .start: 0x0080_0003
-        case .center: 0x01
-        case .end: 0x0080_0005
-        }
-        let down: Int32 = switch vertical {
-        case .start: 0x30
-        case .center: 0x10
-        case .end: 0x50
-        }
-        Java.call(reference, JavaAPI.setGravity, .int(across | down))
+        Java.call(
+            reference, JavaAPI.setGravity,
+            .int(ViewConstants.gravity(across: horizontal) | ViewConstants.gravity(down: vertical)))
     }
 
     /// The space between the letters in points, which Android counts in ems of the text's own size.

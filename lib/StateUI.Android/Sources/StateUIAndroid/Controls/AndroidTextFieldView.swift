@@ -50,7 +50,9 @@ final class AndroidTextFieldView: AndroidTextView {
         case .search:
             setReturnKey(nil)
         case .editor:
-            Java.call(reference, JavaAPI.setGravity, .int(0x0080_0003 | 0x30))
+            Java.call(
+                reference, JavaAPI.setGravity,
+                .int(ViewConstants.gravity(across: .start) | ViewConstants.gravity(down: .start)))
             Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(false))
             setGrows(false)
         }
@@ -148,6 +150,12 @@ final class AndroidTextFieldView: AndroidTextView {
         } else {
             Java.call(reference, JavaAPI.setHintTextColors, .object(madeHintColors!.reference))
         }
+    }
+
+    /// Where the words and the placeholder stand across the field; down, they stay where the kind stands them.
+    func setAlignment(_ alignment: TextAlignment) {
+        let down = Java.callInt(reference, JavaAPI.getGravity) & ~ViewConstants.acrossGravity
+        Java.call(reference, JavaAPI.setGravity, .int(ViewConstants.gravity(across: alignment) | down))
     }
 
     /// Hides what is typed, or shows it; the words and their weight stay.

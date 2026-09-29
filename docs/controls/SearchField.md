@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 41 ✅ · 1 ☑️ | `NSSearchField` |  |
 | UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
-| Android Views | ✅ | 62 ✅ · 1 ☑️ | `SearchView` |  |
+| Android Views | ✅ | 63 ✅ · 1 ☑️ | `SearchView` |  |
 | WinUI 3 | ✅ | 63 ✅ | `AutoSuggestBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
@@ -180,7 +180,7 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ |  |  | · |  | Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read horizontalTextAlignment of SearchField - GTK's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ |  | · |  | WinUI 3: not realized; GTK 4: cannot read horizontalTextAlignment of SearchField - GTK's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [TintElement](tiers/TintElement.md)

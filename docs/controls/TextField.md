@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 42 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 46 ✅ | `UITextField` |  |
-| Android Views | ✅ | 63 ✅ · 1 ☑️ | `EditText` |  |
+| Android Views | ✅ | 64 ✅ · 1 ☑️ | `EditText` |  |
 | WinUI 3 | ✅ | 68 ✅ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
@@ -182,5 +182,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ |  | ✅ | · |  | Android Views: not realized; GTK 4: cannot read horizontalTextAlignment of TextField - GTK's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read horizontalTextAlignment of TextField - GTK's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |

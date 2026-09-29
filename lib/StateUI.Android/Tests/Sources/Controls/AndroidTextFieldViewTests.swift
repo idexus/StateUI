@@ -30,6 +30,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testAReturnKeyIsCaptionedAsTheTreeSays", testAReturnKeyIsCaptionedAsTheTreeSays),
             ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
             ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
+            ("testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes", testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes),
         ]
     }
 
@@ -193,6 +194,28 @@ final class AndroidTextFieldViewTests: XCTestCase {
             XCTAssertEqual(editors[2].frame.height, 200, "its room, at two pixels a point")
             let multiLine = Java.callInt(editors[0].reference, TestJava.getInputType) & 0x20000
             XCTAssertEqual(multiLine, 0x20000)
+        }
+    }
+
+    /// A field's words and its placeholder stand across it where `horizontalTextAlignment` says, and down where
+    /// its kind stands them: a line's in its middle, an editor's at its top.
+    func testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes() {
+        onMainActor {
+            let words = State(wrappedValue: "")
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField(words.projectedValue).horizontalTextAlignment(.center)
+                    SearchField(words.projectedValue).horizontalTextAlignment(.end)
+                    TextEditor(words.projectedValue).horizontalTextAlignment(.center)
+                }
+            }
+            let gravity = host.views(AndroidTextFieldView.self).map { Java.callInt($0.reference, JavaAPI.getGravity) }
+
+            XCTAssertEqual(gravity, [
+                ViewConstants.gravity(across: .center) | ViewConstants.gravity(down: .center),
+                ViewConstants.gravity(across: .end) | ViewConstants.gravity(down: .center),
+                ViewConstants.gravity(across: .center) | ViewConstants.gravity(down: .start),
+            ])
         }
     }
 }

@@ -53,7 +53,9 @@ a search; a text field's is the platform's until the tree names one. An
 editor takes several lines, standing from its top, and Return starts a new
 one. One that does not grow with its words is one line tall where nothing
 gives it room, and scrolls within the room it is given; one that grows is as
-tall as its lines.
+tall as its lines. The words and the placeholder stand across each kind where
+`horizontalTextAlignment` says - the view's gravity across - and down where
+its kind stands them.
 
 ## An editor a line tall
 

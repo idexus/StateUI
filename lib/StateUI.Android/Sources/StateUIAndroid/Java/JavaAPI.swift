@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIAndroid
+import StateUI
 
 /// The Java classes and methods the host calls, each looked up once, on the main thread.
 @MainActor
@@ -107,6 +108,7 @@ enum JavaAPI {
     static let setEllipsize = Java.method(textView, "setEllipsize", "(Landroid/text/TextUtils$TruncateAt;)V")
     static let setHorizontallyScrolling = Java.method(textView, "setHorizontallyScrolling", "(Z)V")
     static let setGravity = Java.method(textView, "setGravity", "(I)V")
+    static let getGravity = Java.method(textView, "getGravity", "()I")
     static let setLetterSpacing = Java.method(textView, "setLetterSpacing", "(F)V")
     static let setLineSpacing = Java.method(textView, "setLineSpacing", "(FF)V")
     static let getPaintFlags = Java.method(textView, "getPaintFlags", "()I")
@@ -483,4 +485,25 @@ enum ViewConstants {
 
     /// A spec of `mode` and `size`.
     static func spec(_ mode: Int32, _ size: Int32) -> Int32 { mode | (max(0, size) & 0x3FFF_FFFF) }
+
+    /// `Gravity`'s bits across - `START`, `CENTER_HORIZONTAL`, `END`.
+    static func gravity(across alignment: TextAlignment) -> Int32 {
+        switch alignment {
+        case .start: 0x0080_0003
+        case .center: 0x01
+        case .end: 0x0080_0005
+        }
+    }
+
+    /// `Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK`: every bit across.
+    static let acrossGravity: Int32 = 0x0080_0007
+
+    /// `Gravity`'s bits down - `TOP`, `CENTER_VERTICAL`, `BOTTOM`.
+    static func gravity(down alignment: TextAlignment) -> Int32 {
+        switch alignment {
+        case .start: 0x30
+        case .center: 0x10
+        case .end: 0x50
+        }
+    }
 }
