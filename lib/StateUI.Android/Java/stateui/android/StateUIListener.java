@@ -69,14 +69,17 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
         StateUIHost.textChanged(view, text.toString());
     }
 
-    /** Once per Return: the keyboard's action, or a hardware key as it goes down. */
+    /**
+     * Once per Return: the keyboard's action, or a hardware key as it is let go - its release then reaches no field
+     * the submission put the focus on.
+     */
     @Override
     public boolean onEditorAction(TextView field, int action, KeyEvent event) {
         if (event == null) {
             StateUIHost.submitted(view);
             return false;
         }
-        if (event.getAction() == KeyEvent.ACTION_DOWN) StateUIHost.submitted(view);
+        if (event.getAction() == KeyEvent.ACTION_UP) StateUIHost.submitted(view);
         return true;
     }
 

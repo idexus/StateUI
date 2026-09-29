@@ -17,9 +17,13 @@ public final class StateUITestRunner extends Instrumentation {
     /** The part of the suite asked for: the tests whose "Case.test" name holds it; empty for every test. */
     private String filter = "";
 
+    /** The runner at work, which a test asks what only an instrumentation may do. */
+    private static StateUITestRunner running;
+
     @Override
     public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
+        running = this;
         if (arguments != null && arguments.getString("filter") != null) filter = arguments.getString("filter");
         start();
     }
@@ -47,6 +51,14 @@ public final class StateUITestRunner extends Instrumentation {
         Bundle results = new Bundle();
         results.putString(REPORT_KEY_STREAMRESULT, report[0] + "\n");
         finish(Activity.RESULT_OK, results);
+    }
+
+    /**
+     * Takes the window into touch mode or out of it, as a finger or a hardware key does; the window hears it through
+     * its input channel, among the UI thread's messages.
+     */
+    public static void touchMode(boolean inTouch) {
+        running.setInTouchMode(inTouch);
     }
 
     private static native String[] begin(Context context, Activity window, String filter);

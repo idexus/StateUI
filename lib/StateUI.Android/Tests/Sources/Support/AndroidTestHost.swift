@@ -25,9 +25,61 @@ extension XCTestCase {
     }
 }
 
-/// The activity's window as a test drives it: its UI thread's messages.
+/// The activity's window as a test drives it: its input mode, and its UI thread's messages.
 @MainActor
 enum TestWindow {
+    private static let runner = Java.findClass("stateui/android/test/StateUITestRunner")
+    private static let setTouchMode = Java.staticMethod(runner, "touchMode", "(Z)V")
+    private static let getWindow = Java.method(
+        Java.findClass("android/app/Activity"), "getWindow", "()Landroid/view/Window;")
+    private static let getDecorView = Java.method(
+        Java.findClass("android/view/Window"), "getDecorView", "()Landroid/view/View;")
+    private static let isInTouchMode = Java.method(JavaAPI.view, "isInTouchMode", "()Z")
+
+    /// Takes the window into touch mode or out of it, as a finger or a hardware key does, and waits until it is.
+    static func touchMode(_ inTouch: Bool) {
+        Java.callStatic(runner, setTouchMode, .bool(inTouch))
+        for _ in 0..<50 where inTouchMode != inTouch {
+            run(for: 20)
+        }
+    }
+
+    /// The class and frame of the view holding the focus, as Android writes a view.
+    static var focused: String {
+        Java.frame {
+            Java.callObject(TestContext.window.reference, getCurrentFocus)
+                .map { Java.text(Java.callObject($0, TestJava.toText)) } ?? "nothing"
+        }
+    }
+
+    private static let getCurrentFocus = Java.method(
+        Java.findClass("android/app/Activity"), "getCurrentFocus", "()Landroid/view/View;")
+
+    /// Whether the window is in touch mode, where only a view that takes the focus from a finger takes it.
+    static var inTouchMode: Bool {
+        Java.frame {
+            guard let window = Java.callObject(TestContext.window.reference, getWindow),
+                  let decor = Java.callObject(window, getDecorView)
+            else { return true }
+            return Java.callBool(decor, isInTouchMode)
+        }
+    }
+
+    /// Presses the hardware key `code`, runs `held` while it is down, and lets it go: each half reaches the view
+    /// holding the focus at that moment, as the window hands a key on.
+    static func press(key code: Int32, while held: () -> Void) {
+        for action: Int32 in [0, 1] {
+            let event = Java.new(TestJava.keyEvent, TestJava.newKeyEvent, .int(action), .int(code))
+            withExtendedLifetime(event) {
+                _ = Java.callBool(TestContext.window.reference, dispatchKeyEvent, .object(event.reference))
+            }
+            if action == 0 { held() }
+        }
+    }
+
+    private static let dispatchKeyEvent = Java.method(
+        Java.findClass("android/app/Activity"), "dispatchKeyEvent", "(Landroid/view/KeyEvent;)Z")
+
     /// Runs the UI thread's own messages for `millis` milliseconds: an animation's frames, a posted callback.
     static func run(for millis: Int64) {
         Java.callStatic(AndroidDriver.looper, AndroidDriver.runLooperFor, .long(millis))

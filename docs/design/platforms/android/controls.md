@@ -72,8 +72,12 @@ states still wins.
 
 A keyboard's action reaches the listener with no key event; a hardware Return
 reaches it as the key goes down and again as it comes up. The listener
-submits on the action and on the key going down, and takes the key's release
-itself, so one Return is one submission.
+submits on the action and on the key's release, and takes the key going down
+itself, so one Return is one submission. A Return submitted as it went down
+would leave its release to the view the submission put the focus on - a field
+of the page it showed - and out of touch mode Android takes a Return released
+on a one-line field it did not see go down for a move to the view below it:
+a scanner's Enter would press the button there.
 
 ## The background a view is made with
 

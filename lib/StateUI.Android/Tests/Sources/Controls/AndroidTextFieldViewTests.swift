@@ -27,6 +27,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testAStateWriteShowsTheWordsAndIsNotHeardAsTyping", testAStateWriteShowsTheWordsAndIsNotHeardAsTyping),
             ("testAPasswordHidesTheWordsAndKeepsThem", testAPasswordHidesTheWordsAndKeepsThem),
             ("testReturnSubmitsOnce", testReturnSubmitsOnce),
+            ("testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt", testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt),
             ("testAReturnKeyIsCaptionedAsTheTreeSays", testAReturnKeyIsCaptionedAsTheTreeSays),
             ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
             ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
@@ -139,6 +140,47 @@ final class AndroidTextFieldViewTests: XCTestCase {
         }
     }
 
+    /// A Return is one keystroke: its release does not reach, as a Return of its own, the field its submit put the
+    /// focus on - out of touch mode Android takes a Return released on a line for a move to the view below it, and
+    /// a scanner's Enter would press the button there.
+    func testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt() throws {
+        try onMainActor {
+            let path = State(wrappedValue: [Int]())
+            let driver = AndroidDriver()
+            _ = driver.start(clock: nil, reducesMotion: false) {
+                NavigationStack(path.projectedValue) {
+                    TextField(State(wrappedValue: "").projectedValue).onSubmitted { path.wrappedValue = [1] }
+                } destination: { _ in
+                    AimedFieldPage()
+                }
+            }
+            defer {
+                driver.finish()
+                TestWindow.touchMode(true)
+            }
+            let renderer = try XCTUnwrap(driver.renderer)
+            let typed = try XCTUnwrap(renderer.views(AndroidTextFieldView.self).first)
+            XCTAssertTrue(Java.callBool(typed.reference, TestJava.requestFocus))
+            TestWindow.touchMode(false)
+
+            TestWindow.press(key: 66) {
+                for _ in 0..<10 {
+                    driver.step()
+                }
+            }
+            for _ in 0..<10 {
+                driver.step()
+            }
+
+            XCTAssertEqual(path.wrappedValue, [1])
+            let field = try XCTUnwrap(renderer.views(AndroidTextFieldView.self).last)
+            let below = try XCTUnwrap(renderer.views(AndroidButtonView.self).first)
+            XCTAssertTrue(
+                Java.callBool(field.reference, TestJava.hasFocus), "the field the page aimed at, not \(TestWindow.focused)")
+            XCTAssertFalse(Java.callBool(below.reference, TestJava.hasFocus), "the button below it")
+        }
+    }
+
     /// A field's return key is the platform's where nothing is said, and the tree's choice where it is; a
     /// search field's is a search.
     func testAReturnKeyIsCaptionedAsTheTreeSays() {
@@ -216,6 +258,24 @@ final class AndroidTextFieldViewTests: XCTestCase {
                 ViewConstants.gravity(across: .end) | ViewConstants.gravity(down: .center),
                 ViewConstants.gravity(across: .center) | ViewConstants.gravity(down: .start),
             ])
+        }
+    }
+}
+
+/// A page whose field takes the focus each time the page appears, over a button.
+private struct AimedFieldPage: ContentView {
+    @Environment private var page: PageSession
+    @Aim(TextField.self) private var field
+
+    var content: any View {
+        let (page, field) = (self.page, self.field)
+        return VStack {
+            TextField(State(wrappedValue: "").projectedValue).aim(field)
+            Button("Below")
+        }
+        .onChanged(page.phase) {
+            guard page.phase == .appearing else { return }
+            try await field.focus()
         }
     }
 }
