@@ -10,17 +10,20 @@
 
 import { execSync } from "child_process";
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications, hasHead } from "../Sources/applications";
-import { StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
+import { checkoutNamedBy } from "../Sources/checkouts";
+import { configurations, StateUIDebugConfigurationProvider, uiKitAttach } from "../Sources/debug";
 import { parseDevices } from "../Sources/devices";
 import { parseDevices as parseUIKitDevices, parseSimulators } from "../Sources/uiKitDevices";
 import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
-import { inAppsCommand, nameProblem } from "../Sources/newApplication";
+import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
+import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, releasesIn } from "../Sources/projectGroup";
 import { reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
@@ -480,11 +483,98 @@ export async function run(): Promise<void> {
             nameProblem("MyApp2") === undefined && nameProblem("My-App") !== undefined
             && nameProblem("2App") !== undefined && nameProblem("StateUI") !== undefined);
         {
-            const made = inAppsCommand(root.uri.fsPath, "Notes", "darwin");
-            const windows = inAppsCommand(root.uri.fsPath, "Notes", "win32");
-            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes, new-app.ps1 -Name Notes",
-                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
-                && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
+            const apps = path.join(root.uri.fsPath, "apps");
+            const made = scaffolderCommand(root.uri.fsPath, apps, "Notes", "darwin");
+            const windows = scaffolderCommand(root.uri.fsPath, apps, "Notes", "win32");
+            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes <apps>, new-app.ps1 -Name Notes -AppsDir <apps>",
+                made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh")
+                && made.args.slice(1).join(" ") === `Notes ${apps}`
+                && windows.command === "powershell" && windows.args.slice(-5).join(" ").endsWith(`new-app.ps1 -Name Notes -AppsDir ${apps}`));
+            const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"));
+            const setting = manifest.contributes.configuration.properties;
+            check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
+                + "stateui.checkout is this machine's, stateui.minimumRelease 0.4.0",
+                commands.includes("stateui.newProjectGroup")
+                && manifest.contributes.commands.some((each: { command: string; enablement?: string }) =>
+                    each.command === "stateui.newApplicationInApps" && each.enablement === "stateui.hasApps")
+                && setting["stateui.checkout"].scope === "machine" && setting["stateui.minimumRelease"].default === "0.4.0");
+            check("an application's Package.swift names its checkout: HelloWorld's ../.. is this one",
+                fs.realpathSync(checkoutNamedBy(path.join(apps, "HelloWorld")) ?? "/") === fs.realpathSync(root.uri.fsPath)
+                && findApplications(root.uri.fsPath).every((each) => each.checkout !== undefined));
+            check("a group's name is letters, digits, dots, hyphens and underscores",
+                groupNameProblem("My.Apps-2_x") === undefined && groupNameProblem("My Apps") !== undefined
+                && groupNameProblem("-apps") !== undefined && groupNameProblem("") !== undefined);
+            const listed = ["0.3.1", "0.4.0", "0.10.0", "0.4.1", "v1.0", "1.0.0-beta"]
+                .map((tag, at) => `${at}abc\trefs/tags/${tag}`).join("\n");
+            const clone = cloneCommand("https://github.com/idexus/StateUI.git", "0.4.0", "/Groups/Mine");
+            check("the releases offered are the tags minimumRelease or newer, the newest first; one is cloned shallow into the group's StateUI/",
+                releasesIn(listed, "0.4.0").join(" ") === "0.10.0 0.4.1 0.4.0"
+                && clone.command === "git" && clone.args.join(" ")
+                    === `-c advice.detachedHead=false clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git ${path.join("/Groups/Mine", "StateUI")}`);
+        }
+        // 7a. A project group, made by the command itself with its questions answered: one building with this checkout,
+        //     one with the 0.4.0 release cloned into it. Each application names its StateUI in its Package.swift, New
+        //     Application in apps/ makes another the same way there, and every one of them builds.
+        {
+            const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
+            const taken = ["LocalGroup", "ReleaseGroup"].map((each) => path.join(location, each)).filter((each) => fs.existsSync(each));
+            check(`the groups are made where nothing is yet${taken.length > 0 ? ` - remove ${taken.join(", ")} first` : ""}`, taken.length === 0);
+            const same = (a: string | undefined, b: string): boolean => a !== undefined && fs.realpathSync(a) === fs.realpathSync(b);
+            const builds = (application: string): boolean => {
+                const appKit = process.platform === "darwin";
+                const name = path.basename(application);
+                try {
+                    // As an AppKit build, or plain Swift - whichever host the editor works as at the moment.
+                    const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
+                        .filter((entry): entry is [string, string] => entry[1] !== undefined));
+                    execSync(`swift build --package-path "${application}"${appKit ? ` --product ${name}AppKit` : ""}`, { env, stdio: "pipe" });
+                    return true;
+                } catch (error) {
+                    say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
+                    return false;
+                }
+            };
+            const wired = (application: string): boolean => {
+                const text = fs.readFileSync(path.join(application, "Package.swift"), "utf8");
+                return [...text.matchAll(/^[^/\n]*\.package\(.*path: "([^"]+)"/gm)]
+                    .every((match) => fs.existsSync(path.join(path.resolve(fs.realpathSync(application), match[1]), "Package.swift")));
+            };
+
+            const local = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
+                { location, name: "LocalGroup", checkout: root.uri.fsPath, application: "Notes" });
+            const localNotes = path.join(local ?? "", "apps", "Notes");
+            const launch = local ? JSON.parse(fs.readFileSync(path.join(local, ".vscode", "launch.json"), "utf8")) : {};
+            check("a group is its folder: apps/, .gitignore, and the editor's settings with StateUI: Debug and Release",
+                local === path.join(location, "LocalGroup")
+                && [".gitignore", ".vscode/settings.json", "apps/Notes/Package.swift"].every((each) => fs.existsSync(path.join(local, each)))
+                && JSON.stringify(launch.configurations.map((each: vscode.DebugConfiguration) => [each.name, each.type, each.configuration]))
+                    === JSON.stringify(configurations().map((each) => [each.name, each.type, each.configuration])));
+            check("with the local checkout its application names this checkout by the path from its own folder, and nothing is copied",
+                same(checkoutNamedBy(localNotes), root.uri.fsPath) && wired(localNotes)
+                && !fs.readFileSync(path.join(localNotes, "Package.swift"), "utf8").includes('path: "../.."')
+                && !fs.existsSync(path.join(local!, "StateUI")) && !fs.existsSync(path.join(local!, ".scripts")));
+            const tasks = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: local, name: "Tasks" });
+            check("New Application in apps/ in that group names the same checkout", tasks === path.join(local!, "apps", "Tasks")
+                && same(checkoutNamedBy(tasks), root.uri.fsPath) && wired(tasks));
+            check("the local group's application builds", builds(localNotes));
+
+            const releases = await listReleases("https://github.com/idexus/StateUI.git", "0.4.0");
+            check("GitHub lists the release 0.4.0, and nothing older is offered",
+                releases.releases.includes("0.4.0") && releases.releases.every((each) => each !== "0.3.1"));
+            const release = await vscode.commands.executeCommand<string>("stateui.newProjectGroup",
+                { location, name: "ReleaseGroup", release: "0.4.0", application: "Notes" });
+            const releaseNotes = path.join(release ?? "", "apps", "Notes");
+            check("with a release it is cloned into the group's StateUI/ at that tag, and the application names ../../StateUI",
+                release === path.join(location, "ReleaseGroup")
+                && execSync("git describe --tags", { cwd: releaseDirectory(release) }).toString().trim() === "0.4.0"
+                && same(checkoutNamedBy(releaseNotes), releaseDirectory(release)) && wired(releaseNotes)
+                && fs.readFileSync(path.join(releaseNotes, "Package.swift"), "utf8").includes('.package(path: "../../StateUI")'));
+            const more = await vscode.commands.executeCommand<string>("stateui.newApplicationInApps", { folder: release, name: "Tasks" });
+            check("New Application in apps/ in that group names its release", same(checkoutNamedBy(more), releaseDirectory(release!)));
+            check("the release group's application builds", builds(releaseNotes));
+            if (!process.env.STATEUI_TEST_GROUPS) {
+                fs.rmSync(location, { recursive: true, force: true });
+            }
         }
         // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
         {

@@ -31,6 +31,23 @@
     "onDebugDynamicConfigurations:stateui"
   ],
   "contributes": {
+    "configuration": {
+      "title": "StateUI",
+      "properties": {
+        "stateui.checkout": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "The local StateUI checkout - the folder the repository was cloned into - that **StateUI: New Project Group** builds a group's applications with. Empty: the checkout open in the workspace, else asked for."
+        },
+        "stateui.minimumRelease": {
+          "type": "string",
+          "default": "0.4.0",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "markdownDescription": "The oldest StateUI release **StateUI: New Project Group** offers to clone into a group."
+        }
+      }
+    },
     "commands": [
       {
         "command": "stateui.selectHost",
@@ -53,10 +70,15 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.newProjectGroup",
+        "title": "New Project Group",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.newApplicationInApps",
         "title": "New Application in apps/",
         "category": "StateUI",
-        "enablement": "stateui.hasCheckout"
+        "enablement": "stateui.hasApps"
       },
       {
         "command": "stateui.reinstallExtension",
@@ -185,7 +207,7 @@
       "commandPalette": [
         {
           "command": "stateui.newApplicationInApps",
-          "when": "stateui.hasCheckout"
+          "when": "stateui.hasApps"
         },
         {
           "command": "stateui.reinstallExtension",

@@ -22,14 +22,45 @@ command.
 
 ## A new application
 
-**StateUI: New Application in apps/** - in a StateUI checkout, asks for a name
-and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
-`new-app.ps1` on Windows), which makes HelloWorld under that name. The
-application is then chosen, so **StateUI: Debug** runs it.
+**StateUI: New Application in apps/** - in a StateUI checkout or a project
+group, asks for a name and runs the scaffolder of the checkout the folder's
+applications build with, `.scripts/new-app.sh` (or `new-app.ps1` on Windows),
+which makes HelloWorld under that name. The application is then chosen, so
+**StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the process, the package identifier and the Swift module
 (`<Name>UI`).
+
+## A project group
+
+**StateUI: New Project Group** makes a folder of applications outside a
+checkout. It asks where to make the group and its name, which StateUI its
+applications build with, and the name of its first application:
+
+- **A release from GitHub** - a release tag, `stateui.minimumRelease` or
+  newer, cloned into the group's `StateUI/`.
+- **The local checkout** - the StateUI checkout open in the workspace, else
+  the one `stateui.checkout` names, else asked for.
+
+The group holds `apps/`, a `.gitignore`, and `.vscode/` with **StateUI: Debug**
+and **StateUI: Release**. Its applications are HelloWorld renamed, and each
+one's `Package.swift` names its StateUI by path: `../../StateUI` for a release,
+the path from the application to the checkout for a local one. That path is how
+the extension finds the scripts that build and run the application's heads, in
+that StateUI's `.scripts/`; the group copies none of them.
+
+`StateUI/` is left out of git. A clone of the group gets it back with the
+command its `.gitignore` names:
+
+```bash
+git clone --depth 1 --branch 0.4.0 https://github.com/idexus/StateUI.git StateUI
+```
+
+| Setting | What it holds |
+| --- | --- |
+| `stateui.checkout` | the local checkout a group builds with - set on this machine, so it is not asked for |
+| `stateui.minimumRelease` | the oldest release offered, `0.4.0` |
 
 ## The host
 

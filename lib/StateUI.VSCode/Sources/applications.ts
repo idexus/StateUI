@@ -6,6 +6,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { checkoutNamedBy } from "./checkouts";
 import { Host } from "./hosts";
 
 /** One application, and the heads it has. */
@@ -36,6 +37,12 @@ export interface Application {
      * built by SwiftPM alone.
      */
     readonly bundleScript?: string;
+
+    /**
+     * The StateUI checkout its Package.swift names by path - the library it
+     * builds with, whose `.scripts` build and run its heads - where it names one.
+     */
+    readonly checkout?: string;
 }
 
 /** The applications under `root`, the workspace itself first. */
@@ -82,8 +89,10 @@ function describeApplication(root: string, directory: string): Application | und
         hasWinUIHead,
         hasGTKHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
+        checkout: checkoutNamedBy(directory),
     };
 }
+
 
 /** Whether `application` has a head for `host`. */
 export function hasHead(application: Application, host: Host): boolean {
@@ -94,6 +103,11 @@ export function hasHead(application: Application, host: Host): boolean {
     case "winui": return application.hasWinUIHead;
     case "gtk": return application.hasGTKHead;
     }
+}
+
+/** Whether `folder` keeps applications in apps/ - a StateUI checkout, or a project group. */
+export function keepsApps(folder: string): boolean {
+    return isDirectory(path.join(folder, "apps"));
 }
 
 function isDirectory(candidate: string): boolean {

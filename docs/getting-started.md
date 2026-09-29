@@ -9,7 +9,8 @@ Five native hosts are active - AppKit, UIKit, Android Views, WinUI 3 and
 GTK 4 - each Swift, in the application's own process. The supported setup is a
 StateUI checkout: each host is a sibling Swift package whose manifest uses a
 local dependency on the repository root. No host has a published package route
-yet.
+yet, so an application outside the checkout sits in a
+[project group](#a-project-group) that builds with a checkout on disk.
 
 ## Requirements
 
@@ -90,7 +91,8 @@ The Command Palette offers the rest under **StateUI:**
 | Select Android Device | the device or emulator an Android head runs on |
 | Select Application | the application F5 runs |
 | Run Tests | the workspace's suites, run as the chosen host |
-| New Application in apps/ | a new application beside Gallery and HelloWorld, made by `.scripts/new-app.sh` |
+| New Application in apps/ | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` |
+| New Project Group | a folder of applications outside the checkout - see [A project group](#a-project-group) |
 | Clean Index | removes the language server's index and builds it again |
 | Check Toolchain | what this machine has of what its hosts need, and what to install for the rest |
 
@@ -131,6 +133,27 @@ on Windows):
 ```bash
 .scripts/new-app.sh Notes
 ```
+
+### A project group
+
+An application outside the checkout lives in a project group, a folder of its
+own that **StateUI: New Project Group** makes. Its applications build with a
+StateUI release cloned into the group's `StateUI/`, or with a local checkout.
+Each names that StateUI by path in its `Package.swift`, and that StateUI's
+`.scripts/` build and run its heads:
+
+```text
+MyApps/
+  .gitignore
+  .vscode/            StateUI: Debug and StateUI: Release
+  StateUI/            the release, left out of git; absent with a local checkout
+  apps/
+    Notes/            HelloWorld renamed; its Package.swift names ../../StateUI
+```
+
+**StateUI: New Application in apps/** makes the next application there. The
+extension's README, `lib/StateUI.VSCode/README.md`, describes the choices and
+the settings that save them.
 
 ## Application shape
 
