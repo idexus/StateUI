@@ -6,7 +6,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
     @State private var clocks: [(String, String)] = []
     @State private var season = ""
 
-    /// A few zones a reader will recognize, including one at half past the
+    /// A few zones a user will recognize, including one at half past the
     /// hour - Kolkata is +05:30, and an offset held as minutes is what makes
     /// that ordinary rather than a special case.
     static let cities = [
@@ -133,7 +133,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An offset is minutes on the wire, so +05:30 is not a special case, "
+            Label("An offset is a whole number of minutes, so +05:30 is not a special case, "
                 + "and it is asked for a DAY - which is how the same zone answers "
                 + "differently in January than it does in August.")
                 .fontSize(12)

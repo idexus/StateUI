@@ -73,7 +73,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             // One item twice. `hideSingle` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
-            // about where the reader is - and the right-hand one asks for it.
+            // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
                     Label("hideSingle(true)")
@@ -181,7 +181,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             // One item twice. `hideSingle` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
-            // about where the reader is - and the right-hand one asks for it.
+            // about where the user is - and the right-hand one asks for it.
             HStack {
                 VStack {
                     Label("hideSingle(true)")
@@ -229,7 +229,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Nothing about it is the reader's to change, so there is no binding "
+            Label("Nothing about it is the user's to change, so there is no binding "
                 + "overload - `position` is told to it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -242,7 +242,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
 
             Label("`hideSingle` is true by default, which is why an indicator over a "
                 + "ONE-item list draws nothing at all: a lone dot says nothing about where "
-                + "the reader is. The two columns above are that same one-item indicator, "
+                + "the user is. The two columns above are that same one-item indicator, "
                 + "both ways round.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

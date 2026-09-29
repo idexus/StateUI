@@ -41,21 +41,23 @@ private struct WebBrowserPart: ExampleContent {
 
             var content: any View {
                 Grid {
-                    HStack {
+                    VStack {
                         // The history flags are read by this bar, so every
                         // page that loads builds this closure.
                         DebugInfoLabel()
 
-                        Button("Back")
-                            .isEnabled(hasBack)
-                            .onClicked { try await browser.goBack() }
+                        HStack {
+                            Button("Back")
+                                .isEnabled(hasBack)
+                                .onClicked { try await browser.goBack() }
 
-                        Button("Forward")
-                            .isEnabled(hasForward)
-                            .onClicked { try await browser.goForward() }
+                            Button("Forward")
+                                .isEnabled(hasForward)
+                                .onClicked { try await browser.goForward() }
 
-                        Button("Reload")
-                            .onClicked { try await browser.reload() }
+                            Button("Reload")
+                                .onClicked { try await browser.reload() }
+                        }
                     }
                     .gridRow(0)
 
@@ -100,25 +102,28 @@ private struct WebBrowserPart: ExampleContent {
 
     var content: any View {
         Grid {
-            HStack {
+            VStack {
                 DebugInfoLabel()
 
-                Button("Back")
-                    .isEnabled(hasBack)
-                    .padding(14, 8)
-                    .onClicked { try await browser.goBack() }
+                HStack {
+                    Button("Back")
+                        .isEnabled(hasBack)
+                        .padding(14, 8)
+                        .onClicked { try await browser.goBack() }
 
-                Button("Forward")
-                    .isEnabled(hasForward)
-                    .padding(14, 8)
-                    .onClicked { try await browser.goForward() }
+                    Button("Forward")
+                        .isEnabled(hasForward)
+                        .padding(14, 8)
+                        .onClicked { try await browser.goForward() }
 
-                Button("Reload")
-                    .padding(14, 8)
-                    .onClicked { try await browser.reload() }
+                    Button("Reload")
+                        .padding(14, 8)
+                        .onClicked { try await browser.reload() }
+                }
+                .spacing(8)
+                .horizontalAlignment(.center)
             }
-            .spacing(8)
-            .horizontalAlignment(.center)
+            .spacing(4)
             .gridRow(0)
 
             // The browser takes the STAR row - as tall as the window leaves -

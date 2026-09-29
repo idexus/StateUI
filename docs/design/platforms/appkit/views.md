@@ -1,0 +1,68 @@
+# Views on AppKit
+
+What the AppKit half's views are given by the host rather than finding for
+themselves.
+
+## Pictures
+
+What crosses the boundary for a picture is a name, and the files behind it
+belong to the renderer: it knows the application's resource directory and
+keeps the cache over it, so one name is loaded once however many views draw
+it. A registration is made once for the whole process and has no renderer to
+ask, so the host hands every view it makes, through `AppKitPictureResolving`,
+the means to resolve a name. A name the application has no file for resolves
+to nothing.
+
+## Accessibility on the control
+
+A host view that wraps one native control hands assistive technology that
+control in its own place, through `AppKitAccessibilityPresenting`. The
+author's words, the role and whether the element takes part are written where
+VoiceOver meets the control, not on the view around it.
+
+## A stated size
+
+A size the tree states for a view - its width, height and bounds - is what
+StateUI's layouts measure and place it by; the view also carries it as a
+constraint, for a measurement of AppKit's own to read. That constraint stands
+just short of required: a layout of StateUI's places the view by its frame,
+whose constraints stand over it until the first layout gives that frame,
+and two required answers to one width are a conflict AppKit reports.
+
+## A layout's own box
+
+A stack, a grid or a ZStack paints its own box. A plain colour on a plain
+rectangle is its layer's background colour: the view draws nothing and keeps
+no backing store, which is what almost every layout is. An outline, a
+rounded or oval shape, or a gradient makes the view draw instead - the
+background on the shape, the outline inside the bounds, half its width either
+side of the shape's edge, in a colour alone (AppKit's brush strokes no
+gradient). With `clipsContent` the layer cuts what the layout holds: to its
+bounds, its rounded corners, or an oval mask; without it nothing is cut.
+
+A scroller's box is its layer's alone: a colour behind what it shows, a
+colour's outline on a rectangle or a rounded one, and the cut of what it shows
+to its shape, always. AppKit repaints a scroller's layer as it displays it and
+clears its colour and outline, so the scroller puts them back each time it
+updates its layer. An oval scroller cuts and draws no outline.
+
+## Scroll bars
+
+A ScrollView and an ItemsView lay their scroll bars over what they show,
+whatever the Mac is set to show. StateUI gives what they hold their whole
+width - a list's item as wide as the list - and a bar standing beside it
+takes 17 points of that: a Mac with a mouse and no trackpad shows its bars
+always, beside the content, and a hosted CI runner is such a Mac. The style
+is set before the scroll view first lays out; set later, its clip keeps the
+narrower width until it lays out again. To see the runner's bars on a
+desktop, run the suite after `defaults write com.apple.dt.xctest.tool
+AppleShowScrollBars Always`, and delete that key afterwards.
+
+## A radio button's set
+
+StateUI owns a radio button's set - its name, across the whole window - and
+turns the others of a set off as one is checked. AppKit keeps sets of its own:
+the radio buttons of one superview sharing one action turn each other off as
+one is clicked, whatever sets StateUI put them in. So the host's radio button
+takes a turn only from StateUI's own writes and from a click on itself, which
+its cell makes; AppKit's turning off of the others is refused.

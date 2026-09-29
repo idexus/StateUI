@@ -1,49 +1,32 @@
-#if MAUI
 import StateUI
 
-/// Rows chosen by the handful, and the offset written to move the list.
+/// Rows chosen by the handful, and the list scrolled to a row from code.
 private struct PickList: ExampleContent {
     @State private var chosen: Set<Int> = []
-
-    /// Where the list is scrolled to, both ways.
-    @State private var offset = Point.zero
+    @Aim(ItemsViewContract.self) private var list
 
     static let code = """
         @State private var chosen: Set<Int> = []
-        @State private var offset = Point.zero
+        @Aim(ItemsViewContract.self) private var list
 
         Grid {
             HStack {
-                // The list's own numbers arrive, so a write with no law of
-                // its own jumps; these state the law they glide by.
                 Button("Top")
-                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
-
-                // A stated row height makes a row's offset arithmetic.
+                    .onClicked { try await list.scrollTo(0, anchor: .start) }
                 Button("Row 500")
-                    .onClicked {
-                        try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
-                    }
-
+                    .onClicked { try await list.scrollTo(500, anchor: .start) }
                 Button("Clear")
                     .isEnabled(!chosen.isEmpty)
                     .onClicked { chosen = [] }
             }
             .gridRow(0)
 
+            // A Set binding: as many chosen as the user likes.
             ItemsView(0..<1_000) { number in
-                HStack {
-                    Label(chosen.contains(number) ? "✓" : "").width(22)
-                    Label("Row \\(number)")
-                }
-                .padding(14, 10)
-                .background(chosen.contains(number) ? Palette.selected : .transparent)
+                Label("Row \\(number)").padding(14, 10)
             }
-            .itemSize(44)
-            // A Set rather than one value: the binding's TYPE says how many
-            // rows may be chosen.
             .selection($chosen)
-            .scrollOffset($offset)
+            .aim(list)
             .gridRow(1)
 
             DebugInfoLabel()
@@ -61,14 +44,12 @@ private struct PickList: ExampleContent {
                 Button("Top")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked { try await $offset.journey.move(to: .zero, .eased(300, .cubicOut)) }
+                    .onClicked { try await list.scrollTo(0, anchor: .start) }
 
                 Button("Row 500")
                     .fontSize(13)
                     .padding(16, 6)
-                    .onClicked {
-                        try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
-                    }
+                    .onClicked { try await list.scrollTo(500, anchor: .start) }
 
                 Button("Clear")
                     .fontSize(13)
@@ -81,24 +62,12 @@ private struct PickList: ExampleContent {
             .gridRow(0)
 
             ItemsView(0..<1_000) { number in
-                HStack {
-                    Label(chosen.contains(number) ? "✓" : "")
-                        .fontSize(14)
-                        .textColor(Palette.accent)
-                        .width(22)
-                        .verticalAlignment(.center)
-
-                    Label("Row \(number)")
-                        .fontSize(14)
-                        .verticalAlignment(.center)
-                }
-                .spacing(8)
-                .padding(14, 10)
-                .background(chosen.contains(number) ? Palette.selected : .transparent)
+                Label("Row \(number)")
+                    .fontSize(14)
+                    .padding(14, 10)
             }
-            .itemSize(44)
             .selection($chosen)
-            .scrollOffset($offset)
+            .aim(list)
             .gridRow(1)
 
             DebugInfoLabel()
@@ -114,23 +83,18 @@ private struct PickList: ExampleContent {
     }
 
     var notes: Element? {
-        Label("Tap rows to choose several - a Set binding is what allows it. Top and Row 500 "
-            + "write the offset and glide there; a row's offset is its number times the "
-            + "stated height.")
+        Label("Tap rows to choose several; Row 500 scrolls there.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
 }
 
-/// Choosing rows by the handful, and moving the list from Swift.
+/// Several rows chosen at once, and the list moved to a row from code.
 struct ChoosingItemsSample: SampleContent {
     static let id = "choosingItems"
     static let title = "Choosing items"
-    static let summary = "Rows chosen by the handful, and the offset written to move the list."
+    static let summary = "Rows chosen by the handful, and the list scrolled to a row from code."
 
-    // The example IS a scroller, so the page does not put one inside another -
-    // and it takes the window's height, since a list is worth as many rows as
-    // there is room for.
     static let scrolls = false
     static let fills = true
 
@@ -138,4 +102,3 @@ struct ChoosingItemsSample: SampleContent {
         [Example(PickList())]
     }
 }
-#endif

@@ -130,16 +130,16 @@ private struct Knob: ContentView {
             HStack {
                 Button("Full")
                     .background(Palette.accent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked { level = 1 }
 
                 Button("Empty")
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(16, 8)
                     .onClicked { level = 0 }
             }

@@ -65,7 +65,7 @@ struct LevelPage: ContentView {
             Button("Deeper")
                 .background(Palette.accent)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .onClicked { path.append(.level(level + 1)) }
@@ -86,7 +86,7 @@ struct LevelPage: ContentView {
             page.gallery("Level \(level)", scene: scene, nav: nav)
 
             // What the back button reads while the page ABOVE this one is on
-            // top - written on the page the reader would go back to. A host
+            // top - written on the page the user would go back to. A host
             // whose back affordance has no text ignores it.
             page.backButtonTitle = "Level \(level)"
         }

@@ -45,7 +45,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         private var bars: [Binding<Double>] { [$hop0, $hop1, $hop2, $hop3] }
 
         VStack {
-            Border {
+            ZStack {
                 VStack {
                     HStack {
                         ForEach(Array(bars.enumerated()), id: \\.offset) { bar in
@@ -62,6 +62,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         .opacity($breath)
                 }
             }
+            .style("Card")
             .background($wash)
 
             HStack {
@@ -141,7 +142,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
 
     var content: any View {
         VStack {
-            Border {
+            ZStack {
                 VStack {
                     HStack {
                         ForEach(Array(bars.enumerated()), id: \.offset) { bar in
@@ -165,6 +166,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(16)
             }
+            .style("Card")
             .background($wash)
             .stroke(.transparent)
             .shape(.roundedRectangle(12))

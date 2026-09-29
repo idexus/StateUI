@@ -1,0 +1,9 @@
+# revision 1.1
+NavigationStack.icon: ✅
+NavigationStack.title: ✅
+Page.icon: ✅
+Page.title: ✅
+SplitView.icon: ✅
+SplitView.title: ✅
+TabbedView.icon: ✅
+TabbedView.title: ✅

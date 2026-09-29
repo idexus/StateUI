@@ -1,0 +1,7 @@
+module CGalleryGLES [system] {
+    header "CGalleryGLES.h"
+    link "EGL"
+    link "GLESv3"
+    link "android"
+    export *
+}

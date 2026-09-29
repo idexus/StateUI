@@ -1,0 +1,32 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+extension GTKRegistrations {
+    /// A Button: its caption and its look, whether it takes a press, and the click.
+    static func buttons(_ registry: Registry<GTKView>) {
+        registry.add(ButtonContract.self, create: { reports in
+            let button = GTKButtonView()
+            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            return button
+        }, members: { button in
+            button.applies(TextMembers.members) { view, values in applyText(view, values) }
+            button.applies([
+                VisualElementContract.background,
+                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.strokeWidth,
+            ]) { view, values in
+                view.setBox(
+                    fill: values[VisualElementContract.background]?.propValue,
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    strokeWidth: values[BorderElementContract.strokeWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
+            }
+            button.property(VisualElementContract.isEnabled) { view, enabled in
+                view.setEnabled(enabled ?? true)
+            }
+            button.raises(ButtonContract.clicked)
+        })
+    }
+}

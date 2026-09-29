@@ -1,0 +1,4 @@
+# revision 1.1
+ProgressBar: ✅
+ProgressBar.frameChanged: ✅
+ProgressBar.progress: ✅

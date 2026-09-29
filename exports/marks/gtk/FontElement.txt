@@ -1,0 +1,41 @@
+# revision 1.1
+Button.fontAttributes: cannot read fontAttributes of Button - GTK's driver has no path for it yet
+Button.fontAutoScalingEnabled: not realized
+Button.fontFamily: cannot read fontFamily of Button - GTK's driver has no path for it yet
+Button.fontSize: cannot read fontSize of Button - GTK's driver has no path for it yet
+DatePicker.fontAttributes: not realized
+DatePicker.fontAutoScalingEnabled: not realized
+DatePicker.fontFamily: not realized
+DatePicker.fontSize: not realized
+Label.fontAttributes: cannot read fontAttributes of Label - GTK's driver has no path for it yet
+Label.fontAutoScalingEnabled: not realized
+Label.fontFamily: cannot read fontFamily of Label - GTK's driver has no path for it yet
+Label.fontSize: cannot read fontSize of Label - GTK's driver has no path for it yet
+Picker.fontAttributes: not realized
+Picker.fontAutoScalingEnabled: not realized
+Picker.fontFamily: not realized
+Picker.fontSize: not realized
+RadioButton.fontAttributes: cannot read fontAttributes of RadioButton - GTK's driver has no path for it yet
+RadioButton.fontAutoScalingEnabled: not realized
+RadioButton.fontFamily: cannot read fontFamily of RadioButton - GTK's driver has no path for it yet
+RadioButton.fontSize: cannot read fontSize of RadioButton - GTK's driver has no path for it yet
+SearchField.fontAttributes: cannot read fontAttributes of SearchField - GTK's driver has no path for it yet
+SearchField.fontAutoScalingEnabled: not realized
+SearchField.fontFamily: cannot read fontFamily of SearchField - GTK's driver has no path for it yet
+SearchField.fontSize: cannot read fontSize of SearchField - GTK's driver has no path for it yet
+Span.fontAttributes: cannot read fontAttributes of Span - GTK's driver has no path for it yet
+Span.fontAutoScalingEnabled: not realized
+Span.fontFamily: not realized
+Span.fontSize: cannot read fontSize of Span - GTK's driver has no path for it yet
+TextEditor.fontAttributes: cannot read fontAttributes of TextEditor - GTK's driver has no path for it yet
+TextEditor.fontAutoScalingEnabled: not realized
+TextEditor.fontFamily: cannot read fontFamily of TextEditor - GTK's driver has no path for it yet
+TextEditor.fontSize: cannot read fontSize of TextEditor - GTK's driver has no path for it yet
+TextField.fontAttributes: cannot read fontAttributes of TextField - GTK's driver has no path for it yet
+TextField.fontAutoScalingEnabled: not realized
+TextField.fontFamily: cannot read fontFamily of TextField - GTK's driver has no path for it yet
+TextField.fontSize: cannot read fontSize of TextField - GTK's driver has no path for it yet
+TimePicker.fontAttributes: not realized
+TimePicker.fontAutoScalingEnabled: not realized
+TimePicker.fontFamily: not realized
+TimePicker.fontSize: not realized

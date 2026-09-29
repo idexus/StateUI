@@ -1,0 +1,11 @@
+# revision 1.1
+Button: ✅
+Button.clicked: ✅
+Button.frameChanged: ✅
+Button.icon: cannot read icon of Button - UIKit's driver has no path for it yet
+Button.iconPosition: ✅
+Button.iconSpacing: ✅
+Button.lineBreak: ✅
+Button.pressed: 🔌 pressDown on Button: the view's listening handed the recognizer's states, no touch sent
+Button.released: 🔌 pressDown on Button: the view's listening handed the recognizer's states, no touch sent
+Label.text: ✅

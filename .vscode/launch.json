@@ -1,20 +1,13 @@
 {
   // Debugging StateUI's applications - through the StateUI extension,
-  // lib/StateUI.VSCode (install stateui-*.vsix, built by `npm run package`).
+  // lib/StateUI.VSCode (install artifacts/stateui-*.vsix, built by `npm run package`).
   //
   // "StateUI: Debug" and "StateUI: Release" are the whole of it. The extension's
   // status bar chooses:
   //
-  //   the host         AppKit, or .NET MAUI - and the editor works as it
+  //   the host         AppKit, Android, WinUI or GTK - and the editor works as it
   //   the application  Gallery, HelloWorld, … - remembered for the workspace
-  //   the debugger     for MAUI: C#; Swift on the iOS Simulator or Mac Catalyst;
-  //                    C# and Swift together on Mac Catalyst; Swift on Linux
-  //                    and Windows
-  //
-  // A MAUI C# launch is the MAUI extension's, on the device its status bar
-  // chose; its Release build is believed only because settings.json sets
-  // maui.configuration.useLaunchJsonConfigurations. Swift attaches to a process
-  // this machine runs - never to Android or a physical device.
+  //   the device       for Android: the phone or emulator it runs on
   //
   // THE PICKER'S ORDER IS `presentation.order`, not the order in this file.
   "version": "0.2.0",
@@ -32,20 +25,6 @@
       "request": "launch",
       "configuration": "release",
       "presentation": { "group": "0 StateUI", "order": 2 }
-    },
-    {
-      // The C# suite with its debugger attached, so a failing renderer test can
-      // be stepped through. StateUI: Run Tests runs every suite without one.
-      "name": "Test: C# (debug)",
-      "type": "coreclr",
-      "request": "launch",
-      "program": "dotnet",
-      "args": ["test", "${workspaceFolder}/lib/StateUI.Maui/Tests"],
-      "cwd": "${workspaceFolder}",
-      "console": "internalConsole",
-      "stopAtEntry": false,
-      "env": { "VSTEST_HOST_DEBUG": "0" },
-      "presentation": { "group": "1 tests", "order": 1 }
     }
   ]
 }

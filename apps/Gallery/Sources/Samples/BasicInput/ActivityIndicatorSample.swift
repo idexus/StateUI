@@ -67,7 +67,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("No binding here, unlike the inputs: nothing about a spinner is the "
-                + "reader's to change, so the value only goes one way.")
+                + "user's to change, so the value only goes one way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

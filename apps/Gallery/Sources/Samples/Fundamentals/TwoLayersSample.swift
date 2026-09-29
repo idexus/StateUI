@@ -59,7 +59,7 @@ private struct LayerRows: ExampleContent {
                 .fontSize(14)
                 .background(Palette.accent)
                 .textColor(Palette.onAccent)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(22, 10)
                 .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
@@ -102,7 +102,7 @@ private struct LayerRows: ExampleContent {
     /// One captioned row, its content in a closure of its own - which is what
     /// makes the reading inside it that row's alone.
     private func boxed(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
-        Border {
+        ZStack {
             VStack {
                 Label(caption)
                     .fontSize(11)
@@ -113,6 +113,7 @@ private struct LayerRows: ExampleContent {
             }
             .spacing(6)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
@@ -203,18 +204,18 @@ private struct LayerCost: ExampleContent {
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(Palette.onAccent)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(18, 8)
                     .onClicked { counter += 1 }
 
                 // A choice of more than two, so a button that cycles them.
                 Button("Views: \(leaves)")
                     .fontSize(13)
-                    .borderColor(Palette.outline)
-                    .borderWidth(1)
+                    .stroke(Palette.outline)
+                    .strokeWidth(1)
                     .background(.transparent)
                     .textColor(Palette.subtle)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(18, 8)
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }

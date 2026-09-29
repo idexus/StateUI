@@ -1,0 +1,37 @@
+# revision 1.1
+SearchField.cursorPosition: ✅
+SearchField.inputPurpose: ✅
+SearchField.isEnabled: ✅
+SearchField.isReadOnly: ✅
+SearchField.isSpellCheckEnabled: ✅
+SearchField.isTextPredictionEnabled: ✅
+SearchField.maximumLength: ✅
+SearchField.placeholder: ✅
+SearchField.placeholderColor: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet
+SearchField.selectionLength: ✅
+SearchField.text: ✅
+SearchField.textChanged: ✅
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: ✅
+TextEditor.isEnabled: ✅
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
+TextEditor.maximumLength: ✅
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: ✅
+TextEditor.selectionLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅
+TextField.cursorPosition: ✅
+TextField.inputPurpose: ✅
+TextField.isEnabled: ✅
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: ✅
+TextField.isTextPredictionEnabled: ✅
+TextField.maximumLength: ✅
+TextField.placeholder: ✅
+TextField.placeholderColor: cannot read placeholderColor of TextField - UIKit's driver has no path for it yet
+TextField.selectionLength: ✅
+TextField.text: ✅
+TextField.textChanged: ✅

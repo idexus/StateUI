@@ -1,0 +1,84 @@
+# Input on WinUI
+
+How the WinUI host hears what the user does to an element with a finger, a pen
+or the mouse - a tap, the pointer, a press dragged, a pinch - and reports it
+as the element's events ([a user's change](../../host/runtime.md#a-users-change)).
+A control's own input - a button's click, a switch turned - is the control's,
+and stays there ([controls](controls.md)).
+
+## Listening
+
+A view listens only for what its element's handlers and channels ask: taps
+for a tap handler, the pointer for a pointer handler, a press dragged for a
+pan, a swipe or a state a pan carries, a pinch for a pinch handler; and what
+it hears becomes the element's events by the host layer's rule ([what the
+user does with a finger](../../host/runtime.md#what-the-user-does-with-a-finger)).
+The relay takes what a view listens for in the host layer's own bits, and
+hangs its handlers on the element once, each naming the view by its number,
+and each asks what the view listens for as it runs; a view that stops
+listening, or leaves the tree, takes them off again once the event running
+is over. WinUI raising a routed event reads the element's list of handlers
+after each one returns, and a handler that renders runs the whole turn
+inside the event: a tap that closes what was tapped - an inspector's close -
+would take the handlers off under the list being read, and XAML reads past
+its end. Until they come off, each asks what the view listens for and
+answers nothing.
+
+A panel draws nothing between its children, and WinUI hits nothing there. A
+panel with no background of its own is painted clear while it listens or
+offers a context menu, so a row answers a click past its words as well as on
+them; once it does neither, the clear paint goes, and an author's background
+is never touched.
+
+## Taps
+
+WinUI tells a tap, and a second tap soon after as a double tap in place of a
+tap. The relay counts a quick run: a tap within the system's double-click
+time of the last one continues it. A view asking for `count` taps answers
+each time the run reaches a multiple of it. A tap is handled where a view
+listens for it, so a tappable row inside another answers alone.
+
+## Pressed by assistive technology
+
+A panel that listens for taps is a button to UI Automation: its peer offers
+the invoke pattern, and pressing it runs the tap handler once, whatever
+count the view asks for - as a screen reader's press, and a test's, do.
+
+## A press dragged
+
+A press of the primary button, or a finger or a pen down, becomes a drag by
+the host layer's rule ([a press dragged](../../host/runtime.md#a-press-dragged))
+once it has moved past the system's drag distance along either axis
+(`SM_CXDRAG`, `SM_CYDRAG` at 96 DPI, so in DIPs as the press is measured).
+The relay tells the press alone - down, moved, let go, taken away - and holds
+the pointer for the view as the rule says it is a drag: from there the view holds the
+pointer, so the drag goes on outside it, and the drag is handled, so a view
+dragged inside another drags alone. It is measured on the window's content,
+where the view it moves does not move the measure. A drag says its phases -
+began, moved by how far since it began, ended or cancelled - and a pan's
+states move by that from where they stood as it began. Ended, it is a swipe
+by the host layer's rule ([a swipe](../../host/runtime.md#a-swipe)). A pan
+that asks for more than one pointer is not recognized.
+
+## A pinch
+
+A view that listens for a pinch takes WinUI's scale manipulation - two
+fingers on a touch screen - and says each step's scale since the last, and
+where, as shares of its size. Taking the manipulation keeps the platform's
+own panning off that view's touches.
+
+## A button held down
+
+A button held down - by the pointer, or by Space or Enter on the keyboard -
+is told as pressed, and let go as released, apart from its click: the relay
+follows WinUI's own `IsPressed`, which the button's pressed look follows too.
+A scroller taken hold of and let go arrives by the same road, each view
+answering what holding means for it.
+
+## The keyboard coming in
+
+A view whose element hears `isFocusedChanged` is told when the keyboard comes
+into it - to it, or to what stands in it, as a number box's own field - and
+when it leaves. WinUI's `GotFocus` and `LostFocus` bubble from inside the
+element, so as each arrives the relay asks where the keyboard is now, the
+act of moving the focus asking the same, and tells only a change.

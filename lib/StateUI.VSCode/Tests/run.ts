@@ -12,7 +12,7 @@ import * as path from "path";
 
 const extension = path.resolve(__dirname, "..", "..");
 const repository = path.resolve(extension, "..", "..");
-const code = process.env.STATEUI_VSCODE ?? "/Applications/Visual Studio Code.app/Contents/MacOS/Code";
+const code = process.env.STATEUI_VSCODE ?? installedCode();
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-vscode-"));
 const results = path.join(profile, "results.txt");
 
@@ -23,6 +23,10 @@ const results = path.join(profile, "results.txt");
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results };
 // The suite starts from no host at all; an inherited one would decide the first answer.
 delete env.STATEUI_APPKIT;
+delete env.STATEUI_UIKIT;
+delete env.STATEUI_ANDROID;
+delete env.STATEUI_WINUI;
+delete env.STATEUI_GTK;
 delete env.ELECTRON_RUN_AS_NODE;
 
 const child = spawn(code, [
@@ -32,11 +36,6 @@ const child = spawn(code, [
     `--user-data-dir=${path.join(profile, "data")}`,
     `--extensions-dir=${path.join(os.homedir(), ".vscode", "extensions")}`,
     "--disable-workspace-trust", "--skip-welcome", "--skip-release-notes", "--new-window",
-    // The suite asks the Swift side and resolves a MAUI launch without running
-    // one. The .NET extensions only load the solution - which, on a profile
-    // bound to no SDK, they report as "Project load blocked".
-    ...["ms-dotnettools.csdevkit", "ms-dotnettools.csharp", "ms-dotnettools.dotnet-maui", "ms-dotnettools.vscode-dotnet-runtime"]
-        .map((id) => `--disable-extension=${id}`),
 ], { env, stdio: "ignore" });
 
 child.on("exit", (status) => {
@@ -44,3 +43,14 @@ child.on("exit", (status) => {
     process.stdout.write(`exit ${status}\n`);
     process.exit(status ?? 1);
 });
+
+/** The VS Code this machine has installed, where each platform puts it; `STATEUI_VSCODE` names another. */
+function installedCode(): string {
+    const candidates = process.platform === "darwin"
+        ? ["/Applications/Visual Studio Code.app/Contents/MacOS/Code"]
+        : process.platform === "win32"
+            ? [path.join(process.env.LOCALAPPDATA ?? "", "Programs", "Microsoft VS Code", "Code.exe"),
+                path.join(process.env.ProgramFiles ?? "C:\\Program Files", "Microsoft VS Code", "Code.exe")]
+            : ["/usr/share/code/code", "/snap/code/current/usr/share/code/code"];
+    return candidates.find((each) => fs.existsSync(each)) ?? candidates[0];
+}

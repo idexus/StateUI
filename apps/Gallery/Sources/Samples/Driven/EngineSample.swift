@@ -95,7 +95,7 @@ struct EngineSample: SampleContent, ExampleContent {
             // the reading can move at all - it is read here.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label()
                     .text($reading)
                     .fontSize(44)
@@ -103,6 +103,7 @@ struct EngineSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
                     .horizontalAlignment(.center)
             }
+            .style("Card")
             .padding(24, 16)
             .background(Palette.surface)
             .stroke(.transparent)

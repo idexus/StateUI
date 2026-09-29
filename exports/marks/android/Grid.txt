@@ -1,0 +1,7 @@
+# revision 1.1
+Grid: ✅
+Grid.columnSpacing: ✅
+Grid.columns: ✅
+Grid.frameChanged: ✅
+Grid.rowSpacing: ✅
+Grid.rows: ✅

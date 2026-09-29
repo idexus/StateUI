@@ -10,16 +10,11 @@ public enum ViewContract: Contract {
     /// Every view is drawn.
     public static let tiers: [any Contract.Type] = [VisualElementContract.self]
 
-    /// Where the view sits in an AbsoluteLayout, and how big it is there.
-    public static let absoluteLayoutBounds = ElementProperty<Self, Rect>(
-        "absoluteLayoutBounds", layer: .structure, travels: false)
-
-    /// Which parts of those bounds are fractions of the layout.
-    public static let absoluteLayoutProportions = ElementProperty<Self, AbsoluteLayoutProportions>(
-        "absoluteLayoutProportions", layer: .structure, travels: false)
-
     /// Whether the view accepts what is dropped on it.
     public static let allowDrop = ElementProperty<Self, Bool>("allowDrop", layer: .native, cleared: false)
+
+    /// The part of the enclosing ZStack's room the view stands in.
+    public static let area = ElementProperty<Self, Area>("area", layer: .structure, travels: false)
 
     /// Whether the view can be dragged.
     public static let canDrag = ElementProperty<Self, Bool>("canDrag", layer: .native, cleared: false)
@@ -107,7 +102,7 @@ public enum ViewContract: Contract {
     public static let swipeDirection = ElementProperty<Self, SwipeDirection>(
         "swipeDirection", layer: .structure, cleared: false)
 
-    /// How far a finger must travel for a swipe, in device units.
+    /// How far a swipe must travel to count, in device units.
     public static let swipeThreshold = ElementProperty<Self, Double>(
         "swipeThreshold", layer: .structure, travels: false, cleared: false)
 
@@ -127,7 +122,7 @@ public enum ViewContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        absoluteLayoutBounds, absoluteLayoutProportions, allowDrop, canDrag, dragLeave,
+        allowDrop, area, canDrag, dragLeave,
         dragOver, dragStarting, dragText, drop, dropCompleted, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, pinchUpdated, pointerEntered, pointerExited,

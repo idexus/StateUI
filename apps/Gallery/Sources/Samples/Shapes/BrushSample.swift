@@ -6,7 +6,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
     static let id = "brush"
     static let title = "Brushes"
-    static let summary = "Gradients: on a shape's fill, a border's stroke, and behind any view at all."
+    static let summary = "Gradients: on a shape's fill, a layout's outline, and behind any view at all."
 
     static let code = """
         @State private var end = 0
@@ -48,10 +48,11 @@ struct BrushSample: SampleContent, ExampleContent {
                 .width(96)
                 .height(96)
 
-            Border {
+            ZStack {
                 Label("A stroke is a brush too")
                     .padding(16, 10)
             }
+            .style("Card")
             .strokeWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
@@ -113,11 +114,12 @@ struct BrushSample: SampleContent, ExampleContent {
 
             SectionTitle("On a stroke and a background")
 
-            Border {
+            ZStack {
                 Label("A stroke is a brush too")
                     .fontSize(14)
                     .padding(16, 10)
             }
+            .style("Card")
             .strokeWidth(4)
             .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))

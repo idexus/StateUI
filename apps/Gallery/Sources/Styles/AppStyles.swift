@@ -13,9 +13,9 @@
 //   - No font family. The gallery ships no fonts, and naming a family that is
 //     not installed is a way to get a different font on every platform.
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
-//     casts it, a SwipeAction is not a style target, a page's appearance is its
-//     `PageSession`'s, and the bars of NavigationStack and TabbedView are
-//     written on the arrangement itself - see MainWindow.detail.
+//     casts it, a page's appearance is its `PageSession`'s, and the bars of
+//     NavigationStack and TabbedView are written on the arrangement itself -
+//     see MainWindow.detail.
 
 import StateUI
 
@@ -77,8 +77,8 @@ enum AppStyles {
                 .background(Palette.accent)
                 .fontSize(14)
                 .fontAttributes(.bold)
-                .borderWidth(0)
-                .cornerRadius(10)                
+                .strokeWidth(0)
+                .shape(.roundedRectangle(10))                
                 .padding(16, 11)
                 .minimumHeight(44)
                 .minimumWidth(44)
@@ -94,7 +94,7 @@ enum AppStyles {
             // whatever colour it is painted.
             //
             // So a chrome button is WORDS AND AN ICON and nothing else - no
-            // fill, no border - answering the pointer by brightening rather
+            // fill, no outline - answering the pointer by brightening rather
             // than by growing a frame. The icon is the one its menu row
             // already carries, in the colour of the words beside it: see
             // nav_surprise_chrome.svg. The MARK is left white, the colour of
@@ -120,7 +120,7 @@ enum AppStyles {
                 .background(.transparent)
                 .fontSize(13)
                 .fontAttributes(.bold)
-                .borderWidth(0)
+                .strokeWidth(0)
                 .padding(5, 0)
                 .height(26)
                 .visualState(.normal) { $0
@@ -147,8 +147,8 @@ enum AppStyles {
                 .background(Palette.accent)
                 .fontSize(13)
                 .fontAttributes(.bold)
-                .borderWidth(0)
-                .cornerRadius(10)
+                .strokeWidth(0)
+                .shape(.roundedRectangle(10))
                 .padding(14, 4)
                 .minimumHeight(0)
                 .minimumWidth(0)
@@ -159,9 +159,9 @@ enum AppStyles {
 
             Style<Button>("IconButton")
                 .opacity(1)
-                .borderColor(.transparent)
-                .borderWidth(0)
-                .cornerRadius(10)
+                .stroke(.transparent)
+                .strokeWidth(0)
+                .shape(.roundedRectangle(10))
                 .minimumHeight(44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
@@ -289,9 +289,6 @@ enum AppStyles {
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
 
-            Style<RefreshView>()
-                .tint(Palette.accent)
-
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any
@@ -321,11 +318,13 @@ enum AppStyles {
             // A colour here is one property with the view's own background,
             // so a panel that sets its own - a colour, or a gradient like the
             // home page's - replaces this one, the animated panel included.
-            Style<Border>()
+            // What a card holds is cut to its corners: a picture reaches them.
+            Style<ZStack>("Card")
                 .background(Palette.raised)
                 .stroke(Palette.outline)
                 .shape(.roundedRectangle(14))
                 .strokeWidth(1)
+                .clipsContent(true)
 
             // COLOUR, not background: a ColorBox draws its colour, and a
             // background is a second square behind that one - which Android

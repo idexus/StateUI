@@ -1,0 +1,4 @@
+# revision 1.1
+Menu: ✅
+Menu.isEnabled: ☑️ UIKit holds no menu out of reach itself: each of its entries is.
+Menu.text: ✅

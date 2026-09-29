@@ -25,7 +25,7 @@ struct StyleSample: SampleContent, ExampleContent {
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
-                .cornerRadius(10)
+                .shape(.roundedRectangle(10))
                 .padding(16, 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
@@ -96,10 +96,9 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            // A style can say what a control looks like in a STATE: the
-            // platform enters the state, and hearing that is what
-            // .onVisualStateChanged is for, next door in the Visual states
-            // sample.
+            // A style can say what a control looks like in a STATE; hearing
+            // the control enter one is what .onVisualStateChanged is for, next
+            // door in the Visual states sample.
             Button(enabled ? "Enabled" : "Disabled")
                 .isEnabled(enabled)
                 .horizontalAlignment(.center)

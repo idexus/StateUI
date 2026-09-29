@@ -74,10 +74,10 @@ struct SampleTabPage: ContentView {
                 .horizontalAlignment(.start)
         }
         // Dressed as every page of the gallery is, and named and pictured for
-        // its tab: the tab's caption and icon, the caption the window's title
-        // while the tab is chosen. What a sample adds to the bar it writes
-        // from its own `.onCreated`, which runs after this one, being further
-        // in.
+        // its tab: the tab's caption and icon. The window takes the sample's
+        // name from the tabs (`SamplePage.shown`). What a sample adds to the bar
+        // it writes from its own `.onCreated`, which runs after this one,
+        // being further in.
         .onCreated {
             page.gallery(sample.caption(of: tab), scene: scene, nav: nav)
             page.icon = sample.icon(of: tab)
@@ -130,10 +130,9 @@ struct SampleTabPage: ContentView {
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
-            if !example.hostCode.isEmpty {
+            example.hostCode.listings.map { listing -> Element in
                 SamplePage.section(
-                    example.hostCode.heading,
-                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+                    example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
         }
         .spacing(16)

@@ -1,0 +1,136 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import UIKit
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+@testable import StateUIUIKit
+import XCTest
+
+/// What pages and their arrangements say on UIKit's bars and the window's scene.
+final class UIKitPagesTests: XCTestCase {
+    /// Tabs pushed onto a stack are its last place and name the window by their own title, on the bar and the
+    /// scene alike - never by what they show: their pages name their tabs alone.
+    @MainActor
+    func testTabsOnAStackNameTheWindowByTheirOwnTitle() throws {
+        let path = State(wrappedValue: [Int]())
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(path.projectedValue) {
+                TitledPage(title: "Items and Cards")
+            } destination: { _ in
+                TabbedView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+            }
+        }
+        defer { host.finish() }
+        let window: UIWindow = try XCTUnwrap(host.roster.windows.first?.1.window)
+        host.settle { window.windowScene?.title == "Items and Cards" }
+        XCTAssertEqual(window.windowScene?.title, "Items and Cards")
+
+        path.wrappedValue = [1]
+        let pushed: () -> UIViewController? = {
+            (host.runtime.tree.root.flatMap { Self.tabbedView(in: $0) }?.native as? UIKitElement)?.controller
+        }
+        host.settle { pushed() != nil }
+        host.runtime.pump.turn()
+        let tabs: UIViewController = try XCTUnwrap(pushed())
+        XCTAssertEqual(tabs.navigationItem.title, "ItemsView", "the bar's title")
+        XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
+    }
+
+    /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
+    /// colour for them (`BandWords`).
+    @MainActor
+    func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
+        let dark = State(wrappedValue: true)
+        let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TitledPage(title: "Root")
+            } destination: { _ in Label("Pushed") }
+                .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
+        let words = { () -> CGFloat? in
+            let color = page()?.navigationItem.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor
+            var white: CGFloat = -1
+            return color?.getWhite(&white, alpha: nil) == true ? white : nil
+        }
+        host.settle { words() != nil }
+        XCTAssertEqual(words() ?? -1, 1, accuracy: 0.01, "light on navy")
+
+        dark.wrappedValue = false
+        host.settle { (words() ?? 1) < 0.01 }
+        XCTAssertEqual(words() ?? -1, 0, accuracy: 0.01, "dark on yellow")
+    }
+
+    /// A page's content stands clear of the bars and the notch, but where it lets itself under them it reaches the
+    /// screen's edge; the page's background stands behind the bars either way.
+    @MainActor
+    func testAPagesContentReachesUnderTheBarsWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container)
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.safeAreaInsets.top > 0 }
+        let top = controller.view.safeAreaInsets.top
+        XCTAssertGreaterThan(top, 0, "the phone has a notch")
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, top, "clear of the notch")
+
+        under.wrappedValue = true
+        host.settle { page()?.view?.frame.minY == 0 }
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
+    }
+
+    /// A page's background stands behind the whole screen, the strip under the home indicator and the bars
+    /// included - never the system's white there.
+    @MainActor
+    func testAPagesBackgroundStandsBehindTheWholeScreen() throws {
+        let host = UIKitRenderer.running { PaintedPage() }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        host.settle { controller.view.backgroundColor != .systemBackground }
+        var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
+        controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [247, 245, 252])
+    }
+
+    /// The first tabbed view in `element`'s tree.
+    @MainActor
+    private static func tabbedView(in element: MountedElement) -> MountedElement? {
+        first(.tabbedView, in: element)
+    }
+
+    /// The first element of `type` in `element`'s tree.
+    @MainActor
+    private static func first(_ type: NodeType, in element: MountedElement) -> MountedElement? {
+        element.type == type ? element : element.children.lazy.compactMap { first(type, in: $0) }.first
+    }
+}
+
+/// A page that names itself.
+private struct TitledPage: ContentView {
+    let title: String
+
+    @Environment private var page: PageSession
+
+    var content: any View {
+        let title = self.title
+        let page = self.page
+        return Label(title).onCreated { page.title = title }
+    }
+}
+
+/// A page whose background the page itself says, as the Gallery's pages do.
+private struct PaintedPage: ContentView {
+    @Environment private var page: PageSession
+
+    var content: any View {
+        let page = self.page
+        return Label("Painted").onCreated { page.background = Color("#F7F5FC") }
+    }
+}

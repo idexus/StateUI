@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Pin
 
@@ -8,27 +8,39 @@ Layer: `provider`. An optional provider supplies it: a package, or the applicati
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | Proven by every test of it that ran on that host. |
+| ☑️ | Proven, the host recording what is missing. |
+| – | Never on that host's family, which meets the contract there. |
+| ❌ | A test of it failed. |
+| ◐ | Some of its tests proved it, another could not run or read. |
+| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
+| · | The driver cannot yet do or read what its test needs. |
+| ⏸ | Its test waits on a member the host does not realize. |
+| ⌛ | Said at another revision of its family than it stands at. |
+| empty | Not realized, or no run - the note says which. |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/PinContract.swift`.
+See [the dictionary](README.md) for how a mark is given.
+
+| Host | Created | Members (6) | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
+| UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
+| Android Views |  |  | Google Play services `MapView` / `Marker` (?) | not realized |
+| WinUI 3 |  |  | `MapControl` (?) | not realized |
+| GTK 4 |  |  | libshumate `ShumateMap` / `ShumateMarker` | not realized |
+| Web |  |  | no honest native counterpart | no host yet |
+
+Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PinContract.swift`.
 
 ## Pin's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `label` | property | `String` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `location` | property | `Location` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `onPinClicked` (`pinClicked`) | event |  | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `type` | property | `PinType` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-
-Realization:
-
-- **MAUI**: `Map` / `Pin`
-- **AppKit**: `MKMapView` / `MKAnnotation`
-- **UIKit**: `MKMapView` / `MKAnnotation`
-- **GTK 4**: libshumate `ShumateMap` / `ShumateMarker`
-- **Android Views**: Google Play services `MapView` / `Marker` (?)
-- **WinUI 3**: `MapControl` (?)
-- **Web**: no honest native counterpart.
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `address` | property | `String` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `label` | property | `String` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `location` | property | `Location` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onPinClicked` (`pinClicked`) | event |  | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `type` | property | `PinType` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |

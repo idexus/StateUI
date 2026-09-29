@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # NavigationStack
 
@@ -8,48 +8,60 @@ Layer: `adaptive`. Every base host presents it by its platform's conventions, ke
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | Proven by every test of it that ran on that host. |
+| ☑️ | Proven, the host recording what is missing. |
+| – | Never on that host's family, which meets the contract there. |
+| ❌ | A test of it failed. |
+| ◐ | Some of its tests proved it, another could not run or read. |
+| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
+| · | The driver cannot yet do or read what its test needs. |
+| ⏸ | Its test waits on a member the host does not realize. |
+| ⌛ | Said at another revision of its family than it stands at. |
+| empty | Not realized, or no run - the note says which. |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/NavigationStackContract.swift`.
+See [the dictionary](README.md) for how a mark is given.
+
+| Host | Created | Members (6) | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 1 ✅ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| UIKit | ✅ | 6 ✅ | `UINavigationController` |  |
+| Android Views | ✅ | 1 ✅ | custom `ViewGroup` stack + `Toolbar` |  |
+| WinUI 3 | ✅ | 3 ✅ | `Frame` |  |
+| GTK 4 | ✅ |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
+| Web |  |  | History API | no host yet |
+
+Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
 
 ## NavigationStack's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `popped` | event | `Int` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-
-Realization:
-
-- **MAUI**: `NavigationPage`
-- **AppKit**: custom `NSView` stack; title, back and actions in the window's `NSToolbar`
-- **UIKit**: `UINavigationController`
-- **GTK 4**: `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView`
-- **Android Views**: custom `ViewGroup` stack + `Toolbar`
-- **WinUI 3**: `Frame`
-- **Web**: History API
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet; GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
 What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [BarElement](tiers/BarElement.md)
 
 The bar a page arrangement draws: its colour.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `barBackgroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barBackgroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read icon of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `title` | property | `String` | native | · | ✅ | · | ✅ | · |  | cannot read title of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read title of NavigationStack - Android's driver has no path for it yet; GTK 4: cannot read title of NavigationStack - GTK's driver has no path for it yet |

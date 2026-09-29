@@ -3,9 +3,6 @@ ActivityIndicator
 Button
   aspect
   background
-  borderColor
-  borderWidth
-  cornerRadius
   fontAttributes
   fontFamily
   fontSize
@@ -13,7 +10,11 @@ Button
   iconPosition
   isEnabled
   lineBreak
+  shape
+  stroke
+  strokeWidth
   text
+  textCase
   textColor
   clicked()
   pressed()
@@ -26,6 +27,7 @@ Canvas
 CheckBox
   isEnabled
   isOn
+  tint
   toggled()
 ColorBox
   background
@@ -65,6 +67,16 @@ Image
   aspect
   isAnimating
   source
+ItemsView
+  endReachedWithin
+  items
+  itemsLayout
+  selectedItems
+  selectionMode
+  endReached()
+  itemActivated()
+  realizedChanged()
+  selectionChanged()
 Line
   aspect
   fill
@@ -104,6 +116,7 @@ Picker
   options
   selectedIndex
   textColor
+  tint
   title
   closed()
   opened()
@@ -163,6 +176,9 @@ ScrollView
   orientation
   padding
   scrollOffset
+  shape
+  stroke
+  strokeWidth
   verticalScrollBarVisibility
 SearchField
   background
@@ -180,6 +196,7 @@ SearchField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -187,6 +204,7 @@ Slider
   isEnabled
   maximum
   minimum
+  tint
   value
   dragCompleted()
   dragStarted()
@@ -221,6 +239,7 @@ TextEditor
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   textChanged()
 TextField
@@ -240,6 +259,7 @@ TextField
   placeholderColor
   selectionLength
   text
+  textCase
   textColor
   submitted()
   textChanged()
@@ -255,12 +275,11 @@ VStack
   padding
   spacing
 (every element)
-  absoluteLayoutBounds
-  absoluteLayoutProportions
   accessibilityHeadingLevel
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  area
   automationExcludedWithChildren
   frame
   gridColumn
@@ -279,6 +298,7 @@ VStack
   minimumHeight
   minimumWidth
   opacity
+  panTouchCount
   panXChannel
   panYChannel
   pivotX
@@ -292,7 +312,6 @@ VStack
   swipeDirection
   swipeThreshold
   tapCount
-  tint
   translationX
   translationY
   verticalAlignment
@@ -309,8 +328,18 @@ VStack
   swiped()
   tapped()
 (acts)
+  alert()
+  announce()
+  chooseAction()
+  confirm()
+  currentTime()
+  currentTimeZone()
   focus()
+  handlerFailed()
   hideOnScreenKeyboard()
   persistSceneValue()
   persistValue()
+  prompt()
+  scrollTo()
   unfocus()
+  utcOffset()

@@ -1,0 +1,41 @@
+# revision 1.1
+Button.fontAttributes: ✅
+Button.fontAutoScalingEnabled: not realized
+Button.fontFamily: ✅
+Button.fontSize: ✅
+DatePicker.fontAttributes: ✅
+DatePicker.fontAutoScalingEnabled: not realized
+DatePicker.fontFamily: ✅
+DatePicker.fontSize: ✅
+Label.fontAttributes: ✅
+Label.fontAutoScalingEnabled: not realized
+Label.fontFamily: ✅
+Label.fontSize: ✅
+Picker.fontAttributes: ✅
+Picker.fontAutoScalingEnabled: not realized
+Picker.fontFamily: ✅
+Picker.fontSize: ✅
+RadioButton.fontAttributes: ✅
+RadioButton.fontAutoScalingEnabled: not realized
+RadioButton.fontFamily: ✅
+RadioButton.fontSize: ✅
+SearchField.fontAttributes: ✅
+SearchField.fontAutoScalingEnabled: not realized
+SearchField.fontFamily: ✅
+SearchField.fontSize: ✅
+Span.fontAttributes: cannot read fontAttributes of Span - AppKit's driver has no path for it yet
+Span.fontAutoScalingEnabled: not realized
+Span.fontFamily: not realized
+Span.fontSize: not realized
+TextEditor.fontAttributes: ✅
+TextEditor.fontAutoScalingEnabled: not realized
+TextEditor.fontFamily: ✅
+TextEditor.fontSize: ✅
+TextField.fontAttributes: ✅
+TextField.fontAutoScalingEnabled: not realized
+TextField.fontFamily: ✅
+TextField.fontSize: ✅
+TimePicker.fontAttributes: ✅
+TimePicker.fontAutoScalingEnabled: not realized
+TimePicker.fontFamily: ✅
+TimePicker.fontSize: ✅

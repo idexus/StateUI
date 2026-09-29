@@ -27,9 +27,9 @@ struct VisualStateSample: SampleContent, ExampleContent {
         @State private var press = 1.0
 
         VStack {
-            // A visual state is worn by the host and renders nobody. What
-            // DOES render here is `entered`, written by the handler and read
-            // in this closure - so the count follows the reports, not the look.
+            // A state describes the button alone. What renders this closure is
+            // `entered`, written by the handler and read here - so the count
+            // follows what was heard, not the look.
             DebugInfoLabel()
 
             // Written on the CONTROL rather than in a style. The states after
@@ -66,8 +66,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
 
             Label("entered \\(entered) · pressed \\(presses) times")
 
-            // A RadioButton has two states of its own, and it RESTS in
-            // .unchecked rather than .normal.
+            // A RadioButton has two states of its own, following isOn.
             RadioButton("Ready")
                 .isOn($ready)
                 .visualState(.checked) { $0.background(Palette.selected) }
@@ -149,44 +148,9 @@ struct VisualStateSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        VStack {
-            Label("Which states a control enters is the control's own business, so the "
-                + "list after the dot is exactly those. A Button has .pressed, a Switch has "
-                + ".on and .off, a CheckBox has .on, a RadioButton has .checked and "
-                + ".unchecked - and every view has .normal, .disabled, .focused, "
-                + ".unfocused, .pointerOver and .selected. Writing a state a control never "
-                + "enters does not compile: it would be a style that silently does nothing. "
-                + "And .pointerOver is a desktop's: nothing on a touch-only device enters it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The colour is a SETTER, and it CROSSES: a visual state is carried by "
-                + "the engine at the control's own motion. `Hold me too` wears "
-                + "`.motion(.none)`, so held side by side the first crosses to its pressed "
-                + "colour while the second arrives at it. The size takes 90ms and is "
-                + "awaited, which is the reason to hear a state rather than only set it. "
-                + "What moves is `press`, a DRIVEN state the button's scale is read off - "
-                + "so the whole 90ms costs no render, and the state stands at 0.94 from "
-                + "the first millisecond while the button is still on its way there.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A control reports the states it DECLARES and nothing else. Naming "
-                + "states in .onVisualStateChanged declares them without changing how they "
-                + "look; the first button writes both already. The gallery's "
-                + "`Style<Button>` also says what a disabled button looks like, and the two "
-                + "are MERGED: the control's setters are written over the style's, one "
-                + "property at a time.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A resting state need not be written: a group that names none is given "
-                + "an empty one, so a control that enters .disabled comes back to its own "
-                + "look when it is enabled again. That resting state is .normal for every "
-                + "control but a RadioButton, which RESTS in .unchecked.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(8)
+        Label("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
+            + "Turn Enabled off for the disabled look, and choose a radio button for the checked one.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

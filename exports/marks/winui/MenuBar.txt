@@ -1,0 +1,5 @@
+# revision 1.1
+Menu.text: ✅
+MenuBar: ✅
+MenuItem.clicked: ✅
+MenuItem.isEnabled: ✅

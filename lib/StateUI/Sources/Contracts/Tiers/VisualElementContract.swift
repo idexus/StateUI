@@ -11,7 +11,7 @@ public enum VisualElementContract: Contract {
     /// Every drawn element carries values in the tree.
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
-    /// How deep a heading the element is, for a reader moving by headings.
+    /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeadingLevel = ElementProperty<Self, HeadingLevel>(
         "accessibilityHeadingLevel", layer: .native)
 
@@ -24,7 +24,7 @@ public enum VisualElementContract: Contract {
         "accessibilityLabel", layer: .native)
 
     /// Whether the element and everything in it are left out of what a screen
-    /// reader walks.
+    /// reader reads.
     public static let automationExcludedWithChildren = ElementProperty<Self, Bool>(
         "automationExcludedWithChildren", layer: .native)
 
@@ -129,15 +129,11 @@ public enum VisualElementContract: Contract {
     /// Takes the keyboard focus off the element.
     public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
 
-    /// The element entered one of its visual states, the one it names.
-    public static let visualStateChanged = ElementEvent<Self, String>(
-        "visualStateChanged", layer: .stateUI)
-
     /// The width the element asks for.
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
 
-    /// Which of its siblings the element is drawn over and under.
+    /// Which of its overlapping siblings in a grid or an absolute layout the element is drawn over.
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
@@ -147,6 +143,6 @@ public enum VisualElementContract: Contract {
         isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, translationX,
-        translationY, unfocus, visualStateChanged, width, zIndex,
+        translationY, unfocus, width, zIndex,
     ]
 }

@@ -85,7 +85,7 @@ struct NavigationSample: SampleContent, ExampleContent {
             Button("Push a page")
                 .background(Palette.accent)
                 .textColor(.white)
-                .cornerRadius(8)
+                .shape(.roundedRectangle(8))
                 .padding(20, 10)
                 .horizontalAlignment(.center)
                 .onClicked { nav.push(.level(1)) }
@@ -143,7 +143,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
-    /// Where the reader is, in words - the section and how deep above it.
+    /// Where the user is, in words - the section and how deep above it.
     ///
     /// Read from the same state the arrangement is built from, which is the
     /// whole point: there is one answer and it cannot drift from the screen.

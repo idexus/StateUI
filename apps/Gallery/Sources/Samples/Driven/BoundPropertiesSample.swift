@@ -86,7 +86,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             }
 
             // BOTH WAYS: the host sets the choice from the state and lands
-            // the reader's pick on it - and nothing here reads `choice`.
+            // the user's pick on it - and nothing here reads `choice`.
             VStack {
                 Picker(["S", "M", "L"]).selectedIndex($choice)
                 DebugInfoLabel()                            // stays at one
@@ -199,7 +199,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 + "carries it: a number and a colour are WALKED there under the "
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
                 + "choice or a toggle is set from the state and landed on it when the "
-                + "reader moves it. A MEMBER - an alignment, a keyboard, a line break - "
+                + "user moves it. A MEMBER - an alignment, a keyboard, a line break - "
                 + "crosses as its number and the host resolves it into the platform's own. "
                 + "Every row wears its own build count, and only row 7 climbs: it is the "
                 + "one whose braces read the value.")
@@ -220,7 +220,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
     private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
-        Border {
+        ZStack {
             VStack {
                 Label(caption)
                     .fontSize(11)
@@ -231,6 +231,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             }
             .spacing(6)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

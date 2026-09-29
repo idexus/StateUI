@@ -16,7 +16,7 @@ struct SectionTitle: ContentView {
     var content: any View {
         Label(text)
             // A HEADING IS WHAT THIS SAYS IT IS, not what it is drawn like:
-            // a reader moving through a long sample page by its headings
+            // a user moving through a long sample page by its headings
             // lands on these, and on nothing that merely looks bold.
             .accessibilityHeadingLevel(.level2)
             .fontSize(13)

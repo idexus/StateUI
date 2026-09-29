@@ -26,7 +26,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
         @State private var taps = 0
         @State private var said = ""
 
-        // What a reader is told is read here, so throwing the switch builds
+        // What a user is told is read here, so throwing the switch builds
         // this closure again.
         VStack {
             DebugInfoLabel()
@@ -50,12 +50,12 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             SwitchRow("Describe the second button", $described)
 
-            // Read as a heading: somewhere a reader jumping through the page
+            // Read as a heading: somewhere a user jumping through the page
             // can land.
             Label("A heading, and drawn the same")
                 .accessibilityHeadingLevel(.level1)
 
-            // Said out loud, now, whatever the reader was on. An ACT, because
+            // Said out loud, now, whatever the user was on. An ACT, because
             // it is something that happens at a moment rather than a value a
             // view can hold.
             Button("Announce the count")
@@ -71,12 +71,13 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             // One word takes the panel AND everything in it out of what a
             // screen reader walks; the rule below is a single view taken out.
-            Border {
+            ZStack {
                 VStack {
                     Label("Skipped")
                     Label("Neither line is read")
                 }
             }
+            .style("Card")
             .automationExcludedWithChildren(true)
 
             ColorBox(Palette.outline)
@@ -109,12 +110,12 @@ struct SemanticsSample: SampleContent, ExampleContent {
                         .aspect(.fit)
                         .width(64)
                         .height(64)
-                        .borderColor(Palette.outline)
-                        .borderWidth(1)
-                        .cornerRadius(12)
+                        .stroke(Palette.outline)
+                        .strokeWidth(1)
+                        .shape(.roundedRectangle(12))
                         .onClicked { taps += 1 }
 
-                    Label("A reader hears")
+                    Label("A user hears")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -131,7 +132,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 VStack {
                     describedButton
 
-                    Label("A reader hears")
+                    Label("A user hears")
                         .fontSize(11)
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
@@ -158,7 +159,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             SectionTitle("A heading is what this says it is")
 
             // Drawn alike and read differently: only the second is somewhere a
-            // reader jumping through the page can land.
+            // user jumping through the page can land.
             VStack {
                 Label("Drawn large")
                     .fontSize(20)
@@ -189,10 +190,10 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .textColor(said.isEmpty ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 
-            SectionTitle("What a reader walks past")
+            SectionTitle("What a user walks past")
 
             HStack {
-                Border {
+                ZStack {
                     VStack {
                         Label("Walked")
                             .fontSize(15)
@@ -205,10 +206,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
+                .style("Card")
 
                 // The whole panel, and everything in it, is not there at all
                 // to a screen reader - one word instead of one per view.
-                Border {
+                ZStack {
                     VStack {
                         Label("Skipped")
                             .fontSize(15)
@@ -221,12 +223,13 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
+                .style("Card")
                 .automationExcludedWithChildren(true)
             }
             .spacing(12)
             .horizontalAlignment(.center)
 
-            // A rule is decoration: a stop that would waste the reader's time.
+            // A rule is decoration: a stop that would waste the user's time.
             ColorBox(Palette.outline)
                 .height(1)
                 .isAccessibilityHidden(true)
@@ -246,9 +249,9 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .aspect(.fit)
             .width(64)
             .height(64)
-            .borderColor(Palette.outline)
-            .borderWidth(1)
-            .cornerRadius(12)
+            .stroke(Palette.outline)
+            .strokeWidth(1)
+            .shape(.roundedRectangle(12))
             .onClicked { taps += 1 }
 
         return described
@@ -262,7 +265,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
                 + "`.accessibilityHeadingLevel` marks a view as a heading, which is how a "
-                + "reader moves through a long page. `.accessibilityIdentifier` is a handle nobody "
+                + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "
                 + "application asks the platform to find.")
                 .fontSize(12)

@@ -1,0 +1,5 @@
+# revision 1.1
+ColorBox: ✅
+ColorBox.color: ✅
+ColorBox.cornerRadius: ✅
+ColorBox.frameChanged: ✅

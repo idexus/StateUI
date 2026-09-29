@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Page
 
@@ -8,40 +8,52 @@ Layer: `adaptive`. Every base host presents it by its platform's conventions, ke
 
 Inherits: [PageElement](tiers/PageElement.md)
 
-Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | Proven by every test of it that ran on that host. |
+| ☑️ | Proven, the host recording what is missing. |
+| – | Never on that host's family, which meets the contract there. |
+| ❌ | A test of it failed. |
+| ◐ | Some of its tests proved it, another could not run or read. |
+| 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
+| · | The driver cannot yet do or read what its test needs. |
+| ⏸ | Its test waits on a member the host does not realize. |
+| ⌛ | Said at another revision of its family than it stands at. |
+| empty | Not realized, or no run - the note says which. |
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/PageContract.swift`.
+See [the dictionary](README.md) for how a mark is given.
+
+| Host | Created | Members (12) | Realization | Notes |
+| --- | :---: | --- | --- | --- |
+| AppKit | ✅ | 7 ✅ | custom `NSView` |  |
+| UIKit | ✅ | 11 ✅ | `UIViewController` |  |
+| Android Views | ✅ | 6 ✅ | custom `ViewGroup` |  |
+| WinUI 3 | ✅ | 9 ✅ | `Page` |  |
+| GTK 4 | ✅ | 3 ✅ | custom `GtkWidget` |  |
+| Web |  |  | `<section>` | no host yet |
+
+Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift`.
 
 ## Page's own members
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `backButtonTitle` | property | `String` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `disappearing` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `hasBackButton` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `hasNavigationBar` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `navigatedFrom` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `navigatedTo` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `navigatingFrom` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `padding` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
-
-Realization:
-
-- **MAUI**: `ContentPage`
-- **AppKit**: custom `NSView`
-- **UIKit**: `UIViewController`
-- **GTK 4**: custom `GtkWidget`
-- **Android Views**: custom `ViewGroup`
-- **WinUI 3**: `Page`
-- **Web**: `<section>`
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `appearing` | event |  | adaptive | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: cannot goBack on Window - Android's driver has no path for it yet; GTK 4: waits on ModalStack |
+| `backButtonTitle` | property | `String` | adaptive | · |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
+| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
+| `hasBackButton` | property | `Bool` | adaptive | · | ✅ | · |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | · |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet; GTK 4: cannot read hasNavigationBar of Page - GTK's driver has no path for it yet |
+| `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `navigatedTo` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `navigatingFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `padding` | property | `Insets` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [PageElement](tiers/PageElement.md)
 
 What a page shows about itself where another container presents it as an item - a title and a picture.
 
-| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `title` | property | `String` | native | ◐ | ✅ | · | ✅ | · |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet; GTK 4: cannot read title of Page - GTK's driver has no path for it yet |

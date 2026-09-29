@@ -232,7 +232,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
-                // read: the switch on this row is the only thing here a build
+                // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
 
@@ -243,29 +243,30 @@ struct PlacedSample: SampleContent, ExampleContent {
                 Button("Next")
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
-
-                SwitchRow(
-                    "Turn by panning",
-                    Binding(
-                        get: { grabbing },
-                        set: { taking in
-                            // ONE NUMBER AT EACH HANDOVER: the two values are
-                            // folded into the scroll alone, so whichever input
-                            // comes next starts from where the ring stands -
-                            // and the scroller, built afresh by the swap, is
-                            // aimed at that card again by the opening aim.
-                            let standing = at.rounded() * 90
-
-                            dragged = 0
-                            $scrolled.journey.snap(to: Point(standing, 0))
-                            aim = standing
-                            opened = taking
-                            grabbing = taking
-                        }))
             }
             .gridRow(1)
+
+            SwitchRow(
+                "Turn by panning",
+                Binding(
+                    get: { grabbing },
+                    set: { taking in
+                        // ONE NUMBER AT EACH HANDOVER: the two values are
+                        // folded into the scroll alone, so whichever input
+                        // comes next starts from where the ring stands -
+                        // and the scroller, built afresh by the swap, is
+                        // aimed at that card again by the opening aim.
+                        let standing = at.rounded() * 90
+
+                        dragged = 0
+                        $scrolled.journey.snap(to: Point(standing, 0))
+                        aim = standing
+                        opened = taking
+                        grabbing = taking
+                    }))
+            .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .auto, .auto)
 
         // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
         // ask for it again. It runs on the display's own frames, reads those
@@ -285,7 +286,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             }
         }
 
-        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
+        // A PLACEMENT WORKED OUT FROM SOMETHING THE USER IS MOVING DOES NOT
         // TRAVEL - a card a fifth of a second behind the hand is a card that
         // lags - which is what a `PlacedRun` written with no law says.
         func place(_ index: Int, _ count: Int) -> Placement {
@@ -342,7 +343,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         // One card's face - a picture and its name, and nothing at all about
         // where the card is or which way it faces. That is the placement's.
         func face(_ card: Card) -> any View {
-            Border {
+            ZStack {
                 Grid {
                     Image(ImageSource(card.art))
                         .aspect(.fill)
@@ -353,11 +354,11 @@ struct PlacedSample: SampleContent, ExampleContent {
                     }
                     .verticalAlignment(.end)
                 }
-                // THE PICTURE IS CUT AT THE CARD'S EDGE: a Border clips what
-                // it holds on Apple and does not on Android, so the clip goes
-                // on the grid, which is a layout and has edges to cut at.
+                // THE PICTURE IS CUT AT THE CARD'S EDGE: the grid holding it,
+                // a layout with edges to cut at, clips it.
                 .clipsContent(true)
             }
+            .style("Card")
             .shape(.roundedRectangle(16))
         }
         """
@@ -444,7 +445,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
-                // read: the switch on this row is the only thing here a build
+                // read: the switch below is the only thing here a build
                 // depends on, and the ring itself turns for no build at all.
                 DebugInfoLabel()
                     .margin(4, 0)
@@ -458,37 +459,38 @@ struct PlacedSample: SampleContent, ExampleContent {
                     .margin(4, 0)
                     .isEnabled(!grabbing)
                     .onClicked { try await move(1) }
-
-                SwitchRow(
-                    "Turn by panning",
-                    Binding(
-                        get: { grabbing },
-                        set: { taking in
-                            // ONE NUMBER AT EACH HANDOVER: the two values are
-                            // folded into the scroll alone, so whichever input
-                            // comes next starts from where the ring stands -
-                            // and the scroller, built afresh by the swap,
-                            // is aimed at that card again by the opening aim.
-                            let standing = at.rounded() * Self.reach
-
-                            dragged = 0
-                            $scrolled.journey.snap(to: Point(standing, 0))
-                            aim = standing
-                            opened = taking
-                            grabbing = taking
-                        }))
-                    .margin(4, 0)
             }
             .spacing(8)
             .horizontalAlignment(.center)
             .gridRow(1)
+
+            SwitchRow(
+                "Turn by panning",
+                Binding(
+                    get: { grabbing },
+                    set: { taking in
+                        // ONE NUMBER AT EACH HANDOVER: the two values are
+                        // folded into the scroll alone, so whichever input
+                        // comes next starts from where the ring stands -
+                        // and the scroller, built afresh by the swap,
+                        // is aimed at that card again by the opening aim.
+                        let standing = at.rounded() * Self.reach
+
+                        dragged = 0
+                        $scrolled.journey.snap(to: Point(standing, 0))
+                        aim = standing
+                        opened = taking
+                        grabbing = taking
+                    }))
+            .horizontalAlignment(.center)
+            .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .auto, .auto)
         .rowSpacing(10)
     }
 
     /// The ring of cards, placed by the arithmetic below - the same views
-    /// whichever way the reader turns them.
+    /// whichever way the user turns them.
     private var cards: any View {
         PlacedLayout(Self.cards, id: \.name) { card in
             face(card)
@@ -501,7 +503,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         .frame($room)
         // THE WHOLE LAYOUT, run on the display's own frames whenever one of
         // the three values it reads has moved. A PLACEMENT WORKED OUT FROM
-        // SOMETHING THE READER IS MOVING DOES NOT TRAVEL - a card a fifth of a
+        // SOMETHING THE USER IS MOVING DOES NOT TRAVEL - a card a fifth of a
         // second behind the hand is a card that lags - which is what a
         // `PlacedRun` written with no law of its own says.
         .engine(following: $scrolled, $dragged, $room) { _ in
@@ -523,7 +525,7 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// the card is or which way it faces. That is the placement's, and keeping
     /// the two apart is what lets one run of cards be turned into any shape.
     private func face(_ card: Card) -> any View {
-        Border {
+        ZStack {
             Grid {
                 Image(ImageSource(card.art))
                     .aspect(.fill)
@@ -550,14 +552,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .background(Color("#B3000000"))
                 .verticalAlignment(.end)
             }
-            // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
-            // difference rather than a nicety: a Border clips what it holds on
-            // Apple and does not on Android, so a picture told to FILL the card
-            // is painted at its own size all over the layout. The clip belongs
-            // on the grid, which is a layout and therefore the thing that has
-            // edges to cut at.
+            // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+            // the card is painted at its own size all over the layout, so the
+            // grid holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
+        .style("Card")
         .strokeWidth(0)
         .shape(.roundedRectangle(16))
     }
@@ -632,7 +632,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
                 + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
                 + "the whole layout: this ring is six lines of arithmetic. `GalleryView`, "
-                + "under Items & cards, is the same layout with the arithmetic for a wheel, "
+                + "under Cards, is the same layout with the arithmetic for a wheel, "
                 + "a fan and a row already written.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

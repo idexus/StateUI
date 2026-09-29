@@ -23,10 +23,11 @@ struct SwipeSample: SampleContent, ExampleContent {
             // What was swiped is read here, so every swipe builds this closure.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Swipe across this box")
                     .padding(32)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .shape(.roundedRectangle(10))
             // A recognizer that listens for nothing recognizes nothing, so
@@ -37,10 +38,11 @@ struct SwipeSample: SampleContent, ExampleContent {
 
             Label(swipe.isEmpty ? "nothing yet" : "Swiped \\(swipe)")
 
-            Border {
+            ZStack {
                 Label("Left or right, and a long way")
                     .padding(32)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
@@ -67,12 +69,13 @@ struct SwipeSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Swipe across this box")
                     .fontSize(15)
                     .padding(32)
                     .horizontalTextAlignment(.center)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))
@@ -84,12 +87,13 @@ struct SwipeSample: SampleContent, ExampleContent {
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
-            Border {
+            ZStack {
                 Label("Left or right, and a long way")
                     .fontSize(15)
                     .padding(32)
                     .horizontalTextAlignment(.center)
             }
+            .style("Card")
             .stroke(Palette.accent)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))

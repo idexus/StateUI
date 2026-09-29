@@ -1,0 +1,50 @@
+# The GTK host's suite: its own tests and every conformance family, each
+# verdict held to the marks under exports/marks/gtk, on a screen with no
+# monitor. CI never writes the marks, so a family whose verdicts changed fails
+# here and its marks are written again on a Linux machine, on purpose.
+#
+# The container is swift.org's own image, as build-linux.yml's.
+
+name: GTK
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  # GTK 4 and libadwaita as Ubuntu 24.04 has them, the versions the host is
+  # written against, drawn on Xvfb with a session bus. A label is measured in
+  # the font GNOME gives this platform's desktop, so a verdict that reads a
+  # frame holds here as it was written. gdk-pixbuf reads an SVG only through
+  # librsvg's loader, which an install without recommends leaves out.
+  gtk:
+    name: GTK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    container: swift:6.4.0-noble
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: GTK 4, libadwaita, a screen and the desktop's font
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends pkg-config libgtk-4-dev libadwaita-1-dev \
+            librsvg2-common xvfb xauth dbus fonts-ubuntu
+          mkdir -p "$HOME/.config/gtk-4.0"
+          printf '[Settings]\ngtk-font-name=Ubuntu Sans 11\n' > "$HOME/.config/gtk-4.0/settings.ini"
+
+      - name: Report the toolchain
+        run: swift --version
+
+      - name: GTK host tests, every verdict held
+        run: dbus-run-session -- xvfb-run -a env GDK_BACKEND=x11 .scripts/GTK/test-gtk.sh

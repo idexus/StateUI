@@ -1,0 +1,12 @@
+# revision 1.1
+Page: ✅
+Page.appearing: ✅
+Page.backButtonTitle: not realized
+Page.background: ✅
+Page.disappearing: ✅
+Page.hasBackButton: cannot read hasBackButton of Page - Android's driver has no path for it yet
+Page.hasNavigationBar: cannot read hasNavigationBar of Page - Android's driver has no path for it yet
+Page.navigatedFrom: ✅
+Page.navigatedTo: ✅
+Page.navigatingFrom: ✅
+Page.padding: ✅

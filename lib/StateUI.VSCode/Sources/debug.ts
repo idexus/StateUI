@@ -5,48 +5,93 @@
 //
 // A `stateui` configuration is never debugged itself: it is resolved into the
 // configuration the chosen host's own debugger takes - lldb-dap for an AppKit
-// head, which is built first, and the MAUI extension's `maui` for a MAUI head,
-// on the device that extension's own picker chose. Resolved in the FIRST hook,
-// so the new type's resolvers still run over it.
+// head, which is built first. Resolved in the FIRST hook, so the new type's
+// resolvers still run over it. On a machine that runs no host, nothing is
+// resolved and the launch says so.
+//
+// An Android head is run by .scripts/Android/run-app.sh, which builds, installs
+// and starts it on the device chosen, in a task whose terminal then follows its
+// log. A Debug launch is then attached to by lldb-dap: the script readies the
+// NDK's lldb-server in the application's sandbox and writes where it listens to
+// .build-android/debugger.json. A Release build cannot be debugged, and
+// resolves to no session.
+//
+// A UIKit head is run by .scripts/UIKit/run-app.sh on the iPhone, iPad or
+// simulator chosen, in a task whose terminal follows what it prints. A Debug
+// launch starts it held until a debugger attaches, and the script writes where
+// to .build-uikit/debugger.json: a simulator's process is one of this Mac's, a
+// device's is reached through the device. lldb-dap attaches, which lets it run.
+// A Release launch has no session.
+//
+// A GTK head is built by .scripts/GTK/run-app.sh --build-only, as a task, and
+// launched by lldb-dap: the debugger is the application's parent, which is what
+// Ubuntu's ptrace scope permits.
+//
+// A WinUI head is built by .scripts/WinUI/run-app.ps1 -BuildOnly, as a task -
+// which stops a running copy first, its executable written again - and
+// launched by lldb-dap, which reads the DWARF the head carries.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
-// naming its `application` runs that one instead. A MAUI head is debugged the
-// way StateUI: Select Debugger chose - C#, Swift, or both on Mac Catalyst.
+// naming its `application` runs that one instead.
 
-import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, appKitProgram } from "./applications";
-import { environment, Host, MauiDebugger } from "./hosts";
+import { Application, appKitProgram, gtkProgram, winUIProgram } from "./applications";
+import { androidScript } from "./devices";
+import { environment, Host } from "./hosts";
+import { uiKitScript } from "./uiKitDevices";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
 
 /** The choices a launch runs: the host, and the application for it. */
 export interface Choices {
-    host(): Host;
+    /** The host chosen - nothing on a machine that runs none. */
+    host(): Host | undefined;
 
     /**
      * The application to run on `host` - the one named, else the one chosen,
-     * else asked for - or nothing, where there is none or the reader declined.
+     * else asked for - or nothing, where there is none or the user declined.
      */
     application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
-
-    /** How a MAUI head is debugged. */
-    debugger(): MauiDebugger;
 
     /** Runs a build as a task and answers its exit code. */
     run(task: vscode.Task): Promise<number | undefined>;
 
-    /**
-     * Attaches lldb-dap to `processName` once the C# session named
-     * `sessionName` has started it - both debuggers against one process.
-     */
-    attachSwiftWhenStarted(sessionName: string, processName: string): void;
+    /** Starts a task that runs until it is stopped - a head followed by its log. */
+    start(task: vscode.Task): Promise<void>;
 
-    /** The machine the launch runs on; the tests name one. */
-    readonly platform?: NodeJS.Platform;
+    /**
+     * Waits, while `task` runs, for it to write `file`; whether it did before
+     * it ended.
+     */
+    ready(file: string, task: vscode.Task): Promise<boolean>;
+
+    /**
+     * The serial of the Android device a launch runs on - the one chosen while
+     * it is attached, else asked for - or nothing, where none is picked.
+     */
+    device(folder: vscode.WorkspaceFolder): Promise<string | undefined>;
+
+    /**
+     * The iPhone, iPad or simulator a UIKit launch runs on - the one chosen
+     * while it is listed, else asked for - or nothing, where none is picked.
+     */
+    uiKitDevice(): Promise<string | undefined>;
+}
+
+/** What a machine that runs no host is told, wherever a host is asked for. */
+export const noHost = "no StateUI host runs on this machine yet - AppKit, UIKit and Android are built and run on macOS, WinUI on Windows, GTK on Linux.";
+
+/** A script of a StateUI checkout's .scripts/WinUI, under `root`. */
+export function winUIScript(root: string, name: string): string {
+    return path.join(root, ".scripts", "WinUI", name);
+}
+
+/** A script of a StateUI checkout's .scripts/GTK, under `root`. */
+export function gtkScript(root: string, name: string): string {
+    return path.join(root, ".scripts", "GTK", name);
 }
 
 /** The two configurations every workspace offers. */
@@ -73,6 +118,11 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         const name = launch.name || (configuration === "release" ? "StateUI: Release" : "StateUI: Debug");
         const host = this.choices.host();
 
+        if (!host) {
+            void vscode.window.showErrorMessage(`StateUI: ${noHost}`);
+            return undefined;
+        }
+
         const root = folder ?? vscode.workspace.workspaceFolders?.[0];
         if (!root) {
             void vscode.window.showErrorMessage("StateUI: open the folder of a StateUI application first.");
@@ -85,8 +135,20 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        if (host === "maui") {
-            return this.maui(root, application, configuration, name);
+        if (host === "android") {
+            return this.android(root, application, configuration, name);
+        }
+
+        if (host === "uikit") {
+            return this.uiKit(root, application, configuration, name);
+        }
+
+        if (host === "winui") {
+            return this.winUI(root, application, configuration, name);
+        }
+
+        if (host === "gtk") {
+            return this.gtk(root, application, configuration, name);
         }
 
         if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
@@ -105,123 +167,247 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         };
     }
 
-    /** A MAUI head, debugged the way StateUI: Select Debugger chose. */
-    private async maui(
+    /**
+     * An Android head, started by run-app.sh in a task that follows its log;
+     * a Debug build then attached to by lldb-dap, through the lldb-server the
+     * script readied - a Release build has no session.
+     */
+    private async android(
         root: vscode.WorkspaceFolder,
         application: Application,
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const platform = this.choices.platform ?? process.platform;
-        const project = asLoaded(application.mauiProject!, platform);
-        const build = configuration === "release" ? "Release" : "Debug";
-        const csharp: vscode.DebugConfiguration = {
-            type: "maui", request: "launch", name, project,
-            ...(configuration === "release" ? { configuration: "Release" } : {}),
-            // ON WINDOWS A RELEASE LAUNCH NAMES ITS EXECUTABLE: the MAUI
-            // extension works the executable out without the configuration and
-            // looks in bin/Debug. No architecture in the path, because the
-            // project keeps the runtime identifier out of its output path.
-            ...(configuration === "release" && platform === "win32"
-                ? { program: path.join(path.dirname(project), "bin", "Release", "net10.0-windows10.0.19041.0", `${application.name}.exe`) }
-                : {}),
-        };
-
-        // Linux's head is a plain net10.0 executable, beside its runtime and
-        // artwork, which no MAUI extension launches.
-        const linuxProgram = path.join(path.dirname(project), "bin", build, "net10.0", application.name);
-        const linuxBuild = (): Promise<boolean> => this.succeeds(root, application, `Build ${application.name} (MAUI, Linux, ${configuration})`,
-            new vscode.ShellExecution("dotnet", ["build", project, "-c", build, "-nodeReuse:false"], { cwd: root.uri.fsPath }));
-
-        const attach = (processName: string): vscode.DebugConfiguration => ({
-            type: "lldb-dap", request: "attach", name, stopOnEntry: false,
-            attachCommands: [`process attach --name ${processName}`],
-        });
-
-        switch (this.choices.debugger()) {
-        case "csharp":
-            if (platform !== "linux") {
-                return csharp;
-            }
-            return (await linuxBuild())
-                ? { type: "coreclr", request: "launch", name, program: linuxProgram, cwd: path.dirname(linuxProgram), console: "internalConsole", stopAtEntry: false }
-                : undefined;
-
-        case "swift-ios":
-        case "swift-maccatalyst": {
-            // Started WITHOUT a debugger, then attached to: the simulator's
-            // watchdog kills an app a debugger holds stopped at launch.
-            const target = this.choices.debugger() === "swift-ios" ? "ios" : "maccatalyst";
-            const script = await this.buildScript(project, `net10.0-${target}`, "run-app.sh");
-            if (!script) {
-                return undefined;
-            }
-            const started = await this.succeeds(root, application, `Run ${application.name} (${target}, ${configuration})`,
-                new vscode.ShellExecution("bash", [script, target, build, project], { cwd: root.uri.fsPath }));
-            return started ? attach(application.name) : undefined;
+        const script = androidScript(root.uri.fsPath, "run-app.sh");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: an Android head runs through a StateUI checkout's .scripts/Android/run-app.sh, which ${root.name} does not have.`);
+            return undefined;
         }
 
-        case "csharp-swift-maccatalyst":
-            this.choices.attachSwiftWhenStarted(name, application.name);
-            return { ...csharp, targetFramework: "net10.0-maccatalyst" };
-
-        case "swift":
-            if (platform === "linux") {
-                return (await linuxBuild())
-                    ? { type: "lldb-dap", request: "launch", name, program: linuxProgram, cwd: path.dirname(linuxProgram), stopOnEntry: false }
-                    : undefined;
-            }
-            {
-                const script = await this.buildScript(project, "net10.0-windows10.0.19041.0", "run-app.ps1");
-                if (!script) {
-                    return undefined;
-                }
-                const started = await this.succeeds(root, application, `Run ${application.name} (Windows, ${configuration})`,
-                    new vscode.ShellExecution("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
-                        "-Configuration", build, "-Project", project], { cwd: root.uri.fsPath }));
-                // LLDB on Windows matches a process name WITH its extension.
-                return started ? attach(`${application.name}.exe`) : undefined;
-            }
+        const serial = await this.choices.device(root);
+        if (!serial) {
+            return undefined;
         }
+
+        const debug = configuration === "debug";
+        const facts = path.join(application.directory, ".build-android", "debugger.json");
+        fs.rmSync(facts, { force: true });
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device: serial }, root,
+            `Run ${application.name} (Android, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash",
+                [script, application.directory, configuration, serial, ...(debug ? ["--debugger"] : [])],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await this.choices.start(task);
+        if (!debug) {
+            return undefined;
+        }
+
+        if (!(await this.choices.ready(facts, task))) {
+            void vscode.window.showErrorMessage(
+                `StateUI: ${application.name} did not start for the debugger on ${serial} - the terminal says why.`);
+            return undefined;
+        }
+        return androidAttach(name, serial, JSON.parse(fs.readFileSync(facts, "utf8")));
     }
 
     /**
-     * A script of the StateUI build `project` imports - the one its own build
-     * runs with, whether that is a checkout's or the StateUI.Maui package's -
-     * or nothing, said, where the project imports none.
+     * A UIKit head, started by run-app.sh on the device chosen in a task that
+     * follows what it prints; a Debug build started held and attached to by
+     * lldb-dap - a Release build has no session.
      */
-    private async buildScript(project: string, targetFramework: string, script: string): Promise<string | undefined> {
-        const directory = await stateUIBuildDirectory(project, targetFramework);
-        const found = directory && path.join(directory, script);
-        if (found && fs.existsSync(found)) {
-            return found;
+    private async uiKit(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const script = uiKitScript(root.uri.fsPath, "run-app.sh");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a UIKit head runs through a StateUI checkout's .scripts/UIKit/run-app.sh, which ${root.name} does not have.`);
+            return undefined;
         }
-        void vscode.window.showErrorMessage(
-            `StateUI: ${path.basename(project)} imports no StateUI build with ${script} - it references neither a StateUI checkout's .scripts/Maui/StateUI.targets nor the StateUI.Maui package.`);
-        return undefined;
+
+        const device = await this.choices.uiKitDevice();
+        if (!device) {
+            return undefined;
+        }
+
+        const debug = configuration === "debug";
+        const facts = path.join(application.directory, ".build-uikit", "debugger.json");
+        fs.rmSync(facts, { force: true });
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device }, root,
+            `Run ${application.name} (UIKit, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash",
+                [script, application.directory, configuration, device, ...(debug ? ["--debugger"] : [])],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await this.choices.start(task);
+        if (!debug) {
+            return undefined;
+        }
+
+        if (!(await this.choices.ready(facts, task))) {
+            void vscode.window.showErrorMessage(
+                `StateUI: ${application.name} did not start for the debugger on ${device} - the terminal says why.`);
+            return undefined;
+        }
+        return uiKitAttach(name, JSON.parse(fs.readFileSync(facts, "utf8")));
     }
 
-    /** Runs one step before a launch as a task, and says so where it failed. */
-    private async succeeds(root: vscode.WorkspaceFolder, application: Application, label: string, execution: vscode.ShellExecution): Promise<boolean> {
-        const task = new vscode.Task({ type: "stateui", application: application.name }, root, label, "StateUI", execution, []);
-        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-
-        if ((await this.choices.run(task)) === 0) {
-            return true;
+    /**
+     * A WinUI head, built by run-app.ps1 -BuildOnly in a task - which stops a running copy first, its executable
+     * written again - and launched by lldb-dap.
+     */
+    private async winUI(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const script = winUIScript(root.uri.fsPath, "run-app.ps1");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a WinUI head is built by a StateUI checkout's .scripts/WinUI/run-app.ps1, which ${root.name} does not have.`);
+            return undefined;
         }
-        void vscode.window.showErrorMessage(`StateUI: ${label} failed - its output is in the terminal.`);
-        return false;
+
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device: "windows" }, root,
+            `Build ${application.name} (WinUI, ${configuration})`, "StateUI",
+            new vscode.ProcessExecution("powershell",
+                ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
+                    "-App", application.directory, "-Configuration", configuration, "-BuildOnly"],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        if ((await this.choices.run(task)) !== 0) {
+            void vscode.window.showErrorMessage(
+                `StateUI: the WinUI build of ${application.name} failed - its output is in the terminal.`);
+            return undefined;
+        }
+
+        return {
+            type: "lldb-dap",
+            request: "launch",
+            name,
+            program: winUIProgram(application, configuration),
+            cwd: root.uri.fsPath,
+            stopOnEntry: false,
+        };
+    }
+    /**
+     * A GTK head, built by run-app.sh --build-only in a task - which stops a running copy first, a GTK application
+     * being one instance - and launched by lldb-dap.
+     */
+    private async gtk(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const script = gtkScript(root.uri.fsPath, "run-app.sh");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a GTK head is built by a StateUI checkout's .scripts/GTK/run-app.sh, which ${root.name} does not have.`);
+            return undefined;
+        }
+
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration }, root,
+            `Build ${application.name} (GTK, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash", [script, application.directory, configuration, "--build-only"],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        if ((await this.choices.run(task)) !== 0) {
+            void vscode.window.showErrorMessage(
+                `StateUI: the GTK build of ${application.name} failed - its output is in the terminal.`);
+            return undefined;
+        }
+
+        return {
+            type: "lldb-dap",
+            request: "launch",
+            name,
+            program: gtkProgram(application, configuration),
+            cwd: root.uri.fsPath,
+            stopOnEntry: false,
+        };
     }
 }
 
+/** Where run-app.sh --debugger left the application, and its debugger's server. */
+export interface AndroidDebugger {
+    /** The package, the process started, the server's socket, and the libraries unstripped. */
+    package: string;
+    process: number;
+    socket: string;
+    symbols: string;
+}
+
 /**
- * `project` spelled as C# Dev Kit loads it. The MAUI extension finds a launch's
- * project by comparing that text with the path of each project loaded, and on
- * Windows those name the drive in upper case, where a workspace folder's
- * `fsPath` names it in lower case.
+ * lldb-dap attached to an Android head's process through the lldb-server that
+ * runs in its sandbox: the device named in the address, whichever others are
+ * attached, and the libraries read from the build, which kept them unstripped.
+ * The runtime raises SIGSEGV and SIGBUS on purpose - its null and suspend
+ * checks - so they pass to it without stopping the session. LLDB does not
+ * follow the code the runtime's JIT compiles: announced to it method by
+ * method, each stopping the whole application, over USB it froze the UI
+ * thread for seconds.
  */
-function asLoaded(project: string, platform: NodeJS.Platform): string {
-    return platform === "win32" ? project.replace(/^[a-z]:/, (drive) => drive.toUpperCase()) : project;
+export function androidAttach(name: string, serial: string, server: AndroidDebugger): vscode.DebugConfiguration {
+    return {
+        type: "lldb-dap",
+        request: "attach",
+        name,
+        stopOnEntry: false,
+        initCommands: [
+            "settings set plugin.jit-loader.gdb.enable off",
+            "platform select remote-android",
+            `platform connect unix-abstract-connect://${serial}/${server.socket}`,
+            `settings append target.exec-search-paths ${server.symbols}`,
+        ],
+        attachCommands: [
+            `process attach --pid ${server.process}`,
+            "process handle SIGSEGV --pass true --stop false --notify false",
+            "process handle SIGBUS --pass true --stop false --notify false",
+        ],
+    };
+}
+
+/**
+ * Where run-app.sh --debugger left a UIKit head: its process, held until a
+ * debugger attaches, and on a device the device and the bundle built.
+ */
+export interface UIKitDebugger {
+    process: number;
+    device?: string;
+    symbols?: string;
+}
+
+/**
+ * lldb-dap attached to a UIKit head's process, which lets it run: on a
+ * simulator a process of this Mac, found by its number; on a device through
+ * the device, its symbols read from the bundle built rather than copied back.
+ */
+export function uiKitAttach(name: string, facts: UIKitDebugger): vscode.DebugConfiguration {
+    if (!facts.device) {
+        return { type: "lldb-dap", request: "attach", name, pid: facts.process, stopOnEntry: false };
+    }
+    return {
+        type: "lldb-dap",
+        request: "attach",
+        name,
+        stopOnEntry: false,
+        initCommands: facts.symbols
+            ? [`settings append target.exec-search-paths ${facts.symbols}`,
+                `settings append target.exec-search-paths ${facts.symbols}/Frameworks`]
+            : [],
+        attachCommands: [`device select ${facts.device}`, `device process attach --pid ${facts.process}`],
+    };
 }
 
 /**
@@ -253,27 +439,4 @@ export async function buildAppKitHead(
     task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
 
     return (await run(task)) === 0;
-}
-
-/**
- * Where the StateUI build a MAUI project imports lives, for `targetFramework`:
- * `.scripts/Maui/` of the checkout it is built against, or
- * `buildTransitive/Maui/` of the StateUI.Maui package it references. Asked of
- * MSBuild, so it is the directory the project's own build runs from.
- *
- * Restored first and without the framework - a restore handed one framework
- * restores that one alone - since a restore is what brings a package's build
- * into the project. Then asked WITH it: NuGet imports a package's build per
- * target framework, so a project evaluated for none of them has none.
- */
-export async function stateUIBuildDirectory(project: string, targetFramework: string): Promise<string | undefined> {
-    // No node reuse: a worker left behind would hold these calls' output open.
-    const msbuild = (args: string[]): Promise<{ failed: boolean; output: string }> => new Promise((resolve) =>
-        execFile("dotnet", ["msbuild", project, ...args, "-nologo", "-nodeReuse:false"], { cwd: path.dirname(project) },
-            (error, stdout) => resolve({ failed: error !== null, output: stdout })));
-
-    await msbuild(["-t:Restore"]);
-    const asked = await msbuild(["-getProperty:StateUIBuildDir", `-p:TargetFramework=${targetFramework}`]);
-    const directory = asked.output.trim().split(/\r?\n/).pop()?.trim();
-    return !asked.failed && directory ? directory : undefined;
 }

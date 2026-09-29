@@ -108,8 +108,8 @@ struct TimePickerSample: SampleContent, ExampleContent {
             Label("A `ClockTime` rather than a Foundation value, for the reason a "
                 + "`CalendarDate` is not a `Date`: formatting one needs ICU, and ICU is "
                 + "the dependency this library cannot take. It is three numbers - hour, "
-                + "minute, second - and whether the reader sees 21:05 or 9:05 PM is the "
-                + "host's to decide, from the reader's locale and the `.format`.")
+                + "minute, second - and whether the user sees 21:05 or 9:05 PM is the "
+                + "host's to decide, from the user's locale and the `.format`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -121,7 +121,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The count answers the READER: the three buttons write `alarm` from the "
+            Label("The count answers the USER: the three buttons write `alarm` from the "
                 + "tree, both fields follow, and no event fires.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

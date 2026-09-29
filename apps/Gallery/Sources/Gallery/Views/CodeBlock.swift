@@ -26,16 +26,17 @@ struct CodeBlock: ContentView {
     }
 
     var content: any View {
-        Border {
-            ScrollView {
-                snippet
-            }
-            .orientation(.horizontal)
-            .verticalScrollBarVisibility(.never)
+        ScrollView {
+            snippet
         }
+        .orientation(.horizontal)
+        .verticalScrollBarVisibility(.never)
+        .background(Palette.raised)
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(8))
+        // Code reads left to right in every language, from its first column.
+        .layoutDirection(.leftToRight)
     }
 
     /// How large the code is drawn, in points.

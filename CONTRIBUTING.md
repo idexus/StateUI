@@ -16,7 +16,7 @@ A control, property, or event decision reaches every active layer together:
 
 - Swift API and vocabulary;
 - `HostContract` ownership;
-- every applicable host, the MAUI host included;
+- every applicable host;
 - focused core and host tests;
 - the Gallery, on every host the change reaches;
 - the handbook (`README.md`, `docs/`, and public `///` documentation).
@@ -31,11 +31,19 @@ requirement.
 
 ## Keep the core platform-neutral
 
-Code under `lib/StateUI/Sources` does not import Foundation or a platform UI
-framework. AppKit belongs under `lib/StateUI.AppKit` and the .NET MAUI host
-under `lib/StateUI.Maui`, with its build in `.scripts/Maui`; each later host
-receives a sibling package of its own. Swift written for the MAUI host alone
-stands under `#if MAUI`, the condition every MAUI build defines.
+Code under `lib/StateUI/Sources` and `lib/StateUI.Host/Sources` does not
+import Foundation or a platform UI framework. Each host is a sibling package of
+its own - `lib/StateUI.AppKit`, `lib/StateUI.Android`, `lib/StateUI.WinUI`,
+`lib/StateUI.GTK` - standing on the host layer, with its build in
+`.scripts/<Platform>`. Swift written for one host alone stands under that
+host's condition - `#if APPKIT`, `#if ANDROID`, `#if WINUI`, `#if GTK` - which
+its builds define.
+
+The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
+`DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
+UI thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory
+allocated in Swift is freed in Swift - never `strdup` and `free` - because
+several C runtimes can share a Windows process.
 
 Swift owns identity, diffing, state, journeys, and motion descriptions. Hosts
 own native objects, platform callbacks, and display-frame property motion. Keep
@@ -50,40 +58,39 @@ narrate migration history or explain the API by comparison with another
 framework.
 
 Every public Swift declaration needs `///` documentation. Gallery pages use
-minimal on-screen prose: show behavior directly and tell the reader only what
+minimal on-screen prose: show behavior directly and tell the user only what
 they need to try.
-
-Every public C# member of the MAUI host carries XML documentation: CS1591 and
-CS1573 are errors in its projects.
 
 ## Test
 
 Run the suite owned by the area while iterating, then every suite before
 handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
-once with AppKit and once with .NET MAUI chosen. From a terminal,
-`.scripts/test-native.sh` runs every Swift suite under both conditions:
+once with AppKit and once with Android chosen. From a terminal,
+`.scripts/test-native.sh` runs every Swift suite on this Mac, and
+`.scripts/Android/test-android.sh <serial>` the Android host's on a device:
 
 ```bash
 .scripts/test-native.sh
-dotnet test lib/StateUI.Maui/Tests
+.scripts/Android/test-android.sh emulator-5554
 ```
 
-A plain `swift test` compiles neither `#if APPKIT` nor `#if MAUI` code, so it
-does not test either host's half on its own.
+A plain `swift test` compiles no code under a host's condition, so it does not
+test any host's half on its own.
 
-Run the Gallery with **StateUI: Debug** on each host the change reaches:
-AppKit, and .NET MAUI on the affected platform. From a terminal:
+Run the Gallery with **StateUI: Debug** on each host the change reaches. From a
+terminal:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
+.scripts/Android/run-app.sh apps/Gallery debug emulator-5554
 ```
 
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
-A pull request to `main` or `dev` runs the `Tests` workflow and the four
-platform builds: `iOS / Mac Catalyst`, `Android`, `Windows`, and `Linux`.
+Open every pull request against `dev`, never `main`: `main` takes only the
+releases merged from `dev`. A pull request runs the `Tests` workflow on macOS
+and the suites on `Windows` and `Linux`.
 
 ## Keep changes reviewable
 

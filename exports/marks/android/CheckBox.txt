@@ -1,0 +1,5 @@
+# revision 1.1
+CheckBox: ✅
+CheckBox.frameChanged: ✅
+CheckBox.isOn: ✅
+CheckBox.toggled: ✅

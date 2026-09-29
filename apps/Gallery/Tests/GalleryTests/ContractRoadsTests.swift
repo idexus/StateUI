@@ -7,9 +7,10 @@ import XCTest
 /// An element has ONE public road: its contract.
 ///
 /// Every road the element contract replaced - a token and a list of values
-/// where a member and its declared type now stand - is written here the way an
-/// application would have written it, and must NOT compile against the
-/// library's public module; the road through the contract, beside it, must.
+/// where a member and its declared type now stand - and every element
+/// withdrawn by decision is written here the way an application would have
+/// written it, and must NOT compile against the library's public module; the
+/// road through the contract, beside it, must.
 /// The pair is what makes the refusal mean something: the two listings differ
 /// in that one spelling, so a failure is the spelling's and never a typo's.
 ///
@@ -130,11 +131,92 @@ final class ContractRoadsTests: XCTestCase {
                     static let members: [any ContractMember] = []
                 }
                 """),
+        Road(
+            name: "the withdrawn SwipeView",
+            removed: #"_ = SwipeView { Label("Row") }"#,
+            contract: #"_ = Label("Row").onSwiped { _ in }"#),
+        Road(
+            name: "the withdrawn SwipeAction",
+            removed: #"_ = SwipeAction("Delete")"#,
+            contract: #"_ = MenuItem("Delete")"#),
+        Road(
+            name: "the withdrawn named store",
+            removed: #"_ = PersistentStorage("Notes.Json")"#,
+            contract: #"_ = PersistentKey("notes.draft", of: String.self)"#),
+        Road(
+            name: "the withdrawn RefreshView",
+            removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
+            contract: #"_ = ScrollView { Label("Rows") }"#),
+        Road(
+            name: "a button's withdrawn borderColor",
+            removed: ##"_ = Button("Save").borderColor(Color("#888888"))"##,
+            contract: ##"_ = Button("Save").stroke(Color("#888888"))"##),
+        Road(
+            name: "a button's withdrawn borderWidth",
+            removed: #"_ = Button("Save").borderWidth(1)"#,
+            contract: #"_ = Button("Save").strokeWidth(1)"#),
+        Road(
+            name: "a button's withdrawn cornerRadius",
+            removed: #"_ = Button("Save").cornerRadius(8)"#,
+            contract: #"_ = Button("Save").shape(.roundedRectangle(8))"#),
+        Road(
+            name: "the withdrawn Border",
+            removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
+            contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
+        Road(
+            name: "the withdrawn AbsoluteLayout",
+            removed: #"_ = AbsoluteLayout { Label("Corner") }"#,
+            contract: #"_ = ZStack { Label("Corner") }"#),
+        Road(
+            name: "the withdrawn absolute bounds",
+            removed: #"_ = Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))"#,
+            contract: #"_ = Label("Corner").area(.absolute(0, 0, 120, 40))"#),
+        Road(
+            name: "the withdrawn proportions",
+            removed: #"_ = Label("Half").absoluteLayoutProportions(.all)"#,
+            contract: #"_ = Label("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
+        Road(
+            name: "a visual state by a name of the author's own",
+            removed: #"_ = Button("Save").visualState(VisualState("Hovered")) { $0.opacity(0.5) }"#,
+            contract: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the window's one overlay",
+            removed: "WindowSession().overlay = nil",
+            contract: #"WindowSession().overlays[OverlayKey("notice")] = nil"#),
+        Road(
+            name: "the withdrawn resting state",
+            removed: "_ = RadioButton.restingVisualState",
+            contract: "_ = VisualState<RadioButton>.unchecked"),
+        Road(
+            name: "a visual state's withdrawn group",
+            removed: #"_ = Switch().visualState(.on, group: "Value") { $0.opacity(0.5) }"#,
+            contract: "_ = Switch().visualState(.on) { $0.opacity(0.5) }"),
+        Road(
+            name: "the withdrawn unfocused state",
+            removed: #"_ = Button("Save").visualState(.unfocused) { $0.opacity(0.5) }"#,
+            contract: #"_ = Button("Save").visualState(.focused) { $0.opacity(1) }"#),
+        Road(
+            name: "the withdrawn selected state",
+            removed: #"_ = Label("Row").visualState(.selected) { $0.opacity(0.5) }"#,
+            contract: #"_ = Label("Row").visualState(.pointerOver) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the host's withdrawn visual state report",
+            removed: #"_ = Button("Save").onEvent(VisualElementContract.visualStateChanged) { _ in }"#,
+            contract: #"_ = Button("Save").onVisualStateChanged { _ in }"#),
+        Road(
+            name: "the withdrawn VisualState node",
+            removed: "_ = Node(contract: VisualStateContract.self)",
+            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
+        Road(
+            name: "the withdrawn Setters node",
+            removed: "_ = Node(contract: SettersContract.self)",
+            contract: #"_ = Button("Save").visualState(.disabled) { $0.opacity(0.5) }"#),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {
         guard let module = DocumentationExamplesTests.builtModuleDirectory() else {
-            throw XCTSkip("no StateUI.swiftmodule beside the test bundle - build the package first")
+            // Never a skip: a check that did not run reads as one that passed.
+            return XCTFail("no StateUI.swiftmodule beside the test bundle - no road was checked")
         }
         let sdk = try DocumentationExamplesTests.sdkPath()
         let scratch = FileManager.default.temporaryDirectory

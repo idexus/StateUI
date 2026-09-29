@@ -1,12 +1,12 @@
-<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Layout
 
 What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 
-Wears: [View](View.md) · [PaddingElement](PaddingElement.md)
+Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md)
 
-Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md)
+Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Sources/Contracts/Tiers/LayoutContract.swift`.
 

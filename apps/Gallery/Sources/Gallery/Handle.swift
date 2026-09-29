@@ -2,7 +2,7 @@
 
 import StateUI
 
-/// The gallery's rule for `.accessibilityIdentifier`: a ROLE and the caption the reader
+/// The gallery's rule for `.accessibilityIdentifier`: a ROLE and the caption the user
 /// can see, joined with a dot - `handle("switch", "Runs sideways")` is
 /// `switch.runs.sideways`.
 ///
@@ -13,7 +13,7 @@ import StateUI
 /// that points at nothing.
 ///
 /// A caption is what makes it unique, so two of one role on one page need two
-/// captions - which they need anyway, a reader being no better at telling
+/// captions - which they need anyway, a user being no better at telling
 /// them apart than a driver.
 ///
 /// - Parameters:

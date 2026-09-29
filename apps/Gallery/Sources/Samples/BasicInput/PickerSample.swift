@@ -1,6 +1,6 @@
 import StateUI
 
-/// One choice out of a list, opened by the reader or by a button.
+/// One choice out of a list, opened by the user or by a button.
 struct PickerSample: SampleContent, ExampleContent {
     @State private var size = 1
     @State private var changes = 0
@@ -31,7 +31,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .selectedIndex($size)
                 .title("Size")
                 // Settable, so a button elsewhere can open the list. The two
-                // events answer the reader and the platform - never this
+                // events answer the user and the platform - never this
                 // side's own write.
                 .isOpen(showing)
                 .onOpened { opened += 1; showing = true }
@@ -100,7 +100,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE COUNT ONLY MOVES FOR A READER. Opening the list with the button "
+            Label("THE COUNT ONLY MOVES FOR A USER. Opening the list with the button "
                 + "leaves `opened` where it was: that open is this side's own write, and "
                 + "a write made here never comes back as an event. Tap the field itself "
                 + "and the count goes up.")

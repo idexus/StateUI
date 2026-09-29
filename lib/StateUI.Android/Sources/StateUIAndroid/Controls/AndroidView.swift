@@ -1,0 +1,440 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+import Android
+import CStateUIAndroid
+
+/// An `android.view.View` Swift holds, and the number Java calls back with.
+/// Design: docs/design/platforms/android/jni.md#a-view-and-its-number
+@MainActor
+class AndroidView {
+    /// The view, held globally until this is released.
+    let object: JavaObject
+
+    /// The number the view's Java listeners and layout call back with.
+    let number: Int64
+
+    /// Pixels per point, the display's density.
+    var density: Double { AndroidRenderer.density }
+
+    private static var nextNumber: Int64 = 0
+    private static var live: [Int64: Weak] = [:]
+
+    /// The background the view was made with, often none, read before the first change.
+    private var madeBackground: JavaObject??
+
+    /// How the view's own properties move, turn and scale it.
+    private var own = HostDrawingTransform.identity
+
+    /// How a placing layout draws the view over the place it gave; nil for none.
+    private var placed: HostDrawingTransform?
+
+    /// How opaque the view's own property and a placing layout draw it.
+    private var ownOpacity = 1.0
+    private var placedOpacity = 1.0
+
+    /// The point the view turns and scales about, as fractions of its size.
+    private var pivot = (x: 0.5, y: 0.5)
+
+    /// Takes the next number and holds the view `make` makes, handed that number.
+    init(_ make: (_ number: Int64) -> JavaObject) {
+        Self.nextNumber += 1
+        number = Self.nextNumber
+        object = make(number)
+        Self.live[number] = Weak(self)
+    }
+
+    isolated deinit {
+        Self.live[number] = nil
+    }
+
+    /// The live view a Java callback names; nil once it has left.
+    static func find(_ number: Int64) -> AndroidView? {
+        live[number]?.view
+    }
+
+    /// How many views Swift holds - what a test counts to see every one let go.
+    static var liveCount: Int { live.count }
+
+    var reference: jobject { object.reference }
+
+    /// Hands each of `setters` one listener forwarding what the user does to this view, by its number.
+    /// Design: docs/design/platforms/android/jni.md#global-references
+    func listen(_ setters: jmethodID...) {
+        listen(on: reference, setters)
+    }
+
+    /// Hands each of `setters` of `object` - a view this one holds - one listener forwarding to this view.
+    func listen(on object: jobject, _ setters: jmethodID...) {
+        listen(on: object, setters)
+    }
+
+    private func listen(on object: jobject, _ setters: [jmethodID]) {
+        for setter in setters { Java.call(object, setter, .object(listener.reference)) }
+    }
+
+    /// Lets the view's listener see its touches and its hovering pointer, for the gestures its element listens
+    /// for. A view made of parts lets it see what its parts get, before they get it.
+    /// Design: docs/design/platforms/android/controls.md#gestures
+    func watchTouches() {
+        listen(JavaAPI.setOnTouchListener, JavaAPI.setOnHoverListener)
+    }
+
+    /// The one listener forwarding what the user does to this view, whichever of its interfaces a setter takes.
+    private(set) lazy var listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
+
+    /// What of the user's input the view's element listens for, as last told to its listener.
+    var listening = Listening.nothing
+
+    /// What hears the user's input the view heard.
+    var onHeard: ((HeardInput) -> Void)?
+
+    /// The press the view heard, on its way to a drag by the host layer's rule.
+    var press = DragRecognition(distance: .radius(0))
+
+    /// What the view does when it takes the keyboard's focus or loses it; nil where nothing listens.
+    private(set) var onFocusChanged: ((Bool) -> Void)?
+    private var listensForFocus = false
+
+    /// Makes the view say when it takes the keyboard's focus and loses it, or say nothing for nil.
+    func setFocusChanged(_ action: ((Bool) -> Void)?) {
+        if action != nil, !listensForFocus {
+            listensForFocus = true
+            listen(JavaAPI.setOnFocusChangeListener)
+        }
+        onFocusChanged = action
+    }
+
+    // MARK: - What every view takes
+
+    func setShown(_ shown: Bool) {
+        Java.call(reference, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
+    }
+
+    /// Whether the view is shown rather than gone.
+    var isShown: Bool {
+        Java.callInt(reference, JavaAPI.getVisibility) == ViewConstants.visible
+    }
+
+    /// How opaque the view's own property draws it, with a placing layout's opacity over it; written only where
+    /// it differs from what was.
+    func setOpacity(_ opacity: Double) {
+        ownOpacity = opacity
+        let alpha = Float(ownOpacity * placedOpacity)
+        guard alpha != written.alpha else { return }
+
+        written.alpha = alpha
+        Java.call(reference, JavaAPI.setAlpha, .float(alpha))
+    }
+
+    /// How opaque the view's own property draws it.
+    var opacity: Double { ownOpacity }
+
+    /// Moves, turns and scales the view where its layout put it, in points and degrees.
+    /// Design: docs/design/platforms/android/motion.md#moved-turned-and-scaled
+    func setTransform(_ transform: HostDrawingTransform) {
+        own = transform
+        applyTransform()
+    }
+
+    /// How a placing layout draws the view over the place it gave, and how opaque; nil and 1 for as the view says.
+    /// Design: docs/design/platforms/android/drawing.md#a-placed-child
+    func setPlacedDrawing(_ transform: HostDrawingTransform?, opacity: Double) {
+        guard transform != placed || opacity != placedOpacity else { return }
+
+        placed = transform
+        placedOpacity = opacity
+        applyTransform()
+        setOpacity(ownOpacity)
+    }
+
+    /// Writes the view's own transform, with a placing layout's over it (`HostDrawingTransform.under`).
+    private func applyTransform() {
+        let drawn = own.under(placed)
+        pivot = (drawn.pivotX, drawn.pivotY)
+
+        // A pivot off the centre is in pixels of the size the view was last placed at; at the centre, Android's own.
+        let size = laidOut.map { (Double($0.right - $0.left), Double($0.bottom - $0.top)) } ?? (0, 0)
+        let centred = pivot == (0.5, 0.5)
+        let transform = Written.Transform(
+            translationX: Float(drawn.translationX * density), translationY: Float(drawn.translationY * density),
+            rotation: Float(drawn.rotation), rotationX: Float(drawn.rotationX), rotationY: Float(drawn.rotationY),
+            scaleX: Float(drawn.scaleX), scaleY: Float(drawn.scaleY),
+            pivotX: centred ? nil : Float(pivot.x * size.0), pivotY: centred ? nil : Float(pivot.y * size.1))
+        guard transform != written.transform else { return }
+
+        written.transform = transform
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.transformView, .object(reference),
+            .float(transform.translationX), .float(transform.translationY), .float(transform.rotation),
+            .float(transform.rotationX), .float(transform.rotationY), .float(transform.scaleX), .float(transform.scaleY),
+            .float(transform.pivotX ?? .nan), .float(transform.pivotY ?? .nan))
+    }
+
+    /// What the host last wrote to the view, so a frame writes only what differs and reads nothing back.
+    /// Design: docs/design/platforms/android/jni.md#what-a-frame-writes
+    private struct Written {
+        struct Transform: Equatable {
+            var translationX: Float = 0, translationY: Float = 0
+            var rotation: Float = 0, rotationX: Float = 0, rotationY: Float = 0
+            var scaleX: Float = 1, scaleY: Float = 1
+            var pivotX: Float?, pivotY: Float?
+        }
+
+        var alpha: Float = 1
+        var transform = Transform()
+    }
+
+    private var written = Written()
+
+    /// Where the host last laid the view out, in pixels of its parent; nil until it has, or once another
+    /// container places it.
+    private var laidOut: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
+
+    func setEnabled(_ enabled: Bool) {
+        Java.call(reference, JavaAPI.setEnabled, .bool(enabled))
+    }
+
+    /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
+    func setBackground(_ value: HostValue?) {
+        guard let value else { return showBackground(nil) }
+
+        if let argb = Self.argb(value) {
+            return showBackground(Java.new(JavaAPI.colorDrawable, JavaAPI.newColorDrawable, .int(argb)))
+        }
+        let brush = AndroidShapeDrawable()
+        brush.setFill(value)
+        if let size = placedSize { brush.fit(width: size.width, height: size.height) }
+        showBackground(brush.object)
+        backgroundBrush = brush
+    }
+
+    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a colour or none.
+    private var backgroundBrush: AndroidShapeDrawable?
+
+    /// Shows `drawable` behind the view; nil puts back the background it was made with.
+    func showBackground(_ drawable: JavaObject?) {
+        backgroundBrush = nil
+        if madeBackground == nil {
+            madeBackground = .some(Java.callObject(reference, JavaAPI.getBackground).map(JavaObject.init))
+        }
+        let shown = drawable ?? madeBackground ?? nil
+        withExtendedLifetime(shown) { Java.call(reference, JavaAPI.setBackground, .object(shown?.reference)) }
+    }
+
+    /// A finger took hold of the view, or let go of it; a view that listens for it says what that means.
+    func held(_ holding: Bool) {}
+
+    /// The user opened the view's list, calendar or clock.
+    func opened() {}
+
+    /// The view's list, calendar or clock closed.
+    func closed() {}
+
+    /// What assistive technology meets of the view: the name a test finds it by, the words read for it and the
+    /// hint after them - none leaves the view's own - whether it is a heading, and whether it, or it and its
+    /// children, are met at all: none, as the view is of itself.
+    /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
+    func setAccessibility(_ words: AccessibilityWords) {
+        let own = ownPresence ?? Java.callInt(reference, JavaAPI.getImportantForAccessibility)
+        ownPresence = own
+        // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
+        let presence: Int32 = switch words.presence {
+        case .met?: 1
+        case .hidden?: 2
+        case .hiddenWithChildren?: 4
+        case nil: own
+        }
+        Java.frame {
+            Java.callStatic(
+                JavaAPI.views, JavaAPI.setAccessibility, .object(reference),
+                .object(words.identifier.flatMap(Java.string)), .object(words.label.flatMap(Java.string)),
+                .object(words.hint.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
+        }
+    }
+
+    /// Whether assistive technology met the view of itself - a text view is met, a layout as Android decides -
+    /// read before the element first says.
+    private var ownPresence: Int32?
+
+    /// What the view does when the user taps it; nil where it takes no tap.
+    private(set) var onTapped: (() -> Void)?
+
+    /// Makes the view answer a tap with `action`, or answer none for nil.
+    func setTapped(_ action: (() -> Void)?) {
+        let listening = onTapped != nil
+        onTapped = action
+        guard (action != nil) != listening, !(self is AndroidButtonView) else { return }
+
+        if action != nil {
+            listen(JavaAPI.setOnClickListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnClickListener, .object(nil))
+            Java.call(reference, JavaAPI.setClickable, .bool(false))
+        }
+    }
+
+    /// The user clicked or tapped the view.
+    func clicked() {
+        onTapped?()
+    }
+
+    /// What the view writes into its context menu as the user opens it; nil where it offers none.
+    private(set) var onMenuOpening: ((jobject) -> Void)?
+
+    /// What the view does with one of its menu's items chosen, handed its place among them.
+    var onMenuChose: ((Int) -> Void)?
+
+    /// Whether the view took a long press before it offered a menu, given back when it offers none.
+    private var longClickableWithoutMenu = false
+
+    /// Makes the view offer a context menu, which `opening` writes as the user asks for it - a long press, a
+    /// secondary click - or offer none for nil.
+    /// Design: docs/design/platforms/android/menus.md#a-context-menu
+    func setMenu(_ opening: ((jobject) -> Void)?) {
+        let offering = onMenuOpening != nil
+        onMenuOpening = opening
+        guard (opening != nil) != offering else { return }
+
+        if opening != nil {
+            longClickableWithoutMenu = Java.callBool(reference, JavaAPI.isLongClickable)
+            listen(JavaAPI.setOnCreateContextMenuListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnCreateContextMenuListener, .object(nil))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu))
+            onMenuChose = nil
+        }
+    }
+
+    /// The user asks for the view's context menu, to be written into `menu`.
+    func menuOpening(_ menu: jobject) {
+        onMenuOpening?(menu)
+    }
+
+    /// One of the view's menu items was chosen, by its place among them.
+    func menuChose(_ item: Int) {
+        onMenuChose?(item)
+    }
+
+    /// The element left the tree: the view lets go of everything that would call back into it.
+    func detach() {
+        onTapped = nil
+        onMenuOpening = nil
+        onMenuChose = nil
+        onHeard = nil
+        onFocusChanged = nil
+    }
+
+    /// Asks Android to measure and place this view and its ancestors again.
+    func requestLayout() {
+        Java.call(reference, JavaAPI.requestLayout)
+    }
+
+    /// Measures the view for the specs given; its size in pixels.
+    func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
+        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(reference), .int(width), .int(height))
+        return (Int32(truncatingIfNeeded: size >> 32), Int32(truncatingIfNeeded: size))
+    }
+
+    /// Places the view at `place`, in points of its parent: measured there exactly and laid out, in one call.
+    func layout(_ place: Rect) {
+        let frame = (
+            left: pixels(place.x), top: pixels(place.y),
+            right: pixels(place.x + place.width), bottom: pixels(place.y + place.height))
+        let resized = laidOut.map { $0.right - $0.left != frame.right - frame.left || $0.bottom - $0.top != frame.bottom - frame.top }
+            ?? true
+        laidOut = frame
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.placeView, .object(reference),
+            .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
+        if resized, pivot != (0.5, 0.5) { applyTransform() }
+        if resized {
+            backgroundBrush?.fit(width: frame.right - frame.left, height: frame.bottom - frame.top)
+            sized(width: frame.right - frame.left, height: frame.bottom - frame.top)
+        }
+    }
+
+    /// The view was placed at a new size, in pixels: what it draws to its size is drawn again.
+    func sized(width: Int32, height: Int32) {}
+
+    /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
+    func travels(to destination: Rect?) {}
+
+    /// The room the view's words stand in while its place travels; nil where they stand in its place.
+    var wordsRoom: Rect? { nil }
+
+    /// The size the view was last placed at, in pixels; nil before its first place.
+    var placedSize: (width: Int32, height: Int32)? {
+        laidOut.map { ($0.right - $0.left, $0.bottom - $0.top) }
+    }
+
+    /// Whether a layout has placed the view: StateUI's, or Android's giving it a size.
+    var isLaidOut: Bool {
+        guard laidOut == nil else { return true }
+        let standing = standingFrame
+        return standing.width > 0 || standing.height > 0
+    }
+
+    /// Hands the view to a container of Android's own, which places it: its place is read from Android from now on.
+    func forgetPlace() {
+        laidOut = nil
+    }
+
+    /// Where the view's top left corner stands in its window, in points.
+    var cornerInWindow: Point {
+        let window = Java.ints([0, 0])
+        Java.call(reference, JavaAPI.getLocationInWindow, .object(window))
+        var pixels: [Int32] = [0, 0]
+        pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
+        Java.release(local: window)
+        return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
+    }
+
+    /// `points` in whole pixels.
+    func pixels(_ points: Double) -> Int32 {
+        Int32((points * density).rounded())
+    }
+
+    /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
+    static func argb(_ value: HostValue) -> Int32? {
+        value.argb.map { Int32(bitPattern: $0) }
+    }
+
+    private struct Weak {
+        weak var view: AndroidView?
+
+        init(_ view: AndroidView) { self.view = view }
+    }
+}
+
+extension AndroidView {
+    /// Where Android has the view in its parent, in points, read from the view itself: what a frame report says.
+    var standingFrame: Rect {
+        let (left, top) = (Java.callInt(reference, JavaAPI.getLeft), Java.callInt(reference, JavaAPI.getTop))
+        let (right, bottom) = (Java.callInt(reference, JavaAPI.getRight), Java.callInt(reference, JavaAPI.getBottom))
+        return Rect(
+            x: Double(left) / density, y: Double(top) / density,
+            width: Double(right - left) / density, height: Double(bottom - top) / density)
+    }
+}
+
+extension AndroidView: PlacedView {
+    /// Where the view stands in its parent, in points - where the host last laid it out, or else where Android
+    /// has it; set, it is measured and placed there, at its words' room while its place travels.
+    var placedFrame: Rect {
+        get {
+            let frame = laidOut ?? (
+                left: Java.callInt(reference, JavaAPI.getLeft), top: Java.callInt(reference, JavaAPI.getTop),
+                right: Java.callInt(reference, JavaAPI.getRight), bottom: Java.callInt(reference, JavaAPI.getBottom))
+            return Rect(
+                x: Double(frame.left) / density, y: Double(frame.top) / density,
+                width: Double(frame.right - frame.left) / density, height: Double(frame.bottom - frame.top) / density)
+        }
+        set {
+            let room = wordsRoom ?? newValue
+            layout(Rect(x: newValue.x, y: newValue.y, width: room.width, height: room.height))
+        }
+    }
+}

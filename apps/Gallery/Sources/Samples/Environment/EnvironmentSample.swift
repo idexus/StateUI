@@ -119,7 +119,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
                 Button("Visit again")
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .horizontalAlignment(.center)
                     .onClicked { session.visits += 1 }

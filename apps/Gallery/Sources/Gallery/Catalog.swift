@@ -9,7 +9,7 @@
 
 import StateUI
 
-/// The samples, grouped as a reader would look for them.
+/// The samples, grouped as a user would look for them.
 ///
 /// Built once per gallery and kept by `KeptCatalog`, where everything else that
 /// describes the interface is built again on every render. The examples inside
@@ -30,24 +30,6 @@ final class Catalog {
         bar: TitleBarState,
         log: WindowLog
     ) {
-        var collections = [
-            Sample(SwipeViewSample()),
-            Sample(RefreshViewSample()),
-            Sample(GalleryViewSample()),
-            Sample(PositionIndicatorSample()),
-        ]
-
-        #if MAUI
-        // The MAUI host's lists, compiled for that host alone.
-        collections.insert(
-            contentsOf: [
-                Sample(ItemsViewSample()),
-                Sample(ChoosingItemsSample()),
-                Sample(LoadingItemsSample()),
-            ],
-            at: 0)
-        #endif
-
         var groups: [SampleGroup] = [
             SampleGroup(
                 route: "fundamentals",
@@ -117,7 +99,7 @@ final class Catalog {
                     Sample(AnimatedInputSample()),
                     Sample(ConcurrentAnimationSample()),
                     Sample(AnalogClockSample()),
-                ]),
+                ] + Self.drawnByTheHost),
 
             SampleGroup(
                 route: "basicInput",
@@ -167,11 +149,11 @@ final class Catalog {
                 samples: [
                     Sample(StackLayoutSample()),
                     Sample(GridSample()),
-                    Sample(AbsoluteLayoutSample()),
+                    Sample(ZStackSample()),
                     Sample(PlacedSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
-                    Sample(BorderSample()),
+                    Sample(OutlineSample()),
                     Sample(ColorBoxSample()),
                     Sample(TransformSample()),
                     Sample(LayoutDirectionSample()),
@@ -209,11 +191,18 @@ final class Catalog {
 
             SampleGroup(
                 route: "collections",
-                title: "Items & cards",
-                summary: "Lists of items, swipe and refresh actions, cards, and position indicators.",
+                title: "Items and Cards",
+                summary: "The platform's own lists of items, cards swiped through one at a time, and the dots "
+                    + "that say which one shows.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
-                samples: collections),
+                samples: [
+                    Sample(ItemsViewSample()),
+                    Sample(ChoosingItemsSample()),
+                    Sample(LoadingItemsSample()),
+                    Sample(GalleryViewSample()),
+                    Sample(PositionIndicatorSample()),
+                ]),
 
             SampleGroup(
                 route: "gestures",
@@ -276,6 +265,7 @@ final class Catalog {
                     Sample(WindowSample()),
                     Sample(TitleBarSample(bar: bar)),
                     Sample(MultiWindowSample(style: style)),
+                    Sample(WindowOverlaySample()),
                     Sample(LifecycleSample(log: log)),
                     Sample(WindowPhaseSample()),
                 ]),
@@ -316,55 +306,35 @@ final class Catalog {
                 ]),
         ]
 
-        #if MAUI
-        // Calling C#, hearing from it, and controls the application registers
-        // with the C# host - each described like the library's own.
-        groups.append(
-            SampleGroup(
-                route: "interop",
-                title: "C# interop",
-                summary: "Calling C#, hearing from it, and controls the app registers - "
-                    + "described like the library's own.",
-                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
-                samples: [
-                    Sample(CustomActsSample()),
-                    Sample(CustomEventsSample()),
-                    Sample(CustomControlSample()),
-                    Sample(CustomContainerSample()),
-                    Sample(CustomBindingSample()),
-                    Sample(CustomStyleSample()),
-                    Sample(CustomAnimationSample()),
-                ]))
-        #endif
 
-        #if APPKIT
-        // Calling the host, hearing from it, and a control the application
-        // registers with it - each described like the library's own.
-        //
-        // The Swift half of the first three is the SAME file the C# interop
-        // group shows: one contract, one `View`, and a host of its own at each
-        // end. What differs is the other half.
-        //
-        // The Metal cube is the exception, and deliberately: its view draws on
-        // the GPU, so it is declared for this host alone.
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        // Calling the host, hearing from it, and a control the application registers with it - each described like
+        // the library's own: one contract, one `View`, and the host's half beside the head, in Platforms/<host>.
+        // The cube draws on the GPU, so it is declared only for the hosts that draw it, each in its own way.
         groups.append(
             SampleGroup(
-                route: "appKitInterop",
-                title: "AppKit interop",
-                summary: "Calling the host, hearing from it, and controls the app registers - "
-                    + "one of them drawn on the GPU.",
+                route: InteropHost.key + "Interop",
+                title: InteropHost.name + " interop",
+                summary: "Calling the host, hearing from it, and a control the app registers.",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
                 card: ImageSource("cat_interop.png"),
                 samples: [
-                    Sample(AppKitActsSample()),
-                    Sample(AppKitEventsSample()),
-                    Sample(AppKitControlSample()),
-                    Sample(AppKitMetalSample()),
+                    Sample(InteropActsSample()),
+                    Sample(InteropEventsSample()),
+                    Sample(InteropControlSample()),
                 ]))
         #endif
 
         self.groups = groups
+    }
+
+    /// The animation the host draws on the GPU, on the hosts that draw it.
+    private static var drawnByTheHost: [Sample] {
+        #if APPKIT || UIKIT || GTK || WINUI || ANDROID
+        [Sample(Cube3DSample())]
+        #else
+        []
+        #endif
     }
 
     /// How many samples a device of `formFactor` lists - the home page's count, so

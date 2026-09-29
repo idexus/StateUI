@@ -71,7 +71,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(.white)
-                    .cornerRadius(8)
+                    .shape(.roundedRectangle(8))
                     .padding(20, 10)
                     .horizontalAlignment(.center)
                     .onClicked { profile.visits += 1 }

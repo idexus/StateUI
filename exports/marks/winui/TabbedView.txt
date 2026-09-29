@@ -1,0 +1,5 @@
+# revision 1.1
+Label.frameChanged: ✅
+TabbedView: ✅
+TabbedView.currentPage: ✅
+TabbedView.currentPageChanged: ✅

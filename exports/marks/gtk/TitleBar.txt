@@ -1,0 +1,6 @@
+# revision 1.1
+TitleBar: waits on TitleBar.title
+TitleBar.barForegroundColor: cannot read barForegroundColor of TitleBar - GTK's driver has no path for it yet
+TitleBar.icon: not realized
+TitleBar.subtitle: not realized
+TitleBar.title: not realized

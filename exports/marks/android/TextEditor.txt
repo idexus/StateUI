@@ -1,0 +1,7 @@
+# revision 2.1
+TextEditor: ✅
+TextEditor.frameChanged: ✅
+TextEditor.growsWithText: ✅
+TextEditor.maximumLength: ✅
+TextEditor.text: ✅
+TextEditor.textChanged: ✅

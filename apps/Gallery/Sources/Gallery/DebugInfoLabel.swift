@@ -40,7 +40,7 @@ func DebugInfoLabel() -> Label {
 enum BuildCount {
     /// `debugInfo()` less the name in front of it.
     ///
-    /// The name is the one part of that sentence the reader already has: it is
+    /// The name is the one part of that sentence the user already has: it is
     /// the title of the page they are looking at, or of the tab. What is left
     /// is the whole of what a reading says - `1 build, first time`,
     /// `41 builds, for volume`.

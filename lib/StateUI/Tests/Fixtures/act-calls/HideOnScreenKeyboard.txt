@@ -1,1 +1,0 @@
-hideOnScreenKeyboard completion=-1
