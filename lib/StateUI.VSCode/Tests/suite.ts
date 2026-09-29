@@ -152,9 +152,9 @@ export async function run(): Promise<void> {
         check("appkit runs the core, StateUI.AppKit and the Gallery, and no device",
             appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI.AppKit")
             && appkitSuites.includes("apps/Gallery") && !appkitSuites.some((each) => each.endsWith("Tests")));
-        check("HelloWorld's example test runs with the rest - as an AppKit build on its .build-appkit, or as plain Swift",
+        check("HelloWorld's example test runs with the rest - as an AppKit build on its .build/appkit, or as plain Swift",
             findSuites(root.uri.fsPath, "appkit").some((each) => each.label === "apps/HelloWorld"
-                && each.args.join(" ").endsWith(`--scratch-path ${path.join(root.uri.fsPath, "apps", "HelloWorld", ".build-appkit")}`))
+                && each.args.join(" ").endsWith(`--scratch-path ${path.join(root.uri.fsPath, "apps", "HelloWorld", ".build", "appkit")}`))
             && plainSuites.some((each) => each.label === "apps/HelloWorld"));
         check("with no host the core and the Gallery run as plain Swift, and no host's own package",
             plainSuites.some((each) => each.label === "StateUI") && plainSuites.some((each) => each.label === "apps/Gallery")
@@ -176,18 +176,18 @@ export async function run(): Promise<void> {
         {
             const sdk = "swift-6.4.0-RELEASE_android";
             const android = serverConfig(
-                { swiftPM: { scratchPath: ".build-appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
+                { swiftPM: { scratchPath: ".build/appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
                 serverSettings("android", sdk));
             const back = serverConfig(android, serverSettings("appkit", sdk));
-            check("as Android the language server indexes in .build-android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
-                android.swiftPM?.scratchPath === ".build-android/index-build" && android.swiftPM?.swiftSDK === sdk
+            check("as Android the language server indexes in .build/android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
+                android.swiftPM?.scratchPath === ".build/android/index-build" && android.swiftPM?.swiftSDK === sdk
                 && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
             check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
                 android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
-                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && back.swiftPM?.configuration === "debug"
+                && back.swiftPM?.scratchPath === ".build/appkit/index-build" && back.swiftPM?.configuration === "debug"
                 && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
             check("with no Swift SDK installed Android indexes for this Mac, and with no host the index is SwiftPM's own, with no SDK",
-                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build-android/index-build" })
+                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build/android/index-build" })
                 && JSON.stringify(serverSettings(undefined, sdk)) === JSON.stringify({ scratchPath: ".build/index-build" }));
 
             // The other releases are assembled, so the repository's one-release guard reads no second one here.
@@ -214,7 +214,7 @@ export async function run(): Promise<void> {
         {
             // What run-app.sh --debugger writes once the application runs, faked
             // by the task's start - or not, where the application never starts.
-            const facts = path.join(helloWorld.directory, ".build-android", "debugger.json");
+            const facts = path.join(helloWorld.directory, ".build", "android", "debugger.json");
             const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const ran: string[] = [];
@@ -297,14 +297,14 @@ export async function run(): Promise<void> {
         //     commands a launch and a suite run - captured, not run.
         {
             const simulatorSDK = "/Xcode/SDKs/iPhoneSimulator.sdk";
-            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build-appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
+            const uiKit = serverConfig({ swiftPM: { scratchPath: ".build/appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
             const back = serverConfig(uiKit, serverSettings("appkit", undefined));
-            check("as UIKit the language server indexes in .build-uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
-                uiKit.swiftPM?.scratchPath === ".build-uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
+            check("as UIKit the language server indexes in .build/uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
+                uiKit.swiftPM?.scratchPath === ".build/uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
                 && uiKit.swiftPM?.sdk === simulatorSDK && !("swiftSDK" in uiKit.swiftPM!)
-                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
+                && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
             check("with no simulator SDK found UIKit indexes for this Mac",
-                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build-uikit/index-build" }));
+                JSON.stringify(serverSettings("uikit", undefined, undefined)) === JSON.stringify({ scratchPath: ".build/uikit/index-build" }));
         }
         check("simctl's list reads as the iOS simulators a head installs on, the newest runtime first",
             JSON.stringify(parseSimulators(JSON.stringify({ devices: {
@@ -344,7 +344,7 @@ export async function run(): Promise<void> {
         {
             const helloWorldHere = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
             check("HelloWorld and the Gallery have UIKit heads", hasHead(helloWorldHere, "uikit") && hasHead(gallery_, "uikit"));
-            const facts = path.join(helloWorldHere.directory, ".build-uikit", "debugger.json");
+            const facts = path.join(helloWorldHere.directory, ".build", "uikit", "debugger.json");
             const launchOnUIKit = async (udid: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
@@ -403,9 +403,9 @@ export async function run(): Promise<void> {
 
         // 6b. WinUI: HelloWorld's head, built by run-app.ps1 -BuildOnly and
         //     launched under lldb-dap, and the host's own package through test-winui.ps1.
-        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build-winui/index-build",
+        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build/winui/index-build",
             hasHead(helloWorld, "winui")
-            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build-winui/index-build" }));
+            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build/winui/index-build" }));
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -425,7 +425,7 @@ export async function run(): Promise<void> {
                 ran.length === 1
                 && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release -BuildOnly`
                 && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build-winui", "release", "HelloWorldWinUI.exe"));
+                && resolved.program === path.join(helloWorld.directory, ".build", "winui", "release", "HelloWorldWinUI.exe"));
         }
         {
             const winUISuites = findSuites(root.uri.fsPath, "winui");
@@ -439,9 +439,9 @@ export async function run(): Promise<void> {
 
         // 6c. GTK: HelloWorld's head, built by run-app.sh --build-only and
         //     launched under lldb-dap, and the host's own package by swift test.
-        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build-gtk/index-build",
+        check("HelloWorld has a GTK head, and as GTK the language server indexes in .build/gtk/index-build",
             hasHead(helloWorld, "gtk")
-            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build-gtk/index-build" }));
+            && JSON.stringify(serverSettings("gtk", undefined)) === JSON.stringify({ scratchPath: ".build/gtk/index-build" }));
         {
             const ran: vscode.Task[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -461,7 +461,7 @@ export async function run(): Promise<void> {
                 ran.length === 1
                 && line === `bash ${path.join(root.uri.fsPath, ".scripts", "GTK", "run-app.sh")} ${helloWorld.directory} debug --build-only`
                 && resolved?.type === "lldb-dap" && resolved.request === "launch"
-                && resolved.program === path.join(helloWorld.directory, ".build-gtk", "debug", "HelloWorldGTK"));
+                && resolved.program === path.join(helloWorld.directory, ".build", "gtk", "debug", "HelloWorldGTK"));
         }
         {
             const gtkSuites = findSuites(root.uri.fsPath, "gtk");
@@ -531,7 +531,8 @@ export async function run(): Promise<void> {
                     // As an AppKit build, or plain Swift - whichever host the editor works as at the moment.
                     const env = Object.fromEntries(Object.entries({ ...process.env, ...environment(appKit ? "appkit" : undefined) })
                         .filter((entry): entry is [string, string] => entry[1] !== undefined));
-                    execSync(`swift build --package-path "${application}"${appKit ? ` --product ${name}AppKit` : ""}`, { env, stdio: "pipe" });
+                    execSync(`swift build --package-path "${application}"${appKit ? ` --scratch-path "${path.join(application, ".build", "appkit")}" --product ${name}AppKit` : ""}`,
+                        { env, stdio: "pipe" });
                     return true;
                 } catch (error) {
                     say(`     ${String((error as { stdout?: Buffer }).stdout ?? error).split("\n").slice(-8).join("\n     ")}`);
@@ -700,9 +701,9 @@ export async function run(): Promise<void> {
             check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
-            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/debug/HelloWorldAppKit"));
+            check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit"));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldAppKit process is running", alive);
             await vscode.debug.stopDebugging(running);
 
@@ -773,7 +774,7 @@ export async function run(): Promise<void> {
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session starts on HelloWorldWinUI.exe",
-                String(running?.configuration.program ?? "").endsWith(path.join("apps", "HelloWorld", ".build-winui", "debug", "HelloWorldWinUI.exe")));
+                String(running?.configuration.program ?? "").endsWith(path.join("apps", "HelloWorld", ".build", "winui", "debug", "HelloWorldWinUI.exe")));
             const alive = (): boolean => {
                 try {
                     return execSync('tasklist /FI "IMAGENAME eq HelloWorldWinUI.exe" /NH').toString().includes("HelloWorldWinUI.exe");
@@ -799,9 +800,9 @@ export async function run(): Promise<void> {
                 { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
             const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 900_000))]);
             check("an lldb-dap session starts on HelloWorldGTK",
-                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build-gtk/debug/HelloWorldGTK"));
+                String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/gtk/debug/HelloWorldGTK"));
             await new Promise((resume) => setTimeout(resume, 4000));
-            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build-gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
+            const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/gtk/debug/HelloWorldGTK").toString().trim().length > 0; } catch { return false; } })();
             check("the HelloWorldGTK process is running", alive);
             await vscode.debug.stopDebugging(running);
         }

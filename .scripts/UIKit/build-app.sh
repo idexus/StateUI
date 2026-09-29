@@ -20,7 +20,7 @@ configuration="${2:-debug}"
 device="${3:-}"
 name="$(basename "$app_dir")"
 product="${name}UIKit"
-scratch="$app_dir/.build-uikit"
+scratch="$app_dir/.build/uikit"
 [[ -z "$device" ]] || uikit_target iphoneos
 
 export STATEUI_UIKIT=1

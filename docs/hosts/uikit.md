@@ -211,7 +211,7 @@ or a simulator's name or UDID; with none named it is the simulator booted,
 else an iPhone. A simulator is booted where it is not running and the
 Simulator opened; a device is reached over USB or Wi-Fi, its build signed for
 it. `--no-log` returns once the application has started. Everything a build
-writes stays in the application's `.build-uikit/`.
+writes stays in the application's `.build/uikit/`.
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a
 simulator, and press **F5**.
@@ -222,7 +222,7 @@ simulator, and press **F5**.
 attaches `lldb-dap` to it: a breakpoint in the application, in StateUI or in
 the host stops it from the first line, with its source, its stack and its
 variables. `--debugger` starts the application held until a debugger
-attaches, and writes where to `.build-uikit/debugger.json`: its process and,
+attaches, and writes where to `.build/uikit/debugger.json`: its process and,
 on a device, the device and the bundle built, whose symbols the debugger
 reads. A simulator's process is one of this Mac's; a device's is reached
 through the device:

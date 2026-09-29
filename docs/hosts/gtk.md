@@ -160,7 +160,7 @@ StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 
 `run-app.sh` stops a running copy of the head, builds it and starts it, its
 output in the terminal. Everything a build writes stays in the application's
-`.build-gtk/`, but for what the desktop shows the application by: its icon,
+`.build/gtk/`, but for what the desktop shows the application by: its icon,
 `Resources/AppIcon/appicon_gnome.svg`, and an entry starting this build, both
 named by the application's ID and installed for the user in
 `~/.local/share/icons` and `~/.local/share/applications`. GNOME finds a

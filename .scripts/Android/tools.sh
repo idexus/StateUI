@@ -48,7 +48,7 @@ gradle_binary () {
 build_head () {
   local app="$1" product="$2" configuration="$3" abi="$4" head build java gradle apk task
   head="$app/Platforms/Android"
-  build="$app/.build-android"
+  build="$app/.build/android"
   [[ -f "$head/build.gradle.kts" ]] || { echo "ERROR: $(basename "$app") has no Android head ($head)" >&2; return 1; }
 
   # A command substitution runs this function without `set -e`, so every

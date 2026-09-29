@@ -403,7 +403,7 @@ enum SourceTree {
     }
 
     /// Whether a walk of sources enters a directory: never build output - a
-    /// directory named with a leading dot (`.build`, `.build-appkit`), `bin` or
+    /// directory named with a leading dot (`.build`, `.git`), `bin` or
     /// `obj`. Under `apps/` build output is 99 files in 100, and walking it
     /// costs a guard a minute and more on Windows.
     static func entersSources(_ relative: String) -> Bool {

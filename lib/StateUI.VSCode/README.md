@@ -138,7 +138,7 @@ configuration naming `"application": "Gallery"` runs that one instead.
 them AS THE HOST, one after another, each in a terminal of its own:
 
 - **AppKit**: the library, `lib/StateUI.AppKit`, and each application as an
-  AppKit build (`STATEUI_APPKIT=1`, on `.build-appkit`).
+  AppKit build (`STATEUI_APPKIT=1`, on `.build/appkit`).
 - **UIKit**: the library and each application as plain Swift, and the UIKit
   host's own tests, `lib/StateUI.UIKit/Tests` - an application of tests - run
   on the simulator chosen by `.scripts/UIKit/test-uikit.sh`.
@@ -173,8 +173,8 @@ workspace holds no marks.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build`, `.build-uikit/index-build`, `.build-android/index-build`,
-`.build-winui/index-build` or `.build-gtk/index-build` - with no
+own, `.build/appkit/index-build`, `.build/uikit/index-build`, `.build/android/index-build`,
+`.build/winui/index-build` or `.build/gtk/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.

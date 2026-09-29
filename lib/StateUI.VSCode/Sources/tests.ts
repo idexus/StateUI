@@ -33,7 +33,7 @@ export interface Suite {
  * library first, the hosts' packages next, the applications last.
  *
  * - A Swift package with a test target runs with `swift test`. For AppKit an
- *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build-appkit`.
+ *   APPLICATION runs as the host - `STATEUI_APPKIT=1` on `.build/appkit`.
  * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
  * - For the Android host an application runs as plain Swift, its Android build
  *   running only on a device, and the host's own tests -
@@ -81,8 +81,8 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
             suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
         } else if (host === "appkit" && applications.has(directory)) {
             suites.push({
-                label: name, detail: "swift test as an AppKit build, on .build-appkit", command: "swift",
-                args: [...base, "--scratch-path", path.join(directory, ".build-appkit")], env: appKitEnvironment,
+                label: name, detail: "swift test as an AppKit build, on .build/appkit", command: "swift",
+                args: [...base, "--scratch-path", path.join(directory, ".build", "appkit")], env: appKitEnvironment,
             });
         } else {
             suites.push({ label: name, detail: "swift test", command: "swift", args: base, env: {} });

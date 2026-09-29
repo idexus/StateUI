@@ -180,9 +180,9 @@ StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 
 `run-app.sh` builds the application's Swift for the device's ABI alone, then
 the APK, installs it, starts it and follows its log. Everything a build writes
-stays in the application's `.build-android/`. The APK carries the libraries
+stays in the application's `.build/android/`. The APK carries the libraries
 the head needs and nothing else - the Swift runtime's own among them -
-stripped, with the unstripped copies kept in `.build-android/symbols/` for
+stripped, with the unstripped copies kept in `.build/android/symbols/` for
 `ndk-stack` and a debugger. Android draws no SVG, so the application's
 `Resources/Images` are drawn for it as the APK is built: an SVG three times
 over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
@@ -204,17 +204,17 @@ It is the application running that is attached to, so what runs before - the
 first render - runs without the debugger. Only a debug build can be debugged.
 
 `run-app.sh --debugger` readies it: the NDK's `lldb-server` runs as the
-application, in its own sandbox, and `.build-android/debugger.json` says where
+application, in its own sandbox, and `.build/android/debugger.json` says where
 it listens and which process to attach to. From a terminal, with the toolchain's
 `lldb`:
 
 ```bash
 .scripts/Android/run-app.sh apps/Gallery debug emulator-5554 --no-logcat --debugger
-cat apps/Gallery/.build-android/debugger.json
+cat apps/Gallery/.build/android/debugger.json
 lldb -o "settings set plugin.jit-loader.gdb.enable off" \
      -o "platform select remote-android" \
      -o "platform connect unix-abstract-connect://emulator-5554/com.stateui.gallery/stateui-debugger.sock" \
-     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build-android/symbols/arm64-v8a" \
+     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build/android/symbols/arm64-v8a" \
      -o "process attach --pid <process from debugger.json>" \
      -o "process handle SIGSEGV SIGBUS --pass true --stop false --notify false"
 ```

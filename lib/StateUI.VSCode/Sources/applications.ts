@@ -118,19 +118,20 @@ function isDirectory(candidate: string): boolean {
 export function appKitProgram(application: Application, configuration: "debug" | "release"): string {
     const product = `${application.name}AppKit`;
 
-    // A bundling script builds on a directory of its own and wraps the
-    // executable in an application bundle.
+    // Every AppKit build is on .build/appkit; a bundling script wraps the
+    // executable in an application bundle there.
+    const build = path.join(application.directory, ".build", "appkit", configuration);
     return application.bundleScript
-        ? path.join(application.directory, ".build-appkit", configuration, `${product}.app`, "Contents", "MacOS", product)
-        : path.join(application.directory, ".build", configuration, product);
+        ? path.join(build, `${product}.app`, "Contents", "MacOS", product)
+        : path.join(build, product);
 }
 
 /** Where an application's GTK head is, once `.scripts/GTK/run-app.sh` built it in `configuration`. */
 export function gtkProgram(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build-gtk", configuration, `${application.name}GTK`);
+    return path.join(application.directory, ".build", "gtk", configuration, `${application.name}GTK`);
 }
 
 /** Where an application's WinUI head is, once `.scripts/WinUI/run-app.ps1` built it in `configuration`. */
 export function winUIProgram(application: Application, configuration: "debug" | "release"): string {
-    return path.join(application.directory, ".build-winui", configuration, `${application.name}WinUI.exe`);
+    return path.join(application.directory, ".build", "winui", configuration, `${application.name}WinUI.exe`);
 }

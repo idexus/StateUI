@@ -140,7 +140,8 @@ Build the runnable Gallery bundle:
 Build the smaller example:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
+STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
+  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
 In VS Code, the StateUI extension (`lib/StateUI.VSCode`) runs either

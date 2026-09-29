@@ -105,13 +105,18 @@ Every launch has a command-line equivalent. Build HelloWorld's AppKit head from
 the repository root:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
+STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
+  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
 The variable is what makes it an AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
-[Project structure and development](development.md).
+[Project structure and development](development.md). Each host builds an
+application in a directory of its own inside the application's `.build` -
+`.build/appkit`, `.build/uikit`, `.build/android`, `.build/winui`,
+`.build/gtk` - beside SwiftPM's plain build, so switching hosts rebuilds
+nothing. `swift package clean` empties all of them.
 
 Run HelloWorld's Android head on a device - `.scripts/Android/devices.sh list`
 names the devices:

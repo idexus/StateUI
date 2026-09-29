@@ -12,7 +12,7 @@ product="GalleryAppKit"
 # On a build directory of its own: an AppKit build compiles the application
 # under `#if APPKIT`, and the Gallery's tests, compiled without it, would
 # otherwise rebuild from scratch at every switch.
-scratch_dir="$gallery_dir/.build-appkit"
+scratch_dir="$gallery_dir/.build/appkit"
 
 # THE ONE THING THAT MAKES THIS AN APPKIT BUILD. The manifest reads it and then
 # declares the AppKit head - the target, its product and the StateUIAppKit

@@ -13,13 +13,13 @@
 // and starts it on the device chosen, in a task whose terminal then follows its
 // log. A Debug launch is then attached to by lldb-dap: the script readies the
 // NDK's lldb-server in the application's sandbox and writes where it listens to
-// .build-android/debugger.json. A Release build cannot be debugged, and
+// .build/android/debugger.json. A Release build cannot be debugged, and
 // resolves to no session.
 //
 // A UIKit head is run by .scripts/UIKit/run-app.sh on the iPhone, iPad or
 // simulator chosen, in a task whose terminal follows what it prints. A Debug
 // launch starts it held until a debugger attaches, and the script writes where
-// to .build-uikit/debugger.json: a simulator's process is one of this Mac's, a
+// to .build/uikit/debugger.json: a simulator's process is one of this Mac's, a
 // device's is reached through the device. lldb-dap attaches, which lets it run.
 // A Release launch has no session.
 //
@@ -193,7 +193,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build-android", "debugger.json");
+        const facts = path.join(application.directory, ".build", "android", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
             { type: "stateui", application: application.name, configuration, device: serial }, root,
@@ -239,7 +239,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         const debug = configuration === "debug";
-        const facts = path.join(application.directory, ".build-uikit", "debugger.json");
+        const facts = path.join(application.directory, ".build", "uikit", "debugger.json");
         fs.rmSync(facts, { force: true });
         const task = new vscode.Task(
             { type: "stateui", application: application.name, configuration, device }, root,
@@ -431,8 +431,8 @@ export async function buildAppKitHead(
         ? new vscode.ShellExecution(application.bundleScript, [configuration], { cwd: folder.uri.fsPath, env })
         : new vscode.ShellExecution(
             "swift",
-            ["build", "--package-path", application.directory, "--configuration", configuration,
-                "--product", `${application.name}AppKit`],
+            ["build", "--package-path", application.directory, "--scratch-path", path.join(application.directory, ".build", "appkit"),
+                "--configuration", configuration, "--product", `${application.name}AppKit`],
             { cwd: folder.uri.fsPath, env });
 
     const definition = { type: "stateui", application: application.name, configuration };

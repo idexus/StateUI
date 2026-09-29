@@ -12,7 +12,7 @@
 # a device, its name, devicectl's identifier or its UDID; where none is named,
 # the simulator booted, else an iPhone. --no-log returns once the application
 # has started, instead of following what it prints. --debugger starts it held
-# until a debugger attaches, and writes where to <app-dir>/.build-uikit/
+# until a debugger attaches, and writes where to <app-dir>/.build/uikit/
 # debugger.json: the process - on a simulator one of this Mac's - and, on a
 # device, the device and the bundle built, where the debugger reads symbols.
 set -euo pipefail
@@ -36,7 +36,7 @@ done
 [[ $debugger == 0 || "$configuration" == debug ]] || { echo "ERROR: only a debug build can be debugged"; exit 1; }
 read -r kind id udid <<< "$(uikit_destination "$wanted")"
 [[ -n "$kind" ]] || exit 1
-facts="$app_dir/.build-uikit/debugger.json"
+facts="$app_dir/.build/uikit/debugger.json"
 rm -f "$facts"
 
 # tell <process> [device] - says the application started; with --debugger, where the debugger attaches.

@@ -15,11 +15,11 @@
 #   --debugger  readies the Swift debugger to attach to the application once
 #               it has started - a debug build's: the NDK's lldb-server runs in
 #               the application's own sandbox, and what the debugger needs to
-#               reach it is written to <app-dir>/.build-android/debugger.json
+#               reach it is written to <app-dir>/.build/android/debugger.json
 #
 # The Swift is built for the device's ABI alone, by build-swift.sh; Gradle
 # packages it with the host's Java layer. Everything a build writes stays under
-# <app-dir>/.build-android. Every STATEUI_ variable of the calling shell -
+# <app-dir>/.build/android. Every STATEUI_ variable of the calling shell -
 # STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches the application's environment.
 set -euo pipefail
 
@@ -46,7 +46,7 @@ done
 
 app_dir="$(cd "$app_dir" && pwd)"
 application="$(basename "$app_dir")"
-build="$app_dir/.build-android"
+build="$app_dir/.build/android"
 rm -f "$build/debugger.json"
 
 serial="$(device_serial "$serial")"

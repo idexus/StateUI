@@ -22,7 +22,7 @@
 #               for it and passing on what it writes
 #   -BuildOnly  starts nothing: the head stands ready for a debugger to start
 #
-# Everything a build writes stays under <App>\.build-winui. Every STATEUI_
+# Everything a build writes stays under <App>\.build\winui. Every STATEUI_
 # variable of the calling shell - STATEUI_TALLY=1, STATEUI_INSPECT=1 - reaches
 # the application's environment.
 # ---------------------------------------------------------------------------
@@ -36,7 +36,7 @@ param(
 
 $application = (Resolve-Path $App).Path
 $name = Split-Path $application -Leaf
-$scratch = Join-Path $application '.build-winui'
+$scratch = Join-Path $application '.build\winui'
 
 # A running head holds its executable, which the build writes again: it stops first.
 $running = Get-Process -Name "${name}WinUI" -ErrorAction SilentlyContinue

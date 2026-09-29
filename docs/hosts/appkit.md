@@ -14,7 +14,7 @@ lib/StateUI.AppKit/
   Sources/    StateUIAppKit: the renderer, windows, sessions and the registry
   Tests/      the host's suite
 .scripts/AppKit/
-  build-gallery-appkit.sh      the Gallery's bundle, in apps/Gallery/.build-appkit
+  build-gallery-appkit.sh      the Gallery's bundle, in apps/Gallery/.build/appkit
 apps/<App>/Platforms/AppKit/
   main.swift                   the application's AppKit head
   Host/                        what this host answers for the application

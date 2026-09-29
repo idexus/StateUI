@@ -26,7 +26,7 @@ export function releaseDirectory(group: string): string {
 
 const ignored = (repository: string): string => `# SwiftPM's build directories: .build, and one per host's builds.
 .build*/
-# What Gradle keeps beside a head an editor opens; the scripts keep theirs in .build-android.
+# What Gradle keeps beside a head an editor opens; the scripts keep theirs in .build/android.
 .gradle/
 # The language server's own settings, written by the StateUI editor extension.
 .sourcekit-lsp/

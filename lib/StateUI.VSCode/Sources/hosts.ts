@@ -51,22 +51,22 @@ export interface HostDescription {
 
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
-    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build-appkit/index-build", platforms: ["darwin"] },
+    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build/appkit/index-build", platforms: ["darwin"] },
     {
         id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process", variable: "STATEUI_UIKIT",
-        indexPath: ".build-uikit/index-build", platforms: ["darwin"],
+        indexPath: ".build/uikit/index-build", platforms: ["darwin"],
         target: { triple: "arm64-apple-ios26.0-simulator", xcodeSDK: "iphonesimulator" },
     },
     {
         id: "android", label: "Android", detail: "Android Views, in the application's own process", variable: "STATEUI_ANDROID",
-        indexPath: ".build-android/index-build", platforms: ["darwin"],
+        indexPath: ".build/android/index-build", platforms: ["darwin"],
         target: {
             triple: "aarch64-unknown-linux-android28", swiftSDK: "android",
             swiftSDKGuide: "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
         },
     },
-    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", variable: "STATEUI_WINUI", indexPath: ".build-winui/index-build", platforms: ["win32"] },
-    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", variable: "STATEUI_GTK", indexPath: ".build-gtk/index-build", platforms: ["linux"] },
+    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", variable: "STATEUI_WINUI", indexPath: ".build/winui/index-build", platforms: ["win32"] },
+    { id: "gtk", label: "GTK", detail: "GTK 4 with libadwaita on Linux, in the application's own process", variable: "STATEUI_GTK", indexPath: ".build/gtk/index-build", platforms: ["linux"] },
 ];
 
 /**
