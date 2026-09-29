@@ -6,7 +6,10 @@ package stateui.android;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.PathShape;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -62,7 +65,10 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         setTitle(standing == null ? title : null);
     }
 
-    /** The navigation button: none, the way back in `tint`, or the sidebar's own picture. */
+    /**
+     * The navigation button: none, the way back in `tint`, or the sidebar's own picture - Android's menu glyph in
+     * `tint` where it has none.
+     */
     void setNavigation(int kind, Bitmap picture, int tint, String description) {
         Drawable icon = null;
         if (kind == BACK) {
@@ -70,12 +76,30 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
             icon = attributes.getDrawable(0);
             attributes.recycle();
             if (icon != null && tint != 0) icon.mutate().setTint(tint);
-        } else if (kind == SIDEBAR && picture != null) {
-            icon = StateUIViews.glyph(getResources(), picture);
+        } else if (kind == SIDEBAR) {
+            icon = picture != null ? StateUIViews.glyph(getResources(), picture) : menuGlyph(tint);
         }
         setNavigationIcon(icon);
         setNavigationContentDescription(icon == null ? null : description);
         setNavigationOnClickListener(icon == null ? null : this);
+    }
+
+    /** Android's menu glyph - three lines on its 24 dp icon grid - in `tint`, or at 0 the theme's for controls. */
+    private Drawable menuGlyph(int tint) {
+        Path lines = new Path();
+        for (int top : new int[] {6, 11, 16}) lines.addRect(3, top, 21, top + 2, Path.Direction.CW);
+        ShapeDrawable glyph = new ShapeDrawable(new PathShape(lines, 24, 24));
+        int size = Math.round(24 * getResources().getDisplayMetrics().density);
+        glyph.setIntrinsicWidth(size);
+        glyph.setIntrinsicHeight(size);
+        if (tint != 0) {
+            glyph.setTint(tint);
+        } else {
+            TypedArray theme = getContext().obtainStyledAttributes(new int[] { android.R.attr.colorControlNormal });
+            glyph.setTintList(theme.getColorStateList(0));
+            theme.recycle();
+        }
+        return glyph;
     }
 
     /** The visible page's actions, in the order they show, as `StateUIMenus` writes a menu's entries. */

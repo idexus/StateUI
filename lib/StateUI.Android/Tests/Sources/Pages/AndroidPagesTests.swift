@@ -16,6 +16,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
             ("testALayoutWhileTheDrawerSlidesLeavesItSliding", testALayoutWhileTheDrawerSlidesLeavesItSliding),
+            ("testASidebarWithNoPictureOpensFromTheMenuGlyph", testASidebarWithNoPictureOpensFromTheMenuGlyph),
             ("testAClosedDrawerStandsInvisible", testAClosedDrawerStandsInvisible),
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
@@ -195,6 +196,19 @@ final class AndroidPagesTests: XCTestCase {
 
             XCTAssertTrue(split.isPresented)
             XCTAssertEqual(Java.callFloat(drawer.reference, TestJava.getTranslationX), closed)
+        }
+    }
+
+    /// A sidebar page with no picture still gives the detail's bar its button: Android's menu glyph.
+    func testASidebarWithNoPictureOpensFromTheMenuGlyph() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { drawerOverStack(sidebar: TitledPage(title: "Menu")) }
+            host.layOut()
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+
+            XCTAssertEqual(navigation.bar.content.navigation, .sidebar(nil))
+            let glyph = Java.frame { Java.callObject(navigation.bar.reference, TestJava.getNavigationIcon) != nil }
+            XCTAssertTrue(glyph, "the bar shows a button to open the sidebar")
         }
     }
 

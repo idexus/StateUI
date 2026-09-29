@@ -25,8 +25,8 @@ the title, by priority and then in their order, the rest behind the
 toolbar's overflow - each an entry of the toolbar's menu, written as
 [menus](menus.md) says. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
-where the sidebar slides over it, it is the sidebar page's picture and opens
-the sidebar. A page without a navigation bar hides it. The bar shows only
+where the sidebar slides over it, it is the sidebar page's picture - Android's
+menu glyph where the page has none - and opens the sidebar. A page without a navigation bar hides it. The bar shows only
 what changed since it last showed.
 
 A picture on the bar - the navigation button's, an action's - and a tab's

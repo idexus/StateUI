@@ -127,6 +127,8 @@ enum TestJava {
     static let getLetterSpacing = Java.method(JavaAPI.textView, "getLetterSpacing", "()F")
     static let getLineCount = Java.method(JavaAPI.textView, "getLineCount", "()I")
     static let getVisibility = Java.method(JavaAPI.view, "getVisibility", "()I")
+    static let getNavigationIcon = Java.method(
+        Java.findClass("android/widget/Toolbar"), "getNavigationIcon", "()Landroid/graphics/drawable/Drawable;")
 
     /// An empty root, as an activity's content is.
     static func root() -> JavaObject {
