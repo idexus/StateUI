@@ -158,6 +158,26 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// The actions on a painted bar stand in its words' colour - the one written, else light on a dark bar and dark
+    /// on a light one - not in the theme's.
+    func testTheBarsActionsStandInItsWordsColour() throws {
+        try onUIThread {
+            let navy = Color(red: 0, green: 0, blue: 128)
+            for (written, words) in [(Color(red: 255, green: 230, blue: 0) as Color?, "#FFFFE600"), (nil, "#FFFFFFFF")] {
+                let host = WinUIRenderer.running {
+                    let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(title: "Notes", actions: [ToolbarItem("Scan")])
+                    } destination: { _ in Label("Pushed") }
+                        .barBackgroundColor(navy)
+                    return written.map { stack.barForegroundColor($0) } ?? stack
+                }
+                let bar = try XCTUnwrap(host.window).titleBar
+                host.settle { Self.words(bar, "actions") == "Scan|" }
+                XCTAssertEqual(Self.words(bar, "actionWords"), words, "written \(String(describing: written))")
+            }
+        }
+    }
+
     /// The chrome keeps the window's own buttons their room once, at the scale the window stands at: WinUI's title
     /// bar keeps it in pixels as though they were DIPs, which at 200% stands its actions a caption's width short of
     /// the bar's end.

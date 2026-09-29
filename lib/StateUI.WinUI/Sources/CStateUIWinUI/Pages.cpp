@@ -70,6 +70,20 @@ namespace {
         return bar.RightHeader().as<controls::StackPanel>();
     }
 
+    /// The actions on the bar stand in its words' colour where the tree gives one, "more" among them; an action
+    /// behind "more" keeps the menu's colours, on the menu's own background.
+    void paintActions(controls::TitleBar const &bar) {
+        auto actions = rightHeader(bar).Children().GetAt(0).as<controls::CommandBar>();
+        bool given = bar.ReadLocalValue(controls::Control::ForegroundProperty()) != xaml::DependencyProperty::UnsetValue();
+        auto paint = [&](controls::Control const &control) {
+            if (given) control.Foreground(bar.Foreground());
+            else control.ClearValue(controls::Control::ForegroundProperty());
+        };
+        paint(actions);
+        for (auto const &command : actions.PrimaryCommands())
+            if (auto button = command.try_as<controls::AppBarButton>()) paint(button);
+    }
+
     /// A place on the bar an authored view stands in: no stop of Tab's itself, as the view in it may be.
     controls::ContentControl slot() {
         controls::ContentControl slot;
@@ -146,6 +160,7 @@ extern "C" void stateui_winui_title_bar_set(
         auto theme = words == 1 ? xaml::ElementTheme::Dark
             : words == 2 ? xaml::ElementTheme::Light : xaml::ElementTheme::Default;
         if (bar.RequestedTheme() != theme) bar.RequestedTheme(theme);
+        paintActions(bar);
     } catch (...) {
         report("setting a title bar");
     }
@@ -205,6 +220,7 @@ extern "C" void stateui_winui_title_bar_set_actions(
             });
             (overflows[index] ? actions.SecondaryCommands() : actions.PrimaryCommands()).Append(button);
         }
+        paintActions(bar);
     } catch (...) {
         report("setting a title bar's actions");
     }

@@ -31,12 +31,14 @@ that the application may not render for - a tab chosen, the sidebar shown:
 - the page's title view stands at the chrome's centre, where an application
   puts its search;
 - an authored `TitleBar` adds its leading, centre and trailing content, and
-  the bars' colours paint the chrome; with no colour written for what stands
-  on it, the chrome takes the dark theme on a dark band and the light one on
-  a light band ([words on a painted
-  band](../../host/layout.md#words-on-a-painted-band)), its title, its
-  buttons and its commands alike - the window's own caption buttons keep
-  Windows' colours;
+  the bars' colours paint the chrome: its title and the actions on it stand
+  in the colour written for what stands on the bars, else white on a dark
+  band and black on a light one ([words on a painted
+  band](../../host/layout.md#words-on-a-painted-band)); the chrome takes the
+  dark theme on a dark band and the light one on a light band, for its
+  buttons and a pointer over an action; an action behind "more" keeps the
+  menu's colours on the menu's background, and the window's own caption
+  buttons keep Windows' colours;
 - the visible page's menus stand on a menu bar beneath the chrome
   ([menus](#menus)).
 

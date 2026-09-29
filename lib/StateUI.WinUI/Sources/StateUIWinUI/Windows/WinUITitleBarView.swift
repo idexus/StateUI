@@ -28,8 +28,9 @@ final class WinUITitleBarView: WinUIView {
         self.chrome = chrome
 
         let background = chrome.background?.argb
-        let foreground = chrome.foreground?.argb
-        // Words on a bar the tree paints: light on a dark one, dark on a light one (`BandWords`).
+        // Words on a bar the tree paints - its title and its actions: the colour written, else light on a dark one
+        // and dark on a light one (`BandWords`).
+        let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         let light = chrome.background.flatMap(BandWords.light(on:))
         stateui_winui_title_bar_set(
             handle, chrome.title, chrome.back != nil, chrome.sidebarToggle != nil,

@@ -202,6 +202,14 @@ namespace {
             };
             return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
         }
+        if (what == "actionWords") {
+            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
+            std::string colours;
+            for (auto const &command : actions.PrimaryCommands())
+                if (auto button = command.try_as<controls::AppBarButton>())
+                    colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
+            return colours;
+        }
         if (what == "actionIcons") {
             auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
             auto listed = [](auto const &commands) {

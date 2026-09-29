@@ -663,8 +663,8 @@ int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char 
 /// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
-/// `words` stand light (1) or dark (2) on a bar the tree paints, the bar's buttons and commands with them; 0 for
-/// the theme's own.
+/// `foreground` is the colour of the words on a bar the tree paints, its title's and its actions' alike; `words`
+/// stand light (1) or dark (2) on it, the bar's buttons and commands with them; 0 for the theme's own.
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool back, bool paneToggle,
                                  bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground,
                                  int32_t words);
