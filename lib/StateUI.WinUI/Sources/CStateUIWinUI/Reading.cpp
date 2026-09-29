@@ -290,9 +290,17 @@ namespace {
             return flag(split.IsPaneOpen());
         }
         if (auto tabs = object.try_as<controls::SelectorBar>()) {
-            if (what == "tabs") {
+            if (what == "tabs" || what == "tabIcons" || what == "tabIconSizes") {
                 std::string words;
-                for (auto const &item : tabs.Items()) words += (words.empty() ? "" : ";") + narrow(item.Text());
+                bool first = true;
+                for (auto const &item : tabs.Items()) {
+                    words += first ? "" : ";";
+                    first = false;
+                    if (what == "tabs") words += narrow(item.Text());
+                    else if (what == "tabIcons") words += winrt::to_string(iconFile(item.Icon()));
+                    else if (auto icon = item.Icon())
+                        words += number(icon.ActualWidth()) + "x" + number(icon.ActualHeight());
+                }
                 return words;
             }
             if (what == "selected") {

@@ -130,7 +130,7 @@ final class WinUIWindowController {
         else { return nil }
 
         return WinUIWindowTabs(
-            titles: tabs.titles, selected: tabs.shownIndex, select: { [weak tabs] index in tabs?.selectByUser(index) },
+            tabs: tabs.tabs, selected: tabs.shownIndex, select: { [weak tabs] index in tabs?.selectByUser(index) },
             split: tabbed.parent?.enclosing(type: .splitView)?.winUI.view as? WinUISplitView)
     }
 

@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ | 3 ✅ | `NSSplitViewController` |  |
 | UIKit | ✅ | 5 ✅ | `UISplitViewController` |  |
 | Android Views | ✅ | 1 ✅ | custom `ViewGroup`: a drawer where narrow, beside where wide |  |
-| WinUI 3 | ✅ | 4 ✅ | `SplitView` |  |
+| WinUI 3 | ✅ | 5 ✅ | `SplitView` |  |
 | GTK 4 | ⌛ |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
 | Web |  |  | `<aside>` | no host yet |
 
@@ -55,5 +55,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read icon of SplitView - Android's driver has no path for it yet; GTK 4: not realized |
 | `title` | property | `String` | native | · | ✅ | · | ✅ | · |  | cannot read title of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read title of SplitView - Android's driver has no path for it yet; GTK 4: cannot read title of SplitView - GTK's driver has no path for it yet |

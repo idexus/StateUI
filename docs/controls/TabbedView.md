@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ | 2 ✅ | `NSTabView`: tabless under a full-width select-one `NSSegmentedControl` beneath the toolbar - the split view detail's `NSSplitViewItemAccessoryViewController` on macOS 26 and later, else the title bar's bottom accessory - with top tabs where no window serves it |  |
 | UIKit | ✅ | 6 ✅ | `UITabBarController` |  |
 | Android Views | ✅ | 1 ✅ | custom `LinearLayout` tab row |  |
-| WinUI 3 | ✅ | 4 ✅ | `NavigationView` with a top pane |  |
+| WinUI 3 | ✅ | 5 ✅ | `NavigationView` with a top pane |  |
 | GTK 4 | ✅ |  | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
 | Web |  |  | ARIA `tablist` | no host yet |
 
@@ -63,5 +63,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet; GTK 4: not realized |
 | `title` | property | `String` | native | · | ✅ | · | ✅ | · |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read title of TabbedView - Android's driver has no path for it yet; GTK 4: cannot read title of TabbedView - GTK's driver has no path for it yet |

@@ -29,6 +29,7 @@ enum WinUIRealization {
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
+        .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
         .complete("VisualElement", "style"),
 

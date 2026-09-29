@@ -301,6 +301,7 @@ extension WinUIDriver {
     private func pageHolds(_ name: String, _ element: MountedElement, _ view: WinUIView?) throws -> HostValue? {
         switch (name, view) {
         case ("title", _): return .string(try title(of: element))
+        case ("icon", _): return try tabIcon(of: element).map { Self.picture($0, named: element) }
         case ("hasNavigationBar", _):
             let bar = try window().titleBar
             let back = try read(bar, "back") == "1"
@@ -320,15 +321,28 @@ extension WinUIDriver {
 
     /// The title shown for a page or an arrangement: its tab's, where a tabbed view presents it, else the window's.
     private func title(of element: MountedElement) throws -> String {
+        guard let (row, index) = try tab(of: element) else { return try read(window().titleBar, "title") }
+        let titles = try read(row, "tabs").split(separator: ";", omittingEmptySubsequences: false)
+        return titles.indices.contains(index) ? String(titles[index]) : ""
+    }
+
+    /// The file the picture on a page's or an arrangement's tab shows; nil where no tabbed view presents it.
+    private func tabIcon(of element: MountedElement) throws -> String? {
+        guard let (row, index) = try tab(of: element) else { return nil }
+        let files = try read(row, "tabIcons").split(separator: ";", omittingEmptySubsequences: false)
+        return files.indices.contains(index) ? String(files[index]) : ""
+    }
+
+    /// The row showing the tab a tabbed view presents a page or an arrangement on, and the tab's place in it; nil
+    /// where no tabbed view presents it.
+    private func tab(of element: MountedElement) throws -> (row: WinUIView, index: Int)? {
         var page = element
         while let parent = page.parent, parent.type != .tabbedView, parent.type != .window { page = parent }
         guard let tabbed = page.parent, tabbed.type == .tabbedView,
               let index = tabbed.children.firstIndex(where: { $0 === page }),
               let tabs = (tabbed.native as? WinUIElement)?.view as? WinUITabbedView
-        else { return try read(window().titleBar, "title") }
-        let row: WinUIView = try tabs.tabsShownByWindow ? window().tabRow : tabs
-        let titles = try read(row, "tabs").split(separator: ";", omittingEmptySubsequences: false)
-        return titles.indices.contains(index) ? String(titles[index]) : ""
+        else { return nil }
+        return (try tabs.tabsShownByWindow ? window().tabRow : tabs.row, index)
     }
 
     /// A span's run of its label's words.

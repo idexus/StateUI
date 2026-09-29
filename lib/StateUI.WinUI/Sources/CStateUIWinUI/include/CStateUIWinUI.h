@@ -703,9 +703,11 @@ StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
 
-/// A tabbed view's row of tabs: a SelectorBar, `selected` chosen.
+/// A tabbed view's row of tabs: a SelectorBar, each tab with its title and the files its picture may stand in -
+/// each ended by a line feed, empty for none - `selected` chosen.
 StateUIObjectRef stateui_winui_tabs_make(int64_t view);
-void stateui_winui_tabs_set(StateUIObjectRef tabs, char const *const *titles, int32_t count, int32_t selected);
+void stateui_winui_tabs_set(StateUIObjectRef tabs, char const *const *titles, char const *const *icons, int32_t count,
+                            int32_t selected);
 /// Chooses the tab at `index` as the user's click does - what a test does.
 void stateui_winui_tabs_choose_as_user(StateUIObjectRef tabs, int32_t index);
 

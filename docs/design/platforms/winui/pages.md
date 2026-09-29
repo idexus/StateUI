@@ -122,8 +122,16 @@ visible page path - through stacks and split views' details - gives its tabs
 to the window: they stand across the window beneath its chrome, or across a
 split view's detail, beside the sidebar and never over it. Any other tabbed
 view - in a sidebar, in a tab of another, inside content - shows its tabs in a
-row of its own above its page. Choosing a tab is the user choosing it: the
-pages hear it, then the selection's state, and the chrome follows at once.
+row of its own above its page. Each tab says the title of the page it
+presents and shows that page's picture before it, as the `SelectorBarItem`'s
+`ImageIcon` - the first of the files its name stands for that the
+application's pictures hold ([pictures](controls.md#pictures)) - as tall as the
+theme's tab icons (`TabViewItemHeaderIconSize`) and as wide as its shape makes
+it. The tab's template bounds no icon, and an SVG tells WinUI a size of
+thousands of pixels: an icon given no height stands the row as tall as the
+window. Choosing a tab
+is the user choosing it: the pages hear it, then the selection's state, and
+the chrome follows at once.
 
 ## A page's phases
 

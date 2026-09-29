@@ -87,9 +87,28 @@ final class WinUIPagesTests: XCTestCase {
             tabs.wrappedValue = [0, 1]
             host.runtime.pump.turn()
             let now = try XCTUnwrap(host.views(WinUITabbedView.self).first)
-            XCTAssertEqual(now.titles.count, 2)
+            XCTAssertEqual(now.tabs.count, 2)
             XCTAssertEqual(Self.selected(row), now.shownIndex, "the row marks the tab shown")
             XCTAssertEqual(tab.wrappedValue, 2, "and no choice of the user's heard")
+        }
+    }
+
+    /// A tab's picture stands as tall as the theme's tab icons and as wide as its shape makes it - an SVG too, which
+    /// tells WinUI a size of thousands of pixels: nothing in the tab's template bounds its icon.
+    func testATabsPictureStandsAsTallAsTheThemesTabIcons() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    TabbedView([0, 1]) { tab -> any Page in
+                        tab == 0 ? SessionPage { page, _ in page.title = "Wide"; page.icon = "test_wide.png" }
+                            : SessionPage { page, _ in page.title = "Plain" }
+                    }
+                }
+            }
+            let tabbed = try XCTUnwrap(host.views(WinUITabbedView.self).first)
+            let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row
+            host.settle { Self.words(row, "tabIconSizes") == "32x16;" }
+            XCTAssertEqual(Self.words(row, "tabIconSizes"), "32x16;", "40 by 20 drawn 16 tall; no picture beside it")
         }
     }
 
@@ -109,8 +128,9 @@ final class WinUIPagesTests: XCTestCase {
             host.settle { Self.words(window.titleBar, "title") == "Items and Cards" }
 
             path.wrappedValue = [1]
-            host.settle { host.views(WinUITabbedView.self).first?.titles == ["Example 1", "Example 2"] }
-            XCTAssertEqual(host.views(WinUITabbedView.self).first?.titles, ["Example 1", "Example 2"], "pushed")
+            host.settle { host.views(WinUITabbedView.self).first?.tabs.map(\.title) == ["Example 1", "Example 2"] }
+            XCTAssertEqual(
+                host.views(WinUITabbedView.self).first?.tabs.map(\.title), ["Example 1", "Example 2"], "pushed")
             XCTAssertEqual(Self.words(window.titleBar, "title"), "ItemsView", "the chrome's title")
             var bytes = [CChar](repeating: 0, count: 64)
             let length = stateui_winui_window_system_title(window.handle, &bytes, Int32(bytes.count))

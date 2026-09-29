@@ -11,23 +11,25 @@ final class WinUITabsView: WinUIView {
     /// What the row does when the user chooses a tab.
     var onChosen: ((Int) -> Void)?
 
-    /// The titles shown, and the tab chosen among them.
-    private(set) var titles: [String] = []
+    /// The tabs shown, and the one chosen among them.
+    private(set) var tabs: [WinUITab] = []
     private(set) var chosen = -1
 
     init() {
         super.init { number in stateui_winui_tabs_make(number) }
     }
 
-    /// Shows the tabs' titles, `chosen` selected, as the program's write; written only where they differ.
-    func show(_ titles: [String], chosen: Int) {
-        guard titles != self.titles || chosen != self.chosen else { return }
+    /// Shows the tabs, `chosen` selected, as the program's write; written only where they differ.
+    func show(_ tabs: [WinUITab], chosen: Int) {
+        guard tabs != self.tabs || chosen != self.chosen else { return }
 
-        self.titles = titles
+        self.tabs = tabs
         self.chosen = chosen
         ProgramWrite.perform {
-            WinUIStrings.withCStrings(titles) { pointers in
-                stateui_winui_tabs_set(handle, pointers, Int32(titles.count), Int32(chosen))
+            WinUIStrings.withCStrings(tabs.map(\.title)) { titles in
+                WinUIStrings.withCStrings(tabs.map { WinUIStrings.lines($0.icon) }) { icons in
+                    stateui_winui_tabs_set(handle, titles, icons, Int32(tabs.count), Int32(chosen))
+                }
             }
         }
     }

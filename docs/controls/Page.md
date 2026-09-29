@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ | 7 ✅ | custom `NSView` |  |
 | UIKit | ✅ | 11 ✅ | `UIViewController` |  |
 | Android Views | ✅ | 6 ✅ | custom `ViewGroup` |  |
-| WinUI 3 | ✅ | 9 ✅ | `Page` |  |
+| WinUI 3 | ✅ | 10 ✅ | `Page` |  |
 | GTK 4 | ✅ | 3 ✅ | custom `GtkWidget` |  |
 | Web |  |  | `<section>` | no host yet |
 
@@ -55,5 +55,5 @@ What a page shows about itself where another container presents it as an item - 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · |  |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; GTK 4: not realized |
 | `title` | property | `String` | native | ◐ | ✅ | · | ✅ | · |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet; GTK 4: cannot read title of Page - GTK's driver has no path for it yet |

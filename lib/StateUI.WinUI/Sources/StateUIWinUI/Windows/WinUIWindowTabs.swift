@@ -5,7 +5,7 @@
 /// view whose detail they stand across, if any: beside a sidebar, never over it.
 @MainActor
 struct WinUIWindowTabs {
-    let titles: [String]
+    let tabs: [WinUITab]
     let selected: Int
     let select: (Int) -> Void
     weak var split: WinUISplitView?

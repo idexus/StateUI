@@ -126,7 +126,7 @@ final class WinUIWindow {
         }
         if let tabs {
             tabRow.onChosen = tabs.select
-            tabRow.show(tabs.titles, chosen: tabs.selected)
+            tabRow.show(tabs.tabs, chosen: tabs.selected)
         }
 
         let inWindow = tabs != nil && tabs?.split == nil

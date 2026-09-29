@@ -335,7 +335,9 @@ extern "C" void stateui_winui_tabs_choose_as_user(StateUIObjectRef handle, int32
     }
 }
 
-extern "C" void stateui_winui_tabs_set(StateUIObjectRef handle, char const *const *titles, int32_t count, int32_t selected) {
+extern "C" void stateui_winui_tabs_set(
+    StateUIObjectRef handle, char const *const *titles, char const *const *icons, int32_t count, int32_t selected
+) {
     struct Setting {
         Setting() { settingTabs = true; }
         ~Setting() { settingTabs = false; }
@@ -343,11 +345,20 @@ extern "C" void stateui_winui_tabs_set(StateUIObjectRef handle, char const *cons
     try {
         auto tabs = borrow<controls::SelectorBar>(handle);
         auto items = tabs.Items();
+        auto tabIconHeight = winrt::unbox_value<double>(
+            xaml::Application::Current().Resources().Lookup(winrt::box_value(L"TabViewItemHeaderIconSize")));
         while (static_cast<int32_t>(items.Size()) > count) items.RemoveAtEnd();
         for (int32_t index = 0; index < count; ++index) {
             if (index >= static_cast<int32_t>(items.Size())) items.Append(controls::SelectorBarItem());
             auto item = items.GetAt(index);
             if (item.Text() != text(titles[index])) item.Text(text(titles[index]));
+            if (iconFile(item.Icon()) != pictureFile(icons[index])) {
+                // The row stands a tab's picture at its own size: as tall as the theme's tab icons, as wide as its
+                // shape makes it.
+                auto icon = pictureIcon(icons[index]);
+                if (icon) icon.Height(tabIconHeight);
+                item.Icon(icon);
+            }
         }
         if (selected >= 0 && selected < count && tabs.SelectedItem() != items.GetAt(selected)) {
             tabs.SelectedItem(items.GetAt(selected));

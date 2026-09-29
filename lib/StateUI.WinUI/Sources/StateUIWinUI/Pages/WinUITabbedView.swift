@@ -24,8 +24,8 @@ final class WinUITabbedView: WinUILayoutView {
         }
     }
 
-    /// The tabs' titles, as the tree says them.
-    private(set) var titles: [String] = []
+    /// The tabs, as the tree says them.
+    private(set) var tabs: [WinUITab] = []
 
     /// The row of tabs of its own, shown where the window shows none.
     let row = WinUITabsView()
@@ -39,24 +39,24 @@ final class WinUITabbedView: WinUILayoutView {
         (tabsShownByWindow ? [] : [row]) + (selectedItem.map { [$0.view] } ?? [])
     }
 
-    /// The tab the view shows, as an index into its titles; -1 for none.
-    var shownIndex: Int { choice.shown(among: titles.count) ?? -1 }
+    /// The tab the view shows, as an index into its tabs; -1 for none.
+    var shownIndex: Int { choice.shown(among: tabs.count) ?? -1 }
 
-    /// Shows the tabs' titles and the tab the tree asks for, where the user has not chosen another since.
-    func show(_ titles: [String], requested: Int?) {
+    /// Shows the tabs and the one the tree asks for, where the user has not chosen another since.
+    func show(_ tabs: [WinUITab], requested: Int?) {
         if choice.request(requested) {
             holdChildren()
             invalidateMeasurements()
         }
-        self.titles = titles
-        row.show(titles, chosen: shownIndex)
+        self.tabs = tabs
+        row.show(tabs, chosen: shownIndex)
     }
 
     /// The user chose a tab: it shows, and the view says so.
     func selectByUser(_ index: Int) {
         guard let previous = choice.choose(index, of: items.count) else { return }
 
-        row.show(titles, chosen: index)
+        row.show(tabs, chosen: index)
         holdChildren()
         invalidateMeasurements()
         onSelection?(previous, index)
