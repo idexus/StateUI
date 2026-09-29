@@ -24,6 +24,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 return Label(item)
                     .contextMenu {
                         MenuItem("Duplicate")
+                            .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
                             .onClicked {
                                 items.insert(item + " copy", at: index + 1)
                                 chosen = "duplicated \\(item)"
@@ -42,6 +43,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                         MenuSeparator()
 
                         MenuItem("Remove")
+                            .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
                             .isDestructive(true)
                             .onClicked {
                                 items.remove(at: index)
@@ -73,6 +75,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                         .background(Palette.raised)
                         .contextMenu {
                             MenuItem("Duplicate")
+                                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
                                 .onClicked {
                                     items.insert(item + " copy", at: index + 1)
                                     chosen = "duplicated \(item)"
@@ -91,6 +94,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                             MenuSeparator()
 
                             MenuItem("Remove")
+                                .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
                                 .isDestructive(true)
                                 .onClicked {
                                     items.remove(at: index)
