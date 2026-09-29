@@ -530,8 +530,9 @@ void stateui_winui_field_set_behaviour(StateUIObjectRef field, bool readOnly, bo
 /// The case a field's or an editor's typing takes (StateUI's `TextCase`).
 void stateui_winui_field_set_casing(StateUIObjectRef field, int32_t textCase);
 
-/// How a search box takes words: read only, and the case its typing takes (StateUI's `TextCase`).
-void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase);
+/// How a search box takes words: read only, the case its typing takes (StateUI's `TextCase`), and the words typed
+/// across it as `stateui_winui_field_set_look` has them.
+void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_t textCase, int32_t alignment);
 
 /// Its words across it (StateUI's `TextAlignment`) and its placeholder's colour, the platform's where not
 /// `placeholderColored`.

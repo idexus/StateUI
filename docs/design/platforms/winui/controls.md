@@ -217,6 +217,13 @@ alignment says, the placeholder takes its colour, and the caret and the
 selection are put where the tree put them, in the characters WinUI counts,
 only where the tree changed them.
 
+A search box is WinUI's `AutoSuggestBox` as it is: the text box its template
+holds takes the box's style, which carries whether it is read only, the case
+typing takes and the words typed across it. That template stands the
+placeholder at the start, in the theme's colour, whatever the text box says,
+so the register records the alignment in part and no placeholder colour -
+the host reworks no template.
+
 A test of a search box types into the text box its template holds: the
 search box's own words written from outside are the program's to it, and
 reported as such. The search box tells those words a moment after it takes

@@ -7,7 +7,7 @@ SearchField.isSpellCheckEnabled: not realized
 SearchField.isTextPredictionEnabled: not realized
 SearchField.maximumLength: ✅
 SearchField.placeholder: ✅
-SearchField.placeholderColor: not realized
+SearchField.placeholderColor: – AutoSuggestBox's text box template draws its placeholder in the theme's colour and takes none of its own.
 SearchField.selectionLength: not realized
 SearchField.text: ✅
 SearchField.textChanged: ✅

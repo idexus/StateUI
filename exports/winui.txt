@@ -218,6 +218,7 @@ SearchField
   fontAttributes
   fontFamily
   fontSize
+  horizontalTextAlignment
   isEnabled
   isReadOnly
   maximumLength

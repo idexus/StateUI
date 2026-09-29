@@ -46,6 +46,10 @@ enum WinUIRealization {
         .complete("Page", "navigatingFrom"),
         .complete("Page", "padding"),
         .complete("RadioButton", "groupName"),
+        .partial("SearchField", "horizontalTextAlignment", missing: "The placeholder stands at the start: "
+            + "AutoSuggestBox's text box template aligns only the words typed."),
+        .notPlanned("SearchField", "placeholderColor", reason: "AutoSuggestBox's text box template draws its "
+            + "placeholder in the theme's colour and takes none of its own."),
         .complete("Scene", "activated"),
         .complete("Scene", "deactivated"),
         .complete("Scene", "destroying"),

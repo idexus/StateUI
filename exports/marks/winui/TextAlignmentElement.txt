@@ -3,7 +3,7 @@ Label.horizontalTextAlignment: ✅
 Label.verticalTextAlignment: ✅
 Picker.horizontalTextAlignment: ✅
 Picker.verticalTextAlignment: not realized
-SearchField.horizontalTextAlignment: not realized
+SearchField.horizontalTextAlignment: ☑️ The placeholder stands at the start: AutoSuggestBox's text box template aligns only the words typed.
 SearchField.verticalTextAlignment: not realized
 TextEditor.horizontalTextAlignment: ✅
 TextEditor.verticalTextAlignment: not realized

@@ -38,6 +38,9 @@ extension WinUIRegistrations {
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
             search.property(InputViewContract.isReadOnly) { view, readOnly in view.setReadOnly(readOnly ?? false) }
+            search.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
+                view.setAlignment(alignment ?? .start)
+            }
             search.raises(InputViewContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })

@@ -32,6 +32,19 @@ namespace {
         });
     }
 
+    /// The words across a text box for StateUI's `TextAlignment`: centred, at the end, or at the start.
+    xaml::TextAlignment across(int32_t alignment) {
+        return alignment == 1 ? xaml::TextAlignment::Center
+               : alignment == 2 ? xaml::TextAlignment::Right
+                                : xaml::TextAlignment::Left;
+    }
+
+    media::SolidColorBrush brush(uint32_t argb) {
+        return media::SolidColorBrush(winrt::Windows::UI::Color{
+            static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
+            static_cast<uint8_t>(argb)});
+    }
+
     /// The case a text box puts typed letters in for StateUI's `TextCase`: upper, lower, or as typed.
     controls::CharacterCasing casing(int32_t textCase) {
         return textCase == 3   ? controls::CharacterCasing::Upper
@@ -143,15 +156,18 @@ extern "C" void stateui_winui_field_set_casing(StateUIObjectRef handle, int32_t 
     }
 }
 
-extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readOnly, int32_t textCase) {
+extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readOnly, int32_t textCase, int32_t alignment) {
     try {
         // The box types in the text box its template holds, which takes the style the box gives it: WinUI's own,
-        // with the case typing takes and whether it is read only.
+        // with the case typing takes, whether it is read only and the words typed across it - its template stands
+        // the placeholder at the start, in the theme's colour, whatever the text box says.
         xaml::Style style{winrt::xaml_typename<controls::TextBox>()};
         auto own = xaml::Application::Current().Resources().TryLookup(winrt::box_value(L"AutoSuggestBoxTextBoxStyle"));
         if (own) style.BasedOn(own.as<xaml::Style>());
-        style.Setters().Append(xaml::Setter(controls::TextBox::CharacterCasingProperty(), winrt::box_value(casing(textCase))));
-        style.Setters().Append(xaml::Setter(controls::TextBox::IsReadOnlyProperty(), winrt::box_value(readOnly)));
+        auto setters = style.Setters();
+        setters.Append(xaml::Setter(controls::TextBox::CharacterCasingProperty(), winrt::box_value(casing(textCase))));
+        setters.Append(xaml::Setter(controls::TextBox::IsReadOnlyProperty(), winrt::box_value(readOnly)));
+        setters.Append(xaml::Setter(controls::TextBox::TextAlignmentProperty(), winrt::box_value(across(alignment))));
         borrow<controls::AutoSuggestBox>(handle).TextBoxStyle(style);
     } catch (...) {
         report("setting how a search box takes words");
@@ -161,13 +177,9 @@ extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readO
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
         auto field = borrow<controls::TextBox>(handle);
-        field.TextAlignment(alignment == 1 ? xaml::TextAlignment::Center
-                            : alignment == 2 ? xaml::TextAlignment::Right
-                                             : xaml::TextAlignment::Left);
+        field.TextAlignment(across(alignment));
         if (placeholderColored)
-            field.PlaceholderForeground(media::SolidColorBrush(winrt::Windows::UI::Color{
-                static_cast<uint8_t>(placeholderArgb >> 24), static_cast<uint8_t>(placeholderArgb >> 16),
-                static_cast<uint8_t>(placeholderArgb >> 8), static_cast<uint8_t>(placeholderArgb)}));
+            field.PlaceholderForeground(brush(placeholderArgb));
         else
             field.ClearValue(controls::TextBox::PlaceholderForegroundProperty());
     } catch (...) {

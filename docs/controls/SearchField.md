@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ | 41 ✅ · 1 ☑️ | `NSSearchField` |  |
 | UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
 | Android Views | ✅ | 63 ✅ · 1 ☑️ | `SearchView` |  |
-| WinUI 3 | ✅ | 63 ✅ | `AutoSuggestBox` |  |
+| WinUI 3 | ✅ | 63 ✅ · 1 ☑️ · 1 – | `AutoSuggestBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkSearchEntry` |  |
 | Web |  |  | `<input type=search>` | no host yet |
 
@@ -141,7 +141,7 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ |  |  | · |  | cannot read isTextPredictionEnabled of SearchField - AppKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read isTextPredictionEnabled of SearchField - GTK's driver has no path for it yet |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of SearchField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
 | `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholder of SearchField - GTK's driver has no path for it yet |
-| `placeholderColor` | property | `Color` | native | · | · | ✅ |  | · |  | cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet; WinUI 3: not realized; GTK 4: cannot read placeholderColor of SearchField - GTK's driver has no path for it yet |
+| `placeholderColor` | property | `Color` | native | · | · | ✅ | – | · |  | cannot read placeholderColor of SearchField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of SearchField - UIKit's driver has no path for it yet; WinUI 3: AutoSuggestBox's text box template draws its placeholder in the theme's colour and takes none of its own.; GTK 4: cannot read placeholderColor of SearchField - GTK's driver has no path for it yet |
 | `selectionLength` | property | `Int` | native | · | ✅ | ✅ |  | · |  | cannot read selectionLength of SearchField - AppKit's driver has no path for it yet; WinUI 3: not realized; GTK 4: cannot read selectionLength of SearchField - GTK's driver has no path for it yet |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
@@ -180,7 +180,7 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ |  | · |  | WinUI 3: not realized; GTK 4: cannot read horizontalTextAlignment of SearchField - GTK's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ | ☑️ | · |  | WinUI 3: The placeholder stands at the start: AutoSuggestBox's text box template aligns only the words typed.; GTK 4: cannot read horizontalTextAlignment of SearchField - GTK's driver has no path for it yet |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [TintElement](tiers/TintElement.md)
