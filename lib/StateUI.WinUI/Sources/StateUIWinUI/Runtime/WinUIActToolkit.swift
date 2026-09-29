@@ -90,8 +90,11 @@ final class WinUIActToolkit: ActToolkit {
         renderer.userWindow?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
     }
 
+    /// Design: docs/design/platforms/winui/runtime.md#acts
     func focus(_ element: MountedElement) -> Bool? {
         guard let view = (element.native as? WinUIElement)?.view else { return nil }
+        // A view WinUI has not laid out yet stands in no window and refuses the focus: its window lays out first.
+        if let content = renderer.controller(of: element)?.window.content { stateui_winui_update_layout(content.handle) }
         return stateui_winui_focus(view.handle, true)
     }
 

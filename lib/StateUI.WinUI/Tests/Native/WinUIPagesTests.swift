@@ -218,6 +218,58 @@ final class WinUIPagesTests: XCTestCase {
             XCTAssertTrue(split.detailRow === window.tabRow)
         }
     }
+
+    /// A page that asks for the focus as it appears holds it in a new arrangement of the window - a split view in
+    /// place of the stack a sign-in stood on - though the field that held it leaves with that stack.
+    func testAPageInANewArrangementHoldsTheFocusItAskedFor() throws {
+        try onUIThread {
+            let signedIn = State(wrappedValue: false)
+            let host = WinUIRenderer.running { Self.signIn(signedIn) }
+            let typed = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertTrue(stateui_winui_focus(typed.handle, true), "the sign-in's field holds the focus")
+
+            signedIn.wrappedValue = true
+            for _ in 0..<20 { host.step() }
+
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertFalse(field === typed, "the sign-in has left")
+            XCTAssertTrue(stateui_winui_focused(field.handle), "the field the page aimed at holds the focus")
+        }
+    }
+
+    /// A sign-in's field on a stack, then a split view whose stack's page aims at its field.
+    private static func signIn(_ signedIn: State<Bool>) -> any Page {
+        guard signedIn.wrappedValue else {
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                TextField(State(wrappedValue: "").projectedValue)
+            } destination: { _ in Label("Pushed") }
+        }
+        return SplitView(State(wrappedValue: false).projectedValue) {
+            Label("Menu")
+        } detail: {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                AimedFieldPage()
+            } destination: { _ in Label("Pushed") }
+        }
+    }
+}
+
+/// A page that puts the focus in its field as it appears.
+private struct AimedFieldPage: ContentView {
+    @Environment private var page: PageSession
+    @Aim(TextField.self) private var field
+
+    var content: any View {
+        let (page, field) = (self.page, self.field)
+        return VStack {
+            TextField(State(wrappedValue: "").projectedValue).aim(field)
+            Button("Below")
+        }
+        .onChanged(page.phase) {
+            guard page.phase == .appearing else { return }
+            try await field.focus()
+        }
+    }
 }
 
 /// A page with a title, maybe a log of its phases, the actions it puts on the window's chrome, and whether it hides

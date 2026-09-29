@@ -164,7 +164,12 @@ was saying. The focus
 is put on the view the act names, or the first control in it that takes it;
 WinUI has no way to leave the focus nowhere, so taking it off lends it to the
 window's content for a moment, as no control, and the on-screen keyboard goes
-with a field that loses it.
+with a field that loses it. A page asks for the focus as it appears, before
+WinUI's next layout: a view a control presents through its template - a split
+view's detail, just shown - stands in no window until that layout and refuses
+the focus, which then falls to the window's first stop, its title bar, as the
+field that held it leaves. So the window lays out what it was given before the
+focus moves.
 
 ## Questions for the user
 
