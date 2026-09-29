@@ -25,8 +25,7 @@ final class NativeProjectTests: XCTestCase {
                 contentsOf: app.appendingPathComponent("Package.swift"),
                 encoding: .utf8)
             XCTAssertTrue(manifest.contains("name: \"\(name)UI\""))
-            XCTAssertTrue(manifest.contains("name: \"\(name)AppKit\""))
-            XCTAssertTrue(manifest.contains("name: \"StateUIAppKit\""))
+            XCTAssertTrue(declaresHead(manifest, of: name, for: "AppKit", in: "Platforms/AppKit"))
 
             let entry = try String(
                 contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"),
@@ -41,6 +40,58 @@ final class NativeProjectTests: XCTestCase {
                 registration.contains("@_cdecl(\"stateui_app_register\")"),
                 "\(name)'s module does not register the application for its Android head")
         }
+    }
+
+    /// Every head gets its host from `lib/StateUI.Head`, which reads the build's
+    /// `STATEUI_` variable once for every application: it depends on that host's
+    /// package alone and re-exports it, and a WinUI head links as a windowed
+    /// application. No application names a host's package itself, and each
+    /// reads the same hosts the head package does.
+    func testEveryHeadGetsItsHostFromTheHeadPackage() throws {
+        let repository = SourceTree.repository
+        func text(_ relative: String) throws -> String {
+            try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
+        }
+        let hosts = ["AppKit", "UIKit", "Android", "WinUI", "GTK"]
+        let list = "let host = [" + hosts.map { "\"\($0)\"" }.joined(separator: ", ") + "]"
+
+        let manifest = try text("lib/StateUI.Head/Package.swift")
+        for shape in [list, "path: \"../StateUI.\\($0)\"", "\"/SUBSYSTEM:WINDOWS\"", "\"/ENTRY:mainCRTStartup\""] {
+            XCTAssertTrue(manifest.contains(shape), "lib/StateUI.Head/Package.swift does not say \(shape)")
+        }
+        let source = try text("lib/StateUI.Head/Sources/StateUIHead.swift")
+        for host in hosts {
+            XCTAssertTrue(
+                FileManager.default.fileExists(
+                    atPath: repository.appendingPathComponent("lib/StateUI.\(host)/Package.swift").path),
+                "no host package lib/StateUI.\(host)")
+            XCTAssertTrue(
+                source.contains("if \(host.uppercased())\n@_exported import StateUI\(host)\n"),
+                "StateUIHead does not re-export StateUI\(host) under #if \(host.uppercased())")
+        }
+
+        for application in try SourceTree.applications() {
+            let name = application.lastPathComponent
+            let manifest = try String(contentsOf: application.appendingPathComponent("Package.swift"), encoding: .utf8)
+            XCTAssertTrue(manifest.contains(list), "\(name) reads other hosts than lib/StateUI.Head")
+            XCTAssertTrue(
+                manifest.contains(".package(name: \"StateUIHead\", path: \"../../lib/StateUI.Head\")"),
+                "\(name) does not depend on lib/StateUI.Head")
+            for host in hosts {
+                XCTAssertFalse(
+                    manifest.contains("lib/StateUI.\(host)\""), "\(name) names StateUI\(host)'s package itself")
+            }
+        }
+    }
+
+    /// Whether an application's manifest declares its head for `host`, named
+    /// `<Name><Host>`, in `path`, with StateUIHead bringing the host: by name,
+    /// or through the case every head without a module of its own shares.
+    private func declaresHead(_ manifest: String, of name: String, for host: String, in path: String) -> Bool {
+        let named = manifest.contains("name: \"\(name)\(host)\"") && manifest.contains("path: \"\(path)\"")
+        let shared = path == "Platforms/\(host)"
+            && manifest.contains("name: \"\(name)\\(host)\"") && manifest.contains("path: \"Platforms/\\(host)\"")
+        return manifest.contains(".product(name: \"StateUIHead\", package: \"StateUIHead\")") && (named || shared)
     }
 
     /// Every host is Swift, and code in a platform's own language is a relay
@@ -258,14 +309,9 @@ final class NativeProjectTests: XCTestCase {
                 try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
             }
 
-            let manifest = try text("Package.swift")
-            for shape in [
-                "environment[\"STATEUI_WINUI\"] == \"1\"", "hasWinUIHead ? [.define(\"WINUI\")] : []",
-                "name: \"\(name)WinUI\"", "name: \"StateUIWinUI\"", "path: \"Platforms/WinUI\"",
-                "\"/SUBSYSTEM:WINDOWS\"", "\"/ENTRY:mainCRTStartup\"",
-            ] {
-                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
-            }
+            XCTAssertTrue(
+                declaresHead(try text("Package.swift"), of: name, for: "WinUI", in: "Platforms/WinUI"),
+                "\(name)'s Package.swift declares no WinUI head in Platforms/WinUI")
 
             let entry = try text("Platforms/WinUI/main.swift")
             for shape in ["import StateUIWinUI", "stateui_app_register()", "StateUIWinUI.run()"] {
@@ -373,13 +419,9 @@ final class NativeProjectTests: XCTestCase {
                 try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
             }
 
-            let manifest = try text("Package.swift")
-            for shape in [
-                "environment[\"STATEUI_GTK\"] == \"1\"", "hasGTKHead ? [.define(\"GTK\")] : []",
-                "name: \"\(name)GTK\"", "name: \"StateUIGTK\"", "path: \"Platforms/GTK\"",
-            ] {
-                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
-            }
+            XCTAssertTrue(
+                declaresHead(try text("Package.swift"), of: name, for: "GTK", in: "Platforms/GTK"),
+                "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
             for shape in ["import StateUIGTK", "stateui_app_register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
@@ -406,13 +448,9 @@ final class NativeProjectTests: XCTestCase {
                 try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
             }
 
-            let manifest = try text("Package.swift")
-            for shape in [
-                "environment[\"STATEUI_ANDROID\"] == \"1\"", "hasAndroidHead ? [.define(\"ANDROID\")] : []",
-                "name: \"\(name)Android\"", "name: \"StateUIAndroid\"", "path: \"Platforms/Android/Swift\"",
-            ] {
-                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
-            }
+            XCTAssertTrue(
+                declaresHead(try text("Package.swift"), of: name, for: "Android", in: "Platforms/Android/Swift"),
+                "\(name)'s Package.swift declares no Android head in Platforms/Android/Swift")
 
             // The host's activity, or one of the application's own Java that extends it.
             let android = try text("Platforms/Android/AndroidManifest.xml")
@@ -500,16 +538,16 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertEqual(offenders, [], "these name a host in code every host runs")
     }
 
-    /// Every application DEFINES THE APPKIT CONDITION IN ITS MANIFEST, for
-    /// every module it compiles, exactly when a build says it is an AppKit one.
+    /// Every application DEFINES ITS HOST'S CONDITION IN ITS MANIFEST, for
+    /// every module it compiles, exactly when a build says it is for that host.
     ///
-    /// One variable says both things - that the build has an AppKit head, and
-    /// that code under `#if APPKIT` compiles - so a build and an editor that
-    /// set it agree, and the editor completes that code like any other. The
-    /// flag it replaced, `-Xswiftc -DAPPKIT`, is refused wherever a build is
-    /// written down: a second spelling of the same switch is how the two
-    /// drift apart.
-    func testEveryApplicationDefinesTheAppKitConditionInItsManifest() throws {
+    /// One variable says both things - `STATEUI_APPKIT=1` gives the build an
+    /// AppKit head and compiles the code under `#if APPKIT` - so a build and an
+    /// editor that set it agree, and the editor completes that code like any
+    /// other. The flag it replaced, `-Xswiftc -DAPPKIT`, is refused wherever a
+    /// build is written down: a second spelling of the same switch is how the
+    /// two drift apart.
+    func testEveryApplicationDefinesItsHostsConditionInItsManifest() throws {
         let repository = SourceTree.repository
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
@@ -518,9 +556,11 @@ final class NativeProjectTests: XCTestCase {
         for relative in ["apps/Gallery/Package.swift", "apps/HelloWorld/Package.swift"] {
             let manifest = try text(relative)
 
-            XCTAssertTrue(
-                manifest.contains("hasAppKitHead ? [.define(\"APPKIT\")] : []"),
-                "\(relative) does not define APPKIT for an AppKit build")
+            for shape in [
+                "Context.environment[\"STATEUI_\\($0.uppercased())\"] == \"1\"", ".define($0.uppercased())",
+            ] {
+                XCTAssertTrue(manifest.contains(shape), "\(relative) does not say \(shape)")
+            }
 
             // No module is left compiling without it.
             let settings = manifest.components(separatedBy: "swiftSettings:").dropFirst()

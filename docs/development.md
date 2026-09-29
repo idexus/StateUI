@@ -7,6 +7,7 @@ Package.swift                      StateUI core package and core tests
 lib/StateUI/Sources/               platform-neutral StateUI
 lib/StateUI/Tests/                 core tests and shared test support
 lib/StateUI.Host/                  the host layer every host stands on, and its tests
+lib/StateUI.Head/                  the host every application's head is built with
 lib/StateUI.Conformance/           the conformance suite every host's tests run
 lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
@@ -43,10 +44,12 @@ any other mention of a host in the library and in the applications'
 `Sources/`.
 
 `STATEUI_APPKIT=1` is what makes a build an AppKit one. An application's
-manifest reads it and then declares the `Platforms/AppKit` target, the product
-it makes and the `StateUIAppKit` dependency, and defines `APPKIT` for every
-module of the application. A manifest cannot read a compiler flag - a flag
-reaches the targets of a build, never the manifest describing them - so no
+manifest reads it, declares its `Platforms/AppKit` head and defines `APPKIT`
+for every module of the application. The head depends on
+`lib/StateUI.Head`, whose manifest reads the same variable once for every
+application and brings the `StateUIAppKit` host; an application names no host
+package itself. A manifest cannot read a compiler flag - a flag reaches the
+targets of a build, never the manifest describing them - so no
 `-Xswiftc -DAPPKIT` is given beside the variable. Without it, `swift test`
 resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
@@ -261,6 +264,6 @@ honest about that state until both products have a supported versioned route.
 
 A release has one version, stated in the editor extension's
 `lib/StateUI.VSCode/package.json`. Every other place that names it - the
-published-package line in each `Package.swift`, each Android head's version,
+published-package line in the root `Package.swift`, each Android head's version,
 the Gallery's AppKit bundle, the bug report's example - names the same one, and
 `ReleaseTests` holds them to it.

@@ -298,13 +298,16 @@ final class AppsTests: XCTestCase {
 
     /// Every path a manifest names, and whether it names a package - a
     /// directory holding a Package.swift - rather than a target's own files.
-    /// Comment lines are left out.
+    /// Comment lines are left out, and so is a path built from the build's
+    /// host - `Platforms/\(host)` - whose head NativeProjectTests asks about
+    /// host by host.
     private func manifestPaths(in manifest: String) -> [(path: String, isPackage: Bool)] {
         manifest.split(separator: "\n")
             .filter { !$0.drop(while: { $0 == " " }).hasPrefix("//") }
             .flatMap { line -> [(path: String, isPackage: Bool)] in
                 let isPackage = line.contains(".package(")
                 return String(line).occurrences(between: "path: \"", and: "\"")
+                    .filter { !$0.contains("\\(") }
                     .map { (path: $0, isPackage: isPackage) }
             }
     }
