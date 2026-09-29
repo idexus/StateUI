@@ -20,6 +20,23 @@ private struct Coming: ContentView {
     }
 }
 
+/// Another kind of view drawing what `Coming` draws, saying when it comes and goes.
+private struct Arriving: ContentView {
+    @Binding var log: [String]
+    let name: String
+
+    var content: any View {
+        Label(name)
+            .onCreated { log.append("created \(name)") }
+            .onDestroying { log.append("destroying \(name)") }
+    }
+}
+
+/// One view or another, as a function answers it: no builder path tells the two apart.
+private func chosen(_ arriving: Bool, log: Binding<[String]>) -> any View {
+    arriving ? Arriving(log: log, name: "b") : Coming(log: log, name: "a")
+}
+
 /// A view holding another, both saying when they come and go.
 private struct Holding: ContentView {
     @Binding var log: [String]
@@ -158,6 +175,23 @@ final class LifetimeTests: XCTestCase {
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(log.wrappedValue, ["created 1", "destroying 1", "created 2"])
+    }
+
+    /// A view of another kind is a new element, though it stands where the
+    /// last one stood and draws the same control: the one standing goes and
+    /// the new one comes, and nothing the one before watched carries over.
+    func testAViewOfAnotherKindIsANewElement() {
+        let log = State(wrappedValue: [String]())
+        let arriving = State(wrappedValue: false)
+        let renders = Renders()
+        let tree = { VStack { chosen(arriving.wrappedValue, log: log.projectedValue) }.body }
+
+        renders.render(tree())
+        arriving.wrappedValue = true
+        let patch = renders.render(tree(), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(log.wrappedValue, ["created a", "destroying a", "created b"])
+        XCTAssertEqual(patch.children.first?.replace, true, "the host makes the control anew")
     }
 
     /// What is written ON a composed view runs as well as what its body

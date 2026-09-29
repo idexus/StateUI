@@ -46,6 +46,18 @@ conditional beside them does not shift them.
 differ assigns and `.manual` is the author's text. One is a number and the
 other a string, so they can never collide.
 
+## Another kind of view
+
+A key says where an element stands, not what it is. A function that answers
+one view or another - a `switch` returning a page, where no builder records a
+branch - puts both in one place under one key. The views composed into an
+element are part of what it is: another kind of view there, or the same kind
+in another order, replaces the element, as another host type does. The host
+makes the control anew, the elements under it are created, and nothing the
+view before it watched, wrote or was told carries over - its page, its
+`onChanged` readings, its focus. A composed view keeps state only from a view
+of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
+
 ## What a walk keeps
 
 The differ is one object for the life of the renderer. What it keeps between

@@ -63,6 +63,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(told, [6, 7, 8, 2, 3])
     }
 
+    /// A page made anew where one stood - another view in the stack's place - hears it is shown, as a page pushed
+    /// there does.
+    func testAPageMadeAnewInItsPlaceIsShown() throws {
+        var told: [Int32] = []
+        let runtime = runtime(stackWindow([node("a", .page, events: first)])) { told.append($0) }
+        _ = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
+        told = []
+
+        var anew = node("a", .page, events: [.appearing: 9, .navigatedTo: 10])
+        anew.replace = true
+        runtime.tree.apply(stackWindow([anew]), complete: false)
+
+        XCTAssertEqual(told, [9, 10])
+    }
+
     /// A tabbed view's tabs stand in the window's row down its stacks and split view details, and nowhere else.
     func testTabsStandInTheWindowDownItsStacksAndDetails() throws {
         let tabs = { (id: String) in self.node(id, .tabbedView, children: [self.node("\(id).page", .page)]) }

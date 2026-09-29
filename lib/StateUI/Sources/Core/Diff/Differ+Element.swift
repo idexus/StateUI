@@ -316,9 +316,11 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
         let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
 
-        // Except those with no host default, which replace the element.
+        // Except those with no host default, which replace the element - as a view of another kind does.
+        // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
-            && (rendered!.type != node.type || lost.contains { !$0.facts.cleared })
+            && (rendered!.type != node.type || rendered!.views.map(\.type) != views.map(\.type)
+                || lost.contains { !$0.facts.cleared })
 
         // Nothing to build on: the element is new, or cannot become what is described.
         let previous = replace ? nil : rendered

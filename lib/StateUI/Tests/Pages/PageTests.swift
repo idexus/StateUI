@@ -180,14 +180,20 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(again.cleared, [], "and nothing is taken off the page")
     }
 
-    /// Another view standing there is another page: it starts with a session
-    /// of its own, and nothing the view before it wrote is left on it.
-    func testAnotherViewOnThePageStartsASessionOfItsOwn() {
+    /// Another view standing there is another page: the host makes it anew
+    /// with a session of its own, nothing the view before it wrote is left on
+    /// it, and the view arriving comes into the tree - what it writes as it
+    /// comes is on the page.
+    func testAnotherViewOnThePageIsAnotherPage() {
         let renders = Renders()
         renders.settled(Node.page(Named(name: "Home")))
-        let other = renders.settled(Node.page(Plain()))
+        let plain = renders.settled(Node.page(Plain()))
+        let named = renders.settled(Node.page(Named(name: "Away")))
 
-        XCTAssertEqual(other.cleared, ["title"], "the title was the view before's")
+        XCTAssertTrue(plain.replace, "the host makes the page anew")
+        XCTAssertNil(plain.props[.title], "the title was the view before's")
+        XCTAssertTrue(named.replace)
+        XCTAssertEqual(named.props[.title], .string("Away"), "written by the view arriving, as it came")
     }
 
     /// The same kind of view under another explicit id is another view, and
