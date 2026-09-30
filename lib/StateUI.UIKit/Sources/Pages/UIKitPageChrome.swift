@@ -24,11 +24,13 @@ struct UIKitPageChrome {
     /// Puts it on `item`, the bar a navigation controller shows for the page.
     func show(on item: UINavigationItem) {
         item.title = title
-        if item.titleView !== titleView { item.titleView = titleView }
-        if let titleView {
-            let size = titleView.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44))
-            titleView.bounds.size = size
+        // A layout's size follows what it holds; a control keeps the width the bar gave it, which a fit to its
+        // words at every render cut and the bar widened again, letter by letter.
+        // Design: docs/design/platforms/uikit/pages.md#the-bar
+        if let titleView, item.titleView !== titleView || titleView is UIKitLayoutView || titleView.bounds.isEmpty {
+            titleView.bounds.size = titleView.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44))
         }
+        if item.titleView !== titleView { item.titleView = titleView }
         item.hidesBackButton = !offersBack
         // Each group its own background; the leading ones beside the way back.
         // Design: docs/design/platforms/uikit/pages.md#the-bar

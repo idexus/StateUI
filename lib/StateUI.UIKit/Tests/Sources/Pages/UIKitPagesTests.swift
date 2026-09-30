@@ -37,6 +37,34 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// A field in the title's place keeps its width while the user types into it: a control is not fitted to its
+    /// words again at every render, which cut it and let the bar widen it again, letter by letter.
+    @MainActor
+    func testATitleFieldKeepsItsWidthWhileTheUserTypes() throws {
+        let query = State(wrappedValue: "")
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Label("Found \(query.wrappedValue)").titleView {
+                    SearchField(query.projectedValue).placeholder("Search the list").id("query")
+                }
+            } destination: { _ in Label("Pushed") }
+        }
+        defer { host.finish() }
+        let field = { (host.runtime.tree.root?.first(id: .manual("query"))?.native as? UIKitElement)?.view as? UITextField }
+        host.settle { field()?.window != nil }
+        let search = try XCTUnwrap(field())
+        let width = search.bounds.width
+        XCTAssertTrue(search.becomeFirstResponder())
+
+        for letter in ["b", "e", "t"] {
+            search.insertText(letter)
+            host.runtime.pump.turn()
+            search.window?.layoutIfNeeded()
+            XCTAssertEqual(search.bounds.width, width, "after \(letter)")
+        }
+        XCTAssertEqual(query.wrappedValue, "bet")
+    }
+
     /// The main menu is built again when an entry answers another element though it says the same: the page's Save
     /// standing in the place of the stack's carries the page's element in its identifier.
     @MainActor

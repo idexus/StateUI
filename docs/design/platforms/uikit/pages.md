@@ -27,7 +27,11 @@ it - its actions as the host layer composes them along the page's path, each
 group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
 background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button, whether it offers the way back, and its colours
-where the tree gives them. An action that destroys something is marked
+where the tree gives them. The view standing in for the title is fitted to
+what it holds as it comes, and a layout again at every render; a control -
+a search field - keeps the width the bar gives it: fitted to its words at
+every render, it was cut as the user typed and widened again by the bar,
+letter by letter. An action that destroys something is marked
 destructive in the menu and tinted red on the bar. A tabbed view's bar is its
 chosen tab's page's, but for its title: the page the window is named by
 ([the window's chrome](../../host/pages.md#the-windows-chrome)) - tabs pushed
