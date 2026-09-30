@@ -45,7 +45,7 @@ enum AndroidRealization {
         .notPlanned("MenuItem", "accessibilityIdentifier",
                     reason: "An Android menu entry holds no identifier: automation finds it by its title."),
         .complete("NavigationStack", "barBackgroundColor"),
-        .complete("NavigationStack", "barForegroundColor"),
+        .partial("NavigationStack", "barForegroundColor", missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the navigation button and the pictures take the colour itself."),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "background"),

@@ -77,8 +77,8 @@ enum TestMenus {
     static let getMenu = Java.method(Java.findClass("android/widget/Toolbar"), "getMenu", "()Landroid/view/Menu;")
     private static let barActions = Java.staticMethod(owner, "onBar", "(Landroid/view/ViewGroup;)Ljava/lang/String;")
 
-    /// The actions standing on `bar` as it lays them out: each one's words, or "picture", and the colour it is
-    /// drawn in, as ARGB in hexadecimal.
+    /// The actions standing on `bar` as it lays them out: each one's words and whether they are drawn "light" or
+    /// "dark", or "picture" and the colour it is drawn in, as ARGB in hexadecimal.
     static func onBar(_ bar: AndroidView) -> String {
         Java.frame { Java.callStaticObject(owner, barActions, .object(bar.reference)).map { Java.text($0) } ?? "" }
     }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.Spanned;
@@ -68,8 +69,9 @@ public final class TestMenus {
     }
 
     /**
-     * The actions standing on `bar`, as it lays them out: each one's words and the colour they are drawn in, or
-     * "picture" and the colour at the middle of its picture as drawn - ARGB in hexadecimal, ", " between them.
+     * The actions standing on `bar`, as it lays them out: each one's words and whether they are drawn "light" or
+     * "dark", or "picture" and the colour at the middle of its picture as drawn - ARGB in hexadecimal - ", "
+     * between them.
      */
     public static String onBar(ViewGroup bar) {
         StringBuilder words = new StringBuilder();
@@ -82,7 +84,9 @@ public final class TestMenus {
                 Drawable picture = action.getCompoundDrawables()[0];
                 if (words.length() > 0) words.append(", ");
                 if (action.getText().length() > 0) {
-                    words.append(action.getText()).append(" #").append(Integer.toHexString(action.getCurrentTextColor()));
+                    int colour = action.getCurrentTextColor();
+                    double luminance = 0.2126 * Color.red(colour) + 0.7152 * Color.green(colour) + 0.0722 * Color.blue(colour);
+                    words.append(action.getText()).append(luminance / 255 < 0.5 ? " dark" : " light");
                 } else if (picture != null) {
                     words.append("picture #").append(Integer.toHexString(middle(picture)));
                 }

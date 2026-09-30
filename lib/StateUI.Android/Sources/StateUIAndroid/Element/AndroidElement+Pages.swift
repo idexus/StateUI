@@ -131,13 +131,14 @@ extension AndroidElement {
         }
 
         navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)
-        navigation.bar.show(content)
-        navigation.bar.showTitleView(page?.slotContent(.titleView)?.android.layoutItem?.view)
-        navigation.bar.onMenuChose = { index in
+        let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
+        bar.show(content)
+        bar.showTitleView(page?.slotContent(.titleView)?.android.layoutItem?.view)
+        bar.onMenuChose = { index in
             guard shown.indices.contains(index) else { return }
             shown[index].android.send(.clicked, [])
         }
-        navigation.bar.onNavigation = { [weak self] in
+        bar.onNavigation = { [weak self] in
             guard let self else { return }
             if content.navigation == .back {
                 host?.goBack(.pop(element))

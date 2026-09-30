@@ -35,9 +35,26 @@ final class AndroidBarView: AndroidView {
     /// The view standing in for the title, where one does.
     private(set) weak var titleView: AndroidView?
 
-    init() {
+    /// The theme the bar's actions take their words from: Android's overlay for a dark bar - light words - or a
+    /// light one, by the host layer's reading of the bar's colour (`BandWords.light`); the activity's where the tree
+    /// paints no bar.
+    /// Design: docs/design/platforms/android/pages.md#the-bar
+    enum Words: Int32 {
+        case platform = 0, light = 1, dark = 2
+
+        /// The words a bar painted `background` takes.
+        init(on background: HostValue?) {
+            self = background.flatMap(BandWords.light(on:)).map { $0 ? .light : .dark } ?? .platform
+        }
+    }
+
+    /// The theme the bar's actions take their words from, fixed as the bar is made.
+    let words: Words
+
+    init(words: Words = .platform) {
+        self.words = words
         super.init { number in
-            Java.new(JavaAPI.bar, JavaAPI.newBar, .object(AndroidRenderer.context), .long(number))
+            Java.new(JavaAPI.bar, JavaAPI.newBar, .object(AndroidRenderer.context), .long(number), .int(words.rawValue))
         }
     }
 

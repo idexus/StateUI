@@ -9,7 +9,19 @@
 /// Design: docs/design/platforms/android/pages.md#a-navigation-stack
 @MainActor
 final class AndroidNavigationView: AndroidLayoutView {
-    let bar = AndroidBarView()
+    private(set) var bar = AndroidBarView()
+
+    /// The bar whose actions take `words`: the one standing, or one made in their theme in its place - a view's
+    /// theme is fixed as it is made.
+    func bar(taking words: AndroidBarView.Words) -> AndroidBarView {
+        guard words != bar.words else { return bar }
+
+        bar.detach()
+        bar = AndroidBarView(words: words)
+        holdChildren()
+        invalidateMeasurements()
+        return bar
+    }
 
     /// Whether the bar shows over the top page, as the page says.
     private(set) var showsBar = true

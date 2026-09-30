@@ -311,11 +311,13 @@ final class AndroidPagesTests: XCTestCase {
 }
 
 extension AndroidPagesTests {
-    /// The actions standing on a painted bar stand in its words' colour, their words and their pictures alike, as
-    /// its title does.
+    /// The actions standing on a painted bar take their words from the bar's theme - light on a dark bar, dark on a
+    /// light one - as Android's own bars do; their pictures take the bar's words' colour itself. A bar painted
+    /// again in the other shade is made again in its theme.
     func testTheBarsActionsStandInItsWordsColour() throws {
         try onMainActor {
-            let host = AndroidRenderer.running {
+            let dark = State(wrappedValue: true)
+            let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
                         ToolbarItem("Scan").priority(0),
@@ -324,13 +326,19 @@ extension AndroidPagesTests {
                 } destination: { _ in
                     TitledPage(title: "Note")
                 }
-                .barBackgroundColor(.purple)
-                .barForegroundColor(.white)
+                .barBackgroundColor(dark.wrappedValue ? .purple : .yellow)
+                .barForegroundColor(dark.wrappedValue ? .white : .navy)
             }
             host.layOut()
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            let onDark = TestMenus.onBar(navigation.bar)
 
-            XCTAssertEqual(TestMenus.onBar(navigation.bar), "Scan #ffffffff, picture #ffffffff")
+            dark.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+
+            XCTAssertEqual(onDark, "Scan light, picture #ffffffff")
+            XCTAssertEqual(TestMenus.onBar(navigation.bar), "Scan dark, picture #ff000080")
         }
     }
 

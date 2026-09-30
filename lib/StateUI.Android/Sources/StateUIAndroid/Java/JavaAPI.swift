@@ -181,7 +181,7 @@ enum JavaAPI {
     static let setFieldOpen = Java.method(dateField, "setOpen", "(Z)V")
 
     static let webView = Java.findClass("stateui/android/StateUIWebView")
-    static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;J)V")
+    static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;JI)V")
     static let loadWeb = Java.method(webView, "load", "(Ljava/lang/String;Ljava/lang/String;)V")
     static let showWeb = Java.method(webView, "show", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let setWebUserAgent = Java.method(webView, "setUserAgent", "(Ljava/lang/String;)V")
@@ -409,7 +409,7 @@ enum JavaAPI {
     static let connectivityFacts = Java.staticMethod(environment, "connectivity", "(Landroid/content/Context;)[I")
 
     static let bar = Java.findClass("stateui/android/StateUIBar")
-    static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;J)V")
+    static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;JI)V")
     static let showBar = Java.method(bar, "show", "(Ljava/lang/String;II)V")
     static let setBarNavigation = Java.method(
         bar, "setNavigation", "(ILandroid/graphics/Bitmap;ILjava/lang/String;)V")

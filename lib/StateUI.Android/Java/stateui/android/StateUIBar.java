@@ -4,19 +4,17 @@
 package stateui.android;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ActionMenuView;
-import android.widget.TextView;
 import android.widget.Toolbar;
 
 /**
@@ -34,12 +32,18 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     /** The page's title, shown while no view stands in for it. */
     private String title = "";
 
-    /** The colour the bar's words and actions stand in; 0 for Android's own. */
+    /** The colour the bar's words and its actions' pictures stand in; 0 for Android's own. */
     private int foreground;
     private View titleView;
 
-    StateUIBar(Context context, long view) {
-        super(context);
+    /** The theme the bar's actions take their words from: the activity's, light words, or dark words. */
+    static final int PLATFORM = 0, LIGHT_WORDS = 1, DARK_WORDS = 2;
+
+    /** A bar whose actions take their words from `words`: Android's overlay for a dark bar or a light one. */
+    StateUIBar(Context context, long view, int words) {
+        super(words == PLATFORM ? context : new ContextThemeWrapper(context, words == LIGHT_WORDS
+                ? android.R.style.ThemeOverlay_Material_Dark_ActionBar
+                : android.R.style.ThemeOverlay_Material_ActionBar));
         this.view = view;
     }
 
@@ -114,25 +118,6 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         Menu menu = getMenu();
         menu.clear();
         StateUIMenus.fill(getContext(), menu, view, entries, texts, pictures, foreground);
-    }
-
-    /** The actions Android stood on the bar are laid out: their words take the bar's words' colour. */
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        if (foreground == 0) return;
-
-        ColorStateList colours = StateUIViews.textColors(getContext(), foreground);
-        for (int index = 0; index < getChildCount(); index++) {
-            if (!(getChildAt(index) instanceof ActionMenuView)) continue;
-            ActionMenuView actions = (ActionMenuView) getChildAt(index);
-            for (int place = 0; place < actions.getChildCount(); place++) {
-                View action = actions.getChildAt(place);
-                if (action instanceof TextView && !colours.equals(((TextView) action).getTextColors())) {
-                    ((TextView) action).setTextColor(colours);
-                }
-            }
-        }
     }
 
     @Override
