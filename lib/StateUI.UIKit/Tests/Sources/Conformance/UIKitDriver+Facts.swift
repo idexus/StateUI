@@ -43,6 +43,35 @@ extension UIKitDriver {
     }
 
     /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.
+    /// The bar `page` shows, read from its navigation item: its leading and trailing groups, the overflow's entries -
+    /// each action told by the element whose identifier it carries.
+    func bar(of page: MountedElement) throws -> String {
+        guard let item = (page.native as? UIKitElement)?.controller?.navigationItem else {
+            throw DriverCannot("read the bar of \(page.type.name)")
+        }
+        var root = page
+        while let parent = root.parent { root = parent }
+        let items = Self.toolbarItems(in: root)
+        let word = { (action: UIAction?, enabled: Bool) -> String? in
+            guard let action, let element = items.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
+            else { return nil }
+            return BarWords.word(element, enabled: enabled)
+        }
+        let groups = { (groups: [UIBarButtonItemGroup]) -> [[String]] in
+            groups.map { $0.barButtonItems.compactMap { word($0.primaryAction, $0.isEnabled) } }.filter { !$0.isEmpty }
+        }
+        let overflow = item.trailingItemGroups.flatMap(\.barButtonItems).filter { $0.primaryAction == nil }
+            .flatMap { $0.menu?.children ?? [] }
+            .compactMap { ($0 as? UIAction).flatMap { word($0, !$0.attributes.contains(.disabled)) } }
+        return BarWords.said(
+            leading: groups(item.leadingItemGroups), trailing: groups(item.trailingItemGroups), overflow: overflow)
+    }
+
+    /// Every toolbar item under `root`, the arrangements' slots included.
+    private static func toolbarItems(in root: MountedElement) -> [MountedElement] {
+        (root.type == .toolbarItem ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
+    }
+
     func menu(of element: MountedElement) throws -> String {
         if element.type == .window { return UIKitMenus.said(renderer?.menuBar ?? []) }
         guard let native = element.native as? UIKitElement, native.view != nil else {

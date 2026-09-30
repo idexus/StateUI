@@ -41,6 +41,6 @@ struct HiddenPage: ContentView {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery("Not in the list", scene: scene, nav: nav) }
+        .onCreated { page.gallery("Not in the list") }
     }
 }

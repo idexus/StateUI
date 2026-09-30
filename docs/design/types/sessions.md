@@ -29,8 +29,18 @@ what the page was told, and it changes when something says so, which is
 exactly a `@State` a handler writes. So the page builds again when its
 session is written, by the rule every state follows, and is asked nothing on
 a build caused by anything else. What a page's `.onCreated` writes is in the
-same patch that brings the page, so a presented page's style and a bar's
-buttons are there when the platform first shows them.
+same patch that brings the page, so a presented page's style is there when
+the platform first shows it.
+
+## Values are told, structure is declared
+
+A session holds values - a phase, a title, a colour, a size - and acts.
+What has a body of its own - a view, an element with a handler - is declared
+in the tree instead, where the state it follows lives: a page's actions with
+`.toolbar { }`, the view in its title's place with `.titleView { }`. Built
+with the body declaring it, it follows that state with nothing written by
+hand, and it lives exactly as long as the element declaring it, so a page
+that goes takes its declarations with it and nothing needs restoring.
 
 ## One per page held by its element
 
@@ -45,19 +55,18 @@ modifier, from `PageElement`.
 
 A value written into a session is put on the node as the page or window
 builds, and a colour or a picture with a half for each theme is picked
-there, so it is right in both themes whenever it was written. A view written
-into a session - a title view, a toolbar item, a title bar's slot - is built
-where it is shown: a composed view there reads its own state as it builds,
-builds again when that state moves, and a binding handed to a control keeps
-it live. What the bar offers is what was written, so a caption that follows
-the page's state is written again when that state moves.
+there, so it is right in both themes whenever it was written. A view a
+window's session still holds - a title bar's slot - is built where it is
+shown: a composed view there reads its own state as it builds, builds again
+when that state moves, and a binding handed to a control keeps it live.
 
 ## Collections hang as one node
 
-A page's toolbar items and its menus each hang off the page as one node
-holding the collection, `ToolbarItems` and `MenuBar`, rather than as one
-node each. The host has a list to keep in step, and a list needs a parent of
-its own to be matched against; a swipe view's actions hang the same way.
+A page's menus hang off the page as one node holding the collection,
+`MenuBar`, and each toolbar group off the element declaring it as one
+`ToolbarItems` node, rather than as one node each. The host has a list to keep
+in step, and a list needs a parent of its own to be matched against; a swipe
+view's actions hang the same way.
 
 ## Scenes and windows are read not held
 

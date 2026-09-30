@@ -5,8 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `ToolbarItemContract` on a host: an item on the visible page's bar runs its handler when chosen, stands where its
-/// placement puts it - on the bar or in its overflow - and in its priority's order, its words beside its picture where
-/// it says so.
+/// placement puts it - on the bar or in its overflow - its words beside its picture where it says so.
 @_spi(Host) public enum ToolbarItemTests: ConformanceFamily {
     public static let name = "ToolbarItem"
 
@@ -66,30 +65,16 @@
                 try s.settle { try s.held(ToolbarItemContract.showsText, on: s.element("save")) == false }
                 s.expect(try s.held(ToolbarItemContract.showsText, on: s.element("save")), false)
             },
-            ConformanceCase("itemsStandInTheirPrioritysOrder", proves: [Covered(ToolbarItemContract.priority)]) { s in
-                s.start {
-                    Self.page {
-                        [
-                            ToolbarItem("Later").priority(2).id("later"),
-                            ToolbarItem("First").priority(0).id("first"),
-                            ToolbarItem("Second").priority(1).id("second"),
-                        ]
-                    }
-                }
-
-                s.expect(try ["first", "second", "later"].map { try s.held(ToolbarItemContract.priority, on: s.element($0)) },
-                         [0, 1, 2], "each where its priority stands it")
-            },
         ]
     }
 
-    /// A page inside a navigation stack putting `items` on its bar - again whenever `key` changes - with words and
+    /// A page inside a navigation stack declaring `items` for its bar - again whenever `key` changes - with words and
     /// what stands `beside` them.
     static func page(
         beside: [any View] = [], key: String = "", _ items: @escaping @Sendable () -> [ToolbarItem]
     ) -> any Page {
         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-            SessionPage(beside: beside.map { $0 }, key: key) { page, _ in page.toolbarItems = items() }
+            DeclaringPage(beside: beside.map { $0 }, key: key, items)
         } destination: { _ in Label("Pushed") }
     }
 }

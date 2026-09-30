@@ -208,43 +208,73 @@ The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
 stack comes from that page's own `PageSession`.
 
-A view such as `SearchField` can occupy the current page's navigation title
-slot:
+A view such as `SearchField` can stand in the page's title slot, declared where
+the state it follows lives:
 
 ```swift quote
-@Environment private var page: PageSession
 @State private var query = ""
 
-.onCreated {
-    page.titleView = SearchField($query)
-        .placeholder("Search")
-}
+VStack { … }
+    .titleView {
+        SearchField($query)
+            .placeholder("Search")
+    }
 ```
+
+Declared on a stack or a window's page, a title view stands on every page shown
+there that declares none of its own; the innermost declaration wins.
 
 ## Toolbars
 
-Toolbar items are page furniture, not views in page layout:
+A page's actions are declared where the state they follow lives, with
+`.toolbar { }` on the page's view:
 
 ```swift quote
-@Environment private var page: PageSession
-
-page.toolbarItems = [
-    ToolbarItem("Save")
-        .id("save")
-        .priority(0)
-        .onClicked { try await save() },
-    ToolbarItem("Delete")
-        .id("delete")
-        .placement(.overflow)
-        .isDestructive(true)
-        .onClicked { try await delete() },
-]
+VStack { … }
+    .toolbar {
+        ToolbarItem("Save")
+            .id("save")
+            .isEnabled(hasChanges)
+            .onClicked { try await save() }
+        ToolbarItem("Delete")
+            .id("delete")
+            .placement(.overflow)
+            .isDestructive(true)
+            .onClicked { try await delete() }
+    }
 ```
 
-`placement` distinguishes primary actions from actions behind native overflow.
-Within either group, lower `priority` appears first and equal values retain
-source order. The host chooses the native placement appropriate to the window
-and available space. Give stable identities to items whose list can change.
+The group is built with the body declaring it, so an item follows the state it
+reads - Save enables itself as `hasChanges` moves, with nothing written by hand.
+It stands on the bar while its page is shown, and when the page goes, its
+actions go with it.
+
+One declaration is one group: its actions share one background where the
+platform groups a bar's actions, as macOS and iOS draw them on one piece of
+glass. A second group is a second declaration. A group stands at the bar's
+trailing edge unless `.toolbar(.leading)` puts it at the other.
+
+A window's page and an arrangement declare actions for every page shown in
+them. The actions declared further in join them nearer the title, so the
+outer ones keep their place at the edge from page to page:
+
+```swift quote
+NavigationStack($path) {
+    Library(path: $path)
+} destination: { book in
+    BookPage(book: book)
+}
+.toolbar(id: "library") {
+    ToolbarItem("Account").onClicked { showAccount() }
+}
+```
+
+`order` moves a group earlier or later among the others at its edge, lower
+first. `.toolbar(id:)` adds a page's actions to the group of that id instead of
+starting one of its own, and an item with the `.id` of one declared further out
+stands in that item's place while its page is shown. `placement` keeps an
+action on the bar or behind the native overflow. Give stable identities to
+items whose list can change.
 
 An item given an `icon` shows the picture alone on the bar; its words stay its
 name to assistive technology and its tip. `showsText(true)` asks for the words
@@ -255,19 +285,21 @@ words, so there the item keeps its picture alone. An item with no picture
 always shows its words.
 
 ```swift quote
-@Environment private var page: PageSession
-
-page.toolbarItems = [
-    ToolbarItem("Add")
-        .icon("add.png")
-        .showsText(true)
-        .onClicked { add() },
-]
+VStack { … }
+    .toolbar {
+        ToolbarItem("Add")
+            .icon("add.png")
+            .showsText(true)
+            .onClicked { add() }
+    }
 ```
 
 On AppKit a page's furniture is its window's toolbar: the top page's title
-names the window, the way back is the system's back item, primary actions are
-toolbar items, and secondary ones sit in the toolbar's overflow menu. A tabbed
+names the window, the way back is the system's back item, the actions are
+toolbar items - a space between two groups, a leading group before the
+flexible space - and those placed in the overflow sit in the toolbar's
+overflow menu. Android's bar has no leading edge beside its navigation button,
+so a leading group stands first among its actions. A tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its

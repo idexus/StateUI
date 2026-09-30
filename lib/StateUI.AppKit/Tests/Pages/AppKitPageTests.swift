@@ -859,11 +859,11 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(held.fittingSize.height, 10)
     }
 
-    /// The page's actions are native toolbar items: the primary ones by
-    /// priority, then source order, and the secondary ones behind the
-    /// toolbar's own overflow menu.
+    /// The page's actions are native toolbar items: each group by its order,
+    /// a space between two groups, a leading group before the flexible space,
+    /// and the overflow's behind the toolbar's own overflow menu.
     @MainActor
-    func testThePagesActionsFollowTheirOrderAndPriorityInTheToolbar() throws {
+    func testThePagesGroupsStandInTheToolbarByTheirOrder() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -872,8 +872,7 @@ final class AppKitPageTests: XCTestCase {
         func toolbarItem(
             _ id: String,
             title: String,
-            priority: Int,
-            order: Int32 = 0,
+            placement: Int32 = 0,
             enabled: Bool = true,
             destructive: Bool = false,
             icon: String? = nil
@@ -881,27 +880,29 @@ final class AppKitPageTests: XCTestCase {
             var item = HostPatch(id: .manual(id), type: .toolbarItem)
             item.properties = [
                 .text: .string(title),
-                .priority: .number(Double(priority)),
-                .placement: .enumeration(order),
+                .placement: .enumeration(placement),
                 .isEnabled: .bool(enabled),
                 .isDestructive: .bool(destructive),
             ]
             if let icon { item.properties[.icon] = .string(icon) }
             return item
         }
+        func group(_ id: String, order: Double, side: ToolbarSide = .trailing, _ items: [HostPatch]) -> HostPatch {
+            var group = HostPatch(id: .manual(id), type: .toolbarItems)
+            group.properties = [.order: .number(order), .side: .enumeration(side.rawValue)]
+            group.children = .arranged(items)
+            return group
+        }
 
-        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItems)
-        toolbar.children = .arranged([
-            toolbarItem(
-                "save", title: "Save", priority: 5, enabled: false,
-                icon: "save-symbol"),
-            toolbarItem("earlier", title: "Earlier", priority: -1),
-            toolbarItem(
-                "delete", title: "Delete", priority: 0, order: 2,
-                destructive: true),
-        ])
         var details = page("details", title: "Details", events: 200)
-        details.children = .arranged(details.children.arrangedForTesting + [toolbar])
+        details.children = .arranged(details.children.arrangedForTesting + [
+            group("later", order: 1, [
+                toolbarItem("save", title: "Save", enabled: false, icon: "save-symbol"),
+                toolbarItem("delete", title: "Delete", placement: 2, destructive: true),
+            ]),
+            group("first", order: 0, [toolbarItem("earlier", title: "Earlier")]),
+            group("start", order: 0, side: .leading, [toolbarItem("compose", title: "Compose")]),
+        ])
         var stack = navigation([
             page("home", title: "Home", events: 100),
             details,
@@ -913,9 +914,17 @@ final class AppKitPageTests: XCTestCase {
         let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
         let save = try XCTUnwrap(chrome.itemForTesting(titled: "Save"))
         let earlier = try XCTUnwrap(chrome.itemForTesting(titled: "Earlier"))
+        let compose = try XCTUnwrap(chrome.itemForTesting(titled: "Compose"))
+        let identifiers = chrome.identifiersForTesting
 
-        XCTAssertEqual(chrome.actionTitlesForTesting, ["Earlier", "Save"])
+        XCTAssertEqual(chrome.actionTitlesForTesting, ["Compose", "Earlier", "Save"])
         XCTAssertEqual(chrome.overflowTitlesForTesting, ["Delete"])
+        XCTAssertLessThan(
+            try XCTUnwrap(identifiers.firstIndex(of: compose.itemIdentifier)),
+            try XCTUnwrap(identifiers.firstIndex(of: .flexibleSpace)), "the leading group before the flexible space")
+        let from = try XCTUnwrap(identifiers.firstIndex(of: earlier.itemIdentifier))
+        let to = try XCTUnwrap(identifiers.firstIndex(of: save.itemIdentifier))
+        XCTAssertEqual(identifiers[from...to].filter { $0 == .space }.count, 1, "a space between two groups")
         XCTAssertNil(chrome.itemForTesting(titled: "Delete"))
         XCTAssertNotNil(chrome.itemForTesting(AppKitWindowToolbar.overflow))
         XCTAssertFalse(save.isEnabled)
@@ -1046,7 +1055,7 @@ private enum ChromeRoute: Hashable {
     case withoutNavigationBar
 }
 
-/// A pushed page that offers one action and, for its route, takes its way
+/// A pushed page that declares one action and, for its route, takes its way
 /// back or its whole navigation bar away - written through its session as
 /// it comes in.
 private struct ChromePage: ContentView {
@@ -1054,8 +1063,7 @@ private struct ChromePage: ContentView {
     let route: ChromeRoute
 
     var content: any View {
-        Label("Pushed").onCreated {
-            page.toolbarItems = [ToolbarItem("Save")]
+        Label("Pushed").toolbar { ToolbarItem("Save") }.onCreated {
             switch route {
             case .plain: break
             case .withoutBackButton: page.hasBackButton = false

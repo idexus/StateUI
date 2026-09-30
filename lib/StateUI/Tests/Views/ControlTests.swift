@@ -692,9 +692,11 @@ final class ControlTests: XCTestCase {
 
             read += declared.count
 
-            // A test writes `.strokeWidth(`, and the anchors are what keep
-            // `text` from being answered by `textColor`.
-            for key in declared.sorted() where !rendered.contains(key) && !tests.contains(".\(key)(") {
+            // A test writes `.strokeWidth(`, or reads what a message carried,
+            // `props["side"]`; the anchors keep `text` from being answered by
+            // `textColor`.
+            for key in declared.sorted()
+            where !rendered.contains(key) && !tests.contains(".\(key)(") && !tests.contains("[\"\(key)\"]") {
                 missing.append("\(source) declares \(key)")
             }
         }

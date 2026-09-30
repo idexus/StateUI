@@ -41,6 +41,9 @@ final class UIKitElement: NativeElement {
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
 
+    /// What every action made for this element is identified by: UIKit keeps it in the copies it makes of an action.
+    var actionIdentifier: UIAction.Identifier { UIAction.Identifier("stateui.action.\(element.mount)") }
+
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
         self.host = host

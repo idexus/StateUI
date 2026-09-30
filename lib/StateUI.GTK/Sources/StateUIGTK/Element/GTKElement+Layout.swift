@@ -37,7 +37,7 @@ extension GTKElement {
 
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.
     var layoutItem: GTKLayoutItem? {
-        guard let view else { return children.lazy.compactMap(\.layoutItem).first }
+        guard let view else { return element.arrangedChildren.lazy.compactMap(\.gtk.layoutItem).first }
 
         var item = GTKLayoutItem(view: view, values: element.layoutValues, isShown: isShown)
         item.mount = element.mount

@@ -67,6 +67,10 @@
     /// caption, ";" between; empty for none.
     func menu(of element: MountedElement) throws -> String
 
+    /// The bar `page` shows as the user meets it: the leading groups, "|", the trailing groups, "|", the actions in
+    /// the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be chosen.
+    func bar(of page: MountedElement) throws -> String
+
     /// Whether `element` holds the keyboard.
     func focused(_ element: MountedElement) throws -> Bool
 
@@ -117,6 +121,10 @@ extension HostDriver {
 
     public func menu(of element: MountedElement) throws -> String {
         throw DriverCannot("read the menu of \(element.type.name)")
+    }
+
+    public func bar(of page: MountedElement) throws -> String {
+        throw DriverCannot("read the bar of \(page.type.name)")
     }
 
     public func focused(_ element: MountedElement) throws -> Bool {

@@ -37,6 +37,33 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// The groups a page's path declares stand on its navigation item as the host layer composes them: each a
+    /// `UIBarButtonItemGroup` of its own - a background of its own - the page's nearer the title and the stack's at
+    /// the edge, a leading group beside the way back.
+    @MainActor
+    func testTheBarsGroupsStandAsThePathComposesThem() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Label("Root")
+                    .toolbar {
+                        ToolbarItem("Save").accessibilityIdentifier("save")
+                        ToolbarItem("Add").accessibilityIdentifier("add")
+                    }
+                    .toolbar(.leading) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
+            } destination: { _ in Label("Pushed") }
+            .toolbar { ToolbarItem("Home").accessibilityIdentifier("home") }
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        let said = { (groups: [UIBarButtonItemGroup]) in groups.map { $0.barButtonItems.map { $0.accessibilityIdentifier ?? "" } } }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+
+        let bar = try XCTUnwrap(item())
+        XCTAssertEqual(said(bar.trailingItemGroups), [["save", "add"], ["home"]])
+        XCTAssertEqual(said(bar.leadingItemGroups), [["filter"]])
+        XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
+    }
+
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
     /// colour for them (`BandWords`).
     @MainActor

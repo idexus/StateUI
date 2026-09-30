@@ -184,6 +184,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: "WindowSession().overlay = nil",
             contract: #"WindowSession().overlays[OverlayKey("notice")] = nil"#),
         Road(
+            name: "a page's actions written into its session",
+            removed: #"PageSession().toolbarItems = [ToolbarItem("Save")]"#,
+            contract: #"_ = Label("Notes").toolbar { ToolbarItem("Save") }"#),
+        Road(
+            name: "a page's title view written into its session",
+            removed: #"PageSession().titleView = Label("Search")"#,
+            contract: #"_ = Label("Notes").titleView { Label("Search") }"#),
+        Road(
+            name: "an item's withdrawn priority",
+            removed: #"_ = ToolbarItem("Save").priority(1)"#,
+            contract: #"_ = Label("Notes").toolbar(order: 1) { ToolbarItem("Save") }"#),
+        Road(
             name: "the withdrawn resting state",
             removed: "_ = RadioButton.restingVisualState",
             contract: "_ = VisualState<RadioButton>.unchecked"),

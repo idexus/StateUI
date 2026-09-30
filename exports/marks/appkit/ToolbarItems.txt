@@ -1,3 +1,5 @@
-# revision 1.1
+# revision 2.1
 ToolbarItem.clicked: 🔌 activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
 ToolbarItems: ✅
+ToolbarItems.order: ✅
+ToolbarItems.side: ✅

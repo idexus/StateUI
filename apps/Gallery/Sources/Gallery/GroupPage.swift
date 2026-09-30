@@ -47,6 +47,6 @@ struct GroupPage: ContentView {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery(group.title, scene: scene, nav: nav) }
+        .onCreated { page.gallery(group.title) }
     }
 }

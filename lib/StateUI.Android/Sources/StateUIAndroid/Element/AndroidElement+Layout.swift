@@ -35,7 +35,7 @@ extension AndroidElement {
 
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its parent.
     var layoutItem: AndroidLayoutItem? {
-        guard let view else { return children.lazy.compactMap(\.layoutItem).first }
+        guard let view else { return element.arrangedChildren.lazy.compactMap(\.android.layoutItem).first }
 
         var item = AndroidLayoutItem(view: view, values: element.layoutValues, isShown: isShown)
         item.mount = element.mount

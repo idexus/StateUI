@@ -90,8 +90,9 @@ extension UIKitDriver {
             guard let split = native?.controller as? UISplitViewController else { throw DriverCannot(act, on: element) }
             split.displayMode == .secondaryOnly ? split.show(.primary) : split.hide(.primary)
         case .activate:
-            let title = element.value(.text)?.string ?? ""
-            guard let (action, enabled) = barActions().first(where: { $0.action.title == title }) else {
+            // The action UIKit holds for this item, found by its element's identifier - never by its words.
+            guard let identifier = (element.native as? UIKitElement)?.actionIdentifier,
+                  let (action, enabled) = barActions().first(where: { $0.action.identifier == identifier }) else {
                 throw DriverCannot(act, on: element)
             }
             // A button or an entry that cannot be taken sends nothing.
@@ -152,7 +153,8 @@ extension UIKitDriver {
         guard let window = renderer?.roster.windows.first?.1.window else { return [] }
         var found: [(action: UIAction, enabled: Bool)] = []
         func search(_ controller: UIViewController) {
-            for item in controller.navigationItem.rightBarButtonItems ?? [] {
+            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
+            for item in groups.flatMap(\.barButtonItems) {
                 if let action = item.primaryAction { found.append((action, item.isEnabled)) }
                 for case let entry as UIAction in item.menu?.children ?? [] {
                     found.append((entry, !entry.attributes.contains(.disabled)))

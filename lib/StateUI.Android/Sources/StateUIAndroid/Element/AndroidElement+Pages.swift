@@ -110,8 +110,11 @@ extension AndroidElement {
     func refreshBar() {
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
         let page = element.visiblePage
-        let actions: (primary: [MountedElement], overflow: [MountedElement]) = page?.chromeActions ?? ([], [])
-        let shown = actions.primary + actions.overflow
+        // No place at the leading edge beside the navigation button: those groups stand first.
+        // Design: docs/design/platforms/android/pages.md#the-bar
+        let actions = page?.chromeActions ?? ChromeActions()
+        let onBar = actions.leading.flatMap { $0 } + actions.primary
+        let shown = onBar + actions.overflow
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
@@ -120,7 +123,7 @@ extension AndroidElement {
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         content.actions = shown.map { item in
             var action = item.android.menuItem
-            action.onBar = actions.primary.contains { $0 === item }
+            action.onBar = onBar.contains { $0 === item }
             return action
         }
         if element.visibleBackStack === element {
@@ -133,7 +136,7 @@ extension AndroidElement {
         navigation.setShowsBar(element.children.last?.showsTheStacksBar ?? true)
         let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
-        bar.showTitleView(page?.slotContent(.titleView)?.android.layoutItem?.view)
+        bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)
         bar.onMenuChose = { index in
             guard shown.indices.contains(index) else { return }
             shown[index].android.send(.clicked, [])

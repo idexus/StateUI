@@ -4,25 +4,21 @@
 @_spi(Host) import StateUI
 
 /// What a page gives the chrome it stands under, the same on every host - a window's one chrome, or a header bar of
-/// its own: its actions, and the colours of its bar.
+/// its own: its actions, its title view, and the colours of its bar.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 extension MountedElement {
-    /// This page's actions for its chrome, by priority, then in the order written, those placed in the overflow apart;
-    /// none where the page hides its bar.
-    public var chromeActions: (primary: [MountedElement], overflow: [MountedElement]) {
-        guard value(.hasNavigationBar)?.bool != false,
-              let items = children.first(where: { $0.type == .toolbarItems })?.children.filter({ $0.type == .toolbarItem })
-        else { return ([], []) }
+    /// This page's actions for its chrome: the groups declared on its path, composed; none where the page hides
+    /// its bar.
+    /// Design: docs/design/host/pages.md#the-actions-of-a-path
+    public var chromeActions: ChromeActions {
+        guard value(.hasNavigationBar)?.bool != false else { return ChromeActions() }
 
-        let ordered = items.enumerated().sorted {
-            let left = $0.element.value(.priority)?.number ?? 0
-            let right = $1.element.value(.priority)?.number ?? 0
-            return left == right ? $0.offset < $1.offset : left < right
-        }.map(\.element)
-        let overflows = { (item: MountedElement) in
-            item.value(.placement)?.enumeration == ToolbarItemPlacement.overflow.rawValue
-        }
-        return (ordered.filter { !overflows($0) }, ordered.filter(overflows))
+        return ChromeActions(declared(.toolbarItems))
+    }
+
+    /// What stands in this page's title place: the title view declared innermost on its path; nil where none.
+    public var chromeTitleView: MountedElement? {
+        declared(.titleView).last?.element.children.lazy.compactMap(\.presentingElement).first
     }
 
     /// Whether this action's words stand on its bar: beside its picture where it says so, and always where it has none.

@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `TitleViewContract` on a host: the view a page shows in its bar in place of its title stands there and takes the
-/// user's words; a page pushed over it without one leaves it, and back, it stands there again.
+/// `TitleViewContract` on a host: the view a page declares in its bar in place of its title stands there and takes the
+/// user's words; a page pushed over it without one leaves it, and back, it stands there again; the view a stack
+/// declares stands on a page declaring none.
 @_spi(Host) public enum TitleViewTests: ConformanceFamily {
     public static let name = "TitleView"
 
@@ -16,7 +17,7 @@
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        SessionPage { page, _ in page.titleView = TextField(query.projectedValue).id("query") }
+                        DeclaringPage(title: TextField(query.projectedValue).id("query"))
                     } destination: { _ in Label("Result") }
                 }
                 let field = try s.element("query")
@@ -31,6 +32,22 @@
                 path.wrappedValue = []
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("query")) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("query")), true, "back in its bar")
+            },
+            ConformanceCase("aStacksTitleViewStandsWhereAPageDeclaresNone", proves: [Covered(TitleViewContract.self)]) { s in
+                let path = State(wrappedValue: [Int]())
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        DeclaringPage(title: Label("Own").id("own"))
+                    } destination: { _ in DeclaringPage() }
+                    .titleView { Label("Shared").id("shared") }
+                }
+                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("own")) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("own")), true, "the page's own first")
+
+                path.wrappedValue = [1]
+                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("shared")) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("shared")), true,
+                         "the stack's, on a page declaring none")
             },
         ]
     }

@@ -100,8 +100,8 @@ final class WinUIWindowController {
         chrome.leading = composed.leading?.winUI.view
         chrome.center = composed.center?.winUI.view
         chrome.trailing = composed.trailing?.winUI.view
-        chrome.actions = composed.primaryActions.map(Self.action)
-        chrome.overflow = composed.overflowActions.map(Self.action)
+        chrome.actions = composed.actions.primary.map(Self.action)
+        chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
         chrome.foreground = composed.foreground
         chrome.menuBar = WinUIMenu(bar: composed.menuBar?.winUI)

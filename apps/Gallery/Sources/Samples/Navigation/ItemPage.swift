@@ -50,7 +50,7 @@ struct ItemPage: ContentView {
         .shape(.roundedRectangle(12))
         .verticalAlignment(.center)
         .onCreated {
-            page.gallery(item.isEmpty ? "Item" : item, scene: scene, nav: nav)
+            page.gallery(item.isEmpty ? "Item" : item)
         }
     }
 }

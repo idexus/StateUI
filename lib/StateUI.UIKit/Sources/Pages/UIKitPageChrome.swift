@@ -6,8 +6,8 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a page's bar shows: its title or the view standing in for it, its actions - those on the bar and those in
-/// its overflow menu - whether it shows and offers the way back, and its colours.
+/// What a page's bar shows: its title or the view standing in for it, its groups of actions at either edge and those
+/// in its overflow menu, whether it shows and offers the way back, and its colours.
 /// Design: docs/design/platforms/uikit/pages.md#the-bar
 @MainActor
 struct UIKitPageChrome {
@@ -17,7 +17,8 @@ struct UIKitPageChrome {
     var offersBack = true
     var barBackground: HostValue?
     var barForeground: HostValue?
-    var actions: [UIKitBarAction] = []
+    var leadingActions: [[UIKitBarAction]] = []
+    var actions: [[UIKitBarAction]] = []
     var overflow: [UIKitBarAction] = []
 
     /// Puts it on `item`, the bar a navigation controller shows for the page.
@@ -29,9 +30,13 @@ struct UIKitPageChrome {
             titleView.bounds.size = size
         }
         item.hidesBackButton = !offersBack
-        item.rightBarButtonItems = actions.reversed().map(\.barItem)
-            + (overflow.isEmpty ? [] : [UIBarButtonItem(
-                image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))])
+        // Each group its own background; the leading ones beside the way back.
+        // Design: docs/design/platforms/uikit/pages.md#the-bar
+        item.leftItemsSupplementBackButton = true
+        item.leadingItemGroups = leadingActions.map(Self.group)
+        let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
+            image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: overflow.map(\.menuAction)))]]
+        item.trailingItemGroups = actions.map { $0.map(\.barItem) }.map(Self.group) + menu.map(Self.group)
 
         guard barBackground != nil || barForeground != nil else {
             (item.standardAppearance, item.scrollEdgeAppearance) = (nil, nil)
@@ -52,9 +57,21 @@ struct UIKitPageChrome {
             appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)
             appearance.setBackIndicatorImage(back, transitionMaskImage: back)
-            item.rightBarButtonItems?.forEach { $0.tintColor = foreground }
+            (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems).forEach {
+                $0.tintColor = foreground
+            }
         }
         (item.standardAppearance, item.scrollEdgeAppearance) = (appearance, appearance)
+    }
+
+    /// One group of the bar, drawn on one background.
+    private static func group(_ actions: [UIKitBarAction]) -> UIBarButtonItemGroup {
+        group(actions.map(\.barItem))
+    }
+
+    /// One group of the bar's items, drawn on one background.
+    private static func group(_ items: [UIBarButtonItem]) -> UIBarButtonItemGroup {
+        UIBarButtonItemGroup(barButtonItems: items, representativeItem: nil)
     }
 }
 #endif

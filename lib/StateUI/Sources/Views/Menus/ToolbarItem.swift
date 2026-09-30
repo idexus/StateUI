@@ -8,24 +8,22 @@
 ///
 ///         var content: any View {
 ///             VStack { … }
-///                 .onCreated {
-///                     page.title = "Notes"
-///                     page.toolbarItems = [
-///                         ToolbarItem("Save")
-///                             .onClicked { save() },
+///                 .toolbar {
+///                     ToolbarItem("Save")
+///                         .onClicked { save() }
 ///
-///                         ToolbarItem("Delete")
-///                             .placement(.overflow)
-///                             .isDestructive(true)
-///                             .onClicked { delete() },
-///                     ]
+///                     ToolbarItem("Delete")
+///                         .placement(.overflow)
+///                         .isDestructive(true)
+///                         .onClicked { delete() }
 ///                 }
+///                 .onCreated { page.title = "Notes" }
 ///         }
 ///     }
 ///
 /// A toolbar item is page furniture rather than a layout view. It carries a
-/// caption, an optional image, presentation policy and a handler, and is
-/// written into the page's session whenever that collection changes.
+/// caption, an optional image, presentation policy and a handler, and stands
+/// in a group a `.toolbar { }` declares.
 public struct ToolbarItem: Element, MenuItemElement {
     /// The node this item describes.
     public var node: Node
@@ -42,6 +40,8 @@ public struct ToolbarItem: Element, MenuItemElement {
 
     /// Who this item is among the page's others, so an item inserted in the
     /// middle is matched to itself rather than to whichever item stood there.
+    /// An item with the id of one declared around its page stands in that
+    /// item's place while the page is shown.
     ///
     /// - Parameter value: distinct among the page's items, and the same value
     ///   across renders.
@@ -53,11 +53,6 @@ public struct ToolbarItem: Element, MenuItemElement {
 
     /// Whether it sits on the bar itself or behind the overflow menu.
     public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(ToolbarItemContract.placement, value) }
-
-    /// Where this item sorts among items in the same order group.
-    ///
-    /// Lower values appear first; items of equal priority keep their order.
-    public func priority(_ value: Int) -> Self { setValue(ToolbarItemContract.priority, value) }
 
     /// Whether the item shows its words beside its picture on the bar.
     ///

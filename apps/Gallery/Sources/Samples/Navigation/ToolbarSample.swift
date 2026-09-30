@@ -10,19 +10,20 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// same identity.
     @State private var added = 0
 
-    /// Which of the two buttons ON the bar asks to be drawn first. The number
-    /// it decides is `.priority`; the lower number appears first.
-    @State private var addFirst = false
+    /// Whether the sample's group stands after the gallery's, by its order.
+    @State private var afterGallery = false
+
+    /// Whether the sample's actions join the gallery's own group, by its id.
+    @State private var inGallery = false
+
+    /// Whether the sample's group stands at the bar's leading edge.
+    @State private var atLeading = false
 
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
 
-    /// The page this sample is on, whose bar and menus these are.
+    /// The page this sample is on, whose menus these are.
     @Environment private var page: PageSession
-
-    /// What the page's bar held before this sample added to it - the
-    /// gallery's own buttons, which stay after the sample's.
-    @State private var chrome: [ToolbarItem] = []
 
     static let id = "toolbar"
     static let title = "Toolbar and menus"
@@ -32,42 +33,12 @@ struct ToolbarSample: SampleContent, ExampleContent {
         @State private var saved = 0
         @State private var recent = ["notes.txt", "budget.csv"]
         @State private var added = 0
-        @State private var addFirst = false
+        @State private var afterGallery = false
+        @State private var inGallery = false
+        @State private var atLeading = false
         @State private var addWords = false
 
         @Environment private var page: PageSession
-        @State private var chrome: [ToolbarItem] = []
-
-        // Both belong to the PAGE, so they are written into its session -
-        // and written again when what they say moves.
-        private var items: [ToolbarItem] {
-            [
-                // Written Save then Add whichever way the switch is set; the
-                // lower priority still appears first.
-                ToolbarItem("Save")
-                    .id("save")
-                    .priority(addFirst ? 1 : 0)
-                    .onClicked { saved += 1 },
-
-                // A picture alone, unless it asks for its words beside it.
-                ToolbarItem("Add")
-                    .id("add")
-                    .priority(addFirst ? 0 : 1)
-                    .icon("menu_duplicate_dark.png")
-                    .showsText(addWords)
-                    .onClicked {
-                        added += 1
-                        recent.append("file\\(added).txt")
-                    },
-
-                ToolbarItem("Clear")
-                    .id("clear")
-                    .placement(.overflow)
-                    .isDestructive(true)
-                    .isEnabled(saved > 0)
-                    .onClicked { saved = 0 },
-            ]
-        }
 
         private var menus: [Menu] {
             [
@@ -103,62 +74,54 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 Label(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
                 HStack {
-                    Switch($addFirst)
-
-                    Label(addFirst
-                        ? "Add asks first - .priority(0), against Save's 1"
-                        : "Save asks first - .priority(0), against Add's 1")
+                    Switch($afterGallery)
+                    Label("After the gallery's actions")
                 }
-
+                HStack {
+                    Switch($inGallery)
+                    Label("In the gallery's group")
+                }
+                HStack {
+                    Switch($atLeading)
+                    Label("At the leading edge")
+                }
                 HStack {
                     Switch($addWords)
-
                     Label("Add's words beside its picture")
                 }
             }
-            .onCreated {
-                chrome = page.toolbarItems      // what the page put there first
-                page.toolbarItems = items + chrome
-                page.menuBar = menus
+            // The page's actions, declared where their state lives: they
+            // follow it as the body builds, with nothing written by hand.
+            .toolbar(
+                atLeading ? .leading : .trailing,
+                id: inGallery ? "gallery" : "sample",
+                order: afterGallery ? 1 : 0
+            ) {
+                ToolbarItem("Save")
+                    .id("save")
+                    .onClicked { saved += 1 }
+
+                // A picture alone, unless it asks for its words beside it.
+                ToolbarItem("Add")
+                    .id("add")
+                    .icon("menu_duplicate_dark.png")
+                    .showsText(addWords)
+                    .onClicked {
+                        added += 1
+                        recent.append("file\\(added).txt")
+                    }
+
+                ToolbarItem("Clear")
+                    .id("clear")
+                    .placement(.overflow)
+                    .isDestructive(true)
+                    .isEnabled(saved > 0)
+                    .onClicked { saved = 0 }
             }
-            .onChanged(addFirst) { page.toolbarItems = items + chrome }
-            .onChanged(addWords) { page.toolbarItems = items + chrome }
-            .onChanged(saved) { page.toolbarItems = items + chrome }
+            .onCreated { page.menuBar = menus }
             .onChanged(recent) { page.menuBar = menus }
         }
         """
-
-    /// The buttons this sample puts on the page's bar, before the gallery's
-    /// own.
-    private var items: [ToolbarItem] {
-        [
-            // Written Save then Add whichever way the switch is set; the lower
-            // priority still appears first.
-            ToolbarItem("Save")
-                .id("save")
-                .priority(addFirst ? 1 : 0)
-                .onClicked { saved += 1 },
-
-            // A picture alone, unless it asks for its words beside it. The
-            // white one reads on the accent bar in both themes.
-            ToolbarItem("Add")
-                .id("add")
-                .priority(addFirst ? 0 : 1)
-                .icon("menu_duplicate_dark.png")
-                .showsText(addWords)
-                .onClicked {
-                    added += 1
-                    recent.append("file\(added).txt")
-                },
-
-            ToolbarItem("Clear")
-                .id("clear")
-                .placement(.overflow)
-                .isDestructive(true)
-                .isEnabled(saved > 0)
-                .onClicked { saved = 0 },
-        ]
-    }
 
     /// And the desktop menu bar's File menu.
     private var menus: [Menu] {
@@ -200,50 +163,61 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("Which one comes first")
+            SectionTitle("Where the actions stand")
 
-            HStack {
-                Switch($addFirst)
-                    .accessibilityIdentifier("toolbar.addFirst")
-                    .accessibilityLabel("Add asks first")
-
-                Label(addFirst
-                    ? "Add asks first - `.priority(0)`, against Save's 1"
-                    : "Save asks first - `.priority(0)`, against Add's 1")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-            }
-            .spacing(10)
+            switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
+            switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
+            switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
 
             SectionTitle("A picture and its words")
 
-            HStack {
-                Switch($addWords)
-                    .accessibilityIdentifier("toolbar.addWords")
-                    .accessibilityLabel("Add's words beside its picture")
-
-                Label("Add's words beside its picture")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-            }
-            .spacing(10)
+            switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
         }
         .spacing(12)
-        // The bar and the menus are the PAGE's, so this sample writes them
-        // into the page's session - its buttons before the gallery's own,
-        // which the page wrote a moment earlier, being further out.
-        .onCreated {
-            chrome = page.toolbarItems
-            page.toolbarItems = items + chrome
-            page.menuBar = menus
+        // The page's actions, declared where their state lives: they follow
+        // it as the body builds - `saved` decides whether Clear can be pressed,
+        // `addWords` Add's words, the three switches where the group stands.
+        .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
+            ToolbarItem("Save")
+                .id("save")
+                .onClicked { saved += 1 }
+
+            // A picture alone, unless it asks for its words beside it. The
+            // white one reads on the accent bar in both themes.
+            ToolbarItem("Add")
+                .id("add")
+                .icon("menu_duplicate_dark.png")
+                .showsText(addWords)
+                .onClicked {
+                    added += 1
+                    recent.append("file\(added).txt")
+                }
+
+            ToolbarItem("Clear")
+                .id("clear")
+                .placement(.overflow)
+                .isDestructive(true)
+                .isEnabled(saved > 0)
+                .onClicked { saved = 0 }
         }
-        // What they say follows the state, so they are written again when it
-        // moves: `saved` decides whether Clear can be pressed, `addFirst` the
-        // priorities, `addWords` Add's words, `recent` the submenu.
-        .onChanged(addFirst) { page.toolbarItems = items + chrome }
-        .onChanged(addWords) { page.toolbarItems = items + chrome }
-        .onChanged(saved) { page.toolbarItems = items + chrome }
+        // The menus are still the page's session's, written again when the
+        // recent files move.
+        .onCreated { page.menuBar = menus }
         .onChanged(recent) { page.menuBar = menus }
+    }
+
+    /// A switch and what it says, told apart for scripts by `id`.
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
+        HStack {
+            Switch(value)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(words)
+
+            Label(words)
+                .fontSize(14)
+                .verticalAlignment(.center)
+        }
+        .spacing(10)
     }
 
     var notes: Element? {
@@ -253,8 +227,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Lower priority appears first; equal priority keeps source order. "
-                + "Flip the switch and the same native items exchange places.")
+            Label("The gallery's own actions stand at the edge on every page; the sample's "
+                + "come in from the title's side. `order: 1` moves its group after them, "
+                + "`id: \"gallery\"` joins their group, `.leading` takes it to the other edge.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -265,12 +240,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             Label("Recent files live in the desktop File menu: Add puts one there, "
                 + "choosing one removes it, and an empty submenu disables itself.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The bar and the menus belong to the page, so they are written into "
-                + "its `PageSession` - and written again whenever the state they show "
-                + "moves.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

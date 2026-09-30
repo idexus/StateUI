@@ -82,20 +82,18 @@ private struct Shelf: ContentView {
     }
 }
 
-/// A page whose state is read BESIDE its content - the title and the view on
-/// the navigation bar hang off the page, not under it - written into the
-/// page's session as it comes into the tree: the title again whenever the
-/// query moves, and the view on the bar holding the query's own binding.
+/// A page whose state is read BESIDE its content - the title hangs off the
+/// page, not under it - written into the page's session as it comes into the
+/// tree and again whenever the query moves, while the view on the bar it
+/// declares holds the query's own binding.
 private struct QueryPage: ContentView {
     @Environment private var page: PageSession
     @State var query = ""
 
     var content: any View {
         Label(query)
-            .onCreated {
-                page.title = "Results: \(query)"
-                page.titleView = SearchField($query).placeholder("Type here")
-            }
+            .titleView { SearchField($query).placeholder("Type here") }
+            .onCreated { page.title = "Results: \(query)" }
             .onChanged(query) { page.title = "Results: \(query)" }
     }
 }
@@ -351,14 +349,14 @@ final class StateTests: XCTestCase {
     }
 
     /// What a page writes into its session comes from the same boxes its
-    /// content reads, AFTER adoption: the view on its bar holds the query's
-    /// own binding, and a title written as the query moves says what the
-    /// user typed.
+    /// content reads, AFTER adoption: the view on the bar it declares holds the
+    /// query's own binding, and a title written as the query moves says what
+    /// the user typed.
     func testStateReadBesideTheContentSeesTheSurvivingValue() {
         let renders = Renders()
 
         let first = renders.settled(Node.page(QueryPage()))
-        let slot = first.children.first { $0.type == "TitleView" }
+        let slot = first.children.first?.children.first { $0.type == "TitleView" }
         let search = slot?.children.first
         let number = search?.driven?[.text]?.state
 

@@ -22,7 +22,7 @@ extension AppKitWindowController {
         let arrangement = presentation.arrangement
         let chrome = WindowChrome(window: element, arrangement: arrangement)
         let titleBar = element.appKit.slot(.titleBar)
-        let titleView = arrangement?.visiblePage?.slotContent(.titleView)?.appKit.view
+        let titleView = arrangement?.visiblePage?.chromeTitleView?.appKit.view
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? "StateUI"
@@ -52,9 +52,10 @@ extension AppKitWindowController {
             },
             title: paintedTitle,
             leading: chrome.leading?.appKit.view,
+            leadingActions: chrome.actions.leading.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
-            actions: chrome.primaryActions.map(Self.action),
-            overflow: chrome.overflowActions.map(Self.action),
+            actions: chrome.actions.trailing.map { $0.map(Self.action) },
+            overflow: chrome.actions.overflow.map(Self.action),
             trailing: chrome.trailing?.appKit.view))
         synchronizeBar(window, color: barColor, split: split)
         synchronizeTitleAccessory(

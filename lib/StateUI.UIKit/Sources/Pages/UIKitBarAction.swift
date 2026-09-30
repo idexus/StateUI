@@ -41,7 +41,7 @@ struct UIKitBarAction {
 
     /// An entry of a menu.
     var menuAction: UIAction {
-        let action = UIAction(title: title, image: image) { _ in perform() }
+        let action = UIAction(title: title, image: image, identifier: element?.actionIdentifier) { _ in perform() }
         var attributes: UIMenuElement.Attributes = []
         if !isEnabled { attributes.insert(.disabled) }
         if isDestructive { attributes.insert(.destructive) }

@@ -48,6 +48,6 @@ struct MissingPage: ContentView {
         }
         .spacing(16)
         .padding(24)
-        .onCreated { page.gallery("Not found", scene: scene, nav: nav) }
+        .onCreated { page.gallery("Not found") }
     }
 }

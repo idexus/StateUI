@@ -192,6 +192,7 @@ extension NodeType {
     static let hasBackButton = PageContract.hasBackButton.token
     static let hasNavigationBar = PageContract.hasNavigationBar.token
     static let opacity = VisualElementContract.opacity.token
+    static let order = ToolbarItemsContract.order.token
     static let placement = ToolbarItemContract.placement.token
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
@@ -202,7 +203,6 @@ extension NodeType {
     static let placeholderColor = InputViewContract.placeholderColor.token
     static let points = PolygonContract.points.token
     static let position = PositionIndicatorContract.position.token
-    static let priority = ToolbarItemContract.priority.token
     static let progress = ProgressBarContract.progress.token
     static let region = MapContract.region.token
     static let renderTransform = ShapeContract.renderTransform.token
@@ -219,6 +219,7 @@ extension NodeType {
     static let selectedIndex = PickerContract.selectedIndex.token
     static let selectedIndicatorColor = PositionIndicatorContract.selectedIndicatorColor.token
     static let selectionLength = InputViewContract.selectionLength.token
+    static let side = ToolbarItemsContract.side.token
     static let source = ImageContract.source.token
     static let spacing = StackBaseContract.spacing.token
     static let stroke = ShapeContract.stroke.token

@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// The one chrome a window composes from what it shows, the same on every host: its title, the way back, the visible
-/// page's actions, what stands in the title's place and beside it, an authored title bar's own title area, the bars'
+/// The one chrome a window composes from what it shows, the same on every host: its title, the way back, the actions
+/// its visible path declares, what stands in the title's place and beside it, an authored title bar's own title area, the bars'
 /// colours, the page's menus and the sidebar's toggle - elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
@@ -15,16 +15,14 @@
     /// The stack whose top page the way back takes, and the way back's words.
     public var back: (stack: MountedElement, title: String)?
 
-    /// The visible page's actions on the chrome, by priority, then in the order written.
-    public var primaryActions: [MountedElement] = []
-
-    /// The visible page's actions behind the overflow, in the same order.
-    public var overflowActions: [MountedElement] = []
+    /// The actions the visible page's path declares, composed.
+    public var actions = ChromeActions()
 
     /// What stands at the chrome's leading edge: the title bar's leading content.
     public var leading: MountedElement?
 
-    /// What stands in the title's place: the title bar's content, else the visible page's title view.
+    /// What stands in the title's place: the title bar's content, else the title view the visible page's path
+    /// declares.
     public var center: MountedElement?
 
     /// What stands at the chrome's trailing edge: the title bar's trailing content.
@@ -53,9 +51,9 @@
         back = arrangement?.visibleBackStack.map { stack in
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? "Back")
         }
-        if let page { (primaryActions, overflowActions) = page.chromeActions }
+        if let page { actions = page.chromeActions }
         leading = titleBar?.slotContent(.leadingContent)
-        center = titleBar?.slotContent(.content) ?? page?.slotContent(.titleView)
+        center = titleBar?.slotContent(.content) ?? page?.chromeTitleView
         trailing = titleBar?.slotContent(.trailingContent)
         titleArea = titleBar.flatMap(TitleArea.init(of:))
         (background, foreground) = (page ?? window).barColors

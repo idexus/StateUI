@@ -43,7 +43,7 @@ struct SecondTabPage: ContentView {
             .padding(24)
         }
         .onCreated {
-            page.gallery("Second", scene: scene, nav: nav)
+            page.gallery("Second")
             page.icon = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
         }
     }

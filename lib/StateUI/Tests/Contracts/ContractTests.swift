@@ -180,7 +180,7 @@ final class ContractTests: XCTestCase {
             PinType(rawValue: 1)!, Aspect(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
-            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!,
+            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
             SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
             WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),

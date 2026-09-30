@@ -11,7 +11,7 @@ extension AppKitElement {
     func arrangeChildren() {
         guard let view else { return }
         if let items = view as? AppKitItemsView { return items.childrenChanged() }
-        let items = children.compactMap(\.layoutItem)
+        let items = element.arrangedChildren.map(\.appKit).compactMap(\.layoutItem)
         (view as? AppKitDirectedLayout)?.direction = element.layoutDirection
 
         if let label = view as? AppKitLabelView {
@@ -82,18 +82,18 @@ extension AppKitElement {
     /// The element whose view `presentableViews` puts first.
     var presentableNode: AppKitElement? {
         if view != nil { return self }
-        return children.lazy.compactMap(\.presentableNode).first
+        return element.arrangedChildren.lazy.compactMap(\.appKit.presentableNode).first
     }
 
     /// The drawing of the view `presentableViews` puts first.
     var presentableDrawing: AppKitViewDrawing? {
         if view != nil { return drawing }
-        return children.lazy.compactMap(\.presentableDrawing).first
+        return element.arrangedChildren.lazy.compactMap(\.appKit.presentableDrawing).first
     }
 
     var presentableViews: [NSView] {
         if let view { return [view] }
-        return children.flatMap(\.presentableViews)
+        return element.arrangedChildren.flatMap(\.appKit.presentableViews)
     }
 
     /// The first native view authored into one structural child slot.

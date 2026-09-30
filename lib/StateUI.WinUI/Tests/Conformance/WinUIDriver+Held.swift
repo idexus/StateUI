@@ -432,7 +432,6 @@ extension WinUIDriver {
         case "text": return .string(caption)
         case "isEnabled": return (!row[index].hasPrefix("!")).propValue
         case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
-        case "priority": return index.propValue
         case "accessibilityIdentifier", "icon", "isDestructive", "showsText":
             let read = ["icon": "actionIcons", "isDestructive": "actionDestructive", "showsText": "actionWordsShown"][name]
                 ?? "actionIdentifiers"

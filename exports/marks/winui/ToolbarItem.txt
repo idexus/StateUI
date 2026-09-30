@@ -2,5 +2,4 @@
 ToolbarItem: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.placement: ✅
-ToolbarItem.priority: ✅
 ToolbarItem.showsText: ✅

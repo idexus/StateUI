@@ -72,9 +72,7 @@
             }
         case "ToolbarItem":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                SessionPage(beside: others, key: "\(worn)") { page, _ in
-                    page.toolbarItems = [dressing.wear(ToolbarItem("Save")).id(dressing.id)]
-                }
+                DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarItem("Save")).id(dressing.id)] }
             } destination: { _ in Label("Pushed") }
         case "TitleBar":
             return SessionPage(beside: others, key: "\(worn)") { _, window in
@@ -132,5 +130,54 @@ public struct SessionPage: ContentView {
         return VStack { [Label("Page")] + beside }
             .onCreated { write(page, window) }
             .onChanged(key) { write(page, window) }
+    }
+}
+
+/// A page declaring a group of `items` for its bar - at `side`, in `order`, joining the group `group` names - and a
+/// title view, over words and what stands beside them; built again whenever `key` changes or a state it reads is
+/// written.
+public struct DeclaringPage: ContentView {
+    /// What stands beside its words.
+    let beside: [Element]
+
+    /// What it declares, said as words: a change in them builds it again.
+    let key: String
+
+    /// The edge of the bar its group stands at.
+    let side: ToolbarSide
+
+    /// Where its group stands among the others at its edge.
+    let order: Int
+
+    /// The id of the group its items join or start; nil for a group of its own.
+    let group: String?
+
+    /// The view it declares in its title's place; nil for none.
+    let title: (any View)?
+
+    /// Its group's items.
+    let items: @Sendable () -> [ToolbarItem]
+
+    /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
+    /// words.
+    public init(
+        beside: [Element] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
+        title: (any View)? = nil, _ items: @escaping @Sendable () -> [ToolbarItem] = { [] }
+    ) {
+        self.beside = beside
+        self.key = key
+        self.side = side
+        self.order = order
+        self.group = group
+        self.title = title
+        self.items = items
+    }
+
+    public var content: any View {
+        let (items, words) = (self.items, VStack { [Label("Page")] + beside })
+        let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
+            ?? words.toolbar(side, order: order) { items() }
+        guard let title else { return grouped }
+        return grouped.titleView { title }
     }
 }

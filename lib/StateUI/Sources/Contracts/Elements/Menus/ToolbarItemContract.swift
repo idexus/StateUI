@@ -16,15 +16,11 @@ public enum ToolbarItemContract: ElementContract {
     public static let placement = ElementProperty<Self, ToolbarItemPlacement>(
         "placement", layer: .adaptive, travels: false, cleared: false)
 
-    /// Where it sorts among the items of its placement.
-    public static let priority = ElementProperty<Self, Int>(
-        "priority", layer: .adaptive, travels: false, cleared: false)
-
     /// Whether its words stand beside its picture on the bar; an item with no picture shows its words whatever
     /// this says.
     public static let showsText = ElementProperty<Self, Bool>(
         "showsText", layer: .adaptive, travels: false, cleared: false)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [placement, priority, showsText]
+    public static let members: [any ContractMember] = [placement, showsText]
 }

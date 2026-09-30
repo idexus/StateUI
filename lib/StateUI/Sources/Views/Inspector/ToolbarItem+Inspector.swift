@@ -3,13 +3,12 @@
 
 extension ToolbarItem {
     /// The button that shows a scene's inspector and hides it again - for a
-    /// page's `toolbarItems`. See `Inspector`.
+    /// page's `.toolbar { }`. See `Inspector`.
     ///
     ///     @Environment private var scene: SceneSession
-    ///     @Environment private var page: PageSession
     ///
     ///     VStack { … }
-    ///         .onCreated { page.toolbarItems = [.inspector(scene)] }
+    ///         .toolbar { ToolbarItem.inspector(scene) }
     ///
     /// - Parameter scene: the scene whose inspector it shows - the page's own.
     public static func inspector(_ scene: SceneSession) -> ToolbarItem {

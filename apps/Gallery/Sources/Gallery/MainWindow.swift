@@ -51,6 +51,9 @@ struct MainWindow: Window {
     /// window is sure to be built.
     @Environment private var window: WindowSession
 
+    /// The gallery this window is in - the scene the ⓘ opens the inspector of.
+    @Environment private var scene: SceneSession
+
     // MARK: - What the user is looking at
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
@@ -64,6 +67,19 @@ struct MainWindow: Window {
                 listsHiddenRow: nav.listsHiddenRow)
         } detail: {
             detail()
+        }
+        // The gallery's own actions, declared once around every page: a page's
+        // own stand nearer the title, and these keep their place at the edge.
+        // Icons give both a stable native footprint; their captions remain
+        // available to accessibility and to platforms that show text.
+        .toolbar(id: "gallery") {
+            ToolbarItem.inspector(scene)
+                .text("Inspector")
+                .icon("nav_inspect_dark.png")
+
+            if !nav.showing(.home) {
+                ToolbarItem.home(nav)
+            }
         }
         // A size and a minimum: the size is the window's as it opens, the
         // minimum how small the user may drag it before the layout stops
@@ -203,6 +219,9 @@ struct MainWindow: Window {
 
         case .item(let item):
             return ItemPage(item: item, nav: nav, path: path)
+
+        case .layer(let depth):
+            return ToolbarLayerPage(depth: depth, path: path)
         }
     }
 

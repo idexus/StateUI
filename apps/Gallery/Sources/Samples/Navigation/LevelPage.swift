@@ -83,7 +83,7 @@ struct LevelPage: ContentView {
         .spacing(16)
         .padding(24)
         .onCreated {
-            page.gallery("Level \(level)", scene: scene, nav: nav)
+            page.gallery("Level \(level)")
 
             // What the back button reads while the page ABOVE this one is on
             // top - written on the page the user would go back to. A host

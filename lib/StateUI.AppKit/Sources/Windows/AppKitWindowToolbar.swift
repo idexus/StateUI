@@ -31,16 +31,18 @@ struct AppKitToolbarAction {
 /// authored `TitleBar`, and the toolbar lays it out in one order: the
 /// sidebar toggle and the separator that tracks the sidebar, the way back,
 /// the page's title where a painted band hides the system's, the title bar's
-/// leading content, the centre, the page's actions, native overflow, and the
-/// title bar's trailing content.
+/// leading content, the leading groups of actions, the centre, the trailing
+/// groups, native overflow, and the title bar's trailing content. A space
+/// stands between two groups, so each keeps a background of its own.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
     var back: AppKitToolbarAction?
     var title: NSView?
     var leading: NSView?
+    var leadingActions: [[AppKitToolbarAction]] = []
     var center: NSView?
-    var actions: [AppKitToolbarAction] = []
+    var actions: [[AppKitToolbarAction]] = []
     var overflow: [AppKitToolbarAction] = []
     var trailing: NSView?
 }
@@ -128,15 +130,22 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextIdentifiers.append(Self.leading)
             nextViews[Self.leading] = leading
         }
+        let place = { (groups: [[AppKitToolbarAction]]) in
+            for (index, group) in groups.enumerated() {
+                if index > 0 { nextIdentifiers.append(.space) }
+                for action in group {
+                    nextIdentifiers.append(action.identifier)
+                    nextActions[action.identifier] = action
+                }
+            }
+        }
+        place(chrome.leadingActions)
         nextIdentifiers.append(.flexibleSpace)
         if let center {
             nextIdentifiers += [Self.center, .flexibleSpace]
             nextViews[Self.center] = center
         }
-        for action in chrome.actions {
-            nextIdentifiers.append(action.identifier)
-            nextActions[action.identifier] = action
-        }
+        place(chrome.actions)
         if !chrome.overflow.isEmpty { nextIdentifiers.append(Self.overflow) }
         if let trailing {
             nextIdentifiers.append(Self.trailing)
@@ -178,7 +187,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        identifiers + [.flexibleSpace, .toggleSidebar, .sidebarTrackingSeparator]
+        identifiers + [.flexibleSpace, .space, .toggleSidebar, .sidebarTrackingSeparator]
     }
 
     /// The system's sidebar toggle toggles this window's split view, whoever
@@ -277,6 +286,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 
     var overflowTitlesForTesting: [String] { overflowActions.map(\.title) }
+
+    /// The actions behind the overflow, each by its identifier and whether it can be chosen.
+    var overflowForTesting: [(identifier: NSToolbarItem.Identifier, isEnabled: Bool)] {
+        overflowActions.map { ($0.identifier, $0.isEnabled) }
+    }
 
     func itemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSToolbarItem? {
         toolbar.items.first { $0.itemIdentifier == identifier }

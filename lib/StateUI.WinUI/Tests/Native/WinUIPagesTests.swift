@@ -417,9 +417,9 @@ private struct TitledPage: ContentView {
         let page = self.page
 
         return Label(title)
+            .toolbar { actions }
             .onCreated {
                 page.title = title
-                page.toolbarItems = actions
                 if hidesBar { page.hasNavigationBar = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }

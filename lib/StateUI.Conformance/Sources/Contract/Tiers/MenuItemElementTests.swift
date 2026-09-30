@@ -52,8 +52,8 @@ enum Chosen {
         let (on, off) = (item(true), item(false))
         if element == "ToolbarItem" {
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                SessionPage { page, _ in
-                    page.toolbarItems = [
+                DeclaringPage {
+                    [
                         ToolbarItem(on.0).onClicked { on.1() }.id(on.0),
                         ToolbarItem(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
                     ]

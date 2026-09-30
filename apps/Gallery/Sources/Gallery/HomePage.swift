@@ -338,7 +338,7 @@ struct HomePage: ContentView {
         .opacity($shown)
         // No home button: this is it. The inspector stays, as it does on
         // every page - what each render cost is a question about any of them.
-        .onCreated { page.gallery("Home", scene: scene, nav: nil) }
+        .onCreated { page.gallery("Home") }
     }
 
     /// Where the page is in coming in.

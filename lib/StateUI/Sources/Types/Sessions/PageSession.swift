@@ -5,9 +5,9 @@
 // itself, written as state and read into the page's node as it builds.
 // Design: docs/design/types/sessions.md#told-not-derived
 
-/// A content page as it runs: where it stands in its life, and everything it
-/// says about itself: its title, its actions, and what it asks of the stack it
-/// is on.
+/// A content page as it runs: where it stands in its life, and the values it
+/// is told about itself: its title, its picture, and what it asks of the stack
+/// it is on.
 ///
 ///     @Environment private var page: PageSession
 ///
@@ -19,8 +19,9 @@
 /// Every page offers its own to the view it shows and to everything in it, so
 /// a view acts on the page it is in, and what the page is told stands until it
 /// is told otherwise. Every optional property is nil until written, leaving
-/// the native host to choose its default. See `ApplicationSession` for what a
-/// session is.
+/// the native host to choose its default. What the page shows on its bar is
+/// declared in its view instead - `.toolbar { }`, `.titleView { }` - built
+/// with the state it follows. See `ApplicationSession` for what a session is.
 ///
 /// An arrangement - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
 /// page already and has none: it is told what it is by modifier, from
@@ -77,27 +78,6 @@ public final class PageSession {
     /// are looking at. Hosts whose back affordance has no text ignore it.
     @State public var backButtonTitle: String? = nil
 
-    /// A view on the bar, in place of the title.
-    ///
-    ///     page.titleView = SearchField($query)
-    ///
-    /// An ordinary part of the tree, built where the bar is: a composed view
-    /// there reads its own state, and a binding handed to a control keeps it
-    /// live.
-    @State public var titleView: (any View)? = nil
-
-    /// The actions in the page's navigation bar or native toolbar.
-    ///
-    ///     page.toolbarItems = [
-    ///         ToolbarItem("Add").onClicked { items.append(Item()) },
-    ///         ToolbarItem("Sort").placement(.overflow),
-    ///     ]
-    ///
-    /// What the bar offers is what was written: a button whose caption follows
-    /// the page's state is written again when that state moves -
-    /// `.onChanged(editing) { page.toolbarItems = … }`.
-    @State public var toolbarItems: [ToolbarItem] = []
-
     /// The menus active while this page is showing on a host with a menu bar.
     ///
     ///     page.menuBar = [
@@ -127,21 +107,13 @@ public final class PageSession {
         return props
     }
 
-    /// What hangs off the page besides its content: the title view, the
-    /// toolbar items and the menus, each as the node the host knows it by.
+    /// What hangs off the page besides its content: the menus, as the node the
+    /// host knows them by.
     var slots: [Node] {
         var slots: [Node] = []
 
-        if let titleView = titleView {
-            slots.append(Node(contract: TitleViewContract.self, children: [titleView.body]))
-        }
-
         // One node per collection, a parent the host's list is matched against.
         // Design: docs/design/types/sessions.md#collections-hang-as-one-node
-        if !toolbarItems.isEmpty {
-            slots.append(Node(contract: ToolbarItemsContract.self, children: toolbarItems.map { $0.body }))
-        }
-
         if !menuBar.isEmpty {
             slots.append(Node(contract: MenuBarContract.self, children: menuBar.map { $0.body }))
         }

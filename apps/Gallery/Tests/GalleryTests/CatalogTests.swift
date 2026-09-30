@@ -1106,7 +1106,8 @@ final class CatalogTests: XCTestCase {
         XCTAssertNotNil(flyout.events["isSidebarVisibleChanged"],
                         "a native presentation change would not reach the binding")
 
-        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail"])
+        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],
+                       "the two halves, then the gallery's own actions declared around every page")
 
         let pane = try XCTUnwrap(flyout.children.first).built
 
@@ -1120,7 +1121,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(shownPane.type, "Page")
         XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
 
-        let detail = try XCTUnwrap(flyout.children.last).built
+        let detail = flyout.children[1].built
 
         XCTAssertEqual(detail.type, "NavigationStack")
         XCTAssertNotNil(detail.props["barBackgroundColor"], "the bar is left to the platform")
@@ -1340,7 +1341,7 @@ final class CatalogTests: XCTestCase {
         // A written page's caption and picture are its SESSION's, written as
         // it comes in - so they are read off the message that brings it.
         let shown = firstPatch(window(place.nav))
-        let tabbed = try XCTUnwrap(shown.children.first?.children.last)
+        let tabbed = try XCTUnwrap(shown.children.first?.children.first { $0.type == "TabbedView" })
         let second = try XCTUnwrap(tabbed.children.last)
 
         XCTAssertEqual(tabbed.type, "TabbedView")

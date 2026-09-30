@@ -23,7 +23,9 @@ its page puts it.
 ## The bar
 
 A page's bar is its navigation item: its title - or the view standing in for
-it - its actions as the host layer orders them, those beyond the bar in a
+it - its actions as the host layer composes them along the page's path, each
+group a `UIBarButtonItemGroup` of its own, so each keeps its own shared
+background, the leading ones beside the way back, those beyond the bar in a
 menu behind its last button, whether it offers the way back, and its colours
 where the tree gives them. An action that destroys something is marked
 destructive in the menu and tinted red on the bar. A tabbed view's bar is its

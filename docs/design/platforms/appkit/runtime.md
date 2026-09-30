@@ -83,7 +83,10 @@ the bar as the page shows, into the menu of the same name where there is one.
 
 ## The toolbar
 
-A window's toolbar holds the chrome its arrangement composes. A layout the
+A window's toolbar holds the chrome its arrangement composes: each group of
+actions a run of items with a space between it and the next, so each keeps a
+background of its own, the leading groups before the flexible space and the
+trailing ones after it. A layout the
 tree stands in it - a title bar's leading or trailing content, a page's
 title view - is held in a slot at the size StateUI measures it at: AppKit
 measures a toolbar item's view by its constraints and warns of any it

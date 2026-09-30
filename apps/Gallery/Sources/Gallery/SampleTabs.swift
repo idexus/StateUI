@@ -79,7 +79,7 @@ struct SampleTabPage: ContentView {
         // it writes from its own `.onCreated`, which runs after this one,
         // being further in.
         .onCreated {
-            page.gallery(sample.caption(of: tab), scene: scene, nav: nav)
+            page.gallery(sample.caption(of: tab))
             page.icon = sample.icon(of: tab)
         }
     }

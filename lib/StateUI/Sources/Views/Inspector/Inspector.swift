@@ -8,10 +8,9 @@
 /// What each render costs and what it builds, shown inside the application.
 ///
 ///     @Environment private var scene: SceneSession
-///     @Environment private var page: PageSession
 ///
 ///     VStack { … }
-///         .onCreated { page.toolbarItems = [.inspector(scene)] }
+///         .toolbar { ToolbarItem.inspector(scene) }
 ///
 /// Each render is listed as it happens - its cause, its road, the time Swift
 /// took to describe it and the host to apply it, and how many composed views

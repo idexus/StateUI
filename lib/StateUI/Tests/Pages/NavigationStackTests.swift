@@ -45,16 +45,17 @@ private struct DressedDestination: ContentView {
     let depth: Int
 
     var content: any View {
-        ModifiedContent(node: label("level \(depth)")).onCreated {
-            page.title = "Level \(depth)"
+        ModifiedContent(node: label("level \(depth)"))
+            .titleView { ModifiedContent(node: label("on the bar")) }
+            .onCreated {
+                page.title = "Level \(depth)"
 
-            // Non-default values prove that the host must apply the branch;
-            // an assertion agreeing with a default could pass without it.
-            page.hasNavigationBar = false
-            page.hasBackButton = false
-            page.backButtonTitle = "Up"
-            page.titleView = ModifiedContent(node: label("on the bar"))
-        }
+                // Non-default values prove that the host must apply the branch;
+                // an assertion agreeing with a default could pass without it.
+                page.hasNavigationBar = false
+                page.hasBackButton = false
+                page.backButtonTitle = "Up"
+            }
     }
 }
 
@@ -249,8 +250,10 @@ final class NavigationStackTests: XCTestCase {
         XCTAssertEqual(page.props["backButtonTitle"], .string("Up"))
         XCTAssertEqual(page.props["hasBackButton"], .bool(false))
         XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
-        XCTAssertEqual(page.children.map(\.type), [.label, .titleView])
-        XCTAssertEqual(page.children.last?.children.first?.props["text"], .string("on the bar"))
+        XCTAssertEqual(page.children.map(\.type), [.label])
+        let content = try XCTUnwrap(page.children.first)
+        XCTAssertEqual(content.children.map(\.type), [.titleView])
+        XCTAssertEqual(content.children.last?.children.first?.props["text"], .string("on the bar"))
     }
 
     // MARK: - What comes back

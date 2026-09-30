@@ -42,7 +42,7 @@ struct SamplePage: ContentView {
         // bar it writes from its own `.onCreated`, which runs AFTER this one,
         // being further in - so its buttons go before these and its title
         // view, a page having one, replaces the gallery's.
-        scrolling.onCreated { page.gallery(sample.title, scene: scene, nav: nav) }
+        scrolling.onCreated { page.gallery(sample.title) }
     }
 
     /// Everything in one scroller: the summary, then each example with its

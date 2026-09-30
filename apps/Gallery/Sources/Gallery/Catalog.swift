@@ -249,6 +249,7 @@ final class Catalog {
                     Sample(ModalSample(nav: nav)),
                     Sample(DialogsSample()),
                     Sample(ToolbarSample()),
+                    Sample(ToolbarLayersSample(nav: nav)),
                     Sample(ContextMenuSample()),
                     Sample(SearchSample(nav: nav)),
                 ]),

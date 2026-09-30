@@ -423,14 +423,15 @@ final class HostContractTests: XCTestCase {
     /// A control's properties speak in plain words: a stepper moves by its
     /// `step`, a picker offers `options`, a grid has `rows` and `columns` of
     /// `.fixed`, `.proportional` or `.fill` length, a Boolean choice is `isOn`
-    /// and reports `onToggled`, a toolbar item has a `placement`.
+    /// and reports `onToggled`, a toolbar item has a `placement` - and `order`
+    /// names where a toolbar group stands, never an item's placement.
     func testControlPropertiesSpeakInPlainWords() throws {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
         let former = [
             "increment", "itemsSource", "isAnimationPlaying", "rowDefinitions",
-            "columnDefinitions", "absoluteLayoutFlags", "isShowingUser", "order",
+            "columnDefinitions", "absoluteLayoutFlags", "isShowingUser",
             "isToggled", "isChecked", "absoluteLayoutBounds", "absoluteLayoutProportions",
         ]
 

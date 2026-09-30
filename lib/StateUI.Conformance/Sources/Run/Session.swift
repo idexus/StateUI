@@ -135,6 +135,12 @@
         return try driver.menu(of: element)
     }
 
+    /// The bar `page` shows as the user meets it (`HostDriver.bar(of:)`).
+    public func bar(of page: MountedElement) throws -> String {
+        note("read the bar of \(page.type.name)")
+        return try driver.bar(of: page)
+    }
+
     /// Whether `element` holds the keyboard.
     public func focused(_ element: MountedElement) throws -> Bool {
         try driver.focused(element)

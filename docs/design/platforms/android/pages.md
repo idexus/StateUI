@@ -20,9 +20,10 @@ window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome
 tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the
 navigation button and the actions. The bar also carries the stack's bar
-colours and the page's actions: the primary ones beside
-the title, by priority and then in their order, the rest behind the
-toolbar's overflow - each an entry of the toolbar's menu, written as
+colours and the actions the page's path declares: the ones on the bar
+beside the title, as the host layer composes them - the leading groups
+first, the bar having no leading edge beside its navigation button - the rest
+behind the toolbar's overflow - each an entry of the toolbar's menu, written as
 [menus](menus.md) says. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
 where the sidebar slides over it, it is the sidebar page's picture - Android's

@@ -367,16 +367,19 @@ told what it is by modifier.
 | `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `hasBackButton` | whether that bar offers its native back affordance |
 | `backButtonTitle` | short title supplied by this page for the page pushed above it |
-| `titleView` | an authored view replacing the navigation title |
-| `toolbarItems` | actions in the page toolbar |
 | `menuBar` | menus active while the page is visible on a platform with a menu bar |
 
 Every optional value starts as `nil`, which leaves that choice with the host.
-The toolbar and menu collections start empty.
+The menu collection starts empty.
+
+A session holds values. What has a body of its own - the page's actions and
+the view in its title's place - is declared in the view instead, with
+`.toolbar { }` and `.titleView { }`, and built with the state it follows (see
+[Navigation and presentation](navigation-and-presentation.md#toolbars)).
 
 The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
-not a cross-platform navigation lock. `titleView`, toolbar
+not a cross-platform navigation lock. Title views, toolbar
 items, and menu items are ordinary identified subtrees built where their
 native surface presents them. Modal presentation is adaptive: each host uses
 its platform's native presentation for pages in `WindowSession.modalStack`.
@@ -384,11 +387,11 @@ its platform's native presentation for pages in `WindowSession.modalStack`.
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is
 released explicitly with `Aim.unfocus()` or `OnScreenKeyboard.hide()`. A custom title,
-including an image, belongs in `titleView`; bar foreground color
+including an image, belongs in `.titleView { }`; bar foreground color
 belongs to the containing page arrangement.
 
-Set stable page furniture when the content element is created and update it
-when the state it depends on changes:
+Tell the page its values when the content element is created and again when
+the state they depend on changes; declare its actions where that state lives:
 
 ```swift quote
 struct EditorPage: ContentView {
@@ -397,10 +400,12 @@ struct EditorPage: ContentView {
 
     var content: any View {
         TextEditor()
-            .onCreated {
-                page.title = "Draft"
-                page.toolbarItems = [saveItem]
+            .toolbar {
+                ToolbarItem("Save")
+                    .isEnabled(dirty)
+                    .onClicked { save() }
             }
+            .onCreated { page.title = "Draft" }
             .onChanged(dirty) {
                 page.title = dirty ? "Draft - Edited" : "Draft"
             }

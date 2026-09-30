@@ -78,7 +78,7 @@ enum WinUIRealization {
         .complete("TitleBar", "subtitle"),
         .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
-        .complete("ToolbarItem", "priority"),
+        .complete("ToolbarItems", "order"),
         .complete("ToolbarItem", "showsText"),
         .notPlanned("WebView", "panTouchCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panUpdated", reason: webViewTakesTheHand),

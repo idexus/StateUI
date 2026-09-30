@@ -42,7 +42,7 @@ extension GTKElement {
 
         var chrome = GTKPageChrome()
         chrome.title = value(.title)?.string ?? ""
-        chrome.titleView = element.slotContent(.titleView)?.gtk.view
+        chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.showsBar = value(.hasNavigationBar)?.bool != false
         chrome.offersBack = value(.hasBackButton)?.bool != false
         (chrome.barBackground, chrome.barForeground) = element.barColors

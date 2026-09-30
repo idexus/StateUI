@@ -81,17 +81,17 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// The visible page's actions stand at its header bar's end in their priority's order, the overflow's behind the
+    /// The visible page's actions stand at its header bar's end in their order, the overflow's behind the
     /// bar's menu; choosing one runs its handler, and one that cannot be chosen runs nothing.
-    func testThePagesActionsFollowTheirOrderAndPriority() throws {
+    func testThePagesActionsFollowTheirOrder() throws {
         try onUIThread {
             let heard = Received<String>()
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
                         ToolbarItem("Delete").placement(.overflow).onClicked { heard.values.append("delete") },
-                        ToolbarItem("Save").priority(1).onClicked { heard.values.append("save") },
-                        ToolbarItem("Add").priority(0).isEnabled(false).onClicked { heard.values.append("add") },
+                        ToolbarItem("Add").isEnabled(false).onClicked { heard.values.append("add") },
+                        ToolbarItem("Save").onClicked { heard.values.append("save") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -223,9 +223,9 @@ struct TitledPage: ContentView {
         let page = self.page
 
         return Label(title)
+            .toolbar { actions }
             .onCreated {
                 page.title = title
-                page.toolbarItems = actions
                 if hidesBar { page.hasNavigationBar = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
@@ -252,9 +252,8 @@ private struct SearchingPage: ContentView {
     var content: any View {
         let page = self.page
         let query = $query
-        return Label("Results").onCreated {
-            page.title = "Search"
-            page.titleView = TextField(query).placeholder("Search")
-        }
+        return Label("Results")
+            .titleView { TextField(query).placeholder("Search") }
+            .onCreated { page.title = "Search" }
     }
 }

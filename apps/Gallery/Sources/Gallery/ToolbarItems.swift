@@ -12,12 +12,13 @@ import StateUI
 /// itself. It is declared here rather than in the library because there is
 /// nothing general about it: it knows this app's state and this app's icon.
 extension ToolbarItem {
-    /// Back to the home page, for a page's `toolbarItems`.
+    /// Back to the home page, in the gallery's group `MainWindow` declares
+    /// around every page.
     ///
-    /// A page ADDS this to its own items rather than being handed a list, so a
-    /// sample that declares toolbar items of its own keeps them - and it goes
-    /// LAST, which is the end of the row the platform fills from the title
-    /// outwards.
+    /// A page's own actions join that group's page rather than replacing it, so
+    /// a sample that declares actions of its own keeps this one - and it stands
+    /// at the edge, where it stays from page to page while a page's actions
+    /// come in from the title's side.
     ///
     /// The picture is the WHITE house in both themes, which is the one that
     /// reads on the accent bar `MainWindow` paints - see the note in

@@ -21,6 +21,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColour", testTheBarsActionsStandInItsWordsColour),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
             ("testAStackAndItsPagesSayHowTheBarAndThePageLook", testAStackAndItsPagesSayHowTheBarAndThePageLook),
@@ -279,7 +280,7 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// What a page puts on the bar: its actions in their priority's order, the overflow's last, each with its
+    /// What a page puts on the bar: its actions in their order, the overflow's last, each with its
     /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
     /// the theme's error colour; choosing one runs its handler, and one that cannot be chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
@@ -290,9 +291,9 @@ final class AndroidPagesTests: XCTestCase {
                     TitledPage(title: "Notes", actions: [
                         ToolbarItem("Delete").placement(.overflow).isDestructive(true)
                             .onClicked { heard.values.append("delete") },
-                        ToolbarItem("Save").priority(1).icon("test_wide.png").onClicked { heard.values.append("save") },
-                        ToolbarItem("Add").priority(0).icon("test_wide.png").isEnabled(false)
+                        ToolbarItem("Add").icon("test_wide.png").isEnabled(false)
                             .onClicked { heard.values.append("add") },
+                        ToolbarItem("Save").icon("test_wide.png").onClicked { heard.values.append("save") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -311,6 +312,23 @@ final class AndroidPagesTests: XCTestCase {
 }
 
 extension AndroidPagesTests {
+    /// A bar with no leading edge beside its navigation button: a leading group the stack declares stands first
+    /// among the actions, the page's own after it.
+    func testALeadingGroupStandsFirstAmongTheActions() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [ToolbarItem("Save")])
+                } destination: { _ in
+                    TitledPage(title: "Note")
+                }
+                .toolbar(.leading) { ToolbarItem("Filter") }
+            }
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(navigation.bar.content.actions.map(\.text), ["Filter", "Save"])
+        }
+    }
+
     /// The actions standing on a painted bar take their words from the bar's theme - light on a dark bar, dark on a
     /// light one - as Android's own bars do; their pictures take the bar's words' colour itself. A bar painted
     /// again in the other shade is made again in its theme.
@@ -320,8 +338,8 @@ extension AndroidPagesTests {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Scan").priority(0),
-                        ToolbarItem("Save").priority(1).icon("test_wide.png"),
+                        ToolbarItem("Scan"),
+                        ToolbarItem("Save").icon("test_wide.png"),
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -621,10 +639,9 @@ private struct SearchingPage: ContentView {
     var content: any View {
         let page = self.page
         let query = $query
-        return Label("Results").onCreated {
-            page.title = "Search"
-            page.titleView = SearchField(query).placeholder("Search")
-        }
+        return Label("Results")
+            .titleView { SearchField(query).placeholder("Search") }
+            .onCreated { page.title = "Search" }
     }
 }
 
@@ -680,10 +697,10 @@ private struct TitledPage: ContentView {
         let page = self.page
 
         return Label(title)
+            .toolbar { actions }
             .onCreated {
                 page.title = title
                 page.icon = icon
-                page.toolbarItems = actions
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
     }

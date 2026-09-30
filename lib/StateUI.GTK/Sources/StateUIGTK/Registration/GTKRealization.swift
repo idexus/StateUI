@@ -54,7 +54,7 @@ enum GTKRealization {
         .complete("TitleBar", "background"),
         .complete("TitleBar", "barForegroundColor"),
         .complete("ToolbarItem", "placement"),
-        .complete("ToolbarItem", "priority"),
+        .complete("ToolbarItems", "order"),
     ]
 
     /// What GTK's registry says it realizes: the export's content.

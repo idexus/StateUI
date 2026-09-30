@@ -21,7 +21,7 @@ extension UIKitElement {
     /// What this element gives the layout it stands in: its view, or the first view of an element drawn by its
     /// parent.
     var layoutItem: UIKitLayoutItem? {
-        guard let view else { return children.lazy.compactMap(\.layoutItem).first }
+        guard let view else { return element.arrangedChildren.lazy.compactMap(\.uiKit.layoutItem).first }
 
         var item = UIKitLayoutItem(view: view, values: element.layoutValues, isShown: element.standsShown)
         item.mount = element.mount

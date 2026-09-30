@@ -59,6 +59,6 @@ struct TabsPage: ContentView {
             .spacing(14)
             .padding(24)
         }
-        .onCreated { page.gallery("Tabs", scene: scene, nav: nav) }
+        .onCreated { page.gallery("Tabs") }
     }
 }

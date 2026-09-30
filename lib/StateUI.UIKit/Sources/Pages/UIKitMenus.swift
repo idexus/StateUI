@@ -42,9 +42,10 @@ enum UIKitMenus {
 
     private static func action(_ entry: MenuEntry, inReach: Bool) -> UIAction {
         let element = entry.element?.uiKit
-        let action = UIAction(title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:))) {
-            [weak element] _ in element?.send(.clicked, [])
-        }
+        let action = UIAction(
+            title: entry.title, image: entry.icon.flatMap(UIKitRenderer.image(named:)),
+            identifier: element?.actionIdentifier
+        ) { [weak element] _ in element?.send(.clicked, []) }
         var attributes: UIMenuElement.Attributes = []
         if !entry.isEnabled || !inReach { attributes.insert(.disabled) }
         if entry.isDestructive { attributes.insert(.destructive) }

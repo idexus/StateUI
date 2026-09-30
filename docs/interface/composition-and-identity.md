@@ -278,8 +278,8 @@ struct EditorScene: Scene {
     }
 }
 
-// Inside a page with SceneSession and PageSession environments:
-.onCreated { page.toolbarItems = [.inspector(scene)] }
+// Inside a page with a SceneSession environment:
+.toolbar { ToolbarItem.inspector(scene) }
 ```
 
 The inspector shows what caused each pass, whether a composed view was built,

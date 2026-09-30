@@ -2,7 +2,7 @@
 
 # ToolbarItems
 
-A page's toolbar items.
+A group of actions a page or an arrangement declares for its bar: one shared background where the platform draws one, joined by the groups of the same id declared further in.
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
@@ -23,17 +23,20 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
+| Host | Created | Members (2) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
-| UIKit | ✅ |  | `UIBarButtonItem` |  |
-| Android Views | · |  | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ |  | `CommandBar` `AppBarButton` |  |
-| GTK 4 | · |  | `GtkButton` in `GtkHeaderBar` | cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| AppKit | ✅ | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ✅ | 2 ✅ | `UIBarButtonItem` |  |
+| Android Views | · | 1 – | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` |  |
+| GTK 4 | ⌛ |  | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.
 
 ## ToolbarItems's own members
 
-ToolbarItems declares no members of its own.
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `order` | property | `Int` | stateUI | ✅ | ✅ | · |  |  |  | Android Views: cannot read the bar of Page - Android's driver has no path for it yet |
+| `side` | property | `ToolbarSide` | adaptive | ✅ | ✅ | – |  |  |  | Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions. |

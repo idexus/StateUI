@@ -20,6 +20,41 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
+    /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
+    /// after the last, each run between two spaces a group, then the overflow's actions.
+    func bar(of page: MountedElement) throws -> String {
+        let toolbar = try controller(of: page).toolbarForTesting
+        let identifiers = toolbar.identifiersForTesting
+        var root = page
+        while let parent = root.parent { root = parent }
+        let word = { (identifier: NSToolbarItem.Identifier, enabled: Bool) -> String? in
+            guard identifier.rawValue.hasPrefix("StateUI.action."),
+                  let mount = UInt64(identifier.rawValue.dropFirst("StateUI.action.".count)),
+                  let element = Self.element(mounted: mount, in: root)
+            else { return nil }
+            return BarWords.word(element, enabled: enabled)
+        }
+        let groups = { (part: ArraySlice<NSToolbarItem.Identifier>) -> [[String]] in
+            part.split(separator: .space).map { run in
+                run.compactMap { word($0, toolbar.itemForTesting($0)?.isEnabled ?? true) }
+            }.filter { !$0.isEmpty }
+        }
+        let first = identifiers.firstIndex(of: .flexibleSpace) ?? identifiers.endIndex
+        let last = identifiers.lastIndex(of: .flexibleSpace).map { $0 + 1 } ?? identifiers.endIndex
+        return BarWords.said(
+            leading: groups(identifiers[..<first]), trailing: groups(identifiers[last...]),
+            overflow: toolbar.overflowForTesting.compactMap { word($0.identifier, $0.isEnabled) })
+    }
+
+    /// The element of `mount` in the tree under `root`, its slots included.
+    private static func element(mounted mount: UInt64, in root: MountedElement) -> MountedElement? {
+        if root.mount == mount { return root }
+        for child in root.children + root.slots {
+            if let found = element(mounted: mount, in: child) { return found }
+        }
+        return nil
+    }
+
     /// A window's: its title, the place and size of its content area, their bounds, its buttons, the desktop through
     /// it, whether it floats, and the kind and value its restoration record keeps. The driver orders no window in, so
     /// none stands shown or hidden to read.

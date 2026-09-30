@@ -45,12 +45,13 @@ extension UIKitElement {
 
         var chrome = UIKitPageChrome()
         chrome.title = value(.title)?.string ?? ""
-        chrome.titleView = element.slotContent(.titleView)?.uiKit.view
+        chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.hasNavigationBar)?.bool != false
         chrome.offersBack = value(.hasBackButton)?.bool != false
         (chrome.barBackground, chrome.barForeground) = element.barColors
         let actions = element.chromeActions
-        chrome.actions = actions.primary.map(Self.action)
+        chrome.leadingActions = actions.leading.map { $0.map(Self.action) }
+        chrome.actions = actions.trailing.map { $0.map(Self.action) }
         chrome.overflow = actions.overflow.map(Self.action)
         return chrome
     }

@@ -137,9 +137,9 @@ of its members each meets, and why a cell is empty.
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | adaptive | · |  |  | ✅ | ⏸ |  |
-| [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |
-| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | · | ✅ | · |  |
+| [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | · | ⌛ | ⌛ |  |
+| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | · | ⌛ | ⌛ |  |
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
@@ -486,11 +486,11 @@ Every control, and every part an application, its windows and its pages are made
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 9 | 2 ✅ | 5 ✅ | 1 – | 9 ✅ |  |  |
-| [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 5 ✅ |  |  |
+| [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 105 | 48 of 105 met | 54 of 105 met | 21 of 105 met | 91 of 105 met | 6 of 105 met |  |
+| **Met** - ✅ and – | 106 | 50 of 106 met | 57 of 106 met | 22 of 106 met | 87 of 106 met | 6 of 106 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -570,7 +570,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  | 4 ✅ |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority`, `showsText` | 3 |  |  |  | 3 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  |  |  |  |
+| [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
 <!-- members:end -->
@@ -623,14 +624,14 @@ realizes the element and each of its members.
 `layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `location`,
 `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
 `maximumLines`, `maximumVisible`, `maximumWidth`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `opacity`, `options`, `orientation`, `padding`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`minimumHeight`, `minimumWidth`, `opacity`, `options`, `order`, `orientation`,
+`padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
 `placeholder`, `placeholderColor`, `placement`, `points`, `position`,
-`priority`, `progress`, `region`, `renderTransform`, `returnKey`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollOffset`, `selectedIndex`, `selectedIndicatorColor`, `selectedItems`,
-`selectionLength`, `selectionMode`, `shape`, `showsClearButton`, `showsText`,
-`showsUserLocation`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
+`progress`, `region`, `renderTransform`, `returnKey`, `rotation`, `rotationX`,
+`rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
+`selectedIndex`, `selectedIndicatorColor`, `selectedItems`, `selectionLength`,
+`selectionMode`, `shape`, `showsClearButton`, `showsText`, `showsUserLocation`,
+`side`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
 `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
 `strokeWidth`, `style`, `subtitle`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`,
