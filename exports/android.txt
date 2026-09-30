@@ -218,7 +218,9 @@ SearchField
   fontFamily
   fontSize
   horizontalTextAlignment
+  inputPurpose
   isEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
   placeholderColor
@@ -256,7 +258,9 @@ TextEditor
   fontSize
   growsWithText
   horizontalTextAlignment
+  inputPurpose
   isEnabled
+  isTextPredictionEnabled
   maximumLength
   placeholder
   placeholderColor
@@ -271,8 +275,10 @@ TextField
   fontFamily
   fontSize
   horizontalTextAlignment
+  inputPurpose
   isEnabled
   isPassword
+  isTextPredictionEnabled
   maximumLength
   placeholder
   placeholderColor

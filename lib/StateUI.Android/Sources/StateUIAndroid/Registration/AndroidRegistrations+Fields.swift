@@ -56,6 +56,7 @@ extension AndroidRegistrations {
         FontElementContract.fontAttributes,
         FontElementContract.fontFamily, TextStyleElementContract.textColor, InputViewContract.placeholder,
         InputViewContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
+        InputViewContract.inputPurpose, InputViewContract.isTextPredictionEnabled,
         InputViewContract.maximumLength, InputViewContract.cursorPosition, InputViewContract.selectionLength,
         VisualElementContract.isEnabled,
     ]
@@ -77,6 +78,11 @@ extension AndroidRegistrations {
         }
         if values.changed(InputViewContract.placeholderColor) {
             view.setPlaceholderColor(values[InputViewContract.placeholderColor]?.propValue)
+        }
+        if values.changed(InputViewContract.inputPurpose) || values.changed(InputViewContract.isTextPredictionEnabled) {
+            view.setTraits(InputTraits(
+                spellChecked: true, predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
+                purpose: values[InputViewContract.inputPurpose]))
         }
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 46 ✅ · 1 ☑️ | `NSTextView` in an `NSScrollView` |  |
 | UIKit | ✅ | 46 ✅ | `UITextView` |  |
-| Android Views | ✅ | 63 ✅ · 1 ☑️ | multi-line `EditText` |  |
+| Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
@@ -134,10 +134,10 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read cursorPosition of TextEditor - GTK's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ |  | ✅ | · |  | only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks; Android Views: not realized; GTK 4: cannot read inputPurpose of TextEditor - GTK's driver has no path for it yet |
+| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ | ✅ | · |  | only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks; GTK 4: cannot read inputPurpose of TextEditor - GTK's driver has no path for it yet |
 | `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ◐ |  | Android Views: not realized; GTK 4: cannot read isReadOnly of TextEditor - GTK's driver has no path for it yet |
-| `isSpellCheckEnabled` | property | `Bool` | native | ✅ | ✅ |  | ✅ | · |  | Android Views: not realized; GTK 4: cannot read isSpellCheckEnabled of TextEditor - GTK's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native | ✅ | ✅ |  | ✅ | · |  | Android Views: not realized; GTK 4: cannot read isTextPredictionEnabled of TextEditor - GTK's driver has no path for it yet |
+| `isSpellCheckEnabled` | property | `Bool` | native | ✅ | ✅ | – | ✅ | · |  | Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.; GTK 4: cannot read isSpellCheckEnabled of TextEditor - GTK's driver has no path for it yet |
+| `isTextPredictionEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isTextPredictionEnabled of TextEditor - GTK's driver has no path for it yet |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
 | `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholder of TextEditor - GTK's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholderColor of TextEditor - GTK's driver has no path for it yet |

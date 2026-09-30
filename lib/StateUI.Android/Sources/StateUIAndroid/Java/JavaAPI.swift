@@ -469,6 +469,20 @@ enum ViewConstants {
     static let passwordInput: Int32 = 0x80
     static let multiLineInput: Int32 = 0x20000
 
+    /// `InputType`'s text variations for an address and a link, and its text flags: capitals at each sentence,
+    /// correction as the user types, and no suggestions.
+    static let emailInput: Int32 = 0x20
+    static let linkInput: Int32 = 0x10
+    static let sentenceCapitals: Int32 = 0x4000
+    static let autoCorrect: Int32 = 0x8000
+    static let noSuggestions: Int32 = 0x80000
+
+    /// `InputType.TYPE_CLASS_NUMBER` with its decimal flag and its hidden variation, and `TYPE_CLASS_PHONE`.
+    static let numberInput: Int32 = 0x2
+    static let decimalNumber: Int32 = 0x2000
+    static let hiddenNumber: Int32 = 0x10
+    static let phoneInput: Int32 = 0x3
+
 
     /// `TypedValue.COMPLEX_UNIT_PX` and `COMPLEX_UNIT_SP`: a text size in pixels, and one the user's font scale applies to.
     static let pixels: Int32 = 0

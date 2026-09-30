@@ -38,6 +38,9 @@ final class AndroidTextFieldView: AndroidTextView {
     var textCase: TextCase?
 
     private(set) var isPassword = false
+
+    /// What the field's keyboard and its checking of the words do.
+    private var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
     private var madeHintColors: JavaObject?
 
     init(_ kind: Kind = .field) {
@@ -59,10 +62,32 @@ final class AndroidTextFieldView: AndroidTextView {
         listen(JavaAPI.addTextChangedListener, JavaAPI.setOnEditorActionListener)
     }
 
-    /// The field's kind of input: one line or several, and hiding what is typed.
+    /// The field's kind of input: the keys its traits pick, one line or several, hiding what is typed, capitals,
+    /// correction and suggestions.
+    /// Design: docs/design/platforms/android/controls.md#what-typing-is-given
     private var inputType: Int32 {
-        ViewConstants.textInput | (kind == .editor ? ViewConstants.multiLineInput : 0)
-            | (isPassword ? ViewConstants.passwordInput : 0)
+        switch traits.keys {
+        case .number:
+            return ViewConstants.numberInput | ViewConstants.decimalNumber | (isPassword ? ViewConstants.hiddenNumber : 0)
+        case .telephone:
+            return ViewConstants.phoneInput
+        case .words, .email, .url:
+            let variation = isPassword ? ViewConstants.passwordInput
+                : traits.keys == .email ? ViewConstants.emailInput : traits.keys == .url ? ViewConstants.linkInput : 0
+            return ViewConstants.textInput | variation | (kind == .editor ? ViewConstants.multiLineInput : 0)
+                | (traits.capitals == .sentences ? ViewConstants.sentenceCapitals : 0)
+                | (traits.corrects && !isPassword ? ViewConstants.autoCorrect : 0)
+                | (traits.predicts ? 0 : ViewConstants.noSuggestions)
+        }
+    }
+
+    /// What the field's keyboard and its checking of the words do; the words and their weight stay.
+    func setTraits(_ traits: InputTraits) {
+        guard traits != self.traits else { return }
+
+        self.traits = traits
+        Java.call(reference, JavaAPI.setInputType, .int(inputType))
+        setFontAttributes(fontAttributes)
     }
 
     /// What the keyboard's return key does; nil for the kind's own - the platform's, or a search.

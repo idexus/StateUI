@@ -33,6 +33,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
             ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
             ("testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes", testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes),
+            ("testAPurposeGivesTheKeyboardItsKeysAndItsCapitals", testAPurposeGivesTheKeyboardItsKeysAndItsCapitals),
         ]
     }
 
@@ -274,6 +275,29 @@ final class AndroidTextFieldViewTests: XCTestCase {
                 ViewConstants.gravity(across: .end) | ViewConstants.gravity(down: .center),
                 ViewConstants.gravity(across: .center) | ViewConstants.gravity(down: .start),
             ])
+        }
+    }
+
+    /// A purpose picks the keys a keyboard offers and where capitals go: plain words are taken as typed, with no
+    /// suggestions; an address takes its keys; text starts its sentences in capitals; a password stays hidden and
+    /// corrected by nothing.
+    func testAPurposeGivesTheKeyboardItsKeysAndItsCapitals() {
+        onMainActor {
+            let words = State(wrappedValue: "")
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField(words.projectedValue).inputPurpose(.plain)
+                    TextField(words.projectedValue).inputPurpose(.email)
+                    TextField(words.projectedValue).inputPurpose(.text)
+                    TextField(words.projectedValue).inputPurpose(.numeric)
+                    TextField(words.projectedValue).inputPurpose(.email).isPassword(true)
+                }
+            }
+            let types = host.views(AndroidTextFieldView.self).map { Java.callInt($0.reference, TestJava.getInputType) }
+
+            // InputType: TEXT 0x1, NUMBER 0x2; EMAIL 0x20, PASSWORD 0x80; CAP_SENTENCES 0x4000, AUTO_CORRECT 0x8000,
+            // NO_SUGGESTIONS 0x80000; a number's DECIMAL 0x2000.
+            XCTAssertEqual(types.map { String($0, radix: 16) }, ["80001", "8021", "c001", "2002", "81"])
         }
     }
 }

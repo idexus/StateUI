@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 42 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 46 ✅ | `UITextField` |  |
-| Android Views | ✅ | 64 ✅ · 1 ☑️ | `EditText` |  |
+| Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
 | WinUI 3 | ✅ | 68 ✅ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
@@ -137,10 +137,10 @@ What every field a user types into has: the text's limits and caret, the keyboar
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `cursorPosition` | property | `Int` | native | · | ✅ | ✅ | ✅ | · |  | cannot read cursorPosition of TextField - AppKit's driver has no path for it yet; GTK 4: cannot read cursorPosition of TextField - GTK's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ |  | ✅ | · |  | only through the host's own: read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks; Android Views: not realized; GTK 4: cannot read inputPurpose of TextField - GTK's driver has no path for it yet |
+| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ | ✅ | · |  | only through the host's own: read inputPurpose of TextField: the traits the host keeps; a Mac shows no keys a purpose picks; GTK 4: cannot read inputPurpose of TextField - GTK's driver has no path for it yet |
 | `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ◐ |  | Android Views: not realized; GTK 4: cannot read isReadOnly of TextField - GTK's driver has no path for it yet |
-| `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ |  | ✅ | · |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; Android Views: not realized; GTK 4: cannot read isSpellCheckEnabled of TextField - GTK's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ |  | ✅ | · |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet; Android Views: not realized; GTK 4: cannot read isTextPredictionEnabled of TextField - GTK's driver has no path for it yet |
+| `isSpellCheckEnabled` | property | `Bool` | native | · | ✅ | – | ✅ | · |  | cannot read isSpellCheckEnabled of TextField - AppKit's driver has no path for it yet; Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.; GTK 4: cannot read isSpellCheckEnabled of TextField - GTK's driver has no path for it yet |
+| `isTextPredictionEnabled` | property | `Bool` | native | · | ✅ | ✅ | ✅ | · |  | cannot read isTextPredictionEnabled of TextField - AppKit's driver has no path for it yet; GTK 4: cannot read isTextPredictionEnabled of TextField - GTK's driver has no path for it yet |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextField - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
 | `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholder of TextField - GTK's driver has no path for it yet |
 | `placeholderColor` | property | `Color` | native | · | · | ✅ | ✅ | · |  | cannot read placeholderColor of TextField - AppKit's driver has no path for it yet; UIKit: cannot read placeholderColor of TextField - UIKit's driver has no path for it yet; GTK 4: cannot read placeholderColor of TextField - GTK's driver has no path for it yet |

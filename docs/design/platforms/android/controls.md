@@ -57,6 +57,17 @@ tall as its lines. The words and the placeholder stand across each kind where
 `horizontalTextAlignment` says - the view's gravity across - and down where
 its kind stands them.
 
+## What typing is given
+
+A field's traits ([what typing is given](../../host/runtime.md#what-typing-is-given))
+are its input type: numbers and telephones their own classes, an address and
+a link their text variations, capitals at each sentence where the traits put
+them, correction where they correct - not in a password - and no suggestions
+where they do not predict. A new input type resets the typeface, so the
+field puts its weight back after it, as a password does. Android has no
+switch for spell checking alone: its marks go with the suggestions, which
+prediction turns off.
+
 ## An editor a line tall
 
 An editor that does not grow stands a line tall where the tree states no

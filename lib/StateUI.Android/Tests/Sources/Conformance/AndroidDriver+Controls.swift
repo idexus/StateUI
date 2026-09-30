@@ -54,6 +54,10 @@ extension AndroidDriver {
             return Int(end - start).propValue
         case .isPassword where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80 != 0).propValue }
+        case .inputPurpose where view is AndroidTextFieldView:
+            return number("inputType").map { purpose(of: Int($0)).propValue }
+        case .isTextPredictionEnabled where view is AndroidTextFieldView:
+            return number("inputType").map { (Int($0) & 0x80000 == 0).propValue }
         case .padding where !(view is AndroidLayoutView):
             // Whole pixels on Android: a fraction of a point off, back to the whole points the tree gives.
             let sides = read("padding")?.split(separator: ",").compactMap { Double($0) } ?? []
@@ -72,6 +76,19 @@ extension AndroidDriver {
         case .tint:
             return number("tint").map { color(UInt32(bitPattern: Int32(truncatingIfNeeded: Int($0)))).propValue }
         default: return nil
+        }
+    }
+
+    /// The purpose an input type was made for: its class, then its variation, then its capitals and suggestions.
+    private static func purpose(of type: Int) -> InputPurpose {
+        switch (type & 0xF, type & 0xFF0) {
+        case (2, _): return .numeric
+        case (3, _): return .telephone
+        case (_, 0x20): return .email
+        case (_, 0x10): return .url
+        default:
+            if type & 0x4000 != 0 { return .text }
+            return type & 0x80000 != 0 ? .plain : .default
         }
     }
 

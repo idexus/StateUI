@@ -40,6 +40,8 @@ enum AndroidRealization {
             + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .notPlanned("InputView", "isSpellCheckEnabled",
+                    reason: "Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off."),
         .notPlanned("MenuItem", "accessibilityIdentifier",
                     reason: "An Android menu entry holds no identifier: automation finds it by its title."),
         .complete("NavigationStack", "barBackgroundColor"),
