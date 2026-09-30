@@ -104,9 +104,11 @@
         if provider[keyPath: field] != value { provider[keyPath: field] = value }
     }
 
-    /// The typed keys the host reads before the first application render.
+    /// The typed keys the host reads before the first application render - the application, made at its first
+    /// need, lists them as it is made.
     public static var persistentKeys: [PersistentKey] {
-        StandardEnvironment.application.persistentKeys
+        Renderer.shared.madeApplication()
+        return StandardEnvironment.application.persistentKeys
     }
 
     /// Hydrates values found in the native store before the first render.

@@ -223,9 +223,10 @@ private struct ShownView {
 ///         stateUIUseApp(HelloWorldApp())
 ///     }
 ///
-/// - Parameter application: the application, made here with a fresh
-///   application session and kept for the life of the process, so `@State`
-///   declared on it outlives every window.
-public func stateUIUseApp(_ application: @autoclosure () -> Application) {
+/// - Parameter application: the application, made at its first need - once
+///   the host has told what the device is - with a fresh application session,
+///   and kept for the life of the process, so `@State` declared on it
+///   outlives every window.
+public func stateUIUseApp(_ application: @escaping @autoclosure () -> Application) {
     Renderer.shared.setApplication(application())
 }

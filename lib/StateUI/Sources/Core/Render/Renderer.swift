@@ -15,6 +15,10 @@ public final class Renderer: @unchecked Sendable {
     public static let shared = Renderer()
 
     private var application: Application?
+
+    /// The registered application, still to be made: it is made at its first need - the first render, or the
+    /// host reading the keys it keeps - so after the host has told what the device is.
+    private var making: (() -> Application)?
     private var dirty = true
 
     /// The states written since the last render, by storage identity. Behind
@@ -124,9 +128,10 @@ public final class Renderer: @unchecked Sendable {
 
     /// Registers the application. Called through `stateUIUseApp`.
     ///
-    /// - Parameter application: the application, made once what an earlier
-    ///   registration wrote into the application's session is forgotten.
-    public func setApplication(_ application: @autoclosure () -> Application) {
+    /// - Parameter application: the application, made at its first need, once
+    ///   what an earlier registration wrote into the application's session is
+    ///   forgotten and the host has told what the device is.
+    public func setApplication(_ application: @escaping @autoclosure () -> Application) {
         StandardEnvironment.application.forget()
 
         // A new application is a new tree: the old one is let go, and every element of
@@ -140,14 +145,26 @@ public final class Renderer: @unchecked Sendable {
         unreading(rootReads)
         rootReads = []
 
-        let application = application()
-        self.application = application
-        Renderer.name(statesOf: application)
+        self.application = nil
+        making = application
 
         // One scene, waiting for the platform's first window (Scenes.swift).
         Scenes.shared.reset()
 
         setNeedsRender()
+    }
+
+    /// The registered application, made the first time it is needed.
+    /// Design: docs/design/core/render.md#a-new-application
+    @discardableResult
+    func madeApplication() -> Application? {
+        if application == nil, let making {
+            self.making = nil
+            let made = making()
+            application = made
+            Renderer.name(statesOf: made)
+        }
+        return application
     }
 
     /// Names the application's own `@State` by their properties, once, since the
@@ -448,7 +465,7 @@ public final class Renderer: @unchecked Sendable {
     /// The whole tree, its styles and its motion, read in one scope, so whatever
     /// they read lands in `rootReads`.
     private var root: (tree: Node, styles: StyleSheet?, motion: Motion) {
-        guard let application = application else {
+        guard let application = madeApplication() else {
             return (Renderer.unregistered, nil, .standard)
         }
 
