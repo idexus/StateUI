@@ -67,6 +67,28 @@ StateUI libraries in `Frameworks/`. Its icon is drawn from
 and `appicon_mark.svg` in its middle, opaque, which iOS rounds itself. Its
 `Info.plist` says the application supports many scenes.
 
+An application's own keys - the reason it asks for the local network, a
+capability the device must have - stand in `Platforms/UIKit/Info.plist`,
+which the bundle's `Info.plist` takes in, the application's value where both
+name one key. The head's target leaves the file out, as a head leaves out
+anything that is not its Swift:
+
+```swift quote
+.executableTarget(
+    name: "NotesUIKit", dependencies: head, path: "Platforms/UIKit", exclude: ["Info.plist"])
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Notes reaches its server on this network.</string>
+</dict>
+</plist>
+```
+
 `STATEUI_HOST=uikit` is what makes a build a UIKit one: the application's
 manifest reads it, declares its `Platforms/UIKit` head, and defines the
 `UIKIT` compilation condition for every module of the application;

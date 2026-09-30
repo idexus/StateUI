@@ -47,7 +47,7 @@ binary_dir="$(uikit_build "$package" "$scratch" debug "$product" \
   -Xlinker -F -Xlinker "$frameworks" -Xlinker -L -Xlinker "$libraries" \
   -Xlinker -rpath -Xlinker "$frameworks" -Xlinker -rpath -Xlinker "$libraries")"
 bundle="$scratch/debug/$product.app"
-uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources" "$bundle" "$scratch/tools"
+uikit_bundle "$binary_dir" "$product" "$product" "$identifier" "$package/Resources" "$bundle" "$scratch/tools" ""
 
 xcrun simctl install "$device" "$bundle"
 output="$(mktemp)"
