@@ -188,7 +188,7 @@ struct PanSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The totals are measured from where the pan BEGAN, not from "
                 + "the last report - which is why the running case adds them to "

@@ -73,7 +73,7 @@ struct ToolbarLayersSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Every page declares its own actions where their state lives; the gallery "
                 + "declares Inspector and Home once, around every page.")

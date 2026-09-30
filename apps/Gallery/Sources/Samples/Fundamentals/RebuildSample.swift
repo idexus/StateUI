@@ -72,7 +72,7 @@ struct RebuildSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Every view can say why it is being described. `debugInfo()` "
                 + "answers the view's own name, how many times it has been "

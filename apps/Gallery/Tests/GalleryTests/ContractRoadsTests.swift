@@ -192,6 +192,26 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"WindowSession().modalStack = nil"#,
             contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }"#),
         Road(
+            name: "an action standing in a stack",
+            removed: #"_ = VStack { ToolbarItem("Save") }"#,
+            contract: #"_ = VStack { Label("Notes") }.toolbar { ToolbarItem("Save") }"#),
+        Road(
+            name: "an arrangement of pages standing in a stack",
+            removed: #"_ = VStack { NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Next") } }"#,
+            contract: #"_ = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { VStack { Label("Home") } } destination: { _ in Label("Next") }"#),
+        Road(
+            name: "a run of text standing in a stack",
+            removed: #"_ = VStack { TextSpan("Hi") }"#,
+            contract: #"_ = VStack { Label().spans { TextSpan("Hi") } }"#),
+        Road(
+            name: "a view standing among a label's runs",
+            removed: #"_ = Label().spans { Label("Hi") }"#,
+            contract: #"_ = Label().spans { TextSpan("Hi") }"#),
+        Road(
+            name: "a view standing among a map's pins",
+            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Label("Castle") }"#,
+            contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Pin("Castle") }"#),
+        Road(
             name: "a window's title bar written into its session",
             removed: #"WindowSession().titleBar = nil"#,
             contract: #"_ = SplitView(State(wrappedValue: true).projectedValue) { Label("Menu") } detail: { Label("Home") }.barTitle("Notes")"#),

@@ -77,7 +77,7 @@ private struct LoadingList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Scroll towards the end: thirty more arrive, up to three hundred.")
             .fontSize(12)
             .textColor(Palette.subtle)

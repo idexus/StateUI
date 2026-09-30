@@ -133,7 +133,7 @@ struct StateSample: SampleContent, ExampleContent {
         .shape(.roundedRectangle(12))
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("This view is a value, rebuilt on every render, and its @State is "
                 + "declared right on it. The same view at the same place keeps its state "

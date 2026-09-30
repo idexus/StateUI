@@ -131,7 +131,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
         .spacing(16)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A `@State` write is whole from ANY thread - a handler, a "
                 + "`Task.detached` that worked something out, an `async let` "

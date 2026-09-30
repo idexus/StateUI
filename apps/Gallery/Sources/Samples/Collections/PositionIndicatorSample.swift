@@ -221,7 +221,7 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The usual home for one is under a GalleryView. Both take a `position`, so "
                 + "one @State joins them - which is also what makes a PositionIndicator useful "

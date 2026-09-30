@@ -138,7 +138,7 @@ struct MotionSample: SampleContent, ExampleContent {
             .motion(.none, .size)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Press Size or Colour. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")

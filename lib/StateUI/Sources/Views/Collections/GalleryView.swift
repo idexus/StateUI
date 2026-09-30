@@ -98,7 +98,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private var empty: (any View)?
 
     /// What is drawn over a far card to darken it. See `shade(_:amount:)`.
-    private var mask: Element?
+    private var mask: (any View)?
 
     /// How far the shade goes, from 0 to 1.
     private var shades = 1.0
@@ -256,7 +256,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     ///   - amount: how dark the furthest card goes, from 0 (not at all) to 1
     ///     (as far as the shape says). The whole of it, unless said.
     /// - Returns: the gallery, darkening its far cards.
-    public func shade(_ view: Element, amount: Double = 1) -> Self {
+    public func shade(_ view: any View, amount: Double = 1) -> Self {
         var copy = self
         copy.mask = view
         copy.shades = Self.fraction(amount, "shade(_:amount:)")

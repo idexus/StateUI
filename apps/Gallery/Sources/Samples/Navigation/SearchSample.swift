@@ -95,7 +95,7 @@ struct SearchSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The box is a `SearchField` declared with `.titleView { }`, the bar's title "
                 + "slot, so it sits where this page's title would; the page a match pushes "

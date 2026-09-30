@@ -48,7 +48,7 @@
     /// first tab and a modal stack's root are a stack of one page - `beside` the page's words.
     static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> any Page {
         let dressing = Dressing(worn)
-        let others: [Element] = beside.map { $0 }
+        let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { [Label("Page")] + others }

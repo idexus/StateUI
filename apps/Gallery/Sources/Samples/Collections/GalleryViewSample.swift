@@ -286,7 +286,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         .shape(.roundedRectangle(16))
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`GalleryView` is a run of cards the user swipes through, with "
                 + "`.arrangement` choosing the shape they stand in - `.default` is a "

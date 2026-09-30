@@ -48,7 +48,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
         }
         """
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
             + "`OnScreenKeyboard.hide()` releases whichever input holds the focus, and answers "
             + "whether anything did.")

@@ -117,7 +117,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Delete a row. It FADES where it stands and the rows under it "
                 + "then close over the gap - a plain `VStack`, and not a line in "

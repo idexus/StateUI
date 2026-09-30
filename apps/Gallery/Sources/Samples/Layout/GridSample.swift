@@ -98,7 +98,7 @@ private struct GridPlacement: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Where a view sits is written on the view - `.gridRow(1)`, "
                 + "`.gridColumn(1)` - and those modifiers are on every view, because any "

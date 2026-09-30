@@ -10,7 +10,11 @@ a key.
 Every method of `ViewBuilder` works on `[Element]`, never on one `Element`: an
 `if` or a `ForEach` produces a list, and working in lists lets either stand as
 one statement among the others. `buildBlock` joins the statements in writing
-order.
+order. What it takes is a view - `any View`, a list of views, a `ForEach` -
+and nothing else: an action, a run of text, a pin and an arrangement of pages
+each go where they belong, so `VStack { ToolbarItem("Save") }` does not
+compile. A modifier on a view gives back a view (`View where Modified: View`),
+so a chain goes on on `any View` as on a view of a known type.
 
 ## Every statement records where it stood
 
@@ -103,8 +107,8 @@ is why a hand-built `[Element]` whose length changes wants `ForEach` instead.
 
 The segment is added by a wrapper, `Keyed`, and an item's identity by another,
 `Identified`, rather than by a property on the controls. The builder is handed
-an `Element` and must not care which kind: a Label, a composed view and a
-hand-written `Node` take a segment the same way. The wrapper writes onto
+a view and must not care which kind: a Label, a composed view and a
+hand-written `Node` in `ModifiedContent(node:)` take a segment the same way. The wrapper writes onto
 whatever node the element builds, a composed view's placeholder included,
 which is where a key has to sit for the differ to see it.
 
@@ -121,8 +125,9 @@ not. It records no path. An entry is matched by its `.id()` and otherwise by
 its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. A hand-written entry standing beside a
 conditional wants an id; `ForEach` gives each of its entries its item's
-identity. `MenuBarBuilder` and `ToolbarBuilder` collect one type each - a
-`Menu`, a `ToolbarItem` - the same way.
+identity. `MenuBarBuilder`, `ToolbarBuilder`, `SpanBuilder` and `PinBuilder`
+collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Pin` - the
+same way, an array of them standing for a loop.
 
 ## Windows and styles
 

@@ -148,7 +148,7 @@ struct PinchSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`scale` is RELATIVE - how much has changed since the LAST report - so "
                 + "a view being pinched multiplies rather than assigns. `scaleOrigin` says "

@@ -198,7 +198,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Each row is one question put to Foundation on this platform. The "
                 + "library crosses the boundary with three-integer dates; Foundation here "

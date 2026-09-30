@@ -22,13 +22,14 @@
 ///     }
 @resultBuilder
 public enum ViewBuilder {
-    /// A single view written as a statement.
-    public static func buildExpression(_ expression: Element) -> [Element] {
+    /// A single view written as a statement. Only a view: an action, a run of
+    /// text, a pin or an arrangement of pages goes where it belongs.
+    public static func buildExpression(_ expression: any View) -> [Element] {
         [expression]
     }
 
-    /// Several, from something that already produced a list.
-    public static func buildExpression(_ expression: [Element]) -> [Element] {
+    /// Several, from something that already produced a list of views.
+    public static func buildExpression(_ expression: [any View]) -> [Element] {
         expression
     }
 

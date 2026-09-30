@@ -113,7 +113,7 @@ struct DialogsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A dialog is an act, not a view. The handler resumes with the "
                 + "native answer after the dialog closes.")

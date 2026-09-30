@@ -384,7 +384,7 @@ private struct OffsetStrips: ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Three strips, three states. `.scrollOffset($offset)` hands the state over, "
                 + "so the scroller is no reader of it: what the offset costs is decided "
@@ -524,7 +524,7 @@ private struct RestStrips: ExampleContent {
         .verticalAlignment(.center)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Drag the first strip and let go: the throw stops where the platform "
                 + "stops it, and the strip then glides on to the tile it is nearest. The "
@@ -611,7 +611,7 @@ private struct BarStrips: ExampleContent {
         .rowSpacing(6)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("`.never` takes the bar away and nothing brings it back; `.always` asks for "
             + "one that stays whether or not a drag is under way. Where the platform draws "
             + "an overlay bar that fades on its own, the two look alike until the scroller "

@@ -51,7 +51,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Switch the SYSTEM's appearance and the word above follows "
                 + "in the same breath.")

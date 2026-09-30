@@ -130,7 +130,7 @@ struct SampleTabPage: ContentView {
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
-            example.hostCode.listings.map { listing -> Element in
+            example.hostCode.listings.map { listing -> any View in
                 SamplePage.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }

@@ -89,7 +89,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("`.horizontalAlignment` places a child across the room its stack gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)

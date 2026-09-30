@@ -67,7 +67,7 @@ private struct Timer: ContentView {
 /// state to shift.
 private struct Shelf: ContentView {
     /// What sits above the count, when anything does.
-    let extra: Element?
+    let extra: (any View)?
 
     @State var count = 0
 
@@ -293,7 +293,9 @@ final class StateTests: XCTestCase {
             }
 
             var content: any View {
-                VStack { parts }
+                // The parts go in as the builder made them, keyed already.
+                let held: () -> [Element] = { [parts] in parts }
+                return VStack(content: held)
             }
         }
 
@@ -302,7 +304,7 @@ final class StateTests: XCTestCase {
 
             return Holder {
                 if branch {
-                    ticking ? Timer() as any Element : Counter()
+                    ticking ? Timer() as any View : Counter()
                 }
             }
         }

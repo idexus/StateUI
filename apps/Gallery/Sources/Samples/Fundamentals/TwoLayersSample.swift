@@ -81,7 +81,7 @@ private struct LayerRows: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Both rows show the same number. The first reads it, so every press "
                 + "builds that row again, compares it and sends what changed. The second "
@@ -237,7 +237,7 @@ private struct LayerCost: ExampleContent {
         .spacing(8)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Two blocks of the same views, one number shown two ways. Each block "
                 + "reads the clock at the top of its closure and again at the bottom, so "

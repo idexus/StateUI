@@ -62,7 +62,7 @@ struct SwitchSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("`.onToggled` carries the value the switch now has, and runs after the "
             + "binding has written it - so both hold what the switch is, not what this "
             + "side guessed.")

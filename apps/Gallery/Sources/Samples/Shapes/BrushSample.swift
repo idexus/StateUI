@@ -136,7 +136,7 @@ struct BrushSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A gradient's points are fractions of the thing being painted, not device "
                 + "units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom "

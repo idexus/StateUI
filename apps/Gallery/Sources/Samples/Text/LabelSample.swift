@@ -122,7 +122,7 @@ struct LabelSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The uppercase and the lowercase line are written the same way, in mixed "
                 + "case: the transform changes the DRAWING and leaves the text alone.")

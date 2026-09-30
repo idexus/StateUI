@@ -108,7 +108,7 @@ struct SizingSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Every one of these is a REQUEST. The layout decides, and a stack that "
                 + "has no room to spare will ignore a width it cannot give - which is why "
@@ -134,7 +134,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
     /// One example with the modifier that made it, so the column reads as a
     /// list of named cases.
-    private func row(_ caption: String, _ view: Element) -> any View {
+    private func row(_ caption: String, _ view: any View) -> any View {
         VStack {
             Label(caption)
                 .fontSize(11)

@@ -922,7 +922,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
         + "nothing is left turning behind a page you have left."
     #endif
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label(Self.drawnBy)
                 .fontSize(12)

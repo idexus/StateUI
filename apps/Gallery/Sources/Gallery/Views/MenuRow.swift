@@ -15,7 +15,7 @@ import StateUI
 ///
 /// Shaped like `Card`, and for the same reason: what the row IS goes in the
 /// initializer, and everything a caller may leave out is a modifier.
-struct MenuRow: Element {
+struct MenuRow: ContentView {
     /// What the row says.
     private let title: String
 
@@ -54,15 +54,8 @@ struct MenuRow: Element {
         return copy
     }
 
-    /// `Element` rather than `ContentView`: this row is only ever placed inside
-    /// a stack and wears no modifier of its own, and an `Element` requires
-    /// nothing but `body`.
-    ///
-    /// Which is also what it OFFERS - a plain `Element` wears no modifiers at
-    /// all, `.margin`, `.onCreated` and `.isVisible` among them, and the compiler
-    /// names the missing modifier rather than the base protocol. A composed view
-    /// that must wear any of them is a `ContentView`.
-    var body: Node {
+    /// A view, as everything placed in a stack is.
+    var content: any View {
         // Copies for the handler to capture, never `self` - see the note in
         // Card.swift: a closure written in a body getter that captures the view
         // is moved off this library's executor by the compiler, and the press
@@ -97,6 +90,5 @@ struct MenuRow: Element {
         .accessibilityIdentifier(handle("menu", title))
         .accessibilityLabel(title)
         .onTapped { try await action() }
-        .body
     }
 }

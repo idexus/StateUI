@@ -151,7 +151,7 @@ struct EngineSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("An engine is for arithmetic that remembers. Rewriting one value as "
                 + "another - a number into words, two numbers into one - is a conversion: "

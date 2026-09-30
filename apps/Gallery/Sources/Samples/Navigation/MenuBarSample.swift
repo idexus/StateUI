@@ -121,7 +121,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The window declares File with a disabled Save around every page. While this "
                 + "page saves, its own Save stands in that place; Export… is this page's section, "

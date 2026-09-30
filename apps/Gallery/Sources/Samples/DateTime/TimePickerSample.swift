@@ -103,7 +103,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A `ClockTime` rather than a Foundation value, for the reason a "
                 + "`CalendarDate` is not a `Date`: formatting one needs ICU, and ICU is "

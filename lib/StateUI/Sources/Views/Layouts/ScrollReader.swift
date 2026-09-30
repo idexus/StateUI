@@ -197,10 +197,8 @@ public struct ScrollReader: ContentView {
 
         return Grid {
             // What is moved takes no touches: the scroller over it takes them.
-            Grid {
-                content()
-            }
-            .ignoresInput(true)
+            Grid(content: content)
+                .ignoresInput(true)
 
             FrameReader { room in
                 ScrollView {

@@ -68,7 +68,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The button above is enabled by a READ - "
                 + "`connectivity.networkAccess == .internet` - so it follows the "

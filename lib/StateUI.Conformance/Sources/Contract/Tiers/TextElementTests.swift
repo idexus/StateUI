@@ -20,10 +20,9 @@
         ], needs: [Covered(ButtonContract.clicked)]) { s in
             let words = State(wrappedValue: "Some words")
             s.start {
-                VStack {
-                    Specimens.page(element, [Write(TextElementContract.text, words.wrappedValue)])
-                    Button("Change").onClicked { words.wrappedValue = "Other words" }.id("change")
-                }
+                Specimens.page(element, [Write(TextElementContract.text, words.wrappedValue)], beside: [
+                    Button("Change").onClicked { words.wrappedValue = "Other words" }.id("change"),
+                ])
             }
             let view = try s.specimen(element)
             s.expect(try s.held(TextElementContract.text, on: view), "Some words")

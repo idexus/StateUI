@@ -62,7 +62,7 @@ struct StepperSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A `Stepper` is a `Slider` for a value with few enough steps to name. This "
                 + "one goes from 1 to 12 and never lands between two servings - which is "

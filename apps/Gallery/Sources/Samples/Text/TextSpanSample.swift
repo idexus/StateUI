@@ -40,13 +40,12 @@ struct TextSpanSample: SampleContent, ExampleContent {
                         .background(Palette.accent)
                 }
 
-            // A loop is the usual way - one run per token, which is how the
+            // A list is the usual way - one run per token, which is how the
             // code block on every page of this gallery is drawn.
             Label()
                 .spans {
-                    ForEach(Array(words.enumerated()), id: \\.offset) { pair in
-                        let (index, word) = pair
-                        return TextSpan(word + " ")
+                    words.enumerated().map { index, word in
+                        TextSpan(word + " ")
                             .textColor(index == highlighted ? Palette.accent : Palette.text)
                             .fontAttributes(index == highlighted ? .bold : .none)
                     }
@@ -92,9 +91,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
 
             Label()
                 .spans {
-                    ForEach(Array(words.enumerated()), id: \.offset) { pair in
-                        let (index, word) = pair
-                        return TextSpan(word + " ")
+                    words.enumerated().map { index, word in
+                        TextSpan(word + " ")
                             .fontSize(17)
                             .textColor(index == highlighted ? Palette.accent : Palette.text)
                             .fontAttributes(index == highlighted ? .bold : .none)
@@ -115,7 +113,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Two colours in one line is what runs are for: a label has one `textColor`, "
                 + "so text in two colours is two runs. A run carries font and text properties "
@@ -124,7 +122,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A loop is the usual way, one run per token - which is how the code block "
+            Label("A list is the usual way, one run per token - which is how the code block "
                 + "under every example here is drawn. Moving the highlight sends the two runs "
                 + "that changed and nothing else; the host keeps the rest of the line, the "
                 + "same way it keeps a list of rows.")

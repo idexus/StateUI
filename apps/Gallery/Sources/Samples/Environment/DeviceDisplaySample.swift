@@ -66,7 +66,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("The host measures the screen in PIXELS; a layout speaks "
             + "points, which is width divided by density. Rotate a phone "
             + "and every number above moves in one push - orientation, "

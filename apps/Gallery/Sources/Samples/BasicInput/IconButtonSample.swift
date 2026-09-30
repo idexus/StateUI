@@ -81,7 +81,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The picture is what gives it its purpose, so it goes in the initializer - "
                 + "and it can be drawn once per theme, like any other, which is what these "

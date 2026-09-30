@@ -625,7 +625,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             Self.height * fit)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`PlacedLayout` builds one view per card from its closure; an engine of "
                 + "yours works out a `Placement` for each - where the card goes, and how it "

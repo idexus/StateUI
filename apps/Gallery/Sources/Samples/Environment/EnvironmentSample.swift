@@ -135,7 +135,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The badge and the editor say `@Environment var session: Session` and "
                 + "nothing is passed to them - the type is the key, and they resolve the "

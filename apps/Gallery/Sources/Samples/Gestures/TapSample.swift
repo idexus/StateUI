@@ -77,7 +77,7 @@ struct TapSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Any view answers a tap: every card on a group's page is a view with "
             + "`.onTapped` on it.")
             .fontSize(12)

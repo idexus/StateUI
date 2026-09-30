@@ -49,7 +49,7 @@ struct ModalSample: SampleContent, ExampleContent {
         }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 
     var content: any View {
         VStack {

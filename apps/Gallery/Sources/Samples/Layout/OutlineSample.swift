@@ -100,7 +100,7 @@ struct OutlineSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`: the layout's background is "
             + "painted to it and its outline follows it. `.clipsContent(true)` cuts what the layout holds to it too.")
             .fontSize(12)

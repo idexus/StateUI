@@ -118,7 +118,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The stack is this array, so where the gallery is can be read, written, "
                 + "tested and serialized in Swift - and the platform's own back gesture "

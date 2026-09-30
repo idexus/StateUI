@@ -54,7 +54,7 @@ struct BatterySample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Reading a property is the whole subscription: the host "
                 + "pushes each change the platform reports, and exactly the "

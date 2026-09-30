@@ -162,7 +162,7 @@ struct StateClassSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The basket is a class, held in @State. The view's box holds a reference "
                 + "to it, so `basket.items.append(…)` never writes through that box - the "

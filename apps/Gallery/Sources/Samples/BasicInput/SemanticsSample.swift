@@ -259,7 +259,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             : button
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Two jobs, four modifiers, and they do not stand in for one another. "
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "

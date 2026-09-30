@@ -44,7 +44,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         .spacing(16)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A view told `.rightToLeft` mirrors its layout: a row fills from the "
                 + "right, padding swaps sides, and text finds its natural alignment at "

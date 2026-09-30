@@ -202,7 +202,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Fonts and Colours are this gallery's own windows: they change its font "
             + "and accent, and close with it. A swatch window exists once per value, "
             + "its number lent to it as a binding. Another gallery is one more scene, "

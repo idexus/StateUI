@@ -184,7 +184,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The build count each half takes is what tells them apart. The top "
                 + "caption PRINTS `volume`, which makes the closure it sits in a "

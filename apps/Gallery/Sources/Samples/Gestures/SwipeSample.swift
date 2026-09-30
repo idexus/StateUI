@@ -110,7 +110,7 @@ struct SwipeSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("The first box says nothing about `direction`, and a recognizer that "
             + "listens for nothing recognizes nothing - so it hears every way. The "
             + "second is narrowed to `.left` and `.right` with the threshold raised "

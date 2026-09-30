@@ -70,7 +70,7 @@ struct WindowSample: SampleContent, ExampleContent {
             .onCreated { translucent = window.isTranslucent == true }
         """
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 
     var content: any View {
         VStack {

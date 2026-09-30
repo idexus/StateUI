@@ -113,7 +113,7 @@ struct PointerSample: SampleContent, ExampleContent {
         .onPointerExited { hovering = false; pressing = false; last = "exited" }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Five events: entered, exited, moved, pressed and released. A pointer "
                 + "is a mouse, a trackpad or a pen, so on a touch-only device none of "

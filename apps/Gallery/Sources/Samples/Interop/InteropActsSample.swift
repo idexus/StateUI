@@ -469,7 +469,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`StateUIActs.add` registers a function under an act the "
                 + "application's contract declares, with what it takes and answers. "

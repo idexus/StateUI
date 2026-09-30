@@ -123,7 +123,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
         .onCreated { try await read() }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Every line above crossed the boundary as an act - `ClockTime.now()`, "
                 + "`TimeZoneInfo.local()`, `TimeZoneInfo.utcOffset` - and came back as "

@@ -78,7 +78,7 @@ struct SliderSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The drag's two ends are events of their own - `.onDragStarted` as the "
                 + "thumb is grabbed, `.onDragCompleted` as it is let go - and every step "

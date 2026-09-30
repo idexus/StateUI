@@ -116,7 +116,7 @@ struct IdentitySample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Type in a field, then insert a row above it: the text stays where it "
                 + "is, because the control did.")

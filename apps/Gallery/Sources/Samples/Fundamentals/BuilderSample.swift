@@ -116,7 +116,7 @@ struct BuilderSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("An `if` above a view does not move it: type in the field, flip the "
                 + "switch, and the TextField keeps its control - and with it the text, the "

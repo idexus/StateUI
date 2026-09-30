@@ -140,7 +140,7 @@ struct DrivenSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The reading at the top says how many times this closure has been "
                 + "described and which value for. Press the buttons and watch the marker "

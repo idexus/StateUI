@@ -66,7 +66,7 @@ struct ButtonSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Also `.onPressed` and `.onReleased`, for the moment the button goes "
             + "down and comes up.")
             .fontSize(12)

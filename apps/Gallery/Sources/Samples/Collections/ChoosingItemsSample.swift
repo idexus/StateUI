@@ -82,7 +82,7 @@ private struct PickList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Tap rows to choose several; Row 500 scrolls there.")
             .fontSize(12)
             .textColor(Palette.subtle)

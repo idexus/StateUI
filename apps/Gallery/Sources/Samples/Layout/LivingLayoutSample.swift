@@ -153,7 +153,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         .gridColumn(column)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Add a row and the ones under it SLIDE down; remove one and "
                 + "they close up; shuffle and they cross past each other. The "

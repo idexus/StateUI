@@ -153,7 +153,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The tinted box is the parent, drawn because the first reading is measured "
                 + "against it: `in its parent` is where the panel sits inside that box. "

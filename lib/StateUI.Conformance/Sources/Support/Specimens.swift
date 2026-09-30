@@ -62,7 +62,7 @@
     /// (`Session.specimen(_:)`).
     public static func page(_ element: String, _ worn: [any Worn] = [], beside: [any View] = []) -> any Page {
         let dressing = Dressing(worn)
-        let others: [Element] = beside.map { $0 }
+        let others: [any View] = beside
         switch element {
         case "Span":
             return VStack { [Label().spans { dressing.wear(TextSpan("Some words")) }] + others }
@@ -105,7 +105,7 @@
 /// again whenever what it writes changes, over words and what stands beside them.
 public struct SessionPage: ContentView {
     /// What stands beside its words.
-    let beside: [Element]
+    let beside: [any View]
 
     /// What it writes, said as words: a change in them writes the sessions again.
     let key: String
@@ -118,7 +118,7 @@ public struct SessionPage: ContentView {
 
     /// A page writing its sessions as `write` says - again whenever `key` changes - `beside` its words.
     public init(
-        beside: [Element] = [], key: String = "", _ write: @escaping @Sendable (PageSession, WindowSession) -> Void
+        beside: [any View] = [], key: String = "", _ write: @escaping @Sendable (PageSession, WindowSession) -> Void
     ) {
         self.beside = beside
         self.key = key
@@ -138,7 +138,7 @@ public struct SessionPage: ContentView {
 /// written.
 public struct DeclaringPage: ContentView {
     /// What stands beside its words.
-    let beside: [Element]
+    let beside: [any View]
 
     /// What it declares, said as words: a change in them builds it again.
     let key: String
@@ -161,7 +161,7 @@ public struct DeclaringPage: ContentView {
     /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
     /// words.
     public init(
-        beside: [Element] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
+        beside: [any View] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
         title: (any View)? = nil, _ items: @escaping @Sendable () -> [ToolbarItem] = { [] }
     ) {
         self.beside = beside

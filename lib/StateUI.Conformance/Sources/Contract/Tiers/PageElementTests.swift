@@ -77,7 +77,7 @@ enum Presented {
     static func page<Value: HostRepresentable & Sendable & Equatable>(
         _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
     ) -> any Page {
-        let others: [Element] = beside.map { $0 }
+        let others: [any View] = beside
         let written = Write(member, value)
         switch element {
         case "NavigationStack":

@@ -214,7 +214,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("One press, and three things move at once for as long as it runs: "
                 + "the wash across the stage, the caption breathing, and the bars "

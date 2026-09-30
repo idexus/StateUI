@@ -147,7 +147,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Hold each button down: the left crosses to its pressed colour, the right arrives at it. "
             + "Turn Enabled off for the disabled look, and choose a radio button for the checked one.")
             .fontSize(12)

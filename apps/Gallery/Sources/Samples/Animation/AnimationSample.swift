@@ -182,7 +182,7 @@ struct AnimationSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Each button moves STATE. `.opacity($fade)` DRIVES the property "
                 + "from the state behind it, and `$fade.journey.move(to: 0.1, …)` sends "

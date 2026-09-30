@@ -91,7 +91,7 @@ struct InspectorView: ContentView {
     ///
     /// A horizontally scrolling action row that remains reachable in a narrow
     /// inspector.
-    private func head(_ model: InspectorModel) -> Element {
+    private func head(_ model: InspectorModel) -> any View {
         let record = Scenes.shared.record(id: scene)
         let windowed = record.map(Inspector.windowed) ?? false
         let close: () -> Void = {
@@ -176,7 +176,7 @@ struct InspectorView: ContentView {
     }
 
     /// The scene's renders, newest first.
-    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> Element {
+    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> any View {
         let model = InspectorModel.shared
 
         return ScrollView {
@@ -194,7 +194,7 @@ struct InspectorView: ContentView {
     }
 
     /// The render chosen: its numbers, then its tree in this scene.
-    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> Element {
+    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> any View {
         guard let pass = chosen else {
             return Label("Choose a render to see what it built.")
                 .fontSize(12)

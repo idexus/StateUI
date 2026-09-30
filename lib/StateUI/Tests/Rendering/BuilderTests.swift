@@ -30,6 +30,25 @@ final class BuilderTests: XCTestCase {
         [patch] + patch.children.flatMap { mentioned($0) }
     }
 
+    // MARK: - What a builder takes
+
+    /// A modifier on any view gives back a view, so a chain goes on where the view's type is not known - a helper
+    /// returning `any View` wears a handler, a grid place and a margin one after another.
+    func testAChainGoesOnOnAnyView() {
+        func option(_ title: String) -> any View { Label(title) }
+
+        let node = option("x")
+            .onCreated {}
+            .onChanged(1) {}
+            .gridRow(1)
+            .margin(8)
+            .body
+
+        XCTAssertEqual(node.props["text"], .string("x"))
+        XCTAssertEqual(node.props["gridRow"], .number(1))
+        XCTAssertNotNil(node.props["margin"])
+    }
+
     // MARK: - An `if` beside other views
 
     /// The one that started this: an `if` with no `else` moved its siblings.

@@ -131,7 +131,7 @@ struct AimSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("What an author holds is declared, one way for each kind. A value is "
                 + "@State, which the modifier that shows it also animates through its $ "

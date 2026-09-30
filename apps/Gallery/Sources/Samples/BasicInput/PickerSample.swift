@@ -80,7 +80,7 @@ struct PickerSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The items are a list of strings and the choice is an index into it; "
                 + "-1 means nothing is chosen.")

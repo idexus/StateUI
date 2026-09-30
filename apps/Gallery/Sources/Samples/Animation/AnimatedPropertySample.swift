@@ -146,7 +146,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Each button moves a bound property on host frames. The build "
                 + "counter stays still while colour, size, padding and text move.")

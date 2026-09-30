@@ -403,7 +403,7 @@ struct InteropEventsSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The host calls `StateUIEvents.raise(event, values)` when the platform "
                 + "reports something, from any thread. Every `HostEvents.on` subscription "

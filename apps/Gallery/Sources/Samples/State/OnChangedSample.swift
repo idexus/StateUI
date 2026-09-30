@@ -82,7 +82,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`.onChanged` compares against what this view carried last render, on "
                 + "the Swift side alone - nothing about it crosses to the host. The "

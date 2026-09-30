@@ -76,7 +76,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The binding and the event are two halves of one choice: `$due` takes "
                 + "the chosen day into state, and `onDateChanged` runs after that write "

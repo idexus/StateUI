@@ -160,7 +160,7 @@ struct ImageSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
                 + "each asked for by its `.png` name. Where the build makes no PNG of that "

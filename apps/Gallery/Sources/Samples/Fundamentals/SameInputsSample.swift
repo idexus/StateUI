@@ -115,7 +115,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Press the button and read the three counts: the first block stands "
                 + "still and the other two move, each for a reason of its own. The rows "

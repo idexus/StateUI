@@ -504,7 +504,7 @@ struct InteropControlSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label(InteropHost.lamps + " The host creates it once, keeps "
                 + "it by identity between renders, puts each described value on it, and "

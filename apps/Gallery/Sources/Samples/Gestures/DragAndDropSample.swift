@@ -157,7 +157,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("What travels is a STRING, decided before the drag starts: a native "
                 + "drag session needs its payload at once, so `draggable(text:)` says it "

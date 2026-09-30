@@ -57,7 +57,7 @@ struct RadioButtonSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Picking one unchecks the others in the same `groupName`, and BOTH changes "
                 + "are reported - false on the button that lost, true on the new one. So a "

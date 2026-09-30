@@ -180,7 +180,7 @@ struct ReaderSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("One state, `value`, written by the slider at the top and by +10%. "
                 + "Every row is a closure of its own and takes its own reading, so "

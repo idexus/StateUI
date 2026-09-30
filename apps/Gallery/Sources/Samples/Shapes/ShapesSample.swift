@@ -311,7 +311,7 @@ struct ShapesSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Fill, stroke and everything about the stroke form one `Shape` protocol, "
                 + "shared by all six outlines and every native host. A shape with no "

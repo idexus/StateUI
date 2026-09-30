@@ -209,7 +209,7 @@ struct ConverterSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`$volume.convert { $0 * 100 }` is a second state the host carries, worked "
                 + "out from the first by an engine the differ writes for you: drag either "

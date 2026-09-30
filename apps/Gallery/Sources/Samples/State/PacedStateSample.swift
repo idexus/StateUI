@@ -134,7 +134,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Press Fade and read the three counts. The first stands still for the "
                 + "whole two seconds, the second counts up once a frame, the third about "

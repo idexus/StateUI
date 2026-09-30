@@ -94,7 +94,7 @@ struct TabsSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A `TabbedView` is a page, so a section of this gallery is one: the "
                 + "button opens a section arranged as tabs rather than as a stack. The "

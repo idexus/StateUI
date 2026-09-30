@@ -130,7 +130,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("One state, two readings. `width` is 300 the instant Grow is "
                 + "pressed; `$width.journey.value` is what the bar is actually showing this "

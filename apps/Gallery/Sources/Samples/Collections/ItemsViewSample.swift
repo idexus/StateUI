@@ -75,7 +75,7 @@ private struct LongList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Scroll to the end, and tap a row to choose it.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -145,7 +145,7 @@ private struct AcrossList: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Swipe both strips: the cards share one width, and every tag is as wide as its word.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -211,7 +211,7 @@ private struct GridList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Turn the device or widen the window: the columns follow the width.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -298,7 +298,7 @@ private struct GroupedList: ExampleContent {
         .rowSpacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Turn Counts off: the groups close up where their footers stood.")
             .fontSize(12)
             .textColor(Palette.subtle)

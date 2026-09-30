@@ -299,7 +299,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The time comes from the platform - `ClockTime.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "

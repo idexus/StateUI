@@ -53,7 +53,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A still spinner is also an INVISIBLE one on most platforms, which is why "
                 + "`ActivityIndicator(loading)` is usually the whole of it - there is "

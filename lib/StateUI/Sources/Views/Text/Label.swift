@@ -59,17 +59,15 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     ///         }
     ///
     /// The one way to colour part of a label: text in two colours is two runs.
-    /// A `ForEach` builds them, keyed by where each sits, since two tokens may
-    /// read the same:
+    /// A list of runs goes in whole, each matched by where it sits, since two
+    /// tokens may read the same:
     ///
     ///     Label().spans {
-    ///         ForEach(Array(highlighted(code).enumerated()), id: \.offset) { token in
-    ///             TextSpan(token.element.text).textColor(token.element.colour)
-    ///         }
+    ///         highlighted(code).map { TextSpan($0.text).textColor($0.colour) }
     ///     }
     ///
     /// A Label given both runs and a `text` shows the runs.
-    public func spans(@ViewBuilder _ spans: () -> [Element]) -> Self {
+    public func spans(@SpanBuilder _ spans: () -> [TextSpan]) -> Self {
         modified {
             $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.body })]
         }

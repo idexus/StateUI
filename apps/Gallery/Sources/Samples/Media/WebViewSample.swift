@@ -171,7 +171,7 @@ private struct WebBrowserPart: ExampleContent {
         .rowSpacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Follow the page's own link, and Back lights up: `canGoBack` and "
                 + "`canGoForward` are reported into bindings after every navigation. "
@@ -208,7 +208,7 @@ private struct WrittenInPlacePart: ExampleContent {
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("`source(html:)` shows HTML written in place, without the network. Web "
             + "content scrolls itself, which is why this page holds still and the view "
             + "fills the height the window gives it.")

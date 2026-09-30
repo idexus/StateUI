@@ -99,5 +99,5 @@ struct TextEditorSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 }

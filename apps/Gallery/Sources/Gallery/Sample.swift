@@ -103,10 +103,10 @@ protocol ExampleContent: ContentView {
     /// belongs in the example: it is what the example is doing. The notes are
     /// built once, with the catalog, so they are words that never change.
     ///
-    /// An `Element` and not a string, so the words are written the way every
-    /// other view here is. Required with no default, so a `notes` of any other
+    /// A view and not a string, so the words are written the way every other
+    /// view here is. Required with no default, so a `notes` of any other
     /// type is a compile error rather than a property nothing reads.
-    var notes: Element? { get }
+    var notes: (any View)? { get }
 
     /// What heads the example's own code.
     ///
@@ -185,10 +185,10 @@ struct HostListing {
 /// Swift.
 struct Example {
     /// The example itself, as a value whose content builds when the page does.
-    let view: Element
+    let view: any View
 
     /// The words about it, where it has any.
-    let notes: Element?
+    let notes: (any View)?
 
     /// The Swift that wrote it.
     let code: String

@@ -87,7 +87,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Two events: `.onTextChanged` on every edit - which runs after the binding "
                 + "has landed the words on `query` - and `.onSubmitted` when the "

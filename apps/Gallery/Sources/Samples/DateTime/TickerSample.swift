@@ -95,7 +95,7 @@ struct TickerSample: SampleContent, ExampleContent {
         .onDestroying { ticker.stop() }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The same countdown as the Task.sleep sample, with the loop moved into "
                 + "the library. What is left here is a value to read: no flag, no visit "

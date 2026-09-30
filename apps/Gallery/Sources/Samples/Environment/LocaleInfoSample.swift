@@ -59,7 +59,7 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("This is the host's answer on every platform, the zone an "
             + "IANA name everywhere. It is for LOGIC - a first weekday, a "
             + "24-hour clock, a unit - not for formatting.")

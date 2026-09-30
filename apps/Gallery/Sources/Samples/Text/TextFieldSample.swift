@@ -173,7 +173,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("The binding IS the two-way part: `TextField($name)` hands the state to the "
             + "host, which shows it in the field and lands every edit back on it. "
             + "`.onTextChanged` written afterwards runs beside it, never instead of "

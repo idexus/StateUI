@@ -62,7 +62,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The formFactor is the value this gallery itself builds by: the "
                 + "menu stands beside the page where device.formFactor answers "

@@ -83,7 +83,7 @@ public struct Map: View, MapProperties {
 
     /// The pins on it, replacing whatever was pinned before. A `Pin` is not a
     /// view, and goes here and nowhere else.
-    public func pins(@ViewBuilder _ content: () -> [Element]) -> Self {
+    public func pins(@PinBuilder _ content: () -> [Pin]) -> Self {
         var copy = self
 
         // The pins go before the context menu's slot, which stays last.

@@ -52,20 +52,15 @@ struct CodeBlock: ContentView {
         VStack {
             Label()
                 .spans {
-                    // Identified by OFFSET: two runs may be the same words
-                    // in the same colour, and the snippet never changes, so
-                    // the offsets never move.
-                    ForEach(
-                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
-                        id: \.offset
-                    ) { run in
-                        // The size goes on every run rather than on the
-                        // Label. A span carries font properties of its own,
-                        // and what an unset one falls back to is the
-                        // platform's business - one property per run costs
-                        // nothing and leaves nothing to it.
-                        TextSpan(run.element.text)
-                            .textColor(run.element.colour)
+                    // Matched by where each run sits: two runs may be the same
+                    // words in the same colour, and the snippet never changes.
+                    // The size goes on every run rather than on the Label. A
+                    // span carries font properties of its own, and what an
+                    // unset one falls back to is the platform's business - one
+                    // property per run costs nothing and leaves nothing to it.
+                    CodeHighlight.runs(in: code, language: spoken).map { run in
+                        TextSpan(run.text)
+                            .textColor(run.colour)
                             .fontSize(size)
                     }
                 }

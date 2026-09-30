@@ -178,7 +178,7 @@ struct TransformSample: SampleContent, ExampleContent {
         .spacing(22)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("One switch throws every example on the page at once. Each transform is "
                 + "written as a choice between itself and none, and a changed transform "
@@ -226,7 +226,7 @@ struct TransformSample: SampleContent, ExampleContent {
 
     /// One piece with its caption, so a row reads as labelled examples rather
     /// than bare boxes. The gap under the box is what a scaled one grows into.
-    private func piece(_ view: Element, _ caption: String) -> any View {
+    private func piece(_ view: any View, _ caption: String) -> any View {
         VStack {
             view
 

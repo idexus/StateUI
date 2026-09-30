@@ -108,7 +108,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Press Another visit and the FIRST count moves while the second stands "
                 + "still; type a name and the second moves while the first stands. One "

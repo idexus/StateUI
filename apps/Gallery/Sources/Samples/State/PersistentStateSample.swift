@@ -86,7 +86,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
         }
         """
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Close the app completely and open it again: the count and the name "
                 + "are where you left them.")

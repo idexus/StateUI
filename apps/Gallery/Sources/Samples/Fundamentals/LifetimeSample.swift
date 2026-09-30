@@ -121,7 +121,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Switch the card off and on: it is destroyed and created again - a new "
                 + "card, counting from nought. A new card does the same to the one on "

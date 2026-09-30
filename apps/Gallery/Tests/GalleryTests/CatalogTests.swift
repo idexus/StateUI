@@ -69,7 +69,7 @@ private struct Filling: SampleContent, ExampleContent {
         }
     }
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 }
 
 /// A sample whose example has a half on the host - the shape an interop sample
@@ -89,7 +89,7 @@ private struct TwoSided: SampleContent, ExampleContent {
         Label("row")
     }
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 }
 
 private extension Sample {

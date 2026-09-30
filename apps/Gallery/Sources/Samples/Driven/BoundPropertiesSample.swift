@@ -193,7 +193,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Every property here is handed a plain `@State` as `$x`, and the host "
                 + "carries it: a number and a colour are WALKED there under the "

@@ -84,7 +84,7 @@ private struct Areas: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         Label("Resize the window: a proportional area follows the room, an absolute one stays put.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -146,7 +146,7 @@ private struct Layers: ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? { nil }
+    var notes: (any View)? { nil }
 }
 
 /// One labelled marker, so the sample says what is being positioned rather than

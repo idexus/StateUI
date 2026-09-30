@@ -50,7 +50,7 @@
 enum Stacked {
     /// A stack of `element`'s kind, its children `spacing` apart.
     static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> any View {
-        let held: [Element] = children().map { $0 }
+        let held = children()
         if element == "HStack" { return HStack { held }.spacing(spacing) }
         return VStack { held }.spacing(spacing)
     }

@@ -134,7 +134,7 @@ struct PollSample: SampleContent, ExampleContent {
         .onDestroying { poll.stop() }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A repeating timer would fire again while the work of the last round "
                 + "was still going, and two checks would overlap. This one does not "

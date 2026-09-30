@@ -200,7 +200,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
         .spacing(10)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Save and Add are on the page's bar. Clear is a destructive item in the "
                 + "native overflow, enabled once something is saved.")

@@ -84,7 +84,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
         .spacing(18)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("One state, `level`, handed on as `$level` three times: to the knob, "
                 + "which drags it and sends it, and to two meters. Handing it on makes "

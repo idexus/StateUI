@@ -92,7 +92,7 @@ struct SamplePage: ContentView {
 
             // The far side of the example, where it has one: a section per
             // language its host's half is written in.
-            example.hostCode.listings.map { listing -> Element in
+            example.hostCode.listings.map { listing -> any View in
                 Self.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }
@@ -104,7 +104,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter heading: what the section is called.
     /// - Parameter content: what it holds.
-    static func section(_ heading: String, _ content: Element) -> any View {
+    static func section(_ heading: String, _ content: any View) -> any View {
         VStack {
             SectionTitle(heading)
             content
@@ -122,7 +122,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter view: the example itself.
     /// - Parameter fills: whether the example takes the whole cell.
-    static func boxed(_ view: Element, fills: Bool = false) -> ZStack {
+    static func boxed(_ view: any View, fills: Bool = false) -> ZStack {
         ZStack {
             if fills {
                 Grid {

@@ -113,10 +113,10 @@ public struct FrameReader: ContentView {
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
     public var content: any View {
-        Grid {
-            build(frame)
-        }
-        .onFrameChanged(in: space) { frame = $0 }
+        // What the author's builder made goes in as it is, keyed already.
+        let children: () -> [Element] = { build(frame) }
+        return Grid(content: children)
+            .onFrameChanged(in: space) { frame = $0 }
     }
 }
 

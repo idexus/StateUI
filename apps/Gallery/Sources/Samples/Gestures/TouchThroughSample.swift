@@ -100,7 +100,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`letsInputThrough(true)` takes only a layout's own empty area out of "
                 + "hit testing: a tap there reaches the box below, and the label inside "

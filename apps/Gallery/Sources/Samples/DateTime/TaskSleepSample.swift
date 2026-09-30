@@ -159,7 +159,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
         .onDestroying { running = false }
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Foundation's `Timer` hangs off a RunLoop, and nothing turns one on "
                 + "Android or Windows - so a timer here is a loop that sleeps. The "

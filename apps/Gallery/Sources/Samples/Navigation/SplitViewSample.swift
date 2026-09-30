@@ -106,7 +106,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("The pane is an ordinary page. Every row is a view whose action chooses "
                 + "a section and closes the menu, and a row the app does not want is an "

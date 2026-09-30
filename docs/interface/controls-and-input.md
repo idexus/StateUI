@@ -122,9 +122,17 @@ Label()
     }
 ```
 
-`TextSpan` is structural text content, not a `View`. It can carry text, font,
-decoration, line-height, foreground, and run background properties, but it has
-no independent frame, margin, or gesture surface.
+`TextSpan` is structural text content, not a `View`: it stands among a label's
+runs and nowhere else. It can carry text, font, decoration, line-height,
+foreground, and run background properties, but it has no independent frame,
+margin, or gesture surface. Runs made from a list go in as an array, each
+matched by where it sits:
+
+```swift quote
+Label().spans {
+    tokens.map { TextSpan($0.text).textColor($0.colour) }
+}
+```
 
 Plain text and formatted text are mutually exclusive descriptions of one
 label. Do not rely on modifier order to keep both.

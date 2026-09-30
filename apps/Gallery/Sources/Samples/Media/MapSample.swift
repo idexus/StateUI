@@ -175,7 +175,7 @@ struct MapSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("`Map` is an optional provider, drawn by the platform's own map where a "
                 + "host provides one - `MKMapView` on Apple. Elsewhere a host depends on a "

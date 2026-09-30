@@ -70,7 +70,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A FRACTION, not a percentage and not a count: 0.4 is four tenths of the "
                 + "way through, whatever the work is measured in. The step count is divided "

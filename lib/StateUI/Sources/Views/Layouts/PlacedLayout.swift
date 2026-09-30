@@ -54,7 +54,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     private var travel = Motion.inherited
 
     /// What is drawn over each placed view at its placement's `shade`, if any.
-    private var mask: Element?
+    private var mask: (any View)?
 
     /// The state the run of placements is carried on, where there is one.
     private var run: Binding<PlacedRun>?
@@ -71,7 +71,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     public init(
         _ items: Items,
         id: KeyPath<Items.Element, Id>,
-        content: @escaping (Items.Element) -> Element
+        content: @escaping (Items.Element) -> any View
     ) {
         self.source = Source(items: items, path: id, view: content)
     }
@@ -121,7 +121,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     /// - Parameter view: what to draw over each placed view.
     /// - Returns: the layout, shaded.
-    public func shade(_ view: Element) -> PlacedLayout {
+    public func shade(_ view: any View) -> PlacedLayout {
         var copy = self
         copy.mask = view
         return copy
@@ -170,13 +170,13 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let path: KeyPath<Items.Element, Id>
 
         /// The view for one item.
-        let view: (Items.Element) -> Element
+        let view: (Items.Element) -> any View
 
         /// What the initializer was handed.
         init(
             items: Items,
             path: KeyPath<Items.Element, Id>,
-            view: @escaping (Items.Element) -> Element
+            view: @escaping (Items.Element) -> any View
         ) {
             self.items = items
             self.path = path
@@ -188,12 +188,12 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     /// the author's own properties on the view are never overwritten; a shade
     /// is the container's second child.
     /// Design: docs/design/views/measured-layouts.md#placed-layout
-    private static func wrapped(_ view: Element, under mask: Element?) -> Element {
+    private static func wrapped(_ view: any View, under mask: (any View)?) -> any View {
         guard let mask else { return Grid { view } }
 
         return Grid {
             view
-            ModifiedContent(node: mask.body)
+            mask
         }
     }
 }

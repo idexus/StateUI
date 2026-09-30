@@ -139,7 +139,7 @@ struct StyleSample: SampleContent, ExampleContent {
         .spacing(14)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("Nothing in the example sets a colour, a size or a corner: every "
                 + "button takes all of it from the gallery's one `Style<Button>`.")

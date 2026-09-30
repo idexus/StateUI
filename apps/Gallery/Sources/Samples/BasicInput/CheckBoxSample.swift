@@ -92,7 +92,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    var notes: Element? {
+    var notes: (any View)? {
         VStack {
             Label("A `CheckBox` is the box and nothing else: it has no caption, so the words "
                 + "beside it are a `Label`. Tapping the words does nothing; that is the "
