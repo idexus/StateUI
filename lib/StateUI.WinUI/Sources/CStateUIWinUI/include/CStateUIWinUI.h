@@ -720,6 +720,10 @@ StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
 
+/// Whether a window's content shows the keys it takes - the way back's, Escape's - in a tip over everything it
+/// holds: what a test reads.
+bool stateui_winui_window_shows_keys(StateUIObjectRef window);
+
 /// A tabbed view's row of tabs: a SelectorBar, each tab with its title and the files its picture may stand in -
 /// each ended by a line feed, empty for none - `selected` chosen.
 StateUIObjectRef stateui_winui_tabs_make(int64_t view);

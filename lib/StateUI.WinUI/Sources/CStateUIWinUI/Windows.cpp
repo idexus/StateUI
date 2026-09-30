@@ -33,6 +33,8 @@ namespace {
     /// The window's way back - the mouse's back button, Alt+Left and the Back key - chosen on its chrome as -1; and
     /// Escape, which takes a sheet away.
     void takeTheWayBack(controls::Grid const &grid, int64_t chrome) {
+        // The window's keys, not a control's: no tip says them under the pointer over everything it holds.
+        grid.KeyboardAcceleratorPlacementMode(xaml::Input::KeyboardAcceleratorPlacementMode::Hidden);
         grid.AddHandler(
             xaml::UIElement::PointerPressedEvent(),
             winrt::box_value(xaml::Input::PointerEventHandler(
@@ -91,6 +93,16 @@ namespace {
     /// Whether `window` stands off the screen: minimized, or hidden.
     bool offScreen(windowing::AppWindow const &window) {
         return minimized(window) || !window.IsVisible();
+    }
+}
+
+extern "C" bool stateui_winui_window_shows_keys(StateUIObjectRef handle) {
+    try {
+        return root(as<xaml::Window>(handle)).KeyboardAcceleratorPlacementMode() !=
+               xaml::Input::KeyboardAcceleratorPlacementMode::Hidden;
+    } catch (...) {
+        report("reading whether a window shows its keys");
+        return false;
     }
 }
 

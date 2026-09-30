@@ -226,6 +226,15 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// The keys a window takes - Alt+Left, the Back key, Escape - show in no tip: its content holds them, and a tip
+    /// saying them would stand under the pointer over everything the window shows.
+    func testTheKeysAWindowTakesShowInNoTip() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { VStack { Label("Content") } }
+            XCTAssertFalse(stateui_winui_window_shows_keys(try XCTUnwrap(host.window).handle))
+        }
+    }
+
     /// The chrome keeps the window's own buttons their room once, at the scale the window stands at: WinUI's title
     /// bar keeps it in pixels as though they were DIPs, which at 200% stands its actions a caption's width short of
     /// the bar's end.

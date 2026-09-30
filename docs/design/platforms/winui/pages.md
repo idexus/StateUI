@@ -76,7 +76,9 @@ for when the user comes back to it. Its bar is the window's chrome.
 
 The way back is the chrome's back button, the mouse's back button, Alt+Left
 and the Back key - each the window's, as Windows applications offer it - and
-it pops the visible stack's top page.
+it pops the visible stack's top page. The window's content holds those keys,
+and Escape, with their tip hidden: WinUI would otherwise say them under the
+pointer over everything the window shows.
 
 ## A split view
 
