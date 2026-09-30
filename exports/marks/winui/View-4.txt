@@ -231,12 +231,12 @@ VStack.pointerReleased: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 WebView.allowDrop: not realized
-WebView.area: not realized
+WebView.area: ✅
 WebView.dragLeave: not realized
 WebView.dragOver: not realized
 WebView.drop: not realized
-WebView.frameChanged: not realized
-WebView.panYChannel: not realized
+WebView.frameChanged: ✅
+WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.frameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅

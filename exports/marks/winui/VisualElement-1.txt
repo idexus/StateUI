@@ -112,8 +112,8 @@ VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.scaleY: ✅
 VStack.width: ✅
-WebView.frame: not realized
-WebView.pivotX: not realized
+WebView.frame: ✅
+WebView.pivotX: ✅
 WebView.zIndex: not realized
 ZStack.accessibilityLabel: ✅
 ZStack.rotationX: not realized

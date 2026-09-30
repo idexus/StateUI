@@ -110,12 +110,12 @@ VStack.accessibilityHeadingLevel: ✅
 VStack.opacity: ✅
 VStack.scale: ✅
 WebView.background: not realized
-WebView.frameChanged: not realized
-WebView.maximumHeight: not realized
-WebView.maximumWidth: not realized
-WebView.minimumHeight: not realized
-WebView.minimumWidth: not realized
-WebView.translationX: not realized
+WebView.frameChanged: ✅
+WebView.maximumHeight: ✅
+WebView.maximumWidth: ✅
+WebView.minimumHeight: ✅
+WebView.minimumWidth: ✅
+WebView.translationX: ✅
 ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
 ZStack.pivotY: ✅

@@ -142,7 +142,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | · | ✅ | · |  |
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [WebView](controls/WebView.md) | native |  | ✅ | ✅ |  |  |  |
+| [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
 | [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ⏸ |  |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ◐ |  |
 <!-- creation:end -->
@@ -459,9 +459,9 @@ Every control, and every part an application, its windows and its pages are made
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  | 4 ✅ |  |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
-| [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – |  |  |  |
+| [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 | 1004 of 2591 met | 1040 of 2591 met | 1754 of 2591 met | 1822 of 2591 met | 585 of 2591 met |  |
+| **Met** - ✅ and – | 2591 | 1004 of 2591 met | 1040 of 2591 met | 1754 of 2591 met | 1884 of 2591 met | 585 of 2591 met |  |
 
 ### Application structure
 
@@ -571,7 +571,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  | 4 ✅ |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  | 2 ✅ |  |  |
-| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ |  |  |  |
+| [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
 <!-- members:end -->
 

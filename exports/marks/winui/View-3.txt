@@ -230,12 +230,12 @@ WebView.canDrag: not realized
 WebView.dragStarting: not realized
 WebView.dragText: not realized
 WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.horizontalAlignment: not realized
-WebView.panTouchCount: not realized
-WebView.panUpdated: not realized
-WebView.panXChannel: not realized
-WebView.verticalAlignment: not realized
+WebView.frameChanged: ✅
+WebView.horizontalAlignment: ✅
+WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.verticalAlignment: ✅
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅

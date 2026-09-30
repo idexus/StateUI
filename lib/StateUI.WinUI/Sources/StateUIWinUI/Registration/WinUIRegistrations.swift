@@ -21,6 +21,7 @@ enum WinUIRegistrations {
         dates(registry)
         fields(registry)
         pictures(registry)
+        web(registry)
         shapes(registry)
         drawing(registry)
         layouts(registry)

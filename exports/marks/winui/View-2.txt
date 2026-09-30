@@ -231,15 +231,15 @@ VStack.gridRow: ✅
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
-WebView.frameChanged: not realized
-WebView.margin: not realized
-WebView.pointerEntered: not realized
-WebView.pointerExited: not realized
-WebView.pointerMoved: not realized
-WebView.pointerPressed: not realized
-WebView.pointerReleased: not realized
-WebView.tapCount: not realized
-WebView.tapped: not realized
+WebView.frameChanged: ✅
+WebView.margin: ✅
+WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.tapCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.tapped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.allowDrop: not realized
 ZStack.area: ✅
 ZStack.dragLeave: not realized

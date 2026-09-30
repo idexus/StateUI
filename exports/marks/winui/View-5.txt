@@ -229,12 +229,12 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.verticalAlignment: ✅
-WebView.frameChanged: not realized
-WebView.gridColumn: not realized
-WebView.gridRow: not realized
-WebView.swipeDirection: not realized
-WebView.swipeThreshold: not realized
-WebView.swiped: not realized
+WebView.frameChanged: ✅
+WebView.gridColumn: ✅
+WebView.gridRow: ✅
+WebView.swipeDirection: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.swipeThreshold: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.swiped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.frameChanged: ✅
 ZStack.margin: ✅
 ZStack.pointerEntered: ✅

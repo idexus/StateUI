@@ -10,7 +10,7 @@
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Map", "Pin", "PositionIndicator", "WebView",
+        "Map", "Pin", "PositionIndicator",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words, a title bar
@@ -77,6 +77,21 @@ enum WinUIRealization {
         .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
+        .notPlanned("WebView", "panTouchCount", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "panUpdated", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "panXChannel", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "panYChannel", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pinchUpdated", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pointerEntered", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pointerExited", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pointerMoved", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pointerPressed", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "pointerReleased", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "swipeDirection", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "swipeThreshold", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "swiped", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "tapCount", reason: webViewTakesTheHand),
+        .notPlanned("WebView", "tapped", reason: webViewTakesTheHand),
         .complete("Window", "activated"),
         .complete("Window", "created"),
         .complete("Window", "deactivated"),
@@ -102,12 +117,17 @@ enum WinUIRealization {
         .complete("Window", "y"),
     ]
 
+    /// Why a web view hears none of the user's hand as a view does.
+    static let webViewTakesTheHand = "WebView2 gives the user's hand to its page: listened to by WinUI, it ends the "
+        + "process (fail-fast in Microsoft.UI.Xaml.Controls)."
+
     /// What WinUI's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {
         let registry = WinUIRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo]).map(\.name))
+            acts: (HostActs.performed + [ApplicationContract.persistSceneValue, ItemsViewContract.scrollTo]
+                + WinUIRegistrations.webActs).map(\.name))
     }
 
     /// What WinUI realizes, member by member: these records before what its registry says.

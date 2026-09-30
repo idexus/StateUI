@@ -37,5 +37,5 @@ TimePicker.accessibilityIdentifier: ✅
 TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
-WebView.accessibilityIdentifier: not realized
+WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

@@ -110,8 +110,8 @@ TitleBar.scaleX: not realized
 VStack.ignoresInput: ✅
 VStack.layoutDirection: not realized
 VStack.translationY: ✅
-WebView.rotation: not realized
-WebView.style: not realized
+WebView.rotation: ✅
+WebView.style: ✅
 ZStack.accessibilityHeadingLevel: ✅
 ZStack.opacity: ✅
 ZStack.scale: ✅

@@ -151,6 +151,28 @@ enum WinUICallbacks {
             },
             itemsShowing: { view, first, last in
                 MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.showing(Int(first)...Int(last)) }
+            },
+            webNavigating: { view, told, utf8 in
+                let address = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUIWebView)?.navigating(
+                        told: WebNavigationEvent(rawValue: told) ?? .unknown, to: address)
+                }
+            },
+            webNavigated: { view, result, utf8 in
+                let address = utf8.map { String(cString: $0) } ?? ""
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUIWebView)?.navigated(
+                        WebNavigationResult(rawValue: result) ?? .unknown, at: address)
+                }
+            },
+            webHistory: { view, back, forward in
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUIWebView)?.historyChanged(back: back, forward: forward)
+                }
+            },
+            webEnded: { view in
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIWebView)?.ended() }
             })
     }
 }

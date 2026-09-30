@@ -111,6 +111,6 @@ VStack.isEnabled: not realized
 VStack.scaleX: ✅
 WebView.ignoresInput: not realized
 WebView.layoutDirection: not realized
-WebView.translationY: not realized
+WebView.translationY: ✅
 ZStack.rotation: ✅
 ZStack.style: ✅

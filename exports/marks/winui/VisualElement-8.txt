@@ -111,11 +111,11 @@ TitleBar.unfocus: not realized
 VStack.accessibilityHint: ✅
 VStack.isVisible: ✅
 VStack.rotationY: not realized
-WebView.automationExcludedWithChildren: not realized
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.scaleY: not realized
-WebView.width: not realized
+WebView.automationExcludedWithChildren: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.scaleY: ✅
+WebView.width: ✅
 ZStack.frame: ✅
 ZStack.pivotX: ✅
 ZStack.zIndex: not realized

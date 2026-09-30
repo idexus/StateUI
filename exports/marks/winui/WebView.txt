@@ -1,14 +1,14 @@
 # revision 1.1
-WebView: not realized
-WebView.canGoBackChanged: not realized
-WebView.canGoForwardChanged: not realized
-WebView.evaluateJavaScript: not realized
-WebView.frameChanged: not realized
-WebView.goBack: not realized
-WebView.goForward: not realized
-WebView.navigated: not realized
-WebView.navigating: not realized
-WebView.processTerminated: not realized
-WebView.reload: not realized
-WebView.source: not realized
-WebView.userAgent: not realized
+WebView: ✅
+WebView.canGoBackChanged: ✅
+WebView.canGoForwardChanged: ✅
+WebView.evaluateJavaScript: ✅
+WebView.frameChanged: ✅
+WebView.goBack: ✅
+WebView.goForward: ✅
+WebView.navigated: ✅
+WebView.navigating: ✅
+WebView.processTerminated: ✅
+WebView.reload: ✅
+WebView.source: ✅
+WebView.userAgent: ✅

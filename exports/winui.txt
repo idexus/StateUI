@@ -312,6 +312,14 @@ VStack
   spacing
   stroke
   strokeWidth
+WebView
+  source
+  userAgent
+  canGoBackChanged()
+  canGoForwardChanged()
+  navigated()
+  navigating()
+  processTerminated()
 ZStack
   background
   clipsContent
@@ -376,12 +384,16 @@ ZStack
   confirm()
   currentTime()
   currentTimeZone()
+  evaluateJavaScript()
   focus()
+  goBack()
+  goForward()
   handlerFailed()
   hideOnScreenKeyboard()
   persistSceneValue()
   persistValue()
   prompt()
+  reload()
   scrollTo()
   unfocus()
   utcOffset()

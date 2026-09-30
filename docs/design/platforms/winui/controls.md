@@ -315,3 +315,31 @@ of the room. A stretched picture keeps no proportions, and WinUI draws a
 stretched SVG at its room's size, where the SVG would keep its own and leave
 bands: the relay hands WinUI the picture from memory with its proportions
 let go (`preserveAspectRatio="none"`).
+
+## A web view
+
+A WebView is WinUI's `WebView2`, over the system's WebView2 runtime: the
+WebView2 package's component and loader stand beside the application, as
+the Windows App SDK's runtime does. Its core stands a moment after it is
+first asked for a page, so a page asked for before then is gone to once it
+stands, in the order asked. What the page does comes back as the element's
+events: a navigation as it starts and as it ends, why it began by the host
+layer's rule - the program's step, else what WebView2 tells, which does not
+tell a step back from one forward - and whether there is a page behind and
+ahead as it changes ([a web view](../../host/web.md)). A page the program
+loads again while it is still coming, which WebView2 leaves as it is, is
+asked for again instead. A script's answer is the JSON WebView2 writes its
+value in, read by the host layer's rule, and the end of the page's web
+process is heard as WebView2 tells it. The agent it names itself by is the
+tree's, and the runtime's own where the tree gives none, taken back from
+when its core stood. Its page takes the user's hand: a web view hears none
+of it as a view does - WebView2, listened to by WinUI, ends the process - so
+its taps, pans, swipes, pinch and pointer are none on WinUI.
+
+A document written in place is what its address answers, the view serving
+it through `WebResourceRequested` whenever the view asks for it - going back
+to it too - and nothing is fetched: at its own address, which its relative
+links resolve against, else at one the host gives it, under
+`https://page.stateui.invalid/`, which no network answers. WebView2 leaves a
+`data:` address unfinished, sent to it or taken back to - `NavigateToString`
+goes to one - and every navigation after it.

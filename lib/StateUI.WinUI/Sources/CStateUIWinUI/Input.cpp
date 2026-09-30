@@ -226,6 +226,8 @@ namespace stateui {
 extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32_t hearing) {
     try {
         auto element = as<xaml::UIElement>(handle);
+        // A web view's page takes the user's hand: WebView2 ends the process (fail-fast) once it is listened to.
+        if (element.try_as<controls::WebView2>()) return;
         auto found = listening.find(view);
         if (!hearing) {
             if (found == listening.end()) return;
