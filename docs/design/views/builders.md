@@ -113,12 +113,16 @@ the node, so a wrapped element is built no earlier than an unwrapped one.
 
 ## Menus collect without keys
 
-`MenuBuilder` is shaped like `ViewBuilder` over the same `[Element]`: `if`,
-`if/else` and `ForEach` work in a menu, and a plain `for` does not. It records
-no path. An entry is matched by its `.id()` and otherwise by its position, so
-an `if` whose entry comes and goes re-matches every entry below it against a
-different one. A hand-written entry standing beside a conditional wants an id;
-`ForEach` gives each of its entries its item's identity.
+`MenuBuilder` is shaped like `ViewBuilder` over `[Element]`, but its
+expressions are a menu's entries alone - a `MenuItem`, a `Menu`, a
+`MenuSeparator`, a list of items, a `ForEach` - so a view in a menu does not
+compile. `if`, `if/else` and `ForEach` work in a menu, and a plain `for` does
+not. It records no path. An entry is matched by its `.id()` and otherwise by
+its position, so an `if` whose entry comes and goes re-matches every entry
+below it against a different one. A hand-written entry standing beside a
+conditional wants an id; `ForEach` gives each of its entries its item's
+identity. `MenuBarBuilder` and `ToolbarBuilder` collect one type each - a
+`Menu`, a `ToolbarItem` - the same way.
 
 ## Windows and styles
 

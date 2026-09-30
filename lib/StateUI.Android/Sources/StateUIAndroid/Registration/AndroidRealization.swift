@@ -10,7 +10,7 @@
 enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "LeadingContent", "Map", "MenuBar", "Pin", "PositionIndicator", "TitleBar",
+        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar",
         "TrailingContent",
     ]
 
@@ -40,10 +40,13 @@ enum AndroidRealization {
             + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .complete("MenuBar", "order"),
         .notPlanned("InputView", "isSpellCheckEnabled",
                     reason: "Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off."),
         .notPlanned("MenuItem", "accessibilityIdentifier",
                     reason: "An Android menu entry holds no identifier: automation finds it by its title."),
+        .notPlanned("MenuItem", "icon",
+                    reason: "Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone."),
         .complete("NavigationStack", "barBackgroundColor"),
         .partial("NavigationStack", "barForegroundColor", missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the navigation button and the pictures take the colour itself."),
         .complete("NavigationStack", "popped"),
@@ -78,6 +81,7 @@ enum AndroidRealization {
                     reason: "An Android bar action is a menu entry, which holds no identifier: automation finds it by its title."),
         .complete("ToolbarItem", "icon"),
         .complete("ToolbarItem", "placement"),
+        .partial("ToolbarItem", "showsText", missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
         .complete("ToolbarItems", "order"),
         .notPlanned("ToolbarItems", "side",
                     reason: "Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions."),

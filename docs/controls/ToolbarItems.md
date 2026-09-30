@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
 | UIKit | ✅ | 2 ✅ | `UIBarButtonItem` |  |
-| Android Views | · | 1 – | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| Android Views | ◐ | 1 – | `Toolbar` `MenuItem` | cannot read the bar of Page - Android's driver has no path for it yet |
 | WinUI 3 | ⌛ |  | `CommandBar` `AppBarButton` |  |
 | GTK 4 | ⌛ |  | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |

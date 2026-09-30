@@ -22,7 +22,7 @@ public enum ElementId: Hashable, Sendable {
 
     /// Whether the author named this one - an element matched by its builder path
     /// must not take an author's name.
-    var isManual: Bool {
+    @_spi(Host) public var isManual: Bool {
         if case .manual = self { return true }
 
         return false

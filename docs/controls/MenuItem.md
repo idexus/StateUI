@@ -27,8 +27,8 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ | 3 ✅ · 1 ☑️ | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ | 6 ✅ | `UIMenu` / `UIAction` |  |
-| Android Views | · | 1 – | `PopupMenu` / `MenuItem`; no menu bar | cannot activate on MenuItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ | 6 ✅ | `MenuFlyout` / `MenuBar` |  |
+| Android Views | ✅ | 4 ✅ · 2 – | `PopupMenu` / `MenuItem`; no menu bar |  |
+| WinUI 3 | ✅ | 4 ✅ | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
@@ -52,8 +52,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet; GTK 4: not realized |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ |  | ✅ |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; Android Views: not realized; GTK 4: not realized |
-| `isDestructive` | property | `Bool` | adaptive | · | ✅ | · | ✅ |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; Android Views: cannot read isDestructive of MenuItem - Android's driver has no path for it yet; GTK 4: not realized |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot activate on MenuItem - Android's driver has no path for it yet; GTK 4: not realized |
-| `text` | property | `String` | native | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read text of MenuItem - Android's driver has no path for it yet; GTK 4: not realized |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |  |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | – | ✅ |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.; GTK 4: not realized |
+| `isDestructive` | property | `Bool` | adaptive | · | ✅ | ✅ | ✅ |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |  |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |

@@ -319,24 +319,63 @@ remain ordinary view composition where the application owns the surface.
 
 ## Menu bars and context menus
 
-Desktop menu bars are also stored on `PageSession`:
+A page's menus are declared like its actions, with `.menuBar { }` on the
+page's view, and stand on the desktop menu bar while the page is shown:
 
 ```swift quote
-page.menuBar = [
-    Menu("File") {
-        MenuItem("Save").onClicked { try await save() }
-        MenuSeparator()
-        Menu("Recent") {
-            ForEach(recent) { file in
-                MenuItem(file.name)
-                    .id(file.id)
-                    .onClicked { open(file) }
+VStack { … }
+    .menuBar {
+        Menu("File") {
+            MenuItem("Save")
+                .id("save")
+                .isEnabled(hasChanges)
+                .onClicked { try await save() }
+            Menu("Recent") {
+                ForEach(recent) { file in
+                    MenuItem(file.name)
+                        .id(file.id)
+                        .onClicked { open(file) }
+                }
             }
         }
+        .id(StandardMenu.file)
     }
-    .id("file"),
-]
 ```
+
+A window's page and an arrangement declare menus for every page shown in
+them. A menu with the `.id` of one declared further out joins it: its
+entries stand after that menu's as a section of their own, after a line, and
+an entry with the `.id` of an entry there stands in that entry's place while
+its page is shown - a window's disabled Save becomes the document page's own,
+and the window's comes back as the page goes. Other menus follow the ones
+declared further out, before the platform's Window and Help; `order` moves a
+declaration's menus and sections earlier or later, lower first.
+
+```swift quote
+SplitView($sidebar) {
+    Library()
+} detail: {
+    Welcome()
+}
+.menuBar {
+    Menu("File") {
+        MenuItem("Save")
+            .id("save")
+            .isEnabled(false)
+    }
+    .id(StandardMenu.file)
+}
+```
+
+The platform's own menus are joined by identity, never by caption:
+`.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
+entries into AppKit's File menu and UIKit's `.file` menu after the platform's
+own, whatever the menu is called, so "Plik" joins it too. On WinUI and GTK it
+is an ordinary menu of the application's. Android keeps no menu bar: a page's
+menus stand behind its stack's bar's overflow, each a submenu after the
+actions. An iPhone shows no menu bar. `Menu`
+holds only `MenuItem`, `Menu` and `MenuSeparator`, and a menu bar only `Menu`:
+anything else does not compile.
 
 The same item vocabulary can be attached to any view as a context menu:
 

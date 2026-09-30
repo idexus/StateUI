@@ -367,14 +367,13 @@ told what it is by modifier.
 | `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `hasBackButton` | whether that bar offers its native back affordance |
 | `backButtonTitle` | short title supplied by this page for the page pushed above it |
-| `menuBar` | menus active while the page is visible on a platform with a menu bar |
 
 Every optional value starts as `nil`, which leaves that choice with the host.
-The menu collection starts empty.
 
-A session holds values. What has a body of its own - the page's actions and
-the view in its title's place - is declared in the view instead, with
-`.toolbar { }` and `.titleView { }`, and built with the state it follows (see
+A session holds values. What has a body of its own - the page's actions, the
+view in its title's place and its menus - is declared in the view instead,
+with `.toolbar { }`, `.titleView { }` and `.menuBar { }`, and built with the
+state it follows (see
 [Navigation and presentation](navigation-and-presentation.md#toolbars)).
 
 The back-button title belongs to the page being returned to, not the page

@@ -78,8 +78,17 @@ menu with Quit, File with a new window, Edit and Window. Edit holds the text
 commands - undo, redo, cut, copy, paste, delete, select all - each sent down
 the responder chain, where the field holding the keyboard answers it: AppKit
 routes ⌘C, ⌘V and ⌘Z through the menu bar's key equivalents, so a field in an
-application with no Edit menu copies and pastes nothing. A page's menus join
-the bar as the page shows, into the menu of the same name where there is one.
+application with no Edit menu copies and pastes nothing. File, Edit and
+Window carry their `StandardMenu` identity as their item's identifier.
+
+The menus the key window's visible page composes (`chromeMenus`) join the bar
+as it shows and leave it as it goes: one whose identity is a standard menu
+the bar holds joins it as a section after its entries, parted by a line; a
+standard one the bar holds none of stands where the platform puts it - View
+after Edit, Help last - and any other before Window. Each entry is a copy of
+the page's item in a menu that enables its items by asking, so the element
+it tells answers whether it can be chosen (`validateMenuItem`), as the tree
+says.
 
 ## The toolbar
 

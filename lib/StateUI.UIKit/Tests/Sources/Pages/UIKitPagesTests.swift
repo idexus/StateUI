@@ -37,6 +37,33 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(window.windowScene?.title, "ItemsView", "the scene's")
     }
 
+    /// The main menu is built again when an entry answers another element though it says the same: the page's Save
+    /// standing in the place of the stack's carries the page's element in its identifier.
+    @MainActor
+    func testTheMenuBarIsBuiltAgainWhenAnEntryAnswersAnotherElement() throws {
+        let saves = State(wrappedValue: false)
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Label("Document").menuBar {
+                    Menu("File") {
+                        if saves.wrappedValue { MenuItem("Save").id("save") }
+                    }
+                    .id("file")
+                }
+            } destination: { _ in Label("Pushed") }
+            .menuBar { Menu("File") { MenuItem("Save").id("save") }.id("file") }
+        }
+        defer { host.finish() }
+        host.settle { !host.menuBar.isEmpty }
+        let words = UIKitMenus.said(host.menuBar)
+        let identified = UIKitMenus.said(host.menuBar, identified: true)
+
+        saves.wrappedValue = true
+        host.settle { UIKitMenus.said(host.menuBar, identified: true) != identified }
+        XCTAssertEqual(UIKitMenus.said(host.menuBar), words, "the same words")
+        XCTAssertNotEqual(UIKitMenus.said(host.menuBar, identified: true), identified, "another element's")
+    }
+
     /// The groups a page's path declares stand on its navigation item as the host layer composes them: each a
     /// `UIBarButtonItemGroup` of its own - a background of its own - the page's nearer the title and the stack's at
     /// the edge, a leading group beside the way back.

@@ -218,15 +218,25 @@ final class UIKitRenderer {
             })
     }
 
-    /// The menus the user's window's page puts on the application's menu bar.
-    var menuBar: [UIMenu] {
+    /// The menus the user's window's page puts on the application's menu bar, as the host layer composes them.
+    var pageMenus: [MenuEntry] {
         roster.windows.first { $0.1.window === userWindow }?.1.pageMenus ?? []
     }
 
-    /// Asks UIKit to build its main menu again where the page's menus say something else now.
+    /// Those menus as UIKit's main menu takes them, each under an identifier of its own.
+    var menuBar: [UIMenu] {
+        pageMenus.enumerated().map { index, menu in
+            UIKitMenus.menu(
+                menu.entries, title: menu.title,
+                identifier: UIMenu.Identifier("stateui.menu.\(menu.standard?.description ?? String(index))"))
+        }
+    }
+
+    /// Asks UIKit to build its main menu again where the page's menus say something else now or stand for other
+    /// elements: an entry standing in another's place with the same words answers another element.
     /// Design: docs/design/platforms/uikit/pages.md#menus
     private func rebuildMenuBarWhereItChanged() {
-        let said = UIKitMenus.said(menuBar)
+        let said = UIKitMenus.said(menuBar, identified: true)
         guard said != menuBarSaid else { return }
         menuBarSaid = said
         UIMenuSystem.main.setNeedsRebuild()

@@ -192,6 +192,18 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"PageSession().titleView = Label("Search")"#,
             contract: #"_ = Label("Notes").titleView { Label("Search") }"#),
         Road(
+            name: "a page's menus written into its session",
+            removed: #"PageSession().menuBar = [Menu("File") { MenuItem("New") }]"#,
+            contract: #"_ = Label("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
+        Road(
+            name: "a view standing on the menu bar",
+            removed: #"_ = Label("Notes").menuBar { Label("File") }"#,
+            contract: #"_ = Label("Notes").menuBar { Menu("File") { MenuItem("New") } }"#),
+        Road(
+            name: "a view standing in a menu",
+            removed: #"_ = Menu("File") { Label("New") }"#,
+            contract: #"_ = Menu("File") { MenuItem("New") }"#),
+        Road(
             name: "an item's withdrawn priority",
             removed: #"_ = ToolbarItem("Save").priority(1)"#,
             contract: #"_ = Label("Notes").toolbar(order: 1) { ToolbarItem("Save") }"#),

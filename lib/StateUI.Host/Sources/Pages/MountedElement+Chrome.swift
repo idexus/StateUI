@@ -21,6 +21,11 @@ extension MountedElement {
         declared(.titleView).last?.element.children.lazy.compactMap(\.presentingElement).first
     }
 
+    /// The menus this page's window shows on its menu bar while the page is shown, composed from its path.
+    public var chromeMenus: ChromeMenus {
+        ChromeMenus(declared(.menuBar))
+    }
+
     /// Whether this action's words stand on its bar: beside its picture where it says so, and always where it has none.
     public var showsActionWords: Bool {
         (value(.icon)?.string ?? "").isEmpty || value(.showsText)?.bool == true

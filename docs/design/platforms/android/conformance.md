@@ -74,6 +74,18 @@ drawables - a shape's paint, a layout's box - and where StateUI's layout places
 the children hold nothing of Android's: they do not apply here, each proven by
 its effect in another case.
 
+## Menus
+
+A window's menus are read from the toolbar's menu of the stack showing its
+visible page, its submenus alone; a view's context menu is opened into an
+empty menu, as a long press opens it. An entry or an action is chosen and read
+by its item's id - its element's place (`menuPlace`) - never by its words:
+`performIdentifierAction`, which runs nothing for one that cannot be chosen,
+and the item's words, whether it can be chosen, whether its words are in the
+error colour. What the item keeps no trace of stays unread: a picture's name,
+and whether an action asks for its words beside its picture, which Android
+keeps inside its own item.
+
 ## Running the stale families
 
 The device reads no repository, so `STATEUI_STALE_ONLY=1` is the script's to

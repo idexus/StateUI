@@ -93,6 +93,22 @@ enum AppKitMenus {
         entries.map(item)
     }
 
+    /// The identifier a menu on the bar is known by as the platform's `standard` one.
+    nonisolated static func identifier(_ standard: StandardMenu) -> NSUserInterfaceItemIdentifier {
+        NSUserInterfaceItemIdentifier(standard.description)
+    }
+
+    /// Where a menu the bar holds none of its identity stands: a standard one where the platform puts it - View after
+    /// Edit, Help last - and any other before Window.
+    static func place(of standard: StandardMenu?, in main: NSMenu) -> Int {
+        let index = { (standard: StandardMenu) in main.items.firstIndex { $0.identifier == identifier(standard) } }
+        switch standard {
+        case .help: return main.items.count
+        case .view: return index(.edit).map { $0 + 1 } ?? index(.window) ?? main.items.count
+        default: return index(.window) ?? main.items.count
+        }
+    }
+
     private static func item(_ entry: MenuEntry) -> NSMenuItem {
         guard let element = entry.element?.appKit else { return .separator() }
 

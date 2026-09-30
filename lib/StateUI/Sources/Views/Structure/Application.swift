@@ -192,10 +192,9 @@ extension Node {
         return node
     }
 
-    /// The page: the session's properties, its content first - so a page
-    /// gaining a title view does not move its content - then what hangs off it.
+    /// The page: the session's properties around its content.
     private static func page(around content: Node, session: PageSession) -> Node {
-        var node = Node(contract: PageContract.self, children: [content] + session.slots)
+        var node = Node(contract: PageContract.self, children: [content])
         node.props = session.props
 
         node.addHandler(PageContract.appearing.token) { session.phase = .appearing }

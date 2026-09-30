@@ -39,6 +39,7 @@ enum WinUIRealization {
             + "initializer that sets nothing, which a list of some items has not."),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .complete("MenuBar", "order"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "background"),

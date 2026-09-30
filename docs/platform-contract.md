@@ -95,7 +95,7 @@ of its members each meets, and why a cell is empty.
 | [CheckBox](controls/CheckBox.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Content](controls/Content.md) | structure | ✅ |  |  | ✅ |  |  |
-| [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | · | ✅ |  |  |
+| [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Grid](controls/Grid.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -106,10 +106,10 @@ of its members each meets, and why a cell is empty.
 | [LeadingContent](controls/LeadingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Map](controls/Map.md) | provider |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | structure | ✅ | ✅ | · | ✅ |  |  |
-| [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ |  | ✅ |  |  |
-| [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | · | ✅ |  |  |
-| [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | · | ✅ |  |  |
+| [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
+| [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
+| [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
+| [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [ModalStack](controls/ModalStack.md) | structure | ✅ | ✅ | ◐ | ✅ |  |  |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | · | ✅ | · |  |
@@ -138,8 +138,8 @@ of its members each meets, and why a cell is empty.
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | adaptive | · |  |  | ✅ | ⏸ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | · | ⌛ | ⌛ |  |
-| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | · | ⌛ | ⌛ |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ⌛ | ⌛ |  |
+| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ⌛ | ⌛ |  |
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
@@ -471,9 +471,9 @@ Every control, and every part an application, its windows and its pages are made
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  | 2 ✅ |  |  |
-| [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 1 – | 6 ✅ |  |  |
+| [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
+| [MenuBar](controls/MenuBar.md) | 1 |  |  | 1 ✅ |  |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
@@ -486,11 +486,11 @@ Every control, and every part an application, its windows and its pages are made
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 5 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 5 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 106 | 50 of 106 met | 57 of 106 met | 22 of 106 met | 87 of 106 met | 6 of 106 met |  |
+| **Met** - ✅ and – | 107 | 50 of 107 met | 57 of 107 met | 34 of 107 met | 84 of 107 met | 6 of 107 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -545,7 +545,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  | 2 ✅ |  |  |
+| [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
+| [MenuBar](controls/MenuBar.md) | `order` | 1 |  |  | 1 ✅ |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 |  | 2 ✅ |  | 1 ✅ |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 6 ✅ | 8 ✅ | 3 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |

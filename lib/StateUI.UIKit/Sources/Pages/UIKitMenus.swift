@@ -56,22 +56,37 @@ enum UIKitMenus {
     }
 
     /// A menu as the suite writes it: each entry by its caption, "!" before one that cannot be chosen, "-" between
-    /// two groups, a submenu's entries in brackets after its caption, ";" between.
-    static func said(_ elements: [UIMenuElement]) -> String {
+    /// two groups, a submenu's entries in brackets after its caption, ";" between; `identified`, each action and menu
+    /// with its identifier after an "@".
+    static func said(_ elements: [UIMenuElement], identified: Bool = false) -> String {
         var parts: [String] = []
         for element in elements {
             if let action = element as? UIAction {
-                parts.append((action.attributes.contains(.disabled) ? "!" : "") + action.title)
+                parts.append((action.attributes.contains(.disabled) ? "!" : "") + action.title
+                    + (identified ? "@" + action.identifier.rawValue : ""))
             } else if let menu = element as? UIMenu {
+                let children = said(menu.children, identified: identified)
                 if menu.options.contains(.displayInline) {
                     if !parts.isEmpty { parts.append("-") }
-                    parts.append(said(menu.children))
+                    parts.append(children)
                 } else {
-                    parts.append((outOfReach.contains(menu) ? "!" : "") + menu.title + "[" + said(menu.children) + "]")
+                    parts.append((outOfReach.contains(menu) ? "!" : "") + menu.title
+                        + (identified ? "@" + menu.identifier.rawValue : "") + "[" + children + "]")
                 }
             }
         }
         return parts.filter { !$0.isEmpty }.joined(separator: ";")
+    }
+
+    /// The identifier of UIKit's own menu that `standard` stands for.
+    static func identifier(_ standard: StandardMenu) -> UIMenu.Identifier {
+        switch standard {
+        case .file: .file
+        case .edit: .edit
+        case .view: .view
+        case .window: .window
+        case .help: .help
+        }
     }
 }
 #endif

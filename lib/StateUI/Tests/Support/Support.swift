@@ -730,7 +730,7 @@ enum SourceTree {
     /// Map case, which builds both.
     static let notViews: Set<String> = [
         "Spans", "Span",
-        "ToolbarItems", "ToolbarItem", "TitleView", "Menu",
+        "ToolbarItems", "ToolbarItem", "TitleView", "MenuBar", "Menu",
         "MenuItem", "MenuSeparator",
         "ContextMenu",
         "Pin",

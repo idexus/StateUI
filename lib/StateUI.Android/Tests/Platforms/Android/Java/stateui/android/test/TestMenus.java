@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ActionMenuView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.List;
 
 /** A menu read back as words, and an item chosen by its words - what a test of the host's menus asks. */
 public final class TestMenus {
@@ -53,6 +55,46 @@ public final class TestMenus {
             if (item.hasSubMenu()) words.append(" [").append(describe(context, item.getSubMenu())).append("]");
         }
         return words.toString();
+    }
+
+    /**
+     * The menu as the conformance suite writes it: each entry by its words, "!" before one that cannot be chosen,
+     * "-" between two groups, a submenu's entries in brackets after its words, ";" between. `menusOnly` says the
+     * submenus at its top alone - a bar's menus, apart from its actions.
+     */
+    public static String said(Menu menu, boolean menusOnly) {
+        List<String> parts = new ArrayList<>();
+        Integer group = null;
+        for (int index = 0; index < menu.size(); index++) {
+            MenuItem item = menu.getItem(index);
+            if (menusOnly && !item.hasSubMenu()) continue;
+            if (group != null && item.getGroupId() != group) parts.add("-");
+            group = item.getGroupId();
+            String part = (item.isEnabled() ? "" : "!") + item.getTitle();
+            if (item.hasSubMenu()) part += "[" + said(item.getSubMenu(), false) + "]";
+            parts.add(part);
+        }
+        return String.join(";", parts);
+    }
+
+    /** Chooses the item of `id`, in `menu` or a submenu of it, as a touch does; whether it ran. */
+    public static boolean choose(Menu menu, int id) {
+        return menu.performIdentifierAction(id, 0);
+    }
+
+    /**
+     * What the item of `id` holds, a line each: its words, then 1 or 0 for whether it can be chosen, whether its
+     * words are in the theme's error colour and whether it has a picture; null where the menu holds no such item.
+     */
+    public static String held(Context context, Menu menu, int id) {
+        MenuItem item = menu.findItem(id);
+        if (item == null) return null;
+        TypedArray attributes = context.obtainStyledAttributes(new int[] { android.R.attr.colorError });
+        int error = attributes.getColor(0, 0);
+        attributes.recycle();
+        CharSequence title = item.getTitle();
+        return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (colour(title) == error ? 1 : 0)
+                + "\n" + (item.getIcon() != null ? 1 : 0);
     }
 
     /** Chooses the item whose words are `text`, in `menu` or a submenu of it, as a touch does; whether it ran. */

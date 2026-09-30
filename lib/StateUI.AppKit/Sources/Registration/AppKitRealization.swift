@@ -60,6 +60,7 @@ enum AppKitRealization {
         .complete("Label", "verticalTextAlignment"),
         .complete("Menu", "isEnabled"),
         .complete("Menu", "text"),
+        .complete("MenuBar", "order"),
         .partial("MenuItem", "accessibilityIdentifier", missing: "Only an entry of a context menu carries it; an entry the page puts in the menu bar does not."),
         .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "accessibilityIdentifier"),

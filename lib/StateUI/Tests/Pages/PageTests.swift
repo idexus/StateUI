@@ -47,6 +47,24 @@ private struct EveryPropertyPage: ContentView {
                     .isEnabled(false)
                     .onClicked {}
             }
+            // Its menus, every entry saying all it can.
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Open")
+                        .icon(ImageSource("mark.png"))
+                        .isDestructive(true)
+                        .isEnabled(false)
+                        .onClicked {}
+
+                    Menu("Recent") {
+                        MenuItem("Notes.txt")
+                    }
+                    .isEnabled(true)
+
+                    MenuSeparator()
+                }
+                .isEnabled(true)
+            }
             .onCreated {
                 // The page's own.
                 page.title = "Everything"
@@ -58,25 +76,6 @@ private struct EveryPropertyPage: ContentView {
                 page.hasNavigationBar = false
                 page.hasBackButton = false
                 page.backButtonTitle = "Back"
-
-                // The menus hang off it, every entry saying all it can.
-                page.menuBar = [
-                    Menu("File") {
-                        MenuItem("Open")
-                            .icon(ImageSource("mark.png"))
-                            .isDestructive(true)
-                            .isEnabled(false)
-                            .onClicked {}
-
-                        Menu("Recent") {
-                            MenuItem("Notes.txt")
-                        }
-                        .isEnabled(true)
-
-                        MenuSeparator()
-                    }
-                    .isEnabled(true),
-                ]
             }
     }
 }
@@ -127,8 +126,6 @@ private struct KnobPage: ContentView {
         page.hasNavigationBar = on
         page.hasBackButton = on
         page.backButtonTitle = on ? "Back" : "Return"
-
-        page.menuBar = [Menu(on ? "On" : "Off") { MenuItem("Open") }]
     }
 }
 
@@ -332,7 +329,7 @@ final class PageTests: XCTestCase {
     func testEveryPropertyAPagesItemsDeclareIsCarried() throws {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
-        for source in ["ToolbarItem.swift", "MenuBar.swift", "MenuItemElement.swift"] {
+        for source in ["ToolbarItem.swift", "Menu.swift", "MenuItem.swift", "MenuItemElement.swift"] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
@@ -451,15 +448,15 @@ final class PageTests: XCTestCase {
     }
 
     /// And the slots, which are children rather than properties: each rides as
-    /// a wrapper node of its own after the element holding it, so a patch that
-    /// carries one slot cannot be mistaken for the content - the menus after
-    /// the page's content, the title view and the toolbar group after the
-    /// content's own children, in the order declared.
+    /// a wrapper node of its own after the element declaring it, so a patch
+    /// that carries one slot cannot be mistaken for the content - the title
+    /// view, the toolbar group and the menus after the content's own children,
+    /// in the order declared.
     func testEveryPageSlotRidesAsItsOwnNode() {
         let page = Self.arrived(EveryPropertyPage())
 
-        XCTAssertEqual(page.children.map { $0.type.name }, ["Label", "MenuBar"], "the content first, then the menus")
-        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItems"])
+        XCTAssertEqual(page.children.map { $0.type.name }, ["Label"], "the content alone")
+        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItems", "MenuBar"])
     }
 
     // MARK: - What the values look like
@@ -613,7 +610,7 @@ final class PageTests: XCTestCase {
 
     /// The page arrives whole: its properties, five handlers and everything
     /// hanging off it are in the message that brings it - the content with the
-    /// title view and the toolbar group it declares, then the menus.
+    /// title view, the toolbar group and the menus it declares.
     func testThePageArrivesWhole() throws {
         let page = Self.arrived(EveryPropertyPage())
 
@@ -623,11 +620,11 @@ final class PageTests: XCTestCase {
             "padding": .numbers([4, 8, 12, 16]), "title": .string("Everything"),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
-        XCTAssertEqual(page.children.map(\.type), [.label, .menuBar])
+        XCTAssertEqual(page.children.map(\.type), [.label])
         let content = page.children[0]
-        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItems])
+        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItems, .menuBar])
 
-        let item = try XCTUnwrap(content.children.last?.children.first)
+        let item = try XCTUnwrap(content.children[1].children.first)
         XCTAssertEqual(item.props, [
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
             "isDestructive": .bool(true), "isEnabled": .bool(false),
@@ -638,7 +635,7 @@ final class PageTests: XCTestCase {
 
         // A menu at any depth: the bar's File holds an entry, a menu of its
         // own and a line.
-        let file = try XCTUnwrap(page.children.last?.children.first)
+        let file = try XCTUnwrap(content.children.last?.children.first)
         XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
         XCTAssertEqual(file.children[1].children.first?.props, ["text": .string("Notes.txt")])
     }

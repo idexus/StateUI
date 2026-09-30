@@ -72,7 +72,7 @@ final class AppKitWindowController: NSWindowController {
     /// `AppKitWindowContentView.isTranslucent`.
     var isTranslucent = false
 
-    var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
+    var pageMenuItemsForTesting: [NSMenuItem] { AppKitMenus.items(pageMenus) }
     var modalCountForTesting: Int { modals.count }
     var hiddenBySceneForTesting: Bool { hiddenByScene }
     var toolbarForTesting: AppKitWindowToolbar { toolbar }

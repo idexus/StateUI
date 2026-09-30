@@ -45,7 +45,7 @@ public enum StateUIAppKit {
         delegate: AppDelegate
     ) {
         let main = mainMenu(newScene: delegate)
-        application.windowsMenu = main.item(withTitle: "Window")?.submenu
+        application.windowsMenu = main.items.first { $0.identifier == AppKitMenus.identifier(.window) }?.submenu
         application.mainMenu = main
     }
 
@@ -66,7 +66,7 @@ public enum StateUIAppKit {
         let newWindow = NSMenuItem(title: "New Window", action: #selector(AppDelegate.newScene(_:)), keyEquivalent: "n")
         newWindow.target = newScene
         fileMenu.addItem(newWindow)
-        main.addItem(submenu: fileMenu, titled: "File")
+        main.addItem(submenu: fileMenu, titled: "File", standard: .file)
 
         let editMenu = NSMenu(title: "Edit")
         editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
@@ -78,23 +78,24 @@ public enum StateUIAppKit {
         editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
         editMenu.addItem(withTitle: "Delete", action: #selector(NSText.delete(_:)), keyEquivalent: "")
         editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
-        main.addItem(submenu: editMenu, titled: "Edit")
+        main.addItem(submenu: editMenu, titled: "Edit", standard: .edit)
 
         let windowMenu = NSMenu(title: "Window")
         windowMenu.addItem(
             withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
         windowMenu.addItem(
             withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
-        main.addItem(submenu: windowMenu, titled: "Window")
+        main.addItem(submenu: windowMenu, titled: "Window", standard: .window)
         return main
     }
 }
 
 private extension NSMenu {
-    /// Adds `submenu` to the bar under `title`.
-    func addItem(submenu: NSMenu, titled title: String) {
+    /// Adds `submenu` to the bar under `title`, known as the platform's `standard` menu where it is one.
+    func addItem(submenu: NSMenu, titled title: String, standard: StandardMenu? = nil) {
         let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         item.submenu = submenu
+        item.identifier = standard.map(AppKitMenus.identifier)
         addItem(item)
     }
 }

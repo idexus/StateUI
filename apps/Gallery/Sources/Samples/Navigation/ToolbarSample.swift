@@ -22,9 +22,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
 
-    /// The page this sample is on, whose menus these are.
-    @Environment private var page: PageSession
-
     static let id = "toolbar"
     static let title = "Toolbar and menus"
     static let summary = "Buttons in the navigation bar, and the desktop menu bar above it."
@@ -37,32 +34,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
         @State private var inGallery = false
         @State private var atLeading = false
         @State private var addWords = false
-
-        @Environment private var page: PageSession
-
-        private var menus: [Menu] {
-            [
-                Menu("File") {
-                    MenuItem("Save")
-                        .id("save")
-                        .onClicked { saved += 1 }
-
-                    MenuSeparator()
-                        .id("line")
-
-                    Menu("Recent") {
-                        ForEach(recent) { file in
-                            MenuItem(file)
-                                .id(file)
-                                .onClicked { recent.removeAll { $0 == file } }
-                        }
-                    }
-                    .id("recent")
-                    .isEnabled(!recent.isEmpty)
-                }
-                .id("file"),
-            ]
-        }
 
         var content: any View {
             VStack {
@@ -118,35 +89,28 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
             }
-            .onCreated { page.menuBar = menus }
-            .onChanged(recent) { page.menuBar = menus }
+            // The desktop File menu: this Save stands in the window's place,
+            // and the recent files follow the state they list.
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Save")
+                        .id("save")
+                        .onClicked { saved += 1 }
+
+                    Menu("Recent") {
+                        ForEach(recent) { file in
+                            MenuItem(file)
+                                .id(file)
+                                .onClicked { recent.removeAll { $0 == file } }
+                        }
+                    }
+                    .id("recent")
+                    .isEnabled(!recent.isEmpty)
+                }
+                .id(StandardMenu.file)
+            }
         }
         """
-
-    /// And the desktop menu bar's File menu.
-    private var menus: [Menu] {
-        [
-            Menu("File") {
-                MenuItem("Save")
-                    .id("save")
-                    .onClicked { saved += 1 }
-
-                MenuSeparator()
-                    .id("line")
-
-                Menu("Recent") {
-                    ForEach(recent) { file in
-                        MenuItem(file)
-                            .id(file)
-                            .onClicked { recent.removeAll { $0 == file } }
-                    }
-                }
-                .id("recent")
-                .isEnabled(!recent.isEmpty)
-            }
-            .id("file"),
-        ]
-    }
 
     var content: any View {
         VStack {
@@ -200,10 +164,26 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .isEnabled(saved > 0)
                 .onClicked { saved = 0 }
         }
-        // The menus are still the page's session's, written again when the
-        // recent files move.
-        .onCreated { page.menuBar = menus }
-        .onChanged(recent) { page.menuBar = menus }
+        // The desktop File menu, declared the same way: this Save stands in
+        // the place of the window's, and the recent files follow the state.
+        .menuBar {
+            Menu("File") {
+                MenuItem("Save")
+                    .id("save")
+                    .onClicked { saved += 1 }
+
+                Menu("Recent") {
+                    ForEach(recent) { file in
+                        MenuItem(file)
+                            .id(file)
+                            .onClicked { recent.removeAll { $0 == file } }
+                    }
+                }
+                .id("recent")
+                .isEnabled(!recent.isEmpty)
+            }
+            .id(StandardMenu.file)
+        }
     }
 
     /// A switch and what it says, told apart for scripts by `id`.
@@ -238,8 +218,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Recent files live in the desktop File menu: Add puts one there, "
-                + "choosing one removes it, and an empty submenu disables itself.")
+            Label("Recent files live in the desktop File menu, after the window's entries: "
+                + "Add puts one there, choosing one removes it, and an empty submenu disables "
+                + "itself. The page's Save stands in the place of the window's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

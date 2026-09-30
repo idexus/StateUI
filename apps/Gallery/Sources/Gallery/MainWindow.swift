@@ -81,6 +81,16 @@ struct MainWindow: Window {
                 ToolbarItem.home(nav)
             }
         }
+        // The window's File menu, on every page: Save waits for a page that
+        // saves, which puts its own in its place.
+        .menuBar {
+            Menu("File") {
+                MenuItem("Save")
+                    .id("save")
+                    .isEnabled(false)
+            }
+            .id(StandardMenu.file)
+        }
         // A size and a minimum: the size is the window's as it opens, the
         // minimum how small the user may drag it before the layout stops
         // making sense. A phone ignores both, an app there being the whole

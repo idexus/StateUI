@@ -12,7 +12,7 @@ extension OverlayKey {
     fileprivate static let notice = OverlayKey("notice")
 }
 
-/// A page filled by a button, presenting its sheets from one state, writing its menus from another and laying a
+/// A page filled by a button, presenting its sheets from one state, declaring its menus by another and laying a
 /// notice over its window from a third, which tells its scene.
 private struct OverlaidPage: ContentView {
     let sheets: State<[Int]>
@@ -22,20 +22,19 @@ private struct OverlaidPage: ContentView {
 
     @Environment private var window: WindowSession
     @Environment private var scene: SceneSession
-    @Environment private var page: PageSession
 
     var content: any View {
         let (sheets, menus, scenes, notice) = (self.sheets, self.menus, self.scenes, self.notice)
-        let (window, scene, page) = (self.window, self.scene, self.page)
+        let (window, scene) = (self.window, self.scene)
         return Button("Beneath")
             .horizontalAlignment(.fill)
             .verticalAlignment(.fill)
+            .menuBar {
+                if menus.wrappedValue { Menu("File") { MenuItem("New") } }
+            }
             .onCreated {
                 scenes.values.append(scene)
                 window.modalStack = ModalStack(sheets.projectedValue) { number in Label("Sheet \(number)") }
-            }
-            .onChanged(menus.wrappedValue) {
-                page.menuBar = menus.wrappedValue ? [Menu("File") { MenuItem("New") }] : []
             }
             .onChanged(notice.wrappedValue) {
                 window.overlays[.notice] = notice.wrappedValue

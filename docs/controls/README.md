@@ -76,9 +76,9 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Content](Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |
-| [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ |  | 2 ✅ |  |  |
-| [MenuBar](MenuBar.md) | 0 |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 1 – | 6 ✅ |  |  |
+| [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
+| [MenuBar](MenuBar.md) | 1 |  |  | 1 ✅ |  |  |  |
+| [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 4 ✅ |  |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |
 | [NavigationStack](NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
@@ -91,11 +91,11 @@ The scene, the window and the page an application is made of, the arrangements a
 | [SplitView](SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TabbedView](TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 5 ✅ |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 5 ✅ |  |  |
 | [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 106 | 50 of 106 met | 57 of 106 met | 22 of 106 met | 87 of 106 met | 6 of 106 met |  |
+| **Met** - ✅ and – | 107 | 50 of 107 met | 57 of 107 met | 34 of 107 met | 84 of 107 met | 6 of 107 met |  |
 <!-- structure:end -->
 
 ## Tiers

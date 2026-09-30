@@ -24,7 +24,8 @@ colours and the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
 first, the bar having no leading edge beside its navigation button - the rest
 behind the toolbar's overflow - each an entry of the toolbar's menu, written as
-[menus](menus.md) says. Its navigation button is the way back on a pushed page
+[menus](menus.md) says, and the menus the path declares behind the overflow
+after them. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
 where the sidebar slides over it, it is the sidebar page's picture - Android's
 menu glyph where the page has none - and opens the sidebar. The bar's words'

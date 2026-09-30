@@ -19,9 +19,9 @@
 /// Every page offers its own to the view it shows and to everything in it, so
 /// a view acts on the page it is in, and what the page is told stands until it
 /// is told otherwise. Every optional property is nil until written, leaving
-/// the native host to choose its default. What the page shows on its bar is
-/// declared in its view instead - `.toolbar { }`, `.titleView { }` - built
-/// with the state it follows. See `ApplicationSession` for what a session is.
+/// the native host to choose its default. What the page shows on its bar and
+/// its menus are declared in its view instead - `.toolbar { }`,
+/// `.titleView { }`, `.menuBar { }` - built with the state they follow. See `ApplicationSession` for what a session is.
 ///
 /// An arrangement - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
 /// page already and has none: it is told what it is by modifier, from
@@ -78,15 +78,6 @@ public final class PageSession {
     /// are looking at. Hosts whose back affordance has no text ignore it.
     @State public var backButtonTitle: String? = nil
 
-    /// The menus active while this page is showing on a host with a menu bar.
-    ///
-    ///     page.menuBar = [
-    ///         Menu("File") {
-    ///             MenuItem("New").onClicked { documents.append(Document()) }
-    ///         }
-    ///     ]
-    @State public var menuBar: [Menu] = []
-
     /// A fresh session - what every content page is given as it is first
     /// built, and what a test or one branch provides as a fake with
     /// `.environment(...)`.
@@ -105,19 +96,5 @@ public final class PageSession {
         props.describe(PageContract.hasBackButton, hasBackButton)
         props.describe(PageContract.backButtonTitle, backButtonTitle)
         return props
-    }
-
-    /// What hangs off the page besides its content: the menus, as the node the
-    /// host knows them by.
-    var slots: [Node] {
-        var slots: [Node] = []
-
-        // One node per collection, a parent the host's list is matched against.
-        // Design: docs/design/types/sessions.md#collections-hang-as-one-node
-        if !menuBar.isEmpty {
-            slots.append(Node(contract: MenuBarContract.self, children: menuBar.map { $0.body }))
-        }
-
-        return slots
     }
 }

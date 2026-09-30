@@ -33,10 +33,10 @@
         var byId: [ElementId: Int] = [:]
         for declaration in declarations {
             let id = declaration.group.id
-            if id.named, let at = byId[id] {
+            if id.isManual, let at = byId[id] {
                 groups[at].append(declaration)
             } else {
-                if id.named { byId[id] = groups.count }
+                if id.isManual { byId[id] = groups.count }
                 groups.append([declaration])
             }
         }
@@ -68,7 +68,7 @@
     private static func standing(_ items: [Placed]) -> [ObjectIdentifier: MountedElement] {
         var outermost: [ElementId: Placed] = [:]
         var innermost: [ElementId: Placed] = [:]
-        for placed in items where placed.item.id.named {
+        for placed in items where placed.item.id.isManual {
             let id = placed.item.id
             if outermost[id].map({ placed.depth < $0.depth }) ?? true { outermost[id] = placed }
             if innermost[id].map({ placed.depth > $0.depth }) ?? true { innermost[id] = placed }
@@ -76,7 +76,7 @@
 
         var standing: [ObjectIdentifier: MountedElement] = [:]
         for placed in items {
-            guard placed.item.id.named else {
+            guard placed.item.id.isManual else {
                 standing[ObjectIdentifier(placed.item)] = placed.item
                 continue
             }
@@ -125,13 +125,5 @@ extension MountedElement {
     /// Whether this action stands behind the overflow.
     fileprivate var isOverflow: Bool {
         value(.placement)?.enumeration == ToolbarItemPlacement.overflow.rawValue
-    }
-}
-
-extension ElementId {
-    /// Whether the author named this one with `.id()`.
-    fileprivate var named: Bool {
-        if case .manual = self { return true }
-        return false
     }
 }

@@ -186,7 +186,7 @@ extension AppKitRenderer {
     /// A window took the keyboard: its page's menus stand in the menu bar, and the host layer settles what it means.
     func windowBecameKey(_ controller: AppKitWindowController) {
         activeWindow = controller
-        installPageMenus(controller.pageMenuItems)
+        installPageMenus(controller.pageMenus)
         windowStateChanged(controller)
     }
 
@@ -223,23 +223,28 @@ extension AppKitRenderer {
 
     func pageMenusChanged(in controller: AppKitWindowController) {
         guard activeWindow === controller || controller.window?.isKeyWindow == true else { return }
-        installPageMenus(controller.pageMenuItems)
+        installPageMenus(controller.pageMenus)
     }
 
-    /// Replaces only commands contributed by the visible StateUI page. The
-    /// standard application, File and Window commands remain host-owned.
-    func installPageMenus(_ roots: [NSMenuItem]) {
+    /// Puts the menus the visible page composes on the menu bar in place of the ones it put there before: a
+    /// standard menu joins the platform's own of its identity as a section after its entries, a standard menu the
+    /// platform keeps none of stands where the platform's would, and any other stands before Window.
+    /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
+    func installPageMenus(_ menus: [MenuEntry], into main: NSMenu? = NSApplication.shared.mainMenu) {
         for insertion in pageMenuInsertions.reversed() {
             insertion.menu.removeItem(insertion.item)
         }
         pageMenuInsertions.removeAll(keepingCapacity: true)
 
-        guard let main = NSApplication.shared.mainMenu else { return }
+        // Each entry's own item, kept on its element, stands in the page's menus; the bar takes copies.
+        let roots = AppKitMenus.items(menus)
+        guard let main else { return }
 
-        for root in roots {
-            if let standing = main.items.first(where: { $0.title == root.title }),
-               let target = standing.submenu,
-               let source = root.submenu {
+        for (menu, root) in zip(menus, roots) {
+            let standing = menu.standard.flatMap { standard in
+                main.items.first { $0.identifier == AppKitMenus.identifier(standard) }?.submenu
+            }
+            if let target = standing, let source = root.submenu {
                 if !target.items.isEmpty {
                     let separator = NSMenuItem.separator()
                     target.addItem(separator)
@@ -253,9 +258,8 @@ extension AppKitRenderer {
                 }
             } else {
                 let item = cloneMenuItem(root)
-                let windowIndex = main.items.firstIndex(where: { $0.title == "Window" })
-                    ?? main.items.count
-                main.insertItem(item, at: windowIndex)
+                item.identifier = menu.standard.map(AppKitMenus.identifier)
+                main.insertItem(item, at: AppKitMenus.place(of: menu.standard, in: main))
                 pageMenuInsertions.append((main, item))
             }
         }
@@ -269,6 +273,7 @@ extension AppKitRenderer {
             action: source.action,
             keyEquivalent: source.keyEquivalent)
         item.target = source.target
+        item.setAccessibilityIdentifier(source.accessibilityIdentifier())
         item.attributedTitle = source.attributedTitle
         item.image = source.image
         item.isEnabled = source.isEnabled

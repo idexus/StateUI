@@ -19,6 +19,10 @@ final class AndroidElement: NativeElement {
     /// Whether a label shows its spans' runs rather than its own words.
     var hasRuns = false
 
+    /// A menu item's or an action's place among the items of the menu it last stood in - its Android item's id,
+    /// less one.
+    var menuPlace: Int?
+
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host

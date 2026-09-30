@@ -1,0 +1,140 @@
+import StateUI
+
+/// The window's menus on every page, and a page's own joining them: an entry standing in the place of the window's,
+/// a section of the page's own after a line, and a menu of its own.
+struct MenuBarSample: SampleContent, ExampleContent {
+    @State private var saved = 0
+    @State private var exported = 0
+
+    /// Whether this page saves: its Save then stands in the place of the window's.
+    @State private var pageSaves = false
+
+    /// Whether this page adds a menu of its own.
+    @State private var ownMenu = false
+
+    static let id = "menuBar"
+    static let title = "Menu bar"
+    static let summary = "The window's menus on every page, and a page's own joining them."
+
+    static let code = """
+        @State private var saved = 0
+        @State private var exported = 0
+        @State private var pageSaves = false
+        @State private var ownMenu = false
+
+        var content: any View {
+            VStack {
+                // The counts are read here, so every entry that acts builds
+                // this closure.
+                DebugInfoLabel()
+
+                Label("Saved \\(saved) time(s), exported \\(exported)")
+
+                HStack {
+                    Switch($pageSaves)
+                    Label("This page saves")
+                }
+                HStack {
+                    Switch($ownMenu)
+                    Label("A menu of its own")
+                }
+            }
+            // Joins the window's File menu by its identity: Save stands in the
+            // place of the window's, the export after a line.
+            .menuBar {
+                Menu("File") {
+                    if pageSaves {
+                        MenuItem("Save")
+                            .id("save")
+                            .onClicked { saved += 1 }
+                    }
+
+                    MenuItem("Export…")
+                        .id("export")
+                        .onClicked { exported += 1 }
+                }
+                .id(StandardMenu.file)
+
+                if ownMenu {
+                    Menu("Sample") {
+                        MenuItem("Save twice")
+                            .onClicked { saved += 2 }
+                    }
+                    .id("sample")
+                }
+            }
+        }
+        """
+
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
+
+            Label("Saved \(saved) time(s), exported \(exported)")
+                .fontSize(17)
+
+            Label("Open the File menu - on Android, in the bar's overflow.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
+            switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
+        }
+        .spacing(12)
+        // Joins the window's File menu by its identity: Save stands in the
+        // place of the window's, the export after a line.
+        .menuBar {
+            Menu("File") {
+                if pageSaves {
+                    MenuItem("Save")
+                        .id("save")
+                        .onClicked { saved += 1 }
+                }
+
+                MenuItem("Export…")
+                    .id("export")
+                    .onClicked { exported += 1 }
+            }
+            .id(StandardMenu.file)
+
+            if ownMenu {
+                Menu("Sample") {
+                    MenuItem("Save twice")
+                        .onClicked { saved += 2 }
+                }
+                .id("sample")
+            }
+        }
+    }
+
+    /// A switch and what it says, told apart for scripts by `id`.
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
+        HStack {
+            Switch(value)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(words)
+
+            Label(words)
+                .fontSize(14)
+                .verticalAlignment(.center)
+        }
+        .spacing(10)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("The window declares File with a disabled Save around every page. While this "
+                + "page saves, its own Save stands in that place; Export… is this page's section, "
+                + "after a line. Going to another page takes both away.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A menu of its own stands after the window's, before the platform's Window and "
+                + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
+                + "puts the menus behind the bar's overflow; an iPhone shows none.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}

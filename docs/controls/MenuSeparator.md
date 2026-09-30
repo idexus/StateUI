@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
-| Android Views | · |  | `PopupMenu` / `MenuItem`; no menu bar | cannot read the menu of Label - Android's driver has no path for it yet |
+| Android Views | ✅ |  | `PopupMenu` / `MenuItem`; no menu bar |  |
 | WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |

@@ -36,29 +36,26 @@ private struct BarredPage: ContentView {
             .toolbar(.leading, id: "edit", order: 1) {
                 ToolbarItem("Undo").id("undo")
             }
-            .onCreated {
-                page.title = "Notes"
-
-                page.menuBar = [
-                    Menu("File") {
-                        MenuItem("New")
-                            .id("new")
-                            .text("New")
-                            .icon("nav_media.png")
-                            .isDestructive(false)
-                            .isEnabled(true)
-                            .onClicked {}
-                        MenuSeparator().id("sep")
-                        Menu("Recent") {
-                            MenuItem("a.txt").id("a")
-                        }
-                        .id("recent")
+            .menuBar(order: 1) {
+                Menu("File") {
+                    MenuItem("New")
+                        .id("new")
+                        .text("New")
+                        .icon("nav_media.png")
+                        .isDestructive(false)
                         .isEnabled(true)
+                        .onClicked {}
+                    MenuSeparator().id("sep")
+                    Menu("Recent") {
+                        MenuItem("a.txt").id("a")
                     }
-                    .id("file")
-                    .isEnabled(true),
-                ]
+                    .id("recent")
+                    .isEnabled(true)
+                }
+                .id("file")
+                .isEnabled(true)
             }
+            .onCreated { page.title = "Notes" }
     }
 }
 
@@ -69,16 +66,15 @@ final class PageBarTests: XCTestCase {
         Renders().settled(Node.page(BarredPage()))
     }
 
-    /// Each toolbar group hangs on the element declaring it, after its own
-    /// children, as a collection of its own - which is what lets the host keep
-    /// the list in step rather than rebuilding it - and the menus beside the
-    /// content.
-    func testAPageHangsItsGroupsOnItsContentAndItsMenusBesideIt() throws {
+    /// Each toolbar group and menu bar hangs on the element declaring it,
+    /// after its own children, as a collection of its own - which is what lets
+    /// the host keep the list in step rather than rebuilding it.
+    func testADeclarationHangsOnTheElementDeclaringIt() throws {
         let page = Self.arrived()
 
-        XCTAssertEqual(page.children.map { $0.type }, ["Label", "MenuBar"])
+        XCTAssertEqual(page.children.map { $0.type }, ["Label"])
         let label = page.children[0]
-        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItems", "ToolbarItems"])
+        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItems", "ToolbarItems", "MenuBar"])
 
         let toolbar = label.children[0]
         XCTAssertEqual(toolbar.props["side"], .enumeration(0))
@@ -93,7 +89,8 @@ final class PageBarTests: XCTestCase {
                        "ToolbarItemPlacement.Overflow")
         XCTAssertNotNil(toolbar.children[0].events?["clicked"])
 
-        let menus = try XCTUnwrap(page.children.first { $0.type == "MenuBar" })
+        let menus = try XCTUnwrap(label.children.first { $0.type == "MenuBar" })
+        XCTAssertEqual(menus.props["order"], .number(1))
         let file = menus.children[0]
 
         XCTAssertEqual(file.type, "Menu")
@@ -108,7 +105,7 @@ final class PageBarTests: XCTestCase {
     func testEveryToolbarAndMenuModifierIsExercised() throws {
         let sent = Self.keys(in: Self.arrived())
 
-        for source in ["ToolbarItem.swift", "Page+Toolbar.swift", "MenuBar.swift"] {
+        for source in ["ToolbarItem.swift", "Page+Toolbar.swift", "Menu.swift", "MenuItem.swift", "Page+MenuBar.swift"] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")

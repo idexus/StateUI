@@ -500,7 +500,7 @@ final class PagesTests: XCTestCase {
     /// A menu walks its items, separators and submenus in order, each with its caption and whether it can be chosen;
     /// a bar holds only its menus.
     func testAMenuIsWalkedInOrder() throws {
-        let runtime = runtime(node("bar", .menuBar, children: [
+        let runtime = runtime(node("page", .page, children: [node("bar", .menuBar, children: [
             node("file", .menu, [.text: .string("File")], children: [
                 node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
                 node("line", .menuSeparator),
@@ -510,9 +510,9 @@ final class PagesTests: XCTestCase {
                 ]),
             ]),
             node("stray", .menuItem),
-        ])) { _ in }
+        ])])) { _ in }
 
-        let menus = MenuEntry.menus(of: try XCTUnwrap(runtime.tree.root))
+        let menus = try XCTUnwrap(runtime.tree.root).chromeMenus.menus
         XCTAssertEqual(menus.map(\.title), ["File"], "the bar holds only its menus")
         let file = try XCTUnwrap(menus.first).entries
         XCTAssertEqual(file.map(\.kind), [.item, .separator, .item, .submenu])
@@ -520,6 +520,89 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(file.map(\.icon), ["folder", nil, nil, nil], "an empty picture is none")
         XCTAssertEqual(file.map(\.isDestructive), [false, false, true, false])
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
+    }
+
+    /// A menu bar the path declares, each of its menus captioned and holding `entries`.
+    private func menuBar(_ id: String, _ menus: [HostPatch], order: Double = 0) -> HostPatch {
+        node(id, .menuBar, [.order: .number(order)], children: menus)
+    }
+
+    /// A menu captioned `text`.
+    private func menu(_ id: String, _ text: String, _ entries: [HostPatch]) -> HostPatch {
+        node(id, .menu, [.text: .string(text)], children: entries)
+    }
+
+    /// An entry captioned `text`, one that can be chosen unless said otherwise.
+    private func menuItem(_ id: String, _ text: String, enabled: Bool = true) -> HostPatch {
+        node(id, .menuItem, [.text: .string(text), .isEnabled: .bool(enabled)])
+    }
+
+    /// How a composed menu bar reads: each menu's caption and its entries, "!" before one that cannot be chosen and
+    /// "-" between sections.
+    private func said(_ menus: [MenuEntry]) -> String {
+        menus.map { menu in
+            let entries = menu.entries.map { $0.kind == .separator ? "-" : ($0.isEnabled ? "" : "!") + $0.title }
+            return "\(menu.title)[\(entries.joined(separator: ";"))]"
+        }.joined(separator: " ")
+    }
+
+    /// A menu of an id declared further in joins the one around it as a section after its entries; the others follow
+    /// the menus declared around them.
+    func testTheMenusOfAPathJoinByIdInSections() throws {
+        let runtime = runtime(pathWindow(
+            outer: [menuBar("window", [
+                menu("file", "File", [menuItem("new", "New"), menuItem("close", "Close")]),
+                menu("go", "Go", [menuItem("back", "Back")]),
+            ])],
+            inner: [menuBar("page", [
+                menu("file", "Datei", [menuItem("export", "Export…")]),
+                menu("format", "Format", [menuItem("bold", "Bold")]),
+            ])])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+
+        XCTAssertEqual(said(page.chromeMenus.menus), "File[New;Close;-;Export…] Go[Back] Format[Bold]")
+        XCTAssertEqual(said(try XCTUnwrap(runtime.tree.root?.first(id: .manual("home"))).chromeMenus.menus),
+                       "File[New;Close] Go[Back]", "a page declaring none shows the window's alone")
+    }
+
+    /// An entry of an id declared further in stands in the place of the outer one - its words, whether it can be
+    /// chosen, its element - and a section left with nothing is none.
+    func testAnEntryOfAnIdStandsInThePlaceOfTheOuterOne() throws {
+        let runtime = runtime(pathWindow(
+            outer: [menuBar("window", [
+                menu("file", "File", [menuItem("new", "New"), menuItem("save", "Save", enabled: false)]),
+            ])],
+            inner: [menuBar("page", [menu("file", "File", [menuItem("save", "Save this page")])])])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+
+        let menus = page.chromeMenus.menus
+        XCTAssertEqual(said(menus), "File[New;Save this page]")
+        XCTAssertTrue(menus.first?.entries.last?.element === page.first(id: .manual("save")), "the page's own entry")
+    }
+
+    /// A declaration's order moves its menus among the others and its section inside a menu it joins.
+    func testADeclarationsOrderMovesItsMenusAndSections() throws {
+        let runtime = runtime(pathWindow(
+            outer: [menuBar("window", [menu("file", "File", [menuItem("new", "New")])])],
+            inner: [menuBar("page", [
+                menu("file", "File", [menuItem("open", "Open")]),
+                menu("format", "Format", [menuItem("bold", "Bold")]),
+            ], order: -1)])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+
+        XCTAssertEqual(said(page.chromeMenus.menus), "Format[Bold] File[Open;-;New]",
+                       "the page's menu before the window's, its section first in the menu it joins")
+    }
+
+    /// A menu whose `.id` is a standard menu joins the platform's by that identity, never by its caption.
+    func testAStandardMenuIsKnownByItsIdentity() throws {
+        let runtime = runtime(node("page", .page, children: [menuBar("bar", [
+            menu(StandardMenu.file.description, "Plik", [menuItem("export", "Eksportuj")]),
+            menu("file", "File", [menuItem("other", "Other")]),
+        ])])) { _ in }
+
+        let menus = try XCTUnwrap(runtime.tree.root).chromeMenus.menus
+        XCTAssertEqual(menus.map(\.standard), [.file, nil])
     }
 
     /// An arrangement's children are its pages: what it declares - its actions, its menus, its title view - is

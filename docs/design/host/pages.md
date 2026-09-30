@@ -114,6 +114,21 @@ left with nothing is none. The items placed in the overflow leave their
 groups for it, in the order composed (`ChromeActions`). A bar that draws no
 groups takes the trailing actions in reading order (`primary`).
 
+## The menus of a path
+
+The menu bar a page's window shows is composed from the menu bars its path
+declares (`ChromeMenus`), by the rule the actions follow. A menu whose `.id`
+was declared further out joins that menu, which its outermost declaration
+heads - its caption, whether it opens - and places. The menus and the
+sections inside a joined one stand by their declaration's `order`, then the
+outer first, then as declared: a page's entries come after the window's as
+a section of their own, parted by a line, and a page's own menus after the
+window's. An entry whose `.id` an entry further out has stands in that
+entry's place - its words, whether it can be chosen, its element - which the
+others of that id leave; a section left with nothing is none. A menu whose
+`.id` is a `StandardMenu` names the platform's menu of that identity
+(`standard`), which the host joins by it, never by its caption.
+
 ## The window's chrome
 
 A window composes one chrome from what it shows (`WindowChrome`): the title
@@ -130,8 +145,8 @@ bar's leading and trailing content beside it; an authored title bar's own title,
 of them (`titleArea`), which a host shows where its platform names the
 application; the bars' colours (`barColors`) from the nearest stack or tabbed view
 around the visible page, else the title bar, and what stands on them from the
-nearest stack, else the title bar; the visible page's menu bar; and the
-sidebar's toggle where the window shows a split view. A host lays these out
+nearest stack, else the title bar; the menus its path declares
+(`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
 in its own chrome. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
 its title view (`chromeTitleView`) and its bar's colours.

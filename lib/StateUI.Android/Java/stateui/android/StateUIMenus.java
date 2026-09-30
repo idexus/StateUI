@@ -26,8 +26,11 @@ final class StateUIMenus {
     /** An entry's kind, in its lowest bits. */
     static final int ITEM = 0, MENU = 1, END = 2, SEPARATOR = 3, KIND = 3;
 
-    /** An entry's flags: not enabled, destructive, and standing on the bar beside the title where room allows. */
-    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16;
+    /**
+     * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, and
+     * showing its words there beside its picture where room allows.
+     */
+    static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32;
 
     private StateUIMenus() {}
 
@@ -66,8 +69,9 @@ final class StateUIMenus {
                         added.setIcon(drawable);
                     }
                     added.setEnabled((entry & DISABLED) == 0);
+                    int withText = (entry & WITH_TEXT) != 0 ? MenuItem.SHOW_AS_ACTION_WITH_TEXT : 0;
                     added.setShowAsAction(
-                            (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM : MenuItem.SHOW_AS_ACTION_NEVER);
+                            (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM | withText : MenuItem.SHOW_AS_ACTION_NEVER);
                     int chosen = item++;
                     added.setOnMenuItemClickListener(clicked -> {
                         StateUIHost.menuChose(view, chosen);

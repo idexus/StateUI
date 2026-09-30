@@ -178,10 +178,11 @@ they are. The window takes the overlay out when it no longer describes it.
 
 ## Menus
 
-The visible page's menus stand on WinUI's `MenuBar` in a row of the window
-beneath its chrome, above the window's tabs - each menu one of the bar's,
-its entries within it - while the page has any; a page with none leaves no
-row. The bar is written again only when what it draws changes: a render that
+The menus the visible page composes (`chromeMenus`) stand on WinUI's
+`MenuBar` in a row of the window beneath its chrome, above the window's tabs
+- each menu one of the bar's, its entries within it - while there are any;
+a path with none leaves no row. WinUI keeps no menus of its own, so a
+`StandardMenu` is an ordinary menu of the application's. The bar is written again only when what it draws changes: a render that
 changes nothing on it leaves the bar, and a menu open on it, as they are.
 
 A view's context menu is WinUI's `MenuFlyout` on the view: a right click and a

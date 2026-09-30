@@ -44,21 +44,30 @@
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
 
+    /// The platform's menu this one joins, where its `.id` is a `StandardMenu`.
+    public var standard: StandardMenu? {
+        guard case .manual(let identity) = element?.id else { return nil }
+        return StandardMenu(identity: identity)
+    }
+
     /// The entries `container` holds - a menu, a context menu, a submenu - in order; what is none of them is none.
     public static func entries(of container: MountedElement) -> [MenuEntry] {
         container.children.compactMap { entry in
             switch entry.type {
             case .menuItem: MenuEntry(entry, kind: .item, entries: [])
-            case .menuSeparator: MenuEntry(nil, kind: .separator, entries: [])
+            case .menuSeparator: .separator
             case .menu: MenuEntry(entry, kind: .submenu, entries: entries(of: entry))
             default: nil
             }
         }
     }
 
-    /// The menus a menu bar holds, in order - what else stands at its top stands on no bar.
-    public static func menus(of bar: MountedElement) -> [MenuEntry] {
-        bar.children.filter { $0.type == .menu }.map { MenuEntry($0, kind: .submenu, entries: entries(of: $0)) }
+    /// A line between two sections.
+    static var separator: MenuEntry { MenuEntry(nil, kind: .separator, entries: []) }
+
+    /// The menu `head` holding `entries`, composed from it and the menus joining it.
+    init(menu head: MountedElement, entries: [MenuEntry]) {
+        self.init(head, kind: .submenu, entries: entries)
     }
 
     private init(_ element: MountedElement?, kind: Kind, entries: [MenuEntry]) {

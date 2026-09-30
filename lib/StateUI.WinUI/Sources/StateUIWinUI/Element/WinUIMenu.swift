@@ -24,9 +24,9 @@ struct WinUIMenu {
         if let container { add(MenuEntry.entries(of: container.element)) }
     }
 
-    /// The menus `bar` holds, as the host layer walks them; none for no bar.
-    init(bar: WinUIElement?) {
-        if let bar { add(MenuEntry.menus(of: bar.element)) }
+    /// The menus of a menu bar, as the host layer composes them.
+    init(menus: [MenuEntry]) {
+        add(menus)
     }
 
     /// Whether the menu has no entries.

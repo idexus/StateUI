@@ -38,6 +38,7 @@ enum UIKitRealization {
             + "a layout deeper in stands where its page puts it, and none stands clear of the keyboard."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("Menu", "text"),
+        .complete("MenuBar", "order"),
         .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "barForegroundColor"),
         .complete("NavigationStack", "popped"),

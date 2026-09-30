@@ -2,7 +2,7 @@
 
 # MenuBar
 
-A page's menus - its menu bar.
+The menus a page or an arrangement declares for the menu bar, joining the menus of the same id declared around it.
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
@@ -23,17 +23,19 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
+| Host | Created | Members (1) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
 | AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
-| Android Views |  |  | `PopupMenu` / `MenuItem`; no menu bar | not realized |
-| WinUI 3 | ✅ |  | `MenuFlyout` / `MenuBar` |  |
-| GTK 4 |  |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | not realized |
+| Android Views | ✅ | 1 ✅ | `PopupMenu` / `MenuItem`; no menu bar |  |
+| WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` |  |
+| GTK 4 | ⌛ |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuBarContract.swift`.
 
 ## MenuBar's own members
 
-MenuBar declares no members of its own.
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `order` | property | `Int` | stateUI | 🔌 | 🔌 | ✅ |  |  |  | only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu; UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu |

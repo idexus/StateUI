@@ -16,14 +16,15 @@ enum AndroidMenu {
         case separator
     }
 
-    /// An item: its words and picture, whether it can be chosen, whether it cannot be undone, and whether it
-    /// stands on the bar beside the title rather than in a menu.
+    /// An item: its words and picture, whether it can be chosen, whether it cannot be undone, whether it stands on
+    /// the bar beside the title rather than in a menu, and whether it shows its words there beside its picture.
     struct Item: Equatable {
         var text: String
         var picture: String?
         var isEnabled = true
         var isDestructive = false
         var onBar = false
+        var withText = false
     }
 
     /// Writes `entries` into `menu`, an item chosen reported to `view` by its place among the items.
@@ -62,7 +63,8 @@ enum AndroidMenu {
             switch entry {
             case .item(let item):
                 kinds.append(
-                    (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0) | (item.onBar ? onBar : 0))
+                    (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0) | (item.onBar ? onBar : 0)
+                        | (item.withText ? withText : 0))
                 texts.append(item.text)
                 pictures.append(item.picture)
             case .menu(let text, let isEnabled, let inner):
@@ -78,5 +80,5 @@ enum AndroidMenu {
     }
 
     private static let menu: Int32 = 1, end: Int32 = 2, separator: Int32 = 3
-    private static let disabled: Int32 = 4, destructive: Int32 = 8, onBar: Int32 = 16
+    private static let disabled: Int32 = 4, destructive: Int32 = 8, onBar: Int32 = 16, withText: Int32 = 32
 }

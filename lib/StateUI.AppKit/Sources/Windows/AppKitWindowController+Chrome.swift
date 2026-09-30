@@ -97,10 +97,10 @@ extension AppKitWindowController {
             split: tabbed.parent?.enclosing(type: .splitView)?.appKit.view as? AppKitSplitView)
     }
 
-    /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer walks them.
-    var pageMenuItems: [NSMenuItem] {
-        let page = (presentation.sheets.last ?? presentation.arrangement)?.visiblePage
-        return AppKitMenus.items(page?.children.first { $0.type == .menuBar }.map(MenuEntry.menus(of:)) ?? [])
+    /// The menus of the page the user sees - the top sheet's, else the arrangement's - as the host layer composes
+    /// them from its path.
+    var pageMenus: [MenuEntry] {
+        (presentation.sheets.last ?? presentation.arrangement)?.visiblePage?.chromeMenus.menus ?? []
     }
 
     /// A window's tabs stand beneath its toolbar: on macOS 26 and later across

@@ -107,6 +107,12 @@ menu out of reach holds each of its entries out of reach.
 
 A view's context menu is UIKit's context menu interaction, which asks for
 the menu as the user holds the view; it is built then from what the tree says
-now. The menus the page the user sees puts on its menu bar are the
-application's main menu - on an iPad its menu bar - standing before UIKit's
-own Window menu, built again whenever they say something else.
+now. The menus the page the user sees composes (`chromeMenus`) are the
+application's main menu - on an iPad its menu bar. One whose identity is a
+standard menu stands as a section at the end of UIKit's own menu of that
+identity (`UIMenu.Identifier.file`), one UIKit keeps none of where UIKit's
+would stand - View after Edit, Help after Window - and any other before
+Window. The main menu is built again whenever they say something else or an
+entry answers another element: every action carries its element's identifier
+(`actionIdentifier`), which UIKit keeps in the copies it makes, so a page's
+Save standing in the window's place with the same words still rebuilds it.

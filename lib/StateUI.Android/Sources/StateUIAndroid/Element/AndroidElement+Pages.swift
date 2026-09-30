@@ -104,8 +104,8 @@ extension AndroidElement {
     // MARK: - A stack's bar
 
     /// Shows on a stack's bar what its visible page says: the title - the page's the host layer names it by
-    /// (`titledPage`), or the view standing in for it - the colours, the way back or to the sidebar, and the page's
-    /// actions in their order.
+    /// (`titledPage`), or the view standing in for it - the colours, the way back or to the sidebar, the page's
+    /// actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
@@ -121,11 +121,15 @@ extension AndroidElement {
         content.title = element.titledPage?.value(.title)?.string ?? ""
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
-        content.actions = shown.map { item in
+        content.actions = shown.enumerated().map { place, item in
+            item.android.menuPlace = place
             var action = item.android.menuItem
             action.onBar = onBar.contains { $0 === item }
+            action.withText = action.onBar && item.showsActionWords
             return action
         }
+        var items = shown
+        content.menus = Self.menuEntries(page?.chromeMenus.menus ?? [], items: &items)
         if element.visibleBackStack === element {
             content.navigation = .back
         } else if let split = enclosingSplit, let sidebar = split.children.first,
@@ -137,9 +141,10 @@ extension AndroidElement {
         let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
         bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)
-        bar.onMenuChose = { index in
-            guard shown.indices.contains(index) else { return }
-            shown[index].android.send(.clicked, [])
+        bar.items = items
+        bar.onMenuChose = { [weak bar] index in
+            guard let bar, bar.items.indices.contains(index) else { return }
+            bar.items[index].android.send(.clicked, [])
         }
         bar.onNavigation = { [weak self] in
             guard let self else { return }

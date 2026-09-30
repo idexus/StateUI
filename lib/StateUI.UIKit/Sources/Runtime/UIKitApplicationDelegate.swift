@@ -27,12 +27,30 @@ final class UIKitApplicationDelegate: UIResponder, UIApplicationDelegate {
         return configuration
     }
 
-    /// The main menu - on an iPad the menu bar - holds the menus of the page the user sees, before UIKit's Window
-    /// menu.
+    /// The main menu - on an iPad the menu bar - holds the menus of the page the user sees: a standard one as a
+    /// section at the end of UIKit's own menu of its identity, one UIKit keeps none of where UIKit's would stand -
+    /// View after Edit, Help after Window - and any other before Window.
+    /// Design: docs/design/platforms/uikit/pages.md#menus
     override func buildMenu(with builder: any UIMenuBuilder) {
         super.buildMenu(with: builder)
         guard builder.system == .main else { return }
-        for menu in UIKitRenderer.shared.menuBar { builder.insertSibling(menu, beforeMenu: .window) }
+        let renderer = UIKitRenderer.shared
+        for (entry, menu) in zip(renderer.pageMenus, renderer.menuBar) {
+            guard let standard = entry.standard else {
+                builder.insertSibling(menu, beforeMenu: .window)
+                continue
+            }
+            let identifier = UIKitMenus.identifier(standard)
+            if builder.menu(for: identifier) != nil {
+                builder.insertChild(UIMenu(options: .displayInline, children: menu.children), atEndOfMenu: identifier)
+            } else if standard == .help {
+                builder.insertSibling(menu, afterMenu: .window)
+            } else if standard == .view, builder.menu(for: .edit) != nil {
+                builder.insertSibling(menu, afterMenu: .edit)
+            } else {
+                builder.insertSibling(menu, beforeMenu: .window)
+            }
+        }
     }
 
     /// The user closed windows - swiped their scenes away: each window hears it.

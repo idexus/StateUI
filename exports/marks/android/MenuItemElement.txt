@@ -1,11 +1,11 @@
 # revision 1.1
-MenuItem.clicked: cannot activate on MenuItem - Android's driver has no path for it yet
-MenuItem.icon: not realized
-MenuItem.isDestructive: cannot read isDestructive of MenuItem - Android's driver has no path for it yet
-MenuItem.isEnabled: cannot activate on MenuItem - Android's driver has no path for it yet
-MenuItem.text: cannot read text of MenuItem - Android's driver has no path for it yet
-ToolbarItem.clicked: cannot activate on ToolbarItem - Android's driver has no path for it yet
-ToolbarItem.icon: cannot read icon of ToolbarItem - Android's driver has no path for it yet
-ToolbarItem.isDestructive: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet
-ToolbarItem.isEnabled: cannot activate on ToolbarItem - Android's driver has no path for it yet
-ToolbarItem.text: cannot read text of ToolbarItem - Android's driver has no path for it yet
+MenuItem.clicked: ✅
+MenuItem.icon: – Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.
+MenuItem.isDestructive: ✅
+MenuItem.isEnabled: ✅
+MenuItem.text: ✅
+ToolbarItem.clicked: ✅
+ToolbarItem.icon: cannot read a picture's name - Android's item keeps its picture, not its name
+ToolbarItem.isDestructive: ✅
+ToolbarItem.isEnabled: ✅
+ToolbarItem.text: ✅

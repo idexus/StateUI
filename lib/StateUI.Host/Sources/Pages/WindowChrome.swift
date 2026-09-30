@@ -5,7 +5,7 @@
 
 /// The one chrome a window composes from what it shows, the same on every host: its title, the way back, the actions
 /// its visible path declares, what stands in the title's place and beside it, an authored title bar's own title area, the bars'
-/// colours, the page's menus and the sidebar's toggle - elements and values a host turns into its toolkit's chrome.
+/// colours, the menus its visible path declares and the sidebar's toggle - elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
     /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
@@ -37,8 +37,8 @@
     /// The colour of what stands on the bars: the nearest stack's, else the title bar's.
     public var foreground: HostValue?
 
-    /// The visible page's menu bar.
-    public var menuBar: MountedElement?
+    /// The menus the visible page's path declares, composed.
+    public var menus = ChromeMenus()
 
     /// The split view whose sidebar the chrome's toggle shows and hides: the one the window shows.
     public var sidebarToggle: MountedElement?
@@ -57,7 +57,7 @@
         trailing = titleBar?.slotContent(.trailingContent)
         titleArea = titleBar.flatMap(TitleArea.init(of:))
         (background, foreground) = (page ?? window).barColors
-        menuBar = page?.children.first { $0.type == .menuBar }
+        if let page { menus = page.chromeMenus }
         sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
     }
 

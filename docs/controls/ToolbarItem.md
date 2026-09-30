@@ -27,7 +27,7 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit | 🔌 | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
-| Android Views | · | 1 – | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
+| Android Views | ✅ | 4 ✅ · 1 – | `Toolbar` `MenuItem` |  |
 | WinUI 3 | ⌛ | 5 ✅ | `CommandBar` `AppBarButton` |  |
 | GTK 4 | ⌛ |  | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
@@ -39,7 +39,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `placement` | property | `ToolbarItemPlacement` | adaptive | · | · | · | ⌛ | ⌛ |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet |
-| `showsText` | property | `Bool` | adaptive |  |  |  | ⌛ |  |  | not realized; UIKit: not realized; Android Views: not realized |
+| `showsText` | property | `Bool` | adaptive |  |  | · | ⌛ |  |  | not realized; UIKit: not realized; Android Views: cannot read showsText of ToolbarItem - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -55,8 +55,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | 🔌 | ✅ | · | ⌛ | ⌛ |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | · |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot read icon of ToolbarItem - GTK's driver has no path for it yet |
-| `isDestructive` | property | `Bool` | adaptive |  | ✅ | · | ✅ |  |  | not realized; Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet; GTK 4: not realized |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |
-| `text` | property | `String` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read text of ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot read text of ToolbarItem - GTK's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native | 🔌 | ✅ | ✅ | ⌛ | ⌛ |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
+| `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | · |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read a picture's name - Android's item keeps its picture, not its name; GTK 4: cannot read icon of ToolbarItem - GTK's driver has no path for it yet |
+| `isDestructive` | property | `Bool` | adaptive |  | ✅ | ✅ | ✅ |  |  | not realized; GTK 4: not realized |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read text of ToolbarItem - GTK's driver has no path for it yet |

@@ -17,17 +17,22 @@ final class AndroidBarView: AndroidView {
         case sidebar(String?)
     }
 
-    /// What the bar says and shows.
+    /// What the bar says and shows: its actions, and the page's menus behind its overflow.
     struct Content: Equatable {
         var title = ""
         var background: HostValue?
         var foreground: HostValue?
         var navigation = Navigation.none
         var actions: [AndroidMenu.Item] = []
+        var menus: [AndroidMenu.Entry] = []
     }
 
     /// What the navigation button does when the user presses it.
     var onNavigation: (() -> Void)?
+
+    /// The elements the bar's items stand for, in the order its menu numbers them: the actions, then the menus'
+    /// items.
+    var items: [MountedElement] = []
 
     private(set) var content = Content()
     private var shown = false
@@ -75,8 +80,9 @@ final class AndroidBarView: AndroidView {
         if previous?.navigation != content.navigation || previous?.foreground != content.foreground {
             showNavigation(content.navigation, tint: content.foreground.flatMap(Self.argb) ?? 0)
         }
-        if previous?.actions != content.actions || previous?.foreground != content.foreground {
-            showActions(content.actions)
+        if previous?.actions != content.actions || previous?.menus != content.menus
+            || previous?.foreground != content.foreground {
+            showActions(content.actions, menus: content.menus)
         }
     }
 
@@ -96,9 +102,12 @@ final class AndroidBarView: AndroidView {
         Java.release(local: words)
     }
 
-    /// The actions as the bar's menu, an item chosen reaching `onMenuChose` by its place among them.
-    private func showActions(_ actions: [AndroidMenu.Item]) {
-        AndroidMenu.encoded(actions.map(AndroidMenu.Entry.item)) { kinds, texts, pictures in
+    /// The actions as the bar's menu, then the menus as its submenus behind the overflow, after a line where
+    /// actions stand there too; an item chosen reaches `onMenuChose` by its place among the items.
+    private func showActions(_ actions: [AndroidMenu.Item], menus: [AndroidMenu.Entry]) {
+        let parted = !menus.isEmpty && actions.contains { !$0.onBar }
+        let entries = actions.map(AndroidMenu.Entry.item) + (parted ? [.separator] : []) + menus
+        AndroidMenu.encoded(entries) { kinds, texts, pictures in
             Java.call(reference, JavaAPI.setBarActions, .object(kinds), .object(texts), .object(pictures))
         }
     }
@@ -120,5 +129,6 @@ final class AndroidBarView: AndroidView {
     override func detach() {
         super.detach()
         onNavigation = nil
+        items = []
     }
 }

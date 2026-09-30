@@ -20,3 +20,4 @@ android InputView 2
 ToolbarItem 3
 ToolbarItems 2
 TitleView 2
+MenuBar 2

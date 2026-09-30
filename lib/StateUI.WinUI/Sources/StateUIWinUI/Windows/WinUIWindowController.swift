@@ -104,7 +104,7 @@ final class WinUIWindowController {
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
         chrome.foreground = composed.foreground
-        chrome.menuBar = WinUIMenu(bar: composed.menuBar?.winUI)
+        chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
         if !presentation.sheets.isEmpty {
             chrome.sheet = (
                 back: { [weak self] in self?.goBack(in: runtime) },

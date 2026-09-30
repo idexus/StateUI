@@ -1,5 +1,5 @@
 # revision 2.1
-ToolbarItem.clicked: cannot activate on ToolbarItem - Android's driver has no path for it yet
-ToolbarItems: cannot activate on ToolbarItem - Android's driver has no path for it yet
+ToolbarItem.clicked: ✅
+ToolbarItems: ◐ cannot read the bar of Page - Android's driver has no path for it yet
 ToolbarItems.order: cannot read the bar of Page - Android's driver has no path for it yet
 ToolbarItems.side: – Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.
