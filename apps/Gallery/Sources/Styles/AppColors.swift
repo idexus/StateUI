@@ -104,20 +104,32 @@ enum AppColors {
     static let inkMutedDark = Color("#A09AB4")
 
     /// Outlines and dividers, in the dark.
-    static let lineDark = Color("#2C2838")
+    static let lineDark = Color("#352F55")
 
     /// The page in the dark: violet-black rather than grey-black.
-    static let surfaceDark = Color("#0D0B14")
+    static let surfaceDark = Color("#0C0A19")
+
+    /// The sidebar in the dark: a step up from the page, as a desktop's glass
+    /// sidebar stands lighter than what it leads to.
+    static let sidebarDark = Color("#1A1531")
+
+    /// The sidebar's tone over glass the desktop shows through, in the dark:
+    /// enough to darken the glass, thin enough to leave it glass.
+    static let sidebarGlassDark = Color("#4D1A1531")
+
+    /// A field in the dark: sunk below the card it stands on, in the chrome's
+    /// violet rather than the platform's grey.
+    static let fieldDark = Color("#17132B")
 
     /// A card in the dark, one step up from the page.
-    static let raisedDark = Color("#17141F")
+    static let raisedDark = Color("#1D1935")
 
     /// Not available, in the dark.
     static let mutedDark = Color("#4A4459")
 
     /// The row you are on, in the dark. Lifted well past a card - a step of two
     /// or three points reads as nothing on a screen at low brightness.
-    static let selectedDark = Color("#2A2340")
+    static let selectedDark = Color("#342B5C")
 
     // MARK: Absolutes
 

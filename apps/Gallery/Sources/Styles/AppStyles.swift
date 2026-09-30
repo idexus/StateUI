@@ -169,10 +169,15 @@ enum AppStyles {
                 }
 
             // MARK: Fields
+            //
+            // A field takes the palette's own ground, so it stands in the page's
+            // violet rather than the platform's grey - and stands at all on
+            // Android, whose field a clear background leaves as bare words.
+            let field = Palette.field
 
             Style<TextField>()
                 .textColor(Palette.text)
-                .background(.transparent)
+                .background(field)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -183,7 +188,7 @@ enum AppStyles {
 
             Style<TextEditor>()
                 .textColor(Palette.text)
-                .background(.transparent)
+                .background(field)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)

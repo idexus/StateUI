@@ -79,6 +79,18 @@ enum Palette {
     /// One step up from the page: a card, a code block, a panel.
     static let raised = Color(light: AppColors.raised, dark: AppColors.raisedDark)
 
+    /// Behind the sidebar's rows: white in the light, a step up from the page
+    /// in the dark, so the menu and the page it leads to stand apart.
+    static let sidebar = Color(light: AppColors.raised, dark: AppColors.sidebarDark)
+
+    /// Over the sidebar's glass where the window shows the desktop: nothing in
+    /// the light, a thin layer of the sidebar's tone in the dark.
+    static let sidebarOverGlass = Color(light: .transparent, dark: AppColors.sidebarGlassDark)
+
+    /// Behind the words of a field: white in the light, sunk below the card in
+    /// the dark.
+    static let field = Color(light: AppColors.raised, dark: AppColors.fieldDark)
+
     /// Outlines, dividers, the edge of a card.
     static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
 
