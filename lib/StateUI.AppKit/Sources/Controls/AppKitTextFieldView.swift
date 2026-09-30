@@ -20,13 +20,13 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     var onTextChanged: ((String) -> Void)?
     var onSubmitted: (() -> Void)?
 
-    private var spellChecking = true
-    private var textPrediction = true
+    /// What the field's keyboard and its checking of the words do.
+    private var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
     private var cursorPosition: Int?
     private var selectionLength: Int?
 
     override init(frame frameRect: NSRect) {
-        textField = NSTextField()
+        textField = AppKitWordsField()
         super.init(frame: frameRect)
         install(textField)
     }
@@ -57,8 +57,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         readOnly: Bool,
         secure: Bool,
         maximumLength: Int?,
-        spellChecking: Bool,
-        textPrediction: Bool,
+        traits: InputTraits,
         cursorPosition: Int?,
         selectionLength: Int?,
         writeSelection: Bool
@@ -68,8 +67,8 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         }
 
         self.maximumLength = maximumLength.map { max(0, $0) }
-        self.spellChecking = spellChecking
-        self.textPrediction = textPrediction
+        self.traits = traits
+        (textField as? AppKitWordsField)?.traits = traits
         self.cursorPosition = cursorPosition
         self.selectionLength = selectionLength
 
@@ -88,7 +87,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isEnabled = enabled
         textField.isEditable = !readOnly
         textField.isSelectable = true
-        textField.isAutomaticTextCompletionEnabled = textPrediction
+        textField.isAutomaticTextCompletionEnabled = traits.predicts
         textField.alignment = alignment(horizontalAlignment)
 
         if let backgroundColor {
@@ -166,7 +165,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         let words = previous.stringValue
         let wasFirstResponder = window?.firstResponder === previous.currentEditor()
             || window?.firstResponder === previous
-        let replacement: NSTextField = secure ? NSSecureTextField() : NSTextField()
+        let replacement: NSTextField = secure ? NSSecureTextField() : AppKitWordsField()
 
         previous.removeFromSuperview()
         textField = replacement
@@ -183,8 +182,7 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     private func applyEditorPreferences() {
         guard let editor = textField.currentEditor() as? NSTextView else { return }
 
-        editor.isContinuousSpellCheckingEnabled = spellChecking
-        editor.isAutomaticTextCompletionEnabled = textPrediction
+        editor.take(traits)
     }
 
     /// Only a change of the authored selection moves the caret. A text write,

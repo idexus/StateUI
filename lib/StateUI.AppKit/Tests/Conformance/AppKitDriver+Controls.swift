@@ -68,6 +68,23 @@ extension AppKitDriver {
         }
     }
 
+    /// The purpose the host's traits were read from: the keys first, then what the traits leave of the words.
+    private static func purpose(of traits: InputTraits) -> InputPurpose {
+        switch traits.keys {
+        case .email: return .email
+        case .url: return .url
+        case .number: return .numeric
+        case .telephone: return .telephone
+        case .words:
+            if traits.offersEmoji { return .chat }
+            switch traits.capitals {
+            case .none: return .plain
+            case .sentences: return .text
+            case .platform: return .default
+            }
+        }
+    }
+
     /// A field's and an editor's: its placeholder, whether it hides what is typed, how its words stand, and - on an
     /// editor, which keeps them itself - its spelling, its completion and its selection.
     private static func fieldHolds(_ property: Prop, _ view: NSView) -> HostValue? {
@@ -82,8 +99,14 @@ extension AppKitDriver {
             case .isTextPredictionEnabled: return text.isAutomaticTextCompletionEnabled.propValue
             case .cursorPosition: return text.selectedRange().location.propValue
             case .selectionLength: return text.selectedRange().length.propValue
+            case .inputPurpose: return purpose(of: editor.traits).propValue
             default: return nil
             }
+        }
+        if property == .inputPurpose {
+            let traits = ((view as? AppKitTextFieldView)?.textField as? AppKitWordsField)?.traits
+                ?? (view as? AppKitSearchFieldView)?.traits
+            return traits.map { purpose(of: $0).propValue }
         }
         let field: NSTextField? = (view as? AppKitTextFieldView)?.textField ?? view as? AppKitSearchFieldView
         guard let field else { return nil }

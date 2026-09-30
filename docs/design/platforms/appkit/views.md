@@ -76,3 +76,16 @@ which takes no alignment from its field as a plain one does, so it carries the
 field's alignment itself. An editor's placeholder is a label over the text
 view, as wide as the text view's room, so the alignment has room to move it.
 
+## What typing is given
+
+A field's traits ([what typing is given](../../host/runtime.md#what-typing-is-given))
+reach the text view a user types in: continuous spell checking, automatic
+spelling correction and text replacement, text completion and inline
+prediction, each on or off. Capitals are the text checking's own: macOS puts
+the first letter of a sentence in capitals as the user's setting says, and a
+field overrides that setting in the options the checking asks its delegate
+for - a field, a search and an editor are their text view's delegate. Plain
+words keep their letters as typed whatever the setting; text starts its
+sentences in capitals; the default leaves the setting alone. A Mac has no
+keyboard on the screen, so a purpose picks no keys - the register records it.
+

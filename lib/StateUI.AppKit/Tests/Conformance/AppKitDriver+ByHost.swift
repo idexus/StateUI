@@ -37,6 +37,8 @@ extension AppKitDriver {
         switch ability {
         case "read currentPage of TabbedView": return "the host's tab choice, not the tab view's"
         case "read isRunning of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
+        case "read inputPurpose of TextField", "read inputPurpose of SearchField", "read inputPurpose of TextEditor":
+            return "the traits the host keeps; a Mac shows no keys a purpose picks"
         case "read windowType of Window", "read windowValue of Window": return "the host's restoration record"
         case "read the menu of Window": return "menu items built from the tree at the read, not the main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"

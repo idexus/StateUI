@@ -88,6 +88,54 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertGreaterThan(ink.height, 14, "at the field's 22 points")
     }
 
+    /// Plain words are taken as typed: the editor a user types in corrects, replaces and marks nothing, and the text
+    /// checking it asks for as the user types puts no capital in - whatever the user's own setting.
+    @MainActor
+    func testPlainWordsAreTakenAsTyped() throws {
+        let view = AppKitTextFieldView()
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 60), styleMask: [.titled], backing: .buffered,
+            defer: false)
+        view.frame = NSRect(x: 0, y: 0, width: 300, height: 30)
+        window.contentView?.addSubview(view)
+        apply(view, text: "", traits: InputTraits(spellChecked: true, predicted: true, purpose: .plain))
+        XCTAssertTrue(window.makeFirstResponder(view.textField))
+        let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
+        editor.insertText("a", replacementRange: editor.selectedRange())
+
+        XCTAssertFalse(editor.isAutomaticSpellingCorrectionEnabled)
+        XCTAssertFalse(editor.isAutomaticTextReplacementEnabled)
+        XCTAssertFalse(editor.isContinuousSpellCheckingEnabled)
+        XCTAssertEqual(try checking(asked: editor)[.automaticCapitalizationEnabledKey] as? Bool, false)
+    }
+
+    /// Text starts its sentences in capitals, whatever the user's own setting; the default says nothing of them.
+    @MainActor
+    func testTextStartsItsSentencesInCapitals() throws {
+        let view = AppKitTextFieldView()
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 60), styleMask: [.titled], backing: .buffered,
+            defer: false)
+        view.frame = NSRect(x: 0, y: 0, width: 300, height: 30)
+        window.contentView?.addSubview(view)
+        apply(view, text: "", traits: InputTraits(spellChecked: true, predicted: true, purpose: .text))
+        XCTAssertTrue(window.makeFirstResponder(view.textField))
+        let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
+        XCTAssertEqual(try checking(asked: editor)[.automaticCapitalizationEnabledKey] as? Bool, true)
+
+        apply(view, text: "", traits: InputTraits(spellChecked: true, predicted: true, purpose: nil))
+        XCTAssertNil(try checking(asked: editor)[.automaticCapitalizationEnabledKey])
+    }
+
+    /// The options the text checking an editor runs as the user types is given, as the editor asks its delegate.
+    @MainActor
+    private func checking(asked editor: NSTextView) throws -> [NSSpellChecker.OptionKey: Any] {
+        let delegate = try XCTUnwrap(editor.delegate)
+        var types = editor.enabledTextCheckingTypes
+        return delegate.textView?(editor, willCheckTextIn: NSRange(location: 0, length: 0), options: [:], types: &types)
+            ?? [:]
+    }
+
     @MainActor
     func testPasswordChangesTheNativeEditorWithoutLosingText() {
         let view = AppKitTextFieldView()
@@ -217,7 +265,8 @@ final class AppKitTextFieldViewTests: XCTestCase {
         enabled: Bool = true,
         readOnly: Bool = false,
         secure: Bool = false,
-        maximumLength: Int? = nil
+        maximumLength: Int? = nil,
+        traits: InputTraits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
     ) {
         view.apply(
             text: text,
@@ -232,8 +281,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
             readOnly: readOnly,
             secure: secure,
             maximumLength: maximumLength,
-            spellChecking: true,
-            textPrediction: true,
+            traits: traits,
             cursorPosition: nil,
             selectionLength: nil,
             writeSelection: false)

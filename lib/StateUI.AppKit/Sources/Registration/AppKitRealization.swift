@@ -34,6 +34,7 @@ enum AppKitRealization {
         .complete("PageElement", "title"),
         .complete("Layout", "clipsContent"),
         .partial("VisualElement", "accessibilityHeadingLevel", missing: "AppKit marks a heading, not its level: every level is a heading."),
+        .partial("InputView", "inputPurpose", missing: "A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction and prediction, no keys."),
         .partial("VisualElement", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by a layout."),
         .partial("View", "panTouchCount", missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("VisualElement", "style"),

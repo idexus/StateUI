@@ -9,6 +9,9 @@ import AppKit
 /// A native multiline editor whose scroll ownership stays inside the control.
 @MainActor
 final class AppKitTextEditorView: NSView, NSTextViewDelegate {
+    /// What the editor's keyboard and its checking of the words do.
+    private(set) var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
+
     let scrollView = NSScrollView()
     let textView = NSTextView()
     private let placeholder = AppKitTextEditorPlaceholder()
@@ -105,8 +108,7 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         enabled: Bool,
         readOnly: Bool,
         maximumLength: Int?,
-        spellChecking: Bool,
-        textPrediction: Bool,
+        traits: InputTraits,
         cursorPosition: Int?,
         selectionLength: Int?,
         writeSelection: Bool,
@@ -124,8 +126,8 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         textView.alignment = nativeAlignment(horizontalAlignment)
         textView.isEditable = enabled && !readOnly
         textView.isSelectable = enabled
-        textView.isContinuousSpellCheckingEnabled = spellChecking
-        textView.isAutomaticTextCompletionEnabled = textPrediction
+        self.traits = traits
+        textView.take(traits)
 
         scrollView.hasVerticalScroller = !growsWithText
         placeholder.stringValue = placeholderText ?? ""
@@ -163,6 +165,14 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
         updatePlaceholder()
         invalidateMeasurements()
         onTextChanged?(typed)
+    }
+
+    /// The text checking the user's typing runs follows the editor's traits.
+    func textView(
+        _ view: NSTextView, willCheckTextIn range: NSRange, options: [NSSpellChecker.OptionKey: Any] = [:],
+        types checkingTypes: UnsafeMutablePointer<NSTextCheckingTypes>
+    ) -> [NSSpellChecker.OptionKey: Any] {
+        traits.checking(options)
     }
 
     private func updatePlaceholder() {

@@ -16,8 +16,8 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     /// The case the view holds its words in; nil for as they are typed.
     var textCase: TextCase?
 
-    private var spellChecking = true
-    private var textPrediction = true
+    /// What the search's keyboard and its checking of the words do.
+    private(set) var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
     private var cursorPosition: Int?
     private var selectionLength: Int?
 
@@ -50,15 +50,13 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         enabled: Bool,
         readOnly: Bool,
         maximumLength: Int?,
-        spellChecking: Bool,
-        textPrediction: Bool,
+        traits: InputTraits,
         cursorPosition: Int?,
         selectionLength: Int?,
         writeSelection: Bool
     ) {
         self.maximumLength = maximumLength.map { max(0, $0) }
-        self.spellChecking = spellChecking
-        self.textPrediction = textPrediction
+        self.traits = traits
         self.cursorPosition = cursorPosition
         self.selectionLength = selectionLength
 
@@ -76,7 +74,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
         isEnabled = enabled
         isEditable = !readOnly
         isSelectable = true
-        isAutomaticTextCompletionEnabled = textPrediction
+        isAutomaticTextCompletionEnabled = traits.predicts
         alignment = nativeAlignment(horizontalAlignment)
 
         drawsBackground = true
@@ -123,8 +121,16 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     private func applyEditorPreferences() {
         guard let editor = currentEditor() as? NSTextView else { return }
-        editor.isContinuousSpellCheckingEnabled = spellChecking
-        editor.isAutomaticTextCompletionEnabled = textPrediction
+        editor.take(traits)
+    }
+
+    /// The search is its editor's delegate: the text checking the user's typing runs follows its traits.
+    @objc(textView:willCheckTextInRange:options:types:)
+    func textView(
+        _ view: NSTextView, willCheckTextIn range: NSRange, options: [NSSpellChecker.OptionKey: Any],
+        types: UnsafeMutablePointer<NSTextCheckingTypes>
+    ) -> [NSSpellChecker.OptionKey: Any] {
+        traits.checking(options)
     }
 
     /// Only a change of the authored selection moves the caret. A text write,

@@ -43,8 +43,7 @@ extension AppKitRegistrations {
                     readOnly: values[InputViewContract.isReadOnly] ?? false,
                     secure: values[TextFieldContract.isPassword] ?? false,
                     maximumLength: values[InputViewContract.maximumLength],
-                    spellChecking: values[InputViewContract.isSpellCheckEnabled] ?? true,
-                    textPrediction: values[InputViewContract.isTextPredictionEnabled] ?? true,
+                    traits: InputTraits(values),
                     cursorPosition: values[InputViewContract.cursorPosition],
                     selectionLength: values[InputViewContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
@@ -80,8 +79,7 @@ extension AppKitRegistrations {
                     enabled: values[VisualElementContract.isEnabled] ?? true,
                     readOnly: values[InputViewContract.isReadOnly] ?? false,
                     maximumLength: values[InputViewContract.maximumLength],
-                    spellChecking: values[InputViewContract.isSpellCheckEnabled] ?? true,
-                    textPrediction: values[InputViewContract.isTextPredictionEnabled] ?? true,
+                    traits: InputTraits(values),
                     cursorPosition: values[InputViewContract.cursorPosition],
                     selectionLength: values[InputViewContract.selectionLength],
                     writeSelection: Self.writesSelection(values),
@@ -118,8 +116,7 @@ extension AppKitRegistrations {
                     enabled: values[VisualElementContract.isEnabled] ?? true,
                     readOnly: values[InputViewContract.isReadOnly] ?? false,
                     maximumLength: values[InputViewContract.maximumLength],
-                    spellChecking: values[InputViewContract.isSpellCheckEnabled] ?? true,
-                    textPrediction: values[InputViewContract.isTextPredictionEnabled] ?? true,
+                    traits: InputTraits(values),
                     cursorPosition: values[InputViewContract.cursorPosition],
                     selectionLength: values[InputViewContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
@@ -137,7 +134,7 @@ extension AppKitRegistrations {
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
         InputViewContract.isReadOnly, InputViewContract.maximumLength,
-        InputViewContract.isSpellCheckEnabled, InputViewContract.isTextPredictionEnabled,
+        InputViewContract.isSpellCheckEnabled, InputViewContract.isTextPredictionEnabled, InputViewContract.inputPurpose,
         InputViewContract.cursorPosition, InputViewContract.selectionLength,
     ]
 

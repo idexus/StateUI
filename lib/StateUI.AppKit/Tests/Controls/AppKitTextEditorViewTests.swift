@@ -18,7 +18,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
         editor.apply(
             text: "", writeText: true, placeholder: "WWW", placeholderColor: .red, foregroundColor: .textColor,
             backgroundColor: .white, font: .systemFont(ofSize: 22), horizontalAlignment: 1, enabled: true,
-            readOnly: false, maximumLength: nil, spellChecking: false, textPrediction: false, cursorPosition: nil,
+            readOnly: false, maximumLength: nil, traits: InputTraits(spellChecked: false, predicted: false, purpose: nil), cursorPosition: nil,
             selectionLength: nil, writeSelection: false, growsWithText: false)
         editor.layoutSubtreeIfNeeded()
 
@@ -42,8 +42,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
             enabled: true,
             readOnly: false,
             maximumLength: 20,
-            spellChecking: false,
-            textPrediction: false,
+            traits: InputTraits(spellChecked: false, predicted: false, purpose: nil),
             cursorPosition: nil,
             selectionLength: nil,
             writeSelection: false,
@@ -149,8 +148,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
             enabled: true,
             readOnly: false,
             maximumLength: maximumLength,
-            spellChecking: true,
-            textPrediction: true,
+            traits: InputTraits(spellChecked: true, predicted: true, purpose: nil),
             cursorPosition: nil,
             selectionLength: nil,
             writeSelection: false,
