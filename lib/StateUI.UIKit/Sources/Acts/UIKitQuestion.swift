@@ -43,7 +43,7 @@ final class UIKitQuestion {
             alert.addTextField { field in
                 field.text = question.words
                 field.placeholder = question.placeholder
-                UIKitKeyboard(spellChecked: true, predicted: true, purpose: question.purpose).apply(to: field)
+                UIKitKeyboard(InputTraits(spellChecked: true, predicted: true, purpose: question.purpose)).apply(to: field)
             }
         }
     }

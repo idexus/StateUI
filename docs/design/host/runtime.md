@@ -433,6 +433,18 @@ emoji - is never split. A picker is given its choices where they changed, and
 its choice only where the tree changed it or the choices (`PickerChoices`):
 the user's own choice is never argued with.
 
+## What typing is given
+
+What a field's keyboard and the platform's checking of its words do is read
+once from what the tree says (`InputTraits`): spell checking, prediction -
+correction goes with it - and the input purpose, which picks the keys a
+screen keyboard offers and where capitals go. Plain words are taken as typed:
+no capitals, no checking, no correction, no prediction - a login, a code a
+user types or a scanner enters. An address takes no capitals; text starts
+its sentences in them; the default leaves the platform its own. Each host
+tells its toolkit these in its own terms - a keyboard type, input flags, the
+text checking a desktop does as the user types.
+
 ## A value in a range
 
 A value a control holds inside a range - a slider's, a stepper's, a progress

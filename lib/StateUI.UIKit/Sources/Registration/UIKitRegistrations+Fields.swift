@@ -81,10 +81,7 @@ extension UIKitRegistrations {
             view.setBehaviour(
                 enabled: values[VisualElementContract.isEnabled] ?? true,
                 readOnly: values[InputViewContract.isReadOnly] ?? false,
-                keyboard: UIKitKeyboard(
-                    spellChecked: values[InputViewContract.isSpellCheckEnabled] ?? true,
-                    predicted: values[InputViewContract.isTextPredictionEnabled] ?? true,
-                    purpose: values[InputViewContract.inputPurpose]))
+                keyboard: UIKitKeyboard(InputTraits(values)))
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {

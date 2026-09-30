@@ -6,8 +6,8 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What the keyboard is told of the words a view takes: whether they are spell checked and predicted, and what they
-/// are for.
+/// What the keyboard is told of the words a view takes, by their traits (`InputTraits`): whether they are spell
+/// checked and predicted, and what they are for.
 @MainActor
 struct UIKitKeyboard {
     var keyboardType = UIKeyboardType.default
@@ -17,21 +17,24 @@ struct UIKitKeyboard {
     var correction = UITextAutocorrectionType.default
     var prediction = UITextInlinePredictionType.default
 
-    init(spellChecked: Bool, predicted: Bool, purpose: InputPurpose?) {
-        spellChecking = spellChecked ? .yes : .no
-        correction = predicted ? .yes : .no
-        prediction = predicted ? .yes : .no
-        switch purpose ?? .default {
-        case .default: break
-        case .text: capitalization = .sentences
-        case .plain:
-            (spellChecking, correction, prediction, capitalization) = (.no, .no, .no, .none)
-        case .chat: keyboardType = .default
-        case .email: (keyboardType, content, capitalization) = (.emailAddress, .emailAddress, .none)
-        case .numeric: keyboardType = .decimalPad
-        case .telephone: (keyboardType, content) = (.phonePad, .telephoneNumber)
-        case .url: (keyboardType, content, capitalization) = (.URL, .URL, .none)
+    init(_ traits: InputTraits) {
+        keyboardType = switch traits.keys {
+        case .words: .default
+        case .email: .emailAddress
+        case .number: .decimalPad
+        case .telephone: .phonePad
+        case .url: .URL
         }
+        content = switch traits.keys {
+        case .email: .emailAddress
+        case .telephone: .telephoneNumber
+        case .url: .URL
+        case .words, .number: nil
+        }
+        capitalization = traits.capitals == .none ? .none : .sentences
+        spellChecking = traits.checksSpelling ? .yes : .no
+        correction = traits.corrects ? .yes : .no
+        prediction = traits.predicts ? .yes : .no
     }
 
     func apply(to field: UITextField) {
