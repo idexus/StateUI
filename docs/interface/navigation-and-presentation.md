@@ -113,23 +113,47 @@ it; on an iPad or a wide tablet it stands beside the detail.
 
 ## Modal pages
 
-Modal presentation belongs to the window. `ModalStack` maps an application
-array to pages and is installed in `WindowSession`:
+Modal presentation is an arrangement of an application array, `ModalStack`,
+standing as a window's page: the page it holds first, and a page presented
+over it for each element of the array:
 
-```swift quote
+```swift
 enum Sheet: Hashable {
     case settings
-    case rename
+    case about
 }
 
-@State private var sheets: [Sheet] = []
-@Environment private var window: WindowSession
+struct Home: ContentView {
+    @Binding var sheets: [Sheet]
 
-.onCreated {
-    window.modalStack = ModalStack($sheets) { sheet in
-        switch sheet {
-        case .settings: SettingsPage(sheets: $sheets)
-        case .rename: RenamePage(sheets: $sheets)
+    var content: any View {
+        Button("Settings").onClicked { sheets.append(.settings) }
+    }
+}
+
+struct Presented: ContentView {
+    let title: String
+    @Binding var sheets: [Sheet]
+
+    var content: any View {
+        VStack {
+            Label(title)
+            Button("Close").onClicked { sheets.removeLast() }
+        }
+    }
+}
+
+struct MainWindow: Window {
+    @State private var sheets: [Sheet] = []
+
+    var page: any Page {
+        ModalStack($sheets) {
+            Home(sheets: $sheets)
+        } destination: { sheet in
+            switch sheet {
+            case .settings: Presented(title: "Settings", sheets: $sheets)
+            case .about: Presented(title: "About", sheets: $sheets)
+            }
         }
     }
 }
@@ -138,30 +162,23 @@ enum Sheet: Hashable {
 Appending presents, removing dismisses, and the last element is on top. A
 native dismissal truncates the bound array to the number of pages still
 presented. A modal page therefore carries its own dismissal route by receiving
-the binding.
-
-The stack belongs to the window rather than to whichever page happened to
-present it. Replacing or closing that window tears down every modal it owns.
+the binding. The stack is the window's page, so its sheets stand over
+everything the window shows; closing the window tears down every page it
+presents.
 
 ## Over every page
 
-A window lays views of the application's over its page and every page
-presented over it - a notice that stays while the pages change under it. They
-are the window's too, `window.overlays`, each under a key the application
-declares:
+A view declares what it lays over the window with `.overlays { }`, built
+with the state it follows - a notice comes and goes with its state:
 
 ```swift
-extension OverlayKey {
-    static let offline = OverlayKey("offline")
-}
-
 struct OfflineNotice: ContentView {
-    @Environment private var window: WindowSession
+    @Binding var shown: Bool
 
     var content: any View {
         HStack {
             Label("Working offline")
-            Button("Dismiss").onClicked { window.overlays[.offline] = nil }
+            Button("Dismiss").onClicked { shown = false }
         }
         .spacing(12)
         .horizontalAlignment(.center)
@@ -170,24 +187,27 @@ struct OfflineNotice: ContentView {
 }
 
 struct LibraryPage: ContentView {
-    @Environment private var window: WindowSession
     @State private var offline = false
 
     var content: any View {
         Switch($offline)
-            .onChanged(offline) { window.overlays[.offline] = offline ? OfflineNotice() : nil }
+            .overlays {
+                if offline {
+                    OfflineNotice(shown: $offline)
+                }
+            }
     }
 }
 ```
 
-The layers stand in one ZStack, each written later over the ones before, and
-`.zIndex` on a layer's view reorders them. A key is the layer's identity: a
-view written again under it replaces the one there in its place, and the
-other layers keep their controls as it comes and goes. Each view has the
-page's whole area and stands where its alignments put it. A click beside it
-goes on to what is under it; a layout of its own that fills the area passes a
-click on with `.letsInputThrough(true)`. `nil` takes a layer away. A docked
-inspector is one of these layers, over every other.
+Declared on a window's page, the overlays stand over every page the window
+shows and every sheet over it, and live as long as the window; declared on a
+page, they stand while that page is shown and go with it - a page pushed over
+it takes them away, and going back brings them again. Those declared further
+in stand over those declared around them, and `.zIndex` reorders the views of
+one declaration. Each view has the window's whole area and stands where its
+alignments put it. A click beside it goes on to what is under it. A docked
+inspector stands over every overlay.
 
 ## Page titles and navigation furniture
 

@@ -20,7 +20,7 @@ final class AppKitWindowContentTests: XCTestCase {
         placed.horizontal = 2
         placed.vertical = 3
         placed.width = 60
-        content.set(page: page, overlay: AppKitLayoutItem(view: panel, values: placed))
+        content.set(page: page, overlays: [AppKitLayoutItem(view: panel, values: placed)])
         content.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(page.frame, content.bounds)
@@ -34,9 +34,9 @@ final class AppKitWindowContentTests: XCTestCase {
         let page = NSView()
         let panel = NSButton()
         let content = AppKitWindowContentView()
-        content.set(page: page, overlay: AppKitLayoutItem(view: panel))
+        content.set(page: page, overlays: [AppKitLayoutItem(view: panel)])
 
-        content.set(page: page, overlay: nil)
+        content.set(page: page, overlays: [])
 
         XCTAssertTrue(page.superview === content)
         XCTAssertNil(panel.superview)

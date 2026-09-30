@@ -58,9 +58,6 @@ public enum WindowContract: ElementContract {
     public static let minimumWidth = ElementProperty<Self, Double>(
         "minimumWidth", layer: .native, moves: .width)
 
-    /// A modal went without being told to, leaving this many presented.
-    public static let modalPopped = ElementEvent<Self, Int>("modalPopped", layer: .adaptive)
-
     /// The window came back from out of sight.
     public static let resumed = ElementEvent<Self, Void>("resumed", layer: .adaptive)
 
@@ -90,7 +87,6 @@ public enum WindowContract: ElementContract {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         activated, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
-        isMinimizable, isTranslucent, maximumHeight, maximumWidth, minimumHeight, minimumWidth, modalPopped,
-        resumed, stopped, title, width, windowType, windowValue, x, y,
+        isMinimizable, isTranslucent, maximumHeight, maximumWidth, minimumHeight, minimumWidth, resumed, stopped, title, width, windowType, windowValue, x, y,
     ]
 }

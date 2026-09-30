@@ -40,7 +40,7 @@ final class GTKRenderer {
     /// The window the first window element shows in; nil before it says it is there.
     private(set) var window: GTKWindow?
 
-    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlay, and that it was made.
+    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlays, and that it was made.
     private let presentation = WindowPresentation()
 
     /// Whether the screen the window stands on has been told.
@@ -133,7 +133,7 @@ final class GTKRenderer {
                 window.show(arrangement?.gtk.view)
             }
         }
-        if let overlay = changes.overlay { window.showOverlay(overlay?.gtk.view) }
+        if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
         refreshChrome()
     }
 

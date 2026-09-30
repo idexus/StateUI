@@ -43,13 +43,13 @@ and restored with it.
 
 ## Where it docks
 
-A docked inspector is one of the scene's main window's overlays: its panel is
-written into the window's session under `OverlayKey.inspector`, with a
-`zIndex` over every other layer, whenever it docks, moves or leaves - the
-window reads its overlays, so it builds again then. The panel is a layout
-that takes no touches of its own, laid over the whole window: a touch
-anywhere the panel is not goes through to the page under it, so the
-application can be used while it is watched. A panel at the side starts under
+A docked inspector is the scene's main window's own overlay: where it docks
+is a value of the window's session (`dockedInspector`), written whenever it
+docks, moves or leaves; the window reads it, so it builds again then, and
+lays the panel after every overlay a page declares - over all of them. The
+panel is a layout that takes no touches of its own, laid over the whole
+window: a touch anywhere the panel is not goes through to the page under it,
+so the application can be used while it is watched. A panel at the side starts under
 the page's bar, keeping the page's own buttons - its ⓘ among them - in reach. The buttons at the end of the bottom line are
 drawn rather than typed, because a font without the glyph draws an empty box.
 

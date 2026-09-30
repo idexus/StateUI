@@ -143,6 +143,10 @@ final class Navigation {
     /// platforms make it one: a sheet may present a sheet.
     @State var sheets: [Sheet] = []
 
+    /// Whether the window's notice stands over every page - the Window
+    /// overlay sample's switch, the window's own declaration.
+    @State var windowNotice = false
+
     /// The tabs the demonstration is showing, in order - the LIST a
     /// `TabbedView` is built over, held as state so that the user can change
     /// it while a tab is selected. See `TabsControls`.

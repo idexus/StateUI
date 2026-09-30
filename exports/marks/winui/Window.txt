@@ -15,7 +15,6 @@ Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.modalPopped: ✅
 Window.resumed: ✅
 Window.stopped: ✅
 Window.title: ✅

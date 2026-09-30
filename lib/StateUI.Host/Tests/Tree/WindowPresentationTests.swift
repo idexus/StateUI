@@ -27,12 +27,68 @@ final class WindowPresentationTests: XCTestCase {
         XCTAssertEqual(first.arrangement?.shown?.id, .manual("page"))
         XCTAssertNil(first.arrangement?.previous)
         XCTAssertEqual(told, [5])
-        XCTAssertTrue(first.overlay == nil, "no overlay, before or now: nothing to say")
+        XCTAssertNil(first.overlays, "no overlay, before or now: nothing to say")
 
         let again = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
         XCTAssertNil(again.arrangement)
-        XCTAssertTrue(again.overlay == nil, "nothing new to lay over")
+        XCTAssertNil(again.overlays, "nothing new to lay over")
         XCTAssertEqual(told, [5], "told it was made once")
+    }
+
+    private func node(_ id: String, _ type: NodeType, _ children: [HostPatch] = []) -> HostPatch {
+        var patch = HostPatch(id: .manual(id), type: type)
+        patch.children = .arranged(children)
+        return patch
+    }
+
+    /// An overlay declared with `layer`.
+    private func overlay(_ id: String) -> HostPatch {
+        node(id, .overlay, [node("\(id).layer", .zStack)])
+    }
+
+    /// A modal stack standing as a window's page: its root is what the window shows, its other pages the sheets over
+    /// it, the last on top.
+    func testAModalStackShowsItsRootUnderItsSheets() throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(node("window", .window, [
+            node("modal", .modalStack, [
+                node("stack", .navigationStack, [node("home", .page)]), node("first", .page), node("second", .page),
+            ]),
+        ]), complete: true)
+
+        let changes = WindowPresentation().show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
+        XCTAssertEqual(changes.arrangement?.shown?.id, .manual("stack"))
+        XCTAssertEqual(changes.sheets?.map(\.id), [.manual("first"), .manual("second")])
+    }
+
+    /// The overlays a window lays: those its shown path declares, the outer under the inner, then each sheet's, then
+    /// the library's own over every other; a page pushed over another takes that page's away.
+    func testTheOverlaysOfAWindowStandInThePathsOrder() throws {
+        let runtime = HostRuntime.still()
+        func tree(pushed: Bool) -> HostPatch {
+            node("window", .window, [
+                node("modal", .modalStack, [
+                    node("stack", .navigationStack, [
+                        node("home", .page, [node("content", .vStack, [node("words", .label), overlay("home's")])]),
+                    ] + (pushed ? [node("detail", .page)] : []) + [overlay("stack's")]),
+                    node("sheet", .page, [overlay("sheet's")]),
+                ]),
+                overlay("inspector"),
+            ])
+        }
+        runtime.tree.apply(tree(pushed: false), complete: true)
+        let presentation = WindowPresentation()
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        let first = presentation.show(root, in: runtime.lifecycle)
+        XCTAssertEqual(first.overlays?.map(\.id), [
+            .manual("stack's"), .manual("home's"), .manual("sheet's"), .manual("inspector"),
+        ])
+
+        runtime.tree.apply(tree(pushed: true), complete: true)
+        let pushed = presentation.show(root, in: runtime.lifecycle)
+        XCTAssertEqual(pushed.overlays?.map(\.id), [.manual("stack's"), .manual("sheet's"), .manual("inspector")],
+                       "the home page's went with it")
     }
 
     /// A window's place and size are four requests, each said alone where the tree changed it; one it keeps, or

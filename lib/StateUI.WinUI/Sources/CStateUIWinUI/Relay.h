@@ -199,7 +199,7 @@ namespace stateui {
         return nullptr;
     }
 
-    /// Whether `element` is one of a window's layers over its rows - its sheets or its overlay - and no row's own.
+    /// Whether `element` is one of a window's layers over its rows - its sheets or its overlays - and no row's own.
     inline bool isLayer(xaml::FrameworkElement const &element) {
         auto name = winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"");
         return name == L"sheets" || name == L"overlay";

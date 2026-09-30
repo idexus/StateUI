@@ -101,9 +101,9 @@ extension Window {
     private func composed(session: @escaping () -> WindowSession) -> Node {
         Node.composed(self, type: String(reflecting: Self.self)) {
             let session = session()
-            let overlay = Node.overlay(session.overlays)
+            let overlay = Node.overlay(inspector: session.dockedInspector, of: session.record?.id)
 
-            // Its page, the title bar and modal stack, the overlay: one order.
+            // Its page, the title bar, the library's overlay: one order.
             // Design: docs/design/views/pages.md#the-children-of-a-window
             var node = Node(
                 contract: WindowContract.self,
@@ -119,27 +119,21 @@ extension Window {
             node.addHandler(WindowContract.resumed.token) { session.phase = .resumed }
             node.addHandler(WindowContract.destroying.token) { session.phase = .destroying }
 
-            if let stack = session.modalStack { node.addHandler(WindowContract.modalPopped.token, stack.popped) }
-
             return node
         }
     }
 }
 
 extension Node {
-    /// What a window lays over its page and the pages presented over it: one ZStack of its overlays, each under
-    /// its key, so a layer keeps its elements as the others come and go; nil for none.
+    /// What the library lays over a window, over every overlay a page declares: the scene's inspector, docked
+    /// at `place`; nil where none is.
     /// Design: docs/design/views/pages.md#the-children-of-a-window
-    static func overlay(_ overlays: WindowOverlays) -> Node? {
-        guard !overlays.layers.isEmpty else { return nil }
+    static func overlay(inspector place: Inspector.Place?, of scene: String?) -> Node? {
+        guard let place, let scene else { return nil }
 
-        var stack = ZStack().letsInputThrough(true).node
-        stack.children = overlays.layers.map { key, view in
-            var node = view.body
-            node.key = key.name
-            return node
-        }
-        return Node(contract: OverlayContract.self, children: [stack])
+        var layer = ZStack().letsInputThrough(true).node
+        layer.children = [InspectorPanel(scene: scene, place: place).body]
+        return Node(contract: OverlayContract.self, children: [layer])
     }
 }
 

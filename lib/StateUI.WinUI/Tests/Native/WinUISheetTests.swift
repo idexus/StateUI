@@ -12,26 +12,28 @@ private enum Sheet: Hashable {
     case first, second
 }
 
-/// A page that presents sheets over its window, saying where it stands.
+/// The page beneath the window's sheets, presenting the first and saying where it stands.
 private struct SheetsPage: ContentView {
     let log: Received<String>
-    @State private var sheets: [Sheet] = []
-    @Environment private var window: WindowSession
+    @Binding var sheets: [Sheet]
     @Environment private var page: PageSession
 
     var content: any View {
-        let log = log
-        let window = window
-        let page = page
-        let sheets = $sheets
+        let (log, page, sheets) = (log, page, $sheets)
         return VStack {
             Label("beneath")
             Button("Present").onClicked { sheets.wrappedValue.append(.first) }
         }
-        .onCreated {
-            window.modalStack = ModalStack(sheets) { sheet in SheetPage(name: "\(sheet)", sheets: sheets) }
-        }
         .onChanged(page.phase) { log.values.append("beneath \(page.phase)") }
+    }
+}
+
+/// The window's sheets over a page saying where it stands.
+private func sheetsOver(_ sheets: State<[Sheet]>, log: Received<String>) -> ModalStack {
+    ModalStack(sheets.projectedValue) {
+        SheetsPage(log: log, sheets: sheets.projectedValue)
+    } destination: { sheet in
+        SheetPage(name: "\(sheet)", sheets: sheets.projectedValue)
     }
 }
 
@@ -57,8 +59,8 @@ final class WinUISheetTests: XCTestCase {
     /// window hears how many remain, and the page beneath shows again.
     func testEscapeAndTheWayBackTakeTheTopSheetAway() throws {
         try onUIThread {
-            let log = Received<String>()
-            let host = WinUIRenderer.running { SheetsPage(log: log) }
+            let (sheets, log) = (State(wrappedValue: [Sheet]()), Received<String>())
+            let host = WinUIRenderer.running { sheetsOver(sheets, log: log) }
             let window = try XCTUnwrap(host.window)
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }

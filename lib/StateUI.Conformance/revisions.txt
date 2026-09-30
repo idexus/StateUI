@@ -21,3 +21,6 @@ ToolbarItem 3
 ToolbarItems 2
 TitleView 2
 MenuBar 2
+Window 2
+ModalStack 2
+Overlay 2

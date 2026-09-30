@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `OverlayContract` on a host: a view laid over the window stands over its page and over a sheet presented after
-/// it, a press beside it reaches the page, and nothing is left once the tree takes it away.
+/// `OverlayContract` on a host: a view a page declares over the window stands over its page, a press beside it
+/// reaches the page, nothing is left once the tree takes it away, it goes with the page declaring it, and one
+/// declared further in stands over those declared around it.
 @_spi(Host) public enum OverlayTests: ConformanceFamily {
     public static let name = "Overlay"
 
@@ -21,6 +22,8 @@
                 try s.perform(.activate, on: s.element("show"))
                 try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("notice")) == true }
                 let over = try s.element("notice")
+                // A view coming into a layer standing already fades in: pressed once it stands.
+                try s.settle { try s.reaches(over, at: Point(40, 10)) }
                 s.expect(try s.reaches(over, at: Point(40, 10)), true, "the overlay takes a press on it")
                 s.expect(try s.reaches(beneath, at: Point(5, 200)), true, "a press beside it reaches the page")
 
@@ -28,23 +31,55 @@
                 s.settle { (try? s.element("notice")) == nil }
                 s.expect((try? s.element("notice")) == nil, true, "gone once the tree takes it away")
             },
+            ConformanceCase("anOverlayGoesWithThePageDeclaringIt", proves: [Covered(OverlayContract.self)]) { s in
+                let path = State(wrappedValue: [Int]())
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        Label("Home").overlays { Label("Home's").width(80).height(20).id("home's") }
+                    } destination: { _ in Label("Pushed") }
+                }
+                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }
+
+                let shown = { (try? s.element("home's")).flatMap { try? s.held(VisualElementContract.isVisible, on: $0) } }
+                path.wrappedValue = [1]
+                s.settle { shown() != true }
+                s.expect(shown() == true, false, "a page pushed over it took it away")
+
+                path.wrappedValue = []
+                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("home's")) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: s.element("home's")), true, "back with its page")
+            },
+            ConformanceCase("anOverlayDeclaredFurtherInStandsOverThoseAround", proves: [
+                Covered(OverlayContract.self),
+            ]) { s in
+                s.start {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Label("Home").overlays {
+                            Label("Inner").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
+                                .id("inner")
+                        }
+                    } destination: { _ in Label("Pushed") }
+                    .overlays {
+                        Label("Outer").width(80).height(40).horizontalAlignment(.start).verticalAlignment(.start)
+                            .id("outer")
+                    }
+                }
+                let (inner, outer) = (try s.element("inner"), try s.element("outer"))
+                try s.settle { try s.held(VisualElementContract.isVisible, on: inner) == true }
+
+                s.expect(try s.reaches(inner, at: Point(10, 10)), true, "the inner one takes the press")
+                s.expect(try s.reaches(outer, at: Point(10, 10)), false, "the outer one stands under it")
+            },
         ]
     }
 }
 
-extension OverlayKey {
-    /// The notice a case lays over its window.
-    fileprivate static let notice = OverlayKey("conformance.notice")
-}
-
-/// A page that lays a notice over its window while a state says so.
+/// A page that declares a notice over its window while a state says so.
 struct OverlaidPage: ContentView {
     let notice: State<Bool>
 
-    @Environment private var window: WindowSession
-
     var content: any View {
-        let (notice, window) = (self.notice, self.window)
+        let notice = notice
         return VStack {
             Button("Show").onClicked { notice.wrappedValue = true }.id("show")
             Button("Hide").onClicked { notice.wrappedValue = false }.id("hide")
@@ -52,10 +87,10 @@ struct OverlaidPage: ContentView {
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
-        .onChanged(notice.wrappedValue) {
-            window.overlays[.notice] = notice.wrappedValue
-                ? Label("Offline").width(80).height(20).horizontalAlignment(.end).verticalAlignment(.start).id("notice")
-                : nil
+        .overlays {
+            if notice.wrappedValue {
+                Label("Offline").width(80).height(20).horizontalAlignment(.end).verticalAlignment(.start).id("notice")
+            }
         }
     }
 }

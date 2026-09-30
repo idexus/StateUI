@@ -153,13 +153,11 @@ public enum Inspector {
         model.settle()
     }
 
-    /// Docks a scene's inspector at `place` in its main window, or nowhere: its panel is one of the window's
-    /// overlays, over every other.
+    /// Docks a scene's inspector at `place` in its main window, or nowhere: a value of the window, whose panel the
+    /// library lays over every overlay a page declares.
     /// Design: docs/design/views/inspector.md#where-it-docks
     private static func dock(_ place: Place?, in record: SceneRecord) {
         InspectorModel.shared.places[record.id] = place
-        record.windowSession(SceneElement.mainKey).overlays[.inspector] = place.map {
-            InspectorPanel(scene: record.id, place: $0).zIndex(Int(Int32.max))
-        }
+        record.windowSession(SceneElement.mainKey).dockedInspector = place
     }
 }

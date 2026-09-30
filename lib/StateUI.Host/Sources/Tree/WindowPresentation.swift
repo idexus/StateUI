@@ -17,8 +17,8 @@
         /// The pages its modal stack presents as sheets, the last on top, where they changed.
         public var sheets: [MountedElement]?
 
-        /// What the window lays over its pages now, where that changed: the element, or nil for nothing.
-        public var overlay: MountedElement??
+        /// What the window lays over its pages and sheets now, where that changed: each layer, the first lowest.
+        public var overlays: [MountedElement]?
 
         /// The place and size the tree changed, each alone; nil where it changed none.
         public var frame: WindowFrame?
@@ -44,8 +44,8 @@
     /// The pages shown as sheets over it, the last on top.
     public private(set) var sheets: [MountedElement] = []
 
-    /// What is laid over the pages.
-    public private(set) var overlay: MountedElement?
+    /// What is laid over the pages and sheets, each layer an overlay element, the first lowest.
+    public private(set) var overlays: [MountedElement] = []
     private weak var created: MountedElement?
     private var requested = WindowFrame()
     private var bounds: WindowBounds?
@@ -66,21 +66,24 @@
         let previousVisible = sheets.last ?? arrangement
         let hadSheets = !sheets.isEmpty
 
-        let arrangement = window.children.first { NodeType.pageTypes.contains($0.type) }
+        // A modal stack standing as the window's page: its root is what the window shows, its other pages the sheets.
+        // Design: docs/design/host/tree.md#a-window-shown
+        let page = window.children.first { NodeType.pageTypes.contains($0.type) }
+        let modalStack = page?.type == .modalStack ? page : nil
+        let arrangement = modalStack?.children.first ?? page
         if arrangement !== self.arrangement {
             changes.arrangement = (self.arrangement, arrangement)
             self.arrangement = arrangement
         }
-        let sheets = window.children.first { $0.type == .modalStack }?.children
-            .filter { NodeType.pageTypes.contains($0.type) } ?? []
+        let sheets = modalStack.map { Array($0.children.dropFirst()) } ?? []
         if !sheets.elementsEqual(self.sheets, by: ===) {
             changes.sheets = sheets
             self.sheets = sheets
         }
-        let overlay = window.children.first { $0.type == .overlay }
-        if overlay !== self.overlay {
-            changes.overlay = .some(overlay)
-            self.overlay = overlay
+        let overlays = Self.overlays(of: window, over: [arrangement].compactMap { $0 } + sheets)
+        if !overlays.elementsEqual(self.overlays, by: ===) {
+            changes.overlays = overlays
+            self.overlays = overlays
         }
         let requested = WindowFrame(of: window)
         let frame = requested.changes(since: self.requested)
@@ -129,5 +132,13 @@
             return top.visibleBackStack.map(WayBack.pop) ?? .dismissSheet(remaining: sheets.count - 1)
         }
         return arrangement?.visibleBackStack.map(WayBack.pop)
+    }
+
+    /// The layers laid over `window`, the first lowest: those declared along the path of each page it shows - the
+    /// arrangement's, then each sheet's - the outer under the inner, then the library's own, over every other.
+    /// Design: docs/design/host/pages.md#the-overlays-of-a-window
+    private static func overlays(of window: MountedElement, over shown: [MountedElement]) -> [MountedElement] {
+        shown.flatMap { $0.visiblePage?.declared(.overlay).map(\.element) ?? [] }
+            + window.children.filter { $0.type == .overlay }
     }
 }

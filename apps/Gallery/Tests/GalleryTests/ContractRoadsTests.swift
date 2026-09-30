@@ -182,7 +182,15 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "the window's one overlay",
             removed: "WindowSession().overlay = nil",
-            contract: #"WindowSession().overlays[OverlayKey("notice")] = nil"#),
+            contract: #"_ = Label("Notes").overlays { Label("Offline") }"#),
+        Road(
+            name: "a window's overlays kept by key in its session",
+            removed: #"WindowSession().overlays[OverlayKey("notice")] = nil"#,
+            contract: #"_ = Label("Notes").overlays { Label("Offline") }"#),
+        Road(
+            name: "a window's modal stack written into its session",
+            removed: #"WindowSession().modalStack = nil"#,
+            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }"#),
         Road(
             name: "a page's actions written into its session",
             removed: #"PageSession().toolbarItems = [ToolbarItem("Save")]"#,

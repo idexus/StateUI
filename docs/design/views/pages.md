@@ -81,27 +81,29 @@ the window's own `@Environment` resolves it as well as everything under it.
 
 ## The children of a window
 
-A window node's children are its page, then what hangs off it - the title bar
-and the modal stack, read off the session as the window builds - then its
-overlay. The host finds them by type, so the order is this side's to settle,
-and one order makes the window's children the same list in every run.
+A window node's children are its page, then what hangs off it - the title bar,
+read off the session as the window builds - then the library's own overlay.
+The host finds them by type, so the order is this side's to settle, and one
+order makes the window's children the same list in every run.
 
 ```text
   Window
-   ├── Page          the window's page
+   ├── ModalStack    the window's page, here a modal stack
+   │    ├── Page         what it holds
+   │    └── Page …       its sheets, the last on top
    ├── TitleBar      from WindowSession.titleBar
-   ├── ModalStack    from WindowSession.modalStack
-   └── Overlay
-        └── ZStack       lets a click beside its layers through
-             ├── …           WindowSession.overlays, each keyed by its OverlayKey's name
-             └── panel       a docked inspector's, OverlayKey.inspector, zIndex over every other
+   └── Overlay       the library's: a docked inspector's panel
+        └── ZStack       lets a click beside it through
 ```
 
-The overlay is one node however many layers it holds, so a host lays one view
-over the page and the sheets. Each layer is keyed by its `OverlayKey`, so a
-layer coming or going leaves the others the elements they were. The inspector
-docks by writing its own layer into its main window's session like any other,
-the one road to the stack.
+What a page lays over the window is declared on it (`.overlays { }`): an
+overlay node after the declaring element's own children, holding one ZStack
+of the views, so a view coming or going leaves the others the elements they
+were. The host lays the overlays of the path it shows - the outer under the
+inner - and the library's own over them all
+([the overlays of a window](../host/pages.md#the-overlays-of-a-window)). The
+inspector docks by a value of its main window (`dockedInspector`), whose
+panel the window lays as it builds.
 
 ## Lifecycle reports one by one
 
@@ -238,7 +240,7 @@ out - its sidebar button, an edge swipe, a tap on the dimmed page - report only
 once the gesture has finished, whatever it settled on, and are written only
 when the value moved.
 
-## The modal stack is a value
+## The modal stack is the state
 
 What is presented over a window is a stack of the author's own values, the
 last on top: presenting is `sheets.append(.settings)`, closing is
@@ -246,15 +248,12 @@ last on top: presenting is `sheets.append(.settings)`, closing is
 call and no completion to await. It is a stack because the platforms make it
 one: a sheet may present a sheet.
 
-`ModalStack` is a value written into `WindowSession.modalStack` rather than a
-modifier: the generic lives in its initializer, so a window's session holds one
-plain `ModalStack` whatever the author's sheet type is. Its pages are built as
-the window builds, from the array as it stands then, so a stack written once
-presents whatever the array says and the window is what builds again when the
-array moves. They sit under a wrapper node of their own, as a page's toolbar
-items do, so the host has a list to keep in step apart from the window's own
-children. The report that a modal has gone is the window's, since the stack
-is the window's.
+`ModalStack` is an arrangement of `NavigationStack`'s shape, standing as a
+window's page: the page it holds first, the sheets after it, each built as
+the arrangement builds from the array as it stands then, so the window is
+what builds again when the array moves. A sheet's identity carries its depth
+and its value, as a stack's page does. The report that a sheet has gone is
+the stack's own (`popped`), with how many remain.
 
 ## What an arrangement does not offer
 

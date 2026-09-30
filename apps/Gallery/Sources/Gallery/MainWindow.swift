@@ -59,97 +59,101 @@ struct MainWindow: Window {
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var page: any Page {
-        SplitView(nav.$menuOpen) {
-            MenuPage(
-                catalog: catalog,
-                nav: nav,
-                log: log,
-                listsHiddenRow: nav.listsHiddenRow)
-        } detail: {
-            detail()
-        }
-        // The gallery's own actions, declared once around every page: a page's
-        // own stand nearer the title, and these keep their place at the edge.
-        // Icons give both a stable native footprint; their captions remain
-        // available to accessibility and to platforms that show text.
-        .toolbar(id: "gallery") {
-            ToolbarItem.inspector(scene)
-                .text("Inspector")
-                .icon("nav_inspect_dark.png")
+        // What is over all of it: the pages presented over the split view, the
+        // stack and the bars alike - empty almost always: presenting is
+        // `sheets.append`, and a sheet the user drags down shortens the array
+        // itself.
+        ModalStack(nav.$sheets) {
+            SplitView(nav.$menuOpen) {
+                MenuPage(
+                    catalog: catalog,
+                    nav: nav,
+                    log: log,
+                    listsHiddenRow: nav.listsHiddenRow)
+            } detail: {
+                detail()
+            }
+            // The gallery's own actions, declared once around every page: a page's
+            // own stand nearer the title, and these keep their place at the edge.
+            // Icons give both a stable native footprint; their captions remain
+            // available to accessibility and to platforms that show text.
+            .toolbar(id: "gallery") {
+                ToolbarItem.inspector(scene)
+                    .text("Inspector")
+                    .icon("nav_inspect_dark.png")
 
-            if !nav.showing(.home) {
-                ToolbarItem.home(nav)
+                if !nav.showing(.home) {
+                    ToolbarItem.home(nav)
+                }
             }
-        }
-        // The window's File menu, on every page: Save waits for a page that
-        // saves, which puts its own in its place.
-        .menuBar {
-            Menu("File") {
-                MenuItem("Save")
-                    .id("save")
-                    .isEnabled(false)
+            // The window's notice, over every page while the gallery says so.
+            .overlays {
+                if nav.windowNotice {
+                    WindowNotice(words: "Over every page", shown: nav.$windowNotice)
+                }
             }
-            .id(StandardMenu.file)
-        }
-        // A size and a minimum: the size is the window's as it opens, the
-        // minimum how small the user may drag it before the layout stops
-        // making sense. A phone ignores both, an app there being the whole
-        // screen - and there is no `x` or `y` on purpose: pinning an app to
-        // the same corner of the screen at every launch is worse than letting
-        // the platform place it.
-        .onCreated {
-            window.title = "StateUI Gallery"
-            window.width = 1100
-            window.height = 800
-            #if APPKIT
-            // The AppKit window shows the desktop through it from the start, in
-            // the accent's tint.
-            window.isTranslucent = true
-            #endif
-            window.minimumWidth = 700
-            window.minimumHeight = 500
-            window.maximumWidth = 1600
-            window.maximumHeight = 1200
-            window.isMaximizable = true
-            window.isMinimizable = true
+            // The window's File menu, on every page: Save waits for a page that
+            // saves, which puts its own in its place.
+            .menuBar {
+                Menu("File") {
+                    MenuItem("Save")
+                        .id("save")
+                        .isEnabled(false)
+                }
+                .id(StandardMenu.file)
+            }
+            // A size and a minimum: the size is the window's as it opens, the
+            // minimum how small the user may drag it before the layout stops
+            // making sense. A phone ignores both, an app there being the whole
+            // screen - and there is no `x` or `y` on purpose: pinning an app to
+            // the same corner of the screen at every launch is worse than letting
+            // the platform place it.
+            .onCreated {
+                window.title = "StateUI Gallery"
+                window.width = 1100
+                window.height = 800
+                #if APPKIT
+                // The AppKit window shows the desktop through it from the start, in
+                // the accent's tint.
+                window.isTranslucent = true
+                #endif
+                window.minimumWidth = 700
+                window.minimumHeight = 500
+                window.maximumWidth = 1600
+                window.maximumHeight = 1200
+                window.isMaximizable = true
+                window.isMinimizable = true
 
-            // Authored window chrome is meaningful on a desktop host, and
-            // there the menu is a sidebar beside the page.
-            if device.formFactor == .desktop {
-                window.titleBar = chrome
-                nav.menuOverlays = false
-            }
+                // Authored window chrome is meaningful on a desktop host, and
+                // there the menu is a sidebar beside the page.
+                if device.formFactor == .desktop {
+                    window.titleBar = chrome
+                    nav.menuOverlays = false
+                }
 
-            // What is over all of it: a second arranged list on the window,
-            // holding the pages presented over the split view, the stack and the
-            // bars alike. Written once - it reads the array as the window
-            // builds - and empty almost always: presenting is
-            // `sheets.append`, and a sheet the user drags down truncates
-            // the array itself.
-            window.modalStack = ModalStack(nav.$sheets) { _ in
-                ModalPage(nav: nav)
+                log.note("created")
             }
-
-            log.note("created")
-        }
-        // The chrome is painted in the gallery's accent, which the Colours
-        // window chooses - so the bar is written again when it moves.
-        .onChanged(style.accent.color) {
-            if device.formFactor == .desktop {
-                window.titleBar = chrome
+            // The chrome is painted in the gallery's accent, which the Colours
+            // window chooses - so the bar is written again when it moves.
+            .onChanged(style.accent.color) {
+                if device.formFactor == .desktop {
+                    window.titleBar = chrome
+                }
             }
-        }
-        .onChanged(bar.subtitle) {
-            if device.formFactor == .desktop {
-                window.titleBar = chrome
+            .onChanged(bar.subtitle) {
+                if device.formFactor == .desktop {
+                    window.titleBar = chrome
+                }
             }
-        }
-        // And again when the desktop starts or stops showing through the
-        // window, the bars letting it through with the rest.
-        .onChanged(window.isTranslucent) {
-            if device.formFactor == .desktop {
-                window.titleBar = chrome
+            // And again when the desktop starts or stops showing through the
+            // window, the bars letting it through with the rest.
+            .onChanged(window.isTranslucent) {
+                if device.formFactor == .desktop {
+                    window.titleBar = chrome
+                }
             }
+        } destination: { _ in
+            ModalPage(nav: nav)
         }
     }
 

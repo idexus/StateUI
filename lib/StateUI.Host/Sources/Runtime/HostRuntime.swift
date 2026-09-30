@@ -176,7 +176,7 @@
     }
 
     /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
-    /// the window told how many remain.
+    /// the modal stack told how many remain.
     /// Design: docs/design/host/pages.md#the-way-back
     public func goBack(_ way: WayBack, in window: MountedElement) {
         switch way {
@@ -184,7 +184,8 @@
             guard stack.children.count > 1, let handler = stack.handler(.popped) else { return }
             dispatch(handler, payload: [.number(Double(stack.children.count - 2))])
         case .dismissSheet(let remaining):
-            guard let handler = window.handler(.modalPopped) else { return }
+            let stack = window.children.first { $0.type == .modalStack }
+            guard let handler = stack?.handler(.popped) else { return }
             dispatch(handler, payload: [.number(Double(remaining))])
         }
     }

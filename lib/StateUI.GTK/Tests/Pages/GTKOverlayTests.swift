@@ -8,53 +8,60 @@ import CStateUIGTK
 import StateUIConformance
 import XCTest
 
-extension OverlayKey {
-    fileprivate static let notice = OverlayKey("notice")
-}
-
-/// A page filled by a button, laying a notice over its window from a state, which tells its scene.
+/// A page filled by a button, declaring a notice over its window while a state says so.
 private struct OverlaidPage: ContentView {
-    let scenes: Received<SceneSession>
-    var notice = State(wrappedValue: false)
-    @Environment private var window: WindowSession
-    @Environment private var scene: SceneSession
+    let notice: State<Bool>
 
     var content: any View {
-        let (scenes, notice, window, scene) = (self.scenes, self.notice, self.window, self.scene)
+        let notice = notice
         return Button("Beneath")
             .horizontalAlignment(.fill)
             .verticalAlignment(.fill)
-            .onCreated { scenes.values.append(scene) }
-            .onChanged(notice.wrappedValue) {
-                window.overlays[.notice] = notice.wrappedValue
-                    ? Label("Offline").horizontalAlignment(.center).verticalAlignment(.start) : nil
+            .overlays {
+                if notice.wrappedValue {
+                    Label("Offline").horizontalAlignment(.center).verticalAlignment(.start)
+                }
             }
     }
 }
 
+/// A page filled by a button, which tells its scene.
+private struct ScenePage: ContentView {
+    let scenes: Received<SceneSession>
+    @Environment private var scene: SceneSession
+
+    var content: any View {
+        let (scenes, scene) = (self.scenes, self.scene)
+        return Button("Beneath")
+            .horizontalAlignment(.fill)
+            .verticalAlignment(.fill)
+            .onCreated { scenes.values.append(scene) }
+    }
+}
+
 final class GTKOverlayTests: XCTestCase {
-    /// The application's own overlay stands over the page where its alignments put it; a click beside it reaches
-    /// the page, and nil takes it away.
-    func testTheApplicationsOverlayStandsOverThePage() throws {
+    /// An overlay the page declares stands over it where its alignments put it; a click beside it reaches the page,
+    /// and the tree taking it away takes it off the window.
+    func testAnOverlayThePageDeclaresStandsOverThePage() throws {
         try onUIThread {
             let notice = State(wrappedValue: false)
-            let host = GTKRenderer.running { OverlaidPage(scenes: Received(), notice: notice) }
-            let window = try XCTUnwrap(host.window)
+            let host = GTKRenderer.running { OverlaidPage(notice: notice) }
             let beneath = try XCTUnwrap(host.views(GTKButtonView.self).first)
-            XCTAssertNil(window.overlay)
+            let offline = { host.views(GTKLabelView.self).first { $0.text == "Offline" } }
+            XCTAssertNil(offline())
 
             notice.wrappedValue = true
-            host.settle { window.overlay != nil }
+            host.settle { offline() != nil }
             host.layOut()
-            let words = try XCTUnwrap(host.views(GTKLabelView.self).first { $0.text == "Offline" })
+            let words = try XCTUnwrap(offline())
             let size = beneath.frame
             XCTAssertEqual(words.frame.y, 0, "at the top, where its alignment puts it")
             XCTAssertTrue(words.reaches(words.frame.width / 2, words.frame.height / 2))
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height / 2), "a click beside it reaches the page")
 
             notice.wrappedValue = false
-            host.settle { window.overlay == nil }
-            XCTAssertNil(window.overlay)
+            host.settle { offline() == nil }
+            XCTAssertNil(offline())
         }
     }
 
@@ -63,7 +70,7 @@ final class GTKOverlayTests: XCTestCase {
     func testTheWindowsOverlayStandsOverItsPageLettingAClickBesideItThrough() throws {
         try onUIThread {
             let scenes = Received<SceneSession>()
-            let host = GTKRenderer.running { OverlaidPage(scenes: scenes) }
+            let host = GTKRenderer.running { ScenePage(scenes: scenes) }
             let window = try XCTUnwrap(host.window)
             let scene = try XCTUnwrap(scenes.values.last)
             defer { Inspector.close(in: scene) }
@@ -72,9 +79,9 @@ final class GTKOverlayTests: XCTestCase {
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height - 20), "nothing over the page yet")
 
             Inspector.open(in: scene)
-            host.settle { window.overlay != nil }
+            host.settle { !window.overlays.isEmpty }
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? GTKElement)?.view)
-            XCTAssertTrue(window.overlay === overlay)
+            XCTAssertTrue(window.overlays.elementsEqual([overlay], by: ===))
             host.layOut()
             XCTAssertFalse(beneath.reaches(size.width / 2, size.height - 20), "the folded inspector along the bottom")
             let strip = beneath.point(size.width / 2, size.height - 20, in: overlay)
@@ -82,8 +89,8 @@ final class GTKOverlayTests: XCTestCase {
             XCTAssertTrue(beneath.reaches(size.width / 2, 20), "a click beside it reaches the page")
 
             Inspector.close(in: scene)
-            host.settle { window.overlay == nil }
-            XCTAssertNil(window.overlay)
+            host.settle { window.overlays.isEmpty }
+            XCTAssertTrue(window.overlays.isEmpty)
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height - 20), "taken out of the window")
         }
     }

@@ -1,5 +1,4 @@
-# revision 1.1
-ModalStack: ✅
+# revision 2.1
 Window: ✅
 Window.activated: ✅
 Window.created: ✅
@@ -15,7 +14,6 @@ Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.modalPopped: 🔌 goBack on Window: the host's toolbar or sheet entry called, no toolbar item or sheet touched
 Window.resumed: 🔌 minimize on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.stopped: 🔌 minimize on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.title: ✅

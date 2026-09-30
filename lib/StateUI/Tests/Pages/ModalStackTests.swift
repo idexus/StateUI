@@ -4,13 +4,11 @@
 // What is presented over the window, as Swift describes it.
 //
 // A modal stack is an array the author holds, exactly as a navigation path is,
-// and it rides as a list of pages under one wrapper node beside the window's
-// own page. The page underneath hands the window its stack as it comes into
-// the tree - written once into the window's session, the stack reads the array
-// every time the window builds - and what it and the sheets write as they
-// arrive is in the message that brings them, which is what `Renders.settled`
-// answers. Coming back there is one report, and it says how many are STILL
-// presented - the sheet the user dragged down has already gone.
+// and it is an arrangement of that shape: the page it holds first, the sheets
+// over it after, as the window's page. What the pages write as they arrive is
+// in the message that brings them, which is what `Renders.settled` answers.
+// Coming back there is one report, and it says how many are STILL presented -
+// the sheet the user dragged down has already gone.
 //
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -22,26 +20,15 @@ private enum Sheet: Hashable {
     case about
 }
 
-/// The page underneath, which is what presents - and what hands its window the
-/// modal stack as it comes into the tree.
+/// The page underneath, which is what presents.
 private struct HomePage: ContentView {
     @Environment private var page: PageSession
-    @Environment private var window: WindowSession
     @Binding var sheets: [Sheet]
 
     var content: any View {
         Button("Settings")
             .onClicked { sheets.append(.settings) }
-            .onCreated {
-                page.title = "Home"
-
-                window.modalStack = ModalStack($sheets) { sheet in
-                    switch sheet {
-                    case .settings: SheetPage(sheets: $sheets, name: "Settings")
-                    case .about: SheetPage(sheets: $sheets, name: "About")
-                    }
-                }
-            }
+            .onCreated { page.title = "Home" }
     }
 }
 
@@ -72,14 +59,22 @@ private struct TestWindow: Window {
     var path: Binding<[Int]>?
 
     var page: any Page {
-        guard let path else { return HomePage(sheets: sheets) }
+        let sheets = sheets
+        return ModalStack(sheets) {
+            guard let path else { return HomePage(sheets: sheets) }
 
-        return NavigationStack(path) {
-            HomePage(sheets: sheets)
-        } destination: { _ in
-            HomePage(sheets: sheets)
+            return NavigationStack(path) {
+                HomePage(sheets: sheets)
+            } destination: { _ in
+                HomePage(sheets: sheets)
+            }
+            .title("Diary")
+        } destination: { sheet in
+            switch sheet {
+            case .settings: SheetPage(sheets: sheets, name: "Settings")
+            case .about: SheetPage(sheets: sheets, name: "About")
+            }
         }
-        .title("Diary")
     }
 }
 
@@ -91,29 +86,29 @@ private func window(_ sheets: Binding<[Sheet]>) -> Window {
 final class ModalStackTests: XCTestCase {
     // MARK: - What goes out
 
-    /// A window with nothing presented still says so: the list is there and it
-    /// is empty, which is what tells the host to dismiss whatever it is still
-    /// holding.
-    func testAWindowWithNothingPresentedCarriesAnEmptyList() {
+    /// A window with nothing presented shows the stack's own page alone - which
+    /// is what tells the host to dismiss whatever it is still holding.
+    func testAWindowWithNothingPresentedShowsTheStacksPageAlone() {
         let sheets = State<[Sheet]>([])
 
         let patch = Renders().settled(window(sheets.projectedValue).body)
 
-        XCTAssertEqual(patch.children.map { $0.type.name }, ["Page", "ModalStack"])
-        XCTAssertEqual(patch.children.last?.children.count, 0)
+        XCTAssertEqual(patch.children.map { $0.type.name }, ["ModalStack"])
+        XCTAssertEqual(patch.children.first?.children.map(\.id), [.manual("root")])
     }
 
-    /// One presented page is one child of the list, and its identity carries
-    /// its DEPTH as well as its value - the rule a navigation stack follows,
-    /// for the reason a stack has it: two identical sheets are two pages.
-    func testAPresentedPageIsAChildOfTheListWearingItsDepth() {
+    /// One presented page is one child after the stack's own, and its identity
+    /// carries its DEPTH as well as its value - the rule a navigation stack
+    /// follows, for the reason a stack has it: two identical sheets are two
+    /// pages.
+    func testAPresentedPageIsAChildOfTheStackWearingItsDepth() {
         let sheets = State<[Sheet]>([.settings, .about])
 
-        let list = Renders().settled(window(sheets.projectedValue).body).children.last
+        let stack = Renders().settled(window(sheets.projectedValue).body).children.first
+        let presented = stack?.children.dropFirst()
 
-        XCTAssertEqual(list?.children.map { $0.id }, [.manual("0/settings"), .manual("1/about")])
-        XCTAssertEqual(list?.children.map { $0.props["title"] },
-                       [.string("Settings"), .string("About")])
+        XCTAssertEqual(presented?.map { $0.id }, [.manual("0/settings"), .manual("1/about")])
+        XCTAssertEqual(presented?.map { $0.props["title"] }, [.string("Settings"), .string("About")])
     }
 
     /// Presenting is appending, and that is the whole of it: the tap on the
@@ -125,16 +120,16 @@ final class ModalStackTests: XCTestCase {
         let renders = Renders()
 
         let first = renders.settled(window(sheets.projectedValue).body)
-        let button = first.children.first?.children.first
+        let button = first.children.first?.children.first?.children.first
 
         XCTAssertTrue(renders.fire(button?.events?["clicked"] ?? -1))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
 
         let patch = renders.settled(
             window(sheets.projectedValue).body, changed: Renderer.shared.pendingChanges)
-        let list = patch.children.first { $0.type == "ModalStack" }
+        let stack = patch.children.first { $0.type == "ModalStack" }
 
-        XCTAssertEqual(list?.children.map { $0.id }, [.manual("0/settings")])
+        XCTAssertEqual(stack?.arrangement, [.manual("root"), .manual("0/settings")], "presented over the stack's page")
     }
 
     /// And closing is the array getting shorter. The button is on the SHEET,
@@ -146,7 +141,7 @@ final class ModalStackTests: XCTestCase {
 
         let first = renders.settled(window(sheets.projectedValue).body)
         let close = first.children.first { $0.type == "ModalStack" }?
-            .children.first?.children.first
+            .children.last?.children.first
 
         XCTAssertTrue(renders.fire(close?.events?["clicked"] ?? -1))
         XCTAssertEqual(sheets.wrappedValue, [])
@@ -154,7 +149,7 @@ final class ModalStackTests: XCTestCase {
         let patch = renders.settled(
             window(sheets.projectedValue).body, changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(patch.children.first { $0.type == "ModalStack" }?.children.count, 0)
+        XCTAssertEqual(patch.children.first { $0.type == "ModalStack" }?.arrangement, [.manual("root")])
     }
 
     // MARK: - What comes back
@@ -167,7 +162,7 @@ final class ModalStackTests: XCTestCase {
 
         let patch = renders.settled(window(sheets.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["modalPopped"] ?? -1, with: [.number(0)]))
+        XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(0)]))
         XCTAssertEqual(sheets.wrappedValue, [])
     }
 
@@ -179,7 +174,7 @@ final class ModalStackTests: XCTestCase {
 
         let patch = renders.settled(window(sheets.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["modalPopped"] ?? -1, with: [.number(1)]))
+        XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(1)]))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
     }
 
@@ -192,7 +187,7 @@ final class ModalStackTests: XCTestCase {
 
         let patch = renders.settled(window(sheets.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["modalPopped"] ?? -1, with: [.number(2)]))
+        XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.number(2)]))
         XCTAssertEqual(sheets.wrappedValue, [])
     }
 
@@ -203,16 +198,15 @@ final class ModalStackTests: XCTestCase {
 
         let patch = renders.settled(window(sheets.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["modalPopped"] ?? -1, with: [.string("0")]))
+        XCTAssertTrue(renders.fire(patch.children.first?.events?["popped"] ?? -1, with: [.string("0")]))
         XCTAssertEqual(sheets.wrappedValue, [.settings])
     }
 
     // MARK: - The contract a host reads
 
-    /// The whole thing: a window whose page is a navigation stack, with two
-    /// pages presented over all of it - as the message that brings them
-    /// carries them, each page of the stack having handed the window the same
-    /// modal stack on its way in, so there is one.
+    /// The whole thing: a window whose page is a modal stack holding a
+    /// navigation stack, with two pages presented over all of it - as the
+    /// message that brings them carries them.
     func testTwoPagesArePresentedOverTheWholeWindow() throws {
         let sheets = State<[Sheet]>([.settings, .about])
         let path = State<[Int]>([1])
@@ -220,13 +214,15 @@ final class ModalStackTests: XCTestCase {
         let window = Renders().settled(
             TestWindow(sheets: sheets.projectedValue, path: path.projectedValue).body)
 
-        XCTAssertEqual(window.children.map(\.type), [.navigationStack, .modalStack])
-        XCTAssertEqual(window.eventNames, (HostPatch.windowEvents + ["modalPopped"]).sorted())
-        XCTAssertEqual(window.at(.auto(2))?.arrangement, [.manual("root"), .manual("0/1")])
-
-        let modal = try XCTUnwrap(window.at(.auto(5)))
-        XCTAssertEqual(modal.arrangement, [.manual("0/settings"), .manual("1/about")])
-        XCTAssertEqual(modal.children.map { $0.props["title"] }, [.string("Settings"), .string("About")])
-        XCTAssertTrue(modal.children.allSatisfy { $0.eventNames == HostPatch.pageEvents })
+        XCTAssertEqual(window.children.map(\.type), [.modalStack])
+        XCTAssertEqual(window.eventNames, HostPatch.windowEvents)
+        let modal = try XCTUnwrap(window.children.first)
+        XCTAssertEqual(modal.eventNames, ["popped"])
+        XCTAssertEqual(modal.arrangement, [.manual("root"), .manual("0/settings"), .manual("1/about")])
+        XCTAssertEqual(modal.children.first?.type, .navigationStack)
+        XCTAssertEqual(modal.children.first?.arrangement, [.manual("root"), .manual("0/1")])
+        let presented = modal.children.dropFirst()
+        XCTAssertEqual(presented.map { $0.props["title"] }, [.string("Settings"), .string("About")])
+        XCTAssertTrue(presented.allSatisfy { $0.eventNames == HostPatch.pageEvents })
     }
 }

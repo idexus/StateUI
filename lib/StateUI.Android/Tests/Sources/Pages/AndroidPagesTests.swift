@@ -507,7 +507,7 @@ extension AndroidPagesTests {
         onMainActor {
             let sheets = State(wrappedValue: [Int]())
             let log = Received<String>()
-            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, log: log) }
+            let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, log: log) }
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 1)
 
             log.values = []
@@ -531,7 +531,7 @@ extension AndroidPagesTests {
         onMainActor {
             let sheets = State(wrappedValue: [Int]())
             let log = Received<String>()
-            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, log: log) }
+            let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, log: log) }
             sheets.wrappedValue = [1, 2]
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 3)
@@ -579,7 +579,7 @@ extension AndroidPagesTests {
         try onMainActor {
             let sheets = State(wrappedValue: [Int]())
             let scenes = Received<SceneSession>()
-            let host = AndroidRenderer.running(reducesMotion: true) { SheetsPage(sheets: sheets, scenes: scenes) }
+            let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(sheets, scenes: scenes) }
             let scene = try XCTUnwrap(scenes.values.last)
             defer { Inspector.close(in: scene) }
             host.layOut()
@@ -645,27 +645,27 @@ private struct SearchingPage: ContentView {
     }
 }
 
-/// A page that presents its sheets over itself through its window's modal stack, and tells its scene.
-private struct SheetsPage: ContentView {
-    let sheets: State<[Int]>
-    var log = Received<String>()
-    var scenes = Received<SceneSession>()
+/// A page under the sheets one state lists, telling its scene - the window's page, a modal stack.
+private func sheetsPage(
+    _ sheets: State<[Int]>, log: Received<String> = Received(), scenes: Received<SceneSession> = Received()
+) -> ModalStack {
+    ModalStack(sheets.projectedValue) {
+        ScenePage(log: log, scenes: scenes)
+    } destination: { number in
+        TitledPage(title: "Sheet \(number)", log: log)
+    }
+}
 
-    @Environment private var window: WindowSession
+/// A page that tells its scene as it comes.
+private struct ScenePage: ContentView {
+    let log: Received<String>
+    let scenes: Received<SceneSession>
+
     @Environment private var scene: SceneSession
 
     var content: any View {
-        let sheets = self.sheets
-        let log = self.log
-        let window = self.window
-        let scenes = self.scenes
-        let scene = self.scene
-        return TitledPage(title: "Page", log: log).onCreated {
-            scenes.values.append(scene)
-            window.modalStack = ModalStack(sheets.projectedValue) { number in
-                TitledPage(title: "Sheet \(number)", log: log)
-            }
-        }
+        let (scenes, scene) = (self.scenes, self.scene)
+        return TitledPage(title: "Page", log: log).onCreated { scenes.values.append(scene) }
     }
 }
 

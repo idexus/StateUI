@@ -425,9 +425,9 @@ StateUIObjectRef stateui_winui_sheet_make(void);
 void stateui_winui_sheet_set(StateUIObjectRef sheet, char const *title, StateUIObjectRef page);
 void stateui_winui_window_set_sheets(StateUIObjectRef window, StateUIObjectRef const *sheets, int32_t count);
 
-/// Lays `overlay` over the window's page and its sheets, where the page stands; a click beside what it holds goes on
-/// to them. Null takes it away.
-void stateui_winui_window_set_overlay(StateUIObjectRef window, StateUIObjectRef overlay);
+/// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
+/// what they hold goes on to them. None takes the layer away.
+void stateui_winui_window_set_overlays(StateUIObjectRef window, StateUIObjectRef const *overlays, int32_t count);
 
 /// How many sheets a window shows - what a test reads.
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);

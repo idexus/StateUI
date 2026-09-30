@@ -23,9 +23,17 @@ private struct Home: ContentView {
     var content: any View { ModifiedContent(node: label("home")) }
 }
 
-extension OverlayKey {
-    fileprivate static let banner = OverlayKey("banner")
-    fileprivate static let toast = OverlayKey("toast")
+/// A page laying a banner over its window while a state says so, and a field under it always.
+private struct Noticed: ContentView {
+    let banner: State<Bool>
+
+    var content: any View {
+        let banner = banner
+        return ModifiedContent(node: label("home")).overlays {
+            if banner.wrappedValue { ModifiedContent(node: label("banner")) }
+            TextField("toast")
+        }
+    }
 }
 
 /// A desktop-sized window session used to verify the complete authored shape.
@@ -80,44 +88,35 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(bars.first?.children.first?.type, "LeadingContent")
     }
 
-    /// What a window lays over its page and the pages presented over it is one overlay, its last child: a ZStack
-    /// of its layers in the order their keys were first written, letting a click beside them through. A view
-    /// written again under a key keeps its place; with no layer there is no overlay.
-    func testAWindowLaysItsOverlaysInOneStack() throws {
-        let session = WindowSession()
-        XCTAssertFalse(PlainWindow().body(session: session).built.children.contains { $0.type == .overlay })
+    /// What a view lays over its window is one declaration after its own children: an overlay holding one ZStack
+    /// of the views in the order written, letting a click beside them through. A window lays none of its own until
+    /// its scene's inspector docks in it.
+    func testAViewDeclaresItsOverlaysInOneStack() throws {
+        XCTAssertFalse(PlainWindow().body(session: WindowSession()).built.children.contains { $0.type == .overlay })
 
-        session.overlays[.banner] = ModifiedContent(node: label("banner"))
-        session.overlays[.toast] = ModifiedContent(node: label("toast"))
-        session.overlays[.banner] = ModifiedContent(node: label("banner again"))
-        let node = PlainWindow().body(session: session).built
+        let node = ModifiedContent(node: label("home")).overlays {
+            ModifiedContent(node: label("banner"))
+            ModifiedContent(node: label("toast"))
+        }.body
 
         let overlay = try XCTUnwrap(node.children.last)
         XCTAssertEqual(overlay.type, .overlay)
         let layers = try XCTUnwrap(overlay.children.first)
         XCTAssertEqual(layers.type, .zStack)
         XCTAssertEqual(layers.props["letsInputThrough"], .bool(true))
-        XCTAssertEqual(layers.children.map { $0.props["text"] }, [.string("banner again"), .string("toast")])
-
-        session.overlays[.banner] = nil
-        session.overlays[.toast] = nil
-        XCTAssertEqual(session.overlays.keys, [])
-        XCTAssertFalse(PlainWindow().body(session: session).built.children.contains { $0.type == .overlay })
+        XCTAssertEqual(layers.children.map { $0.props["text"] }, [.string("banner"), .string("toast")])
     }
 
-    /// A layer keeps its element as the others come and go: the one standing second stays itself as the first is
+    /// An overlay keeps its element as another comes and goes: the one standing second stays itself as the first is
     /// taken away.
-    func testALayerKeepsItsElementAsAnotherGoes() {
-        let session = WindowSession()
+    func testAnOverlayKeepsItsElementAsAnotherGoes() {
+        let banner = State(wrappedValue: true)
         let renders = Renders()
 
-        session.overlays[.banner] = ModifiedContent(node: label("banner"))
-        session.overlays[.toast] = TextField("toast")
-        let both = entry(in: renders.render(PlainWindow().body(session: session)))
+        let both = entry(in: renders.render(Noticed(banner: banner).body))
 
-        session.overlays[.banner] = nil
-        let alone = entry(in: renders.render(
-            PlainWindow().body(session: session), changed: Renderer.shared.pendingChanges))
+        banner.wrappedValue = false
+        let alone = entry(in: renders.render(Noticed(banner: banner).body, changed: Renderer.shared.pendingChanges))
 
         XCTAssertNotNil(both)
         XCTAssertEqual(both, alone)

@@ -102,43 +102,10 @@ public final class WindowSession {
     /// follows its own state.
     @State public var titleBar: TitleBar? = nil
 
-    /// The pages presented over the window, with the last page on top.
-    ///
-    ///     @State private var sheets: [Sheet] = []
-    ///
-    ///     .onCreated {
-    ///         window.modalStack = ModalStack($sheets) { sheet in
-    ///             switch sheet {
-    ///             case .settings: SettingsPage(sheets: $sheets)
-    ///             case .about: AboutPage()
-    ///             }
-    ///         }
-    ///     }
-    ///
-    /// Written once: the stack reads the array as the window is built, so
-    /// presenting a page is `sheets.append(.settings)`, dismissing one is a
-    /// `remove`, and a sheet the user drags away truncates the array itself.
-    /// It belongs to the window rather than to any individual page. See
-    /// `ModalStack`.
-    @State public var modalStack: ModalStack? = nil
-
-    /// The views laid over the window's page and every page presented over
-    /// it - a notice that stays while the pages change under it - each under
-    /// a key of the application's.
-    ///
-    ///     extension OverlayKey {
-    ///         static let offline = OverlayKey("offline")
-    ///     }
-    ///
-    ///     .onChanged(connection.isOnline) {
-    ///         window.overlays[.offline] = connection.isOnline ? nil : OfflineBanner()
-    ///     }
-    ///
-    /// Each has the page's whole area and stands where its alignments put it;
-    /// a click beside it goes on to what is under it, and a layout of its own
-    /// that fills the area passes a click on with `.letsInputThrough(true)`.
-    /// See `WindowOverlays`.
-    @State public var overlays = WindowOverlays()
+    /// Where the scene's inspector is docked in this window - the library
+    /// lays its panel over every overlay a page declares; nil where none is.
+    /// Design: docs/design/views/inspector.md#where-it-docks
+    @State var dockedInspector: Inspector.Place? = nil
 
     /// The key the tree knows the window by in its scene.
     let key: String
@@ -200,15 +167,9 @@ public final class WindowSession {
         return props
     }
 
-    /// What hangs off the window between its page and its overlay: the chrome
-    /// and the modal stack, each as the node the host knows it by - built as
-    /// the window is, so the modal stack reads its array there.
+    /// What hangs off the window between its page and its overlay: the chrome,
+    /// as the node the host knows it by.
     var slots: [Node] {
-        var slots: [Node] = []
-
-        if let bar = titleBar { slots.append(bar.body) }
-        if let stack = modalStack { slots.append(stack.node) }
-
-        return slots
+        titleBar.map { [$0.body] } ?? []
     }
 }

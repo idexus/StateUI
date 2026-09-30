@@ -80,10 +80,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuBar](MenuBar.md) | 1 |  |  | 1 ✅ |  |  |  |
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 4 ✅ |  |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
-| [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |
+| [ModalStack](ModalStack.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
 | [NavigationStack](NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 6 ✅ | 10 ✅ | 3 ✅ |  |
+| [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 8 ✅ | 3 ✅ |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
 | [Span](Span.md) | 12 |  |  |  | 9 ✅ |  |  |
@@ -94,8 +94,8 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 5 ✅ |  |  |
 | [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 107 | 50 of 107 met | 57 of 107 met | 34 of 107 met | 84 of 107 met | 6 of 107 met |  |
+| [Window](Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ |  |  |  |
+| **Met** - ✅ and – | 107 | 51 of 107 met | 57 of 107 met | 36 of 107 met | 59 of 107 met | 6 of 107 met |  |
 <!-- structure:end -->
 
 ## Tiers

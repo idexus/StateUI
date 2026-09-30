@@ -60,6 +60,9 @@ extension AndroidDriver {
             TestTouches.hover(view, action: Self.hoverEnter, x: Self.pixels(point.x), y: Self.pixels(point.y))
             TestTouches.hover(view, action: Self.hoverMove, x: Self.pixels(point.x), y: Self.pixels(point.y))
         case (.leave, let view?): TestTouches.hover(view, action: Self.hoverExit, x: 0, y: 0)
+        case (.goBack, _) where element.type == .window:
+            // The system's back, as the activity hands it on; what it reached, the case reads.
+            _ = renderer?.goBack()
         case (.switchAway, _) where element.type == .window: renderer?.setPhase(.inactive)
         case (.switchBack, _) where element.type == .window: renderer?.setPhase(.active)
         case (.minimize, _) where element.type == .window:

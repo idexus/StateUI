@@ -1107,16 +1107,16 @@ private extension AppKitPageTests {
     func tree(
         _ page: HostPatch,
         modals: [HostPatch]?,
-        modalPopped: Int32 = 902,
         width: Double? = nil
     ) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
         if let width { window.properties[.width] = .number(width) }
         if let modals {
+            // The window's page is a modal stack: the page it holds, then its sheets.
             var stack = HostPatch(id: .manual("modals"), type: .modalStack)
-            stack.children = .arranged(modals)
-            window.children = .arranged([page, stack])
-            window.events = .replace([.modalPopped: modalPopped])
+            stack.children = .arranged([page] + modals)
+            stack.events = .replace([.popped: 902])
+            window.children = .arranged([stack])
         } else {
             window.children = .arranged([page])
         }

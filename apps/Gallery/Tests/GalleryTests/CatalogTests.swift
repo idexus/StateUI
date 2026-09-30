@@ -1099,7 +1099,9 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(window.type, "Window")
 
-        let flyout = try XCTUnwrap(window.children.first)
+        let modal = try XCTUnwrap(window.children.first)
+        XCTAssertEqual(modal.type, "ModalStack", "what is presented over it all")
+        let flyout = try XCTUnwrap(modal.children.first)
 
         XCTAssertEqual(flyout.type, "SplitView")
         XCTAssertEqual(flyout.props["isSidebarVisible"], .bool(false))
@@ -1108,6 +1110,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],
                        "the two halves, then the gallery's own actions declared around every page")
+        XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay, .menuBar],
+                       "and its notice and menus")
 
         let pane = try XCTUnwrap(flyout.children.first).built
 
@@ -1116,7 +1120,7 @@ final class CatalogTests: XCTestCase {
         // The pane's title is its session's, written as the pane comes in, so
         // it is in the complete patch that brings the pane to the host.
         let first = firstPatch(self.window(Place().nav))
-        let shownPane = try XCTUnwrap(first.children.first?.children.first)
+        let shownPane = try XCTUnwrap(first.children.first?.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
         XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
@@ -1173,18 +1177,15 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(buttons(in: trailing).count, 1)
     }
 
-    /// And a SECOND list beside the page: what is presented over all of it,
-    /// which is the window's rather than any page's.
-    func testTheWindowCarriesAModalStack() throws {
-        // The stack is the window's SESSION's, written as the window comes in -
-        // so it is read off the message that brings the window.
+    /// And what is presented over all of it: the window's page is a modal
+    /// stack holding the split view, the sheets after it.
+    func testTheWindowsPageIsAModalStack() throws {
         let shown = firstPatch(window(Place().nav))
 
         let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
 
-        XCTAssertEqual(presented.children.count, 0, "the gallery opens with nothing over it")
-        XCTAssertNotNil(shown.events?[.modalPopped],
-                        "a sheet the user drags down would not reach the array")
+        XCTAssertEqual(presented.children.map(\.type), [.splitView], "the gallery opens with nothing over it")
+        XCTAssertNotNil(presented.events?[.popped], "a sheet the user drags down would not reach the array")
     }
 
     /// Presenting and closing are the array growing and shrinking - the same
@@ -1341,7 +1342,7 @@ final class CatalogTests: XCTestCase {
         // A written page's caption and picture are its SESSION's, written as
         // it comes in - so they are read off the message that brings it.
         let shown = firstPatch(window(place.nav))
-        let tabbed = try XCTUnwrap(shown.children.first?.children.first { $0.type == "TabbedView" })
+        let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabbedView" })
         let second = try XCTUnwrap(tabbed.children.last)
 
         XCTAssertEqual(tabbed.type, "TabbedView")

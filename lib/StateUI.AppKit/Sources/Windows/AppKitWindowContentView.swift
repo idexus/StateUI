@@ -86,7 +86,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         barBand.fill()
     }
 
-    func set(page: NSView?, overlay: AppKitLayoutItem?, spansTitleBar: Bool = false) {
+    func set(page: NSView?, overlays: [AppKitLayoutItem], spansTitleBar: Bool = false) {
         if pageSpansTitleBar != spansTitleBar {
             pageSpansTitleBar = spansTitleBar
             needsLayout = true
@@ -100,8 +100,8 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             }
         }
 
-        overlaySurface.setItem(overlay)
-        if overlay == nil {
+        overlaySurface.setItems(overlays)
+        if overlays.isEmpty {
             overlaySurface.removeFromSuperview()
         } else if overlaySurface.superview !== self {
             addSubview(overlaySurface, positioned: .above, relativeTo: page)
@@ -132,11 +132,41 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
 /// Full-window hit-test surface whose empty area deliberately falls through
 /// to the page below it.
+/// The window's overlays, one layer over another, each over the whole area; a click beside what they hold goes on
+/// to the page under them.
 @MainActor
-private final class AppKitOverlaySurfaceView: AppKitSingleChildView {
+private final class AppKitOverlaySurfaceView: NSView {
+    private var layers: [AppKitSingleChildView] = []
+
+    override var isFlipped: Bool { true }
+
+    /// Lays `items`, the first lowest, each in a layer of its own.
+    func setItems(_ items: [AppKitLayoutItem]) {
+        while layers.count > items.count {
+            let leaving = layers.removeLast()
+            leaving.setItem(nil)
+            leaving.removeFromSuperview()
+        }
+        while layers.count < items.count {
+            let layer = AppKitSingleChildView()
+            addSubview(layer)
+            layers.append(layer)
+        }
+        for (layer, item) in zip(layers, items) { layer.setItem(item) }
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        for layer in layers {
+            layer.frame = bounds
+            layer.layoutSubtreeIfNeeded()
+        }
+    }
+
     override func hitTest(_ point: NSPoint) -> NSView? {
         let target = super.hitTest(point)
-        return target === self ? nil : target
+        return target === self || layers.contains { $0 === target } ? nil : target
     }
 }
 

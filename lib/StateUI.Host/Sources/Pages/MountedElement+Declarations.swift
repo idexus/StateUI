@@ -8,13 +8,14 @@
 /// Design: docs/design/host/pages.md#the-visible-path
 extension MountedElement {
     /// The elements of `sought` this page's chrome takes, in the path's order, each with its level - 0 for the
-    /// outermost arrangement's, the page's own last. A sheet and a split view's sidebar start a path of their own; a
-    /// native collection's items belong to no page.
+    /// outermost arrangement's, the page's own last. A sheet and a split view's sidebar start a path of their own - a
+    /// modal stack's root stands on the path around the stack - and a native collection's items belong to no page.
     public func declared(_ sought: NodeType) -> [(element: MountedElement, level: Int)] {
         var arrangements: [MountedElement] = []
         var (child, each) = (self, parent)
-        while let element = each, element.type != .window, element.type != .modalStack {
+        while let element = each, element.type != .window {
             if element.type == .splitView, element.children.first === child { break }
+            if element.type == .modalStack, element.children.first !== child { break }
             if NodeType.pageTypes.contains(element.type) { arrangements.append(element) }
             (child, each) = (element, element.parent)
         }

@@ -8,7 +8,7 @@ import Foundation
 @_spi(Host) import StateUIHost
 
 /// One window element shown in an AppKit window: what the host layer says it shows - its arrangement of pages, its
-/// sheets, its overlay, its frame, its bounds and its traits - turned into AppKit's, in step with the element as the
+/// sheets, its overlays, its frame, its bounds and its traits - turned into AppKit's, in step with the element as the
 /// tree changes, and what AppKit tells of the window handed to the host layer.
 /// Design: docs/design/platforms/appkit/runtime.md#the-window
 @MainActor
@@ -197,7 +197,7 @@ final class AppKitWindowController: NSWindowController {
         let arrangement = presentation.arrangement
         content.set(
             page: arrangement?.appKit.presentableViews.first,
-            overlay: presentation.overlay?.children.first?.appKit.layoutItem,
+            overlays: presentation.overlays.compactMap { $0.children.first?.appKit.layoutItem },
             spansTitleBar: arrangement?.type == .splitView)
         if window.contentView !== content {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)

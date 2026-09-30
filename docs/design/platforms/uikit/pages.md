@@ -90,16 +90,16 @@ handed out bare - the one on the bar is UIKit's own.
 
 ## Sheets
 
-A window's modal stack is UIKit's page sheets, each presented over the one
+A modal stack standing as the window's page is UIKit's page sheets, each presented over the one
 before once that one stands - UIKit presents over a controller only then -
 and all of them only once the window stands on screen: a sheet presented
 before, UIKit takes away again at once and tells as the user's. Those still
 asked for stay, the rest go from the top. The user swiping the top sheet down
-is the window's way back, told as how many stay; a window that leaves tells
+is the window's way back, told the stack as how many stay; a window that leaves tells
 nobody of its sheets, which leave with it.
 
-An overlay is laid over the window's pages within the safe area, and a touch
-beside what it holds reaches the page under it.
+The overlays are laid over the window's pages within the safe area, the first
+lowest, and a touch beside what one holds reaches the page under it.
 
 ## Menus
 

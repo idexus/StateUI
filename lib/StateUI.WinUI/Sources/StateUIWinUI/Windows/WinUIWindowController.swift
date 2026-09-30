@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// One window element shown in a WinUI window: what the host layer says it shows - its arrangement of pages, its
-/// sheets, its overlay, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.
+/// sheets, its overlays, its frame and its chrome - turned into WinUI's, in step with the element as the tree changes.
 /// Design: docs/design/platforms/winui/runtime.md#the-window
 @MainActor
 final class WinUIWindowController {
@@ -35,7 +35,7 @@ final class WinUIWindowController {
         stand(changes)
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets)
-        if let overlay = changes.overlay { window.showOverlay(overlay?.winUI.view) }
+        if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
     }
 
     /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed, and

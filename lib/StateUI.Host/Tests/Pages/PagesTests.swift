@@ -282,11 +282,10 @@ final class PagesTests: XCTestCase {
     /// A page hiding its bar shows no actions; a sheet's page takes nothing from the window it stands over.
     func testAHiddenBarAndASheetTakeNothingFromAround() throws {
         var window = pathWindow(outer: [toolbarGroup("window", [toolbarAction("inspector")])], inner: [])
-        guard case .arranged(var children) = window.children else { return XCTFail("a window of children") }
-        children.append(node("modal", .modalStack, children: [
+        guard case .arranged(let children) = window.children else { return XCTFail("a window of children") }
+        window.children = .arranged([node("modal", .modalStack, children: children + [
             node("sheet", .page, children: [toolbarGroup("mine", [toolbarAction("done")])]),
-        ]))
-        window.children = .arranged(children)
+        ])])
         let runtime = runtime(window) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
 
@@ -642,9 +641,8 @@ final class PagesTests: XCTestCase {
             self.node(id, .navigationStack, children: [self.node("\(id).a", .page), self.node("\(id).b", .page)])
         }
         func wayBack(_ sheets: [HostPatch]) throws -> WayBack? {
-            let runtime = runtime(node("window", .window, children: [twoPages("main"), node("modal", .modalStack, children: sheets)])) {
-                _ in
-            }
+            let modal = node("modal", .modalStack, children: [twoPages("main")] + sheets)
+            let runtime = runtime(node("window", .window, children: [modal])) { _ in }
             let presentation = WindowPresentation()
             _ = presentation.show(try XCTUnwrap(runtime.tree.root), in: runtime.lifecycle)
             return presentation.wayBack

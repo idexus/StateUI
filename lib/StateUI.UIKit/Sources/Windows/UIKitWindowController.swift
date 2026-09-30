@@ -44,8 +44,8 @@ final class UIKitWindowController {
         if let (_, arrangement) = changes.arrangement {
             root.show(arrangement?.uiKit.controller)
         }
-        if let overlay = changes.overlay {
-            root.lay(overlay?.uiKit.view)
+        if let overlays = changes.overlays {
+            root.lay(overlays.compactMap(\.uiKit.view))
         }
         if let sheets = changes.sheets {
             root.onSheetDismissed = { [weak runtime, weak element] remaining in
@@ -84,13 +84,13 @@ final class UIKitWindowController {
 }
 
 /// What a scene's window shows: the controller of the window's arrangement of pages, over the whole window - each
-/// page stands within the safe area its bars leave - an overlay laid over it, and the pages presented over it as
+/// page stands within the safe area its bars leave - the overlays laid over it, and the pages presented over it as
 /// sheets, each over the one before.
 /// Design: docs/design/platforms/uikit/pages.md#sheets
 @MainActor
 final class UIKitRootViewController: UIViewController, UIAdaptivePresentationControllerDelegate {
     private var shown: UIViewController?
-    private var overlay: UIView?
+    private var overlays: [UIView] = []
 
     /// The sheets shown, the first presented by this controller, each next by the one before.
     private var sheets: [UIViewController] = []
@@ -124,12 +124,12 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         arrangement.didMove(toParent: self)
     }
 
-    /// Lays `overlay` over the arrangement, within the safe area, in place of the one before.
-    func lay(_ overlay: UIView?) {
-        guard overlay !== self.overlay else { return }
-        self.overlay?.removeFromSuperview()
-        self.overlay = overlay
-        if let overlay { view.addSubview(overlay) }
+    /// Lays `overlays` over the arrangement, the first lowest, within the safe area, in place of those before.
+    func lay(_ overlays: [UIView]) {
+        guard !overlays.elementsEqual(self.overlays, by: ===) else { return }
+        for leaving in self.overlays where !overlays.contains(where: { $0 === leaving }) { leaving.removeFromSuperview() }
+        self.overlays = overlays
+        for overlay in overlays { view.addSubview(overlay) }
         view.setNeedsLayout()
     }
 
@@ -184,7 +184,7 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        overlay?.frame = view.bounds.inset(by: view.safeAreaInsets)
+        for overlay in overlays { overlay.frame = view.bounds.inset(by: view.safeAreaInsets) }
     }
 }
 #endif

@@ -261,7 +261,6 @@ translucency, authored title area, modal stack, and `close()` operation.
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
 | `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
 | `titleBar` | optional authored title-area content |
-| `modalStack` | pages presented over this window, with the last one on top |
 | `close()` | closes this exact window; closing the main window ends its scene |
 
 Position and size are four independent optional requests:
@@ -381,7 +380,8 @@ currently on top. Hiding the native back button hides that affordance; it is
 not a cross-platform navigation lock. Title views, toolbar
 items, and menu items are ordinary identified subtrees built where their
 native surface presents them. Modal presentation is adaptive: each host uses
-its platform's native presentation for pages in `WindowSession.modalStack`.
+its platform's native presentation for the pages a `ModalStack` presents
+([modal pages](navigation-and-presentation.md#modal-pages)).
 
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is

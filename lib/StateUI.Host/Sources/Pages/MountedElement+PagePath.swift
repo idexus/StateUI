@@ -14,6 +14,7 @@ extension MountedElement {
         case .navigationStack: children.last?.visiblePage
         case .tabbedView: selectedTab?.visiblePage
         case .splitView: children.dropFirst().first?.visiblePage
+        case .modalStack: children.first?.visiblePage
         default: nil
         }
     }
@@ -27,6 +28,7 @@ extension MountedElement {
         case .page: return self
         case .navigationStack: return children.last?.titledPage
         case .splitView: return children.dropFirst().first?.titledPage
+        case .modalStack: return children.first?.titledPage
         case .tabbedView:
             if let tab = selectedTab, tab.type != .page { return tab.titledPage }
             guard let stack = parent, stack.type == .navigationStack else { return selectedTab }
@@ -43,6 +45,7 @@ extension MountedElement {
         case .navigationStack: self
         case .tabbedView: selectedTab?.visibleNavigationStack
         case .splitView: children.dropFirst().first?.visibleNavigationStack
+        case .modalStack: children.first?.visibleNavigationStack
         default: nil
         }
     }

@@ -110,9 +110,9 @@ of its members each meets, and why a cell is empty.
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
-| [ModalStack](controls/ModalStack.md) | structure | ✅ | ✅ | ◐ | ✅ |  |  |
+| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | · | ✅ | · |  |
+| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ⌛ | ⌛ |  |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -143,7 +143,7 @@ of its members each meets, and why a cell is empty.
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
-| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ⏸ |  |
+| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ◐ |  |
 <!-- creation:end -->
 
@@ -475,10 +475,10 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuBar](controls/MenuBar.md) | 1 |  |  | 1 ✅ |  |  |  |
 | [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
-| [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |
+| [ModalStack](controls/ModalStack.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 6 ✅ | 10 ✅ | 3 ✅ |  |
+| [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 8 ✅ | 3 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ |  |  |
@@ -489,8 +489,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 5 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
-| [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 107 | 50 of 107 met | 57 of 107 met | 34 of 107 met | 84 of 107 met | 6 of 107 met |  |
+| [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ |  |  |  |
+| **Met** - ✅ and – | 107 | 51 of 107 met | 57 of 107 met | 36 of 107 met | 59 of 107 met | 6 of 107 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -547,8 +547,9 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 |  |  | 1 ✅ |  |  |  |
+| [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 |  | 2 ✅ |  | 1 ✅ |  |  |
-| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 6 ✅ | 8 ✅ | 3 ✅ |  |
+| [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 7 ✅ | 6 ✅ | 3 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 | 3 ✅ |  | 2 ✅ | 7 ✅ | 3 ✅ |  |
 | [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  |  |  |  |  |
@@ -574,7 +575,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  |  |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
-| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
+| [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ | 3 ✅ | 2 ✅ |  |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -648,14 +649,14 @@ realizes the element and each of its members.
 `destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
 `endReached`, `frameChanged`, `isFocusedChanged`, `isSidebarVisibleChanged`,
-`itemActivated`, `mapClicked`, `modalPopped`, `navigated`, `navigatedFrom`,
-`navigatedTo`, `navigating`, `navigatingFrom`, `opened`, `panUpdated`,
-`pinchUpdated`, `pinClicked`, `pinDetailsClicked`, `pointerEntered`,
-`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
-`pressed`, `processTerminated`, `realizedChanged`, `released`, `resumed`,
-`scrollStopped`, `scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`,
-`selectionChanged`, `stopped`, `submitted`, `swiped`, `tapped`, `textChanged`,
-`timeChanged`, `toggled`, `valueChanged`, `windowClosed`, `windowRestored`.
+`itemActivated`, `mapClicked`, `navigated`, `navigatedFrom`, `navigatedTo`,
+`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
+`pinClicked`, `pinDetailsClicked`, `pointerEntered`, `pointerExited`,
+`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
+`processTerminated`, `realizedChanged`, `released`, `resumed`, `scrollStopped`,
+`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `selectionChanged`,
+`stopped`, `submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`,
+`toggled`, `valueChanged`, `windowClosed`, `windowRestored`.
 
 ### Acts
 

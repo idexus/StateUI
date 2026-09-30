@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A window: its title, and a root of four rows - the window's chrome, its
-// menu bar, the row of tabs, and the arrangement of pages - with the overlay
+// menu bar, the row of tabs, and the arrangement of pages - with the overlays
 // laid over the page, shown and closed; its activation and its minimizing
 // told as the application's phase.
 // Design: docs/design/platforms/winui/pages.md#the-windows-chrome
@@ -154,14 +154,14 @@ extern "C" void stateui_winui_window_set_content(StateUIObjectRef handle, StateU
     }
 }
 
-extern "C" void stateui_winui_window_set_overlay(StateUIObjectRef handle, StateUIObjectRef overlay) {
+extern "C" void stateui_winui_window_set_overlays(StateUIObjectRef handle, StateUIObjectRef const *overlays, int32_t count) {
     try {
         auto children = root(borrow<xaml::Window>(handle)).Children();
         controls::Grid layer{nullptr};
         for (auto const &child : children)
             if (auto grid = child.try_as<controls::Grid>(); grid && winrt::unbox_value_or<winrt::hstring>(grid.Tag(), L"") == L"overlay")
                 layer = grid;
-        if (!layer && !overlay) return;
+        if (!layer && count == 0) return;
         if (!layer) {
             // Where the page stands, over it and over its sheets; with no background, a click beside what it holds
             // goes on to them.
@@ -172,10 +172,10 @@ extern "C" void stateui_winui_window_set_overlay(StateUIObjectRef handle, StateU
             children.Append(layer);
         }
         layer.Children().Clear();
-        if (overlay) layer.Children().Append(as<xaml::UIElement>(overlay));
-        else if (uint32_t index; children.IndexOf(layer, index)) children.RemoveAt(index);
+        for (int32_t i = 0; i < count; ++i) layer.Children().Append(as<xaml::UIElement>(overlays[i]));
+        if (uint32_t index; count == 0 && children.IndexOf(layer, index)) children.RemoveAt(index);
     } catch (...) {
-        report("laying the overlay over a window");
+        report("laying the overlays over a window");
     }
 }
 

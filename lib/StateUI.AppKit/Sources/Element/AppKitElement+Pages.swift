@@ -32,14 +32,6 @@ extension AppKitElement {
 
     var presentablePageView: NSView? { presentableViews.first }
 
-    var modalStackNode: AppKitElement? {
-        children.first { $0.type == .modalStack }
-    }
-
-    var overlayItem: AppKitLayoutItem? {
-        slot(.overlay)?.children.first?.layoutItem
-    }
-
     /// The tabs of a tabbed view: its pages, each under its title and its picture, the tab the tree asks for, and
     /// whether they stand in the window's row.
     func arrangeTabs(_ tabs: AppKitTabbedView) {

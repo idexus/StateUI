@@ -63,17 +63,6 @@
                 s.settle { log.values.last == .destroying }
                 s.expect(log.values.last, .destroying)
             },
-            ConformanceCase("aModalTheUserTakesAwayIsHeardByItsWindow", proves: [
-                Covered(WindowContract.modalPopped), Covered(ModalStackContract.self),
-            ]) { s in
-                let sheets = State(wrappedValue: [1])
-                s.start { SheetsPage(sheets: sheets, log: Received()) }
-                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("sheet1")) == true }
-
-                try s.perform(.goBack, on: s.element(ofType: WindowContract.nodeType))
-                s.settle { sheets.wrappedValue.isEmpty }
-                s.expect(sheets.wrappedValue, [], "the window heard none remain, and the state took it")
-            },
             holds(WindowContract.title, "Notes", then: "Drafts") { $0.title = $1 },
             holds(WindowContract.width, 640, then: 800) { $0.width = $1 },
             holds(WindowContract.height, 480, then: 600) { $0.height = $1 },

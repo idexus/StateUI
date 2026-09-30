@@ -16,13 +16,17 @@ struct ModalSample: SampleContent, ExampleContent {
         struct MainWindow: Window {
             @State private var sheets: [Sheet] = []
 
+            // The sheets stand over the window's page, the last on top.
             var page: any Page {
-                HomePage(sheets: $sheets)
+                ModalStack($sheets) {
+                    HomePage(sheets: $sheets)
+                } destination: { _ in
+                    SettingsPage(sheets: $sheets)
+                }
             }
         }
 
         struct HomePage: ContentView {
-            @Environment private var window: WindowSession
             @Binding var sheets: [Sheet]
 
             var content: any View {
@@ -31,11 +35,6 @@ struct ModalSample: SampleContent, ExampleContent {
 
                     Button("Present")
                         .onClicked { sheets.append(.settings) }
-                        .onCreated {
-                            window.modalStack = ModalStack($sheets) { _ in
-                                SettingsPage(sheets: $sheets)
-                            }
-                        }
                 }
             }
         }

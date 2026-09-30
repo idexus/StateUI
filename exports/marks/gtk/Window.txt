@@ -15,7 +15,6 @@ Window.maximumHeight: not realized
 Window.maximumWidth: not realized
 Window.minimumHeight: not realized
 Window.minimumWidth: not realized
-Window.modalPopped: not realized
 Window.resumed: not realized
 Window.stopped: not realized
 Window.title: not realized

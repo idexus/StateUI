@@ -40,7 +40,7 @@ final class AndroidRenderer {
     let root: JavaObject
     private let density: Double
 
-    /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlay.
+    /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
 
     /// Whether the activity was last told there is a way back.
@@ -180,9 +180,9 @@ final class AndroidRenderer {
     }
 
     /// Shows what the first window asks for: its arrangement of pages in the activity's root, the pages its modal
-    /// stack presents over it, and its overlay over them all. The host layer tells the page the user sees and the
+    /// stack presents over it, and its overlays over them all. The host layer tells the page the user sees and the
     /// window made.
-    /// Design: docs/design/platforms/android/pages.md#the-windows-overlay
+    /// Design: docs/design/platforms/android/pages.md#the-windows-overlays
     private func showWindow() {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         showTitle(of: window)
@@ -190,7 +190,7 @@ final class AndroidRenderer {
         let changes = presentation.show(window, in: runtime.lifecycle)
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
-            shownOverlay = nil
+            shownOverlays = []
             if let page = arrangement?.android.view {
                 page.forgetPlace()
                 Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
@@ -198,23 +198,23 @@ final class AndroidRenderer {
         }
         let rose = changes.sheets.map { modals.present($0) } ?? false
 
-        // The overlay lies over everything, lifted over a page that rose after it; it takes no touch beside what it
-        // holds, which goes on to the page under it.
-        let overlay = presentation.overlay?.android.view
-        if overlay !== shownOverlay {
-            if let leaving = shownOverlay { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
-            if let overlay {
+        // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
+        // touch beside what they hold, which goes on to the page under them.
+        let overlays = presentation.overlays.compactMap(\.android.view)
+        if !overlays.elementsEqual(shownOverlays, by: ===) {
+            for leaving in shownOverlays { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
+            for overlay in overlays {
                 overlay.forgetPlace()
                 Java.call(root.reference, JavaAPI.addView, .object(overlay.reference), .int(-1), .int(-1))
             }
-            shownOverlay = overlay
-        } else if rose, let overlay {
-            Java.call(overlay.reference, JavaAPI.bringToFront)
+            shownOverlays = overlays
+        } else if rose {
+            for overlay in overlays { Java.call(overlay.reference, JavaAPI.bringToFront) }
         }
     }
 
-    /// The overlay's view the root holds now, let go of as the window stops showing it.
-    private var shownOverlay: AndroidView?
+    /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
+    private var shownOverlays: [AndroidView] = []
 
     /// Goes the way back the window offers the user - a sidebar sliding over the page closing first, then the host
     /// layer's (`WindowPresentation.wayBack`); whether there was one.
@@ -258,7 +258,7 @@ final class AndroidRenderer {
 }
 
 extension AndroidRenderer: TurnPresenter {
-    /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlay, and
+    /// Shows what a render changed: the activity's title, the window's pages, its sheets and its overlays, and
     /// whether there is a way back.
     func presentRendered() {
         showWindow()

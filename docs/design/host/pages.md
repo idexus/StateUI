@@ -129,6 +129,17 @@ others of that id leave; a section left with nothing is none. A menu whose
 `.id` is a `StandardMenu` names the platform's menu of that identity
 (`standard`), which the host joins by it, never by its caption.
 
+## The overlays of a window
+
+A window lays over what it shows the overlays declared along each page it
+shows (`WindowPresentation.overlays`): the arrangement's visible path, the
+outer under the inner, then each sheet's in turn, then the window's own - the
+library's docked inspector - over every other. Each is one layer holding the
+views declared together. A page that stops being shown - a page pushed over
+it, a tab chosen away - takes its overlays with it; nothing is restored,
+because nothing was overwritten. A modal stack standing as the window's page
+is shown as its root under its sheets.
+
 ## The window's chrome
 
 A window composes one chrome from what it shows (`WindowChrome`): the title

@@ -20,11 +20,11 @@ final class GTKWindow {
     /// The frame a page shown by itself stands in; nil while the window shows an arrangement.
     private(set) var pageFrame: GTKPageFrame?
 
-    /// The layers the window's content and its overlay stand in.
+    /// The layers the window's content and its overlays stand in.
     private let layers: GTKWidget
 
     /// What the window lays over everything it shows; nil for nothing.
-    private(set) var overlay: GTKView?
+    private(set) var overlays: [GTKView] = []
 
     private var presented = false
 
@@ -89,13 +89,13 @@ final class GTKWindow {
         setContent(pageFrame?.widget)
     }
 
-    /// Lays `view` over everything the window shows, where the page stands; nil takes it away.
-    /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlay
-    func showOverlay(_ view: GTKView?) {
-        guard view !== overlay else { return }
-        if let overlay { gtk_overlay_remove_overlay(layers.opaque, overlay.widget) }
-        overlay = view
-        if let view { gtk_overlay_add_overlay(layers.opaque, view.widget) }
+    /// Lays `views` over everything the window shows, where the page stands, the first lowest; none takes them away.
+    /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlays
+    func showOverlays(_ views: [GTKView]) {
+        guard !views.elementsEqual(overlays, by: ===) else { return }
+        for leaving in overlays { gtk_overlay_remove_overlay(layers.opaque, leaving.widget) }
+        overlays = views
+        for view in views { gtk_overlay_add_overlay(layers.opaque, view.widget) }
     }
 
     private func setContent(_ widget: GTKWidget?) {

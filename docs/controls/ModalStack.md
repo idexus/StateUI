@@ -2,9 +2,9 @@
 
 # ModalStack
 
-The pages presented over a window, the last of them on top.
+An arrangement presenting pages over the page it holds: its first child is that page, the others the sheets over it, the last on top.
 
-Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
+Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits nothing: every member below is its own.
 
@@ -23,17 +23,19 @@ Inherits nothing: every member below is its own.
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (0) | Realization | Notes |
+| Host | Created | Members (1) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ |  | sheet `NSWindow` |  |
-| UIKit | ✅ |  | `present(_:animated:)` |  |
-| Android Views | ◐ |  | full-screen `Dialog` (?) | cannot goBack on Window - Android's driver has no path for it yet |
-| WinUI 3 | ✅ |  | `ContentDialog` (?) |  |
-| GTK 4 |  |  | modal `GtkWindow`; libadwaita `AdwDialog` | not realized |
+| AppKit | ✅ | 1 ✅ | sheet `NSWindow` |  |
+| UIKit | ✅ | 1 ✅ | `present(_:animated:)` |  |
+| Android Views | ✅ | 1 ✅ | full-screen `Dialog` (?) |  |
+| WinUI 3 | ⌛ |  | `ContentDialog` (?) |  |
+| GTK 4 | ⌛ |  | modal `GtkWindow`; libadwaita `AdwDialog` |  |
 | Web |  |  | `<dialog>` with `showModal()` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/ModalStackContract.swift`.
 
 ## ModalStack's own members
 
-ModalStack declares no members of its own.
+| Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `popped` | event | `Int` | adaptive | ✅ | ✅ | ✅ |  |  |  |  |

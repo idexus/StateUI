@@ -294,7 +294,6 @@ extension NodeType {
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
     static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
     static let mapClicked = MapContract.mapClicked.token
-    static let modalPopped = WindowContract.modalPopped.token
     static let navigated = WebViewContract.navigated.token
     static let navigatedFrom = PageContract.navigatedFrom.token
     static let navigatedTo = PageContract.navigatedTo.token

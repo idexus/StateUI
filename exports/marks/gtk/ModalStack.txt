@@ -2,4 +2,3 @@
 ModalStack: not realized
 Page.appearing: waits on ModalStack
 Page.disappearing: waits on ModalStack
-Window.modalPopped: not realized

@@ -113,8 +113,10 @@ counts the numbers held to see every view let go.
 ## A window shown
 
 A window shows the first arrangement of pages among its children - a page, a
-stack of them, tabs, a split view - the pages its modal stack presents as
-sheets, what it lays over them, and whether its scene hides it ([the
+stack of them, tabs, a split view - and where that is a modal stack, the page
+it holds with the pages it presents over it as sheets; the overlays laid over
+them ([the overlays of a window](pages.md#the-overlays-of-a-window)); and
+whether its scene hides it ([the
 application's phase](runtime.md#the-applications-phase)), and says each to
 its host only when it changed (`WindowPresentation`). It says too the window
 it belongs to: a window of a kind of its own is its scene's main window's,

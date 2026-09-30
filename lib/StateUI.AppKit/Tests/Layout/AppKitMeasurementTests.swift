@@ -343,7 +343,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let page = AppKitSingleChildView()
         page.setItem(AppKitLayoutItem(view: label))
         let content = AppKitWindowContentView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
-        content.set(page: page, overlay: nil)
+        content.set(page: page, overlays: [])
         content.layoutSubtreeIfNeeded()
 
         label.invalidateMeasurements()

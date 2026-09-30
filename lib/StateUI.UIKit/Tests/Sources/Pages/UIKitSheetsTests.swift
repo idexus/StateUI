@@ -7,16 +7,12 @@ import UIKit
 @testable import StateUIUIKit
 import XCTest
 
-/// A page whose window presents numbered sheets from one state.
-private struct Sheets: ContentView {
-    let sheets: State<[Int]>
-    @Environment private var window: WindowSession
-
-    var content: any View {
-        let (sheets, window) = (self.sheets, self.window)
-        return Label("beneath").onCreated {
-            window.modalStack = ModalStack(sheets.projectedValue) { number in Label("On sheet \(number)") }
-        }
+/// A page under the numbered sheets one state lists.
+private func sheetsOver(_ sheets: State<[Int]>) -> ModalStack {
+    ModalStack(sheets.projectedValue) {
+        Label("beneath")
+    } destination: { number in
+        Label("On sheet \(number)")
     }
 }
 
@@ -27,7 +23,7 @@ final class UIKitSheetsTests: XCTestCase {
     @MainActor
     func testSheetsTheWindowStartsWithStandEachOverTheOneBefore() throws {
         let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: true) { Sheets(sheets: sheets) }
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
 
@@ -41,7 +37,7 @@ final class UIKitSheetsTests: XCTestCase {
     @MainActor
     func testSheetsPresentedWithMotionTellTheWindowNothing() throws {
         let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: false) { Sheets(sheets: sheets) }
+        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
 
@@ -57,13 +53,13 @@ final class UIKitSheetsTests: XCTestCase {
     @MainActor
     func testTheNextWindowsSheetsComeAfterOneWhoseSheetsWereMoving() throws {
         let before = State(wrappedValue: [Int]())
-        let first = UIKitRenderer.running(reducesMotion: false) { Sheets(sheets: before) }
+        let first = UIKitRenderer.running(reducesMotion: false) { sheetsOver(before) }
         before.wrappedValue = [1, 2]
         first.settle { first.roster.windows.first?.1.window?.rootViewController?.presentedViewController != nil }
         first.finish()
 
         let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: false) { Sheets(sheets: sheets) }
+        let host = UIKitRenderer.running(reducesMotion: false) { sheetsOver(sheets) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
         host.settle { root.presentedViewController?.presentedViewController != nil }
@@ -76,7 +72,7 @@ final class UIKitSheetsTests: XCTestCase {
     @MainActor
     func testTheUsersSwipeTakesTheTopSheetAway() throws {
         let sheets = State(wrappedValue: [1, 2])
-        let host = UIKitRenderer.running(reducesMotion: true) { Sheets(sheets: sheets) }
+        let host = UIKitRenderer.running(reducesMotion: true) { sheetsOver(sheets) }
         defer { host.finish() }
         let root = try XCTUnwrap(host.roster.windows.first?.1.window?.rootViewController)
         host.settle { root.presentedViewController?.presentedViewController != nil }

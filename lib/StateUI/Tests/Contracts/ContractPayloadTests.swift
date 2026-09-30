@@ -56,6 +56,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ItemsViewContract.realizedChanged, [.strings(["3", "4"])])
         check(ItemsViewContract.selectionChanged, [.strings(["7"])])
         check(MapContract.mapClicked, [.numbers([52.25, 21.01])])
+        check(ModalStackContract.popped, [.number(0)])
         check(NavigationStackContract.popped, [.number(1)])
         check(PageContract.appearing)
         check(PageContract.disappearing)
@@ -99,7 +100,6 @@ final class ContractPayloadTests: XCTestCase {
         check(WindowContract.created)
         check(WindowContract.deactivated)
         check(WindowContract.destroying)
-        check(WindowContract.modalPopped, [.number(0)])
         check(WindowContract.resumed)
         check(WindowContract.stopped)
 

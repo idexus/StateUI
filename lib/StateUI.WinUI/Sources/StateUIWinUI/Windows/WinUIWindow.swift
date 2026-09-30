@@ -20,7 +20,7 @@ final class WinUIWindow {
     private(set) var content: WinUIView?
 
     /// What the window lays over its page and its sheets.
-    private(set) var overlay: WinUIView?
+    private(set) var overlays: [WinUIView] = []
 
     /// The window's chrome, its menu bar, and the row a window's tabs stand in.
     let titleBar = WinUITitleBarView()
@@ -158,12 +158,13 @@ final class WinUIWindow {
         stateui_winui_window_set_sheets(handle, handles, Int32(handles.count))
     }
 
-    /// Lays `view` over the page and its sheets, where the page stands - a click beside what it holds goes on to
-    /// them; nil takes it away.
-    /// Design: docs/design/platforms/winui/pages.md#the-windows-overlay
-    func showOverlay(_ view: WinUIView?) {
-        overlay = view
-        stateui_winui_window_set_overlay(handle, view?.handle)
+    /// Lays `views` over the page and its sheets, where the page stands, the first lowest - a click beside what they
+    /// hold goes on to them; none takes the layer away.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-overlays
+    func showOverlays(_ views: [WinUIView]) {
+        overlays = views
+        let handles: [StateUIObjectRef?] = views.map(\.handle)
+        stateui_winui_window_set_overlays(handle, handles, Int32(handles.count))
     }
 
     /// Closes the window; one closed already stays as it is.

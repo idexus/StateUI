@@ -97,28 +97,29 @@ has nowhere to go back to.
 
 ## A modal stack
 
-The pages a window's modal stack presents stand over its page in the
-activity's root, in order, the top one in front, each in a holder on the
+The pages a modal stack standing as the window's page presents stand over its
+root in the activity's root, in order, the top one in front, each in a holder on the
 theme's window background that takes every touch meant for the page beneath.
 A page rises from the bottom as it comes and goes down as it leaves - at once
 where the user asks for less motion. The page in front is the one presented:
 the page beneath hears it disappear, and appear again when the one over it
 goes. Back is the page in front's own way first - a stack inside it pops -
-and then that page going down, which the window reports as `modalPopped`
-with the pages left, so the state that holds the stack follows.
+and then that page going down, which the stack reports as `popped` with the
+pages left, so the state that holds it follows.
 
 A page the program takes off the stack has already left the tree when the
 stack is shown again, so the host holds each presented page, and the shown
 arrangement, by its mounted element, which owns its Android half: the page is
 still whole as it goes down, and is let go with its holder.
 
-## The window's overlay
+## The window's overlays
 
-What a window lays over everything it shows - the inspector docked in it -
-stands in the activity's root as its top child, over the page and over every
-page the modal stack presents: a page that rises after it lifts the overlay
-over itself again. It is laid out over the whole root, and takes no touch of
-its own, as no StateUI layout on Android does: a touch beside what it holds
-goes on to the page under it. The host holds the overlay by its mounted
-element, as it does the arrangement, and takes its view out of the root when
-the window no longer describes it.
+What a window lays over everything it shows - the overlays the pages on its
+visible path declare, then the inspector docked in it - stand in the
+activity's root as its top children, the first lowest, over the page and over
+every page the modal stack presents: a page that rises after them lifts them
+over itself again. Each is laid out over the whole root, and takes no touch
+of its own, as no StateUI layout on Android does: a touch beside what it
+holds goes on to the page under it. The host holds the overlays by their
+mounted elements, as it does the arrangement, and takes their views out of
+the root and lays them again when the list it is told changes.

@@ -152,8 +152,8 @@ know what an arrangement shows.
 
 ## The modal stack
 
-The pages a window's modal stack presents stand over everything the window
-shows, as WinUI presents a dialog: each on a card over a veil across the
+The pages a modal stack standing as the window's page presents stand over
+everything the window shows, as WinUI presents a dialog: each on a card over a veil across the
 whole window - the chrome and the tabs too - the last on top. The card is a
 dialog's own - its background, outline and corners, no wider than a dialog
 and clear of the window's edges - with the presented page's title above the
@@ -164,17 +164,18 @@ What the user sees is the top sheet, else the window's arrangement: when that
 changes, the page that stops showing hears it and then the one that starts,
 as a move. Escape takes the top sheet away, and so does the window's way back
 while a sheet shows, once the sheet's own stack has no page to go back to;
-the window is told how many sheets remain.
+the stack is told how many sheets remain.
 
-## The window's overlay
+## The window's overlays
 
-What a window lays over everything it shows - the inspector docked in it -
-stands where the page stands, beneath the chrome, over the page and over
-every sheet, whichever came first. It has no background of its own, so a
-click beside what it holds goes on to the page or the sheet under it. It and
-the sheets are layers of the window, not the content of a row: the chrome and
-the menu bar standing again, as a page's menus come and go, leave both where
-they are. The window takes the overlay out when it no longer describes it.
+What a window lays over everything it shows - the overlays the pages on its
+visible path declare, then the inspector docked in it - stands where the page
+stands, beneath the chrome, over the page and over every sheet, whichever
+came first, the first lowest. None has a background of its own, so a click
+beside what one holds goes on to the page or the sheet under it. They and the
+sheets are layers of the window, not the content of a row: the chrome and the
+menu bar standing again, as a page's menus come and go, leave both where they
+are. The window takes the overlays' layer out when it is told none.
 
 ## Menus
 
