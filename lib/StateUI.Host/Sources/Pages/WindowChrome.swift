@@ -65,10 +65,16 @@
 
     /// What an authored title bar says of itself: its title, the line under it, and the picture beside it by name.
     public struct TitleArea: Equatable, Sendable {
+        /// The title; nil where the bar says none.
         public let title: String?
+
+        /// The line under the title; nil for none.
         public let subtitle: String?
+
+        /// The picture beside the title, by name; nil for none.
         public let icon: String?
 
+        /// An area saying `title`, `subtitle` and `icon`.
         public init(title: String?, subtitle: String?, icon: String?) {
             self.title = title
             self.subtitle = subtitle

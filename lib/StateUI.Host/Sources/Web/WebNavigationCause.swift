@@ -13,6 +13,7 @@
     /// Why the navigation under way began.
     public private(set) var current = WebNavigationEvent.unknown
 
+    /// No step asked, and no navigation under way.
     public init() {}
 
     /// The program asked the view for `step`: the next navigation to begin is its.

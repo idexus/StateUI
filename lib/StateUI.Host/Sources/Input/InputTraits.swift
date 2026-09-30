@@ -9,7 +9,16 @@
 @_spi(Host) public struct InputTraits: Equatable, Sendable {
     /// The keys a keyboard on the screen offers.
     public enum Keys: Equatable, Sendable {
-        case words, email, number, telephone, url
+        /// Letters, for prose.
+        case words
+        /// Letters with the at sign, for an address.
+        case email
+        /// Digits.
+        case number
+        /// A telephone's keys.
+        case telephone
+        /// Letters with the slash and the dot, for a web address.
+        case url
     }
 
     /// Where the platform puts letters in capitals as the user types.

@@ -8,6 +8,7 @@
     public private(set) var back = false
     public private(set) var forward = false
 
+    /// No way back or forward, as a web view stands before its first page.
     public init() {}
 
     /// Takes the ways as they stand; answers each that changed - nil for one that did not - the way back first to be
