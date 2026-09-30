@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 PaweÅ‚ KrzywdziÅ„ski and Contributors
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIWinUI
@@ -75,8 +75,8 @@ final class WinUIWebViewTests: XCTestCase {
 
     /// A web view an application listens to as a view stands, and its page arrives: WebView2, listened to by
     /// WinUI, ends the process - its page takes the user's hand.
-    func testAWebViewListenedToStands() throws {
-        try onUIThread {
+    func testAWebViewListenedToStands() {
+        onUIThread {
             let arrived = Received<Bool>()
             let host = WinUIRenderer.running {
                 VStack {
