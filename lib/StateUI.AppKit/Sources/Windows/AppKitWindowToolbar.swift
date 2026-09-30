@@ -213,9 +213,16 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
                 dividerIndex: 0)
         }
 
-        let item = itemIdentifier == Self.overflow
-            ? NSMenuToolbarItem(itemIdentifier: itemIdentifier)
-            : NSToolbarItem(itemIdentifier: itemIdentifier)
+        // A search field stands as the toolbar's own search item, which draws it as AppKit's rounded field: a
+        // field the toolbar holds as a plain item's view stands there with no field drawn at all.
+        // Design: docs/design/platforms/appkit/runtime.md#the-toolbar
+        let item: NSToolbarItem = if itemIdentifier == Self.overflow {
+            NSMenuToolbarItem(itemIdentifier: itemIdentifier)
+        } else if views[itemIdentifier] is NSSearchField {
+            NSSearchToolbarItem(itemIdentifier: itemIdentifier)
+        } else {
+            NSToolbarItem(itemIdentifier: itemIdentifier)
+        }
         configure(item)
         return item
     }
@@ -224,7 +231,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         let identifier = item.itemIdentifier
 
         if let view = views[identifier] {
-            item.view = view
+            if let search = item as? NSSearchToolbarItem, let field = view as? NSSearchField {
+                if search.searchField !== field { search.searchField = field }
+            } else {
+                item.view = view
+            }
             return
         }
 

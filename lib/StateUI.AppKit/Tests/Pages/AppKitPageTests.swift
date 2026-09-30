@@ -785,6 +785,32 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(flyout.sidebarWidthForTesting, 260)
     }
 
+    /// A search field in the title's place stands as the toolbar's own search item's field, which AppKit draws as
+    /// its rounded field; any other title view stands as a plain item's view.
+    @MainActor
+    func testATitleSearchFieldIsTheToolbarsSearchItem() throws {
+        let searching = State(wrappedValue: true)
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Label("Page").titleView {
+                    if searching.wrappedValue { SearchField("").id("query") } else { Label("Title") }
+                }
+            } destination: { _ in Label("Pushed") }
+        }
+        defer { renderer.closeForTesting() }
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
+        let search = try XCTUnwrap(renderer.viewForTesting(id: .manual("query")) as? AppKitSearchFieldView)
+
+        let item = try XCTUnwrap(toolbar.itemForTesting(AppKitWindowToolbar.center) as? NSSearchToolbarItem)
+        XCTAssertTrue(item.searchField === search, "our field, the search item's")
+
+        searching.wrappedValue = false
+        renderer.runtime.pump.turn()
+        let plain = try XCTUnwrap(toolbar.itemForTesting(AppKitWindowToolbar.center))
+        XCTAssertFalse(plain is NSSearchToolbarItem)
+        XCTAssertNotNil(plain.view, "the label's view")
+    }
+
     @MainActor
     func testNavigationUsesThePagesTitleViewAndToolbarItems() throws {
         let renderer = testRenderer(

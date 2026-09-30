@@ -100,7 +100,11 @@ tree stands in it - a title bar's leading or trailing content, a page's
 title view - is held in a slot at the size StateUI measures it at: AppKit
 measures a toolbar item's view by its constraints and warns of any it
 measures at nothing, so a layout holding nothing stands out of the toolbar,
-and in it again once it holds something.
+and in it again once it holds something. A search field standing in the
+title's place is the toolbar's own search item's field
+(`NSSearchToolbarItem.searchField`), which AppKit draws as its rounded
+field: held as a plain item's view, a field in a macOS 26 toolbar is drawn
+with no field at all.
 
 ## Acts
 
