@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The words the user types: a field on one line, whose Enter submits; an
-// editor of several lines, whose Enter starts a new one; and a search box,
-// WinUI's AutoSuggestBox, whose query submits. Each change of the words is told
-// through `textChanged` as it happens.
+// The words the user types: a field on one line, whose Enter submits - a
+// PasswordBox while it holds a password; an editor of several lines, whose
+// Enter starts a new one; and a search box, WinUI's AutoSuggestBox, whose query
+// submits. Each change of the words is told through `textChanged` as it happens.
 // Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
 
 #include "Automation.h"
@@ -45,6 +45,12 @@ namespace {
             static_cast<uint8_t>(argb)});
     }
 
+    /// The theme resources a text box's template reads its placeholder's colour from - at rest, under the pointer,
+    /// focused and disabled.
+    constexpr wchar_t const *placeholderResources[] = {
+        L"TextControlPlaceholderForeground", L"TextControlPlaceholderForegroundPointerOver",
+        L"TextControlPlaceholderForegroundFocused", L"TextControlPlaceholderForegroundDisabled"};
+
     /// The case a text box puts typed letters in for StateUI's `TextCase`: upper, lower, or as typed.
     controls::CharacterCasing casing(int32_t textCase) {
         return textCase == 3   ? controls::CharacterCasing::Upper
@@ -52,11 +58,29 @@ namespace {
                                : controls::CharacterCasing::Normal;
     }
 
-    /// The text box a field or an editor is, or the one a search box's template holds; null before it stands.
+    /// Tells the view `view` that Enter was pressed in `field`.
+    void hearEnter(controls::Control const &field, int64_t view) {
+        field.KeyDown([view](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
+            if (args.Key() == winrt::Windows::System::VirtualKey::Enter) callbacks.submitted(view);
+        });
+    }
+
+    /// The only scopes a password box takes: digits for a numeric purpose, a password's otherwise.
+    xaml::Input::InputScope passwordScope(int32_t purpose) {
+        xaml::Input::InputScope scope;
+        xaml::Input::InputScopeName name;
+        name.NameValue(purpose == 4 ? xaml::Input::InputScopeNameValue::NumericPin
+                                    : xaml::Input::InputScopeNameValue::Password);
+        scope.Names().Append(name);
+        return scope;
+    }
+
+    /// The text box a field or an editor is, or the one a search box's template holds; null before it stands, and
+    /// for a password box.
     controls::TextBox boxOf(StateUIObjectRef handle) {
         auto control = as<IInspectable>(handle);
         if (auto search = control.try_as<controls::AutoSuggestBox>()) return first<controls::TextBox>(search);
-        return control.as<controls::TextBox>();
+        return control.try_as<controls::TextBox>();
     }
 }
 
@@ -64,12 +88,28 @@ extern "C" StateUIObjectRef stateui_winui_field_make(int64_t view) {
     try {
         controls::TextBox field;
         hearWords(field, view);
-        field.KeyDown([view](IInspectable const &, xaml::Input::KeyRoutedEventArgs const &args) {
-            if (args.Key() == winrt::Windows::System::VirtualKey::Enter) callbacks.submitted(view);
-        });
+        hearEnter(field, view);
         return detach(field);
     } catch (...) {
         report("making a field");
+        return nullptr;
+    }
+}
+
+extern "C" StateUIObjectRef stateui_winui_password_make(int64_t view) {
+    try {
+        controls::PasswordBox field;
+        // PasswordChanging, as a text box's TextChanging: raised in the write that makes it.
+        field.PasswordChanging([view](controls::PasswordBox const &sender,
+                                      controls::PasswordBoxPasswordChangingEventArgs const &args) {
+            if (!args.IsContentChanging()) return;
+            auto bytes = winrt::to_string(sender.Password());
+            callbacks.textChanged(view, bytes.c_str());
+        });
+        hearEnter(field, view);
+        return detach(field);
+    } catch (...) {
+        report("making a password field");
         return nullptr;
     }
 }
@@ -115,6 +155,10 @@ extern "C" void stateui_winui_field_set_text(StateUIObjectRef handle, char const
             if (search.Text() != words) search.Text(words);
             return;
         }
+        if (auto password = control.try_as<controls::PasswordBox>()) {
+            if (password.Password() != words) password.Password(words);
+            return;
+        }
         auto field = control.as<controls::TextBox>();
         if (field.Text() == words) return;
         field.Text(words);
@@ -128,6 +172,7 @@ extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, cha
     try {
         auto control = as<IInspectable>(handle);
         if (auto search = control.try_as<controls::AutoSuggestBox>()) search.PlaceholderText(text(utf8));
+        else if (auto password = control.try_as<controls::PasswordBox>()) password.PlaceholderText(text(utf8));
         else control.as<controls::TextBox>().PlaceholderText(text(utf8));
     } catch (...) {
         report("setting a field's placeholder");
@@ -138,6 +183,11 @@ extern "C" void stateui_winui_field_set_behaviour(
     StateUIObjectRef handle, bool readOnly, bool spellChecked, bool predicted, int32_t purpose
 ) {
     try {
+        // A password box has no read-only state, spell checking or prediction.
+        if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
+            password.InputScope(passwordScope(purpose));
+            return;
+        }
         auto field = borrow<controls::TextBox>(handle);
         field.IsReadOnly(readOnly);
         field.IsSpellCheckEnabled(spellChecked);
@@ -150,7 +200,7 @@ extern "C" void stateui_winui_field_set_behaviour(
 
 extern "C" void stateui_winui_field_set_casing(StateUIObjectRef handle, int32_t textCase) {
     try {
-        borrow<controls::TextBox>(handle).CharacterCasing(casing(textCase));
+        if (auto field = as<IInspectable>(handle).try_as<controls::TextBox>()) field.CharacterCasing(casing(textCase));
     } catch (...) {
         report("setting the case a field's typing takes");
     }
@@ -176,11 +226,9 @@ extern "C" void stateui_winui_search_set_box(StateUIObjectRef handle, bool readO
 
 extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef handle, uint32_t argb, bool colored) {
     try {
-        // The template reads its placeholder's colour from these theme resources - at rest, under the pointer,
-        // focused and disabled - which the box's own resources name again.
+        // The template reads its placeholder's colour from the theme resources, which the box's own name again.
         std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
-        for (auto name : {L"TextControlPlaceholderForeground", L"TextControlPlaceholderForegroundPointerOver",
-                          L"TextControlPlaceholderForegroundFocused", L"TextControlPlaceholderForegroundDisabled"})
+        for (auto name : placeholderResources)
             brushes.emplace_back(name, colored ? brush(argb) : xaml::Media::Brush{nullptr});
         writeResources(borrow<controls::AutoSuggestBox>(handle), brushes);
     } catch (...) {
@@ -190,6 +238,15 @@ extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef hand
 
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
+        // A password box has no alignment of its own, and colours its placeholder from the theme resources its
+        // template reads.
+        if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
+            std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+            for (auto name : placeholderResources)
+                brushes.emplace_back(name, placeholderColored ? brush(placeholderArgb) : xaml::Media::Brush{nullptr});
+            writeResources(password, brushes);
+            return;
+        }
         auto field = borrow<controls::TextBox>(handle);
         field.TextAlignment(across(alignment));
         if (placeholderColored)
@@ -203,7 +260,9 @@ extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t al
 
 extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t start, int32_t length) {
     try {
-        auto field = borrow<controls::TextBox>(handle);
+        // A password box puts no caret where it is told.
+        auto field = as<IInspectable>(handle).try_as<controls::TextBox>();
+        if (!field) return;
         auto size = static_cast<int32_t>(field.Text().size());
         auto from = std::clamp(start, 0, size);
         field.Select(from, std::clamp(length, 0, size - from));
@@ -215,6 +274,12 @@ extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t star
 extern "C" void stateui_winui_field_facts(StateUIObjectRef handle, int32_t *facts) {
     try {
         auto field = boxOf(handle);
+        if (!field) {
+            // A password box holds none of these.
+            int32_t const none[] = {0, 0, 0, -1, 0, 0, 0, 0, 0};
+            std::memcpy(facts, none, sizeof none);
+            return;
+        }
         auto names = field.InputScope() ? field.InputScope().Names() : nullptr;
         int32_t const read[] = {
             field.IsReadOnly(), field.IsSpellCheckEnabled(), field.IsTextPredictionEnabled(),

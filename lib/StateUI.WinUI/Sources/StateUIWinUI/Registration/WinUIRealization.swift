@@ -70,6 +70,8 @@ enum WinUIRealization {
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
+        .partial("TextField", "isPassword", missing: "A PasswordBox has no read-only state, alignment, case, caret "
+            + "or selection: a password field keeps none of these."),
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete("TitleBar", "barForegroundColor"),
         .complete("TitleBar", "icon"),

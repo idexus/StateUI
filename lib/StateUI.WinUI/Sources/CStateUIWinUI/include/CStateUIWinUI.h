@@ -262,6 +262,10 @@ int32_t stateui_winui_window_system_title(StateUIObjectRef window, char *utf8, i
 /// decides its place.
 void stateui_winui_fill_place(StateUIObjectRef element);
 
+/// Stands `replacement` where `element` stands in its parent - a panel's child, a border's, or a content control's
+/// content - and takes `element` out; nothing where it stands in none.
+void stateui_winui_replace(StateUIObjectRef element, StateUIObjectRef replacement);
+
 /// Every element: measured and placed by its parent's panel, shown or collapsed, drawn how opaque.
 void stateui_winui_measure(StateUIObjectRef element, double width, double height, double *size);
 void stateui_winui_arrange(StateUIObjectRef element, double x, double y, double width, double height);
@@ -552,8 +556,10 @@ void stateui_winui_stepper_enter_as_user(StateUIObjectRef stepper, char const *u
 void stateui_winui_value_move(StateUIObjectRef control, double value);
 
 /// The words the user types, each change told through `textChanged`: a field on one line, whose Enter is
-/// `submitted`; an editor of several lines, whose Enter starts a new one; a search box, whose query is `submitted`.
+/// `submitted`, and one holding a password; an editor of several lines, whose Enter starts a new one; a search box,
+/// whose query is `submitted`.
 StateUIObjectRef stateui_winui_field_make(int64_t view);
+StateUIObjectRef stateui_winui_password_make(int64_t view);
 StateUIObjectRef stateui_winui_editor_make(int64_t view);
 StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);

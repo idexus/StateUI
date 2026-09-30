@@ -264,6 +264,26 @@ them, so a test waits for them before it submits the query - as a key is
 told before the next is pressed - and submits through the search box's
 automation peer, as its own button does.
 
+## A password
+
+WinUI's `TextBox` shows every word it holds; a password is another control,
+the `PasswordBox`. A field whose `isPassword` turns on stands a `PasswordBox`
+in its `TextBox`'s place, and one that turns off a `TextBox` again: the view
+keeps its number and its place in its layout, takes the words it held over,
+and lets the old control go. What every view hangs on its control - the
+user's input it listens for, its focus heard, whether it shows, how opaque
+and where drawn - comes off the old one and goes on the new, and its element
+writes the new one every value it holds, as it does a control just made.
+
+A `PasswordBox` reports its words from `PasswordChanging`, raised inside the
+write as a text box's `TextChanging` is, and its Enter submits. It takes the
+placeholder, its colour through the theme resources its template reads, the
+font and the words' colour, and the input scope - digits for a numeric
+purpose, a password's otherwise, the only two it takes. It has no read-only
+state, alignment, case, caret or selection, and no spell checking or
+prediction: a password field keeps none of them, which the register records
+beside `isPassword`.
+
 ## Return
 
 A field submits when Enter goes down in it; the key's release reaches nothing.

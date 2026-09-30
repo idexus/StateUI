@@ -29,6 +29,24 @@ extern "C" void stateui_winui_fill_place(StateUIObjectRef handle) {
     }
 }
 
+extern "C" void stateui_winui_replace(StateUIObjectRef handle, StateUIObjectRef replacement) {
+    try {
+        auto element = as<xaml::FrameworkElement>(handle);
+        auto standing = as<xaml::UIElement>(replacement);
+        auto parent = element.Parent();
+        if (auto panel = parent.try_as<controls::Panel>()) {
+            uint32_t index = 0;
+            if (panel.Children().IndexOf(element, index)) panel.Children().SetAt(index, standing);
+        } else if (auto border = parent.try_as<controls::Border>()) {
+            border.Child(standing);
+        } else if (auto content = parent.try_as<controls::ContentControl>()) {
+            content.Content(standing);
+        }
+    } catch (...) {
+        report("standing an element in another's place");
+    }
+}
+
 extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, double height, double *size) {
     try {
         auto element = as<xaml::UIElement>(handle);
@@ -258,6 +276,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
             if (!block.Inlines().Size()) words = block.Text();
         } else if (auto box = object.try_as<controls::TextBox>()) {
             words = box.Text();
+        } else if (auto password = object.try_as<controls::PasswordBox>()) {
+            words = password.Password();
         } else if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             words = search.Text();
         } else if (auto caption = captionOf(object)) {

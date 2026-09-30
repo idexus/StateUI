@@ -9,8 +9,11 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/relay.md#a-view-and-its-number
 @MainActor
 class WinUIView {
-    /// The element, held until this is released.
-    let handle: StateUIObjectRef
+    /// The element, held until this is released or another stands in its place (`replaceNative`).
+    private(set) var handle: StateUIObjectRef
+
+    /// Whether another element came to stand in this one's place, which its values are all written to again.
+    var replacedNative = false
 
     /// The number the relay's callbacks name this view by.
     let number: Int64
@@ -58,6 +61,30 @@ class WinUIView {
     isolated deinit {
         Self.live.release(number)
         stateui_winui_release(handle)
+    }
+
+    /// Stands `replacement`, made for this view's number, in the element's place and lets the element go: what every
+    /// view holds is heard and written on it again, and its element writes it all its values (`replacedNative`).
+    /// Design: docs/design/platforms/winui/controls.md#a-password
+    func replaceNative(with replacement: StateUIObjectRef) {
+        if !hearing.isEmpty { stateui_winui_hear(handle, number, 0) }
+        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, false) }
+        stateui_winui_replace(handle, replacement)
+        stateui_winui_release(handle)
+        handle = replacement
+        replacedNative = true
+
+        stateui_winui_fill_place(handle)
+        if !hearing.isEmpty { stateui_winui_hear(handle, number, hearing.rawValue) }
+        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, true) }
+        stateui_winui_set_shown(handle, isShown)
+        stateui_winui_set_opacity(handle, writtenOpacity)
+        stateui_winui_set_z_index(handle, writtenZIndex)
+        writeTransform()
+        let frame = placedFrame
+        for what in paintsBySize.keys.sorted() { paintsBySize[what]?(LayoutSize(width: frame.width, height: frame.height)) }
+        invalidateMeasure()
+        placingLayout?.invalidateArrange()
     }
 
     /// The live view a callback names; nil once it has left.

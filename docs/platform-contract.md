@@ -455,13 +455,13 @@ Every control, and every part an application, its windows and its pages are made
 | [Stepper](controls/Stepper.md) | 71 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 57 ✅ | 20 ✅ |  |
 | [Switch](controls/Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 22 ✅ |  |
 | [TextEditor](controls/TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 23 ✅ |  |
-| [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 68 ✅ | 23 ✅ |  |
+| [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 23 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | 70 |  |  |  | 4 ✅ |  |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 | 1004 of 2591 met | 1040 of 2591 met | 1763 of 2591 met | 1884 of 2591 met | 585 of 2591 met |  |
+| **Met** - ✅ and – | 2591 | 1004 of 2591 met | 1040 of 2591 met | 1763 of 2591 met | 1885 of 2591 met | 585 of 2591 met |  |
 
 ### Application structure
 
@@ -567,7 +567,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Switch](controls/Switch.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [TabbedView](controls/TabbedView.md) | `currentPage`, `currentPageChanged` | 2 | 1 ✅ | 2 ✅ |  | 2 ✅ |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
-| [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ |  | 1 ✅ |  |
+| [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  | 4 ✅ |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  | 2 ✅ |  |  |

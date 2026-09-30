@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ | 42 ✅ · 1 ☑️ | `NSTextField` / `NSSecureTextField` |  |
 | UIKit | ✅ | 46 ✅ | `UITextField` |  |
 | Android Views | ✅ | 66 ✅ · 1 ☑️ · 1 – | `EditText` |  |
-| WinUI 3 | ✅ | 68 ✅ | `TextBox` / `PasswordBox` |  |
+| WinUI 3 | ✅ | 69 ✅ · 1 ☑️ | `TextBox` / `PasswordBox` |  |
 | GTK 4 | ✅ | 23 ✅ | `GtkEntry` / `GtkPasswordEntry` |  |
 | Web |  |  | `<input>` | no host yet |
 
@@ -38,7 +38,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextFieldContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isPassword` | property | `Bool` | native | ✅ | ✅ | ✅ |  | · |  | WinUI 3: not realized; GTK 4: cannot read isPassword of TextField - GTK's driver has no path for it yet |
+| `isPassword` | property | `Bool` | native | ✅ | ✅ | ✅ | ☑️ | · |  | WinUI 3: A PasswordBox has no read-only state, alignment, case, caret or selection: a password field keeps none of these.; GTK 4: cannot read isPassword of TextField - GTK's driver has no path for it yet |
 | `returnKey` | property | `ReturnKey` | adaptive |  |  | · |  |  |  | not realized; UIKit: not realized; Android Views: cannot read returnKey of TextField - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 | `showsClearButton` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `onSubmitted` (`submitted`) | event |  | native | ✅ | ✅ | ✅ | · | ✅ |  | WinUI 3: cannot submit on TextField - WinUI raises a text box's KeyDown only from the keyboard; Enter is walked on HelloWorld's field |
@@ -153,7 +153,7 @@ What every element showing words has: the words, and the case they are drawn in.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | `String` | native | ✅ | ✅ | ◐ | ◐ | ◐ |  | Android Views: waits on TextField.isReadOnly; WinUI 3: waits on TextField.isPassword; GTK 4: cannot read isPassword of TextField - GTK's driver has no path for it yet |
+| `text` | property | `String` | native | ✅ | ✅ | ◐ | ✅ | ◐ |  | Android Views: waits on TextField.isReadOnly; GTK 4: cannot read isPassword of TextField - GTK's driver has no path for it yet |
 | `textCase` | property | `TextCase` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)

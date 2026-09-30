@@ -61,6 +61,12 @@ extension WinUIElement {
             changed, to: view, of: type,
             reading: { [element] in element.value($0) },
             carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        if view.replacedNative {
+            // Another native element stands in the view's place: it takes every value the element holds.
+            view.replacedNative = false
+            contextMenuChanged = hadContextMenu
+            return applyProperties(changed: Set(element.properties.keys).union(element.driven.keys))
+        }
 
         let own = changed.subtracting(taken)
         for property in own {

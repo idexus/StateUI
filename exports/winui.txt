@@ -282,6 +282,7 @@ TextField
   horizontalTextAlignment
   inputPurpose
   isEnabled
+  isPassword
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled

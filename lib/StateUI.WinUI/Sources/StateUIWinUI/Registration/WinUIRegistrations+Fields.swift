@@ -15,6 +15,7 @@ extension WinUIRegistrations {
             field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return field
         }, members: { field in
+            field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
             field.raises(InputViewContract.textChanged)
