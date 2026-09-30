@@ -400,7 +400,7 @@ enum JavaAPI {
     static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
     static let setWindowTitle = Java.staticMethod(
         environment, "title", "(Landroid/content/Context;Ljava/lang/String;)V")
-    static let deviceFacts = Java.staticMethod(environment, "device", "()[Ljava/lang/String;")
+    static let deviceFacts = Java.staticMethod(environment, "device", "(Landroid/content/Context;)[Ljava/lang/String;")
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
     static let applicationFacts = Java.staticMethod(
         environment, "application", "(Landroid/content/Context;)[Ljava/lang/String;")

@@ -35,6 +35,15 @@ struct EnvironmentPage: ContentView {
     }
 }
 
+/// A page showing what the device is called.
+struct DevicePage: ContentView {
+    @Environment var device: DeviceInfo
+
+    var content: any View {
+        Label("device \(device.name)")
+    }
+}
+
 final class AndroidRendererTests: XCTestCase {
     static var allTests: [(String, (AndroidRendererTests) -> () throws -> Void)] {
         [
@@ -42,6 +51,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
@@ -123,6 +133,33 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
             XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
             XCTAssertFalse(HostBoundary.realizes(MapContract.self))
+        }
+    }
+
+    /// The device is called what its user named it in Settings - "Skorpio 01" - not its model's code name, the same
+    /// on every device of that model.
+    func testTheDeviceIsCalledWhatItsUserNamedIt() throws {
+        try onMainActor {
+            let named = try XCTUnwrap(Self.nameInSettings)
+            stateUIUseApp(OneWindowApplication(page: { DevicePage() }))
+            let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
+
+            XCTAssertEqual(host.views(AndroidLabelView.self).map(\.text), ["device \(named)"])
+        }
+    }
+
+    /// The name the user gave the device in Settings; nil where there is none.
+    @MainActor
+    private static var nameInSettings: String? {
+        Java.frame {
+            let settings = Java.findClass("android/provider/Settings$Global")
+            let getString = Java.staticMethod(
+                settings, "getString", "(Landroid/content/ContentResolver;Ljava/lang/String;)Ljava/lang/String;")
+            let resolver = Java.callObject(
+                TestContext.context.reference,
+                Java.method(JavaAPI.contextClass, "getContentResolver", "()Landroid/content/ContentResolver;"))
+            return Java.callStaticObject(settings, getString, .object(resolver), .object(Java.string("device_name")))
+                .map { Java.text($0) }
         }
     }
 

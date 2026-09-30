@@ -77,7 +77,9 @@ and stderr at a pipe whose reader writes each line to logcat under the tag
 
 What the device, its display and the application are is read as the host
 starts and whenever the activity's configuration changes, each group of
-facts in one call: the model, the maker and Android's version; the display's
+facts in one call: the model, the maker, the device's name and Android's
+version - the name its user gave it in Settings, which tells one terminal of
+a model from another, else the model's code name; the display's
 size in pixels, its density, rotation and refresh rate; the application's
 name, package and version. A device whose smallest width is 600
 density-independent pixels or more is a tablet, any other a phone. The

@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
@@ -36,12 +37,16 @@ import java.util.TimeZone;
 final class StateUIEnvironment {
     private StateUIEnvironment() {}
 
-    /** The model, the maker, the device's name, Android's version, and "1" on an emulator. */
-    static String[] device() {
+    /**
+     * The model, the maker, the device's name - the one its user gave it in Settings, else the model's code name -
+     * Android's version, and "1" on an emulator.
+     */
+    static String[] device(Context context) {
         boolean emulator = Build.FINGERPRINT.startsWith("generic") || Build.HARDWARE.contains("ranchu")
                 || Build.HARDWARE.contains("goldfish") || Build.PRODUCT.contains("sdk");
-        return new String[] { Build.MODEL, Build.MANUFACTURER, Build.DEVICE, Build.VERSION.RELEASE,
-                emulator ? "1" : "0" };
+        String named = Settings.Global.getString(context.getContentResolver(), Settings.Global.DEVICE_NAME);
+        return new String[] { Build.MODEL, Build.MANUFACTURER, named == null || named.isEmpty() ? Build.DEVICE : named,
+                Build.VERSION.RELEASE, emulator ? "1" : "0" };
     }
 
     /**

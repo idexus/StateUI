@@ -23,7 +23,7 @@ enum AndroidEnvironment {
         }
 
         Java.frame {
-            let device = Java.texts(Java.callStaticObject(JavaAPI.environment, JavaAPI.deviceFacts))
+            let device = Java.texts(Java.callStaticObject(JavaAPI.environment, JavaAPI.deviceFacts, .object(activity)))
             let display = floats(Java.callStaticObject(JavaAPI.environment, JavaAPI.displayFacts, .object(activity)))
             let application = Java.texts(
                 Java.callStaticObject(JavaAPI.environment, JavaAPI.applicationFacts, .object(activity)))
