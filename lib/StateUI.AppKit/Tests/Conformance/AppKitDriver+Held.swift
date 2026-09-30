@@ -29,7 +29,13 @@ extension AppKitDriver {
         case .fontSize, .fontAttributes, .fontFamily, .textColor:
             return try words(property, view)
         case .background:
-            return view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }.map { Background.color(color($0)).propValue }
+            // A field and an editor fill their own; every other view is its layer's colour.
+            let fill: NSColor? = switch view {
+            case let field as AppKitTextFieldView: field.textField.backgroundColor
+            case let editor as AppKitTextEditorView: editor.textView.backgroundColor
+            default: view.layer?.backgroundColor.flatMap { NSColor(cgColor: $0) }
+            }
+            return fill.map { Background.color(color($0)).propValue }
         default:
             return try controlHolds(property, view)
         }

@@ -33,6 +33,14 @@ enum AppKitRegistrations {
         return registry
     }()
 
+    /// The elements whose registration draws their background itself - a field, a button, a colour box - under
+    /// which no layer paints another: a search field's rounded field takes no fill colour, and a square painted
+    /// under it hid its shape.
+    /// Design: docs/design/platforms/appkit/registrations.md#a-background
+    static let drawOwnBackground: Set<NodeType> = Set(registry.realization.members
+        .filter { $0.owner == VisualElementContract.name && $0.member == VisualElementContract.background.name }
+        .map { NodeType($0.element) })
+
     /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), and
     /// the scene's kept values, which a Mac keeps in the window it restores. The host layer's performer
     /// (`HostActPerformer`) answers exactly these and the application's own; every other act it refuses by name.

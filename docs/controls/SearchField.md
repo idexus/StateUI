@@ -25,7 +25,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 | Host | Created | Members (89) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 41 ✅ · 1 ☑️ | `NSSearchField` |  |
+| AppKit | ✅ | 41 ✅ · 1 – | `NSSearchField` |  |
 | UIKit | ✅ | 45 ✅ | `UISearchBar` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | `SearchView` |  |
 | WinUI 3 | ✅ | 64 ✅ · 1 ☑️ | `AutoSuggestBox` |  |
@@ -59,7 +59,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityHint of SearchField - GTK's driver has no path for it yet |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityLabel of SearchField - GTK's driver has no path for it yet |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of SearchField - GTK's driver has no path for it yet |
-| `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `background` | property | `Background` | native | – |  | ✅ |  |  |  | AppKit draws its own rounded search field, which takes no fill colour.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ⏸ |  | GTK 4: waits on SearchField.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

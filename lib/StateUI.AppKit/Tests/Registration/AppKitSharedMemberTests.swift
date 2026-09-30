@@ -124,17 +124,25 @@ final class AppKitSharedMemberTests: XCTestCase {
     }
 
     /// A background colour paints the view it is written on: its layer, or -
-    /// for a colour box, which draws its own colours - its drawing.
+    /// for a view that draws its own - its own fill, a colour box's drawing, a
+    /// field's and an editor's. A search field takes none: AppKit draws its
+    /// rounded field itself, and no square is painted under it.
     @MainActor
     func testABackgroundColourPaintsEveryView() throws {
         let layered: [NodeType] = [
             .activityIndicator, .button, .canvas, .checkBox, .datePicker,
             .ellipse, .grid, .hStack, .image, .label, .line, .path, .picker, .polygon,
-            .polyline, .progressBar, .radioButton, .rectangle, .scrollView, .searchField,
-            .slider, .stepper, .switch, .textEditor, .textField, .timePicker, .vStack, .zStack,
+            .polyline, .progressBar, .radioButton, .rectangle, .scrollView,
+            .slider, .stepper, .switch, .timePicker, .vStack, .zStack,
         ]
+        let layer: (NSView) -> [CGFloat]? = { channels($0.layer?.backgroundColor) }
+        var fills: [(NodeType, (NSView) -> [CGFloat]?)] = layered.map { ($0, layer) }
+        fills.append((NodeType.colorBox, { channels(($0 as? AppKitColorBoxView)?.backgroundColor) }))
+        fills.append((NodeType.textField, { channels(($0 as? AppKitTextFieldView)?.textField.backgroundColor) }))
+        fills.append((NodeType.textEditor, { channels(($0 as? AppKitTextEditorView)?.textView.backgroundColor) }))
+        fills.append((NodeType.searchField, layer))
 
-        for type in layered + [.colorBox] {
+        for (type, fill) in fills {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var view = HostPatch(id: .manual("view"), type: type)
@@ -142,10 +150,11 @@ final class AppKitSharedMemberTests: XCTestCase {
             renderer.applyForTesting(tree(view))
 
             let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("view")), type.name)
-            let painted = type == .colorBox
-                ? channels((native as? AppKitColorBoxView)?.backgroundColor)
-                : channels(native.layer?.backgroundColor)
-            assertChannels(painted, [0.2, 0.4, 0.6, 1], type.name)
+            if type == .searchField {
+                XCTAssertNil(fill(native), "no square under the rounded field")
+            } else {
+                assertChannels(fill(native), [0.2, 0.4, 0.6, 1], type.name)
+            }
         }
     }
 

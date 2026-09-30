@@ -25,7 +25,7 @@ ProgressBar.zIndex: not realized
 RadioButton.scaleY: 🔌 read scaleY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.rotationY: 🔌 read rotationY of Rectangle: the host's own transform, checked against the layer it composed itself
 ScrollView.pivotY: 🔌 read pivotY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+SearchField.background: – AppKit draws its own rounded search field, which takes no fill colour.
 Slider.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Stepper.style: ✅
 Switch.ignoresInput: ✅

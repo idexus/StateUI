@@ -94,7 +94,7 @@ extension AppKitElement {
         applyVisibility()
         if let scroll = view as? AppKitScrollView {
             scroll.boxBackground = color(.background)
-        } else if !(view is AppKitTravellingLayout) && !(view is AppKitColorBoxView) {
+        } else if !(view is AppKitTravellingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
             let background = color(.background)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor

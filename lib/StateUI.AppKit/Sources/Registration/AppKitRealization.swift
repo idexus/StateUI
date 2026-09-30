@@ -90,6 +90,7 @@ enum AppKitRealization {
         .complete("ScrollView", "scrollStopped"),
         .complete("ScrollView", "scrollXChanged"),
         .complete("ScrollView", "scrollYChanged"),
+        .notPlanned("SearchField", "background", reason: "AppKit draws its own rounded search field, which takes no fill colour."),
         .complete("Span", "fontAttributes"),
         .complete("Span", "text"),
         .complete("Span", "textCase"),

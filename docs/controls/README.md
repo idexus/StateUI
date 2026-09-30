@@ -51,7 +51,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [RadioButton](RadioButton.md) | 81 | 38 ✅ · 1 ☑️ | 34 ✅ · 3 – | 59 ✅ · 1 ☑️ · 3 – | 63 ✅ | 25 ✅ |  |
 | [Rectangle](Rectangle.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 20 ✅ |  |
 | [ScrollView](ScrollView.md) | 77 | 32 ✅ · 2 ☑️ · 3 – | 33 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 21 ✅ |  |
-| [SearchField](SearchField.md) | 89 | 41 ✅ · 1 ☑️ | 45 ✅ | 65 ✅ · 1 ☑️ · 1 – | 64 ✅ · 1 ☑️ | 23 ✅ |  |
+| [SearchField](SearchField.md) | 89 | 41 ✅ · 1 – | 45 ✅ | 65 ✅ · 1 ☑️ · 1 – | 64 ✅ · 1 ☑️ | 23 ✅ |  |
 | [Slider](Slider.md) | 73 | 34 ✅ · 1 ☑️ | 30 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 57 ✅ | 24 ✅ |  |
 | [Stepper](Stepper.md) | 71 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 57 ✅ | 20 ✅ |  |
 | [Switch](Switch.md) | 69 | 31 ✅ · 1 ☑️ | 27 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ | 22 ✅ |  |
@@ -62,7 +62,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 | 1004 of 2591 met | 1040 of 2591 met | 1763 of 2591 met | 1885 of 2591 met | 585 of 2591 met |  |
+| **Met** - ✅ and – | 2591 | 1005 of 2591 met | 1040 of 2591 met | 1763 of 2591 met | 1885 of 2591 met | 585 of 2591 met |  |
 <!-- controls:end -->
 
 ## Application structure

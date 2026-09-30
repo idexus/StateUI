@@ -94,6 +94,25 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertEqual(submits, 1)
     }
 
+    /// A field whose own registration takes its background keeps AppKit's drawing of it: nothing paints a square
+    /// under the search field's rounded field, or around a text field's own.
+    @MainActor
+    func testAFieldsBackgroundIsNoSquareUnderIt() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                SearchField("Ada").background(.red)
+                TextField("Ada").background(.red)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
+        let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
+
+        XCTAssertNil(search.layer?.backgroundColor, "the search field's rounded field stands alone")
+        XCTAssertNil(field.layer?.backgroundColor, "the text field draws its own")
+        XCTAssertEqual(field.textField.backgroundColor, NSColor(red: 1, green: 0, blue: 0, alpha: 1))
+    }
+
     /// A search field's font family reaches its native field.
     @MainActor
     func testASearchFieldsFontFamilyComesThroughTheHost() throws {
