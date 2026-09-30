@@ -22,6 +22,11 @@
     /// `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
+    /// What an arrangement of pages declares beside its pages - its actions, its menus, its title view - kept
+    /// apart, so its children are its pages alone; nothing for any other element.
+    /// Design: docs/design/host/tree.md#an-arrangements-slots
+    public private(set) var slots: [MountedElement] = []
+
     /// Each child's place in the order the last arrangement wrote them - known before the children are made.
     private(set) var writingOrder: [ElementId: Int] = [:]
 
@@ -134,17 +139,19 @@
         case .changed(let childPatches):
             for childPatch in childPatches {
                 // A new child arrives only in an arranged list; a sparse list naming a stranger drifted.
-                guard let index = children.firstIndex(where: { $0.id == childPatch.id }) else {
+                let isSlot = holdsSlotsApart && NodeType.slotTypes.contains(childPatch.type)
+                guard let index = (isSlot ? slots : children).firstIndex(where: { $0.id == childPatch.id }) else {
                     tree.intake.drifted("a patch names child '\(childPatch.id)' that '\(id)' does not have")
                     continue
                 }
-                let child = children[index]
+                let child = isSlot ? slots[index] : children[index]
 
                 if child.type == childPatch.type, !childPatch.replace {
                     child.apply(childPatch)
                 } else if childPatch.replace {
                     child.leave()
-                    children[index] = MountedElement(childPatch, tree: tree, parent: self)
+                    let anew = MountedElement(childPatch, tree: tree, parent: self)
+                    if isSlot { slots[index] = anew } else { children[index] = anew }
                 } else {
                     tree.intake.drifted(
                         "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
@@ -167,7 +174,7 @@
         restack()
         if changed.contains(.layoutDirection) { directionTurned(arrangingItself: false) }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
-            || children.contains { $0.framesRead }
+            || held.contains { $0.framesRead }
         native.applied(changed: changed, wasDescribed: described)
         described = true
         reconcilePresentation(from: previouslyShown)
@@ -179,12 +186,11 @@
         tree?.tellPhase(handler)
     }
 
-    /// Reconciles a complete child arrangement by key.
+    /// Reconciles a complete child arrangement by key - an arrangement of pages keeping its slots apart.
     private func arrange(_ patches: [HostPatch], tree: MountedTree) {
-        let before = children
-        let previous = Dictionary(uniqueKeysWithValues: children.map { ($0.id, $0) })
-
-        children = patches.map { patch in
+        let before = held
+        let previous = Dictionary(before.map { ($0.id, $0) }) { first, _ in first }
+        let mounted = { (patch: HostPatch) -> MountedElement in
             if let child = previous[patch.id], child.type == patch.type, !patch.replace {
                 child.parent = self
                 child.apply(patch)
@@ -193,8 +199,21 @@
 
             return MountedElement(patch, tree: tree, parent: self)
         }
+
+        let isSlot = { (patch: HostPatch) in self.holdsSlotsApart && NodeType.slotTypes.contains(patch.type) }
+        children = patches.filter { !isSlot($0) }.map(mounted)
+        slots = patches.filter(isSlot).map(mounted)
         leave(before)
     }
+
+    /// Whether this element is an arrangement of pages, whose children are its pages alone.
+    private var holdsSlotsApart: Bool { Self.arrangements.contains(type) }
+
+    /// Everything this element holds: its children, then its slots.
+    private var held: [MountedElement] { children + slots }
+
+    /// The arrangements of pages, which keep their slots apart from their pages.
+    private static let arrangements: Set<NodeType> = [.navigationStack, .tabbedView, .splitView]
 
     /// Puts a grid's or a ZStack's children in the order they are drawn: by `zIndex`, ties in the order
     /// written. Answers whether the order moved.
@@ -236,7 +255,7 @@
 
     /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {
-        let staying = Set(children.map(ObjectIdentifier.init))
+        let staying = Set(held.map(ObjectIdentifier.init))
         for child in previous where !staying.contains(ObjectIdentifier(child)) {
             child.leave()
         }
@@ -262,14 +281,14 @@
         wornStates = []
         isLeaving = false
         native.leave()
-        for child in children { child.leave() }
+        for child in held { child.leave() }
     }
 
     /// The first element of `type` in this subtree, this one first.
     public func first(type sought: NodeType) -> MountedElement? {
         if type == sought { return self }
 
-        for child in children {
+        for child in held {
             if let found = child.first(type: sought) { return found }
         }
 
@@ -300,7 +319,7 @@
     public func first(id sought: ElementId) -> MountedElement? {
         if id == sought { return self }
 
-        for child in children {
+        for child in held {
             if let found = child.first(id: sought) { return found }
         }
 
@@ -310,7 +329,7 @@
     /// Every element with key `sought` in this subtree.
     public func all(id sought: ElementId) -> [MountedElement] {
         var found = id == sought ? [self] : []
-        for child in children {
+        for child in held {
             found.append(contentsOf: child.all(id: sought))
         }
         return found
@@ -327,7 +346,7 @@
             }
         }
 
-        for child in children {
+        for child in held {
             handlers.append(contentsOf: child.takeCreatedHandlers())
         }
 
@@ -341,7 +360,7 @@
             children.remove(at: index)
             return
         }
-        for child in children { child.forgetForTesting(where: matches) }
+        for child in held { child.forgetForTesting(where: matches) }
     }
 
     /// Presents one frame in one walk: bound states' values and moved properties, each parent arranged once.
@@ -362,7 +381,7 @@
         let own = changed.isEmpty ? FrameImpact.none : presentFrame(changed)
         var descendants = FrameImpact.none
 
-        for child in children {
+        for child in held {
             descendants = descendants.union(child.applyFrame(states: valuesByState, properties: propertiesByMount))
         }
 

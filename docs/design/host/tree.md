@@ -46,6 +46,17 @@ element owns its native half; the half refers back without owning, so it can
 never outlive the element. Anything that keeps an element beyond the tree -
 a window's shown page, a sheet - holds the element, never the native half.
 
+## An arrangement's slots
+
+An arrangement's children are its pages: a stack's top is its last child, a
+split view's detail its second, a tab its place among them - and every host
+reads them so. What an arrangement declares beside its pages - its actions,
+its menus, its title view - arrives among its children in the patch, and the
+tree keeps it apart, in the arrangement's slots, so no host ever takes it for
+a page. Every walk of the tree - a search, a frame, an element leaving - takes
+the slots with the children. A page and a view keep their slots among their
+children: a page lays out only its content, and a slot has no view to lay out.
+
 ## Standing values
 
 An animation starts where the value stands, never where the tree last said it

@@ -310,6 +310,22 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(file.last?.entries.map(\.isEnabled), [false])
     }
 
+    /// An arrangement's children are its pages: what it declares - its actions, its menus, its title view - is
+    /// never its top page, and a search still finds it.
+    func testAnArrangementsDeclarationsAreNotItsPages() throws {
+        let runtime = runtime(stackWindow([
+            node("a", .page), node("b", .page),
+            node("items", .toolbarItems, children: [node("save", .toolbarItem)]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let stack = try XCTUnwrap(root.first(id: .manual("stack")))
+
+        XCTAssertEqual(stack.children.map(\.id), [.manual("a"), .manual("b")])
+        XCTAssertEqual(stack.slots.map(\.id), [.manual("items")])
+        XCTAssertEqual(stack.visiblePage?.id, .manual("b"))
+        XCTAssertNotNil(root.first(id: .manual("save")))
+    }
+
     /// A page's slots furnish its chrome and stand in none of its room; another element places every child.
     func testAPagePlacesAllButItsSlots() throws {
         let runtime = runtime(node("page", .page, children: [
