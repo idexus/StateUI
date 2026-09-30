@@ -91,7 +91,9 @@ words the page beneath gives, else "Back"; the visible page's actions - none
 where it hides its bar - by priority, then in the order written, those placed
 in the overflow apart; the title bar's content in the title's place, else the
 page's title view, and the title bar's leading and trailing content beside
-it; the bars' colours (`barColors`) from the nearest stack or tabbed view
+it; an authored title bar's own title, subtitle and picture, where it says any
+of them (`titleArea`), which a host shows where its platform names the
+application; the bars' colours (`barColors`) from the nearest stack or tabbed view
 around the visible page, else the title bar, and what stands on them from the
 nearest stack, else the title bar; the visible page's menu bar; and the
 sidebar's toggle where the window shows a split view. A host lays these out

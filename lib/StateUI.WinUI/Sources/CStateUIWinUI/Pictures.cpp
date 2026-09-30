@@ -191,6 +191,28 @@ controls::Image stateui::pictureImage(char const *names) {
     return image;
 }
 
+controls::IconSource stateui::pictureIconSource(char const *names) {
+    auto file = pictureFile(names);
+    if (file.empty()) return nullptr;
+    auto dot = file.find_last_of(L'.');
+    auto svg = dot != std::wstring::npos && file.substr(dot) == L".svg";
+    controls::ImageIconSource icon;
+    if (svg) icon.ImageSource(imaging::SvgImageSource(address(pictures() + file)));
+    else icon.ImageSource(imaging::BitmapImage(address(pictures() + file)));
+    return icon;
+}
+
+std::wstring stateui::sourceFile(controls::IconSource const &icon) {
+    auto pictured = icon ? icon.try_as<controls::ImageIconSource>() : nullptr;
+    if (!pictured || !pictured.ImageSource()) return {};
+    winrt::Windows::Foundation::Uri at{nullptr};
+    if (auto svg = pictured.ImageSource().try_as<imaging::SvgImageSource>()) at = svg.UriSource();
+    else if (auto bitmap = pictured.ImageSource().try_as<imaging::BitmapImage>()) at = bitmap.UriSource();
+    if (!at) return {};
+    std::wstring path(at.Path());
+    return path.substr(path.find_last_of(L'/') + 1);
+}
+
 std::wstring stateui::iconFile(controls::IconElement const &icon) {
     auto pictured = icon ? icon.try_as<controls::ImageIcon>() : nullptr;
     if (!pictured || !pictured.Tag()) return {};

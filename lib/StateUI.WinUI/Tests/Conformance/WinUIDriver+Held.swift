@@ -27,6 +27,9 @@ extension WinUIDriver {
         case .window:
             if let held = try windowHolds(property.name, element) { return held }
             throw cannot
+        case .titleBar:
+            if let held = try titleBarHolds(property.name, element) { return held }
+            throw cannot
         case .page, .navigationStack, .splitView, .tabbedView:
             if let held = try pageHolds(property.name, element, view) { return held }
         case .button where property.name == "icon":
@@ -448,6 +451,19 @@ extension WinUIDriver {
     static func picture(_ shown: String, named element: MountedElement) -> HostValue {
         let named = element.value(.icon)?.string ?? ""
         return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
+    }
+
+    /// An authored title bar's, as the window's chrome shows it: its title, subtitle, picture and words' colour.
+    private func titleBarHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
+        let bar = try window().titleBar
+        switch name {
+        case "isVisible": return stateui_winui_is_shown(bar.handle).propValue
+        case "title": return .string(try read(bar, "title"))
+        case "subtitle": return .string(try read(bar, "subtitle"))
+        case "icon": return Self.picture(try read(bar, "icon"), named: element)
+        case "barForegroundColor": return try Self.color(read(bar, "foreground")).map { $0.propValue }
+        default: return nil
+        }
     }
 
     /// The place of the toolbar's item among the actions the chrome shows, as its chrome chooses them.

@@ -228,6 +228,8 @@ namespace {
         if (what == "title") return narrow(bar.Title());
         if (what == "back") return flag(bar.IsBackButtonVisible());
         if (what == "paneToggle") return flag(bar.IsPaneToggleButtonVisible());
+        if (what == "subtitle") return narrow(bar.Subtitle());
+        if (what == "icon") return winrt::to_string(sourceFile(bar.IconSource()));
         if (what == "background") return colour(bar.Background());
         if (what == "foreground") return colour(bar.Foreground());
         if (what == "actions") {

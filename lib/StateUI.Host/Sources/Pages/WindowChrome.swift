@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 
 /// The one chrome a window composes from what it shows, the same on every host: its title, the way back, the visible
-/// page's actions, what stands in the title's place and beside it, the bars' colours, the page's menus and the
-/// sidebar's toggle - elements and values a host turns into its toolkit's chrome.
+/// page's actions, what stands in the title's place and beside it, an authored title bar's own title area, the bars'
+/// colours, the page's menus and the sidebar's toggle - elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
     /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
@@ -29,6 +29,9 @@
 
     /// What stands at the chrome's trailing edge: the title bar's trailing content.
     public var trailing: MountedElement?
+
+    /// An authored title bar's own title, subtitle and picture, where it says any of them; nil for none.
+    public var titleArea: TitleArea?
 
     /// The bars' colour: the nearest stack's or tabbed view's around the visible page, else the title bar's.
     public var background: HostValue?
@@ -54,9 +57,31 @@
         leading = titleBar?.slotContent(.leadingContent)
         center = titleBar?.slotContent(.content) ?? page?.slotContent(.titleView)
         trailing = titleBar?.slotContent(.trailingContent)
+        titleArea = titleBar.flatMap(TitleArea.init(of:))
         (background, foreground) = (page ?? window).barColors
         menuBar = page?.children.first { $0.type == .menuBar }
         sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
+    }
+
+    /// What an authored title bar says of itself: its title, the line under it, and the picture beside it by name.
+    public struct TitleArea: Equatable, Sendable {
+        public let title: String?
+        public let subtitle: String?
+        public let icon: String?
+
+        public init(title: String?, subtitle: String?, icon: String?) {
+            self.title = title
+            self.subtitle = subtitle
+            self.icon = icon
+        }
+
+        /// What `titleBar` says of itself; nil where it says none of it. An empty picture is none.
+        @MainActor init?(of titleBar: MountedElement) {
+            self.init(
+                title: titleBar.value(.title)?.string, subtitle: titleBar.value(.subtitle)?.string,
+                icon: titleBar.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
+            if title == nil, subtitle == nil, icon == nil { return nil }
+        }
     }
 
     /// Whether the chrome shows what an element of `type` moves on a frame: a window's frame, a title bar's own

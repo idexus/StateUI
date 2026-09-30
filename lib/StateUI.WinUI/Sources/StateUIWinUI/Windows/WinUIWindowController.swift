@@ -85,6 +85,7 @@ final class WinUIWindowController {
         let composed = WindowChrome(window: element, arrangement: presentation.arrangement)
         var chrome = WinUIWindowChrome()
         chrome.title = composed.title ?? ""
+        chrome.titleArea = composed.titleArea
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }

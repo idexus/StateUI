@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | · |  | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet |
 | UIKit |  |  | no honest native counterpart | not realized |
 | Android Views |  |  | no honest native counterpart | not realized |
-| WinUI 3 |  |  | `TitleBar` | not realized |
+| WinUI 3 | ✅ | 4 ✅ | `TitleBar` |  |
 | GTK 4 | ⏸ |  | `GtkHeaderBar` | waits on TitleBar.title, not realized yet |
 | Web |  |  | no honest native counterpart | no host yet |
 
@@ -38,10 +38,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/TitleBarContract.s
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive | · |  |  |  | · |  | cannot read barForegroundColor of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read barForegroundColor of TitleBar - GTK's driver has no path for it yet |
-| `icon` | property | `ImageSource` | adaptive | · |  |  |  |  |  | cannot read icon of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `subtitle` | property | `String` | adaptive | · |  |  |  |  |  | cannot read subtitle of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `title` | property | `String` | native | · |  |  |  |  |  | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `barForegroundColor` | property | `Color` | adaptive | · |  |  | ✅ | · |  | cannot read barForegroundColor of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: cannot read barForegroundColor of TitleBar - GTK's driver has no path for it yet |
+| `icon` | property | `ImageSource` | adaptive | · |  |  | ✅ |  |  | cannot read icon of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
+| `subtitle` | property | `String` | adaptive | · |  |  | ✅ |  |  | cannot read subtitle of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
+| `title` | property | `String` | native | · |  |  | ✅ |  |  | cannot read isVisible of TitleBar - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 

@@ -92,6 +92,13 @@ namespace stateui {
     /// thousands of pixels - keeping its file as its tag; null for none.
     controls::Image pictureImage(char const *names);
 
+    /// An icon source showing the first of the files `names` lists that the pictures hold, read from its address,
+    /// which says the file again (`sourceFile`); null for none.
+    controls::IconSource pictureIconSource(char const *names);
+
+    /// The file an icon source `pictureIconSource` made shows; empty for any other, and for none.
+    std::wstring sourceFile(controls::IconSource const &icon);
+
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);
 

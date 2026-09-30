@@ -90,6 +90,7 @@ namespace {
     controls::ContentControl slot() {
         controls::ContentControl slot;
         slot.IsTabStop(false);
+        slot.VerticalContentAlignment(xaml::VerticalAlignment::Center);
         return slot;
     }
 
@@ -147,12 +148,14 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_title_bar_set(
-    StateUIObjectRef handle, char const *title, bool back, bool paneToggle, bool hasBackground, uint32_t background,
-    bool hasForeground, uint32_t foreground, int32_t words
+    StateUIObjectRef handle, char const *title, char const *subtitle, char const *icon, bool back, bool paneToggle,
+    bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t words
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
         if (bar.Title() != text(title)) bar.Title(text(title));
+        if (bar.Subtitle() != text(subtitle)) bar.Subtitle(text(subtitle));
+        if (sourceFile(bar.IconSource()) != pictureFile(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
         if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));

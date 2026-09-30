@@ -11,6 +11,8 @@
 @MainActor
 struct WinUIWindowChrome {
     var title = ""
+    /// An authored title bar's own title, subtitle and picture, shown in the place of the title naming the window.
+    var titleArea: WindowChrome.TitleArea?
     var back: WinUIToolbarAction?
     var sidebarToggle: (() -> Void)?
     var leading: WinUIView?

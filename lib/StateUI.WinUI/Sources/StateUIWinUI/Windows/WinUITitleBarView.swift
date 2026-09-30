@@ -32,9 +32,13 @@ final class WinUITitleBarView: WinUIView {
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         let light = chrome.background.flatMap(BandWords.light(on:))
+        // An authored title area stands in the title's place, as an application names itself on WinUI's title bar.
+        let area = chrome.titleArea
+        let icon = WinUIStrings.lines(area?.icon.map(PictureArithmetic.files(for:)) ?? [])
         stateui_winui_title_bar_set(
-            handle, chrome.title, chrome.back != nil, chrome.sidebarToggle != nil,
-            background != nil, background ?? 0, foreground != nil, foreground ?? 0, light.map { $0 ? 1 : 2 } ?? 0)
+            handle, area?.title ?? chrome.title, area?.subtitle ?? "", icon, chrome.back != nil,
+            chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
+            light.map { $0 ? 1 : 2 } ?? 0)
 
         let actions = chrome.actions + chrome.overflow
         let overflows = chrome.actions.map { _ in false } + chrome.overflow.map { _ in true }

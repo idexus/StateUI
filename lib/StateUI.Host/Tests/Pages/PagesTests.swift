@@ -201,6 +201,26 @@ final class PagesTests: XCTestCase {
         XCTAssertNil(chrome.sidebarToggle)
     }
 
+    /// An authored title bar says its own title, the line under it and its picture beside the page's title - where
+    /// it says any of them; one saying none says nothing, an empty picture none.
+    func testTheTitleBarSaysItsOwnTitleArea() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("bar", .titleBar, [.title: .string("StateUI"), .subtitle: .string("Fundamentals"), .icon: .string("")]),
+            node("page", .page, [.title: .string("Buttons")]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+        let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("page")))
+
+        XCTAssertEqual(chrome.title, "Buttons", "the page still names the window")
+        XCTAssertEqual(chrome.titleArea, WindowChrome.TitleArea(title: "StateUI", subtitle: "Fundamentals", icon: nil))
+
+        let bare = self.runtime(node("window", .window, children: [
+            node("bar", .titleBar, [.background: .string("bar")]), node("page", .page),
+        ])) { _ in }
+        let bareRoot = try XCTUnwrap(bare.tree.root)
+        XCTAssertNil(WindowChrome(window: bareRoot, arrangement: bareRoot.first(id: .manual("page"))).titleArea)
+    }
+
     /// Tabs pushed onto a stack keep the title of the page beneath them; tabs with nothing beneath name the window by
     /// the chosen tab, and a stack in a tab by its top page.
     func testTabsPushedOntoAStackKeepTheTitleBeneathThem() throws {

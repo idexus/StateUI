@@ -10,13 +10,13 @@
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
-        "WebView",
+        "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
-    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
-    /// tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span"]
+    /// The entries this host presents with no view of their own - a span is a run of its label's words, a title bar
+    /// the window's chrome and its slots places on it - so no tier's record reaches them: only a member the entry's
+    /// own records name is realized.
+    static let viewless: Set<String> = ["Content", "LeadingContent", "Span", "TitleBar", "TrailingContent"]
 
     /// The entries Windows will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -71,6 +71,10 @@ enum WinUIRealization {
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
+        .complete("TitleBar", "barForegroundColor"),
+        .complete("TitleBar", "icon"),
+        .complete("TitleBar", "subtitle"),
+        .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),

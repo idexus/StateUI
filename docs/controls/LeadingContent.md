@@ -28,7 +28,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ |  | structure |  |
 | UIKit |  |  | structure | not realized |
 | Android Views |  |  | structure | not realized |
-| WinUI 3 |  |  | structure | not realized |
+| WinUI 3 | ✅ |  | structure |  |
 | GTK 4 |  |  | structure | not realized |
 | Web |  |  | structure | no host yet |
 

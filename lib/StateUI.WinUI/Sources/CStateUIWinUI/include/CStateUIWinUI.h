@@ -693,9 +693,9 @@ int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char 
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 /// `foreground` is the colour of the words on a bar the tree paints, its title's and its actions' alike; `words`
 /// stand light (1) or dark (2) on it, the bar's buttons and commands with them; 0 for the theme's own.
-void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, bool back, bool paneToggle,
-                                 bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground,
-                                 int32_t words);
+void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
+                                 bool back, bool paneToggle, bool hasBackground, uint32_t background,
+                                 bool hasForeground, uint32_t foreground, int32_t words);
 /// The page's actions on a window's chrome: each one's words, the identifier automation finds it by (empty for
 /// none), the files its picture may stand in - each ended by a line feed, empty for none - whether choosing it
 /// destroys something, whether it stands in the overflow, and whether it can be chosen.
