@@ -8,6 +8,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var selectAll = false
     @State private var email = ""
     @State private var done = 0
+    @State private var hidden = true
 
     static let id = "textField"
     static let title = "TextField"
@@ -20,6 +21,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
         @State private var selectAll = false
         @State private var email = ""
         @State private var done = 0
+        @State private var hidden = true
 
         VStack {
             // The greeting below reads `name` and the caret below reads `code`,
@@ -64,8 +66,15 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
             TextField()
                 .placeholder("a password")
-                .isPassword(true)
+                .isPassword(hidden)
                 .returnKey(.done)
+
+            HStack {
+                Label("Hidden")
+                    .verticalAlignment(.center)
+
+                Switch($hidden)
+            }
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
@@ -136,8 +145,20 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("entry.password")
                 .accessibilityLabel("Password")
                 .placeholder("a password")
-                .isPassword(true)
+                .isPassword(hidden)
                 .returnKey(.done)
+
+            HStack {
+                Label("Hidden")
+                    .fontSize(14)
+                    .verticalAlignment(.center)
+
+                Switch($hidden)
+                    .accessibilityIdentifier("entry.hidden")
+                    .accessibilityLabel("Password hidden")
+            }
+            .spacing(12)
+            .horizontalAlignment(.center)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
