@@ -40,7 +40,7 @@
                 s.start {
                     VStack {
                         Label("Row").contextMenu {
-                            ForEach(entries.wrappedValue, id: \.self) { entry in MenuItem(entry) }
+                            entries.wrappedValue.map { MenuItem($0).id($0) }
                         }.id("row")
                         Button("Empty").onClicked { entries.wrappedValue = [] }.id("empty")
                     }
@@ -71,7 +71,7 @@ struct MenuPage: ContentView {
                 MenuSeparator().id("separator")
                 MenuItem("Paste").isEnabled(canPaste.wrappedValue).onClicked { heard.values.append("paste") }.id("paste")
                 Menu("Share") {
-                    ForEach(shares.wrappedValue, id: \.self) { share in
+                    shares.wrappedValue.map { share in
                         MenuItem(share).onClicked { heard.values.append("share \(share)") }.id("share \(share)")
                     }
                 }.id("share")

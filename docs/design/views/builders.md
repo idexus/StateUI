@@ -1,38 +1,48 @@
 # Builders
 
-A result builder turns the statements of a closure into the list a container
-holds. StateUI has one for views, and one each for menu entries, windows,
-window groups and styles. The view builder also gives every view it collects
-a key.
+A result builder turns the statements of a closure into what a container
+holds, or into one view. StateUI has one for views, and one each for menu
+entries, toolbar items, text runs, pins, windows, window groups and styles. The
+view builder also gives every view it collects a key.
 
-## Statements become a list
+## The result says what was written
 
-Every method of `ViewBuilder` works on `[Element]`, never on one `Element`: an
-`if` or a `ForEach` produces a list, and working in lists lets either stand as
-one statement among the others. `buildBlock` joins the statements in writing
-order. What it takes is a view - `any View`, a list of views, a `ForEach` -
-and nothing else: an action, a run of text, a pin and an arrangement of pages
-each go where they belong, so `VStack { ToolbarItem("Save") }` does not
-compile. A modifier on a view gives back a view (`View where Modified: View`),
-so a chain goes on on `any View` as on a view of a known type.
+The view builder keeps the type of what it was given. One statement stays what
+it is, so one view is one view. An `if`/`else` is an `Either` of its two
+branches - a view where both branches are views - an `if` with no `else` an
+optional, several statements `Statements`, repetition a `ForEach`, and a list
+of `any View` an array. Everything a container holds is `Views`: every view is
+one, and so is each of these. A composed view's `content` and a one-view slot
+take a `View`, so two statements or an `if` with no `else` there do not compile,
+and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text, a
+pin and an arrangement of pages each go where they belong. A modifier on a view
+gives back a view (`View where Modified: View`), so a chain goes on on
+`any View` as on a view of a known type.
+
+The builder has no `buildExpression`. An overload taking `any View` is chosen
+for every view and erases it while type-checking stays green, so a value held
+as `any View` goes in explicitly, as `ModifiedContent(node: view.body)`. A
+function returning views is `@ViewBuilder` and `some View`: several `return`s of
+different types become an `if`/`else`.
 
 ## Every statement records where it stood
 
-Each method also writes down where a view was written: the statement's number,
-then which branch of an `if` it came from, then the statement's number inside
-that branch. The segments nest into a path, and `Node.key` carries that path to
-the differ.
+Each piece also writes down where a view was written, as its nodes are made
+(`Views.nodes`): the statement's number among several, then which branch of an
+`if` it came from, then the statement's number inside that branch. A lone
+statement adds no number. The segments nest into a path, and `Node.key` carries
+that path to the differ.
 
 ```text
   VStack {
       Label("Title")                  0
       if signedIn {
-          Label("Welcome")            1.some.0
+          Label("Welcome")            1.some
       }
       if editing {
-          TextField($name)            2.if.0
+          TextField($name)            2.if
       } else {
-          TextField($nickname)        2.else.0
+          TextField($nickname)        2.else
       }
   }
 ```
@@ -59,7 +69,7 @@ have only the index to go on:
 Matched by index, signing in would match the new Label against the field: a
 changed type, so a replaced control, and the search field would lose its
 focus, its caret and its scroll on every sign-in and sign-out. With the path
-the Label is `0.some.0` and the field is `1` in both states, so the field is
+the Label is `0.some` and the field is `1` in both states, so the field is
 matched to itself and never moves.
 
 ## Two branches are two elements
@@ -67,16 +77,21 @@ matched to itself and never moves.
 `if editing { TextField($name) } else { TextField($nickname) }` builds the same
 kind of control in both branches. Matched by position they would be one control
 that only changes its text, and the caret would stay put across what the author
-wrote as a switch between two fields. `2.if.0` and `2.else.0` are different
-places, so switching branches replaces the control rather than editing it.
+wrote as a switch between two fields. `2.if` and `2.else` are different
+places, so switching branches replaces the control rather than editing it. The
+same holds where the branch is a composed view's whole content: the content
+root's branch is part of what the element is
+([another kind of view](../core/identity-and-diffing.md#another-kind-of-view)),
+and so is a `ForEach` row's, whose builder takes an `if`/`else` too.
 
 ## No plain for loop
 
-`ViewBuilder` and `MenuBuilder` have no `buildArray`, so a plain `for` does not
-compile in them. A turn of a loop has no identity but its number, and its
+The builders have no `buildArray`, so a plain `for` does not compile in them. A turn of a loop has no identity but its number, and its
 number is its position: a collection that gains a row at the top renumbers
 every turn below it, and every view would be rebuilt as though it had changed.
-`ForEach` is where repetition is written, and it keys each view by its item.
+`ForEach` is where repetition is written, and it keys each view by its item;
+where views are not what is repeated - menu entries, toolbar items, runs, pins -
+an array of them stands for the loop, each matched by its `.id()`.
 
 ## ForEach keys are text
 
@@ -96,36 +111,31 @@ An author's own `.id()` on the view wins over the item's.
 
 ## Several views from one statement
 
-A statement may produce several views: an array handed to `buildExpression`, or
-a branch holding more than one statement. Such a statement's segment gets a
-number of its own under it - `0.0`, `0.1` - so the views do not all share one
-path. That inner number is a position like any other. It does not matter for a
-`ForEach`, whose views carry their items' ids, and an id wins over the path; it
-is why a hand-built `[Element]` whose length changes wants `ForEach` instead.
+A statement may produce several views: an array, or a branch holding more than
+one statement. Such a statement's segment gets a number of its own under it -
+`0.0`, `0.1` - so the views do not all share one path. That inner number is a
+position like any other. It does not matter for a `ForEach`, whose views carry
+their items' ids, and an id wins over the path; it is why a hand-built array
+whose length changes wants `ForEach` instead.
 
-## The path rides a wrapper
+## The path lands on the node
 
-The segment is added by a wrapper, `Keyed`, and an item's identity by another,
-`Identified`, rather than by a property on the controls. The builder is handed
-a view and must not care which kind: a Label, a composed view and a
-hand-written `Node` in `ModifiedContent(node:)` take a segment the same way. The wrapper writes onto
-whatever node the element builds, a composed view's placeholder included,
-which is where a key has to sit for the differ to see it.
-
-`body` is where the segment lands, and `body` is also where the parent asks for
-the node, so a wrapped element is built no earlier than an unwrapped one.
+A piece writes its segment onto the nodes its views build (`BuilderPath`), a
+composed view's placeholder included, which is where a key has to sit for the
+differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
+Label, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
+take a segment the same way. A container asks for the nodes in its producer,
+so its views are built no earlier than before.
 
 ## Menus collect without keys
 
-`MenuBuilder` is shaped like `ViewBuilder` over `[Element]`, but its
-expressions are a menu's entries alone - a `MenuItem`, a `Menu`, a
-`MenuSeparator`, a list of items, a `ForEach` - so a view in a menu does not
-compile. `if`, `if/else` and `ForEach` work in a menu, and a plain `for` does
-not. It records no path. An entry is matched by its `.id()` and otherwise by
-its position, so an `if` whose entry comes and goes re-matches every entry
-below it against a different one. A hand-written entry standing beside a
-conditional wants an id; `ForEach` gives each of its entries its item's
-identity. `MenuBarBuilder`, `ToolbarBuilder`, `SpanBuilder` and `PinBuilder`
+`MenuBuilder` collects `[Element]`, and its expressions are a menu's entries
+alone - a `MenuItem`, a `Menu`, a `MenuSeparator`, a list of items - so a view
+in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
+does not. It records no path. An entry is matched by its `.id()` and otherwise
+by its position, so an `if` whose entry comes and goes re-matches every entry
+below it against a different one. An entry standing beside a conditional, and
+each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `SpanBuilder` and `PinBuilder`
 collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Pin` - the
 same way, an array of them standing for a loop.
 

@@ -138,7 +138,7 @@ struct MenusPage: ContentView {
                     MenuItem("New").onClicked { heard.values.append("new") }.id("new")
                     MenuSeparator()
                     Menu("Recent") {
-                        ForEach(recent.wrappedValue, id: \.self) { file in
+                        recent.wrappedValue.map { file in
                             MenuItem(file).onClicked { heard.values.append("open \(file)") }.id("open \(file)")
                         }
                     }

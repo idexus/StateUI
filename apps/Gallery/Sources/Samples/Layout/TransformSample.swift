@@ -226,7 +226,7 @@ struct TransformSample: SampleContent, ExampleContent {
 
     /// One piece with its caption, so a row reads as labelled examples rather
     /// than bare boxes. The gap under the box is what a scaled one grows into.
-    private func piece(_ view: any View, _ caption: String) -> any View {
+    private func piece<Shown: View>(_ view: Shown, _ caption: String) -> some View {
         VStack {
             view
 

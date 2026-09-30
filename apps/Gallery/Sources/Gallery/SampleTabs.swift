@@ -118,14 +118,14 @@ struct SampleTabPage: ContentView {
 
     /// One example's notes and Swift, under "Notes" and "In Swift" - and,
     /// among several examples, under the example's name as well.
-    private func explanation(of example: Example, at index: Int) -> any View {
+    private func explanation(of example: Example, at index: Int) -> some View {
         VStack {
             if sample.examples.count > 1 {
                 ExampleTitle(sample.name(ofExample: index))
             }
 
             if let notes = example.notes {
-                SamplePage.section("Notes", notes)
+                SamplePage.section("Notes", ModifiedContent(node: notes.body))
             }
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))

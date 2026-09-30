@@ -213,7 +213,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
     /// A line in the gallery's own font and accent - what its two windows
     /// change.
-    private var preview: any View {
+    private var preview: some View {
         let line = Label("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
             .textColor(style.accent.color)
@@ -223,7 +223,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// The button that opens one of the gallery's windows.
-    private func opens(_ caption: String, _ type: WindowType) -> any View {
+    private func opens(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .background(style.accent.color)
             .textColor(.white)
@@ -234,7 +234,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// The button that closes it.
-    private func closes(_ caption: String, _ type: WindowType) -> any View {
+    private func closes(_ caption: String, _ type: WindowType) -> some View {
         Button(caption)
             .fontSize(13)
             .padding(14, 6)
@@ -277,7 +277,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// The button that opens one swatch's window.
-    private func swatch(_ number: Int) -> any View {
+    private func swatch(_ number: Int) -> some View {
         Button("Swatch \(number)")
             .background(SwatchPage.colour(of: number))
             .textColor(.white)

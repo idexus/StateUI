@@ -81,9 +81,9 @@ public struct PositionIndicator: View, PositionIndicatorProperties {
     ///     .position(shown)
     ///
     /// The items take the place of `count`, which is derived from them.
-    public init<Items: RandomAccessCollection>(
+    public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items,
-        content: (Items.Element) -> Element
+        @ViewBuilder content: (Items.Element) -> Content
     ) {
         node = Node(contract: PositionIndicatorContract.self, children: items.map { content($0).body })
     }

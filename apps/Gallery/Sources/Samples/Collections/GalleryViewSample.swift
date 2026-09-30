@@ -142,7 +142,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
         }
 
-        private func face(_ card: Card) -> any View {
+        private func face(_ card: Card) -> some View {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
@@ -264,7 +264,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     /// One card's face - a picture and its name, and nothing at all about where
     /// the card is or which way it faces. That is the gallery's, and keeping
     /// the two apart is what lets one run of cards wear three shapes.
-    private func face(_ card: Card) -> any View {
+    private func face(_ card: Card) -> some View {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))

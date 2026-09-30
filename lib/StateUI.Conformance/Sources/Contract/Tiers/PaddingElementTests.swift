@@ -54,15 +54,16 @@
 /// A layout of each kind holding a view within its padding.
 enum Padded {
     /// A layout of `element`'s kind holding `content`, `padding` in.
-    static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> any View {
-        let held = content()
+    static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> ModifiedContent {
+        let held = ModifiedContent(node: content().body)
         let dressing = Dressing([Write(PaddingElementContract.padding, padding)], id: "layout")
-        switch element {
-        case "Grid": return dressing.dress(Grid { held })
-        case "HStack": return dressing.dress(HStack { held })
-        case "ZStack": return dressing.dress(ZStack { held })
-        case "ScrollView": return dressing.dress(ScrollView { held }.height(100))
-        default: return dressing.dress(VStack { held })
+        let layout: any View = switch element {
+        case "Grid": dressing.dress(Grid { held })
+        case "HStack": dressing.dress(HStack { held })
+        case "ZStack": dressing.dress(ZStack { held })
+        case "ScrollView": dressing.dress(ScrollView { held }.height(100))
+        default: dressing.dress(VStack { held })
         }
+        return ModifiedContent(node: layout.body)
     }
 }

@@ -72,9 +72,9 @@ public struct Grid: Layout, GridProperties {
 
     /// A grid holding what the closure describes. The closure runs when the
     /// differ reaches the grid.
-    public init(@ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(@ViewBuilder content: @escaping () -> Content) {
         node = Node(contract: GridContract.self)
-        node.producer = { content().map { $0.body } }
+        node.producer = { content().nodes }
     }
 
 }

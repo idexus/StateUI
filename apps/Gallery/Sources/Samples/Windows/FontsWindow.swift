@@ -28,7 +28,7 @@ struct FontsPage: ContentView {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            ForEach(FontsPage.families) { family -> Element in
+            ForEach(FontsPage.families) { family in
                 let chosen = style.font == family
                 let button = Button(family.isEmpty ? "The platform's own" : family)
                     .fontSize(15)

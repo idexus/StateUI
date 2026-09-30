@@ -219,7 +219,7 @@ struct ReaderSample: SampleContent, ExampleContent {
     /// One row: a caption, then the content in a stack of its own - so the
     /// reading taken inside the content is that stack's and nobody else's,
     /// and the caption around it is never built again.
-    private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
+    private func row<Content: Views>(_ caption: String, @ViewBuilder _ content: @escaping () -> Content) -> some View {
         ZStack {
             VStack {
                 Label(caption)

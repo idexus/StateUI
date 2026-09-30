@@ -184,7 +184,7 @@ final class LifetimeTests: XCTestCase {
         let log = State(wrappedValue: [String]())
         let arriving = State(wrappedValue: false)
         let renders = Renders()
-        let tree = { VStack { chosen(arriving.wrappedValue, log: log.projectedValue) }.body }
+        let tree = { VStack { ModifiedContent(node: chosen(arriving.wrappedValue, log: log.projectedValue).body) }.body }
 
         renders.render(tree())
         arriving.wrappedValue = true

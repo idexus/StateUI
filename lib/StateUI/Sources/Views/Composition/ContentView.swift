@@ -29,8 +29,9 @@
 ///         .margin(0, 8)
 ///         .gridRow(1)
 public protocol ContentView: View where Modified == ModifiedContent {
-    /// What this view is made of, read each time the view is built.
-    var content: any View { get }
+    /// What this view is made of, read each time the view is built: one view -
+    /// an `if`/`else` of views is one, its branches two elements.
+    @ViewBuilder var content: any View { get }
 }
 
 extension ContentView {

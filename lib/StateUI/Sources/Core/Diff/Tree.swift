@@ -49,12 +49,14 @@ final class RenderedNode {
     var key: String?
 
     /// The composed views this element was built by, outermost first: each one's
-    /// type, its state boxes by path, and what it was built with.
+    /// type, its state boxes by path, what it was built with, and the branch its
+    /// content root stood in.
     /// Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
     var views: [(
         type: String,
         boxes: [(path: String, box: StateBox)],
-        inputs: [(path: String, input: Input)])]
+        inputs: [(path: String, input: Input)],
+        branch: String?)]
 
     /// What stood in for this element's subtree, kept so the clean walk can build it
     /// again without the parent; nil for a leaf.
@@ -131,7 +133,8 @@ final class RenderedNode {
         views: [(
             type: String,
             boxes: [(path: String, box: StateBox)],
-            inputs: [(path: String, input: Input)])] = [],
+            inputs: [(path: String, input: Input)],
+            branch: String?)] = [],
         placeholder: Node? = nil,
         view: String? = nil,
         reads: Set<ObjectIdentifier> = [],

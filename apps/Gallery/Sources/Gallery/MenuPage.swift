@@ -80,7 +80,7 @@ struct MenuPage: ContentView {
     /// The mark, the name and what this is - on the gradient the home page opens
     /// with, so the menu and the page behind it are plainly one application. A
     /// phone leaves the mark out: its rows need the room to scroll.
-    private var header: any View {
+    private var header: some View {
         VStack {
             if device.formFactor != .phone {
                 Image("stateui_mark.png")
@@ -115,7 +115,7 @@ struct MenuPage: ContentView {
 
     /// Home, one row per group, the row that is not always listed, and the one
     /// row that performs an act rather than going anywhere.
-    private var rows: any View {
+    private var rows: some View {
         VStack {
             MenuRow("Home") { nav.open(.home) }
                 .icon(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
@@ -148,7 +148,7 @@ struct MenuPage: ContentView {
 
     /// What is underneath: the platform compiled in, and the formFactor the host
     /// answered before the first render.
-    private var footer: any View {
+    private var footer: some View {
         Label("native: \(stateUIPlatform()) · \(device.formFactor)")
             .fontSize(11)
             .textColor(Palette.subtle)

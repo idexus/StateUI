@@ -183,18 +183,6 @@ private func collectStateParts(
         return
     }
 
-    // A keyed element carries its builder branch, which tells the arms of an `if`
-    // apart, and the type of the view inside.
-    if let keyed = value as? Keyed {
-        collectStateParts(
-            in: keyed.element,
-            at: "\(path).\(keyed.segment)\(storedViewType(of: keyed.element))",
-            boxes: &boxes,
-            slots: &slots,
-            inputs: &inputs)
-        return
-    }
-
     // A value that can say whether it equals another is compared whole.
     if let comparable = value as? any Equatable {
         inputs.append((path: path, input: .value(comparable)))
@@ -273,6 +261,7 @@ extension Node {
         /// Builds the subtree and lands what the author wrote on the view onto its root.
         func expand(over written: Node) -> Node {
             var node = build()
+            node.branch = node.id == nil ? node.key : nil
             node.props.merge(written.props) { _, wrote in wrote }
 
             // The states driven to it, for the same reason: a registration left on the

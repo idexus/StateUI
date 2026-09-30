@@ -55,9 +55,9 @@ public struct ScrollView: View, PaddingElement, BorderElement, ScrollViewPropert
 
     /// A scrollable view around what the closure describes. The closure runs
     /// when the differ reaches the scroller.
-    public init(@ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(@ViewBuilder content: @escaping () -> Content) {
         node = Node(contract: ScrollViewContract.self)
-        node.producer = { content().map { $0.body } }
+        node.producer = { content().nodes }
     }
 
     /// Where the scroller stands, in device units from the content's top-left

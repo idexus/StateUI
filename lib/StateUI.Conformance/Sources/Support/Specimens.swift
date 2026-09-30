@@ -53,8 +53,10 @@
 
     /// `element`'s control wearing `worn`, found by `id` - or words naming the element that stands in no stack, which
     /// the case finding it by its id then fails on.
-    public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> any View {
-        make(element, Dressing(worn, id: id)) ?? Label("no specimen of \(element)")
+    public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> ModifiedContent {
+        // Chosen by name, so held as `any View` and handed on as its node.
+        let view: any View = make(element, Dressing(worn, id: id)) ?? Label("no specimen of \(element)")
+        return ModifiedContent(node: view.body)
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A
@@ -178,6 +180,6 @@ public struct DeclaringPage: ContentView {
         let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
             ?? words.toolbar(side, order: order) { items() }
         guard let title else { return grouped }
-        return grouped.titleView { title }
+        return grouped.titleView { ModifiedContent(node: title.body) }
     }
 }

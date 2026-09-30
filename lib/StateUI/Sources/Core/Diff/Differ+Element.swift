@@ -66,7 +66,8 @@ extension Differ {
         var views: [(
             type: String,
             boxes: [(path: String, box: StateBox)],
-            inputs: [(path: String, input: Input)])] = []
+            inputs: [(path: String, input: Input)],
+            branch: String?)] = []
 
         // How many times this element has been described, this time included.
         let builds = (rendered?.builds ?? 0) + 1
@@ -173,7 +174,7 @@ extension Differ {
                 }
 
                 views.append((
-                    type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs))
+                    type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs, branch: nil))
 
                 // Slots resolve against everything provided so far, before the body builds.
                 stateful.resolve(from: scope)
@@ -223,6 +224,7 @@ extension Differ {
                 node = ReadScope.collect(into: &reads) {
                     BuildScope.within(built) { stateful.expand(over: node) }
                 }
+                views[step].branch = node.branch
                 pushed += node.environments.count
                 scope.append(contentsOf: node.environments)
                 continue
@@ -319,7 +321,7 @@ extension Differ {
         // Except those with no host default, which replace the element - as a view of another kind does.
         // Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
         let replace = rendered != nil
-            && (rendered!.type != node.type || rendered!.views.map(\.type) != views.map(\.type)
+            && (rendered!.type != node.type || Self.kinds(rendered!.views) != Self.kinds(views)
                 || lost.contains { !$0.facts.cleared })
 
         // Nothing to build on: the element is new, or cannot become what is described.
@@ -541,6 +543,16 @@ extension Differ {
             changed: changed,
             names: named,
             everything: describeAll)
+    }
+
+    /// What an element is by its composed views: each one's type and the branch its content root stood in.
+    /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
+    private static func kinds(_ views: [(
+        type: String,
+        boxes: [(path: String, box: StateBox)],
+        inputs: [(path: String, input: Input)],
+        branch: String?)]) -> [String] {
+        views.map { view in view.branch.map { "\(view.type) \($0)" } ?? view.type }
     }
 
     /// Why a composed view is built rather than carried, in words - the carry's

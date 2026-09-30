@@ -242,6 +242,11 @@ public struct Node {
     /// Design: docs/design/core/identity-and-diffing.md#keys
     var key: String?
 
+    /// The branch a composed view's content root was written in - an `if/else`
+    /// there - which the placeholder's key covers; part of what the element is.
+    /// Design: docs/design/core/identity-and-diffing.md#another-kind-of-view
+    var branch: String?
+
     /// The element's properties, by token.
     var props: [Prop: PropValue]
 
@@ -360,7 +365,8 @@ public protocol Element {
     var body: Node { get }
 }
 
-/// A `Node` is an `Element`, so raw nodes and controls mix in one builder.
+/// A `Node` is an `Element`: a node already is what a body describes. In a
+/// view builder it goes as `ModifiedContent(node:)`.
 extension Node: Element {
     /// Itself - a node already is what a body describes.
     public var body: Node { self }

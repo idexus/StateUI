@@ -85,7 +85,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .isAccessibilityHidden(true)
         }
 
-        private var describedButton: any View {
+        private var describedButton: some View {
             let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                 .style("IconButton")
                 .accessibilityIdentifier("semantics.described")
@@ -242,7 +242,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// An absent property restores the host's native default, which is what
     /// makes a modifier written under a condition cost the property and not
     /// the control.
-    private var describedButton: any View {
+    private var describedButton: some View {
         let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
             .style("IconButton")
             .accessibilityIdentifier("semantics.described")

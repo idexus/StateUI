@@ -384,7 +384,7 @@
     /// `element`'s specimen wearing `worn`, its frames heard by `frames`.
     static func reporting(
         _ element: String, _ frames: Received<[Double]>, _ worn: [any Worn], id: String = "specimen"
-    ) -> any View {
+    ) -> ModifiedContent {
         Specimens.view(element, worn + [Hear(ViewContract.frameChanged) { numbers in frames.values.append(numbers) }], id: id)
     }
 }

@@ -12,10 +12,10 @@
 ///         }
 ///     }
 ///
-/// An `if`, an `if/else` and a `ForEach` work in one, and a plain `for` does
-/// not. An entry is matched by its `.id()` and otherwise by its position, so a
-/// hand-written entry beside an `if` wants an id; `ForEach` gives its entries
-/// their items' identities.
+/// An `if`, an `if/else` and an array of items work in one, and a plain `for`
+/// does not. An entry is matched by its `.id()` and otherwise by its position,
+/// so an entry beside an `if`, and each of a list of entries that changes,
+/// wants an id.
 @resultBuilder
 public enum MenuBuilder {
     /// An entry written as a statement.
@@ -36,11 +36,6 @@ public enum MenuBuilder {
     /// Several entries, from something that already produced a list.
     public static func buildExpression(_ expression: [MenuItem]) -> [Element] {
         expression
-    }
-
-    /// A `ForEach`'s entries, each identified by its item.
-    public static func buildExpression(_ expression: ForEach) -> [Element] {
-        expression.elements
     }
 
     /// The statements of the closure, in the order they are written.

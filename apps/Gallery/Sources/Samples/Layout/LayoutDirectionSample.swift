@@ -63,7 +63,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
     }
 
     /// One row laid out each way, with the value that produced it.
-    private func row(_ caption: String, _ direction: LayoutDirection) -> any View {
+    private func row(_ caption: String, _ direction: LayoutDirection) -> some View {
         VStack {
             Label(caption)
                 .fontSize(11)

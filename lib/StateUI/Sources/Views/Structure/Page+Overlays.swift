@@ -25,11 +25,11 @@ extension PropertyContainer where Self: Page {
     ///
     /// - Parameter content: the views, in the order they stand, the last on
     ///   top.
-    public func overlays(@ViewBuilder _ content: () -> [Element]) -> Modified {
-        let views = content()
+    public func overlays<Content: Views>(@ViewBuilder _ content: () -> Content) -> Modified {
+        let views = content().nodes
         return modified {
             var layer = ZStack().letsInputThrough(true).node
-            layer.children = views.map(\.body)
+            layer.children = views
 
             // After the element's own children; the host finds it by type.
             // Design: docs/design/views/modifiers.md#slot-children

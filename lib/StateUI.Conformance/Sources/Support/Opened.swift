@@ -7,22 +7,22 @@ import StateUI
 /// pan carries, an aim - put on whatever kind the specimen is.
 enum Opened {
     /// `view`, its frame landing in `room`.
-    static func framed<V: View>(_ view: V, into room: Binding<Rect>) -> any View {
+    static func framed<V: View>(_ view: V, into room: Binding<Rect>) -> some View {
         view.frame(room)
     }
 
     /// `view`, a pan across it carrying `x`.
-    static func pannedAcross<V: View>(_ view: V, carrying x: Binding<Double>) -> any View {
+    static func pannedAcross<V: View>(_ view: V, carrying x: Binding<Double>) -> some View {
         view.panX(x)
     }
 
     /// `view`, a pan down it carrying `y`.
-    static func pannedDown<V: View>(_ view: V, carrying y: Binding<Double>) -> any View {
+    static func pannedDown<V: View>(_ view: V, carrying y: Binding<Double>) -> some View {
         view.panY(y)
     }
 
     /// `view`, aimed at by `focus`.
-    static func aimed<V: View>(_ view: V, by focus: FocusAim) -> any View {
+    static func aimed<V: View>(_ view: V, by focus: FocusAim) -> some View {
         let aim = Aim(V.self)
         focus.hold(aim)
         return view.aim(aim)

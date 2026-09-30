@@ -98,7 +98,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                         .onClicked { saved += 1 }
 
                     Menu("Recent") {
-                        ForEach(recent) { file in
+                        recent.map { file in
                             MenuItem(file)
                                 .id(file)
                                 .onClicked { recent.removeAll { $0 == file } }
@@ -173,7 +173,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .onClicked { saved += 1 }
 
                 Menu("Recent") {
-                    ForEach(recent) { file in
+                    recent.map { file in
                         MenuItem(file)
                             .id(file)
                             .onClicked { recent.removeAll { $0 == file } }

@@ -49,9 +49,9 @@
 /// A stack of each kind holding views, as a stack's cases need it.
 enum Stacked {
     /// A stack of `element`'s kind, its children `spacing` apart.
-    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> any View {
+    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> ModifiedContent {
         let held = children()
-        if element == "HStack" { return HStack { held }.spacing(spacing) }
-        return VStack { held }.spacing(spacing)
+        let stack: any View = element == "HStack" ? HStack { held }.spacing(spacing) : VStack { held }.spacing(spacing)
+        return ModifiedContent(node: stack.body)
     }
 }

@@ -90,8 +90,8 @@ enum Holding {
     static func layout(
         _ element: String, clips: Bool = false, through: Bool = false, width: Double? = nil, height: Double? = nil,
         _ content: () -> any View
-    ) -> any View {
-        let held = content()
+    ) -> ModifiedContent {
+        let held = ModifiedContent(node: content().body)
         var worn: [any Worn] = [Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through)]
         if let width {
             worn += [Write(VisualElementContract.width, width), Write(ViewContract.horizontalAlignment, Alignment.start)]
@@ -100,11 +100,12 @@ enum Holding {
             worn += [Write(VisualElementContract.height, height), Write(ViewContract.verticalAlignment, Alignment.start)]
         }
         let dressing = Dressing(worn, id: "layout")
-        switch element {
-        case "Grid": return dressing.dress(Grid { held })
-        case "HStack": return dressing.dress(HStack { held })
-        case "ZStack": return dressing.dress(ZStack { held })
-        default: return dressing.dress(VStack { held })
+        let layout: any View = switch element {
+        case "Grid": dressing.dress(Grid { held })
+        case "HStack": dressing.dress(HStack { held })
+        case "ZStack": dressing.dress(ZStack { held })
+        default: dressing.dress(VStack { held })
         }
+        return ModifiedContent(node: layout.body)
     }
 }

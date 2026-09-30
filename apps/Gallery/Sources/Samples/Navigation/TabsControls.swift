@@ -72,7 +72,7 @@ struct TabsControls: ContentView {
     ///
     /// The last row keeps no close button: a tab bar with nothing in it draws no
     /// page, so there would be nothing left to press.
-    private func row(index: Int, tab: DemoTab) -> any View {
+    private func row(index: Int, tab: DemoTab) -> some View {
         HStack {
             Label("\(index)")
                 .fontSize(13)

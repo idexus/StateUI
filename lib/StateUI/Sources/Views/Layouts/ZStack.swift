@@ -29,8 +29,8 @@ public struct ZStack: Layout {
     }
 
     /// A stack of the layers the closure describes, the first at the back.
-    public init(@ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(@ViewBuilder content: @escaping () -> Content) {
         node = Node(contract: ZStackContract.self)
-        node.producer = { content().map { $0.body } }
+        node.producer = { content().nodes }
     }
 }

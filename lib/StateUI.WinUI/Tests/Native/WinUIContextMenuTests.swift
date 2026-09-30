@@ -18,12 +18,12 @@ private struct MenuStacksPage: ContentView {
             HStack { Label("menu") }
                 .width(200)
                 .height(40)
-                .contextMenu { ForEach(entries.wrappedValue, id: \.self) { entry in MenuItem(entry) } }
+                .contextMenu { entries.wrappedValue.map { MenuItem($0).id($0) } }
             HStack { Label("tapped") }
                 .width(200)
                 .height(40)
                 .onTapped {}
-                .contextMenu { ForEach(entries.wrappedValue, id: \.self) { entry in MenuItem(entry) } }
+                .contextMenu { entries.wrappedValue.map { MenuItem($0).id($0) } }
             Button("Empty").onClicked { entries.wrappedValue = [] }
         }
         .horizontalAlignment(.start)

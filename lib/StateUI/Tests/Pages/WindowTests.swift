@@ -153,22 +153,6 @@ final class WindowTests: XCTestCase {
         XCTAssertNotEqual(name, nickname, "both branches were given one control to share")
     }
 
-    /// A title view has one root: several controls go in a layout rather than leaving invisible sibling roots in
-    /// the host's tree.
-    func testATitleViewKeepsOnlyItsFirstRoot() throws {
-        let node = ModifiedContent(node: label("home"))
-            .titleView {
-                Button("Account")
-                Button("Settings")
-            }
-            .body
-            .built
-
-        let declared = try XCTUnwrap(node.children.first { $0.type == .titleView })
-        XCTAssertEqual(declared.children.count, 1)
-        XCTAssertEqual(declared.children.first?.props["text"], .string("Account"))
-    }
-
     /// The identity of the first TextField a patch mentions, at any depth.
     private func entry(in patch: HostPatch) -> ElementId? {
         if patch.type == "TextField" { return patch.id }

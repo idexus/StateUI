@@ -50,9 +50,9 @@ struct BuilderSample: SampleContent, ExampleContent {
             // three alone.
             ForEach(0..<5) { turn in
                 if turn == chosen {
-                    return Label("turn \\(turn) - chosen")
+                    Label("turn \\(turn) - chosen")
                 } else {
-                    return Button("turn \\(turn)")
+                    Button("turn \\(turn)")
                         .onClicked { chosen = turn }
                 }
             }
@@ -100,11 +100,11 @@ struct BuilderSample: SampleContent, ExampleContent {
 
             ForEach(0..<5) { turn in
                 if turn == chosen {
-                    return Label("turn \(turn) - chosen")
+                    Label("turn \(turn) - chosen")
                         .fontAttributes(.bold)
                         .textColor(Palette.accent)
                 } else {
-                    return Button("turn \(turn)")
+                    Button("turn \(turn)")
                         .fontSize(13)
                         .padding(16, 6)
                         .horizontalAlignment(.start)

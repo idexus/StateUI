@@ -19,7 +19,7 @@ enum Look {
     static let bar = 56.0
 
     /// One of the inspector's buttons.
-    static func action(_ caption: String, _ run: @escaping () -> Void) -> any View {
+    static func action(_ caption: String, _ run: @escaping () -> Void) -> some View {
         Button(caption)
             .fontSize(12)
             .textColor(ink)
@@ -42,7 +42,7 @@ enum Look {
     ///   - picture: the drawing - `expanding`, `folding` or `closing`.
     ///   - words: what it does, in a word.
     ///   - run: what a tap does.
-    static func icon(_ picture: String, _ words: String, _ run: @escaping () -> Void) -> any View {
+    static func icon(_ picture: String, _ words: String, _ run: @escaping () -> Void) -> some View {
         Grid {
             Path(picture)
                 .stroke(ink)
@@ -72,7 +72,7 @@ enum Look {
     static let closing = "M2 2 L10 10 M10 2 L2 10"
 
     /// One line of the chosen render's numbers.
-    static func line(_ text: String) -> any View {
+    static func line(_ text: String) -> some View {
         Label(text)
             .fontSize(11)
             .textColor(subtle)

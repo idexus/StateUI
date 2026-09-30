@@ -85,14 +85,14 @@ public struct FrameReader: ContentView {
     private let space: CoordinateSpace
 
     /// What to show, given the space it will live in.
-    private let build: (Rect) -> [Element]
+    private let build: (Rect) -> [Node]
 
     /// A reader handing its content closure the frame in its parent's
     /// coordinates.
     ///
     /// - Parameter content: What to show, built again as each measurement
     ///   settles.
-    public init(@ViewBuilder _ content: @escaping (Rect) -> [Element]) {
+    public init<Content: Views>(@ViewBuilder _ content: @escaping (Rect) -> Content) {
         self.init(in: .parent, content)
     }
 
@@ -102,20 +102,18 @@ public struct FrameReader: ContentView {
     /// - Parameters:
     ///   - space: Which coordinates to hand over.
     ///   - content: What to show, built again as each measurement settles.
-    public init(
+    public init<Content: Views>(
         in space: CoordinateSpace,
-        @ViewBuilder _ content: @escaping (Rect) -> [Element]
+        @ViewBuilder _ content: @escaping (Rect) -> Content
     ) {
         self.space = space
-        self.build = content
+        self.build = { content($0).nodes }
     }
 
     /// The content, in a Grid that fills the offered space and writes its own
     /// frame into the state this body reads.
     public var content: any View {
-        // What the author's builder made goes in as it is, keyed already.
-        let children: () -> [Element] = { build(frame) }
-        return Grid(content: children)
+        Grid { BuiltViews(nodes: build(frame)) }
             .onFrameChanged(in: space) { frame = $0 }
     }
 }

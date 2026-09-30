@@ -115,9 +115,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// - Parameters:
     ///   - items: What the gallery shows, one card each.
     ///   - content: The card's face, run for every item.
-    public init(
+    public init<Content: View>(
         _ items: Items,
-        content: @escaping (Items.Element) -> Element
+        @ViewBuilder content: @escaping (Items.Element) -> Content
     ) where Items.Element: Hashable, Id == Items.Element {
         self.init(items, id: \.self, content: content)
     }
@@ -134,12 +134,12 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     ///   - id: Which part of an item is its identity - distinct across the
     ///     items, and stable while the item means the same card.
     ///   - content: The card's face, run for every item.
-    public init(
+    public init<Content: View>(
         _ items: Items,
         id: KeyPath<Items.Element, Id>,
-        content: @escaping (Items.Element) -> Element
+        @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        source = Source(items: items, path: id, card: content)
+        source = Source(items: items, path: id, card: { content($0).body })
     }
 
     /// Which shape the cards stand in - a wheel unless said. Changing it
@@ -357,7 +357,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // by the placement written on the wrapper every frame.
         var run = PlacedLayout(items, id: source.path) { item in
             Grid {
-                ModifiedContent(node: make(item).body)
+                ModifiedContent(node: make(item))
                     // Which card is pressed, never which is in front.
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
@@ -692,14 +692,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         /// Which part of an item is its identity.
         let path: KeyPath<Items.Element, Id>
 
-        /// The card's face.
-        let card: (Items.Element) -> Element
+        /// The card's face, as a node.
+        let card: (Items.Element) -> Node
 
         /// What the initializers were handed.
         init(
             items: Items,
             path: KeyPath<Items.Element, Id>,
-            card: @escaping (Items.Element) -> Element
+            card: @escaping (Items.Element) -> Node
         ) {
             self.items = items
             self.path = path

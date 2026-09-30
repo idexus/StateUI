@@ -26,7 +26,7 @@
 public struct ScrollReader: ContentView {
     private let across: Double
     private let down: Double
-    private let held: () -> [Element]
+    private let held: () -> [Node]
 
     private var reports: Binding<Point>?
     private var scroller: Aim<ScrollView>?
@@ -55,7 +55,7 @@ public struct ScrollReader: ContentView {
     ///   - across: how far beyond the room it can be scrolled sideways, in
     ///     device units.
     ///   - content: the views lying under it.
-    public init(across: Double, @ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(across: Double, @ViewBuilder content: @escaping () -> Content) {
         self.init(across: across, down: 0, content: content)
     }
 
@@ -64,7 +64,7 @@ public struct ScrollReader: ContentView {
     /// - Parameters:
     ///   - down: how far beyond the room it can be scrolled, in device units.
     ///   - content: the views lying under it.
-    public init(down: Double, @ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(down: Double, @ViewBuilder content: @escaping () -> Content) {
         self.init(across: 0, down: down, content: content)
     }
 
@@ -75,14 +75,14 @@ public struct ScrollReader: ContentView {
     ///     device units.
     ///   - down: how far beyond the room it can be scrolled, in device units.
     ///   - content: the views lying under it.
-    public init(
+    public init<Content: Views>(
         across: Double,
         down: Double,
-        @ViewBuilder content: @escaping () -> [Element]
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.across = across
         self.down = down
-        self.held = content
+        self.held = { content().nodes }
     }
 
     /// Where the run is scrolled to, both ways: the user's hand writes it, and a
@@ -197,7 +197,7 @@ public struct ScrollReader: ContentView {
 
         return Grid {
             // What is moved takes no touches: the scroller over it takes them.
-            Grid(content: content)
+            Grid { BuiltViews(nodes: content()) }
                 .ignoresInput(true)
 
             FrameReader { room in

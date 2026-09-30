@@ -543,7 +543,7 @@ private struct Steps: ContentView {
     }
 
     /// One arrow: where it goes, and whether there is anything there.
-    private func step(_ caption: String, to: Int) -> any View {
+    private func step(_ caption: String, to: Int) -> some View {
         Button(caption)
             .fontSize(18)
             .textColor(Palette.subtle)

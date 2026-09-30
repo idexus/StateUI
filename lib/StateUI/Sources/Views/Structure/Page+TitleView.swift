@@ -14,15 +14,16 @@ extension PropertyContainer where Self: Page {
     /// state, and a binding handed to a control keeps it live. Declared around
     /// the page - on its stack or its window's page - it stands in every page's
     /// title shown there that declares none of its own; the innermost
-    /// declaration wins. A closure producing nothing leaves the title.
+    /// declaration wins.
     ///
-    /// - Parameter content: one root view; put several controls in a layout.
-    public func titleView(@ViewBuilder _ content: () -> [Element]) -> Modified {
-        let view = content().first
+    /// - Parameter content: one view - an `if`/`else` is one; put several
+    ///   controls in a layout.
+    public func titleView<Content: View>(@ViewBuilder _ content: () -> Content) -> Modified {
+        let view = content().body
         return modified {
             // After the element's own children; the host finds it by type.
             // Design: docs/design/views/modifiers.md#slot-children
-            $0.children.append(Node(contract: TitleViewContract.self, children: view.map { [$0.body] } ?? []))
+            $0.children.append(Node(contract: TitleViewContract.self, children: [view]))
         }
     }
 }

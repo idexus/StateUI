@@ -32,19 +32,21 @@ public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
     private(set) var footer: (any View)?
 
     /// A group of `items`, each its own identity, each looking as `content` says.
-    public init(_ items: Items, content: @escaping (Items.Element) -> any View)
+    public init<Content: View>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content)
     where Items.Element: Hashable, Id == Items.Element {
         self.items = items
         identify = { $0 }
-        self.content = content
+        self.content = { content($0) }
     }
 
     /// A group of `items`, each named by the property `id`, each looking as
     /// `content` says.
-    public init(_ items: Items, id: KeyPath<Items.Element, Id>, content: @escaping (Items.Element) -> any View) {
+    public init<Content: View>(
+        _ items: Items, id: KeyPath<Items.Element, Id>, @ViewBuilder content: @escaping (Items.Element) -> Content
+    ) {
         self.items = items
         identify = { $0[keyPath: id] }
-        self.content = content
+        self.content = { content($0) }
     }
 
     /// The group's name, which sets its items apart from another group's.

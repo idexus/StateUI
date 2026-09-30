@@ -157,6 +157,41 @@ final class BuilderTests: XCTestCase {
                        "the branch that left took its element with it")
     }
 
+    /// At a composed view's content root the same rule holds: an `if/else` there is two elements - the switch
+    /// replaces the control - while the view keeps its place.
+    func testTheTwoBranchesOfAContentRootAreDifferentElements() {
+        let renders = Renders()
+
+        let first = renders.render(VStack { Field(editing: true) }.body)
+        let second = renders.render(VStack { Field(editing: false) }.body)
+        let field = patch(second, forType: "TextField")
+
+        XCTAssertNotNil(patch(first, forType: "TextField"))
+        XCTAssertEqual(field?.replace, true, "the content root kept one control for two branches")
+        XCTAssertEqual(field?.properties["text"], .string("nickname"))
+    }
+
+    /// The builder keeps what was written: an `if/else` of two controls is those two, never erased to `any View`,
+    /// and two statements are what a container holds.
+    func testTheBuilderKeepsWhatWasWritten() {
+        @ViewBuilder func pair(_ first: Bool) -> some View {
+            if first {
+                Label("a")
+            } else {
+                Button("b")
+            }
+        }
+
+        @ViewBuilder func both() -> some Views {
+            Label("a")
+            Button("b")
+        }
+
+        XCTAssertTrue(type(of: pair(true)) == Either<Label, Button>.self)
+        XCTAssertTrue(type(of: both()) == Statements<Label, Button>.self)
+        XCTAssertTrue(type(of: Field(editing: true).content) == Either<TextField, TextField>.self)
+    }
+
     /// Going back to a branch that was shown before starts it afresh rather
     /// than digging up what it left behind - which is what "deterministic"
     /// means here: the same tree describes the same controls however it was
@@ -262,9 +297,9 @@ final class BuilderTests: XCTestCase {
             VStack {
                 ForEach(0...10) { turn in
                     if turn == chosen {
-                        return Label("turn \(turn)")
+                        Label("turn \(turn)")
                     } else {
-                        return ColorBox(Color("#C8C8C8"))
+                        ColorBox(Color("#C8C8C8"))
                     }
                 }
             }
@@ -414,5 +449,18 @@ final class BuilderTests: XCTestCase {
 
         XCTAssertFalse(dump.contains("key:"), "the builder's path was sent to the host:\n\(dump)")
         XCTAssertTrue(dump.contains("\"turn 1\""), dump)
+    }
+}
+
+/// A field that is one of two, by what it is handed - its content root an `if/else`.
+private struct Field: ContentView {
+    let editing: Bool
+
+    var content: any View {
+        if editing {
+            TextField("name")
+        } else {
+            TextField("nickname")
+        }
     }
 }

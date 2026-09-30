@@ -14,13 +14,13 @@
 /// stayed - text, caret, focus and `@State` riding along - rather than
 /// rewriting what every position shows. A view's own `.id()` wins. Items must
 /// be distinct within their parent; where they repeat, name the distinct part
-/// with `id:`.
+/// with `id:`. A row is one view: an `if`/`else` works in it.
 ///
 /// A plain `for` does not compile inside a view builder, so this is where
 /// repetition is written.
-public struct ForEach {
-    /// The views, one per item, each wearing its item's identity.
-    let elements: [Element]
+public struct ForEach: Views {
+    /// The views' nodes, one per item, each wearing its item's identity.
+    public let nodes: [Node]
 
     /// One view per item, the item its identity.
     ///
@@ -29,9 +29,9 @@ public struct ForEach {
     ///     }
     ///
     /// A range works: its numbers are the items.
-    public init<Items: RandomAccessCollection>(
+    public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items,
-        content: (Items.Element) -> Element
+        @ViewBuilder content: (Items.Element) -> Content
     ) where Items.Element: Hashable {
         self.init(items, id: \.self, content: content)
     }
@@ -51,35 +51,17 @@ public struct ForEach {
     ///
     /// - Parameter id: which part of an item is its identity - distinct
     ///   across the items, stable while the item means the same row.
-    public init<Items: RandomAccessCollection, Id: Hashable>(
+    public init<Items: RandomAccessCollection, Id: Hashable, Content: View>(
         _ items: Items,
         id: KeyPath<Items.Element, Id>,
-        content: (Items.Element) -> Element
+        @ViewBuilder content: (Items.Element) -> Content
     ) {
-        elements = items.map { item in
-            Identified(identity: String(describing: item[keyPath: id]), element: content(item))
+        // The item's identity, unless the author wrote an `.id()` of their own.
+        // Design: docs/design/views/builders.md#foreach-keys-are-text
+        nodes = items.map { item in
+            var node = content(item).body
+            if node.id == nil { node.id = String(describing: item[keyPath: id]) }
+            return node
         }
-    }
-}
-
-/// One turn's view, wearing its item's identity unless the author wrote an
-/// `.id()` of their own.
-/// Design: docs/design/views/builders.md#the-path-rides-a-wrapper
-struct Identified: Element {
-    /// The item's identity, rendered to the id namespace authors write in.
-    let identity: String
-
-    /// The view as the author wrote it, modifiers and all.
-    let element: Element
-
-    /// The element's own node, identified.
-    var body: Node {
-        var node = element.body
-
-        if node.id == nil {
-            node.id = identity
-        }
-
-        return node
     }
 }

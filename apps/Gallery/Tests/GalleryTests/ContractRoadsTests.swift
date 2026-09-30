@@ -204,6 +204,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = VStack { TextSpan("Hi") }"#,
             contract: #"_ = VStack { Label().spans { TextSpan("Hi") } }"#),
         Road(
+            name: "two views in the title's place",
+            removed: #"_ = Label("Notes").titleView { Button("Back"); Button("Next") }"#,
+            contract: #"_ = Label("Notes").titleView { HStack { Button("Back"); Button("Next") } }"#),
+        Road(
+            name: "two views as a composed view's content",
+            removed: "struct Pair: ContentView { var content: any View { Label(\"a\"); Label(\"b\") } }",
+            contract: "struct Pair: ContentView { var content: any View { VStack { Label(\"a\"); Label(\"b\") } } }"),
+        Road(
             name: "a view standing among a label's runs",
             removed: #"_ = Label().spans { Label("Hi") }"#,
             contract: #"_ = Label().spans { TextSpan("Hi") }"#),

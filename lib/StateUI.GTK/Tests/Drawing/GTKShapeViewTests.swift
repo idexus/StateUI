@@ -103,7 +103,7 @@ final class GTKShapeViewTests: XCTestCase {
     ) throws -> [UInt32] {
         try onUIThread {
             let host = GTKRenderer.running {
-                VStack { shape() }
+                VStack { ModifiedContent(node: shape().body) }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

@@ -91,7 +91,8 @@ struct InspectorView: ContentView {
     ///
     /// A horizontally scrolling action row that remains reachable in a narrow
     /// inspector.
-    private func head(_ model: InspectorModel) -> any View {
+    @ViewBuilder
+    private func head(_ model: InspectorModel) -> some View {
         let record = Scenes.shared.record(id: scene)
         let windowed = record.map(Inspector.windowed) ?? false
         let close: () -> Void = {
@@ -144,22 +145,24 @@ struct InspectorView: ContentView {
         .orientation(.horizontal)
         .horizontalScrollBarVisibility(.never)
 
-        guard place == .bottom else { return actions }
-
         // ALONG THE BOTTOM THE LAST TWO ARE PICTURES AT THE END OF THE ROW -
         // the same two the folded line ends with, this one folding it where
         // that one opens it out.
-        return Grid {
-            actions.gridColumn(0)
+        if place == .bottom {
+            Grid {
+                actions.gridColumn(0)
 
-            HStack {
-                Look.icon(Look.folding, "Collapse") { model.fold(scene) }
-                Look.icon(Look.closing, "Close", close)
+                HStack {
+                    Look.icon(Look.folding, "Collapse") { model.fold(scene) }
+                    Look.icon(Look.closing, "Close", close)
+                }
+                .verticalAlignment(.start)
+                .gridColumn(1)
             }
-            .verticalAlignment(.start)
-            .gridColumn(1)
+            .columns(.fill, .auto)
+        } else {
+            actions
         }
-        .columns(.fill, .auto)
     }
 
     /// One line about the scene's renders.
@@ -176,7 +179,7 @@ struct InspectorView: ContentView {
     }
 
     /// The scene's renders, newest first.
-    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> any View {
+    private func list(_ passes: [InspectedPass], scene: ElementId, at index: Int?) -> some View {
         let model = InspectorModel.shared
 
         return ScrollView {
@@ -194,62 +197,63 @@ struct InspectorView: ContentView {
     }
 
     /// The render chosen: its numbers, then its tree in this scene.
-    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> any View {
-        guard let pass = chosen else {
-            return Label("Choose a render to see what it built.")
+    @ViewBuilder
+    private func detail(_ chosen: InspectedPass?, scene: ElementId, at index: Int?) -> some View {
+        if let pass = chosen {
+            let entries = pass.entries.filter { $0.scene == scene }
+            let whole = entries.first { $0.depth == 0 }
+
+            Grid {
+                VStack {
+                    HStack {
+                        if !wide {
+                            Look.action("‹ Renders") { InspectorModel.shared.selected = nil }
+                        }
+
+                        Label("Render #\(pass.number) · \(Look.road(pass.road))")
+                            .fontSize(13)
+                            .fontAttributes(.bold)
+                            .textColor(Look.ink)
+                            .verticalAlignment(.center)
+                    }
+                    .spacing(8)
+
+                    Look.line(pass.causes.isEmpty
+                        ? "caused by nothing named"
+                        : "for " + pass.causes.joined(separator: ", "))
+                    Look.line("at \(Look.seconds(pass.at)) · generation \(pass.generation)")
+                    Look.line(
+                        "Swift  describe \(Look.micros(pass.describe))"
+                            + (pass.own > 0 ? " · the inspector's own \(Look.micros(pass.own)), left out" : ""))
+                    Look.line(host(pass.host))
+                    Look.line(
+                        "this scene  Swift \(whole.map { Look.micros($0.micros) } ?? "nothing built")"
+                            + (Look.scene(pass.host, at: index).map { " · host \(Look.micros($0))" } ?? ""))
+
+                    if pass.truncated {
+                        Look.line("only the first \(Inspection.most) views are listed")
+                    }
+                }
+                .spacing(2)
+                .gridRow(0)
+
+                ScrollView {
+                    VStack {
+                        ForEach(Array(entries.enumerated()), id: \.offset) { item in
+                            Branch(entry: item.element)
+                        }
+                    }
+                }
+                .gridRow(1)
+            }
+            .rows(.auto, .fill)
+            .rowSpacing(8)
+        } else {
+            Label("Choose a render to see what it built.")
                 .fontSize(12)
                 .textColor(Look.subtle)
                 .verticalAlignment(.start)
         }
-
-        let entries = pass.entries.filter { $0.scene == scene }
-        let whole = entries.first { $0.depth == 0 }
-
-        return Grid {
-            VStack {
-                HStack {
-                    if !wide {
-                        Look.action("‹ Renders") { InspectorModel.shared.selected = nil }
-                    }
-
-                    Label("Render #\(pass.number) · \(Look.road(pass.road))")
-                        .fontSize(13)
-                        .fontAttributes(.bold)
-                        .textColor(Look.ink)
-                        .verticalAlignment(.center)
-                }
-                .spacing(8)
-
-                Look.line(pass.causes.isEmpty
-                    ? "caused by nothing named"
-                    : "for " + pass.causes.joined(separator: ", "))
-                Look.line("at \(Look.seconds(pass.at)) · generation \(pass.generation)")
-                Look.line(
-                    "Swift  describe \(Look.micros(pass.describe))"
-                        + (pass.own > 0 ? " · the inspector's own \(Look.micros(pass.own)), left out" : ""))
-                Look.line(host(pass.host))
-                Look.line(
-                    "this scene  Swift \(whole.map { Look.micros($0.micros) } ?? "nothing built")"
-                        + (Look.scene(pass.host, at: index).map { " · host \(Look.micros($0))" } ?? ""))
-
-                if pass.truncated {
-                    Look.line("only the first \(Inspection.most) views are listed")
-                }
-            }
-            .spacing(2)
-            .gridRow(0)
-
-            ScrollView {
-                VStack {
-                    ForEach(Array(entries.enumerated()), id: \.offset) { item in
-                        Branch(entry: item.element)
-                    }
-                }
-            }
-            .gridRow(1)
-        }
-        .rows(.auto, .fill)
-        .rowSpacing(8)
     }
 
     /// The host's half, in one line.

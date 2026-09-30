@@ -342,7 +342,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
         // One card's face - a picture and its name, and nothing at all about
         // where the card is or which way it faces. That is the placement's.
-        func face(_ card: Card) -> any View {
+        func face(_ card: Card) -> some View {
             ZStack {
                 Grid {
                     Image(ImageSource(card.art))
@@ -491,7 +491,7 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     /// The ring of cards, placed by the arithmetic below - the same views
     /// whichever way the user turns them.
-    private var cards: any View {
+    private var cards: some View {
         PlacedLayout(Self.cards, id: \.name) { card in
             face(card)
         }
@@ -524,7 +524,7 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// One card's face - a picture and its name, and nothing at all about where
     /// the card is or which way it faces. That is the placement's, and keeping
     /// the two apart is what lets one run of cards be turned into any shape.
-    private func face(_ card: Card) -> any View {
+    private func face(_ card: Card) -> some View {
         ZStack {
             Grid {
                 Image(ImageSource(card.art))

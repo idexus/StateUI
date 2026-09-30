@@ -74,7 +74,7 @@ private struct Shelf: ContentView {
     var content: any View {
         VStack {
             if let extra {
-                extra
+                ModifiedContent(node: extra.body)
             }
 
             Button("Shelf: \(count)").onClicked { count += 1 }
@@ -281,30 +281,32 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(third.children[0].props["text"], .string("Count: 1"))
     }
 
-    /// One BRANCH holding another view type each render - a type-erased
-    /// factory inside a stored builder list - is another path: the branch key
-    /// alone would hand Timer the count Counter left behind.
+    /// One BRANCH holding another view type each render - a builder's result
+    /// stored in a field - is another path: the branch key alone would hand
+    /// Timer the count Counter left behind.
     func testABranchHoldingAnotherViewTypeStartsOver() {
-        struct Holder: ContentView {
-            let parts: [Element]
+        struct Holder<Parts: Views>: ContentView {
+            let parts: Parts
 
-            init(@ViewBuilder _ parts: () -> [Element]) {
+            init(@ViewBuilder _ parts: () -> Parts) {
                 self.parts = parts()
             }
 
             var content: any View {
-                // The parts go in as the builder made them, keyed already.
-                let held: () -> [Element] = { [parts] in parts }
-                return VStack(content: held)
+                VStack { parts }
             }
         }
 
-        func make(ticking: Bool) -> Holder {
+        func make(ticking: Bool) -> some View {
             let branch = true
 
             return Holder {
                 if branch {
-                    ticking ? Timer() as any View : Counter()
+                    if ticking {
+                        Timer()
+                    } else {
+                        Counter()
+                    }
                 }
             }
         }

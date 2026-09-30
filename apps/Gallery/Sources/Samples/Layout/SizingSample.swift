@@ -134,7 +134,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
     /// One example with the modifier that made it, so the column reads as a
     /// list of named cases.
-    private func row(_ caption: String, _ view: any View) -> any View {
+    private func row<Shown: View>(_ caption: String, _ view: Shown) -> some View {
         VStack {
             Label(caption)
                 .fontSize(11)

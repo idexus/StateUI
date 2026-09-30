@@ -48,7 +48,7 @@ struct CodeBlock: ContentView {
     /// container's closure - which runs when the block is described, and a
     /// block built with the same code is carried whole, so the scan runs once
     /// per block rather than once per render.
-    private var snippet: any View {
+    private var snippet: some View {
         VStack {
             Label()
                 .spans {

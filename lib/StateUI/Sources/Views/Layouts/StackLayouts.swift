@@ -31,9 +31,9 @@ public struct VStack: StackBase {
 
     /// A column of whatever the closure describes, in the order written.
     /// The closure is kept and run when the differ describes the stack.
-    public init(@ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(@ViewBuilder content: @escaping () -> Content) {
         node = Node(contract: VStackContract.self)
-        node.producer = { content().map { $0.body } }
+        node.producer = { content().nodes }
     }
 }
 
@@ -58,8 +58,8 @@ public struct HStack: StackBase {
 
     /// A row of whatever the closure describes, in the order written.
     /// The closure is kept and run when the differ describes the stack.
-    public init(@ViewBuilder content: @escaping () -> [Element]) {
+    public init<Content: Views>(@ViewBuilder content: @escaping () -> Content) {
         node = Node(contract: HStackContract.self)
-        node.producer = { content().map { $0.body } }
+        node.producer = { content().nodes }
     }
 }

@@ -91,7 +91,7 @@ private struct WideDetail: ContentView {
 
     var content: any View {
         let window = self.window
-        return VStack { detail }
+        return VStack { ModifiedContent(node: detail.body) }
             .onCreated {
                 window.width = 1016
                 window.height = 700

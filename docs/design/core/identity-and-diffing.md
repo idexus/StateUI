@@ -58,6 +58,13 @@ view before it watched, wrote or was told carries over - its page, its
 `onChanged` readings, its focus. A composed view keeps state only from a view
 of its own kind ([state survives a rebuild](#state-survives-a-rebuild)).
 
+The branch a composed view's content root was written in is part of it too:
+`if editing { TextField(…) } else { TextField(…) }` as a view's `content` is
+two elements, as in a container, though the placeholder's key covers the
+content root's own path (`Node.branch`, compared with the views' types). The
+composed view itself keeps its state across the swap; an `.id()` on the
+content root outweighs the branch.
+
 ## What a walk keeps
 
 The differ is one object for the life of the renderer. What it keeps between

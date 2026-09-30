@@ -138,7 +138,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
     private func cell(
         _ text: String, _ colour: Color, at column: Int, faded: Bool = false
-    ) -> any View {
+    ) -> some View {
         ZStack {
             Label(text)
                 .fontSize(13)

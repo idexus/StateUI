@@ -10,7 +10,7 @@ public protocol ViewProperties: VisualElementProperties {}
 /// the frame report and the context menu only a control can carry. A
 /// modifier on a view gives back a view, so a chain goes on - on `any View`
 /// too.
-public protocol View: VisualElement, ViewProperties, Page where Modified: View {}
+public protocol View: VisualElement, ViewProperties, Page, Views where Modified: View {}
 
 extension ViewProperties {
     /// The space kept outside the view, between it and its neighbours.

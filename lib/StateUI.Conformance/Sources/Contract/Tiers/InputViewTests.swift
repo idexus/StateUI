@@ -134,13 +134,14 @@
     }
 
     /// A field of `element`'s kind over `words`, wearing `worn`, found by the id "field".
-    static func field(_ element: String, _ words: State<String>, _ worn: [any Worn] = []) -> any View {
+    static func field(_ element: String, _ words: State<String>, _ worn: [any Worn] = []) -> ModifiedContent {
         let dressing = Dressing(worn, id: "field")
-        switch element {
-        case "SearchField": return dressing.dress(SearchField(words.projectedValue))
-        case "TextEditor": return dressing.dress(TextEditor(words.projectedValue))
-        case "TextField": return dressing.dress(TextField(words.projectedValue))
-        default: return Label("no field of \(element)")
+        let field: any View = switch element {
+        case "SearchField": dressing.dress(SearchField(words.projectedValue))
+        case "TextEditor": dressing.dress(TextEditor(words.projectedValue))
+        case "TextField": dressing.dress(TextField(words.projectedValue))
+        default: Label("no field of \(element)")
         }
+        return ModifiedContent(node: field.body)
     }
 }

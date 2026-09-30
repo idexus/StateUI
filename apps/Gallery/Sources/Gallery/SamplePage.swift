@@ -69,7 +69,7 @@ struct SamplePage: ContentView {
     /// One example as this page shows it: "Example", "Notes" and "In Swift",
     /// each over what it names. Among several examples, the example's name -
     /// "Example 2" - heads its whole group instead.
-    private func sections(of example: Example, at index: Int) -> any View {
+    private func sections(of example: Example, at index: Int) -> some View {
         let name = sample.name(ofExample: index)
         let box = Self.boxed(example.view)
 
@@ -85,7 +85,7 @@ struct SamplePage: ContentView {
             }
 
             if let notes = example.notes {
-                Self.section("Notes", notes)
+                Self.section("Notes", ModifiedContent(node: notes.body))
             }
 
             Self.section(example.codeHeading, CodeBlock(example.code))
@@ -104,7 +104,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter heading: what the section is called.
     /// - Parameter content: what it holds.
-    static func section(_ heading: String, _ content: any View) -> any View {
+    static func section<Content: View>(_ heading: String, _ content: Content) -> some View {
         VStack {
             SectionTitle(heading)
             content
@@ -122,7 +122,7 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter view: the example itself.
     /// - Parameter fills: whether the example takes the whole cell.
-    static func boxed(_ view: any View, fills: Bool = false) -> ZStack {
+    static func boxed<Content: View>(_ view: Content, fills: Bool = false) -> ZStack {
         ZStack {
             if fills {
                 Grid {
