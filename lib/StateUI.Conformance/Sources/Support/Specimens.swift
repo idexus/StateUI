@@ -74,10 +74,6 @@
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarItem("Save")).id(dressing.id)] }
             } destination: { _ in Label("Pushed") }
-        case "TitleBar":
-            return SessionPage(beside: others, key: "\(worn)") { _, window in
-                window.titleBar = dressing.wear(TitleBar("Title")).id(dressing.id)
-            }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { [Label("Root")] + others }
@@ -86,6 +82,10 @@
             return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
                 Label("Sidebar")
             } detail: { VStack { [Label("Detail")] + others } })
+        case "ModalStack":
+            return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                VStack { [Label("Root")] + others }
+            } destination: { _ in Label("Sheet") })
         case "TabbedView":
             return dressing.wear(TabbedView([0, 1]) { tab in VStack { [Label("Tab \(tab)")] + (tab == 0 ? others : []) } })
         default:
@@ -101,7 +101,7 @@
     }
 }
 
-/// A page that writes its page's and its window's sessions - a toolbar's items, a title bar - as it is made and
+/// A page that writes its page's and its window's sessions - a title, a size - as it is made and
 /// again whenever what it writes changes, over words and what stands beside them.
 public struct SessionPage: ContentView {
     /// What stands beside its words.

@@ -53,7 +53,7 @@ final class AppKitWindowController: NSWindowController {
     var tabRowAccessory: NSTitlebarAccessoryViewController?
     weak var tabRowSplit: AppKitSplitView?
     var titleAccessory: NSTitlebarAccessoryViewController?
-    let titleCluster = AppKitTitleBarTitleView()
+    let titleCluster = AppKitTitleAreaView()
 
     /// The page's title where a painted band hides the system's own.
     let bandTitle: NSTextField = {
@@ -81,7 +81,7 @@ final class AppKitWindowController: NSWindowController {
     var tabRowAccessoryForTesting: NSTitlebarAccessoryViewController? { tabRowAccessory }
     var tabRowSplitForTesting: AppKitSplitView? { tabRowSplit }
     var titleAccessoryForTesting: NSTitlebarAccessoryViewController? { titleAccessory }
-    var titleClusterForTesting: AppKitTitleBarTitleView { titleCluster }
+    var titleClusterForTesting: AppKitTitleAreaView { titleCluster }
 
     init(
         _ element: MountedElement,

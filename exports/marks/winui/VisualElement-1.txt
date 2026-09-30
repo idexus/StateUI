@@ -104,9 +104,6 @@ TimePicker.focus: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.pivotY: ✅
 TimePicker.unfocus: ✅
-TitleBar.accessibilityHint: not realized
-TitleBar.isVisible: not realized
-TitleBar.rotationY: not realized
 VStack.automationExcludedWithChildren: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅

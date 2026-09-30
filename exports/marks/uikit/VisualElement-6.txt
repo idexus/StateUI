@@ -33,8 +33,6 @@ Switch.scaleY: 🔌 read scaleY of Switch: the host's own transform, checked aga
 TextEditor.rotationY: 🔌 read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.pivotY: 🔌 read pivotY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.background: not realized
-TitleBar.accessibilityHeadingLevel: not realized
-VStack.style: ✅
-WebView.ignoresInput: not realized
-ZStack.isEnabled: not realized
-ZStack.zIndex: not realized
+VStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
+WebView.style: ✅
+ZStack.ignoresInput: ✅

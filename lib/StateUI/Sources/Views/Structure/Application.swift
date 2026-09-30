@@ -103,11 +103,11 @@ extension Window {
             let session = session()
             let overlay = Node.overlay(inspector: session.dockedInspector, of: session.record?.id)
 
-            // Its page, the title bar, the library's overlay: one order.
+            // Its page, then the library's overlay: one order.
             // Design: docs/design/views/pages.md#the-children-of-a-window
             var node = Node(
                 contract: WindowContract.self,
-                children: [Node.page(page)] + session.slots + (overlay.map { [$0] } ?? []))
+                children: [Node.page(page)] + (overlay.map { [$0] } ?? []))
             node.props = session.props
 
             // One handler per lifecycle report, never iterated from a collection.

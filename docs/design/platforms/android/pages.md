@@ -19,8 +19,11 @@ A stack's bar is Android's own toolbar. It carries the title of the page the
 window is named by ([the window's chrome](../../host/pages.md#the-windows-chrome)):
 tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the
-navigation button and the actions. The bar also carries the stack's bar
-colours and the actions the page's path declares: the ones on the bar
+navigation button and the actions. The bar also carries the line under the
+title and the colours the page's path declares, the nearest of each
+([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
+an arrangement changing one refreshes every bar under it, and a colour that
+travels does so at each frame - and the actions the page's path declares: the ones on the bar
 beside the title, as the host layer composes them - the leading groups
 first, the bar having no leading edge beside its navigation button - the rest
 behind the toolbar's overflow - each an entry of the toolbar's menu, written as

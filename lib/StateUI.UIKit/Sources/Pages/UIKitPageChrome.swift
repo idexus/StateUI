@@ -6,12 +6,13 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a page's bar shows: its title or the view standing in for it, its groups of actions at either edge and those
-/// in its overflow menu, whether it shows and offers the way back, and its colours.
+/// What a page's bar shows: its title or the view standing in for it, the line under the title, its groups of actions
+/// at either edge and those in its overflow menu, whether it shows and offers the way back, and its colours.
 /// Design: docs/design/platforms/uikit/pages.md#the-bar
 @MainActor
 struct UIKitPageChrome {
     var title = ""
+    var subtitle: String?
     var titleView: UIView?
     var showsBar = true
     var offersBack = true
@@ -24,6 +25,7 @@ struct UIKitPageChrome {
     /// Puts it on `item`, the bar a navigation controller shows for the page.
     func show(on item: UINavigationItem) {
         item.title = title
+        if item.subtitle != subtitle { item.subtitle = subtitle }
         // A layout's size follows what it holds; a control keeps the width the bar gave it, which a fit to its
         // words at every render cut and the bar widened again, letter by letter.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
@@ -55,6 +57,7 @@ struct UIKitPageChrome {
         if let foreground = words.flatMap(UIColor.init(stateUI:)) {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]
+            appearance.subtitleTextAttributes = [.foregroundColor: foreground]
             appearance.buttonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)

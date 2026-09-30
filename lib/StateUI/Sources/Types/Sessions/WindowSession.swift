@@ -89,19 +89,6 @@ public final class WindowSession {
     /// platform's opaque window.
     @State public var isTranslucent: Bool? = nil
 
-    /// Authored window chrome presented by hosts that support a custom title
-    /// area.
-    ///
-    ///     .onCreated {
-    ///         if device.formFactor == .desktop {
-    ///             window.titleBar = TitleBar("Notes").trailingContent { AccountButton() }
-    ///         }
-    ///     }
-    ///
-    /// A view in one of the bar's slots is built where the bar is shown, and
-    /// follows its own state.
-    @State public var titleBar: TitleBar? = nil
-
     /// Where the scene's inspector is docked in this window - the library
     /// lays its panel over every overlay a page declares; nil where none is.
     /// Design: docs/design/views/inspector.md#where-it-docks
@@ -165,11 +152,5 @@ public final class WindowSession {
         props.describe(WindowContract.maximumHeight, maximumHeight)
 
         return props
-    }
-
-    /// What hangs off the window between its page and its overlay: the chrome,
-    /// as the node the host knows it by.
-    var slots: [Node] {
-        titleBar.map { [$0.body] } ?? []
     }
 }

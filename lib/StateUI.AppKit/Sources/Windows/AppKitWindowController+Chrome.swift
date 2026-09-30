@@ -14,14 +14,13 @@ extension AppKitWindowController {
     }
 
     /// Lays the chrome the host layer composes from what the window shows in AppKit's: the title, the toolbar's way
-    /// back, the page's actions and the slots, the sidebar's toggle, the bars' colours, the tabs beneath the toolbar
-    /// and the page's menus.
+    /// back, the page's actions and title view, the application's title area, the sidebar's toggle, the bars'
+    /// colours, the tabs beneath the toolbar and the page's menus.
     /// Design: docs/design/host/pages.md#the-windows-chrome
     func refreshVisiblePageChrome() {
         guard let element, let window else { return }
         let arrangement = presentation.arrangement
         let chrome = WindowChrome(window: element, arrangement: arrangement)
-        let titleBar = element.appKit.slot(.titleBar)
         let titleView = arrangement?.visiblePage?.chromeTitleView?.appKit.view
         let barColor = chrome.background.flatMap(nsColor)
         let foreground = chrome.foreground.flatMap(nsColor)
@@ -51,20 +50,16 @@ extension AppKitWindowController {
                     })
             },
             title: paintedTitle,
-            leading: chrome.leading?.appKit.view,
             leadingActions: chrome.actions.leading.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
             actions: chrome.actions.trailing.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action),
-            trailing: chrome.trailing?.appKit.view))
+            overflow: chrome.actions.overflow.map(Self.action)))
         synchronizeBar(window, color: barColor, split: split)
         synchronizeTitleAccessory(
             window,
-            titleBar: titleBar,
+            area: chrome.titleArea,
             foreground: chrome.background.flatMap { band in
-                barColor.map { _ in
-                    Self.foreground(on: band, written: titleBar?.color(.barForegroundColor) ?? foreground)
-                }
+                barColor.map { _ in Self.foreground(on: band, written: foreground) }
             })
         synchronizeTabRow(window, windowTabs(arrangement))
         host?.pageMenusChanged(in: self)
@@ -141,8 +136,6 @@ extension AppKitWindowController {
         }
     }
 
-    /// An authored title bar's own title stands at the trailing edge of the
-    /// window's title bar, where it is text rather than a toolbar control.
     /// What stands on a painted band: the colour written for it, else white on
     /// a dark band and black on a light one (`BandWords`).
     /// Design: docs/design/host/layout.md#words-on-a-painted-band
@@ -174,18 +167,16 @@ extension AppKitWindowController {
         split?.setDetailBarColor(isTranslucent ? nil : color)
     }
 
-    /// An authored title bar's own title, at the trailing edge. It takes
+    /// The application's title area, at the trailing edge of the window's
+    /// title bar, where it is text rather than a toolbar control. It takes
     /// `foreground` only over a painted band; on the system's material it
     /// keeps the system's colours, where a written one could vanish.
     private func synchronizeTitleAccessory(
         _ window: NSWindow,
-        titleBar: AppKitElement?,
+        area: WindowChrome.TitleArea?,
         foreground: NSColor?
     ) {
-        let title = titleBar?.string(.title)
-        let subtitle = titleBar?.string(.subtitle)
-        let icon = titleBar?.image(.icon)
-        guard title != nil || subtitle != nil || icon != nil else {
+        guard let area else {
             if let accessory = titleAccessory,
                let index = window.titlebarAccessoryViewControllers.firstIndex(of: accessory) {
                 window.removeTitlebarAccessoryViewController(at: index)
@@ -195,9 +186,9 @@ extension AppKitWindowController {
         }
 
         titleCluster.apply(
-            title: title ?? "",
-            subtitle: subtitle ?? "",
-            image: icon,
+            title: area.title ?? "",
+            subtitle: area.subtitle ?? "",
+            image: area.icon.flatMap { host?.image(named: $0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and
         // centres it there; only the width is the cluster's own.

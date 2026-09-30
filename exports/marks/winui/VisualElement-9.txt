@@ -104,8 +104,6 @@ TextField.scaleX: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.layoutDirection: not realized
 TimePicker.translationY: ✅
-TitleBar.rotation: not realized
-TitleBar.style: not realized
 VStack.accessibilityHeadingLevel: ✅
 VStack.opacity: ✅
 VStack.scale: ✅

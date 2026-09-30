@@ -10,6 +10,9 @@ public enum ModalStackContract: ElementContract {
     /// It carries structure; each platform presents its sheets its own way.
     public static let layer: ElementLayer = .adaptive
 
+    /// A modal stack declares the bar over what it holds.
+    public static let tiers: [any Contract.Type] = [BarElementContract.self]
+
     /// A sheet went without the tree saying so - the user dismissed it -
     /// leaving this many presented.
     public static let popped = ElementEvent<Self, Int>("popped", layer: .adaptive)

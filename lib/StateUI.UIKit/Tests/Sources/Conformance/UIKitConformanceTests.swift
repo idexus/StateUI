@@ -41,14 +41,11 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testTextEditor() { conform(TextEditorTests.self) }
     @MainActor func testTextField() { conform(TextFieldTests.self) }
     @MainActor func testTimePicker() { conform(TimePickerTests.self) }
-    @MainActor func testTitleBar() { conform(TitleBarTests.self) }
     @MainActor func testVStack() { conform(VStackTests.self) }
     @MainActor func testWebView() { conform(WebViewTests.self) }
     @MainActor func testZStack() { conform(ZStackTests.self) }
     @MainActor func testApplication() { conform(ApplicationTests.self) }
-    @MainActor func testContent() { conform(ContentTests.self) }
     @MainActor func testContextMenu() { conform(ContextMenuTests.self) }
-    @MainActor func testLeadingContent() { conform(LeadingContentTests.self) }
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
@@ -66,7 +63,6 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testTitleView() { conform(TitleViewTests.self) }
     @MainActor func testToolbarItem() { conform(ToolbarItemTests.self) }
     @MainActor func testToolbarItems() { conform(ToolbarItemsTests.self) }
-    @MainActor func testTrailingContent() { conform(TrailingContentTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
     @MainActor func testPropertyContainer() { conform(PropertyContainerTests.self) }
     @MainActor func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 24)) }

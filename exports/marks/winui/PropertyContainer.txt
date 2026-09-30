@@ -34,7 +34,6 @@ TabbedView.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
-TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: ✅
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: ✅

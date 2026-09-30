@@ -12,8 +12,8 @@ its session.
                                                └──groups──▶ WindowGroup ──▶ Window
 
   ApplicationSession    SceneSession        WindowSession             PageSession
-  styles, motion,       open and close      title, frame, title bar,  title, buttons, menus,
-  kept values           its windows         modal stack, lifecycle    bar requests, lifecycle
+  styles, motion,       open and close      title, frame,             title, padding, background,
+  kept values           its windows         lifecycle                 bar requests, lifecycle
 ```
 
 `Application`, `Scene` and `Window` are protocols with one composition getter
@@ -81,8 +81,7 @@ the window's own `@Environment` resolves it as well as everything under it.
 
 ## The children of a window
 
-A window node's children are its page, then what hangs off it - the title bar,
-read off the session as the window builds - then the library's own overlay.
+A window node's children are its page, then the library's own overlay.
 The host finds them by type, so the order is this side's to settle, and one
 order makes the window's children the same list in every run.
 
@@ -91,7 +90,6 @@ order makes the window's children the same list in every run.
    ├── ModalStack    the window's page, here a modal stack
    │    ├── Page         what it holds
    │    └── Page …       its sheets, the last on top
-   ├── TitleBar      from WindowSession.titleBar
    └── Overlay       the library's: a docked inspector's panel
         └── ZStack       lets a click beside it through
 ```

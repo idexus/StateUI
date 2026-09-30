@@ -98,13 +98,12 @@ TextField.panXChannel: 🔌 pan on TextField: handed to the host's recognizer or
 TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
-TitleBar.area: not realized
-TitleBar.frameChanged: not realized
-VStack.canDrag: not realized
-VStack.dragStarting: not realized
-VStack.dragText: not realized
-VStack.dropCompleted: not realized
+VStack.area: ✅
 VStack.frameChanged: ✅
-VStack.margin: ✅
-WebView.pinchUpdated: not realized
-ZStack.panYChannel: 🔌 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+WebView.canDrag: not realized
+WebView.dragStarting: not realized
+WebView.dragText: not realized
+WebView.dropCompleted: not realized
+WebView.frameChanged: not realized
+WebView.margin: not realized
+ZStack.pinchUpdated: 🔌 pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent

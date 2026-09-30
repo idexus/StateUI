@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// Which element's view shows an element, and what stands in a slot, the same on every host.
+/// Which element's view shows an element, and which children a layout places, the same on every host.
 /// Design: docs/design/host/pages.md#slots
 extension MountedElement {
     /// The element whose view shows this one: itself where it presents a view, else the first it places that does.
@@ -15,11 +15,5 @@ extension MountedElement {
     /// menu - which furnishes the chrome and stands in none of its room.
     public var arrangedChildren: [MountedElement] {
         children.filter { !NodeType.slotTypes.contains($0.type) }
-    }
-
-    /// What stands in this element's `slot` - a page's title view, a title bar's content: the first element under
-    /// the slot with a view; nil where none.
-    public func slotContent(_ slot: NodeType) -> MountedElement? {
-        children.first { $0.type == slot }?.children.lazy.compactMap(\.presentingElement).first
     }
 }

@@ -87,49 +87,6 @@ enum AppStyles {
                     .background(Palette.outline)
                 }
 
-            // A button that lives in the WINDOW's chrome rather than on a
-            // page. The implicit style above is an accent pill 44 points tall
-            // - right in the content, and a foreign object in a strip half
-            // that height: a filled pill up there reads as something stuck on,
-            // whatever colour it is painted.
-            //
-            // So a chrome button is WORDS AND AN ICON and nothing else - no
-            // fill, no outline - answering the pointer by brightening rather
-            // than by growing a frame. The icon is the one its menu row
-            // already carries, in the colour of the words beside it: see
-            // nav_surprise_chrome.svg. The MARK is left white, the colour of
-            // the application's name it stands beside - the mark and the name
-            // are one thing said twice, and the accent belongs to the one
-            // thing up here that can be pressed.
-            //
-            // The colour is the WINDOW's own yellow - read off the minimise
-            // button of a running window - so what can be pressed in the
-            // chrome matches the other things in the chrome that can be
-            // pressed. Fixed rather than `Palette.accent` - the exception
-            // Gallery/GalleryPage.swift makes for the toolbar icon: the title
-            // bar does not follow the theme, so a themed colour would be right
-            // in one theme and wrong in the other. It measures 5.0:1 on the
-            // bar's violet, where `swiftOrangeLight` is 3.4:1 and fails AA for
-            // text.
-            //
-            // A keyed style REPLACES the implicit one, so this states
-            // everything it needs, the 44-point touch floor deliberately
-            // dropped: a title bar is a desktop, and a mouse is not a thumb.
-            Style<Button>("ChromeChip")
-                .textColor(AppColors.windowYellow)
-                .background(.transparent)
-                .fontSize(13)
-                .fontAttributes(.bold)
-                .strokeWidth(0)
-                .padding(5, 0)
-                .height(26)
-                .visualState(.normal) { $0
-                    .opacity(1)
-                }
-                .visualState(.pointerOver) { $0
-                    .opacity(0.85)
-                }
-
             // A button that lives in a LIST ROW, where the touch floor is
             // not merely unnecessary but harmful. A recycled cell measures a
             // minimum size INCONSISTENTLY: with one in the row, the cell
@@ -141,7 +98,7 @@ enum AppStyles {
             // its text rather than a thumb target of its own.
             //
             // A keyed style REPLACES the implicit one, so this states
-            // everything it needs - the ChromeChip rule again.
+            // everything it needs.
             Style<Button>("RowChip")
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -230,8 +187,8 @@ enum AppStyles {
             // NO background: a search field keeps the platform's own
             // look on a coloured surface, and that look is the host's. The
             // 44-point floor is a TOUCH screen's: on a desktop it shows as a
-            // dead band under the field - a mouse is not a thumb, the
-            // ChromeChip rule. A desktop's field keeps its platform's size of
+            // dead band under the field - a mouse is not a thumb. A
+            // desktop's field keeps its platform's size of
             // words too: a larger one grows a toolbar's search field past the
             // bar's own controls.
             let search = Style<SearchField>()

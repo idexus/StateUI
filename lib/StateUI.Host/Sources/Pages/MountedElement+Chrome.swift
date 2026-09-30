@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// What a page gives the chrome it stands under, the same on every host - a window's one chrome, or a header bar of
-/// its own: its actions, its title view, and the colours of its bar.
+/// its own: its actions, its title view, its menus, and its bar's colours and title area.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 extension MountedElement {
     /// This page's actions for its chrome: the groups declared on its path, composed; none where the page hides
@@ -31,28 +31,24 @@ extension MountedElement {
         (value(.icon)?.string ?? "").isEmpty || value(.showsText)?.bool == true
     }
 
-    /// The colours this element's bar is painted in: the nearest stack's or tabbed view's around it, itself included,
-    /// and what stands on the bar in, the nearest stack's - else its window's title bar's.
+    /// The colours this element's bar is painted in, and what stands on it in: each the nearest declared on its path,
+    /// itself included.
+    /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barColors: (background: HostValue?, foreground: HostValue?) {
-        var background: HostValue?
-        var foreground: HostValue?
-        var each: MountedElement? = self
-        while let element = each, background == nil || foreground == nil {
-            switch element.type {
-            case .navigationStack:
-                background = background ?? element.value(.barBackgroundColor)
-                foreground = foreground ?? element.value(.barForegroundColor)
-            case .tabbedView:
-                background = background ?? element.value(.barBackgroundColor)
-            case .window:
-                let titleBar = element.children.first { $0.type == .titleBar }
-                background = background ?? titleBar?.value(.background)
-                foreground = foreground ?? titleBar?.value(.barForegroundColor)
-            default:
-                break
-            }
-            each = element.parent
-        }
-        return (background, foreground)
+        (barValue(.barBackgroundColor), barValue(.barForegroundColor))
+    }
+
+    /// What the application says of itself in this element's bar - its name, the line under it and its mark - each
+    /// the nearest declared on its path; nil where none is. An empty line or picture is none.
+    public var titleArea: WindowChrome.TitleArea? {
+        let words = { (value: HostValue?) in value?.string.flatMap { $0.isEmpty ? nil : $0 } }
+        let area = WindowChrome.TitleArea(
+            title: words(barValue(.barTitle)), subtitle: words(barValue(.barSubtitle)), icon: words(barValue(.barIcon)))
+        return area.title == nil && area.subtitle == nil && area.icon == nil ? nil : area
+    }
+
+    /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's around it.
+    public func barValue(_ member: Prop) -> HostValue? {
+        ([self] + arrangementsAround.reversed()).lazy.compactMap { $0.value(member) }.first
     }
 }

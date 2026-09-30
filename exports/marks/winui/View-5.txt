@@ -215,10 +215,6 @@ TimePicker.dragOver: not realized
 TimePicker.drop: not realized
 TimePicker.frameChanged: ✅
 TimePicker.panYChannel: ✅
-TitleBar.frameChanged: not realized
-TitleBar.gridColumnSpan: not realized
-TitleBar.gridRowSpan: not realized
-TitleBar.pinchUpdated: not realized
 VStack.canDrag: not realized
 VStack.dragStarting: not realized
 VStack.dragText: not realized

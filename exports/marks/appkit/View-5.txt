@@ -96,17 +96,14 @@ TimePicker.drop: not realized
 TimePicker.frameChanged: ✅
 TimePicker.horizontalAlignment: ✅
 TimePicker.verticalAlignment: ✅
-TitleBar.pointerEntered: not realized
-TitleBar.pointerExited: not realized
-TitleBar.pointerMoved: not realized
-TitleBar.pointerPressed: not realized
-TitleBar.pointerReleased: not realized
-VStack.swipeDirection: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.swipeThreshold: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.swiped: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panTouchCount: not realized
-WebView.panUpdated: not realized
-WebView.panXChannel: not realized
-ZStack.frameChanged: ✅
-ZStack.gridColumnSpan: ✅
-ZStack.gridRowSpan: ✅
+VStack.pointerEntered: 🔌 hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerExited: 🔌 hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerMoved: 🔌 hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerPressed: 🔌 hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerReleased: 🔌 hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+WebView.swipeDirection: not realized
+WebView.swipeThreshold: not realized
+WebView.swiped: not realized
+ZStack.panTouchCount: 🔌 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.panUpdated: 🔌 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.panXChannel: 🔌 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

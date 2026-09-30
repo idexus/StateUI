@@ -41,7 +41,6 @@ TextField.height: ✅
 TextField.width: ✅
 TimePicker.isVisible: ✅
 TimePicker.translationX: 🔌 read translationX of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.scale: not realized
-VStack.rotation: 🔌 read rotation of VStack: the host's own transform, checked against the layer it composed itself
-WebView.layoutDirection: not realized
-ZStack.isAccessibilityHidden: ✅
+VStack.scale: 🔌 read scale of VStack: the host's own transform, checked against the layer it composed itself
+WebView.rotation: not realized
+ZStack.layoutDirection: not realized

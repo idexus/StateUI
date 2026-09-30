@@ -32,8 +32,7 @@ Switch.background: not realized
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 TextField.style: ✅
 TimePicker.ignoresInput: not realized
-TitleBar.isEnabled: not realized
-TitleBar.zIndex: not realized
-VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.rotationY: 🔌 read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.isEnabled: not realized
+VStack.zIndex: not realized
+WebView.scaleY: 🔌 read scaleY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform, checked against the layer it composed itself

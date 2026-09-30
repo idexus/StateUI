@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The button that shows its scene's inspector and hides it again, for
-/// anywhere a view goes - a window's title bar, or a page of its own. See
-/// `Inspector`.
+/// anywhere a view goes. See `Inspector`; in a bar, `ToolbarItem.inspector`.
 ///
-///     TitleBar().trailingContent { InspectorButton() }
+///     VStack { InspectorButton() }
 public struct InspectorButton: ContentView {
     /// The scene the button is in, whose inspector it shows.
     @Environment private var scene: SceneSession

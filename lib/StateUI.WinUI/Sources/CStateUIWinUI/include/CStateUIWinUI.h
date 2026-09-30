@@ -730,8 +730,9 @@ int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);
 /// What a test reads: the room a title bar keeps at its trailing edge, and the room the window's own buttons there
 /// take, both in DIPs; -1 kept where the bar stands in no window.
 void stateui_winui_title_bar_caption_room(StateUIObjectRef bar, double *kept, double *room);
-void stateui_winui_title_bar_set_slots(StateUIObjectRef bar, StateUIObjectRef leading, StateUIObjectRef center,
-                                       StateUIObjectRef trailing);
+
+/// Stands `view` in the title bar's middle, in the title's place; null takes it away.
+void stateui_winui_title_bar_set_title_view(StateUIObjectRef bar, StateUIObjectRef view);
 
 /// A split view: WinUI's NavigationView, the sidebar in its pane as wide as WinUI opens it - beside the detail from
 /// `expandsAt` DIPs, over it and closed by a click beside it below - with none of the view's own buttons, which the

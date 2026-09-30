@@ -248,7 +248,8 @@ as a newly opened one.
 ## Window session
 
 `WindowSession` owns one running window's phase, title, geometry requests,
-translucency, authored title area, modal stack, and `close()` operation.
+translucency, and `close()` operation. What the window shows - its pages, its
+sheets, its bar - is declared on its `page`.
 
 | Member | Meaning |
 | --- | --- |
@@ -260,7 +261,6 @@ translucency, authored title area, modal stack, and `close()` operation.
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
 | `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
-| `titleBar` | optional authored title-area content |
 | `close()` | closes this exact window; closing the main window ends its scene |
 
 Position and size are four independent optional requests:
@@ -296,9 +296,9 @@ requests without presenting movable or resizable window chrome.
 chrome carries the visible page - AppKit's toolbar shows the visible page's
 title, the way a Mac window is named after what it shows - names the window
 after that page while it has a title, and after `title` otherwise; native
-window menus, restoration surfaces, and accessibility follow the same name. A
-`titleBar`'s own title never names the window: it and the interactive slots
-describe only that visible area.
+window menus, restoration surfaces, and accessibility follow the same name.
+The name a window's bar declares for the application never names the window:
+it describes only what the chrome shows ([The window's bar](#the-windows-bar)).
 
 `isMaximizable` and `isMinimizable` govern the native operations, not merely
 the appearance of one button. A host blocks equivalent native commands while
@@ -436,41 +436,60 @@ a no-op.
 they are not substitutes for page appearance or window activation. Use the
 session phase whose scope matches the work.
 
-## Authored title areas
+## The window's bar
 
-`WindowSession.title` is the native window name. `TitleBar` is a
-separate, adaptive view for a host that supports an authored title area:
+The window's bar is declared on the arrangement its `page` returns, as values
+read in the body - so it follows the state it reads with no write of its own:
 
-```swift quote
-window.titleBar = TitleBar("Notes")
-    .subtitle("Personal")
-    .icon("notes.png")
-    .barForegroundColor(.white)
-    .leadingContent { Button("Sidebar") }
-    .content { SearchField($query) }
-    .trailingContent { Button("Account") }
-    .background(.cornflowerBlue)
+```swift
+import StateUI
+
+struct NotesWindow: Window {
+    @State private var showsFolders = true
+    @State private var folder = "Personal"
+    @State private var query = ""
+
+    var page: any Page {
+        SplitView($showsFolders) {
+            Label("Folders")
+        } detail: {
+            Label("Notes in \(folder)")
+        }
+        .barTitle("Notes")
+        .barSubtitle(folder)
+        .barIcon("notes.png")
+        .barBackgroundColor(.cornflowerBlue)
+        .barForegroundColor(.white)
+        .titleView {
+            SearchField($query)
+        }
+        .toolbar(.leading) {
+            ToolbarItem("New folder")
+        }
+        .toolbar {
+            ToolbarItem("Account")
+        }
+    }
+}
 ```
 
-The initializer supplies the title. `subtitle`, `icon`, and
-`barForegroundColor` supply title-area values; ordinary view modifiers such as
-`background` style the bar itself. The leading, center, and trailing
-closures are identified child subtrees, so controls in them keep ordinary
-state, events, and identity. Returning no child removes that slot; use a
-layout inside a slot when it contains several controls.
+`barTitle`, `barSubtitle` and `barIcon` are the application naming itself, the
+line under the title, and its mark; `barBackgroundColor` and
+`barForegroundColor` paint the bar and what stands on it. Each is taken from
+the nearest arrangement on the visible path that declares it, so a stack
+further in paints its own bar or says its own line while it is shown; a
+sidebar and a sheet take nothing from around them. What stands on the bar is
+declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
+leading edge, and a view in the title's place with `.titleView`
+([Toolbars](navigation-and-presentation.md#toolbars)).
 
-The AppKit host puts the slots in the window's one native `NSToolbar`, beside
-the visible page's own furniture: the leading and trailing content as toolbar
-items and the content in the centre. The title, subtitle and icon stand as
-text at the trailing edge of the title bar. AppKit owns placement, window
-dragging, overflow and the toolbar's material, so the title area's colours are
-the system's; the slot items keep the same StateUI-created native views across
-updates.
-
-Set the title bar through the window session. A platform without an authored
-native title area may ignore it; the
-[TitleBar matrix row](../platform-contract.md#contract-members)
-must carry a check before an application relies on it.
+A desktop host shows the name, the line and the mark where its platform names
+the application - AppKit as text at the trailing edge of the title bar, WinUI
+in its title bar's title, subtitle and icon - while the visible page's title
+still names the window to the system. On a phone and a tablet each bar names
+its page: the line stands under each page's title, and the application's name
+and mark stand nowhere. [BarElement](../controls/tiers/BarElement.md) says what
+each host does with each value.
 
 ## Reading support status
 
@@ -484,7 +503,7 @@ groups separately:
 - auxiliary-window metadata and policies;
 - core page properties and lifecycle;
 - adaptive page properties and structural slots;
-- authored `TitleBar` properties and slots.
+- the bar an arrangement declares.
 
 A `✅` covers the complete member group in its row. A blank cell means absent,
 partial, or unverified support, even when a related row for the same session is

@@ -1,6 +1,0 @@
-# revision 1.1
-TitleBar: ✅
-TitleBar.barForegroundColor: ✅
-TitleBar.icon: ✅
-TitleBar.subtitle: ✅
-TitleBar.title: ✅

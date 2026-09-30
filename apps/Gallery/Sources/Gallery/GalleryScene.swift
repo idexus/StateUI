@@ -8,7 +8,7 @@ import StateUI
 /// properties: WHERE IT IS (`Navigation` - the section, what is pushed and
 /// presented, whether the menu is open), WHAT IT LOOKS LIKE (`SessionStyle` -
 /// the font and the accent its Fonts and Colours windows choose), what its
-/// window's chrome says (`TitleBarState`) and what its window has said about
+/// window's bar says (`WindowBarState`) and what its window has said about
 /// its life (`WindowLog`) - and the catalog of samples it shows. `nav` and
 /// `style` are offered to every window of the gallery, which is how its windows
 /// share one context: nothing is passed between the Colours window and the
@@ -26,8 +26,8 @@ struct GalleryScene: Scene {
     /// What this gallery looks like - kept with it. See SessionStyle.swift.
     @State private var style = SessionStyle()
 
-    /// What the main window's chrome says - written by the TitleBar sample.
-    @State private var bar = TitleBarState()
+    /// What the main window's bar says - written by the Window bar sample.
+    @State private var bar = WindowBarState()
 
     /// What the main window has said about its life - its phase, watched in
     /// `MainWindow` and read by the Lifecycle sample.

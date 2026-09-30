@@ -32,8 +32,7 @@ Switch.background: ☑️ AppKit paints a colour on this view; a brush is drawn 
 TextEditor.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 TextField.style: ✅
 TimePicker.ignoresInput: ✅
-TitleBar.isEnabled: not realized
-TitleBar.zIndex: not realized
-VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.rotationY: not realized
-ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.isEnabled: not realized
+VStack.zIndex: not realized
+WebView.scaleY: not realized
+ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform, checked against the layer it composed itself

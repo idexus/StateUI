@@ -32,6 +32,9 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     /** The page's title, shown while no view stands in for it. */
     private String title = "";
 
+    /** The line under the title, shown with it; null for none. */
+    private String subtitle;
+
     /** The colour the bar's words and its actions' pictures stand in; 0 for Android's own. */
     private int foreground;
     private View titleView;
@@ -47,14 +50,17 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         this.view = view;
     }
 
-    /** The title and the bar's colours; a colour of 0 leaves Android's own. */
-    void show(String title, int background, int foreground) {
+    /** The title, the line under it - null for none - and the bar's colours; a colour of 0 leaves Android's own. */
+    void show(String title, String subtitle, int background, int foreground) {
         this.title = title;
+        this.subtitle = subtitle;
         setTitle(titleView == null ? title : null);
+        setSubtitle(titleView == null ? subtitle : null);
         if (background != 0) setBackgroundColor(background); else setBackground(null);
         this.foreground = foreground;
         if (foreground != 0) {
             setTitleTextColor(foreground);
+            setSubtitleTextColor(foreground);
             Drawable overflow = getOverflowIcon();
             if (overflow != null) overflow.mutate().setTint(foreground);
         }
@@ -74,6 +80,7 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
         }
         setTitle(standing == null ? title : null);
+        setSubtitle(standing == null ? subtitle : null);
     }
 
     /**

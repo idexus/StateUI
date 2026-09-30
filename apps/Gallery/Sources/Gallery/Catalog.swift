@@ -27,7 +27,7 @@ final class Catalog {
     init(
         nav: Navigation,
         style: SessionStyle,
-        bar: TitleBarState,
+        bar: WindowBarState,
         log: WindowLog
     ) {
         var groups: [SampleGroup] = [
@@ -259,13 +259,13 @@ final class Catalog {
                 route: "windows",
                 title: "Windows",
                 summary: "The frame around the pages - what a window is called and how "
-                    + "big it is, its title bar, more than one of them, and what it says "
+                    + "big it is, its bar, more than one of them, and what it says "
                     + "as the app comes and goes.",
                 icon: ImageSource(light: "nav_windows.png", dark: "nav_windows_dark.png"),
                 card: ImageSource("cat_windows.png"),
                 samples: [
                     Sample(WindowSample()),
-                    Sample(TitleBarSample(bar: bar)),
+                    Sample(WindowBarSample(bar: bar)),
                     Sample(MultiWindowSample(style: style)),
                     Sample(WindowOverlaySample(nav: nav)),
                     Sample(LifecycleSample(log: log)),

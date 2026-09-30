@@ -65,7 +65,7 @@ namespace {
                 static_cast<uint8_t>(argb)};
     }
 
-    /// The title bar's right header: the page's actions, then the authored trailing content.
+    /// The title bar's right header: the page's actions.
     controls::StackPanel rightHeader(controls::TitleBar const &bar) {
         return bar.RightHeader().as<controls::StackPanel>();
     }
@@ -86,7 +86,7 @@ namespace {
                 paint(button);
     }
 
-    /// A place on the bar an authored view stands in: no stop of Tab's itself, as the view in it may be.
+    /// The place on the bar a title view stands in: no stop of Tab's itself, as the view in it may be.
     controls::ContentControl slot() {
         controls::ContentControl slot;
         slot.IsTabStop(false);
@@ -122,7 +122,6 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
         bar.Tag(winrt::box_value(view));
         bar.BackRequested([view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -1); });
         bar.PaneToggleRequested([view](controls::TitleBar const &, IInspectable const &) { callbacks.chosen(view, -2); });
-        bar.LeftHeader(slot());
         bar.Content(slot());
         bar.Loaded([](IInspectable const &sender, xaml::RoutedEventArgs const &) {
             capCaptionRoom(sender.as<controls::TitleBar>());
@@ -138,7 +137,6 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
         controls::StackPanel right;
         right.Orientation(controls::Orientation::Horizontal);
         right.Children().Append(actions);
-        right.Children().Append(slot());
         bar.RightHeader(right);
         return detach(bar);
     } catch (...) {
@@ -234,14 +232,9 @@ extern "C" void stateui_winui_title_bar_set_actions(
     }
 }
 
-extern "C" void stateui_winui_title_bar_set_slots(
-    StateUIObjectRef handle, StateUIObjectRef leading, StateUIObjectRef center, StateUIObjectRef trailing
-) {
+extern "C" void stateui_winui_title_bar_set_title_view(StateUIObjectRef handle, StateUIObjectRef view) {
     try {
-        auto bar = borrow<controls::TitleBar>(handle);
-        fill(bar.LeftHeader().as<controls::ContentControl>(), leading);
-        fill(bar.Content().as<controls::ContentControl>(), center);
-        fill(rightHeader(bar).Children().GetAt(1).as<controls::ContentControl>(), trailing);
+        fill(borrow<controls::TitleBar>(handle).Content().as<controls::ContentControl>(), view);
     } catch (...) {
         report("filling a title bar");
     }

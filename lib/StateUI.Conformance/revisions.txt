@@ -24,3 +24,5 @@ MenuBar 2
 Window 2
 ModalStack 2
 Overlay 2
+BarElement 2
+NavigationStack 2

@@ -34,7 +34,6 @@ TabbedView.accessibilityIdentifier: not realized
 TextEditor.accessibilityIdentifier: not realized
 TextField.accessibilityIdentifier: not realized
 TimePicker.accessibilityIdentifier: not realized
-TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: not realized
 VStack.accessibilityIdentifier: not realized
 WebView.accessibilityIdentifier: not realized

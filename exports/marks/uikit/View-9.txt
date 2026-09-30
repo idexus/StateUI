@@ -92,21 +92,18 @@ TextEditor.pinchUpdated: 🔌 pinch on TextEditor: the view's listening handed t
 TextField.panYChannel: 🔌 pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.tapCount: 🔌 tap on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.tapped: 🔌 tap on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TitleBar.frameChanged: not realized
-TitleBar.gridColumn: not realized
-TitleBar.gridRow: not realized
-VStack.allowDrop: not realized
-VStack.dragLeave: not realized
-VStack.dragOver: not realized
-VStack.drop: not realized
 VStack.frameChanged: ✅
-VStack.horizontalAlignment: ✅
-VStack.verticalAlignment: ✅
-WebView.pointerEntered: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerExited: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerMoved: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerPressed: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerReleased: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-ZStack.swipeDirection: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.swipeThreshold: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.swiped: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+VStack.gridColumn: ✅
+VStack.gridRow: ✅
+WebView.allowDrop: not realized
+WebView.dragLeave: not realized
+WebView.dragOver: not realized
+WebView.drop: not realized
+WebView.frameChanged: ✅
+WebView.horizontalAlignment: ✅
+WebView.verticalAlignment: ✅
+ZStack.pointerEntered: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerExited: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerMoved: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerPressed: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerReleased: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent

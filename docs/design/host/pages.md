@@ -75,10 +75,10 @@ stack it is one page shorter, or the window how many sheets remain
 
 ## Slots
 
-A title view and a title bar's leading content, content and trailing
-content are slots. What stands in one is the first element under the slot
-that shows a view of its own (`slotContent`); an element with no view of its
-own is shown by the first under it that has one (`presentingElement`).
+A title view is a slot. What stands in it is the first element under the
+slot that shows a view of its own (`chromeTitleView`); an element with no
+view of its own is shown by the first under it that has one
+(`presentingElement`).
 
 A declaration - a toolbar, a title view, a menu bar, a context menu - is a
 child of whatever element it is declared on, a page, a stack or a button,
@@ -129,6 +129,20 @@ others of that id leave; a section left with nothing is none. A menu whose
 `.id` is a `StandardMenu` names the platform's menu of that identity
 (`standard`), which the host joins by it, never by its caption.
 
+## The bar a path declares
+
+What an arrangement declares of the bar - its colours, and the application's
+name, the line under the title and its mark - is a value on the arrangement
+(`BarElement`), not a declaration: each value of a page's bar is the nearest
+on its path, its own arrangement included (`barValue`), so a stack further in
+paints its own bar and the window's page still names the application. The
+path is the declarations' (`arrangementsAround`): a sidebar and a sheet take
+nothing from around them. The colours are `barColors`; the name, the line and
+the mark are the title area (`titleArea`), none where none is declared, an
+empty line or picture none. A host shows the title area where its platform
+names the application - a desktop's window chrome - and the line under the
+title wherever a bar has one.
+
 ## The overlays of a window
 
 A window lays over what it shows the overlays declared along each page it
@@ -150,17 +164,14 @@ else the window's, else the host's own; the way back, in the
 words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it
-has none (`showsActionWords`); the title bar's content in the title's place,
-else the title view the path declares (`chromeTitleView`), and the title
-bar's leading and trailing content beside it; an authored title bar's own title, subtitle and picture, where it says any
-of them (`titleArea`), which a host shows where its platform names the
-application; the bars' colours (`barColors`) from the nearest stack or tabbed view
-around the visible page, else the title bar, and what stands on them from the
-nearest stack, else the title bar; the menus its path declares
+has none (`showsActionWords`); the title view the path declares in the
+title's place (`chromeTitleView`); the title area and the bars' colours the
+path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
+its path declares
 (`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
 in its own chrome. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
-its title view (`chromeTitleView`) and its bar's colours.
+its title view (`chromeTitleView`), and its bar's colours and the line under its title.
 
 A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page

@@ -104,9 +104,6 @@ TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.scaleY: ✅
 TimePicker.width: ✅
-TitleBar.frame: not realized
-TitleBar.pivotX: not realized
-TitleBar.zIndex: not realized
 VStack.accessibilityLabel: ✅
 VStack.rotationX: not realized
 WebView.isAccessibilityHidden: ✅

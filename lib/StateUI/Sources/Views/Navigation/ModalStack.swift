@@ -29,7 +29,7 @@
 /// a sheet the user dismisses shortens the array itself. The page presented
 /// needs the binding too, to close itself; the host picks the platform's own
 /// modal presentation.
-public struct ModalStack: Page, ModifiableElement, PageArrangement {
+public struct ModalStack: Page, ModifiableElement, BarElement, PageArrangement {
     /// The node this stack describes.
     public var node: Node
 

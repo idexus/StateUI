@@ -69,23 +69,27 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(node.props["y"], .number(100))
     }
 
-    /// The title bar rides as a CHILD of the window, read by type the way the
-    /// resources are - and it is one PROPERTY of the window's session, so a
-    /// window has one or none and there is nothing to double.
-    func testAWindowCarriesItsTitleBarAsAChild() {
-        let session = WindowSession()
-        session.titleBar = TitleBar("StateUI")
-            .subtitle("Home")
-            .leadingContent { label("lead") }
+    /// The bar's title area and colours are values an arrangement declares on itself - no child of the window and
+    /// nothing in its session.
+    func testAnArrangementDeclaresItsBarAsValues() {
+        let node = SplitView(State(wrappedValue: true).projectedValue) {
+            ModifiedContent(node: label("menu"))
+        } detail: {
+            ModifiedContent(node: label("detail"))
+        }
+        .barTitle("StateUI")
+        .barSubtitle("Home")
+        .barIcon("mark.png")
+        .barBackgroundColor(.steelBlue)
+        .barForegroundColor(.white)
+        .body
 
-        let node = PlainWindow().body(session: session).built
-
-        let bars = node.children.filter { $0.type == "TitleBar" }
-
-        XCTAssertEqual(bars.count, 1)
-        XCTAssertEqual(bars.first?.props["title"], .string("StateUI"))
-        XCTAssertEqual(bars.first?.props["subtitle"], .string("Home"))
-        XCTAssertEqual(bars.first?.children.first?.type, "LeadingContent")
+        XCTAssertEqual(node.props["barTitle"], .string("StateUI"))
+        XCTAssertEqual(node.props["barSubtitle"], .string("Home"))
+        XCTAssertEqual(node.props["barIcon"], .string("mark.png"))
+        XCTAssertNotNil(node.props["barBackgroundColor"])
+        XCTAssertNotNil(node.props["barForegroundColor"])
+        XCTAssertEqual(node.children.count, 2, "its two pages alone: values, not declarations")
     }
 
     /// What a view lays over its window is one declaration after its own children: an overlay holding one ZStack
@@ -122,31 +126,20 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(both, alone)
     }
 
-    /// A slot takes a BUILDER, so the two branches of an `if` inside one are
-    /// two elements - the same rule that holds inside a `VStack`.
-    ///
-    /// A slot taking a plain `() -> Element` would be nested content without
-    /// a builder: nothing inside it would have a branch key, an `if/else`
-    /// there would describe ONE control merely changing its properties, and
-    /// the user's focus and caret would go on living in a control the author
-    /// had written as switched away from.
-    func testTheTwoBranchesOfAnIfInASlotAreDifferentElements() {
-        let session = WindowSession()
-
-        // The bar written into the window's session, and the window over it -
-        // the window is the reader of its bar, so a bar written again is the
-        // window built again.
+    /// A declaration takes a BUILDER, so the two branches of an `if` inside one are two elements - the same rule
+    /// that holds inside a `VStack`. A plain `() -> Element` would give nothing inside a branch key, and the user's
+    /// focus and caret would live on in a control the author had switched away from.
+    func testTheTwoBranchesOfAnIfInADeclarationAreDifferentElements() {
         func tree(editing: Bool) -> Node {
-            session.titleBar = TitleBar("StateUI")
-                .content {
+            ModifiedContent(node: label("home"))
+                .titleView {
                     if editing {
                         TextField("name")
                     } else {
                         TextField("nickname")
                     }
                 }
-
-            return PlainWindow().body(session: session)
+                .body
         }
 
         let renders = Renders()
@@ -160,67 +153,20 @@ final class WindowTests: XCTestCase {
         XCTAssertNotEqual(name, nickname, "both branches were given one control to share")
     }
 
-    /// A slot whose closure produces nothing carries NO WRAPPER NODE, which is
-    /// what empties it: the host reads a slot's leaving as its wrapper's
-    /// absence from an arranged list, and a wrapper arriving with no children
-    /// is a patch about a slot whose view did not change.
-    func testASlotThatProducesNothingIsEmptied() {
-        func bar(showing: Bool) -> Node {
-            TitleBar("StateUI")
-                .trailingContent {
-                    if showing {
-                        Button("Account")
-                    }
-                }
-                .body
-                .built
-        }
-
-        XCTAssertEqual(bar(showing: true).children.map(\.type), ["TrailingContent"])
-        XCTAssertEqual(bar(showing: false).children.map(\.type), [])
-    }
-
-    /// A title-area slot has one semantic root. Authors compose several
-    /// controls in a layout rather than leaving invisible sibling roots in the
-    /// host tree.
-    func testATitleBarSlotKeepsOnlyItsFirstRoot() throws {
-        let bar = TitleBar("StateUI")
-            .trailingContent {
+    /// A title view has one root: several controls go in a layout rather than leaving invisible sibling roots in
+    /// the host's tree.
+    func testATitleViewKeepsOnlyItsFirstRoot() throws {
+        let node = ModifiedContent(node: label("home"))
+            .titleView {
                 Button("Account")
                 Button("Settings")
             }
             .body
             .built
 
-        let slot = try XCTUnwrap(bar.children.first)
-        XCTAssertEqual(slot.children.count, 1)
-        XCTAssertEqual(slot.children.first?.props["text"], .string("Account"))
-    }
-
-    /// The other half of that promise is the PATCH: when the slot's `if` flips
-    /// off, the wrapper's leaving rides the patch as an arranged children list
-    /// that no longer carries it - an absent field means unchanged, so only
-    /// the arrangement can say "gone".
-    func testASlotThatEmptiesRidesThePatchAsAnArrangedRemoval() {
-        let renders = Renders()
-
-        func bar(showing: Bool) -> Node {
-            TitleBar("StateUI")
-                .leadingContent {
-                    if showing {
-                        Button("Menu")
-                    }
-                }
-                .body
-                .built
-        }
-
-        renders.render(bar(showing: true))
-        let patch = renders.render(bar(showing: false))
-
-        XCTAssertTrue(patch.arranged, "the slot left, so the children are said whole")
-        XCTAssertFalse(patch.children.contains { $0.type == "LeadingContent" },
-                       "the wrapper is absent, which is what empties the slot")
+        let declared = try XCTUnwrap(node.children.first { $0.type == .titleView })
+        XCTAssertEqual(declared.children.count, 1)
+        XCTAssertEqual(declared.children.first?.props["text"], .string("Account"))
     }
 
     /// The identity of the first TextField a patch mentions, at any depth.

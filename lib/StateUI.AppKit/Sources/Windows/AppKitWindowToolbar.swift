@@ -27,39 +27,34 @@ struct AppKitToolbarAction {
 
 /// What a window's toolbar shows.
 ///
-/// The window controller composes it from the visible arrangement and an
-/// authored `TitleBar`, and the toolbar lays it out in one order: the
-/// sidebar toggle and the separator that tracks the sidebar, the way back,
-/// the page's title where a painted band hides the system's, the title bar's
-/// leading content, the leading groups of actions, the centre, the trailing
-/// groups, native overflow, and the title bar's trailing content. A space
-/// stands between two groups, so each keeps a background of its own.
+/// The window controller composes it from the visible arrangement, and the
+/// toolbar lays it out in one order: the sidebar toggle and the separator
+/// that tracks the sidebar, the way back, the page's title where a painted
+/// band hides the system's, the leading groups of actions, the centre, the
+/// trailing groups and native overflow. A space stands between two groups,
+/// so each keeps a background of its own.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
     var back: AppKitToolbarAction?
     var title: NSView?
-    var leading: NSView?
     var leadingActions: [[AppKitToolbarAction]] = []
     var center: NSView?
     var actions: [[AppKitToolbarAction]] = []
     var overflow: [AppKitToolbarAction] = []
-    var trailing: NSView?
 }
 
 /// The one native toolbar of a StateUI window.
 ///
 /// AppKit owns placement, overflow, the toolbar's material and window
 /// dragging. StateUI owns what the items are: an action becomes a native
-/// toolbar item, and an authored slot view is attached as it is, so its
-/// identity and state stay StateUI's.
+/// toolbar item, and a title view is attached as it is, so its identity and
+/// state stay StateUI's.
 @MainActor
 final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let back = NSToolbarItem.Identifier("StateUI.back")
     static let title = NSToolbarItem.Identifier("StateUI.title")
-    static let leading = NSToolbarItem.Identifier("StateUI.leading")
     static let center = NSToolbarItem.Identifier("StateUI.center")
-    static let trailing = NSToolbarItem.Identifier("StateUI.trailing")
     static let overflow = NSToolbarItem.Identifier("StateUI.overflow")
 
     /// The system's own glyph for going back.
@@ -108,7 +103,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextSlots[ObjectIdentifier(view)] = slot
             return slot.holdsNothing ? nil : slot
         }
-        let (leading, center, trailing) = (standing(chrome.leading), standing(chrome.center), standing(chrome.trailing))
+        let center = standing(chrome.center)
         slots = nextSlots
 
         var nextIdentifiers: [NSToolbarItem.Identifier] = []
@@ -125,10 +120,6 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         if let title = chrome.title {
             nextIdentifiers.append(Self.title)
             nextViews[Self.title] = title
-        }
-        if let leading {
-            nextIdentifiers.append(Self.leading)
-            nextViews[Self.leading] = leading
         }
         let place = { (groups: [[AppKitToolbarAction]]) in
             for (index, group) in groups.enumerated() {
@@ -147,10 +138,6 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
         place(chrome.actions)
         if !chrome.overflow.isEmpty { nextIdentifiers.append(Self.overflow) }
-        if let trailing {
-            nextIdentifiers.append(Self.trailing)
-            nextViews[Self.trailing] = trailing
-        }
 
         let sameItems = nextIdentifiers == identifiers
             && chrome.sidebar === sidebar
@@ -320,11 +307,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 }
 
-/// An authored title bar's own title: its mark, title and subtitle, standing
-/// at the trailing edge of the window's title bar in the system's colours, or
-/// in the bar's foreground over a painted band.
+/// The application's title area: its mark, name and the line under it,
+/// standing at the trailing edge of the window's title bar in the system's
+/// colours, or in the bar's foreground over a painted band.
 @MainActor
-final class AppKitTitleBarTitleView: NSStackView {
+final class AppKitTitleAreaView: NSStackView {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let subtitleLabel = NSTextField(labelWithString: "")
@@ -364,7 +351,7 @@ final class AppKitTitleBarTitleView: NSStackView {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitTitleBarTitleView is created in code")
+        fatalError("AppKitTitleAreaView is created in code")
     }
 
     func apply(title: String, subtitle: String, image: NSImage?, foreground: NSColor?) {

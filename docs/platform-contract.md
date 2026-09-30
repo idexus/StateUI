@@ -94,7 +94,6 @@ of its members each meets, and why a cell is empty.
 | [Canvas](controls/Canvas.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ColorBox](controls/ColorBox.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Content](controls/Content.md) | structure | ✅ |  |  | ✅ |  |  |
 | [ContextMenu](controls/ContextMenu.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [DatePicker](controls/DatePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [Ellipse](controls/Ellipse.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -103,7 +102,6 @@ of its members each meets, and why a cell is empty.
 | [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Label](controls/Label.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [LeadingContent](controls/LeadingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Map](controls/Map.md) | provider |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -111,7 +109,7 @@ of its members each meets, and why a cell is empty.
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
-| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ⌛ | ⌛ |  |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -136,11 +134,9 @@ of its members each meets, and why a cell is empty.
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
-| [TitleBar](controls/TitleBar.md) | adaptive | · |  |  | ✅ | ⏸ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
 | [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ⌛ | ⌛ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ⌛ | ⌛ |  |
-| [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
 | [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |
@@ -149,21 +145,22 @@ of its members each meets, and why a cell is empty.
 
 The AppKit split view uses `NSSplitViewController`.
 
-Page arrangements expose an optional flat `barBackgroundColor`. A
-`NavigationStack` additionally exposes `barForegroundColor` for its title and native
-action affordances. A tab selector keeps the toolkit's selected and unselected
+Every arrangement exposes an optional flat `barBackgroundColor` and a
+`barForegroundColor` for its bar's title and native action affordances, and the
+application's name, the line under the title and its mark (`barTitle`,
+`barSubtitle`, `barIcon`); a page's bar takes each from the nearest arrangement
+around it that declares one. A tab selector keeps the toolkit's selected and unselected
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
 
 On AppKit a written bar colour paints the band the title bar and toolbar cover
 over the visible content - a split view's detail - and the window's
-background, which shows around a floating sidebar and through its glass; an
-authored `TitleBar`'s `background` paints both where no arrangement writes
-one. On a translucent window the colour tints the window's material
-instead, which the band, the margin around the sidebar and its glass all
-show. Text on a painted band is the bar's: the page's title
-in the arrangement's `barForegroundColor`, the title bar's own title in the
-title bar's, each falling back to the other and then to white or black by the band's lightness.
+background, which shows around a floating sidebar and through its glass. On a
+translucent window the colour tints the window's material instead, which the
+band, the margin around the sidebar and its glass all show. Text on a painted
+band - the page's title, and the application's name and line at the trailing
+edge - is in the declared `barForegroundColor`, else white or black by the
+band's lightness.
 On the system's material both keep the system's colours.
 
 `ItemsView` is the native virtualized collection. It presents identified
@@ -198,7 +195,6 @@ may still choose another class that preserves the same contract.
 | `SplitView` | `NSSplitViewController` | `UISplitViewController` | custom `ViewGroup`: a drawer where narrow, beside where wide | `SplitView` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | `<aside>` |
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | full-screen `Dialog` (?) | `ContentDialog` (?) | modal `GtkWindow`; libadwaita `AdwDialog` | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | `GtkOverlay` | positioned element above the page |
-| `TitleBar` | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | — | — | `TitleBar` | `GtkHeaderBar` | — |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem`, `MenuSeparator` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | ARIA `menu` / `menubar` (?) |
 | `ToolbarItems` / `ToolbarItem` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` | `GtkButton` in `GtkHeaderBar` | `<button>` in an ARIA `toolbar` |
 | `ZStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | `Canvas` | `GtkFixed` | `position: absolute` |
@@ -229,7 +225,7 @@ may still choose another class that preserves the same contract.
 | `WebView` | `WKWebView` | `WKWebView` | `WebView` | `WebView2` | WebKitGTK `WebKitWebView` | `<iframe>` (?) |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | libshumate `ShumateMap` / `ShumateMarker` | — |
 | `ItemsView` | `NSCollectionView` / `NSTableView` | `UICollectionView` | AndroidX `RecyclerView` | `ItemsView` | `GtkListView` / `GtkGridView` | semantic list or grid |
-| `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | structure | structure | structure | structure | structure |
+| `TitleView` | structure | structure | structure | structure | structure | structure |
 
 ### Completeness
 
@@ -243,7 +239,7 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TabbedView`: Android Views has no framework tab bar; Web has no tab element.
 - `SplitView`: Android Views depends on AndroidX `DrawerLayout`; Web has no native pane.
 - `ModalStack`: Android Views has no modal page presentation; WinUI 3 shows one `ContentDialog` at a time, so its host stacks sheets of a dialog's look over the window.
-- `TitleBar`: UIKit, Android Views, and Web have no window title bar.
+- The application's name and mark in the bar (`barTitle`, `barIcon`): UIKit, Android Views and GTK 4 give each page a bar of its own that names that page.
 - Menus: Android Views has no menu bar; Web has no native menu element.
 - `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
 - `CheckBox` and `RadioButton`: UIKit has neither control.
@@ -438,7 +434,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
 | [Image](controls/Image.md) | 69 | 27 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 20 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | 76 | 33 ✅ · 1 ☑️ | 29 ✅ · 3 – | 60 ✅ · 1 ☑️ | 60 ✅ | 23 ✅ |  |
-| [Label](controls/Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 21 ✅ |  |
+| [Label](controls/Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 21 ✅ |  |
 | [Line](controls/Line.md) | 80 | 29 ✅ · 1 ☑️ · 3 – | 30 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 20 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 20 ✅ |  |
@@ -457,40 +453,36 @@ Every control, and every part an application, its windows and its pages are made
 | [TextEditor](controls/TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 23 ✅ |  |
 | [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 23 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
-| [TitleBar](controls/TitleBar.md) | 70 |  |  |  | 4 ✅ |  |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2591 | 1005 of 2591 met | 1040 of 2591 met | 1763 of 2591 met | 1885 of 2591 met | 585 of 2591 met |  |
+| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1880 of 2521 met | 585 of 2521 met |  |
 
 ### Application structure
 
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Application](controls/Application.md) | 12 | 7 ✅ | 6 ✅ | 4 ✅ | 12 ✅ | 3 ✅ |  |
-| [Content](controls/Content.md) | 0 |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |
-| [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | 1 |  |  | 1 ✅ |  |  |  |
 | [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
-| [ModalStack](controls/ModalStack.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 6 | 1 ✅ | 6 ✅ | 1 ✅ | 4 ✅ |  |  |
+| [ModalStack](controls/ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – |  |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 3 ✅ |  |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
-| [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 8 ✅ | 3 ✅ |  |
+| [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 7 ✅ | 3 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 5 ✅ |  |  |
-| [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 5 ✅ |  |  |
+| [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 5 ✅ |  |  |
+| [TabbedView](controls/TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 5 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
-| [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ |  |  |  |
-| **Met** - ✅ and – | 107 | 51 of 107 met | 57 of 107 met | 36 of 107 met | 59 of 107 met | 6 of 107 met |  |
+| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 57 of 125 met | 6 of 125 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -525,7 +517,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [BorderElement](controls/tiers/BorderElement.md) | `shape`, `stroke`, `strokeWidth` | 3 |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` | 1 |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | 1 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | 1 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor`, `barForegroundColor`, `barIcon`, `barSubtitle`, `barTitle` | 5 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` | 5 |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | 2 |
 
@@ -548,7 +540,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 1 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 |  |  | 1 ✅ |  |  |  |
 | [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
-| [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | 2 |  | 2 ✅ |  | 1 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | `popped` | 1 |  | 1 ✅ |  |  |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 7 ✅ | 6 ✅ | 3 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 | 3 ✅ |  | 2 ✅ | 7 ✅ | 3 ✅ |  |
@@ -571,7 +563,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
-| [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  | 4 ✅ |  |  |
 | [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  |  |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – |  |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
@@ -594,28 +585,29 @@ realizes the element and each of its members.
 ### Controls and structural nodes
 
 `ActivityIndicator`, `Application`, `Button`, `Canvas`, `CheckBox`, `ColorBox`,
-`Content`, `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`,
-`ItemsView`, `Label`, `LeadingContent`, `Line`, `Map`, `Menu`, `MenuBar`,
-`MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`,
-`Path`, `Picker`, `Pin`, `Polygon`, `Polyline`, `PositionIndicator`,
-`ProgressBar`, `RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
-`Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`, `TabbedView`,
-`TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`,
-`ToolbarItems`, `TrailingContent`, `VStack`, `WebView`, `Window`, `ZStack`.
+`ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ItemsView`,
+`Label`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`,
+`ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
+`Polygon`, `Polyline`, `PositionIndicator`, `ProgressBar`, `RadioButton`,
+`Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`,
+`SplitView`, `Stepper`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
+`TimePicker`, `TitleView`, `ToolbarItem`, `ToolbarItems`, `VStack`, `WebView`,
+`Window`, `ZStack`.
 
 ### Properties
 
 `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityIdentifier`,
 `accessibilityLabel`, `address`, `allowDrop`, `area`, `aspect`,
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
-`background`, `barBackgroundColor`, `barForegroundColor`, `canDrag`,
-`characterSpacing`, `clipsContent`, `color`, `columns`, `columnSpacing`,
-`cornerRadius`, `count`, `currentPage`, `cursorPosition`, `data`, `date`,
-`dragText`, `drawable`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
-`fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `format`,
-`frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `groupName`,
-`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
-`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
+`background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
+`barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
+`color`, `columns`, `columnSpacing`, `cornerRadius`, `count`, `currentPage`,
+`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `endReachedWithin`,
+`fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`,
+`fontFamily`, `fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
+`gridRow`, `gridRowSpan`, `groupName`, `growsWithText`, `hasBackButton`,
+`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
+`horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
@@ -635,9 +627,9 @@ realizes the element and each of its members.
 `selectionMode`, `shape`, `showsClearButton`, `showsText`, `showsUserLocation`,
 `side`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
 `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
-`strokeWidth`, `style`, `subtitle`, `swipeDirection`, `swipeThreshold`,
-`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `time`, `tint`,
-`title`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
+`strokeWidth`, `style`, `swipeDirection`, `swipeThreshold`, `tapCount`, `text`,
+`textCase`, `textColor`, `textDecorations`, `time`, `tint`, `title`,
+`translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
 `zIndex`.

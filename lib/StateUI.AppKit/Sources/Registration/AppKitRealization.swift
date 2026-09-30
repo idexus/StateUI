@@ -13,9 +13,9 @@ enum AppKitRealization {
         "Map", "Pin", "PositionIndicator", "WebView",
     ]
 
-    /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its
-    /// label's words - so no tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span", "TitleBar"]
+    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
+    /// tier's record reaches them: only a member the entry's own records name is realized.
+    static let viewless: Set<String> = ["Span"]
 
     /// The entries the Mac will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -24,6 +24,10 @@ enum AppKitRealization {
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("BarElement", "barBackgroundColor"),
+        .partial("BarElement", "barForegroundColor", missing: "Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour."),
+        .complete("BarElement", "barIcon"),
+        .complete("BarElement", "barSubtitle"),
+        .complete("BarElement", "barTitle"),
         .complete("DecorableTextElement", "textDecorations"),
         .complete("LineHeightElement", "lineHeight"),
         .complete("MenuItemElement", "clicked"),
@@ -65,7 +69,6 @@ enum AppKitRealization {
         .complete("MenuItem", "isDestructive"),
         .complete("ModalStack", "popped"),
         .complete("NavigationStack", "accessibilityIdentifier"),
-        .partial("NavigationStack", "barForegroundColor", missing: "Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour."),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "backButtonTitle"),
@@ -99,11 +102,6 @@ enum AppKitRealization {
         .complete("TabbedView", "accessibilityIdentifier"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
-        .partial("TitleBar", "background", missing: "AppKit paints a colour on the window's bar band; a brush is drawn only by a layout."),
-        .partial("TitleBar", "barForegroundColor", missing: "Only the title takes it, over a band painted in a bar colour; the toolbar's items keep the system's colour."),
-        .complete("TitleBar", "icon"),
-        .complete("TitleBar", "subtitle"),
-        .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
         .unrealized("ToolbarItem", "accessibilityIdentifier", why: "An NSToolbarItem holds no accessibility identifier."),
         .complete("ToolbarItems", "order"),

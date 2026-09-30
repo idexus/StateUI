@@ -65,10 +65,11 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The formFactor is the value this gallery itself builds by: the "
-                + "window wears a title bar and lists the TitleBar sample only "
-                + "where device.formFactor answers .desktop. It is known BEFORE the "
-                + "first render, so the first tree already has it - which "
-                + "pages exist is decided while the tree is built.")
+                + "menu stands beside the page where device.formFactor answers "
+                + ".desktop, and the Multi-window sample is listed only where a "
+                + "second window has room. It is known BEFORE the first render, "
+                + "so the first tree already has it - which pages exist is "
+                + "decided while the tree is built.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

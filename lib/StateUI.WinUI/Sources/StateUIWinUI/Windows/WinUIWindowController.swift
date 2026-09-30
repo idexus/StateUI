@@ -76,8 +76,9 @@ final class WinUIWindowController {
         runtime.goBack(way, in: element)
     }
 
-    /// Lays the chrome the host layer composes from what the window shows in WinUI's: the title, the way back, the
-    /// page's actions, the slots, the colours, the menus, the sidebar's toggle, a sheet's buttons and the tabs.
+    /// Lays the chrome the host layer composes from what the window shows in WinUI's: the title or the title area, the
+    /// way back, the page's actions, the title view, the colours, the menus, the sidebar's toggle, a sheet's buttons
+    /// and the tabs.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     func refreshChrome(in runtime: HostRuntime) {
         guard let element else { return }
@@ -97,9 +98,7 @@ final class WinUIWindowController {
                 split.winUI.changeSidebarVisibility(to: !split.sidebarIsVisible)
             }
         }
-        chrome.leading = composed.leading?.winUI.view
         chrome.center = composed.center?.winUI.view
-        chrome.trailing = composed.trailing?.winUI.view
         chrome.actions = composed.actions.primary.map(Self.action)
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background

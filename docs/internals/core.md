@@ -120,8 +120,8 @@ turns the nodes into the patch.
 
 - **`Application`**, **`Scene`**, **`Window`** and **`Page`** (`Structure/`)
   are the application's structure, one composition getter each; `Windows`,
-  `WindowGroup`, `WindowType` and `WindowError` are a scene's windows;
-  `TitleBar` is an authored title area. `stateUIUseApp` names the application
+  `WindowGroup`, `WindowType` and `WindowError` are a scene's windows.
+  `stateUIUseApp` names the application
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))

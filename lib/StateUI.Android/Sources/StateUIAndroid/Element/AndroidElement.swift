@@ -68,6 +68,8 @@ final class AndroidElement: NativeElement {
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        // A bar's colour travels frame by frame: every bar the arrangement's reaches shows each.
+        if NodeType.pageTypes.contains(type), !changed.isDisjoint(with: Self.barValues) { refreshBars() }
     }
 
     func leave() {

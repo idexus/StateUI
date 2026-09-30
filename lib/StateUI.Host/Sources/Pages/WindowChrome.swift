@@ -3,9 +3,9 @@
 
 @_spi(Host) import StateUI
 
-/// The one chrome a window composes from what it shows, the same on every host: its title, the way back, the actions
-/// its visible path declares, what stands in the title's place and beside it, an authored title bar's own title area, the bars'
-/// colours, the menus its visible path declares and the sidebar's toggle - elements and values a host turns into its toolkit's chrome.
+/// The one chrome a window composes from what it shows, the same on every host: its title, the way back, and what its
+/// visible path declares - the actions, what stands in the title's place, the title area, the bars' colours, the
+/// menus - with the sidebar's toggle: elements and values a host turns into its toolkit's chrome.
 /// Design: docs/design/host/pages.md#the-windows-chrome
 @_spi(Host) @MainActor public struct WindowChrome {
     /// The title of the page that names the window (`titledPage`), else the window's; nil where neither names one,
@@ -18,23 +18,16 @@
     /// The actions the visible page's path declares, composed.
     public var actions = ChromeActions()
 
-    /// What stands at the chrome's leading edge: the title bar's leading content.
-    public var leading: MountedElement?
-
-    /// What stands in the title's place: the title bar's content, else the title view the visible page's path
-    /// declares.
+    /// What stands in the title's place: the title view the visible page's path declares.
     public var center: MountedElement?
 
-    /// What stands at the chrome's trailing edge: the title bar's trailing content.
-    public var trailing: MountedElement?
-
-    /// An authored title bar's own title, subtitle and picture, where it says any of them; nil for none.
+    /// What the application says of itself in the bar, declared on the visible page's path; nil for none.
     public var titleArea: TitleArea?
 
-    /// The bars' colour: the nearest stack's or tabbed view's around the visible page, else the title bar's.
+    /// The bars' colour: the nearest declared on the visible page's path.
     public var background: HostValue?
 
-    /// The colour of what stands on the bars: the nearest stack's, else the title bar's.
+    /// The colour of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
 
     /// The menus the visible page's path declares, composed.
@@ -46,22 +39,19 @@
     /// The chrome of `window` showing `arrangement`.
     public init(window: MountedElement, arrangement: MountedElement?) {
         let page = arrangement?.visiblePage
-        let titleBar = window.children.first { $0.type == .titleBar }
         title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
         back = arrangement?.visibleBackStack.map { stack in
             (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? "Back")
         }
         if let page { actions = page.chromeActions }
-        leading = titleBar?.slotContent(.leadingContent)
-        center = titleBar?.slotContent(.content) ?? page?.chromeTitleView
-        trailing = titleBar?.slotContent(.trailingContent)
-        titleArea = titleBar.flatMap(TitleArea.init(of:))
-        (background, foreground) = (page ?? window).barColors
+        center = page?.chromeTitleView
+        titleArea = page?.titleArea
+        (background, foreground) = page?.barColors ?? (nil, nil)
         if let page { menus = page.chromeMenus }
         sidebarToggle = arrangement?.type == .splitView ? arrangement : nil
     }
 
-    /// What an authored title bar says of itself: its title, the line under it, and the picture beside it by name.
+    /// What the application says of itself in the bar: its name, the line under it, and its mark by name.
     public struct TitleArea: Equatable, Sendable {
         /// The title; nil where the bar says none.
         public let title: String?
@@ -78,21 +68,13 @@
             self.subtitle = subtitle
             self.icon = icon
         }
-
-        /// What `titleBar` says of itself; nil where it says none of it. An empty picture is none.
-        @MainActor init?(of titleBar: MountedElement) {
-            self.init(
-                title: titleBar.value(.title)?.string, subtitle: titleBar.value(.subtitle)?.string,
-                icon: titleBar.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
-            if title == nil, subtitle == nil, icon == nil { return nil }
-        }
     }
 
-    /// Whether the chrome shows what an element of `type` moves on a frame: a window's frame, a title bar's own
-    /// colours, a stack's or a tabbed view's bar colours - the chrome is composed again as they move.
+    /// Whether the chrome shows what an element of `type` moves on a frame: a window's frame, an arrangement's bar
+    /// colours - the chrome is composed again as they move.
     public static func follows(_ type: NodeType) -> Bool {
         followed.contains(type)
     }
 
-    private static let followed: Set<NodeType> = [.window, .titleBar, .navigationStack, .tabbedView]
+    private static let followed: Set<NodeType> = [.window, .navigationStack, .tabbedView, .splitView, .modalStack]
 }

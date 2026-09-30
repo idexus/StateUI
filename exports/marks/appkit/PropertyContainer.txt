@@ -14,6 +14,7 @@ Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
+ModalStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ModalStack - AppKit's driver has no path for it yet
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
@@ -34,7 +35,6 @@ TabbedView.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
-TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: not realized
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: not realized

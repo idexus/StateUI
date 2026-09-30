@@ -13,14 +13,9 @@ public enum NavigationStackContract: ElementContract {
     /// A stack has a bar, and is shown as a page with a title and an icon.
     public static let tiers: [any Contract.Type] = [BarElementContract.self, PageElementContract.self]
 
-    /// The colour the bar draws on its background: the title and the native
-    /// affordances.
-    public static let barForegroundColor = ElementProperty<Self, Color>(
-        "barForegroundColor", layer: .adaptive)
-
     /// The user went back natively, leaving this many pages above the root.
     public static let popped = ElementEvent<Self, Int>("popped", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [barForegroundColor, popped]
+    public static let members: [any ContractMember] = [popped]
 }

@@ -33,7 +33,6 @@ TextEditor.style: ✅
 TextField.ignoresInput: not realized
 TimePicker.isEnabled: ✅
 TimePicker.zIndex: not realized
-TitleBar.scaleY: not realized
-VStack.rotationY: 🔌 read rotationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotY: 🔌 read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.background: ✅
+VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.rotationY: 🔌 read rotationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform, checked against the layer it composed itself

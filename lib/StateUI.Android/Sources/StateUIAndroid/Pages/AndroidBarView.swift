@@ -17,9 +17,11 @@ final class AndroidBarView: AndroidView {
         case sidebar(String?)
     }
 
-    /// What the bar says and shows: its actions, and the page's menus behind its overflow.
+    /// What the bar says and shows: its title and the line under it, its colours, its actions, and the page's menus
+    /// behind its overflow.
     struct Content: Equatable {
         var title = ""
+        var subtitle: String?
         var background: HostValue?
         var foreground: HostValue?
         var navigation = Navigation.none
@@ -69,13 +71,15 @@ final class AndroidBarView: AndroidView {
         shown = true
         self.content = content
 
-        if previous?.title != content.title || previous?.background != content.background
-            || previous?.foreground != content.foreground {
+        if previous?.title != content.title || previous?.subtitle != content.subtitle
+            || previous?.background != content.background || previous?.foreground != content.foreground {
             let title = Java.string(content.title)
+            let subtitle = content.subtitle.flatMap(Java.string)
             Java.call(
-                reference, JavaAPI.showBar, .object(title),
+                reference, JavaAPI.showBar, .object(title), .object(subtitle),
                 .int(content.background.flatMap(Self.argb) ?? 0), .int(content.foreground.flatMap(Self.argb) ?? 0))
             Java.release(local: title)
+            Java.release(local: subtitle)
         }
         if previous?.navigation != content.navigation || previous?.foreground != content.foreground {
             showNavigation(content.navigation, tint: content.foreground.flatMap(Self.argb) ?? 0)

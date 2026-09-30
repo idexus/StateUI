@@ -104,10 +104,6 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.translationX: ✅
-TitleBar.focus: not realized
-TitleBar.isFocusedChanged: not realized
-TitleBar.pivotY: not realized
-TitleBar.unfocus: not realized
 VStack.accessibilityHint: ✅
 VStack.isVisible: ✅
 VStack.rotationY: not realized

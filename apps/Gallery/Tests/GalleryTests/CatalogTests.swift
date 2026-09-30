@@ -554,7 +554,7 @@ final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
     private func catalog(
         _ nav: Navigation = Place().nav,
-        bar: TitleBarState = TitleBarState()
+        bar: WindowBarState = WindowBarState()
     ) -> Catalog {
         Catalog(nav: nav, style: SessionStyle(), bar: bar, log: WindowLog())
     }
@@ -563,7 +563,7 @@ final class CatalogTests: XCTestCase {
     /// is declared, so this is what a test asks for a detail page.
     private func window(
         _ nav: Navigation,
-        bar: TitleBarState = TitleBarState()
+        bar: WindowBarState = WindowBarState()
     ) -> MainWindow {
         MainWindow(catalog: catalog(nav, bar: bar),
                    nav: nav,
@@ -610,29 +610,16 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(catalog.sample(id: "nothing-called-this"))
     }
 
-    /// A sample about desktop chrome is LISTED only on a desktop. The catalog
-    /// still carries it - the route reaches the page on any device - what the
+    /// A sample a device cannot show is not LISTED there. The catalog still
+    /// carries it - the route reaches the page on any device - what the
     /// formFactor steers is the group page, the count and the "Surprise me" pick.
     /// An UNKNOWN formFactor lists everything, which is why this headless test -
     /// and every other one here - sees the whole catalog.
-    func testASampleAboutDesktopChromeIsListedOnlyOnADesktop() throws {
+    func testASampleADeviceCannotShowIsNotListedThere() throws {
         let catalog = catalog()
 
-        // The sample about desktop chrome: the window's own title bar. A
-        // context menu opens with a long press on a phone as well.
-        let desktopOnly: Set<String> = ["titleBar"]
-
-        for id in desktopOnly {
-            let sample = try XCTUnwrap(catalog.sample(id: id))
-
-            XCTAssertTrue(sample.isShown(on: .desktop), "\(id) is hidden on a desktop")
-            XCTAssertFalse(sample.isShown(on: .phone), "\(id) is listed on a phone")
-            XCTAssertFalse(sample.isShown(on: .tablet), "\(id) is listed on a tablet")
-            XCTAssertTrue(sample.isShown(on: .unknown), "a headless test sees everything")
-        }
-
-        // And the one sample a TABLET can show as well: a second window needs
-        // somewhere to put it, which an iPad has and a phone never will.
+        // A second window needs somewhere to put it, which a desktop and an
+        // iPad have and a phone never will.
         let notOnAPhone: Set<String> = ["multi-window"]
 
         for id in notOnAPhone {
@@ -641,12 +628,13 @@ final class CatalogTests: XCTestCase {
             XCTAssertTrue(sample.isShown(on: .desktop), "\(id) is hidden on a desktop")
             XCTAssertTrue(sample.isShown(on: .tablet), "\(id) is hidden on a tablet")
             XCTAssertFalse(sample.isShown(on: .phone), "\(id) is listed on a phone")
+            XCTAssertTrue(sample.isShown(on: .unknown), "a headless test sees everything")
         }
 
         // Every OTHER sample is everywhere: hiding is the exception, and one
         // hidden by accident would simply vanish from a phone with no test
         // the wiser.
-        let hidden = desktopOnly.union(notOnAPhone)
+        let hidden = notOnAPhone
 
         for group in catalog.groups {
             for other in group.samples where !hidden.contains(other.id) {
@@ -1152,29 +1140,25 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(prop(shown, .y))
     }
 
-    /// The live window exercises the complete authored title-area value group
-    /// and retains interactive content as identified slot children.
-    func testTheWindowCarriesTheCompleteTitleBarContract() throws {
-        StandardEnvironment.device.formFactor = .desktop
-        defer { StandardEnvironment.device.formFactor = .unknown }
-
-        let state = TitleBarState()
+    /// The window declares its bar on its page, on every device: the gallery's
+    /// name and mark, the line the Window bar sample types, and "Surprise me"
+    /// among the gallery's actions while the sample says so.
+    func testTheWindowDeclaresItsBar() throws {
+        let state = WindowBarState()
         state.subtitle = "Shared"
-        state.showsSurprise = true
-        let shown = firstPatch(window(Place().nav, bar: state))
-        let bar = try XCTUnwrap(shown.children.first { $0.type == "TitleBar" })
+        let quiet = firstPatch(window(Place().nav, bar: state))
+        let split = try XCTUnwrap(quiet.children.first { $0.type == "ModalStack" }?.children.first)
 
-        XCTAssertEqual(prop(bar, .title), .string("StateUI"))
-        XCTAssertEqual(prop(bar, .subtitle), .string("Shared"))
-        XCTAssertEqual(prop(bar, .icon), .string("stateui_mark.png"))
-        XCTAssertNotNil(prop(bar, .barForegroundColor))
-        XCTAssertNotNil(prop(bar, .background))
-        XCTAssertNil(
-            bar.children.first { $0.type == "LeadingContent" },
-            "the flyout's own native toggle opens the menu; the bar authors no second one")
-        let trailing = try XCTUnwrap(
-            bar.children.first { $0.type == "TrailingContent" })
-        XCTAssertEqual(buttons(in: trailing).count, 1)
+        XCTAssertEqual(split.type, .splitView)
+        XCTAssertEqual(prop(split, .barTitle), .string("StateUI"))
+        XCTAssertEqual(prop(split, .barSubtitle), .string("Shared"))
+        XCTAssertEqual(prop(split, .barIcon), .string("stateui_mark.png"))
+        XCTAssertFalse(actions(on: split).contains("Surprise me"), "no action until the sample asks for one")
+
+        state.showsSurprise = true
+        let asked = firstPatch(window(Place().nav, bar: state))
+        let declaring = try XCTUnwrap(asked.children.first { $0.type == "ModalStack" }?.children.first)
+        XCTAssertTrue(actions(on: declaring).contains("Surprise me"))
     }
 
     /// And what is presented over all of it: the window's page is a modal
@@ -1547,6 +1531,13 @@ final class CatalogTests: XCTestCase {
 
         walk(patch)
         return found
+    }
+
+    /// The words of the actions an element declares on the bar.
+    private func actions(on patch: HostPatch) -> [String] {
+        patch.children.filter { $0.type == .toolbarItems }
+            .flatMap(\.children)
+            .compactMap { $0.properties[.text]?.string }
     }
 
     func testTheHomePageIsSizedByTheCycleRatherThanByARender() throws {

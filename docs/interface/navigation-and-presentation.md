@@ -325,8 +325,12 @@ beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its
 tabs on the top edge of its content.
 
-Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
-accepts `barForegroundColor` for its title and native action affordances. Native tab
+Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
+for its title and native action affordances; a page's bar takes each from the
+nearest arrangement around it that declares one, so a stack further in paints
+its own - a sidebar and a sheet take nothing from around them. The
+application's name, the line under the title and its mark are declared the same
+way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
 selectors keep their selected and unselected states, legible over a written
 background. Leaving the background unwritten preserves the platform's
 material. A written colour is

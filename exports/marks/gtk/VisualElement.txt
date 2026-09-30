@@ -1019,40 +1019,6 @@ TimePicker.translationY: not realized
 TimePicker.unfocus: not realized
 TimePicker.width: not realized
 TimePicker.zIndex: not realized
-TitleBar.accessibilityHeadingLevel: not realized
-TitleBar.accessibilityHint: not realized
-TitleBar.accessibilityLabel: not realized
-TitleBar.automationExcludedWithChildren: not realized
-TitleBar.background: cannot read background of TitleBar - GTK's driver has no path for it yet
-TitleBar.focus: not realized
-TitleBar.frame: not realized
-TitleBar.frameChanged: not realized
-TitleBar.height: not realized
-TitleBar.ignoresInput: not realized
-TitleBar.isAccessibilityHidden: not realized
-TitleBar.isEnabled: not realized
-TitleBar.isFocusedChanged: not realized
-TitleBar.isVisible: not realized
-TitleBar.layoutDirection: not realized
-TitleBar.maximumHeight: not realized
-TitleBar.maximumWidth: not realized
-TitleBar.minimumHeight: not realized
-TitleBar.minimumWidth: not realized
-TitleBar.opacity: not realized
-TitleBar.pivotX: not realized
-TitleBar.pivotY: not realized
-TitleBar.rotation: not realized
-TitleBar.rotationX: not realized
-TitleBar.rotationY: not realized
-TitleBar.scale: not realized
-TitleBar.scaleX: not realized
-TitleBar.scaleY: not realized
-TitleBar.style: not realized
-TitleBar.translationX: not realized
-TitleBar.translationY: not realized
-TitleBar.unfocus: not realized
-TitleBar.width: not realized
-TitleBar.zIndex: not realized
 VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - GTK's driver has no path for it yet
 VStack.accessibilityHint: cannot read accessibilityHint of VStack - GTK's driver has no path for it yet
 VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - GTK's driver has no path for it yet

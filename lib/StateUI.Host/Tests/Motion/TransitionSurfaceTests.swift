@@ -18,8 +18,8 @@ final class TransitionSurfaceTests: XCTestCase {
         XCTAssertTrue(TransitionSurface.presents(.padding, on: .page))
         XCTAssertTrue(TransitionSurface.presents(.renderTransform, on: .line))
         XCTAssertTrue(TransitionSurface.presents(.x, on: .window))
-        XCTAssertTrue(TransitionSurface.presents(.background, on: .titleBar))
-        XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .titleBar))
+        XCTAssertTrue(TransitionSurface.presents(.barBackgroundColor, on: .splitView))
+        XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .modalStack))
 
         XCTAssertFalse(TransitionSurface.presents(.rotationX, on: .label))
         XCTAssertFalse(TransitionSurface.presents(.value, on: .stepper))

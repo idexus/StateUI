@@ -34,10 +34,10 @@
     public static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
         ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
-        ColorBoxContract.self, ContentContract.self, ContextMenuContract.self, DatePickerContract.self,
+        ColorBoxContract.self, ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, ItemsViewContract.self,
         LabelContract.self,
-        LeadingContentContract.self, LineContract.self, MapContract.self, MenuBarContract.self,
+        LineContract.self, MapContract.self, MenuBarContract.self,
         MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, PinContract.self, PolygonContract.self, PolylineContract.self,
@@ -46,8 +46,8 @@
         SearchFieldContract.self, SliderContract.self, SpanContract.self,
         SpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,
         TabbedViewContract.self, TextEditorContract.self, TextFieldContract.self, TimePickerContract.self,
-        TitleBarContract.self, TitleViewContract.self, ToolbarItemContract.self, ToolbarItemsContract.self,
-        TrailingContentContract.self, VStackContract.self, WebViewContract.self,
+        TitleViewContract.self, ToolbarItemContract.self, ToolbarItemsContract.self,
+        VStackContract.self, WebViewContract.self,
         WindowContract.self, ZStackContract.self,
     ]
 

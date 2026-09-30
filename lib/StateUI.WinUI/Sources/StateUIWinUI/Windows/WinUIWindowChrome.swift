@@ -4,20 +4,18 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a window's chrome shows, composed from the visible arrangement and an authored `TitleBar`: the title, the
-/// way back and the sidebar's toggle, the page's actions and those in overflow, three slots, the bar's colours, and
-/// the page's menus beneath.
+/// What a window's chrome shows, composed from the visible arrangement: the title or the title area its path
+/// declares, the way back and the sidebar's toggle, the page's actions and those in overflow, its title view, the
+/// bar's colours, and the page's menus beneath.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 struct WinUIWindowChrome {
     var title = ""
-    /// An authored title bar's own title, subtitle and picture, shown in the place of the title naming the window.
+    /// The application's name, line and mark its path declares, shown in the place of the title naming the window.
     var titleArea: WindowChrome.TitleArea?
     var back: WinUIToolbarAction?
     var sidebarToggle: (() -> Void)?
-    var leading: WinUIView?
     var center: WinUIView?
-    var trailing: WinUIView?
     var actions: [WinUIToolbarAction] = []
     var overflow: [WinUIToolbarAction] = []
     var background: HostValue?

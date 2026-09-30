@@ -57,13 +57,8 @@ Switch.translationY: 🔌 read translationY of Switch: the host's own transform,
 TextEditor.scaleX: 🔌 read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.rotationX: 🔌 read rotationX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.pivotX: 🔌 read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.automationExcludedWithChildren: not realized
-VStack.accessibilityHint: ✅
-WebView.focus: not realized
-WebView.isFocusedChanged: not realized
-WebView.unfocus: not realized
-ZStack.frameChanged: ✅
-ZStack.maximumHeight: ✅
-ZStack.maximumWidth: ✅
-ZStack.minimumHeight: ✅
-ZStack.minimumWidth: ✅
+VStack.automationExcludedWithChildren: ✅
+WebView.accessibilityHint: not realized
+ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard

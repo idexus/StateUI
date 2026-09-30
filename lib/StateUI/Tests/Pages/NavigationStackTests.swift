@@ -193,6 +193,9 @@ final class NavigationStackTests: XCTestCase {
             stack(path.projectedValue)
                 .barBackgroundColor(.black)
                 .barForegroundColor(.white)
+                .barTitle("StateUI")
+                .barSubtitle("Home")
+                .barIcon("mark.png")
                 .body
                 .built
                 .props

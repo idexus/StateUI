@@ -96,15 +96,14 @@ TextField.swiped: 🔌 pan on TextField: the view's listening handed the recogni
 TimePicker.panTouchCount: 🔌 pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.panUpdated: 🔌 pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.panXChannel: 🔌 pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TitleBar.frameChanged: not realized
-TitleBar.gridColumnSpan: not realized
-TitleBar.gridRowSpan: not realized
-VStack.area: ✅
 VStack.frameChanged: ✅
-WebView.canDrag: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.dropCompleted: not realized
+VStack.gridColumnSpan: ✅
+VStack.gridRowSpan: ✅
+WebView.area: ✅
 WebView.frameChanged: ✅
-WebView.margin: ✅
-ZStack.pinchUpdated: 🔌 pinch on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.canDrag: not realized
+ZStack.dragStarting: not realized
+ZStack.dragText: not realized
+ZStack.dropCompleted: not realized
+ZStack.frameChanged: ✅
+ZStack.margin: ✅

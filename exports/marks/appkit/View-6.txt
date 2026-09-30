@@ -99,13 +99,11 @@ TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
 TimePicker.area: ✅
 TimePicker.frameChanged: ✅
-TitleBar.canDrag: not realized
-TitleBar.dragStarting: not realized
-TitleBar.dragText: not realized
-TitleBar.dropCompleted: not realized
-TitleBar.frameChanged: not realized
-TitleBar.margin: not realized
-VStack.pinchUpdated: 🔌 pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panYChannel: not realized
-ZStack.tapCount: 🔌 tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.tapped: 🔌 tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.canDrag: not realized
+VStack.dragStarting: not realized
+VStack.dragText: not realized
+VStack.dropCompleted: not realized
+VStack.frameChanged: ✅
+VStack.margin: ✅
+WebView.pinchUpdated: not realized
+ZStack.panYChannel: 🔌 pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

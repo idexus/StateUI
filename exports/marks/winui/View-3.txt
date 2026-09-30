@@ -215,13 +215,6 @@ TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
-TitleBar.allowDrop: not realized
-TitleBar.area: not realized
-TitleBar.dragLeave: not realized
-TitleBar.dragOver: not realized
-TitleBar.drop: not realized
-TitleBar.frameChanged: not realized
-TitleBar.panYChannel: not realized
 VStack.frameChanged: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅

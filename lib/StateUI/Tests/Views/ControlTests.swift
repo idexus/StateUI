@@ -362,23 +362,6 @@ final class ControlTests: XCTestCase {
                     .onNavigated { _ in }
                     .onProcessTerminated {}),
 
-            // The window's authored title area. Its three slots are structural
-            // children whose root views retain ordinary identity and events.
-            ControlCase("TitleBar", source: "TitleBar.swift",
-                TitleBar("StateUI Gallery")
-                    .subtitle("Fundamentals")
-                    .icon("stateui_mark.png")
-                    .barForegroundColor(.white)
-                    .leadingContent {
-                        Label("lead")
-                    }
-                    .content {
-                        Label("mid")
-                    }
-                    .trailingContent {
-                        Button("act")
-                    }),
-
             // The shapes. What they share is the Shape tier, covered once by the
             // Elements case below; each of these carries only its own.
             ControlCase("Rectangle", source: "Rectangle.swift",
@@ -728,7 +711,7 @@ final class ControlTests: XCTestCase {
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
     /// lanes where a plain value is one - and the tiers no view wears: a page,
-    /// a bar, a menu item, a title bar, a map's own flags.
+    /// a bar, a menu item, a map's own flags.
     func testEveryValueModifierHasABindingTwin() throws {
         let allowed: Set<String> = [
             // Named rather than valued.
@@ -740,8 +723,8 @@ final class ControlTests: XCTestCase {
             "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "area",
             // Tiers no view wears.
-            "barBackgroundColor", "barForegroundColor", "isScrollEnabled", "isZoomEnabled",
-            "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",
+            "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
+            "isZoomEnabled", "isTrafficEnabled", "showsUserLocation", "isDestructive", "title",
             "mapType", "avoidsSafeArea",
         ]
         var values: Set<String> = []

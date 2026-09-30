@@ -192,6 +192,22 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"WindowSession().modalStack = nil"#,
             contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }"#),
         Road(
+            name: "a window's title bar written into its session",
+            removed: #"WindowSession().titleBar = nil"#,
+            contract: #"_ = SplitView(State(wrappedValue: true).projectedValue) { Label("Menu") } detail: { Label("Home") }.barTitle("Notes")"#),
+        Road(
+            name: "the withdrawn TitleBar element",
+            removed: #"_ = TitleBar("Notes").subtitle("Drafts")"#,
+            contract: #"_ = ModalStack(State(wrappedValue: [Int]()).projectedValue) { Label("Home") } destination: { _ in Label("Sheet") }.barSubtitle("Drafts")"#),
+        Road(
+            name: "a title bar's withdrawn slot",
+            removed: "_ = Node(contract: TrailingContentContract.self)",
+            contract: #"_ = Label("Notes").toolbar { ToolbarItem("Account") }"#),
+        Road(
+            name: "a stack's own bar foreground",
+            removed: "_ = NavigationStackContract.barForegroundColor",
+            contract: "_ = BarElementContract.barForegroundColor"),
+        Road(
             name: "a page's actions written into its session",
             removed: #"PageSession().toolbarItems = [ToolbarItem("Save")]"#,
             contract: #"_ = Label("Notes").toolbar { ToolbarItem("Save") }"#),

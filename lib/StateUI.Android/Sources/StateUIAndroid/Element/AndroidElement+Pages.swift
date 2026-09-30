@@ -35,7 +35,13 @@ extension AndroidElement {
         default:
             break
         }
+        // What an arrangement declares of the bar reaches every bar under it.
+        // Design: docs/design/platforms/android/pages.md#the-bar
+        if type != .page, NodeType.pageTypes.contains(type), !changed.isDisjoint(with: Self.barValues) { refreshBars() }
     }
+
+    /// What an arrangement declares of the bars under it.
+    static let barValues: Set<Prop> = [.barBackgroundColor, .barForegroundColor, .barIcon, .barSubtitle, .barTitle]
 
     /// Shows on a tabbed view's row its tabs' titles and pictures, and the tab the tree chose.
     private func refreshTabs() {
@@ -47,12 +53,15 @@ extension AndroidElement {
                 title: tab.value(.title)?.string ?? "",
                 picture: tab.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 })
         }
-        row.background = value(.barBackgroundColor)
-        // Words on a written colour: white on a dark one, the text's own on a light one (`BandWords`).
+        let colors = element.barColors
+        row.background = colors.background
+        // Words on a written colour: white on a dark one, the text's own on a light one (`BandWords`); the chosen
+        // tab's in the colour written for them.
         if let background = row.background, BandWords.light(on: background) == true {
             row.chosenColor = .color(red: 255, green: 255, blue: 255, alpha: 255)
             row.color = .color(red: 255, green: 255, blue: 255, alpha: 170)
         }
+        if let written = colors.foreground { row.chosenColor = written }
         tabs.show(row, requested: value(.currentPage)?.number.map { Int($0) })
         tabs.onSelection = { [weak self] previous, selected in self?.selectTab(from: previous, to: selected) }
     }
@@ -104,8 +113,8 @@ extension AndroidElement {
     // MARK: - A stack's bar
 
     /// Shows on a stack's bar what its visible page says: the title - the page's the host layer names it by
-    /// (`titledPage`), or the view standing in for it - the colours, the way back or to the sidebar, the page's
-    /// actions in their order, and the menus its path declares behind the overflow.
+    /// (`titledPage`), or the view standing in for it - the line under it and the colours its path declares, the way
+    /// back or to the sidebar, the page's actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
         guard type == .navigationStack, let navigation = view as? AndroidNavigationView else { return }
@@ -119,6 +128,7 @@ extension AndroidElement {
 
         var content = AndroidBarView.Content()
         content.title = element.titledPage?.value(.title)?.string ?? ""
+        content.subtitle = (page ?? element).titleArea?.subtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         content.actions = shown.enumerated().map { place, item in
@@ -156,10 +166,11 @@ extension AndroidElement {
         }
     }
 
-    /// Refreshes the bar of every stack in this arrangement of pages.
+    /// Refreshes the bar of every stack and the row of every tabbed view in this arrangement of pages.
     func refreshBars() {
         guard NodeType.pageTypes.contains(type) else { return }
 
+        if type == .tabbedView { refreshTabs() }
         refreshBar()
         children.forEach { $0.refreshBars() }
     }

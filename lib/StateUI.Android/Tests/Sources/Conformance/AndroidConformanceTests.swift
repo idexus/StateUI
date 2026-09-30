@@ -43,14 +43,11 @@ final class AndroidConformanceTests: XCTestCase {
             ("testTextEditor", testTextEditor),
             ("testTextField", testTextField),
             ("testTimePicker", testTimePicker),
-            ("testTitleBar", testTitleBar),
             ("testVStack", testVStack),
             ("testWebView", testWebView),
             ("testZStack", testZStack),
             ("testApplication", testApplication),
-            ("testContent", testContent),
             ("testContextMenu", testContextMenu),
-            ("testLeadingContent", testLeadingContent),
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
@@ -68,7 +65,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testTitleView", testTitleView),
             ("testToolbarItem", testToolbarItem),
             ("testToolbarItems", testToolbarItems),
-            ("testTrailingContent", testTrailingContent),
             ("testWindow", testWindow),
             ("testPropertyContainer", testPropertyContainer),
             ("testVisualElement", testVisualElement),
@@ -123,14 +119,11 @@ final class AndroidConformanceTests: XCTestCase {
     func testTextEditor() throws { try conform(TextEditorTests.self) }
     func testTextField() throws { try conform(TextFieldTests.self) }
     func testTimePicker() throws { try conform(TimePickerTests.self) }
-    func testTitleBar() throws { try conform(TitleBarTests.self) }
     func testVStack() throws { try conform(VStackTests.self) }
     func testWebView() throws { try conform(WebViewTests.self) }
     func testZStack() throws { try conform(ZStackTests.self) }
     func testApplication() throws { try conform(ApplicationTests.self) }
-    func testContent() throws { try conform(ContentTests.self) }
     func testContextMenu() throws { try conform(ContextMenuTests.self) }
-    func testLeadingContent() throws { try conform(LeadingContentTests.self) }
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
@@ -148,7 +141,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testTitleView() throws { try conform(TitleViewTests.self) }
     func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
     func testToolbarItems() throws { try conform(ToolbarItemsTests.self) }
-    func testTrailingContent() throws { try conform(TrailingContentTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
     func testPropertyContainer() throws { try conform(PropertyContainerTests.self) }
     func testVisualElement() throws { try conform(VisualElementTests.self) }

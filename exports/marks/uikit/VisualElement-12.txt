@@ -33,7 +33,6 @@ TextEditor.isEnabled: ✅
 TextEditor.zIndex: not realized
 TextField.scaleY: 🔌 read scaleY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.rotationY: 🔌 read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.pivotY: not realized
-VStack.background: ✅
-WebView.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
-ZStack.style: ✅
+VStack.pivotY: 🔌 read pivotY of VStack: the host's own transform, checked against the layer it composed itself
+WebView.background: not realized
+ZStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level

@@ -215,12 +215,6 @@ TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.verticalAlignment: ✅
-TitleBar.frameChanged: not realized
-TitleBar.gridColumn: not realized
-TitleBar.gridRow: not realized
-TitleBar.swipeDirection: not realized
-TitleBar.swipeThreshold: not realized
-TitleBar.swiped: not realized
 VStack.frameChanged: ✅
 VStack.margin: ✅
 VStack.pointerEntered: ✅

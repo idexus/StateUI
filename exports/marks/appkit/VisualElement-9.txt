@@ -33,7 +33,6 @@ Switch.zIndex: not realized
 TextEditor.scaleY: 🔌 read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.rotationY: 🔌 read rotationY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.pivotY: 🔌 read pivotY of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.background: cannot read background of TitleBar - AppKit's driver has no path for it yet
-VStack.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
-WebView.style: not realized
-ZStack.ignoresInput: ✅
+VStack.background: ✅
+WebView.accessibilityHeadingLevel: not realized
+ZStack.style: ✅

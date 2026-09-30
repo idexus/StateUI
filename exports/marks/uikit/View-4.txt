@@ -103,10 +103,7 @@ TimePicker.dragText: not realized
 TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
-TitleBar.pinchUpdated: not realized
-VStack.panYChannel: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.tapCount: 🔌 tap on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.tapped: 🔌 tap on WebView: the view's listening handed the recognizer's states, no touch sent
-ZStack.frameChanged: ✅
-ZStack.gridColumn: ✅
-ZStack.gridRow: ✅
+VStack.pinchUpdated: 🔌 pinch on VStack: the view's listening handed the recognizer's states, no touch sent
+WebView.panYChannel: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.tapCount: 🔌 tap on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.tapped: 🔌 tap on ZStack: the view's listening handed the recognizer's states, no touch sent

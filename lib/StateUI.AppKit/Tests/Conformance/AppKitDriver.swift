@@ -184,6 +184,8 @@ final class AppKitDriver: HostDriver {
         layOutWindows()
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
+        if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
+        if property == .barBackgroundColor { return try barHolds(element) }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
         case (.selectedItems, let items as AppKitItemsView): return .strings(items.selectedForTesting)

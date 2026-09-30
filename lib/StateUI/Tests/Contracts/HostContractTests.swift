@@ -46,7 +46,7 @@ final class HostContractTests: XCTestCase {
                 + properties.intersection(pageOnlyAlternatives).sorted().joined(separator: ", "))
     }
 
-    /// Native page bars share a flat authored color and a foreground color.
+    /// Native page bars share a flat authored color and a foreground color, declared alike on every arrangement.
     /// A gradient or image remains ordinary view composition instead of a
     /// second background renderer hidden inside every platform adapter.
     func testBarVocabularyContainsOnlyNativeAppearanceCapabilities() throws {
@@ -60,8 +60,8 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(properties.contains("selectedTabColor"))
         XCTAssertFalse(properties.contains("unselectedTabColor"))
         XCTAssertFalse(barSource.contains("func barBackground("))
-        XCTAssertFalse(barSource.contains("func barForegroundColor("))
-        XCTAssertTrue(navigationSource.contains("func barForegroundColor("))
+        XCTAssertTrue(barSource.contains("func barForegroundColor("), "one bar, one foreground, on every arrangement")
+        XCTAssertFalse(navigationSource.contains("func barForegroundColor("))
         XCTAssertFalse(tabSource.contains("func selectedTabColor("))
         XCTAssertFalse(tabSource.contains("func unselectedTabColor("))
     }
@@ -632,8 +632,7 @@ final class HostContractTests: XCTestCase {
             "a bar's foreground, or when a window hides, keeps a second name")
 
         for (file, spelling) in [
-            ("NavigationStack.swift", "func barForegroundColor("),
-            ("TitleBar.swift", "func barForegroundColor("),
+            ("BarElement.swift", "func barForegroundColor("),
             ("WindowGroup.swift", "func hidesWhenInactive("),
         ] {
             let source = try SourceTree.text(in: file)

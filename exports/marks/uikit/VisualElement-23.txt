@@ -52,12 +52,11 @@ TextField.accessibilityHint: ✅
 TimePicker.focus: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.unfocus: ✅
-TitleBar.frameChanged: not realized
-TitleBar.maximumHeight: not realized
-TitleBar.maximumWidth: not realized
-TitleBar.minimumHeight: not realized
-TitleBar.minimumWidth: not realized
-VStack.opacity: ✅
-VStack.translationY: 🔌 read translationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.scaleX: 🔌 read scaleX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.rotationX: 🔌 read rotationX of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.frameChanged: ✅
+VStack.maximumHeight: ✅
+VStack.maximumWidth: ✅
+VStack.minimumHeight: ✅
+VStack.minimumWidth: ✅
+WebView.opacity: ✅
+WebView.translationY: 🔌 read translationY of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.scaleX: 🔌 read scaleX of ZStack: the host's own transform, checked against the layer it composed itself

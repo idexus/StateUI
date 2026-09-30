@@ -95,20 +95,15 @@ TextEditor.frameChanged: ✅
 TextEditor.margin: ✅
 TextField.pinchUpdated: 🔌 pinch on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.panYChannel: 🔌 pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TitleBar.tapCount: not realized
-TitleBar.tapped: not realized
-VStack.frameChanged: ✅
-VStack.gridColumn: ✅
-VStack.gridRow: ✅
-WebView.allowDrop: not realized
-WebView.dragLeave: not realized
-WebView.dragOver: not realized
-WebView.drop: not realized
+VStack.tapCount: 🔌 tap on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.tapped: 🔌 tap on VStack: the view's listening handed the recognizer's states, no touch sent
 WebView.frameChanged: ✅
-WebView.horizontalAlignment: ✅
-WebView.verticalAlignment: ✅
-ZStack.pointerEntered: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.pointerExited: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.pointerMoved: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.pointerPressed: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.pointerReleased: 🔌 hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+WebView.gridColumn: ✅
+WebView.gridRow: ✅
+ZStack.allowDrop: not realized
+ZStack.dragLeave: not realized
+ZStack.dragOver: not realized
+ZStack.drop: not realized
+ZStack.frameChanged: ✅
+ZStack.horizontalAlignment: ✅
+ZStack.verticalAlignment: ✅

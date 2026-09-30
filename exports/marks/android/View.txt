@@ -959,38 +959,6 @@ TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
-TitleBar.allowDrop: not realized
-TitleBar.area: not realized
-TitleBar.canDrag: not realized
-TitleBar.dragLeave: not realized
-TitleBar.dragOver: not realized
-TitleBar.dragStarting: not realized
-TitleBar.dragText: not realized
-TitleBar.drop: not realized
-TitleBar.dropCompleted: not realized
-TitleBar.frameChanged: not realized
-TitleBar.gridColumn: not realized
-TitleBar.gridColumnSpan: not realized
-TitleBar.gridRow: not realized
-TitleBar.gridRowSpan: not realized
-TitleBar.horizontalAlignment: not realized
-TitleBar.margin: not realized
-TitleBar.panTouchCount: not realized
-TitleBar.panUpdated: not realized
-TitleBar.panXChannel: not realized
-TitleBar.panYChannel: not realized
-TitleBar.pinchUpdated: not realized
-TitleBar.pointerEntered: not realized
-TitleBar.pointerExited: not realized
-TitleBar.pointerMoved: not realized
-TitleBar.pointerPressed: not realized
-TitleBar.pointerReleased: not realized
-TitleBar.swipeDirection: not realized
-TitleBar.swipeThreshold: not realized
-TitleBar.swiped: not realized
-TitleBar.tapCount: not realized
-TitleBar.tapped: not realized
-TitleBar.verticalAlignment: not realized
 VStack.allowDrop: not realized
 VStack.area: ✅
 VStack.canDrag: not realized

@@ -92,21 +92,18 @@ TextField.tapped: 🔌 tap on TextField: the view's listening handed the recogni
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
-TitleBar.allowDrop: not realized
-TitleBar.dragLeave: not realized
-TitleBar.dragOver: not realized
-TitleBar.drop: not realized
-TitleBar.frameChanged: not realized
-TitleBar.horizontalAlignment: not realized
-TitleBar.verticalAlignment: not realized
-VStack.pointerEntered: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerExited: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerMoved: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerPressed: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.pointerReleased: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.swipeDirection: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.swipeThreshold: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.swiped: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-ZStack.panTouchCount: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.panUpdated: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.panXChannel: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+VStack.allowDrop: not realized
+VStack.dragLeave: not realized
+VStack.dragOver: not realized
+VStack.drop: not realized
+VStack.frameChanged: ✅
+VStack.horizontalAlignment: ✅
+VStack.verticalAlignment: ✅
+WebView.pointerEntered: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerExited: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerMoved: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerPressed: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerReleased: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.swipeDirection: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.swipeThreshold: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.swiped: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent

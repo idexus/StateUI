@@ -13,10 +13,9 @@ enum WinUIRealization {
         "Map", "Pin", "PositionIndicator",
     ]
 
-    /// The entries this host presents with no view of their own - a span is a run of its label's words, a title bar
-    /// the window's chrome and its slots places on it - so no tier's record reaches them: only a member the entry's
-    /// own records name is realized.
-    static let viewless: Set<String> = ["Content", "LeadingContent", "Span", "TitleBar", "TrailingContent"]
+    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
+    /// tier's record reaches them: only a member the entry's own records name is realized.
+    static let viewless: Set<String> = ["Span"]
 
     /// The entries Windows will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -24,6 +23,11 @@ enum WinUIRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .complete("BarElement", "barBackgroundColor"),
+        .complete("BarElement", "barForegroundColor"),
+        .complete("BarElement", "barIcon"),
+        .complete("BarElement", "barSubtitle"),
+        .complete("BarElement", "barTitle"),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isDestructive"),
@@ -75,10 +79,6 @@ enum WinUIRealization {
         .partial("TextField", "isPassword", missing: "A PasswordBox has no read-only state, alignment, case, caret "
             + "or selection: a password field keeps none of these."),
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
-        .complete("TitleBar", "barForegroundColor"),
-        .complete("TitleBar", "icon"),
-        .complete("TitleBar", "subtitle"),
-        .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItems", "order"),
         .complete("ToolbarItem", "showsText"),

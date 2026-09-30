@@ -57,7 +57,6 @@ TextEditor.minimumWidth: ✅
 TextField.opacity: ✅
 TextField.translationY: 🔌 read translationY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.scaleX: 🔌 read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself
-TitleBar.rotationX: not realized
-VStack.pivotX: 🔌 read pivotX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.automationExcludedWithChildren: ✅
-ZStack.accessibilityHint: ✅
+VStack.rotationX: 🔌 read rotationX of VStack: the host's own transform, checked against the layer it composed itself
+WebView.pivotX: 🔌 read pivotX of WebView: the host's own transform, checked against the layer it composed itself
+ZStack.automationExcludedWithChildren: ✅

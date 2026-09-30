@@ -41,10 +41,8 @@ Switch.scale: 🔌 read scale of Switch: the host's own transform, checked again
 TextEditor.rotation: 🔌 read rotation of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.layoutDirection: not realized
 TimePicker.isAccessibilityHidden: ✅
-TitleBar.accessibilityLabel: not realized
-VStack.frame: ✅
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.width: not realized
-ZStack.isVisible: ✅
-ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.accessibilityLabel: ✅
+WebView.frame: not realized
+ZStack.frameChanged: ✅
+ZStack.height: ✅
+ZStack.width: ✅

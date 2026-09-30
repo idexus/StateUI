@@ -26,7 +26,6 @@ extension NodeType {
     static let colorBox = ColorBoxContract.nodeType
     static let button = ButtonContract.nodeType
     static let checkBox = CheckBoxContract.nodeType
-    static let content = ContentContract.nodeType
     static let page = PageContract.nodeType
     static let contextMenu = ContextMenuContract.nodeType
     static let datePicker = DatePickerContract.nodeType
@@ -42,7 +41,6 @@ extension NodeType {
     static let itemsView = ItemsViewContract.nodeType
     static let positionIndicator = PositionIndicatorContract.nodeType
     static let label = LabelContract.nodeType
-    static let leadingContent = LeadingContentContract.nodeType
     static let line = LineContract.nodeType
     static let map = MapContract.nodeType
     static let menu = MenuContract.nodeType
@@ -70,10 +68,8 @@ extension NodeType {
     static let `switch` = SwitchContract.nodeType
     static let tabbedView = TabbedViewContract.nodeType
     static let timePicker = TimePickerContract.nodeType
-    static let titleBar = TitleBarContract.nodeType
     static let toolbarItem = ToolbarItemContract.nodeType
     static let toolbarItems = ToolbarItemsContract.nodeType
-    static let trailingContent = TrailingContentContract.nodeType
     static let vStack = VStackContract.nodeType
     static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
@@ -89,7 +85,7 @@ extension NodeType {
     static let allowDrop = ViewContract.allowDrop.token
     static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
-    static let barForegroundColor = NavigationStackContract.barForegroundColor.token
+    static let barForegroundColor = BarElementContract.barForegroundColor.token
     static let endReachedWithin = ItemsViewContract.endReachedWithin.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
     static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
@@ -102,6 +98,9 @@ extension NodeType {
     static let growsWithText = TextEditorContract.growsWithText.token
     static let background = VisualElementContract.background.token
     static let barBackgroundColor = BarElementContract.barBackgroundColor.token
+    static let barIcon = BarElementContract.barIcon.token
+    static let barSubtitle = BarElementContract.barSubtitle.token
+    static let barTitle = BarElementContract.barTitle.token
     static let canDrag = ViewContract.canDrag.token
     static let characterSpacing = TextStyleElementContract.characterSpacing.token
     static let selectedItems = ItemsViewContract.selectedItems.token
@@ -230,7 +229,6 @@ extension NodeType {
     static let strokeMiterLimit = ShapeContract.strokeMiterLimit.token
     static let strokeWidth = ShapeContract.strokeWidth.token
     static let style = VisualElementContract.style.token
-    static let subtitle = TitleBarContract.subtitle.token
     static let swipeDirection = ViewContract.swipeDirection.token
     static let swipeThreshold = ViewContract.swipeThreshold.token
     static let tapCount = ViewContract.tapCount.token

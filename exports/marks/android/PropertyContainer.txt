@@ -14,6 +14,7 @@ Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
+ModalStack.accessibilityIdentifier: cannot read accessibilityIdentifier of ModalStack - Android's driver has no path for it yet
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
@@ -34,7 +35,6 @@ TabbedView.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
-TitleBar.accessibilityIdentifier: not realized
 ToolbarItem.accessibilityIdentifier: – An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: ✅

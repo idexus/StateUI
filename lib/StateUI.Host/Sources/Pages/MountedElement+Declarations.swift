@@ -11,21 +11,27 @@ extension MountedElement {
     /// outermost arrangement's, the page's own last. A sheet and a split view's sidebar start a path of their own - a
     /// modal stack's root stands on the path around the stack - and a native collection's items belong to no page.
     public func declared(_ sought: NodeType) -> [(element: MountedElement, level: Int)] {
+        let arrangements = arrangementsAround
+        var found: [(element: MountedElement, level: Int)] = []
+        for (level, arrangement) in arrangements.enumerated() {
+            found += arrangement.slots.filter { $0.type == sought }.map { ($0, level) }
+        }
+        found += declarations(sought).map { ($0, arrangements.count) }
+        return found
+    }
+
+    /// The arrangements around this element on its path, the outermost first: up to its window, a split view's
+    /// sidebar and a sheet stopping at theirs.
+    var arrangementsAround: [MountedElement] {
         var arrangements: [MountedElement] = []
         var (child, each) = (self, parent)
         while let element = each, element.type != .window {
             if element.type == .splitView, element.children.first === child { break }
             if element.type == .modalStack, element.children.first !== child { break }
-            if NodeType.pageTypes.contains(element.type) { arrangements.append(element) }
+            if NodeType.pageTypes.contains(element.type) { arrangements.insert(element, at: 0) }
             (child, each) = (element, element.parent)
         }
-
-        var found: [(element: MountedElement, level: Int)] = []
-        for (level, arrangement) in arrangements.reversed().enumerated() {
-            found += arrangement.slots.filter { $0.type == sought }.map { ($0, level) }
-        }
-        found += declarations(sought).map { ($0, arrangements.count) }
-        return found
+        return arrangements
     }
 
     /// The elements of `sought` in this element's tree, in the tree's order, looking into none of them and into no

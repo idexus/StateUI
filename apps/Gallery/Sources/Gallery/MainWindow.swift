@@ -40,9 +40,9 @@ struct MainWindow: Window {
     /// `GalleryScene`'s, the moments are this window's.
     let log: WindowLog
 
-    /// What the window's chrome says - the TitleBar sample writes it. See
-    /// Samples/Windows/TitleBarSample.swift.
-    let bar: TitleBarState
+    /// What the window's bar says - the Window bar sample writes it. See
+    /// Samples/Windows/WindowBarSample.swift.
+    let bar: WindowBarState
 
     // MARK: - The window itself
 
@@ -85,7 +85,19 @@ struct MainWindow: Window {
                 if !nav.showing(.home) {
                     ToolbarItem.home(nav)
                 }
+
+                if bar.showsSurprise {
+                    ToolbarItem("Surprise me")
+                        .icon("nav_surprise_chrome.png")
+                        .onClicked { nav.surprise(from: catalog, on: device.formFactor) }
+                }
             }
+            // What the window's bar says of the gallery: its name and mark, and
+            // the line the Window bar sample types - where the platform's
+            // chrome names the application.
+            .barTitle("StateUI")
+            .barSubtitle(bar.subtitle)
+            .barIcon("stateui_mark.png")
             // The window's notice, over every page while the gallery says so.
             .overlays {
                 if nav.windowNotice {
@@ -124,33 +136,12 @@ struct MainWindow: Window {
                 window.isMaximizable = true
                 window.isMinimizable = true
 
-                // Authored window chrome is meaningful on a desktop host, and
-                // there the menu is a sidebar beside the page.
+                // On a desktop the menu is a sidebar beside the page.
                 if device.formFactor == .desktop {
-                    window.titleBar = chrome
                     nav.menuOverlays = false
                 }
 
                 log.note("created")
-            }
-            // The chrome is painted in the gallery's accent, which the Colours
-            // window chooses - so the bar is written again when it moves.
-            .onChanged(style.accent.color) {
-                if device.formFactor == .desktop {
-                    window.titleBar = chrome
-                }
-            }
-            .onChanged(bar.subtitle) {
-                if device.formFactor == .desktop {
-                    window.titleBar = chrome
-                }
-            }
-            // And again when the desktop starts or stops showing through the
-            // window, the bars letting it through with the rest.
-            .onChanged(window.isTranslucent) {
-                if device.formFactor == .desktop {
-                    window.titleBar = chrome
-                }
             }
         } destination: { _ in
             ModalPage(nav: nav)
@@ -279,48 +270,5 @@ struct MainWindow: Window {
     /// let through while the desktop shows through the window.
     private var barColour: Color {
         window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
-    }
-
-    /// Native desktop chrome whose values and slot contents are described by
-    /// the gallery scene. See Samples/Windows/TitleBarSample.swift.
-    private var chrome: TitleBar {
-        TitleBar("StateUI")
-            .subtitle(bar.subtitle)
-            .icon("stateui_mark.png")
-            .background(barColour)
-            .barForegroundColor(Palette.onBrand)
-            .trailingContent {
-                ChromeEnd(bar: bar, nav: nav, catalog: catalog)
-            }
-    }
-}
-
-/// The optional action at the trailing edge of the native title area.
-private struct ChromeEnd: ContentView {
-    /// What the chrome says - the TitleBar sample writes it.
-    let bar: TitleBarState
-
-    /// Where the gallery is - what "Surprise me" moves.
-    let nav: Navigation
-
-    /// Everything the gallery shows - what "Surprise me" picks from.
-    let catalog: Catalog
-
-    /// Which kind of device this is, so the pick leaves out what it cannot show.
-    @Environment private var device: DeviceInfo
-
-    var content: any View {
-        HStack {
-            if bar.showsSurprise {
-                Button("Surprise me")
-                    .icon("nav_surprise_chrome.png")
-                    .iconPosition(.leading)
-                    .iconSpacing(5)
-                    .style("ChromeChip")
-                    .verticalAlignment(.center)
-                    .onClicked { nav.surprise(from: catalog, on: device.formFactor) }
-            }
-        }
-        .margin(0, 0, 5, 0)
     }
 }

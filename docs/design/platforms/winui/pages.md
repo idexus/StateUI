@@ -33,13 +33,12 @@ that the application may not render for - a tab chosen, the sidebar shown:
   ([a destructive entry](#a-destructive-entry));
 - the page's title view stands at the chrome's centre, where an application
   puts its search;
-- an authored `TitleBar`'s own title, subtitle and picture stand in the
-  chrome's title, subtitle and icon, as WinUI 3 Gallery names itself on its
-  title bar, while the visible page's title still names the window to the
-  system - the taskbar, Alt+Tab; its picture is read from the application's
-  pictures by its address;
-- an authored `TitleBar` adds its leading, centre and trailing content, each
-  standing in the middle of the bar's height, and
+- the title area the path declares - the application's name, the line under
+  it and its mark ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares))
+  - stands in the chrome's title, subtitle and icon, as WinUI 3 Gallery names
+  itself on its title bar, while the visible page's title still names the
+  window to the system - the taskbar, Alt+Tab; its picture is read from the
+  application's pictures by its address; and
   the bars' colours paint the chrome: its title and the actions on it, a
   destructive one excepted, stand
   in the colour written for what stands on the bars, else white on a dark

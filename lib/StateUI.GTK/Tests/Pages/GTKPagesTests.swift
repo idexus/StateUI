@@ -154,10 +154,16 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A header bar no arrangement colours takes the colours of the window's title bar.
-    func testABarNoArrangementColoursTakesTheTitleBars() throws {
+    /// A header bar takes the colours the window's page declares around the page it shows.
+    func testAHeaderBarTakesTheColoursItsPathDeclares() throws {
         try onUIThread {
-            let host = GTKRenderer.running { TitleBarPage() }
+            let host = GTKRenderer.running {
+                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Label("under a painted bar")
+                } destination: { _ in Label("Sheet") }
+                .barBackgroundColor(Color("#00FF00"))
+                .barForegroundColor(Color("#FFFFFF"))
+            }
             let frame = try XCTUnwrap(host.window?.pageFrame)
             host.settle { gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF") != 0 }
 
@@ -229,18 +235,6 @@ struct TitledPage: ContentView {
                 if hidesBar { page.hasNavigationBar = false }
             }
             .onChanged(page.phase) { log?.values.append("\(title) \(page.phase)") }
-    }
-}
-
-/// A page that gives its window a green title bar with white on it.
-private struct TitleBarPage: ContentView {
-    @Environment private var window: WindowSession
-
-    var content: any View {
-        let window = self.window
-        return Label("under a title bar").onCreated {
-            window.titleBar = TitleBar("Titled").background(Color("#00FF00")).barForegroundColor(Color("#FFFFFF"))
-        }
     }
 }
 

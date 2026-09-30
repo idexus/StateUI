@@ -215,16 +215,6 @@ TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 TimePicker.pinchUpdated: ✅
-TitleBar.canDrag: not realized
-TitleBar.dragStarting: not realized
-TitleBar.dragText: not realized
-TitleBar.dropCompleted: not realized
-TitleBar.frameChanged: not realized
-TitleBar.horizontalAlignment: not realized
-TitleBar.panTouchCount: not realized
-TitleBar.panUpdated: not realized
-TitleBar.panXChannel: not realized
-TitleBar.verticalAlignment: not realized
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅

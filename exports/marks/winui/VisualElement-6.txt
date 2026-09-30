@@ -104,9 +104,6 @@ TextField.rotationX: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.scaleX: ✅
-TitleBar.ignoresInput: not realized
-TitleBar.layoutDirection: not realized
-TitleBar.translationY: not realized
 VStack.rotation: ✅
 VStack.style: ✅
 WebView.accessibilityHeadingLevel: ✅

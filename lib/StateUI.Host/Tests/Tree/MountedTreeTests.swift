@@ -243,20 +243,20 @@ final class MountedTreeTests: XCTestCase {
     /// A frame arranges a parent once when a child's place changed; an element without a view passes it up.
     @MainActor
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {
-        let (tree, log) = Self.tree(viewless: ["slot"])
+        let (tree, log) = Self.tree(viewless: ["bare"])
         var child = HostPatch(id: .manual("child"), type: .label)
         child.properties = [.width: .number(10)]
-        var slot = HostPatch(id: .manual("slot"), type: .content)
-        slot.children = .arranged([child])
+        var bare = HostPatch(id: .manual("bare"), type: .zStack)
+        bare.children = .arranged([child])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.children = .arranged([slot])
+        stack.children = .arranged([bare])
         tree.apply(stack, complete: true)
         log.arranged.removeAll()
 
         let childMount = tree.root!.children[0].children[0].mount
         tree.present(states: [:], properties: [childMount: [.width]])
 
-        XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
+        XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
 
     /// A row says what it holds in reading order: each element's words apart by commas, a label's runs whole, a label

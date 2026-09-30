@@ -32,8 +32,7 @@ Switch.pivotY: 🔌 read pivotY of Switch: the host's own transform, checked aga
 TextEditor.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 TextField.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 TimePicker.style: ✅
-TitleBar.ignoresInput: not realized
-VStack.isEnabled: not realized
-VStack.zIndex: not realized
-WebView.scaleY: not realized
-ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.ignoresInput: ✅
+WebView.isEnabled: not realized
+WebView.zIndex: not realized
+ZStack.scaleY: 🔌 read scaleY of ZStack: the host's own transform, checked against the layer it composed itself

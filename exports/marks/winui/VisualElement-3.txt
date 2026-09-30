@@ -104,9 +104,6 @@ TextField.pivotX: ✅
 TextField.zIndex: not realized
 TimePicker.accessibilityLabel: ✅
 TimePicker.rotationX: not realized
-TitleBar.isAccessibilityHidden: not realized
-TitleBar.isEnabled: not realized
-TitleBar.scaleX: not realized
 VStack.ignoresInput: ✅
 VStack.layoutDirection: not realized
 VStack.translationY: ✅

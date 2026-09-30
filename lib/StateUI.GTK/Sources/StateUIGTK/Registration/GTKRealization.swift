@@ -10,14 +10,13 @@
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Canvas", "Content", "ContextMenu", "DatePicker", "LeadingContent", "Map", "Menu", "MenuBar",
-        "MenuItem", "MenuSeparator", "ModalStack", "Pin", "PositionIndicator", "TimePicker", "TrailingContent",
-        "WebView",
+        "Canvas", "ContextMenu", "DatePicker", "Map", "Menu", "MenuBar", "MenuItem", "MenuSeparator", "ModalStack",
+        "Pin", "PositionIndicator", "TimePicker", "WebView",
     ]
 
-    /// The entries this host presents with no view of their own - a title bar is the window's, a span a run of its
-    /// label's words - so no tier's record reaches them: only a member the entry's own records name is realized.
-    static let viewless: Set<String> = ["Span", "TitleBar"]
+    /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
+    /// tier's record reaches them: only a member the entry's own records name is realized.
+    static let viewless: Set<String> = ["Span"]
 
     /// The entries GTK will not have; none.
     static let notPlanned: [String: String] = [:]
@@ -25,6 +24,12 @@ enum GTKRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .complete("BarElement", "barBackgroundColor"),
+        .complete("BarElement", "barForegroundColor"),
+        .notPlanned("BarElement", "barIcon",
+                    reason: "A GNOME header bar is its page's own and shows no application's mark."),
+        .notPlanned("BarElement", "barTitle",
+                    reason: "A GNOME header bar is its page's own and names that page; an application names itself in none."),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),
@@ -51,8 +56,6 @@ enum GTKRealization {
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
         .complete("TabbedView", "currentPage"),
-        .complete("TitleBar", "background"),
-        .complete("TitleBar", "barForegroundColor"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItems", "order"),
     ]

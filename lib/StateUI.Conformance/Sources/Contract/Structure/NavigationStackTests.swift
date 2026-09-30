@@ -58,7 +58,6 @@
                 s.settle { path.wrappedValue.isEmpty }
                 s.expect(path.wrappedValue, [], "and back to the root")
             },
-            Aspects.holds(NavigationStackContract.barForegroundColor, on: "NavigationStack", .white, then: .black),
         ]
     }
 }

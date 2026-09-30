@@ -12,7 +12,7 @@ import StateUI
 /// THE FIRST GROUP IS THE CARD IN FRONT on the home page, which is what a
 /// user taps before they have read anything, so it holds what this library
 /// IS: one declaration, the reader rule, the two layers and what each costs.
-/// Chrome - styles, the window, its title bar and its lifecycle - is further
+/// Chrome - styles, the window, its bar and its lifecycle - is further
 /// down under names that say so.
 struct SampleGroup {
     /// What the menu row and the home card push - the value inside

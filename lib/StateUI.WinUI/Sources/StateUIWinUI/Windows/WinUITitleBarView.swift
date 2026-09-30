@@ -7,7 +7,7 @@ import CStateUIWinUI
 
 /// The one chrome of a StateUI window: WinUI's `TitleBar`. WinUI owns placement, overflow, the caption buttons and
 /// dragging the window; StateUI owns what stands on it - its way back and sidebar toggle as the bar's own buttons,
-/// an action as a button of its command bar, an authored slot's view attached as it is.
+/// an action as a button of its command bar, a title view attached as it is.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 final class WinUITitleBarView: WinUIView {
@@ -32,7 +32,7 @@ final class WinUITitleBarView: WinUIView {
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         let light = chrome.background.flatMap(BandWords.light(on:))
-        // An authored title area stands in the title's place, as an application names itself on WinUI's title bar.
+        // A declared title area stands in the title's place, as an application names itself on WinUI's title bar.
         let area = chrome.titleArea
         let icon = WinUIStrings.lines(area?.icon.map(PictureArithmetic.files(for:)) ?? [])
         stateui_winui_title_bar_set(
@@ -57,10 +57,7 @@ final class WinUITitleBarView: WinUIView {
         }
         drawn = actions
 
-        if previous.leading !== chrome.leading || previous.center !== chrome.center
-            || previous.trailing !== chrome.trailing {
-            stateui_winui_title_bar_set_slots(handle, chrome.leading?.handle, chrome.center?.handle, chrome.trailing?.handle)
-        }
+        if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }
 
     /// The user pressed the way back (-1), the sidebar's toggle (-2), or an action by its place.

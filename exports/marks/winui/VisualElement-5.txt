@@ -104,13 +104,6 @@ TextField.style: ✅
 TimePicker.accessibilityHeadingLevel: ✅
 TimePicker.opacity: ✅
 TimePicker.scale: ✅
-TitleBar.background: not realized
-TitleBar.frameChanged: not realized
-TitleBar.maximumHeight: not realized
-TitleBar.maximumWidth: not realized
-TitleBar.minimumHeight: not realized
-TitleBar.minimumWidth: not realized
-TitleBar.translationX: not realized
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.pivotY: ✅

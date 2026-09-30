@@ -83,6 +83,23 @@ extension AppKitDriver {
         }
     }
 
+    /// What the title area of the window `element` stands in shows: the application's name and the line under it,
+    /// nil where the window shows no title area.
+    func titleAreaHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
+        let controller = try controller(of: element)
+        guard controller.titleAccessoryForTesting != nil else { return nil }
+        let words = property == .barTitle
+            ? controller.titleClusterForTesting.titleForTesting : controller.titleClusterForTesting.subtitleForTesting
+        return words.isEmpty ? nil : words.propValue
+    }
+
+    /// The colour the bar of the window `element` stands in is painted: the window's own background, which the title
+    /// bar lets show only while a colour is painted; nil on the system's material.
+    func barHolds(_ element: MountedElement) throws -> HostValue? {
+        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent else { return nil }
+        return Self.color(window.backgroundColor).propValue
+    }
+
     /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
     /// preferences, as its words read back; one of the first scene from its main window's restoration record.
     func kept(_ key: String, inScene: Bool) throws -> HostValue? {

@@ -39,10 +39,9 @@ Switch.rotation: 🔌 read rotation of Switch: the host's own transform, checked
 TextEditor.layoutDirection: not realized
 TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅
-TitleBar.frame: not realized
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.width: ✅
-WebView.isVisible: ✅
-WebView.translationX: 🔌 read translationX of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.scale: 🔌 read scale of ZStack: the host's own transform, checked against the layer it composed itself
+VStack.frame: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.width: ✅
+ZStack.isVisible: ✅
+ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform, checked against the layer it composed itself

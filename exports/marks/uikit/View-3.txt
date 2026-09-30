@@ -98,14 +98,12 @@ TimePicker.pointerExited: 🔌 hover on TimePicker: the view's listening handed 
 TimePicker.pointerMoved: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.pointerPressed: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.pointerReleased: 🔌 hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TitleBar.swipeDirection: not realized
-TitleBar.swipeThreshold: not realized
-TitleBar.swiped: not realized
-VStack.panTouchCount: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.panUpdated: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.panXChannel: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.frameChanged: ✅
-WebView.gridColumnSpan: ✅
-WebView.gridRowSpan: ✅
-ZStack.area: ✅
+VStack.swipeDirection: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.swipeThreshold: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.swiped: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
+WebView.panTouchCount: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.panUpdated: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.panXChannel: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.frameChanged: ✅
+ZStack.gridColumnSpan: ✅
+ZStack.gridRowSpan: ✅

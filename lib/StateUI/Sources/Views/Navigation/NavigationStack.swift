@@ -119,12 +119,3 @@ public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement,
         return copy
     }
 }
-
-extension NavigationStack {
-    /// The colour the bar draws on its background: the navigation title and
-    /// the native navigation and toolbar affordances. Destructive actions keep
-    /// the platform's warning colour.
-    public func barForegroundColor(_ value: Color) -> NavigationStack {
-        setValue(NavigationStackContract.barForegroundColor, value)
-    }
-}

@@ -2,11 +2,11 @@
 
 # BarElement
 
-The bar a page arrangement draws: its colour.
+What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
 
 Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [NavigationStack](../NavigationStack.md) · [TabbedView](../TabbedView.md)
+Worn by: [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabbedView](../TabbedView.md)
 
 Declared in `lib/StateUI/Sources/Contracts/Mixins/BarElementContract.swift`.
 
@@ -15,3 +15,7 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `barBackgroundColor` | property | `Color` | adaptive |
+| `barForegroundColor` | property | `Color` | adaptive |
+| `barIcon` | property | `ImageSource` | adaptive |
+| `barSubtitle` | property | `String` | adaptive |
+| `barTitle` | property | `String` | adaptive |

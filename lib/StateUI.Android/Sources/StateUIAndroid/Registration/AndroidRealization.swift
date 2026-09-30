@@ -10,8 +10,7 @@
 enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar",
-        "TrailingContent",
+        "Map", "Pin", "PositionIndicator",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's text - so
@@ -24,6 +23,13 @@ enum AndroidRealization {
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
+        .complete("BarElement", "barBackgroundColor"),
+        .partial("BarElement", "barForegroundColor", missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the colour itself - on a tab row, the chosen tab's words."),
+        .notPlanned("BarElement", "barIcon",
+                    reason: "An Android bar is its stack's own: it shows its page's title, and no application's mark."),
+        .complete("BarElement", "barSubtitle"),
+        .notPlanned("BarElement", "barTitle",
+                    reason: "An Android bar is its stack's own and names its page; an application names itself in none."),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "isDestructive"),
         .complete("MenuItemElement", "isEnabled"),
@@ -48,8 +54,6 @@ enum AndroidRealization {
                     reason: "An Android menu entry holds no identifier: automation finds it by its title."),
         .notPlanned("MenuItem", "icon",
                     reason: "Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone."),
-        .complete("NavigationStack", "barBackgroundColor"),
-        .partial("NavigationStack", "barForegroundColor", missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the navigation button and the pictures take the colour itself."),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "background"),
@@ -75,7 +79,6 @@ enum AndroidRealization {
         .complete("Span", "textDecorations"),
         .complete("SplitView", "isSidebarVisible"),
         .complete("SplitView", "isSidebarVisibleChanged"),
-        .complete("TabbedView", "barBackgroundColor"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
         .notPlanned("ToolbarItem", "accessibilityIdentifier",

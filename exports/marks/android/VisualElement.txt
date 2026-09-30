@@ -1019,40 +1019,6 @@ TimePicker.translationY: ✅
 TimePicker.unfocus: – TimePicker takes no keyboard focus here: it refuses it, and nothing is heard
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
-TitleBar.accessibilityHeadingLevel: not realized
-TitleBar.accessibilityHint: not realized
-TitleBar.accessibilityLabel: not realized
-TitleBar.automationExcludedWithChildren: not realized
-TitleBar.background: not realized
-TitleBar.focus: not realized
-TitleBar.frame: not realized
-TitleBar.frameChanged: not realized
-TitleBar.height: not realized
-TitleBar.ignoresInput: not realized
-TitleBar.isAccessibilityHidden: not realized
-TitleBar.isEnabled: not realized
-TitleBar.isFocusedChanged: not realized
-TitleBar.isVisible: not realized
-TitleBar.layoutDirection: not realized
-TitleBar.maximumHeight: not realized
-TitleBar.maximumWidth: not realized
-TitleBar.minimumHeight: not realized
-TitleBar.minimumWidth: not realized
-TitleBar.opacity: not realized
-TitleBar.pivotX: not realized
-TitleBar.pivotY: not realized
-TitleBar.rotation: not realized
-TitleBar.rotationX: not realized
-TitleBar.rotationY: not realized
-TitleBar.scale: not realized
-TitleBar.scaleX: not realized
-TitleBar.scaleY: not realized
-TitleBar.style: not realized
-TitleBar.translationX: not realized
-TitleBar.translationY: not realized
-TitleBar.unfocus: not realized
-TitleBar.width: not realized
-TitleBar.zIndex: not realized
 VStack.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅

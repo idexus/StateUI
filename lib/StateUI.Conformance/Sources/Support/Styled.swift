@@ -44,7 +44,6 @@ enum Styled {
             dimmed(TextEditor.self)
             dimmed(TextField.self)
             dimmed(TimePicker.self)
-            dimmed(TitleBar.self)
             dimmed(VStack.self)
             dimmed(WebView.self)
             dimmed(ZStack.self)

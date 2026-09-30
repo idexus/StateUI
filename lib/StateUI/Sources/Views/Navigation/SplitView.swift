@@ -50,7 +50,7 @@
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page must have a title.
-public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
+public struct SplitView: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 

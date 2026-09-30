@@ -72,14 +72,8 @@
         case .progressBar:
             return property == .progress
 
-        case .navigationStack:
-            return navigationProperties.contains(property)
-
-        case .tabbedView:
-            return property == .barBackgroundColor
-
-        case .titleBar:
-            return titleBarProperties.contains(property)
+        case .navigationStack, .tabbedView, .splitView, .modalStack:
+            return barProperties.contains(property)
 
         case .rectangle:
             return property == .cornerRadius
@@ -160,13 +154,7 @@
 
     private static let sliderProperties: Set<Prop> = [.value, .tint]
 
-    private static let navigationProperties: Set<Prop> = [
-        .barBackgroundColor, .barForegroundColor,
-    ]
-
-    private static let titleBarProperties: Set<Prop> = [
-        .background, .barForegroundColor,
-    ]
+    private static let barProperties: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
 
     private static let shapeProperties: Set<Prop> = [
         .fill, .stroke, .strokeWidth, .strokeDashOffset, .strokeMiterLimit,

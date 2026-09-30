@@ -11,7 +11,7 @@
 enum UIKitRealization {
     /// The entries this host realizes none of yet: it shows each one's name in red where it belongs.
     static let unrealized: Set<String> = [
-        "Content", "LeadingContent", "Map", "Pin", "PositionIndicator", "TitleBar", "TrailingContent",
+        "Map", "Pin", "PositionIndicator",
     ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
@@ -22,6 +22,12 @@ enum UIKitRealization {
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("BarElement", "barBackgroundColor"),
+        .complete("BarElement", "barForegroundColor"),
+        .notPlanned("BarElement", "barIcon",
+                    reason: "A UIKit bar is each page's own: it shows that page's title, and no application's mark."),
+        .complete("BarElement", "barSubtitle"),
+        .notPlanned("BarElement", "barTitle",
+                    reason: "A UIKit bar is each page's own and names that page; an application names itself in none."),
         .complete("MenuItemElement", "clicked"),
         .complete("MenuItemElement", "icon"),
         .complete("MenuItemElement", "isEnabled"),
@@ -41,7 +47,6 @@ enum UIKitRealization {
         .complete("MenuBar", "order"),
         .complete("ModalStack", "popped"),
         .complete("MenuItem", "isDestructive"),
-        .complete("NavigationStack", "barForegroundColor"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "background"),

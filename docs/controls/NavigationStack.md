@@ -23,13 +23,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (6) | Realization | Notes |
+| Host | Created | Members (9) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | ✅ | 1 ✅ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
-| UIKit | ✅ | 6 ✅ | `UINavigationController` |  |
-| Android Views | ✅ | 1 ✅ | custom `ViewGroup` stack + `Toolbar` |  |
-| WinUI 3 | ✅ | 4 ✅ | `Frame` |  |
-| GTK 4 | ✅ |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
+| AppKit | ✅ | 4 ✅ | custom `NSView` stack; title, back and actions in the window's `NSToolbar` |  |
+| UIKit | ✅ | 7 ✅ · 2 – | `UINavigationController` |  |
+| Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup` stack + `Toolbar` |  |
+| WinUI 3 | ⌛ | 3 ✅ | `Frame` |  |
+| GTK 4 | ⌛ |  | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` |  |
 | Web |  |  | History API | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackContract.swift`.
@@ -38,8 +38,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/NavigationStackCo
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
-| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ✅ |  |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet; GTK 4: not realized |
+| `popped` | event | `Int` | adaptive | 🔌 | ✅ | · | ⌛ | ⌛ |  | only through the host's own: goBack on NavigationStack: the host's toolbar or sheet entry called, no toolbar item or sheet touched; Android Views: cannot goBack on NavigationStack - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -51,11 +50,15 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 ## From [BarElement](tiers/BarElement.md)
 
-The bar a page arrangement draws: its colour.
+What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | · | ✅ | · |  |  |  | cannot read barBackgroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barBackgroundColor of NavigationStack - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
+| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ | ✅ | ⌛ | ⌛ |  |  |
+| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · | ⌛ | ⌛ |  | cannot read barForegroundColor of NavigationStack - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of NavigationStack - Android's driver has no path for it yet |
+| `barIcon` | property | `ImageSource` | adaptive | · | – | – |  |  |  | cannot read barIcon of NavigationStack - AppKit's driver has no path for it yet; UIKit: A UIKit bar is each page's own: it shows that page's title, and no application's mark.; Android Views: An Android bar is its stack's own: it shows its page's title, and no application's mark. |
+| `barSubtitle` | property | `String` | adaptive | ✅ | ✅ | ✅ |  |  |  |  |
+| `barTitle` | property | `String` | adaptive | ✅ | – | – |  |  |  | UIKit: A UIKit bar is each page's own and names that page; an application names itself in none.; Android Views: An Android bar is its stack's own and names its page; an application names itself in none. |
 
 ## From [PageElement](tiers/PageElement.md)
 

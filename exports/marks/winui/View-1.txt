@@ -215,15 +215,6 @@ TimePicker.gridRow: ✅
 TimePicker.swipeDirection: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
-TitleBar.frameChanged: not realized
-TitleBar.margin: not realized
-TitleBar.pointerEntered: not realized
-TitleBar.pointerExited: not realized
-TitleBar.pointerMoved: not realized
-TitleBar.pointerPressed: not realized
-TitleBar.pointerReleased: not realized
-TitleBar.tapCount: not realized
-TitleBar.tapped: not realized
 VStack.allowDrop: not realized
 VStack.area: ✅
 VStack.dragLeave: not realized

@@ -96,17 +96,14 @@ TimePicker.drop: not realized
 TimePicker.frameChanged: ✅
 TimePicker.horizontalAlignment: ✅
 TimePicker.verticalAlignment: ✅
-TitleBar.pointerEntered: not realized
-TitleBar.pointerExited: not realized
-TitleBar.pointerMoved: not realized
-TitleBar.pointerPressed: not realized
-TitleBar.pointerReleased: not realized
-VStack.swipeDirection: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.swipeThreshold: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.swiped: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.panTouchCount: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.panUpdated: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.panXChannel: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-ZStack.frameChanged: ✅
-ZStack.gridColumnSpan: ✅
-ZStack.gridRowSpan: ✅
+VStack.pointerEntered: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.pointerExited: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.pointerMoved: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.pointerPressed: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.pointerReleased: 🔌 hover on VStack: the view's listening handed the recognizer's states, no touch sent
+WebView.swipeDirection: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.swipeThreshold: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.swiped: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.panTouchCount: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.panUpdated: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.panXChannel: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent

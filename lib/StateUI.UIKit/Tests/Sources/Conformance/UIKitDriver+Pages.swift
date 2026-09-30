@@ -35,6 +35,9 @@ extension UIKitDriver {
             default: break
             }
         }
+        if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
+            return Self.barHolds(property, of: element)
+        }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
         else { return nil }
         let onTab = controller.tabBarController != nil
@@ -52,16 +55,31 @@ extension UIKitDriver {
         case .isSidebarVisible:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
-        case .barBackgroundColor:
-            let appearance = (controller as? UINavigationController)?.topViewController?.navigationItem.standardAppearance
-                ?? (controller as? UITabBarController).map { $0.tabBar.standardAppearance as UIBarAppearance }
-            return appearance?.backgroundColor.map { Self.color($0).propValue }
-        case .barForegroundColor:
-            let appearance = (controller as? UINavigationController)?.topViewController?.navigationItem.standardAppearance
-            let color = appearance?.titleTextAttributes[.foregroundColor] as? UIColor
-            return color.map { Self.color($0).propValue }
         default:
             return nil
+        }
+    }
+
+    /// What the bar an arrangement declares stands on: a tabbed view's tab bar, else the bar of the page it shows -
+    /// its colour, the colour of its title, and the line under the title.
+    private static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
+        if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
+            let appearance = tabs.tabBar.standardAppearance
+            switch property {
+            case .barBackgroundColor: return appearance.backgroundColor.map { color($0).propValue }
+            case .barForegroundColor:
+                let words = appearance.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor]
+                return (words as? UIColor).map { color($0).propValue }
+            default: break
+            }
+        }
+        guard let item = (element.visiblePage?.native as? UIKitElement)?.controller?.navigationItem else { return nil }
+        switch property {
+        case .barBackgroundColor: return item.standardAppearance?.backgroundColor.map { color($0).propValue }
+        case .barForegroundColor:
+            return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
+        case .barSubtitle: return item.subtitle.map { .string($0) }
+        default: return nil
         }
     }
 

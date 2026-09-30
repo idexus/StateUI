@@ -43,4 +43,3 @@ extension Canvas: StyleTarget {}
 extension PositionIndicator: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
-extension TitleBar: StyleTarget {}
