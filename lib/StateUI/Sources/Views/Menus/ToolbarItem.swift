@@ -58,4 +58,11 @@ public struct ToolbarItem: Element, MenuItemElement {
     ///
     /// Lower values appear first; items of equal priority keep their order.
     public func priority(_ value: Int) -> Self { setValue(ToolbarItemContract.priority, value) }
+
+    /// Whether the item shows its words beside its picture on the bar.
+    ///
+    /// Without it, an item given an `icon` shows the picture alone, its words
+    /// in its tip and to assistive technology; an item with no picture always
+    /// shows its words.
+    public func showsText(_ value: Bool) -> Self { setValue(ToolbarItemContract.showsText, value) }
 }

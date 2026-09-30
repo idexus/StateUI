@@ -582,7 +582,7 @@
         .isRunning, .isScrollEnabled,
         .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
-        .showsClearButton,
+        .showsClearButton, .showsText,
     ]
 
     private static let enumerationProperties: Set<Prop> = [

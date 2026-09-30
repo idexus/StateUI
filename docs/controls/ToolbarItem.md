@@ -23,13 +23,13 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 
 See [the dictionary](README.md) for how a mark is given.
 
-| Host | Created | Members (8) | Realization | Notes |
+| Host | Created | Members (9) | Realization | Notes |
 | --- | :---: | --- | --- | --- |
-| AppKit | 🔌 | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
-| UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
-| Android Views | · | 1 – | `Toolbar` `MenuItem` | cannot activate on ToolbarItem - Android's driver has no path for it yet |
-| WinUI 3 | ✅ | 8 ✅ | `CommandBar` `AppBarButton` |  |
-| GTK 4 | · |  | `GtkButton` in `GtkHeaderBar` | cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| AppKit | ⌛ | 2 ✅ | `NSToolbarItem`; `NSMenuToolbarItem` overflow |  |
+| UIKit | ⌛ | 5 ✅ | `UIBarButtonItem` |  |
+| Android Views | ⌛ | 1 – | `Toolbar` `MenuItem` |  |
+| WinUI 3 | ✅ | 9 ✅ | `CommandBar` `AppBarButton` |  |
+| GTK 4 | ⌛ |  | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -38,8 +38,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | `ToolbarItemPlacement` | adaptive | · | · | · | ✅ | · |  | cannot read placement of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read placement of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read placement of ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot read placement of ToolbarItem - GTK's driver has no path for it yet |
-| `priority` | property | `Int` | adaptive | · | · | · | ✅ | · |  | cannot read priority of ToolbarItem - AppKit's driver has no path for it yet; UIKit: cannot read priority of ToolbarItem - UIKit's driver has no path for it yet; Android Views: cannot read priority of ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot read priority of ToolbarItem - GTK's driver has no path for it yet |
+| `placement` | property | `ToolbarItemPlacement` | adaptive | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `priority` | property | `Int` | adaptive | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
+| `showsText` | property | `Bool` | adaptive |  |  |  | ✅ |  |  |  |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -55,7 +56,7 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | 🔌 | ✅ | · | ✅ | · |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched; Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |
+| `onClicked` (`clicked`) | event |  | native | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |  |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | · |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read icon of ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot read icon of ToolbarItem - GTK's driver has no path for it yet |
 | `isDestructive` | property | `Bool` | adaptive |  | ✅ | · | ✅ |  |  | not realized; Android Views: cannot read isDestructive of ToolbarItem - Android's driver has no path for it yet; GTK 4: not realized |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot activate on ToolbarItem - Android's driver has no path for it yet; GTK 4: cannot activate on ToolbarItem - GTK's driver has no path for it yet |

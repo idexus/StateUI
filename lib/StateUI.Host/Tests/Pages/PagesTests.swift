@@ -166,6 +166,21 @@ final class PagesTests: XCTestCase {
         XCTAssertFalse(narrow.room(500, breakpoint: 700, shown: false))
     }
 
+    /// An action's words stand on the bar beside its picture only where it says so, and always where it has none.
+    func testAnActionShowsItsWordsBesideItsPictureWhereItSaysSo() throws {
+        let runtime = runtime(node("page", .page, children: [
+            node("items", .toolbarItems, children: [
+                node("words", .toolbarItem, [.text: .string("Words")]),
+                node("picture", .toolbarItem, [.text: .string("Picture"), .icon: .string("add")]),
+                node("both", .toolbarItem, [.text: .string("Both"), .icon: .string("add"), .showsText: .bool(true)]),
+                node("hidden", .toolbarItem, [.text: .string("Hidden"), .showsText: .bool(false)]),
+            ]),
+        ])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(page.chromeActions.primary.map(\.showsActionWords), [true, false, true, true])
+    }
+
     /// The chrome takes the visible page's actions by priority then order, the overflow apart, the way back's words
     /// from the page beneath, the title bar's content over the page's title view, and the stack's colour first.
     func testTheChromeIsComposedFromWhatTheWindowShows() throws {

@@ -14,6 +14,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// it decides is `.priority`; the lower number appears first.
     @State private var addFirst = false
 
+    /// Whether Add shows its words beside its picture on the bar.
+    @State private var addWords = false
+
     /// The page this sample is on, whose bar and menus these are.
     @Environment private var page: PageSession
 
@@ -30,6 +33,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
         @State private var recent = ["notes.txt", "budget.csv"]
         @State private var added = 0
         @State private var addFirst = false
+        @State private var addWords = false
 
         @Environment private var page: PageSession
         @State private var chrome: [ToolbarItem] = []
@@ -45,9 +49,12 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .priority(addFirst ? 1 : 0)
                     .onClicked { saved += 1 },
 
+                // A picture alone, unless it asks for its words beside it.
                 ToolbarItem("Add")
                     .id("add")
                     .priority(addFirst ? 0 : 1)
+                    .icon("menu_duplicate_dark.png")
+                    .showsText(addWords)
                     .onClicked {
                         added += 1
                         recent.append("file\\(added).txt")
@@ -102,6 +109,12 @@ struct ToolbarSample: SampleContent, ExampleContent {
                         ? "Add asks first - .priority(0), against Save's 1"
                         : "Save asks first - .priority(0), against Add's 1")
                 }
+
+                HStack {
+                    Switch($addWords)
+
+                    Label("Add's words beside its picture")
+                }
             }
             .onCreated {
                 chrome = page.toolbarItems      // what the page put there first
@@ -109,6 +122,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 page.menuBar = menus
             }
             .onChanged(addFirst) { page.toolbarItems = items + chrome }
+            .onChanged(addWords) { page.toolbarItems = items + chrome }
             .onChanged(saved) { page.toolbarItems = items + chrome }
             .onChanged(recent) { page.menuBar = menus }
         }
@@ -125,9 +139,13 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .priority(addFirst ? 1 : 0)
                 .onClicked { saved += 1 },
 
+            // A picture alone, unless it asks for its words beside it. The
+            // white one reads on the accent bar in both themes.
             ToolbarItem("Add")
                 .id("add")
                 .priority(addFirst ? 0 : 1)
+                .icon("menu_duplicate_dark.png")
+                .showsText(addWords)
                 .onClicked {
                     added += 1
                     recent.append("file\(added).txt")
@@ -196,6 +214,19 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
             }
             .spacing(10)
+
+            SectionTitle("A picture and its words")
+
+            HStack {
+                Switch($addWords)
+                    .accessibilityIdentifier("toolbar.addWords")
+                    .accessibilityLabel("Add's words beside its picture")
+
+                Label("Add's words beside its picture")
+                    .fontSize(14)
+                    .verticalAlignment(.center)
+            }
+            .spacing(10)
         }
         .spacing(12)
         // The bar and the menus are the PAGE's, so this sample writes them
@@ -208,8 +239,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
         }
         // What they say follows the state, so they are written again when it
         // moves: `saved` decides whether Clear can be pressed, `addFirst` the
-        // priorities, `recent` the submenu.
+        // priorities, `addWords` Add's words, `recent` the submenu.
         .onChanged(addFirst) { page.toolbarItems = items + chrome }
+        .onChanged(addWords) { page.toolbarItems = items + chrome }
         .onChanged(saved) { page.toolbarItems = items + chrome }
         .onChanged(recent) { page.menuBar = menus }
     }
@@ -223,6 +255,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             Label("Lower priority appears first; equal priority keeps source order. "
                 + "Flip the switch and the same native items exchange places.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Add shows its picture alone, its words in its tip; `.showsText(true)` "
+                + "puts them beside it where the platform's bar can.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

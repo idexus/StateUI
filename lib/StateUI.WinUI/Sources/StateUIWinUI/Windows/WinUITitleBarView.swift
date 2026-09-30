@@ -48,8 +48,8 @@ final class WinUITitleBarView: WinUIView {
                 WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
                     WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
                         stateui_winui_title_bar_set_actions(
-                            handle, titles, identifiers, icons, actions.map(\.isDestructive), overflows,
-                            actions.map(\.isEnabled), Int32(actions.count))
+                            handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
+                            overflows, actions.map(\.isEnabled), Int32(actions.count))
                     }
                 }
             }

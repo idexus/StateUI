@@ -24,10 +24,12 @@ that the application may not render for - a tab chosen, the sidebar shown:
   sidebar;
 - the visible page's actions stand on a command bar at the chrome's trailing
   side, in their priority's order, those it places in overflow behind the
-  bar's own "more"; an action with a picture shows the picture alone - the
-  first of the files its name stands for that the application's pictures
-  hold ([pictures](controls.md#pictures)) - its words naming it to Narrator
-  and in its tip; a destructive one stands in the theme's critical colour
+  bar's own "more"; an action with a picture - the first of the files its
+  name stands for that the application's pictures hold
+  ([pictures](controls.md#pictures)) - shows its words at the picture's
+  right where it `showsText`, the command bar's own place for them, and
+  otherwise the picture alone, its words naming it to Narrator and in its
+  tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical colour
   ([a destructive entry](#a-destructive-entry));
 - the page's title view stands at the chrome's centre, where an application
   puts its search;

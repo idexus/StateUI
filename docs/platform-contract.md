@@ -138,7 +138,7 @@ of its members each meets, and why a cell is empty.
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | adaptive | · |  |  | ✅ | ⏸ |  |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | · | ✅ | · |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure | ⌛ | ⌛ | ⌛ | ✅ | ⌛ |  |
 | [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | · | ✅ | · |  |
 | [TrailingContent](controls/TrailingContent.md) | structure | ✅ |  |  | ✅ |  |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -486,11 +486,11 @@ Every control, and every part an application, its windows and its pages are made
 | [SplitView](controls/SplitView.md) | 5 | 3 ✅ | 5 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 2 ✅ | 6 ✅ | 1 ✅ | 5 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 1 – | 8 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 9 | 2 ✅ | 5 ✅ | 1 – | 9 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |
 | [Window](controls/Window.md) | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
-| **Met** - ✅ and – | 104 | 48 of 104 met | 55 of 104 met | 21 of 104 met | 90 of 104 met | 6 of 104 met |  |
+| **Met** - ✅ and – | 105 | 48 of 105 met | 54 of 105 met | 21 of 105 met | 91 of 105 met | 6 of 105 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -570,7 +570,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | 4 |  |  |  | 4 ✅ |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | 2 |  |  |  | 2 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority`, `showsText` | 3 |  |  |  | 3 ✅ |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 23 | 15 ✅ | 4 ✅ | 2 ✅ | 23 ✅ |  |  |
 <!-- members:end -->
@@ -629,7 +629,7 @@ realizes the element and each of its members.
 `priority`, `progress`, `region`, `renderTransform`, `returnKey`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedIndicatorColor`, `selectedItems`,
-`selectionLength`, `selectionMode`, `shape`, `showsClearButton`,
+`selectionLength`, `selectionMode`, `shape`, `showsClearButton`, `showsText`,
 `showsUserLocation`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
 `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
 `strokeWidth`, `style`, `subtitle`, `swipeDirection`, `swipeThreshold`,

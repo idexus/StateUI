@@ -246,6 +246,25 @@ Within either group, lower `priority` appears first and equal values retain
 source order. The host chooses the native placement appropriate to the window
 and available space. Give stable identities to items whose list can change.
 
+An item given an `icon` shows the picture alone on the bar; its words stay its
+name to assistive technology and its tip. `showsText(true)` asks for the words
+beside the picture where the platform's bar shows both - WinUI and GTK for each
+item, Android where the bar has room. A Mac leaves that choice to the user,
+through the toolbar's own display mode, and an iPhone's bar shows a picture or
+words, so there the item keeps its picture alone. An item with no picture
+always shows its words.
+
+```swift quote
+@Environment private var page: PageSession
+
+page.toolbarItems = [
+    ToolbarItem("Add")
+        .icon("add.png")
+        .showsText(true)
+        .onClicked { add() },
+]
+```
+
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, primary actions are
 toolbar items, and secondary ones sit in the toolbar's overflow menu. A tabbed

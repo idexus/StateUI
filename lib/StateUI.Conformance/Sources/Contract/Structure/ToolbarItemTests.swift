@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `ToolbarItemContract` on a host: an item on the visible page's bar runs its handler when chosen, stands where its
-/// placement puts it - on the bar or in its overflow - and in its priority's order.
+/// placement puts it - on the bar or in its overflow - and in its priority's order, its words beside its picture where
+/// it says so.
 @_spi(Host) public enum ToolbarItemTests: ConformanceFamily {
     public static let name = "ToolbarItem"
 
@@ -47,6 +48,23 @@
                 try s.perform(.activate, on: s.element("change"))
                 try s.settle { try s.held(ToolbarItemContract.placement, on: s.element("save")) == .overflow }
                 s.expect(try s.held(ToolbarItemContract.placement, on: s.element("save")), .overflow)
+            },
+            ConformanceCase("anItemsWordsStandBesideItsPictureWhereItSaysSo", proves: [
+                Covered(ToolbarItemContract.showsText),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let words = State(wrappedValue: true)
+                s.start {
+                    Self.page(beside: [Button("Picture alone").onClicked { words.wrappedValue = false }.id("change")],
+                              key: "\(words.wrappedValue)") {
+                        [ToolbarItem("Save").icon("test_dot.png").showsText(words.wrappedValue).id("save")]
+                    }
+                }
+                try s.settle { try s.held(ToolbarItemContract.showsText, on: s.element("save")) == true }
+                s.expect(try s.held(ToolbarItemContract.showsText, on: s.element("save")), true)
+
+                try s.perform(.activate, on: s.element("change"))
+                try s.settle { try s.held(ToolbarItemContract.showsText, on: s.element("save")) == false }
+                s.expect(try s.held(ToolbarItemContract.showsText, on: s.element("save")), false)
             },
             ConformanceCase("itemsStandInTheirPrioritysOrder", proves: [Covered(ToolbarItemContract.priority)]) { s in
                 s.start {

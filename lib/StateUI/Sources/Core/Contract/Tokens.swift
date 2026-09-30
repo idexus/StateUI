@@ -108,6 +108,7 @@ extension NodeType {
     static let selectionMode = ItemsViewContract.selectionMode.token
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
+    static let showsText = ToolbarItemContract.showsText.token
     static let color = ColorBoxContract.color.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token

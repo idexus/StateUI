@@ -254,10 +254,9 @@ namespace {
                     colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
             return colours;
         }
-        if (what == "actionIcons" || what == "actionDestructive") {
+        if (what == "actionIcons" || what == "actionDestructive" || what == "actionWordsShown") {
             auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
-            bool icons = what == "actionIcons";
-            auto listed = [icons](auto const &commands) {
+            auto listed = [what](auto const &commands) {
                 std::string held;
                 bool first = true;
                 for (auto const &command : commands) {
@@ -265,8 +264,10 @@ namespace {
                     if (!button) continue;
                     held += first ? "" : ";";
                     first = false;
-                    held += icons ? winrt::to_string(iconFile(button.Icon()))
-                                  : isDestructive(button, L"AppBarButtonForeground") ? "1" : "0";
+                    if (what == "actionIcons") held += winrt::to_string(iconFile(button.Icon()));
+                    else if (what == "actionWordsShown")
+                        held += button.LabelPosition() == controls::CommandBarLabelPosition::Collapsed ? "0" : "1";
+                    else held += isDestructive(button, L"AppBarButtonForeground") ? "1" : "0";
                 }
                 return held;
             };

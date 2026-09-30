@@ -119,7 +119,7 @@ final class WinUIWindowController {
             title: item.value(.text)?.string ?? "", isEnabled: item.value(.isEnabled)?.bool ?? true,
             identifier: item.value(.accessibilityIdentifier)?.string,
             icon: item.value(.icon)?.string.flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0) } ?? [],
-            isDestructive: item.value(.isDestructive)?.bool == true,
+            isDestructive: item.value(.isDestructive)?.bool == true, showsWords: item.showsActionWords,
             perform: { [weak item] in item?.winUI.send(.clicked, []) })
     }
 

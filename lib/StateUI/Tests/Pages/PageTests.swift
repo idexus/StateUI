@@ -54,6 +54,7 @@ private struct EveryPropertyPage: ContentView {
                     .icon(ImageSource("mark.png"))
                     .placement(.overflow)
                     .priority(2)
+                    .showsText(true)
                     .isDestructive(true)
                     .isEnabled(false)
                     .onClicked {},
@@ -631,7 +632,7 @@ final class PageTests: XCTestCase {
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
             "isDestructive": .bool(true), "isEnabled": .bool(false),
             "placement": ToolbarItemPlacement.overflow.propValue, "priority": .number(2),
-            "text": .string("Save"),
+            "showsText": .bool(true), "text": .string("Save"),
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])
 

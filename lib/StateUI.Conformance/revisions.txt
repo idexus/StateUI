@@ -17,3 +17,4 @@ SplitView 2
 android TextAlignmentElement 2
 appkit InputView 2
 android InputView 2
+ToolbarItem 2

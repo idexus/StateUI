@@ -28,6 +28,7 @@ private struct BarredPage: ContentView {
                     .text("Save")
                     .icon("nav_media.png")
                     .priority(1)
+                    .showsText(true)
                     .isEnabled(true)
                     .onClicked {},
 

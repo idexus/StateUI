@@ -89,7 +89,8 @@ page beneath, never by what they show, their pages naming their tabs alone -
 else the window's, else the host's own; the way back, in the
 words the page beneath gives, else "Back"; the visible page's actions - none
 where it hides its bar - by priority, then in the order written, those placed
-in the overflow apart; the title bar's content in the title's place, else the
+in the overflow apart, each showing its words beside its picture where it
+says so and always where it has none (`showsActionWords`); the title bar's content in the title's place, else the
 page's title view, and the title bar's leading and trailing content beside
 it; an authored title bar's own title, subtitle and picture, where it says any
 of them (`titleArea`), which a host shows where its platform names the

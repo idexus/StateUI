@@ -716,10 +716,11 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
                                  bool back, bool paneToggle, bool hasBackground, uint32_t background,
                                  bool hasForeground, uint32_t foreground, int32_t words);
 /// The page's actions on a window's chrome: each one's words, the identifier automation finds it by (empty for
-/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether choosing it
-/// destroys something, whether it stands in the overflow, and whether it can be chosen.
+/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether its words stand
+/// beside its picture, whether choosing it destroys something, whether it stands in the overflow, and whether it
+/// can be chosen.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
-                                         char const *const *identifiers, char const *const *icons,
+                                         char const *const *identifiers, char const *const *icons, bool const *words,
                                          bool const *destructive, bool const *overflows, bool const *enabled,
                                          int32_t count);
 

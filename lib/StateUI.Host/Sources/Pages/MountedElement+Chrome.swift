@@ -25,6 +25,11 @@ extension MountedElement {
         return (ordered.filter { !overflows($0) }, ordered.filter(overflows))
     }
 
+    /// Whether this action's words stand on its bar: beside its picture where it says so, and always where it has none.
+    public var showsActionWords: Bool {
+        (value(.icon)?.string ?? "").isEmpty || value(.showsText)?.bool == true
+    }
+
     /// The colours this element's bar is painted in: the nearest stack's or tabbed view's around it, itself included,
     /// and what stands on the bar in, the nearest stack's - else its window's title bar's.
     public var barColors: (background: HostValue?, foreground: HostValue?) {

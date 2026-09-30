@@ -11,11 +11,13 @@ struct WinUIToolbarAction {
     var icon: [String] = []
     /// Whether performing it destroys something.
     var isDestructive = false
+    /// Whether its words stand beside its picture (`MountedElement.showsActionWords`).
+    var showsWords = true
     let perform: () -> Void
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
         title == other.title && isEnabled == other.isEnabled && identifier == other.identifier && icon == other.icon
-            && isDestructive == other.isDestructive
+            && isDestructive == other.isDestructive && showsWords == other.showsWords
     }
 }

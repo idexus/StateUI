@@ -1,5 +1,6 @@
-# revision 1.1
+# revision 2.1
 ToolbarItem: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.placement: ✅
 ToolbarItem.priority: ✅
+ToolbarItem.showsText: ✅

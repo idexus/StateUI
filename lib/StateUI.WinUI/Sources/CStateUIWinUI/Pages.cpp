@@ -196,7 +196,7 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
-    bool const *destructive, bool const *overflows, bool const *enabled, int32_t count
+    bool const *words, bool const *destructive, bool const *overflows, bool const *enabled, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -211,11 +211,14 @@ extern "C" void stateui_winui_title_bar_set_actions(
             if (identifiers[index] && *identifiers[index]) {
                 xaml::Automation::AutomationProperties::SetAutomationId(button, text(identifiers[index]));
             }
-            // An action with a picture shows the picture alone; its words name it to Narrator and in its tip.
+            // An action with a picture shows its words beside it only where it says so; else they name it to
+            // Narrator and in its tip.
             if (auto icon = pictureIcon(icons[index])) {
                 button.Icon(icon);
-                button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
-                controls::ToolTipService::SetToolTip(button, winrt::box_value(text(texts[index])));
+                if (!words[index]) {
+                    button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
+                    controls::ToolTipService::SetToolTip(button, winrt::box_value(text(texts[index])));
+                }
             }
             if (destructive[index])
                 markDestructive(button, {L"AppBarButtonForeground", L"AppBarButtonForegroundPointerOver",

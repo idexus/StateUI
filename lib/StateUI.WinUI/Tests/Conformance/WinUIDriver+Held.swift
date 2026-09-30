@@ -419,8 +419,8 @@ extension WinUIDriver {
         }
     }
 
-    /// A toolbar's item, as the window's chrome shows it: its words, whether it can be chosen, where it stands and
-    /// its place in its row.
+    /// A toolbar's item, as the window's chrome shows it: its words, whether it can be chosen, where it stands,
+    /// its place in its row, and whether its words stand beside its picture.
     private func actionHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let caption = element.value(.text)?.string ?? ""
         let rows = try read(window().titleBar, "actions").split(separator: "|", omittingEmptySubsequences: false)
@@ -433,8 +433,9 @@ extension WinUIDriver {
         case "isEnabled": return (!row[index].hasPrefix("!")).propValue
         case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
         case "priority": return index.propValue
-        case "accessibilityIdentifier", "icon", "isDestructive":
-            let read = ["icon": "actionIcons", "isDestructive": "actionDestructive"][name] ?? "actionIdentifiers"
+        case "accessibilityIdentifier", "icon", "isDestructive", "showsText":
+            let read = ["icon": "actionIcons", "isDestructive": "actionDestructive", "showsText": "actionWordsShown"][name]
+                ?? "actionIdentifiers"
             let rows = try self.read(window().titleBar, read).split(separator: "|", omittingEmptySubsequences: false)
             let values = (row == bar ? rows.first : rows.last).map {
                 $0.split(separator: ";", omittingEmptySubsequences: false).map(String.init)
@@ -442,7 +443,7 @@ extension WinUIDriver {
             guard values.indices.contains(index) else { return nil }
             switch name {
             case "icon": return Self.picture(values[index], named: element)
-            case "isDestructive": return (values[index] == "1").propValue
+            case "isDestructive", "showsText": return (values[index] == "1").propValue
             default: return .string(values[index])
             }
         default: return nil
