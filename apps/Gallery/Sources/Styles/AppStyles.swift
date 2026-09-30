@@ -226,18 +226,20 @@ enum AppStyles {
             // look on a coloured surface, and that look is the host's. The
             // 44-point floor is a TOUCH screen's: on a desktop it shows as a
             // dead band under the field - a mouse is not a thumb, the
-            // ChromeChip rule.
-            Style<SearchField>()
+            // ChromeChip rule. A desktop's field keeps its platform's size of
+            // words too: a larger one grows a toolbar's search field past the
+            // bar's own controls.
+            let search = Style<SearchField>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
                 .tint(Palette.accent)
-                .fontSize(15)
                 .minimumHeight(formFactor == .desktop ? 0 : 44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .placeholderColor(Palette.disabled)
                 }
+            if formFactor == .desktop { search } else { search.fontSize(15) }
 
             // MARK: Choices
             //

@@ -40,8 +40,6 @@ struct SearchSample: SampleContent, ExampleContent {
             .titleView {
                 SearchField($query)
                     .placeholder("Search the list")
-                    .background(Palette.surface)
-                    .height(38)
             }
         }
 
@@ -93,8 +91,6 @@ struct SearchSample: SampleContent, ExampleContent {
                 .placeholder("Search the list")
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
-                .background(Palette.surface)
-                .height(38)
                 .verticalAlignment(.center)
         }
     }
