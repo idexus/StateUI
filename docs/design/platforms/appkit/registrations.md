@@ -29,7 +29,10 @@ tier where a list of names would pass quietly.
 A view's background is its layer's colour, a rectangle under its whole frame,
 unless its registration takes the background itself
 (`drawOwnBackground`): a text field fills its own field, a button its own
-face, a colour box its own box. A search field takes no fill colour: AppKit
+face, a colour box its own box. A text field given a colour stands on a line
+(`isBordered`) rather than AppKit's bezel, which on macOS 26 draws its own
+ground over any colour; one given none keeps the bezel. A search field takes
+no fill colour: AppKit
 draws its own rounded field and ignores `backgroundColor`, so a written
 colour is not shown there, and a square painted under it hid the field's
 shape.

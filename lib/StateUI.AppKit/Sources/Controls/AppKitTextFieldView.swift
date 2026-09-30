@@ -90,13 +90,13 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isAutomaticTextCompletionEnabled = traits.predicts
         textField.alignment = alignment(horizontalAlignment)
 
-        if let backgroundColor {
-            textField.drawsBackground = true
-            textField.backgroundColor = backgroundColor
-        } else {
-            textField.drawsBackground = true
-            textField.backgroundColor = .textBackgroundColor
-        }
+        // AppKit's bezel draws its own ground over any colour: a field given one stands on a line, filled with it.
+        // Design: docs/design/platforms/appkit/registrations.md#a-background
+        let colored = backgroundColor.map { $0.alphaComponent > 0 } ?? false
+        textField.isBezeled = !colored
+        textField.isBordered = colored
+        textField.drawsBackground = true
+        textField.backgroundColor = colored ? backgroundColor : .textBackgroundColor
 
         if writeText, let text {
             setText(text)

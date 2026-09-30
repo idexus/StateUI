@@ -111,6 +111,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertNil(search.layer?.backgroundColor, "the search field's rounded field stands alone")
         XCTAssertNil(field.layer?.backgroundColor, "the text field draws its own")
         XCTAssertEqual(field.textField.backgroundColor, NSColor(red: 1, green: 0, blue: 0, alpha: 1))
+        XCTAssertFalse(field.textField.isBezeled, "AppKit's bezel would draw its own ground over the colour")
     }
 
     /// A search field's font family reaches its native field.
