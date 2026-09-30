@@ -181,7 +181,7 @@ enum JavaAPI {
     static let setFieldOpen = Java.method(dateField, "setOpen", "(Z)V")
 
     static let webView = Java.findClass("stateui/android/StateUIWebView")
-    static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;JI)V")
+    static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;J)V")
     static let loadWeb = Java.method(webView, "load", "(Ljava/lang/String;Ljava/lang/String;)V")
     static let showWeb = Java.method(webView, "show", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let setWebUserAgent = Java.method(webView, "setUserAgent", "(Ljava/lang/String;)V")
