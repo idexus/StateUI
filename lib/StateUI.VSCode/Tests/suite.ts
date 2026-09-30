@@ -24,7 +24,7 @@ import { availableHosts, environment, hosts } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { nameProblem, scaffolderCommand } from "../Sources/newApplication";
 import { cloneCommand, groupNameProblem, listReleases, releaseDirectory, releasesIn } from "../Sources/projectGroup";
-import { reinstallSteps } from "../Sources/reinstall";
+import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
     atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
@@ -614,6 +614,8 @@ export async function run(): Promise<void> {
                 && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
                 && steps[1].command === "/Editor/bin/code"
                 && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
+            check("the command line that installs it is the running editor's own, where its platform keeps it",
+                fs.existsSync(editorCommandLine(vscode.env.appRoot)));
         }
         // 7c. The chosen host's marks are made again - every family, or the stale ones - then the documents rendered,
         //     from a checkout alone.
