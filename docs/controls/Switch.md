@@ -141,4 +141,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive |  |  |  | ✅ |  |  | not realized; UIKit: not realized; Android Views: not realized; GTK 4: not realized |
+| `tint` | property | `Color` | adaptive |  |  |  | ✅ | 🔌 |  | not realized; UIKit: not realized; Android Views: not realized; GTK 4: only through the host's own: read tint of Switch: the tint the host gave the track's node: GTK's style sheet tells no one |

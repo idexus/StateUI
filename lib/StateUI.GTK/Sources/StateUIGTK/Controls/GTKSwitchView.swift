@@ -12,6 +12,9 @@ final class GTKSwitchView: GTKToggleView {
 
     override var isOn: Bool { gtk_switch_get_active(widget.opaque) != 0 }
 
+    /// The track while the switch is on.
+    override var accent: String? { ":checked" }
+
     override func setOn(_ on: Bool) {
         gtk_switch_set_active(widget.opaque, on ? 1 : 0)
     }

@@ -1,8 +1,8 @@
 # revision 1.1
-ActivityIndicator.tint: cannot read tint of ActivityIndicator - GTK's driver has no path for it yet
-CheckBox.tint: not realized
-Picker.tint: not realized
-ProgressBar.tint: cannot read tint of ProgressBar - GTK's driver has no path for it yet
+ActivityIndicator.tint: ✅
+CheckBox.tint: 🔌 read tint of CheckBox: the tint the host gave the box's node: GTK's style sheet tells no one
+Picker.tint: – A GNOME drop-down wears no accent: a check in its words' colour marks the choice.
+ProgressBar.tint: 🔌 read tint of ProgressBar: the tint the host gave the done part's node: GTK's style sheet tells no one
 SearchField.tint: not realized
-Slider.tint: not realized
-Switch.tint: not realized
+Slider.tint: 🔌 read tint of Slider: the tint the host gave the track's node: GTK's style sheet tells no one
+Switch.tint: 🔌 read tint of Switch: the tint the host gave the track's node: GTK's style sheet tells no one

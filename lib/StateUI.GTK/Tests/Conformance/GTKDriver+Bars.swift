@@ -89,12 +89,7 @@ extension GTKDriver {
                 red: Int(pixel >> 16 & 0xFF), green: Int(pixel >> 8 & 0xFF), blue: Int(pixel & 0xFF),
                 alpha: Int(pixel >> 24)).propValue
         case .barForegroundColor:
-            var color = GdkRGBA()
-            gtk_widget_get_color(frame.header, &color)
-            let channel = { (value: Float) in Int((value * 255).rounded()) }
-            return Color(
-                red: channel(color.red), green: channel(color.green), blue: channel(color.blue),
-                alpha: channel(color.alpha)).propValue
+            return Self.color(of: frame.header).propValue
         case .barSubtitle:
             guard let heading = adw_header_bar_get_title_widget(frame.header.opaque),
                   GTKTestHost.holds(heading, adw_window_title_get_type()),

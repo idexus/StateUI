@@ -38,6 +38,22 @@ theme, so its fill would stand under the pointer and pressed too: the class
 draws the fill a little fainter under the pointer and fainter again pressed,
 as the theme's own buttons answer.
 
+## A button's picture
+
+A button with a picture shows it as an Image draws one
+([pictures](#pictures)), as GNOME's buttons compose a picture and words:
+with words, a `GtkBox` holds the picture and a label of the button's own,
+across them or down them as the icon's position says - before, above, after
+or below - the icon spacing apart, else libadwaita's 6; with no words, the
+picture alone fills the room inside the padding as its aspect says. The
+button wears GTK's own classes for each, `image-text-button` and
+`image-button`. Its words break as a label's do where the tree says how, and
+stand on one line where it says nothing, as GTK's own buttons stand.
+
+A press is heard as it goes down and as it ends, wherever the pointer ends
+up: a drag gesture of the button's own, which claims nothing, so the button
+still clicks.
+
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words
@@ -181,8 +197,11 @@ A Picker is a `GtkDropDown` over a `GtkStringList` of its choices' words, the
 chosen one shown on its button. The chosen one is written only where the tree
 changed it or the choices changed, so the user's choice is never argued with,
 and the user's choice is reported onto the state it is carried in. GTK gives a
-drop-down no placeholder and no way to open or close its list from outside, so
-the title and the list's opening and closing are not realized.
+drop-down no placeholder and tells no one its list opened or closed, so the
+title and the list's opening and closing are not planned. The words of the
+chosen one - on the drop-down's `button` node - take the tree's font and
+colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
+check in its words' colour marks the choice, so a picker takes no tint.
 
 ## A day and a time
 
@@ -211,10 +230,19 @@ format is not read.
 
 A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past
 either end standing at that end; an activity indicator is a `GtkSpinner`,
-turning while its work runs and drawing nothing while it does not. A tint is
-a class of the display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box)):
-the bar's done part - its trough's `progress` - takes it as its background,
-the spinner as its colour.
+turning while its work runs and drawing nothing while it does not.
+
+## A control's accent
+
+A control's tint is its one accent colour, where GNOME's theme draws its
+accent: a switch's track while it is on, a ticked box or radio, a slider's
+track up to its thumb, a progress bar's done part and a spinner. Each is a
+node GTK documents for the control, so the tint is a class of the
+display-wide sheet ([a widget's own box](drawing.md#a-widgets-own-box))
+filling that node - `switch:checked`, `check:checked`, `radio:checked`,
+`trough > highlight`, `trough > progress` - and the spinner's colour; the
+theme's light under the pointer and pressed lies over it as over its own
+accent.
 
 ## What assistive technology meets
 

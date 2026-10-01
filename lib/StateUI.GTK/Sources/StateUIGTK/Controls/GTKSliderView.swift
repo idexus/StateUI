@@ -12,6 +12,9 @@ final class GTKSliderView: GTKView {
     /// What the slider does when its value moves, handed the value it stands at.
     var onValueChanged: ((Double) -> Void)?
 
+    /// The track up to the thumb.
+    override var accent: String? { " > trough > highlight" }
+
     /// The range's ends, the lower first.
     private(set) var minimum = 0.0
     private(set) var maximum = 1.0

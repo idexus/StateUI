@@ -1,11 +1,11 @@
 # revision 1.1
 Label.text: ✅
 Picker: ✅
-Picker.closed: not realized
+Picker.closed: – GTK's drop-down tells no one its list opened or closed.
 Picker.frameChanged: ✅
-Picker.isOpen: not realized
-Picker.opened: not realized
+Picker.isOpen: – GTK's drop-down tells no one its list opened or closed.
+Picker.opened: – GTK's drop-down tells no one its list opened or closed.
 Picker.options: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅
-Picker.title: not realized
+Picker.title: – GTK's drop-down shows a choice or nothing: it has no words standing for none.

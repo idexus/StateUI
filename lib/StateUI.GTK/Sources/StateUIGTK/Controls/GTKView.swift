@@ -45,6 +45,14 @@ class GTKView {
     /// The style sheet's class giving the view its padding.
     private var paddingClass: String?
 
+    /// The colour the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
+    private(set) var tint: GdkRGBA?
+    private var tintClass: String?
+
+    /// Where the view draws the platform's accent, as a selector after its own (`GTKStyleSheet.tint`); nil for its
+    /// words and marks.
+    var accent: String? { nil }
+
     /// The menu the view offers where the user asks for one; nil for none.
     var contextMenu: GTKContextMenu? {
         didSet { if contextMenu !== oldValue { oldValue?.remove() } }
@@ -98,6 +106,13 @@ class GTKView {
     }
 
     // MARK: - What every view takes
+
+    /// Draws the view's accent in `tint`; nil for the platform's.
+    /// Design: docs/design/platforms/gtk/controls.md#a-controls-accent
+    func setTint(_ tint: HostValue?) {
+        self.tint = tint.flatMap(GTKBrush.rgba)
+        swapClass(&tintClass, to: self.tint.map { GTKStyleSheet.tint($0, on: accent) })
+    }
 
     func setShown(_ shown: Bool) {
         isShown = shown

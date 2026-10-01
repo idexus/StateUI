@@ -144,4 +144,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | ✅ |  | ✅ | ✅ |  |  | UIKit: not realized; GTK 4: not realized |
+| `tint` | property | `Color` | adaptive | ✅ |  | ✅ | ✅ | 🔌 |  | UIKit: not realized; GTK 4: only through the host's own: read tint of CheckBox: the tint the host gave the box's node: GTK's style sheet tells no one |

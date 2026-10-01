@@ -14,6 +14,8 @@ final class GTKPickerView: GTKView {
     /// The choices and the choice as the tree last wrote them (`PickerChoices`).
     private var written = PickerChoices()
 
+    private var wordsClass: String?
+
     init() {
         super.init { _ in gtk_drop_down_new(nil, nil) }
         notify("selected") { _, _, data in
@@ -41,6 +43,12 @@ final class GTKPickerView: GTKView {
         }
         guard write.writesChoice else { return }
         gtk_drop_down_set_selected(widget.opaque, write.chosen.map { guint($0) } ?? guint(GTK_INVALID_LIST_POSITION))
+    }
+
+    /// The style sheet's class the button's words take their look from.
+    func setWordsClass(_ name: String?) {
+        swapClass(&wordsClass, to: name)
+        invalidateMeasure()
     }
 
     override func detach() {

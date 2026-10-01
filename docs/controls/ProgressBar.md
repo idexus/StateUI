@@ -140,4 +140,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive |  | ✅ | ✅ | ✅ | · |  | not realized; GTK 4: cannot read tint of ProgressBar - GTK's driver has no path for it yet |
+| `tint` | property | `Color` | adaptive |  | ✅ | ✅ | ✅ | 🔌 |  | not realized; GTK 4: only through the host's own: read tint of ProgressBar: the tint the host gave the done part's node: GTK's style sheet tells no one |

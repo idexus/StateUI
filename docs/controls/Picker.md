@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 25 ✅ · 3 – | pop-up `UIButton` menu |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkDropDown` |  |
+| GTK 4 | ✅ | 23 ✅ · 5 – | `GtkDropDown` |  |
 | Web |  |  | `<select>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -46,13 +46,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native | · | ⏸ | · | ✅ |  |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: not realized |
-| `isOpen` | property | `Bool` | native | · |  | · | ✅ |  |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: not realized |
-| `onOpened` (`opened`) | event |  | native | · | ⏸ | · | ✅ |  |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `onClosed` (`closed`) | event |  | native | · | ⏸ | · | ✅ | – |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: GTK's drop-down tells no one its list opened or closed. |
+| `isOpen` | property | `Bool` | native | · |  | · | ✅ | – |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: GTK's drop-down tells no one its list opened or closed. |
+| `onOpened` (`opened`) | event |  | native | · | ⏸ | · | ✅ | – |  | cannot read isOpen of Picker - AppKit's driver has no path for it yet; UIKit: waits on Picker.isOpen, not realized yet; Android Views: cannot open on Picker - Android's driver has no path for it yet; GTK 4: GTK's drop-down tells no one its list opened or closed. |
 | `options` | property | `[String]` | structure | ✅ | 🔌 | 🔌 | ✅ | ✅ |  | UIKit: only through the host's own: read options of Picker: the host's own choice, not the menu's; Android Views: only through the host's own: read options of Picker: the rows the relay keeps, not the spinner's |
 | `selectedIndex` | property | `Int` | native | ✅ | 🔌 | ✅ | ✅ | ✅ |  | UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action |
 | `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: choose on Picker: the host's action called, not the pop-up's; UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action |
-| `title` | property | `String` | native | ✅ | 🔌 | 🔌 | ✅ |  |  | UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action; Android Views: only through the host's own: read title of Picker: the rows the relay keeps, not the spinner's; GTK 4: not realized |
+| `title` | property | `String` | native | ✅ | 🔌 | 🔌 | ✅ | – |  | UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action; Android Views: only through the host's own: read title of Picker: the rows the relay keeps, not the spinner's; GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none. |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -148,7 +148,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read textColor of Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `textColor` | property | `Color` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read textColor of Picker - Android's driver has no path for it yet; GTK 4: cannot read textColor of Picker - GTK's driver has no path for it yet |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -156,10 +156,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read fontAttributes of Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontAttributes of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontAttributes of Picker - GTK's driver has no path for it yet |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read fontFamily of Picker - Android's driver has no path for it yet; GTK 4: not realized |
-| `fontSize` | property | `Double` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read fontSize of Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontFamily of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontFamily of Picker - GTK's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontSize of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontSize of Picker - GTK's driver has no path for it yet |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -176,4 +176,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read tint of Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `tint` | property | `Color` | adaptive | ✅ |  | · | ✅ | – |  | UIKit: not realized; Android Views: cannot read tint of Picker - Android's driver has no path for it yet; GTK 4: A GNOME drop-down wears no accent: a check in its words' colour marks the choice. |

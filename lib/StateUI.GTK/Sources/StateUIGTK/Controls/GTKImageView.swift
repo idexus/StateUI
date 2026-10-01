@@ -15,7 +15,7 @@ final class GTKImageView: GTKPanelView {
     private(set) var found = false
 
     /// How the picture fills its room.
-    private var aspect = Aspect.fit
+    private(set) var aspect = Aspect.fit
 
     /// The file read, its own size in logical pixels, and whether it is an SVG, drawn at the size it shows at.
     private var path: String?

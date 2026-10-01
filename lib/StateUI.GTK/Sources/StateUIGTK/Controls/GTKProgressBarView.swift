@@ -9,8 +9,6 @@ import CStateUIGTK
 /// Design: docs/design/platforms/gtk/controls.md#what-shows-work
 @MainActor
 final class GTKProgressBarView: GTKView {
-    private var tintClass: String?
-
     init() {
         super.init { _ in gtk_progress_bar_new() }
     }
@@ -22,18 +20,14 @@ final class GTKProgressBarView: GTKView {
         gtk_progress_bar_set_fraction(widget.opaque, ValueArithmetic.share(progress))
     }
 
-    /// The colour the done part is drawn in; nil for the platform's accent.
-    func setTint(_ tint: HostValue?) {
-        swapClass(&tintClass, to: tint.flatMap(GTKBrush.rgba).map { GTKStyleSheet.tint($0, of: "trough > progress") })
-    }
+    /// The done part.
+    override var accent: String? { " > trough > progress" }
 }
 
 /// An ActivityIndicator: a `GtkSpinner`, turning while its work runs and drawing nothing while it does not.
 /// Design: docs/design/platforms/gtk/controls.md#what-shows-work
 @MainActor
 final class GTKActivityIndicatorView: GTKView {
-    private var tintClass: String?
-
     init() {
         super.init { _ in gtk_spinner_new() }
     }
@@ -43,10 +37,5 @@ final class GTKActivityIndicatorView: GTKView {
 
     func setRunning(_ running: Bool) {
         gtk_spinner_set_spinning(widget.opaque, running ? 1 : 0)
-    }
-
-    /// The colour the spinner turns in; nil for the platform's.
-    func setTint(_ tint: HostValue?) {
-        swapClass(&tintClass, to: tint.flatMap(GTKBrush.rgba).map { GTKStyleSheet.tint($0, of: nil) })
     }
 }

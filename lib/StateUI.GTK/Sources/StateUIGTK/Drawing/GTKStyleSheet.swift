@@ -75,15 +75,16 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class giving a control its tint: the colour `part` of it - its own words and marks where `part` is nil -
-    /// is drawn in.
-    static func tint(_ color: GdkRGBA, of part: String?) -> String {
-        let name = "stateui-tint-" + hex(color) + (part == nil ? "" : "-part")
-        if let part {
-            write(name, "", states: ".\(name) > \(part) { background-color: \(css(color)); }\n")
-        } else {
+    /// The class giving a control its tint: the colour its `accent` - a node or a state of it, as a selector after
+    /// the control's own - is filled in; its own words and marks where `accent` is nil.
+    static func tint(_ color: GdkRGBA, on accent: String?) -> String {
+        guard let accent else {
+            let name = "stateui-tint-" + hex(color)
             write(name, "color: \(css(color));")
+            return name
         }
+        let name = "stateui-tint-" + hex(color) + "-" + String(accent.filter(\.isLetter))
+        write(name, "", states: ".\(name)\(accent) { background-color: \(css(color)); }\n")
         return name
     }
 
@@ -110,8 +111,9 @@ enum GTKStyleSheet {
     }
 
     /// The class giving typed words their look - the font's size, weight, slant and family and the words' colour -
-    /// and the placeholder its colour, in a field's own text or as an editor's label; nil where nothing is given.
-    static func words(_ look: TextLook, placeholder: GdkRGBA?) -> String? {
+    /// and the placeholder its colour, in a field's own text or as an editor's label, or in its `part` - a selector
+    /// after the widget's own; nil where nothing is given.
+    static func words(_ look: TextLook, placeholder: GdkRGBA?, in part: String = "") -> String? {
         var name = "stateui-words"
         var body = ""
         if let size = look.size, size > 0 {
@@ -141,7 +143,12 @@ enum GTKStyleSheet {
                 + "{ color: \(css(placeholder)); opacity: 1; }\n"
         }
         guard name != "stateui-words" else { return nil }
-        write(name, body, states: states)
+        guard !part.isEmpty else {
+            write(name, body, states: states)
+            return name
+        }
+        name += "-" + String(part.filter(\.isLetter))
+        write(name, "", states: ".\(name)\(part) { \(body)}\n" + states)
         return name
     }
 

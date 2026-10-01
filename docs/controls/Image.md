@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIImageView` |  |
 | Android Views | ✅ | 50 ✅ · 1 ☑️ · 3 – | `ImageView` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `Image` |  |
-| GTK 4 | ✅ | 20 ✅ | `GtkPicture` |  |
+| GTK 4 | ✅ | 22 ✅ | `GtkPicture` |  |
 | Web |  |  | `<img>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift`.
@@ -46,7 +46,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ImageContract.swift
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `isAnimating` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `source` | property | `ImageSource` | native | ◐ | ✅ | ◐ | ✅ | ◐ |  | cannot read source of Image - AppKit's driver has no path for it yet; Android Views: cannot read source of Image - Android's driver has no path for it yet; GTK 4: cannot read source of Image - GTK's driver has no path for it yet |
+| `source` | property | `ImageSource` | native | ◐ | ✅ | ◐ | ✅ | ✅ |  | cannot read source of Image - AppKit's driver has no path for it yet; Android Views: cannot read source of Image - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -141,4 +141,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: cannot read aspect of Image - GTK's driver has no path for it yet |
+| `aspect` | property | `Aspect` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

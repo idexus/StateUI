@@ -24,6 +24,7 @@ extension GTKRegistrations {
                     maximum: values[SliderContract.maximum] ?? 1)
             }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.raises(SliderContract.valueChanged)
         })
         registry.add(StepperContract.self, create: { reports in

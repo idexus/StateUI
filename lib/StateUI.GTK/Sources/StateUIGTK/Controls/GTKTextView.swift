@@ -79,7 +79,11 @@ class GTKTextView: GTKView {
     /// limit - the last cut at its end.
     /// Design: docs/design/platforms/gtk/controls.md#words
     func setLines(breaking: LineBreak, maximum: Int?) {
-        let label = widget.opaque
+        Self.setLines(of: widget.opaque, breaking: breaking, maximum: maximum)
+    }
+
+    /// How `label`'s words break, and how many lines show before they are cut, as a Label's do.
+    static func setLines(of label: OpaquePointer, breaking: LineBreak, maximum: Int?) {
         let lines = breaking.lines(maximum: maximum)
         let cut: PangoEllipsizeMode = switch breaking {
         case .noWrap: PANGO_ELLIPSIZE_NONE

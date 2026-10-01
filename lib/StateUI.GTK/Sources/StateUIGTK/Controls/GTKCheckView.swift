@@ -33,6 +33,9 @@ final class GTKCheckView: GTKToggleView {
 
     override var isOn: Bool { gtk_check_button_get_active(widget.of(GtkCheckButton.self)) != 0 }
 
+    /// The box or the radio while it is ticked.
+    override var accent: String? { partner == nil ? " > check:checked" : " > radio:checked" }
+
     override func setOn(_ on: Bool) {
         gtk_check_button_set_active(widget.of(GtkCheckButton.self), on ? 1 : 0)
     }

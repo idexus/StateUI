@@ -63,8 +63,22 @@ final class GTKDriver: HostDriver {
 
     /// What the driver reaches past GTK, through the host's own entry or record - 🔌.
     func byHost(_ ability: String) -> String? {
-        Self.pickersByHost[ability] ?? Self.pickersByHost[Ability(ability).act]
+        Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
     }
+
+    private static let byHostReasons = [
+        "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
+        "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
+        "read aspect of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
+        "read aspect of Button": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
+        "read tint of ProgressBar": "the tint the host gave the done part's node: GTK's style sheet tells no one",
+        "read tint of Switch": "the tint the host gave the track's node: GTK's style sheet tells no one",
+        "read tint of CheckBox": "the tint the host gave the box's node: GTK's style sheet tells no one",
+        "read tint of Slider": "the tint the host gave the track's node: GTK's style sheet tells no one",
+        "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
+        "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+        "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+    ]
 
     private(set) var renderer: GTKRenderer?
 
@@ -116,6 +130,8 @@ final class GTKDriver: HostDriver {
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
+        case (.pressDown, let button as GTKButtonView): GTKTestHost.emit(button.press, "drag-begin", [0, 0])
+        case (.lift, let button as GTKButtonView): GTKTestHost.emit(button.press, "drag-end", [0, 0])
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
              (.lift, let canvas as GTKCanvasView):
             try press(act, on: canvas, element)
@@ -147,6 +163,17 @@ final class GTKDriver: HostDriver {
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
+        case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
+            return button.picture.flatMap { $0.found ? ImageSource($0.file).propValue : nil }
+        case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue
+        case (.iconSpacing, let button as GTKButtonView):
+            return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
+        case (.lineBreak, let button as GTKButtonView): return button.captionLabel.map { Self.lineBreak(of: $0).propValue }
+        case (.aspect, let button as GTKButtonView): return button.picture?.aspect.propValue
+        case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
+        case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
+        case (.source, let image as GTKImageView): return image.found ? ImageSource(image.file).propValue : nil
+        case (.aspect, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.selectedIndex, let picker as GTKPickerView): return picker.chosen.map(\.propValue)
         case (.options, let picker as GTKPickerView):
@@ -160,6 +187,40 @@ final class GTKDriver: HostDriver {
         case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
+        }
+    }
+
+    /// The colour GTK draws `widget`'s words and marks in.
+    static func color(of widget: GTKWidget) -> Color {
+        var color = GdkRGBA()
+        gtk_widget_get_color(widget, &color)
+        return Self.color(color)
+    }
+
+    /// `rgba` as the tree writes a colour.
+    static func color(_ rgba: GdkRGBA) -> Color {
+        let channel = { (value: Float) in Int((value * 255).rounded()) }
+        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), alpha: channel(rgba.alpha))
+    }
+
+    /// Where a button's picture stands by its words: across or down the box, first or last.
+    private static func position(in button: GTKButtonView) -> IconPosition? {
+        guard let box = button.pictureAndCaption, let picture = button.picture else { return nil }
+        let first = gtk_widget_get_first_child(box) == picture.widget
+        return gtk_orientable_get_orientation(box.opaque) == GTK_ORIENTATION_HORIZONTAL
+            ? (first ? .leading : .trailing) : (first ? .top : .bottom)
+    }
+
+    /// How a label's words break, as it wraps them or cuts them.
+    private static func lineBreak(of label: OpaquePointer) -> LineBreak {
+        if gtk_label_get_wrap(label) != 0 {
+            return gtk_label_get_wrap_mode(label) == PANGO_WRAP_CHAR ? .characterWrap : .wordWrap
+        }
+        return switch gtk_label_get_ellipsize(label) {
+        case PANGO_ELLIPSIZE_START: .headTruncation
+        case PANGO_ELLIPSIZE_MIDDLE: .middleTruncation
+        case PANGO_ELLIPSIZE_END: .tailTruncation
+        default: .noWrap
         }
     }
 

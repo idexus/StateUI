@@ -5,11 +5,13 @@
 @_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
-    /// A Button: its caption and its look, whether it takes a press, and the click.
+    /// A Button: its caption, its picture and their look, whether it takes a press, the press and the click.
     static func buttons(_ registry: Registry<GTKView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = GTKButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onPressed = { reports.raise(ButtonContract.pressed) }
+            button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
@@ -23,10 +25,20 @@ extension GTKRegistrations {
                     strokeWidth: values[BorderElementContract.strokeWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
+            button.applies([
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.aspect,
+            ]) { view, values in
+                view.setPicture(
+                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.aspect] ?? .fit)
+            }
+            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
             button.raises(ButtonContract.clicked)
+            button.raises(ButtonContract.pressed)
+            button.raises(ButtonContract.released)
         })
     }
 }

@@ -2,4 +2,4 @@
 Image: ✅
 Image.frameChanged: ✅
 Image.isAnimating: not realized
-Image.source: ◐ cannot read source of Image - GTK's driver has no path for it yet
+Image.source: ✅

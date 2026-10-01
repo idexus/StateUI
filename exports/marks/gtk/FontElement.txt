@@ -11,10 +11,10 @@ Label.fontAttributes: cannot read fontAttributes of Label - GTK's driver has no 
 Label.fontAutoScalingEnabled: not realized
 Label.fontFamily: cannot read fontFamily of Label - GTK's driver has no path for it yet
 Label.fontSize: cannot read fontSize of Label - GTK's driver has no path for it yet
-Picker.fontAttributes: not realized
+Picker.fontAttributes: cannot read fontAttributes of Picker - GTK's driver has no path for it yet
 Picker.fontAutoScalingEnabled: not realized
-Picker.fontFamily: not realized
-Picker.fontSize: not realized
+Picker.fontFamily: cannot read fontFamily of Picker - GTK's driver has no path for it yet
+Picker.fontSize: cannot read fontSize of Picker - GTK's driver has no path for it yet
 RadioButton.fontAttributes: cannot read fontAttributes of RadioButton - GTK's driver has no path for it yet
 RadioButton.fontAutoScalingEnabled: not realized
 RadioButton.fontFamily: cannot read fontFamily of RadioButton - GTK's driver has no path for it yet

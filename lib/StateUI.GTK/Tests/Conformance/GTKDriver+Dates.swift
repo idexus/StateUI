@@ -44,13 +44,6 @@ extension GTKDriver {
         }
     }
 
-    /// What the driver reaches past GTK on a picker - 🔌.
-    static let pickersByHost = [
-        "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
-        "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
-        "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
-    ]
-
     /// The words a picker's button shows.
     private static func words(of picker: GTKPopoverPickerView) -> String {
         String(cString: gtk_label_get_text(picker.label.opaque))

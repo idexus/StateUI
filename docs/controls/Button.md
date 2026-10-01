@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 41 ✅ · 3 – | `UIButton` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkButton` |  |
+| GTK 4 | ✅ | 28 ✅ | `GtkButton` |  |
 | Web |  |  | `<button>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -46,12 +46,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `icon` | property | `ImageSource` | adaptive | · | · | · | ✅ |  |  | cannot read icon of Button - AppKit's driver has no path for it yet; UIKit: cannot read icon of Button - UIKit's driver has no path for it yet; Android Views: cannot read icon of Button - Android's driver has no path for it yet; GTK 4: not realized |
-| `iconPosition` | property | `IconPosition` | adaptive | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet; GTK 4: not realized |
-| `iconSpacing` | property | `Double` | adaptive |  | ✅ | · | ✅ |  |  | not realized; Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet; GTK 4: not realized |
-| `lineBreak` | property | `LineBreak` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `onPressed` (`pressed`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
-| `onReleased` (`released`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent; GTK 4: not realized |
+| `icon` | property | `ImageSource` | adaptive | · | · | · | ✅ | 🔌 |  | cannot read icon of Button - AppKit's driver has no path for it yet; UIKit: cannot read icon of Button - UIKit's driver has no path for it yet; Android Views: cannot read icon of Button - Android's driver has no path for it yet; GTK 4: only through the host's own: read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name |
+| `iconPosition` | property | `IconPosition` | adaptive | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet |
+| `iconSpacing` | property | `Double` | adaptive |  | ✅ | · | ✅ | ✅ |  | not realized; Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet |
+| `lineBreak` | property | `LineBreak` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `onPressed` (`pressed`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent |
+| `onReleased` (`released`) | event |  | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent; UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -193,4 +193,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | · |  | · | ✅ |  |  | cannot read aspect of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted; UIKit: not realized; Android Views: cannot read aspect of Button - Android's driver has no path for it yet; GTK 4: not realized |
+| `aspect` | property | `Aspect` | native | · |  | · | ✅ | 🔌 |  | cannot read aspect of Button - AppKit's button has no covering scale, as the register records: a fill shows fitted; UIKit: not realized; Android Views: cannot read aspect of Button - Android's driver has no path for it yet; GTK 4: only through the host's own: read aspect of Button: how the host's own panel fills its room: GTK's snapshot holds no aspect |

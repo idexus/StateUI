@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 26 ✅ · 3 – | `UIActivityIndicatorView` |  |
 | Android Views | ✅ | 51 ✅ · 1 ☑️ · 3 – | indeterminate `ProgressBar` |  |
 | WinUI 3 | ✅ | 50 ✅ · 3 – | `ProgressRing` |  |
-| GTK 4 | ✅ | 21 ✅ | `GtkSpinner` |  |
+| GTK 4 | ✅ | 22 ✅ | `GtkSpinner` |  |
 | Web |  |  | indeterminate `<progress>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ActivityIndicatorContract.swift`.
@@ -140,4 +140,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive |  | ✅ | ✅ | ✅ | · |  | not realized; GTK 4: cannot read tint of ActivityIndicator - GTK's driver has no path for it yet |
+| `tint` | property | `Color` | adaptive |  | ✅ | ✅ | ✅ | ✅ |  | not realized |

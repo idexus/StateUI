@@ -6,7 +6,7 @@ DatePicker.textColor: cannot read textColor of DatePicker - GTK's driver has no 
 Label.characterSpacing: cannot read characterSpacing of Label - GTK's driver has no path for it yet
 Label.textColor: cannot read textColor of Label - GTK's driver has no path for it yet
 Picker.characterSpacing: not realized
-Picker.textColor: not realized
+Picker.textColor: cannot read textColor of Picker - GTK's driver has no path for it yet
 RadioButton.characterSpacing: not realized
 RadioButton.textColor: cannot read textColor of RadioButton - GTK's driver has no path for it yet
 SearchField.characterSpacing: not realized
