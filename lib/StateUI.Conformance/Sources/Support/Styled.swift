@@ -44,7 +44,6 @@ enum Styled {
             dimmed(TextField.self)
             dimmed(TimePicker.self)
             dimmed(VStack.self)
-            dimmed(WebView.self)
             dimmed(ZStack.self)
             Specimens.componentStyles
         }

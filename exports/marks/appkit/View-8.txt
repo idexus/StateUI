@@ -97,10 +97,4 @@ TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 VStack.area: ✅
 VStack.frameChanged: ✅
-WebView.canDrag: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.margin: not realized
 ZStack.pinchUpdated: 🔌 pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent

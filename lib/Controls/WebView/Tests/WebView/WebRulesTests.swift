@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) @testable import StateUIHost
+@_spi(Host) @testable import StateUIWebViewHost
+import StateUIWebView
 import XCTest
 
-final class WebTests: XCTestCase {
+final class WebRulesTests: XCTestCase {
     /// A script's answer is its words as they are, a number as it is written, anything else as JSON; nothing for no
     /// value.
     func testAScriptsAnswerIsItsValueAsText() {

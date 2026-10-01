@@ -98,6 +98,5 @@ TimePicker.dropCompleted: not realized
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
 VStack.pinchUpdated: 🔌 pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.panYChannel: not realized
 ZStack.tapCount: 🔌 tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.tapped: 🔌 tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent

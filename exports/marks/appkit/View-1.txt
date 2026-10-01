@@ -99,8 +99,5 @@ TimePicker.swiped: 🔌 pan on TimePicker: handed to the host's recognizer or ha
 VStack.panTouchCount: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.panUpdated: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.panXChannel: 🔌 pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.frameChanged: not realized
-WebView.gridColumnSpan: not realized
-WebView.gridRowSpan: not realized
 ZStack.area: ✅
 ZStack.frameChanged: ✅

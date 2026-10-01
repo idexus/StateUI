@@ -96,9 +96,6 @@ TimePicker.pointerReleased: 🔌 hover on TimePicker: the view's listening hande
 VStack.swipeDirection: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swipeThreshold: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swiped: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.panTouchCount: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.panUpdated: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.panXChannel: 🔌 pan on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.frameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅

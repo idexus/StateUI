@@ -96,8 +96,6 @@ TimePicker.panXChannel: 🔌 pan on TimePicker: the view's listening handed the 
 VStack.frameChanged: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
-WebView.area: ✅
-WebView.frameChanged: ✅
 ZStack.canDrag: not realized
 ZStack.dragStarting: not realized
 ZStack.dragText: not realized

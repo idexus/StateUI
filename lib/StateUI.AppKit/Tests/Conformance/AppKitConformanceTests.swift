@@ -42,7 +42,6 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testTextField() { conform(TextFieldTests.self) }
     @MainActor func testTimePicker() { conform(TimePickerTests.self) }
     @MainActor func testVStack() { conform(VStackTests.self) }
-    @MainActor func testWebView() { conform(WebViewTests.self) }
     @MainActor func testZStack() { conform(ZStackTests.self) }
     @MainActor func testApplication() { conform(ApplicationTests.self) }
     @MainActor func testContextMenu() { conform(ContextMenuTests.self) }

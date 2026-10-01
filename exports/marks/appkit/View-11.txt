@@ -96,9 +96,6 @@ TextField.pinchUpdated: 🔌 pinch on TextField: handed to the host's recognizer
 TimePicker.panYChannel: 🔌 pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 VStack.tapCount: 🔌 tap on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.tapped: 🔌 tap on VStack: handed to the host's recognizer or handler, no NSEvent sent
-WebView.frameChanged: not realized
-WebView.gridColumn: not realized
-WebView.gridRow: not realized
 ZStack.allowDrop: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized

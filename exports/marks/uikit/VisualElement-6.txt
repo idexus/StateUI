@@ -33,5 +33,4 @@ TextEditor.rotationY: 🔌 read rotationY of TextEditor: the host's own transfor
 TextField.pivotY: 🔌 read pivotY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.background: not realized
 VStack.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
-WebView.style: ✅
 ZStack.ignoresInput: ✅

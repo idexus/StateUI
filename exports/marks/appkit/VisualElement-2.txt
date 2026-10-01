@@ -53,10 +53,5 @@ TimePicker.accessibilityHint: ✅
 VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.frameChanged: not realized
-WebView.maximumHeight: not realized
-WebView.maximumWidth: not realized
-WebView.minimumHeight: not realized
-WebView.minimumWidth: not realized
 ZStack.opacity: ✅
 ZStack.translationY: 🔌 read translationY of ZStack: the host's own transform, checked against the layer it composed itself

@@ -99,8 +99,5 @@ TimePicker.swiped: 🔌 pan on TimePicker: the view's listening handed the recog
 VStack.panTouchCount: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.panUpdated: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.panXChannel: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.frameChanged: ✅
-WebView.gridColumnSpan: ✅
-WebView.gridRowSpan: ✅
 ZStack.area: ✅
 ZStack.frameChanged: ✅

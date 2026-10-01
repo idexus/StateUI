@@ -40,6 +40,4 @@ TimePicker.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.width: ✅
-WebView.isVisible: not realized
-WebView.translationX: not realized
 ZStack.scale: 🔌 read scale of ZStack: the host's own transform, checked against the layer it composed itself

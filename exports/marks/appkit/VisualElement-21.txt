@@ -33,5 +33,4 @@ TextField.style: ✅
 TimePicker.ignoresInput: ✅
 VStack.isEnabled: not realized
 VStack.zIndex: not realized
-WebView.scaleY: not realized
 ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform, checked against the layer it composed itself

@@ -103,5 +103,4 @@ VStack.dragText: not realized
 VStack.dropCompleted: not realized
 VStack.frameChanged: ✅
 VStack.margin: ✅
-WebView.pinchUpdated: 🔌 pinch on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.panYChannel: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent

@@ -41,5 +41,4 @@ TextField.isVisible: ✅
 TextField.translationX: 🔌 read translationX of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.scale: 🔌 read scale of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.rotation: 🔌 read rotation of VStack: the host's own transform, checked against the layer it composed itself
-WebView.layoutDirection: not realized
 ZStack.isAccessibilityHidden: ✅

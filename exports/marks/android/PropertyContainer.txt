@@ -36,5 +36,4 @@ TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
 ToolbarItem.accessibilityIdentifier: – An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.
 VStack.accessibilityIdentifier: ✅
-WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

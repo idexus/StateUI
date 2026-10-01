@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+import StateUIWebView
 
 /// Why a web view's navigation began: the step the program asked for - back, forward, the page again - else what the
 /// platform tells, kept to the navigation's end whatever is asked meanwhile.

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The act calls a host is handed, each by the REAL typed call - `focus`, a
-// dialog, a web view's navigation - and what a host's performer is held to:
+// dialog, a list scrolled - and what a host's performer is held to:
 // the act's name, the view at 0, then each argument at its own place, and
 // whether a caller waits for the answer.
 //
@@ -151,35 +151,6 @@ final class ActCallShapeTests: XCTestCase {
     func testClosingTheKeyboardCrossesWithItsArgumentsInPlace() async throws {
         try await check("hideOnScreenKeyboard", []) {
             _ = try await OnScreenKeyboard.hide()
-        }
-    }
-
-    /// The three parameterless WebView acts share the Focus shape - the view
-    /// at 0 and nothing else - and each is pinned by name, so a rename on one
-    /// side cannot slip past the other.
-    func testGoingBackInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goBack", [.string("browser")]) {
-            try await named("browser", WebView.self).goBack()
-        }
-    }
-
-    func testGoingForwardInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goForward", [.string("browser")]) {
-            try await named("browser", WebView.self).goForward()
-        }
-    }
-
-    func testReloadingAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("reload", [.string("browser")]) {
-            try await named("browser", WebView.self).reload()
-        }
-    }
-
-    /// The one WebView act with a second argument: the script after the view,
-    /// and an answer somebody is waiting for.
-    func testRunningJavaScriptCrossesWithItsArgumentsInPlace() async throws {
-        try await check("evaluateJavaScript", [.string("browser"), .string("document.title")]) {
-            _ = try await named("browser", WebView.self).evaluateJavaScript("document.title")
         }
     }
 

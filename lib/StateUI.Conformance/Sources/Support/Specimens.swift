@@ -45,7 +45,6 @@ import Synchronization
         case "TextField": return dressing.dress(TextField())
         case "TimePicker": return dressing.dress(TimePicker())
         case "VStack": return dressing.dress(VStack())
-        case "WebView": return dressing.dress(WebView())
         case "ZStack": return dressing.dress(ZStack())
         default: return components.withLock { $0.first { $0.contract.nodeType.name == element } }?.make(dressing)
         }

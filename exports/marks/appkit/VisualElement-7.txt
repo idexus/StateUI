@@ -40,5 +40,4 @@ TextEditor.scale: 🔌 read scale of TextEditor: the host's own transform, check
 TextField.rotation: 🔌 read rotation of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.layoutDirection: not realized
 VStack.isAccessibilityHidden: ✅
-WebView.accessibilityLabel: not realized
 ZStack.frame: ✅

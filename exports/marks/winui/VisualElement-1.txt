@@ -100,11 +100,6 @@ TimePicker.unfocus: ✅
 VStack.accessibilityHint: ✅
 VStack.isVisible: ✅
 VStack.rotationY: not realized
-WebView.automationExcludedWithChildren: ✅
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.scaleY: ✅
-WebView.width: ✅
 ZStack.frame: ✅
 ZStack.pivotX: ✅
 ZStack.zIndex: not realized

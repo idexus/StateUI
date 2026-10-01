@@ -40,5 +40,4 @@ extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}
 extension Polyline: StyleTarget {}
 extension Canvas: StyleTarget {}
-extension WebView: StyleTarget {}
 extension Map: StyleTarget {}

@@ -25,7 +25,11 @@ var products: [Product] = [
 ]
 
 var targets: [Target] = [
-    .target(name: "GalleryUI", dependencies: ["StateUI"], path: "Sources", swiftSettings: settings),
+    .target(
+        name: "GalleryUI",
+        // A component is a library of its own: the Gallery shows a web view, so it imports one.
+        dependencies: ["StateUI", .product(name: "StateUIWebView", package: "StateUIWebView")],
+        path: "Sources", swiftSettings: settings),
     .testTarget(
         name: "GalleryTests",
         dependencies: ["GalleryUI", .product(name: "StateUI", package: "StateUI")],
@@ -92,7 +96,7 @@ let package = Package(
     ],
     products: products,
     // The StateUI checkout: the library at its root, and a head's host.
-    dependencies: [.package(path: "../..")]
+    dependencies: [.package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView")]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")]),
     targets: targets,
     cxxLanguageStandard: .cxx20

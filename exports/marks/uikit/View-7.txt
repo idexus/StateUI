@@ -96,11 +96,6 @@ VStack.drop: not realized
 VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.verticalAlignment: ✅
-WebView.pointerEntered: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerExited: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerMoved: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerPressed: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.pointerReleased: 🔌 hover on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.swipeDirection: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swipeThreshold: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swiped: 🔌 pan on ZStack: the view's listening handed the recognizer's states, no touch sent

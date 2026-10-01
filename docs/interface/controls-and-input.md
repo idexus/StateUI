@@ -277,7 +277,6 @@ host. Their presence in the Swift module is not a support claim:
 
 | Surface | Semantic contract under evaluation |
 | --- | --- |
-| `WebView` | URL or inline-HTML source; back/forward capability feeds; navigation reports; aimed back, forward, reload, and script actions |
 | `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
 
 `Map` is provider-owned because credentials, map engines, permissions, and
@@ -289,6 +288,16 @@ vertically from API, vocabulary, tests, Gallery, and documentation.
 
 The intended source/event/aim shapes above keep design review explicit; they do
 not authorize production use on an unmarked host.
+
+## Components
+
+A control that pulls in a large engine of its platform is a component: a
+library of its own beside StateUI, which an application imports only where it
+shows one, so an application without it links neither the component nor the
+engine. `WebView` is one - `lib/Controls/WebView`, imported as
+`StateUIWebView` - and an application that shows a web page also registers the
+web view's backend for its host in its head. The component's README is its
+handbook.
 
 ## Collections
 

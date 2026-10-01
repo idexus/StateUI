@@ -101,8 +101,6 @@ TextField.frameChanged: ✅
 TextField.margin: ✅
 TimePicker.pinchUpdated: 🔌 pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.panYChannel: 🔌 pan on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.tapCount: 🔌 tap on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.tapped: 🔌 tap on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅

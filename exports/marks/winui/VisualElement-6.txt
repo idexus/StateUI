@@ -105,8 +105,6 @@ TimePicker.scaleX: ✅
 VStack.ignoresInput: ✅
 VStack.layoutDirection: not realized
 VStack.translationY: ✅
-WebView.rotation: ✅
-WebView.style: ✅
 ZStack.accessibilityHeadingLevel: ✅
 ZStack.opacity: ✅
 ZStack.scale: ✅

@@ -57,5 +57,4 @@ TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 VStack.opacity: ✅
 VStack.translationY: 🔌 read translationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.scaleX: 🔌 read scaleX of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.rotationX: 🔌 read rotationX of ZStack: the host's own transform, checked against the layer it composed itself

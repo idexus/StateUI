@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import StateUI
+
 /// `WebView`'s own properties, shared by the control and its `Style<WebView>`.
 public protocol WebViewProperties: PropertyContainer {}
 
@@ -56,8 +58,8 @@ public struct WebView: View, WebViewProperties {
 
     /// A view on the page at `url`.
     public init(_ url: String) {
-        node = Node(contract: WebViewContract.self)
-        node.write(WebViewContract.source, .url(url))
+        self.init()
+        self = setValue(WebViewContract.source, .url(url))
     }
 
     // MARK: What the platform reports
@@ -294,3 +296,9 @@ extension Aim where Target == WebView {
         return answer ?? ""
     }
 }
+
+// MARK: - A style written for it
+
+extension WebView: StyleTarget {}
+
+extension StyleBag: WebViewProperties where Target == WebView {}

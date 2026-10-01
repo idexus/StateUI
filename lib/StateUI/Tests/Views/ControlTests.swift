@@ -84,8 +84,6 @@ final class ControlTests: XCTestCase {
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
-        let hasBack = State(false)
-        let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
 
         return [
@@ -330,18 +328,6 @@ final class ControlTests: XCTestCase {
                     }
                     .onMapClicked { _ in }),
 
-            // The case's source is the URL form; HTML written in place
-            // travels as a list under the same name - the brush rule, one
-            // level up. The canGoBack and canGoForward bindings are watches
-            // rather than events.
-            ControlCase("WebView", source: "WebView.swift",
-                WebView("https://example.com/docs")
-                    .userAgent("StateUI/1.0")
-                    .canGoBack(hasBack.projectedValue)
-                    .canGoForward(hasForward.projectedValue)
-                    .onNavigating { _ in }
-                    .onNavigated { _ in }
-                    .onProcessTerminated {}),
 
             // The shapes. What they share is the Shape tier, covered once by the
             // Elements case below; each of these carries only its own.
@@ -1266,70 +1252,6 @@ final class ControlTests: XCTestCase {
 
         XCTAssertEqual(seen, [])
         XCTAssertEqual(volume.wrappedValue, 0)
-    }
-
-    /// A navigation that arrives with no reason still reports, because the
-    /// url and the outcome beside it are perfectly good.
-    ///
-    /// Measured on Windows: a web view's FIRST navigation - the source it was
-    /// handed before its browser existed - arrives with a reason no
-    /// `WebNavigationEvent` member names, and the host has nothing to
-    /// translate it onto but `.unknown`. Refusing that report would leave a
-    /// page loaded on screen while the interface still said nothing had, with
-    /// only a second navigation ever reporting. An unknown member degrades; a
-    /// wrong SHAPE still refuses, which is the test below.
-    func testANavigationWithNoReasonStillReports() {
-        var seen: [WebNavigated] = []
-
-        let renders = Renders()
-        let patch = renders.render(
-            WebView("https://example.com")
-                .onNavigated { seen.append($0) }
-                .body)
-
-        renders.fire(handler(patch, "navigated"), with: [
-            .enumeration(WebNavigationResult.success.rawValue),
-            .enumeration(WebNavigationEvent.unknown.rawValue),
-            .string("https://example.com/"),
-        ])
-
-        XCTAssertEqual(seen.count, 1)
-        XCTAssertEqual(seen.first?.result, .success)
-        XCTAssertEqual(seen.first?.event, .unknown)
-        XCTAssertEqual(seen.first?.url, "https://example.com/")
-
-        // `.unknown` is what this platform actually reports, and it has a case
-        // of its own; the RULE is wider than that one member, so a number
-        // neither side declares reads as unknown too rather than taking the
-        // report down with it.
-        renders.fire(handler(patch, "navigated"),
-            with: [.enumeration(9), .enumeration(9), .string("https://example.com/")])
-
-        XCTAssertEqual(seen.count, 2)
-        XCTAssertEqual(seen.last?.result, .unknown)
-        XCTAssertEqual(seen.last?.event, .unknown)
-    }
-
-    /// The other half of the same rule: a value of the wrong KIND is a
-    /// garbled payload rather than a reason the platform left unnamed, so nothing runs -
-    /// a report invented from rubbish is worse than a report not made.
-    func testANavigationReportOfTheWrongShapeLeavesTheHandlerAlone() {
-        var seen: [WebNavigation] = []
-
-        let renders = Renders()
-        let patch = renders.render(
-            WebView("https://example.com")
-                .onNavigating { seen.append($0) }
-                .body)
-
-        // The reason as a plain NUMBER where a member is wanted - what a host
-        // that stopped translating would send.
-        renders.fire(handler(patch, "navigating"), with: [
-            .number(Double(WebNavigationEvent.newPage.rawValue)),
-            .string("https://example.com/"),
-        ])
-
-        XCTAssertTrue(seen.isEmpty)
     }
 
     // MARK: - Support

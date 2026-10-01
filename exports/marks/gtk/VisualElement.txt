@@ -1019,40 +1019,6 @@ VStack.translationY: 🔌 read translationY of VStack: the host's own transform:
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.width: ✅
 VStack.zIndex: not realized
-WebView.accessibilityHeadingLevel: not realized
-WebView.accessibilityHint: not realized
-WebView.accessibilityLabel: not realized
-WebView.automationExcludedWithChildren: not realized
-WebView.background: not realized
-WebView.focus: not realized
-WebView.frame: not realized
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.ignoresInput: not realized
-WebView.isAccessibilityHidden: not realized
-WebView.isEnabled: not realized
-WebView.isFocusedChanged: not realized
-WebView.isVisible: not realized
-WebView.layoutDirection: not realized
-WebView.maximumHeight: not realized
-WebView.maximumWidth: not realized
-WebView.minimumHeight: not realized
-WebView.minimumWidth: not realized
-WebView.opacity: not realized
-WebView.pivotX: not realized
-WebView.pivotY: not realized
-WebView.rotation: not realized
-WebView.rotationX: not realized
-WebView.rotationY: not realized
-WebView.scale: not realized
-WebView.scaleX: not realized
-WebView.scaleY: not realized
-WebView.style: not realized
-WebView.translationX: not realized
-WebView.translationY: not realized
-WebView.unfocus: not realized
-WebView.width: not realized
-WebView.zIndex: not realized
 ZStack.accessibilityHeadingLevel: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅

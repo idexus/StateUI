@@ -33,5 +33,4 @@ TextField.isEnabled: ✅
 TextField.zIndex: not realized
 TimePicker.scaleY: 🔌 read scaleY of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.rotationY: 🔌 read rotationY of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotY: 🔌 read pivotY of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.background: ✅

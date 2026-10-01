@@ -50,4 +50,3 @@ extension StyleBag: SliderProperties where Target == Slider {}
 extension StyleBag: StepperProperties where Target == Stepper {}
 extension StyleBag: SwitchProperties where Target == Switch {}
 extension StyleBag: TimePickerProperties where Target == TimePicker {}
-extension StyleBag: WebViewProperties where Target == WebView {}

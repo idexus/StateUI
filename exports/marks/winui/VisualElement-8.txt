@@ -105,9 +105,6 @@ VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothin
 VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
 VStack.pivotY: ✅
 VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
-WebView.accessibilityHint: ✅
-WebView.isVisible: ✅
-WebView.rotationY: not realized
 ZStack.automationExcludedWithChildren: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅

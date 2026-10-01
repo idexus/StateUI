@@ -70,7 +70,6 @@ extension NodeType {
     static let toolbarItem = ToolbarItemContract.nodeType
     static let toolbarItems = ToolbarItemsContract.nodeType
     static let vStack = VStackContract.nodeType
-    static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
     static let zStack = ZStackContract.nodeType
 }
@@ -233,7 +232,6 @@ extension NodeType {
     static let translationX = VisualElementContract.translationX.token
     static let translationY = VisualElementContract.translationY.token
     static let type = PinContract.type.token
-    static let userAgent = WebViewContract.userAgent.token
 
     static let value = SliderContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
@@ -254,8 +252,6 @@ extension NodeType {
 @_spi(Host) public extension Event {
     static let activated = SceneContract.activated.token
     static let appearing = PageContract.appearing.token
-    static let canGoBackChanged = WebViewContract.canGoBackChanged.token
-    static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
     static let clicked = MenuItemElementContract.clicked.token
     static let closed = DatePickerContract.closed.token
     static let dateChanged = DatePickerContract.dateChanged.token
@@ -283,10 +279,8 @@ extension NodeType {
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
     static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
     static let mapClicked = MapContract.mapClicked.token
-    static let navigated = WebViewContract.navigated.token
     static let navigatedFrom = PageContract.navigatedFrom.token
     static let navigatedTo = PageContract.navigatedTo.token
-    static let navigating = WebViewContract.navigating.token
     static let navigatingFrom = PageContract.navigatingFrom.token
     static let opened = DatePickerContract.opened.token
     static let panUpdated = ViewContract.panUpdated.token
@@ -298,7 +292,6 @@ extension NodeType {
     static let pointerReleased = ViewContract.pointerReleased.token
     static let popped = NavigationStackContract.popped.token
     static let pressed = ButtonContract.pressed.token
-    static let processTerminated = WebViewContract.processTerminated.token
     static let released = ButtonContract.released.token
     static let resumed = WindowContract.resumed.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token
@@ -320,10 +313,6 @@ extension NodeType {
     static let focus = VisualElementContract.focus.token
     static let scrollTo = ItemsViewContract.scrollTo.token
     static let unfocus = VisualElementContract.unfocus.token
-    static let goBack = WebViewContract.goBack.token
-    static let goForward = WebViewContract.goForward.token
-    static let reload = WebViewContract.reload.token
-    static let evaluateJavaScript = WebViewContract.evaluateJavaScript.token
     static let moveToRegion = MapContract.moveToRegion.token
     static let hideOnScreenKeyboard = ApplicationContract.hideOnScreenKeyboard.token
     static let alert = ApplicationContract.alert.token

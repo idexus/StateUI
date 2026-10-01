@@ -603,7 +603,7 @@ final class HostContractTests: XCTestCase {
 
         XCTAssertTrue(acts.isSuperset(of: [
             "alert", "confirm", "chooseAction", "prompt",
-            "currentTime", "currentTimeZone", "utcOffset", "evaluateJavaScript",
+            "currentTime", "currentTimeZone", "utcOffset",
         ]))
         XCTAssertTrue(
             acts.isDisjoint(with: [

@@ -33,6 +33,5 @@ TextEditor.pivotY: 🔌 read pivotY of TextEditor: the host's own transform, che
 TextField.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 TimePicker.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 VStack.style: ✅
-WebView.ignoresInput: not realized
 ZStack.isEnabled: not realized
 ZStack.zIndex: not realized

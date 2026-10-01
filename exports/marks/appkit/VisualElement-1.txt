@@ -39,8 +39,5 @@ TextEditor.layoutDirection: not realized
 TextField.isAccessibilityHidden: ✅
 TimePicker.accessibilityLabel: ✅
 VStack.frame: ✅
-WebView.frameChanged: not realized
-WebView.height: not realized
-WebView.width: not realized
 ZStack.isVisible: ✅
 ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform, checked against the layer it composed itself

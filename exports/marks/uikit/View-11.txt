@@ -96,9 +96,6 @@ TextField.pinchUpdated: 🔌 pinch on TextField: the view's listening handed the
 TimePicker.panYChannel: 🔌 pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.tapCount: 🔌 tap on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.tapped: 🔌 tap on VStack: the view's listening handed the recognizer's states, no touch sent
-WebView.frameChanged: ✅
-WebView.gridColumn: ✅
-WebView.gridRow: ✅
 ZStack.allowDrop: not realized
 ZStack.dragLeave: not realized
 ZStack.dragOver: not realized

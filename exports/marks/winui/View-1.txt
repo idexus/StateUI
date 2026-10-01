@@ -212,10 +212,6 @@ VStack.dragOver: not realized
 VStack.drop: not realized
 VStack.frameChanged: ✅
 VStack.panYChannel: ✅
-WebView.frameChanged: ✅
-WebView.gridColumnSpan: ✅
-WebView.gridRowSpan: ✅
-WebView.pinchUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.canDrag: not realized
 ZStack.dragStarting: not realized
 ZStack.dragText: not realized

@@ -104,8 +104,6 @@ TimePicker.width: ✅
 VStack.frame: ✅
 VStack.pivotX: ✅
 VStack.zIndex: not realized
-WebView.accessibilityLabel: ✅
-WebView.rotationX: not realized
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: not realized
 ZStack.scaleX: ✅

@@ -309,14 +309,6 @@ VStack
   spacing
   stroke
   strokeWidth
-WebView
-  source
-  userAgent
-  canGoBackChanged()
-  canGoForwardChanged()
-  navigated()
-  navigating()
-  processTerminated()
 ZStack
   clipsContent
   ignoresInput

@@ -55,5 +55,4 @@ TextField.opacity: ✅
 TextField.translationY: 🔌 read translationY of TextField: the host's own transform, checked against the layer it composed itself
 TimePicker.scaleX: 🔌 read scaleX of TimePicker: the host's own transform, checked against the layer it composed itself
 VStack.rotationX: 🔌 read rotationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.pivotX: not realized
 ZStack.automationExcludedWithChildren: ✅

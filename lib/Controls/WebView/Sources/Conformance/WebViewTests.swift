@@ -3,6 +3,8 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIConformance
+import StateUIWebView
 
 /// `WebViewContract` on a host: a web view shows the page it is given, heard as it goes there and as it arrives;
 /// the way back and forward heard as they open, and taken by its acts; a page loaded again; a script's answer; the
@@ -154,5 +156,12 @@
     /// A page saying `words`.
     static func page(_ words: String) -> String {
         "<html><body><p>\(words)</p></body></html>"
+    }
+}
+
+extension WebViewTests {
+    /// Adds the web view to the specimens, so the families of the tiers it wears make their cases for it.
+    @MainActor public static func addSpecimen() {
+        Specimens.add(WebViewContract.self, view: WebView.self) { $0.dress(WebView()) }
     }
 }

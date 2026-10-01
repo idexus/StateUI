@@ -959,38 +959,6 @@ VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.verticalAlignment: ✅
-WebView.allowDrop: not realized
-WebView.area: not realized
-WebView.canDrag: not realized
-WebView.dragLeave: not realized
-WebView.dragOver: not realized
-WebView.dragStarting: not realized
-WebView.dragText: not realized
-WebView.drop: not realized
-WebView.dropCompleted: not realized
-WebView.frameChanged: not realized
-WebView.gridColumn: not realized
-WebView.gridColumnSpan: not realized
-WebView.gridRow: not realized
-WebView.gridRowSpan: not realized
-WebView.horizontalAlignment: not realized
-WebView.margin: not realized
-WebView.panTouchCount: not realized
-WebView.panUpdated: not realized
-WebView.panXChannel: not realized
-WebView.panYChannel: not realized
-WebView.pinchUpdated: not realized
-WebView.pointerEntered: not realized
-WebView.pointerExited: not realized
-WebView.pointerMoved: not realized
-WebView.pointerPressed: not realized
-WebView.pointerReleased: not realized
-WebView.swipeDirection: not realized
-WebView.swipeThreshold: not realized
-WebView.swiped: not realized
-WebView.tapCount: not realized
-WebView.tapped: not realized
-WebView.verticalAlignment: not realized
 ZStack.allowDrop: not realized
 ZStack.area: ✅
 ZStack.canDrag: not realized

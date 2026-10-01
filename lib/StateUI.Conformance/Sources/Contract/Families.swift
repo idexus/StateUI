@@ -37,7 +37,6 @@
         TextFieldTests.self,
         TimePickerTests.self,
         VStackTests.self,
-        WebViewTests.self,
         ZStackTests.self,
         ApplicationTests.self,
         ContextMenuTests.self,
