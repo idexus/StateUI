@@ -1,0 +1,88 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+extension Node {
+    /// Hears one of this node's events that carries nothing, beside any
+    /// handler already there - what an element wearing no tier hears its
+    /// events through. A view hears through `onEvent`.
+    ///
+    ///     node.addHandler(TrafficLightContract.closed) { shown = false }
+    ///
+    /// An event that arrives carrying anything is reported once and does not
+    /// reach the handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: what runs.
+    public mutating func addHandler<Owner: Contract>(
+        _ event: ElementEvent<Owner, Void>,
+        _ handler: @escaping EventHandler
+    ) {
+        addHandler(event.token) {
+            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+
+            try await handler()
+        }
+    }
+
+    /// Hears one of this node's events, its value handed over as the type its
+    /// contract declares, beside any handler already there.
+    ///
+    /// A payload that is not what the contract says is reported once and does
+    /// not reach the handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the value.
+    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) {
+        addHandler(event.token) {
+            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self)
+            else { return }
+
+            try await handler(value)
+        }
+    }
+
+    /// Hears one of this node's events that carries two values, handed over
+    /// as the types its contract declares, in its order.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) {
+        addHandler(event.token) {
+            guard let (first, second) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try await handler(first, second)
+        }
+    }
+
+    /// Hears one of this node's events that carries three values, handed over
+    /// as the types its contract declares, in its order.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    public mutating func addHandler<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) {
+        addHandler(event.token) {
+            guard let (first, second, third) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try await handler(first, second, third)
+        }
+    }
+}

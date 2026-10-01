@@ -23,9 +23,16 @@ extension [Prop: PropValue] {
 }
 
 extension Node {
-    /// Writes one member's value into this node - what a modifier setting
-    /// several members at once writes through, where `setValue` cannot chain.
-    mutating func write<Owner: Contract, Value: HostRepresentable>(
+    /// Writes one member's value into this node - what an element wearing no
+    /// tier writes its members through, and a modifier setting several
+    /// members at once, where `setValue` cannot chain.
+    ///
+    ///     node.write(TrafficLightContract.signal, .go)
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - value: what it holds.
+    public mutating func write<Owner: Contract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) {

@@ -21,11 +21,7 @@ extension ModifiableElement {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
     ) -> Modified {
-        addHandler(event.token) {
-            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
-
-            try await handler()
-        }
+        modified { $0.addHandler(event, handler) }
     }
 
     /// Hears one of this element's events, its value handed over as the type
@@ -46,12 +42,7 @@ extension ModifiableElement {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> Modified {
-        addHandler(event.token) {
-            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self)
-            else { return }
-
-            try await handler(value)
-        }
+        modified { $0.addHandler(event, handler) }
     }
 
     /// Hears one of this element's events that carries two values, handed
@@ -67,13 +58,7 @@ extension ModifiableElement {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> Modified {
-        addHandler(event.token) {
-            guard let (first, second) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try await handler(first, second)
-        }
+        modified { $0.addHandler(event, handler) }
     }
 
     /// Hears one of this element's events that carries three values, handed
@@ -89,13 +74,7 @@ extension ModifiableElement {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> Modified {
-        addHandler(event.token) {
-            guard let (first, second, third) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try await handler(first, second, third)
-        }
+        modified { $0.addHandler(event, handler) }
     }
 
     /// Adds a handler beside any already there, by token - on this tier, so
