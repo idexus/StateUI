@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
+@_spi(Host) import StateUIConformance
+import StateUIMap
 
 /// `PinContract` on a host: a pin stands on its map where the tree puts it, with its label, address and kind, and a
 /// click on it, or on its details, is heard.

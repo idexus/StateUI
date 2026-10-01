@@ -45,8 +45,6 @@ Label.width: ✅
 Line.frame: ✅
 Line.pivotX: ✅
 Line.zIndex: not realized
-Map.accessibilityLabel: not realized
-Map.rotationX: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: not realized
 Path.scaleX: ✅

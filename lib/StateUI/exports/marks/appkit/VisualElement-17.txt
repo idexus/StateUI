@@ -25,8 +25,6 @@ Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
-Map.opacity: not realized
-Map.translationY: not realized
 Path.scaleX: 🔌 read scaleX of Path: the host's own transform, checked against the layer it composed itself
 Picker.rotationX: 🔌 read rotationX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotX: 🔌 read pivotX of Polygon: the host's own transform, checked against the layer it composed itself

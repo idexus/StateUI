@@ -60,9 +60,9 @@ final class WinUIRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onUIThread {
-            let host = WinUIRenderer.running { VStack { Map() } }
+            let host = WinUIRenderer.running { VStack { Dial() } }
 
-            XCTAssertEqual(host.views(WinUIUnsupportedView.self).map(\.text), ["WinUI: unsupported Map"])
+            XCTAssertEqual(host.views(WinUIUnsupportedView.self).map(\.text), ["WinUI: unsupported Dial"])
         }
     }
 
@@ -210,4 +210,16 @@ private struct EnvironmentPage: ContentView {
             Label("\(app.requestedTheme)")
         }
     }
+}
+
+/// An element no registration answers - a component's, whose backend the application did not register.
+private enum DialContract: ElementContract {
+    static let nodeType: NodeType = "Dial"
+    static let layer: ElementLayer = .provider
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let members: [any ContractMember] = []
+}
+
+private struct Dial: View {
+    var node = Node(contract: DialContract.self)
 }

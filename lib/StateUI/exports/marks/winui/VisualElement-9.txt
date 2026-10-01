@@ -46,10 +46,6 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.translationX: ✅
-Map.focus: not realized
-Map.isFocusedChanged: not realized
-Map.pivotY: not realized
-Map.unfocus: not realized
 Path.accessibilityHint: ✅
 Path.isVisible: ✅
 Path.rotationY: not realized

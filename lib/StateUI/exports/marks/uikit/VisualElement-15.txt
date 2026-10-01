@@ -14,7 +14,6 @@ ItemsView.style: not realized
 Label.ignoresInput: not realized
 Line.isEnabled: not realized
 Line.zIndex: not realized
-Map.scaleY: not realized
 Path.rotationY: 🔌 read rotationY of Path: the host's own transform, checked against the layer it composed itself
 Picker.pivotY: 🔌 read pivotY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.background: not realized

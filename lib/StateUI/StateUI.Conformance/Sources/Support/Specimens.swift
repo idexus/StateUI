@@ -28,7 +28,6 @@ import Synchronization
         case "ItemsView": return dressing.dress(ItemsView(0..<20) { Label("Item \($0)") }.width(240).height(160))
         case "Label": return dressing.dress(Label())
         case "Line": return dressing.dress(Line())
-        case "Map": return dressing.dress(Map())
         case "Path": return dressing.dress(Path())
         case "Picker": return dressing.dress(Picker())
         case "Polygon": return dressing.dress(Polygon())

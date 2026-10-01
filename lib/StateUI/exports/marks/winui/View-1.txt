@@ -91,16 +91,6 @@ Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
 Line.pinchUpdated: ✅
-Map.canDrag: not realized
-Map.dragStarting: not realized
-Map.dragText: not realized
-Map.dropCompleted: not realized
-Map.frameChanged: not realized
-Map.horizontalAlignment: not realized
-Map.panTouchCount: not realized
-Map.panUpdated: not realized
-Map.panXChannel: not realized
-Map.verticalAlignment: not realized
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅

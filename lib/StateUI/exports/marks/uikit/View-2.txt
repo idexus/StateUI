@@ -47,9 +47,6 @@ Line.pointerExited: 🔌 hover on Line: the view's listening handed the recogniz
 Line.pointerMoved: 🔌 hover on Line: the view's listening handed the recognizer's states, no touch sent
 Line.pointerPressed: 🔌 hover on Line: the view's listening handed the recognizer's states, no touch sent
 Line.pointerReleased: 🔌 hover on Line: the view's listening handed the recognizer's states, no touch sent
-Map.swipeDirection: not realized
-Map.swipeThreshold: not realized
-Map.swiped: not realized
 Path.panTouchCount: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panUpdated: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panXChannel: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent

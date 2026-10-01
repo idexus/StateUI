@@ -43,7 +43,6 @@ Line.dragText: not realized
 Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.margin: ✅
-Map.pinchUpdated: not realized
 Path.panYChannel: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.tapCount: 🔌 tap on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.tapped: 🔌 tap on Picker: handed to the host's recognizer or handler, no NSEvent sent

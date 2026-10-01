@@ -41,8 +41,6 @@ Label.panXChannel: 🔌 pan on Label: the view's listening handed the recognizer
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
-Map.area: not realized
-Map.frameChanged: not realized
 Path.canDrag: not realized
 Path.dragStarting: not realized
 Path.dragText: not realized

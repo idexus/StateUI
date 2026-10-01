@@ -152,7 +152,7 @@ turns the nodes into the patch.
   statement, and `ForEach` keys each view by its item. *Application.*
   ([Composition](../design/views/composition.md), [builders](../design/views/builders.md);
   [composition and identity](../interface/composition-and-identity.md))
-- **The library's views** - `Controls/` (`Button`, `Slider`, `Picker`, `Map`
+- **The library's views** - `Controls/` (`Button`, `Slider`, `Picker`, `Stepper`
   and the rest), `Text/` (`Label`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
   `ZStack`, `ScrollView`) and `Shapes/` (`Rectangle`, `Path`, `Canvas` and

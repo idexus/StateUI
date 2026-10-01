@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import StateUI
+
 /// A pin on the map.
 public enum PinContract: ElementContract {
     /// The node type the contract declares.

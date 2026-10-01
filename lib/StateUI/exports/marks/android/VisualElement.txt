@@ -441,40 +441,6 @@ Line.translationY: ✅
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.width: ✅
 Line.zIndex: not realized
-Map.accessibilityHeadingLevel: not realized
-Map.accessibilityHint: not realized
-Map.accessibilityLabel: not realized
-Map.automationExcludedWithChildren: not realized
-Map.background: not realized
-Map.focus: not realized
-Map.frame: not realized
-Map.frameChanged: not realized
-Map.height: not realized
-Map.ignoresInput: not realized
-Map.isAccessibilityHidden: not realized
-Map.isEnabled: not realized
-Map.isFocusedChanged: not realized
-Map.isVisible: not realized
-Map.layoutDirection: not realized
-Map.maximumHeight: not realized
-Map.maximumWidth: not realized
-Map.minimumHeight: not realized
-Map.minimumWidth: not realized
-Map.opacity: not realized
-Map.pivotX: not realized
-Map.pivotY: not realized
-Map.rotation: not realized
-Map.rotationX: not realized
-Map.rotationY: not realized
-Map.scale: not realized
-Map.scaleX: not realized
-Map.scaleY: not realized
-Map.style: not realized
-Map.translationX: not realized
-Map.translationY: not realized
-Map.unfocus: not realized
-Map.width: not realized
-Map.zIndex: not realized
 Path.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅

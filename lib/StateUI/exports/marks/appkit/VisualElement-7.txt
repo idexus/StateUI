@@ -18,7 +18,6 @@ ItemsView.isVisible: ✅
 ItemsView.translationX: 🔌 read translationX of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.scale: 🔌 read scale of Label: the host's own transform, checked against the layer it composed itself
 Line.rotation: 🔌 read rotation of Line: the host's own transform, checked against the layer it composed itself
-Map.layoutDirection: not realized
 Path.isAccessibilityHidden: ✅
 Picker.accessibilityLabel: ✅
 Polygon.frame: ✅

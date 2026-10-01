@@ -36,7 +36,6 @@ extension StyleBag: GridProperties where Target == Grid {}
 extension StyleBag: ImageProperties where Target == Image {}
 extension StyleBag: LabelProperties where Target == Label {}
 extension StyleBag: LineProperties where Target == Line {}
-extension StyleBag: MapProperties where Target == Map {}
 extension StyleBag: PathProperties where Target == Path {}
 extension StyleBag: PickerProperties where Target == Picker {}
 extension StyleBag: PolygonProperties where Target == Polygon {}

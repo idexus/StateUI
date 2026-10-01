@@ -51,9 +51,9 @@ final class GTKRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onUIThread {
-            let host = GTKRenderer.running { VStack { Map() } }
+            let host = GTKRenderer.running { VStack { Dial() } }
 
-            XCTAssertEqual(host.views(GTKUnsupportedView.self).map(\.text), ["GTK: unsupported Map"])
+            XCTAssertEqual(host.views(GTKUnsupportedView.self).map(\.text), ["GTK: unsupported Dial"])
         }
     }
 
@@ -288,4 +288,16 @@ private struct ScenePhaseLabel: ContentView {
         phases.values.append(scene.phase)
         return Label("\(scene.phase)")
     }
+}
+
+/// An element no registration answers - a component's, whose backend the application did not register.
+private enum DialContract: ElementContract {
+    static let nodeType: NodeType = "Dial"
+    static let layer: ElementLayer = .provider
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let members: [any ContractMember] = []
+}
+
+private struct Dial: View {
+    var node = Node(contract: DialContract.self)
 }

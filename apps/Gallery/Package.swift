@@ -27,8 +27,11 @@ var products: [Product] = [
 var targets: [Target] = [
     .target(
         name: "GalleryUI",
-        // A component is a library of its own: the Gallery shows a web view, so it imports one.
-        dependencies: ["StateUI", .product(name: "StateUIWebView", package: "StateUIWebView")],
+        // A component is a library of its own: the Gallery shows a web view and a map, so it imports both.
+        dependencies: [
+            "StateUI", .product(name: "StateUIWebView", package: "StateUIWebView"),
+            .product(name: "StateUIMap", package: "StateUIMap"),
+        ],
         path: "Sources", swiftSettings: settings),
     .testTarget(
         name: "GalleryTests",
@@ -101,7 +104,10 @@ let package = Package(
     ],
     products: products,
     // The StateUI checkout: the library at its root, and a head's host.
-    dependencies: [.package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView")]
+    dependencies: [
+        .package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView"),
+        .package(name: "StateUIMap", path: "../../lib/Controls/Map"),
+    ]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
         + (webBackend.isEmpty ? [] : host.map { host in
             [.package(name: "StateUIWebView\(host)", path: "../../lib/Controls/WebView/WebView.\(host)")]

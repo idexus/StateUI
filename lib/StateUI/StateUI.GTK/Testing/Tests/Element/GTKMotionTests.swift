@@ -17,7 +17,7 @@ final class GTKMotionTests: XCTestCase {
             XCTAssertTrue(GTKTransitionSurface.presents(.spacing, on: .vStack))
             XCTAssertFalse(GTKTransitionSurface.presents(.value, on: .label))
             XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .switch), "every registered view")
-            XCTAssertFalse(GTKTransitionSurface.presents(.opacity, on: .map))
+            XCTAssertFalse(GTKTransitionSurface.presents(.opacity, on: "Dial"))
             XCTAssertFalse(GTKTransitionSurface.presents(Prop("custom"), on: .label))
         }
     }

@@ -105,7 +105,7 @@ final class CompleteContractTests: XCTestCase {
             owners[item.member.name, default: []].append(item.contract.name)
         }
 
-        XCTAssertGreaterThan(acts.count, 15, "the scan read almost nothing")
+        XCTAssertGreaterThan(acts.count, 14, "the scan read almost nothing")
         XCTAssertEqual(acts.subtracting(owners.keys).sorted(), [], "an act no contract declares")
         XCTAssertEqual(Set(owners.keys).subtracting(acts).sorted(), [], "an act member no token declares")
         XCTAssertEqual(owners.filter { $0.value.count > 1 }.keys.sorted(), [], "an act declared twice")

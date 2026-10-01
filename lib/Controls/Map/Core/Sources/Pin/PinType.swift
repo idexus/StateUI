@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import StateUI
+
 // A closed vocabulary, numbered by StateUI: append a case, never insert one.
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 

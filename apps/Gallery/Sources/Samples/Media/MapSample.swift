@@ -1,4 +1,5 @@
 import StateUI
+import StateUIMap
 
 /// The platform's own map, with pins, a region to move to, and what it draws.
 struct MapSample: SampleContent, ExampleContent {
@@ -177,9 +178,9 @@ struct MapSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("`Map` is an optional provider, drawn by the platform's own map where a "
-                + "host provides one - `MKMapView` on Apple. Elsewhere a host depends on a "
-                + "map library and a map service, and the Web has no map element.")
+            Label("`Map` is a component, `StateUIMap`, drawn by the platform's own map "
+                + "where the host has a backend for it - which needs a map library and a "
+                + "map service. The Web has no map element.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

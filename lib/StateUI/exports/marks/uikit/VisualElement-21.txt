@@ -13,7 +13,6 @@ Image.pivotY: 🔌 read pivotY of Image: the host's own transform, checked again
 ItemsView.background: not realized
 Label.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 Line.style: ✅
-Map.ignoresInput: not realized
 Path.isEnabled: not realized
 Path.zIndex: not realized
 Picker.scaleY: 🔌 read scaleY of Picker: the host's own transform, checked against the layer it composed itself

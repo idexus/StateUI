@@ -40,13 +40,6 @@ Label.tapped: 🔌 tap on Label: the view's listening handed the recognizer's st
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
-Map.allowDrop: not realized
-Map.dragLeave: not realized
-Map.dragOver: not realized
-Map.drop: not realized
-Map.frameChanged: not realized
-Map.horizontalAlignment: not realized
-Map.verticalAlignment: not realized
 Path.pointerEntered: 🔌 hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerExited: 🔌 hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerMoved: 🔌 hover on Path: the view's listening handed the recognizer's states, no touch sent

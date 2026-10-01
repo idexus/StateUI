@@ -22,6 +22,8 @@ final class ContractRoadsTests: XCTestCase {
         let name: String
         let removed: String
         let contract: String
+        /// The components both listings import beside StateUI.
+        var imports: [String] = []
     }
 
     /// An application's own control, acts and event - what every listing leans
@@ -172,6 +174,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = WebView()"#,
             contract: #"_ = Image()"#),
         Road(
+            name: "Map, a component an application imports apart",
+            removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500)"#,
+            contract: #"_ = Image()"#),
+        Road(
             name: "the withdrawn Border",
             removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
             contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
@@ -238,7 +244,13 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "a view standing among a map's pins",
             removed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Label("Castle") }"#,
-            contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Pin("Castle") }"#),
+            contract: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).pins { Pin("Castle") }"#,
+            imports: ["StateUIMap"]),
+        Road(
+            name: "a pin's events by the marker's former names",
+            removed: #"_ = Pin("Castle").onMarkerClicked {}.onInfoWindowClicked {}"#,
+            contract: #"_ = Pin("Castle").onPinClicked {}.onPinDetailsClicked {}"#,
+            imports: ["StateUIMap"]),
         Road(
             name: "a window's title bar written into its session",
             removed: #"WindowSession().titleBar = nil"#,
@@ -322,12 +334,12 @@ final class ContractRoadsTests: XCTestCase {
 
         // Every listing in a file of its own, a road's two side by side.
         let listings = Self.roads.flatMap { road in
-            [(road: road.name, compiles: false, source: road.removed),
-             (road: road.name, compiles: true, source: road.contract)]
+            [(road: road.name, compiles: false, source: road.removed, imports: road.imports),
+             (road: road.name, compiles: true, source: road.contract, imports: road.imports)]
         }
         let files = try listings.enumerated().map { index, listing in
             let file = scratch.appendingPathComponent("road_\(index).swift")
-            try Data(Self.file(around: listing.source).utf8).write(to: file)
+            try Data(Self.file(around: listing.source, importing: listing.imports).utf8).write(to: file)
             return file
         }
 
@@ -348,14 +360,15 @@ final class ContractRoadsTests: XCTestCase {
         }
     }
 
-    /// A listing as a file an application could hold: the declarations, and
-    /// the listing as the body of a function.
-    private static func file(around listing: String) -> String {
+    /// A listing as a file an application could hold: the imports, the
+    /// declarations, and the listing as the body of a function.
+    private static func file(around listing: String, importing components: [String]) -> String {
         let body = listing.split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
 
-        return "import StateUI\n\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
+        let imports = (["StateUI"] + components).map { "import \($0)\n" }.joined()
+        return "\(imports)\n\(declarations)\n\nfunc road() async throws {\n\(body)\n}\n"
     }
 
     /// What the compiler said about each listing, written from the lanes.

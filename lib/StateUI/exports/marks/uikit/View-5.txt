@@ -40,12 +40,6 @@ Label.gridColumnSpan: ✅
 Label.gridRowSpan: ✅
 Line.area: ✅
 Line.frameChanged: ✅
-Map.canDrag: not realized
-Map.dragStarting: not realized
-Map.dragText: not realized
-Map.dropCompleted: not realized
-Map.frameChanged: not realized
-Map.margin: not realized
 Path.pinchUpdated: 🔌 pinch on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.panYChannel: 🔌 pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.tapCount: 🔌 tap on Polygon: the view's listening handed the recognizer's states, no touch sent

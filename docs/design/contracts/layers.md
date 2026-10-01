@@ -12,7 +12,7 @@ dictionary prints it beside every row.
 | `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | ModalStack, NavigationStack, Page, SplitView, TabbedView |
 | `stateUI` | StateUI, composed from smaller primitives before a host receives the tree | CheckBox, Ellipse, Grid, Line, Path, Polygon, Polyline, RadioButton, Rectangle |
 | `structure` | nobody draws it: it carries structure or protocol data | Application, Scene, Window, the menus, the slots and collections, Span |
-| `provider` | an optional provider: a package, or the application that registers it | Map, Pin, a component's WebView, and an application's own elements |
+| `provider` | an optional provider: a package, or the application that registers it | a component's Map, Pin and WebView, and an application's own elements |
 
 An application's own contract is `provider` unless it says otherwise, for the
 element and for each member.
@@ -22,11 +22,10 @@ element and for each member.
 A member's layer is its own and may differ from its element's. A `CheckBox`
 is composed by StateUI, yet whether it is ticked is `native`: the primitive
 it is composed from is drawn by the host. A `Picker` is native, yet its list
-of options is `structure`, data the host lays into its control. A `Map` is a
-provider's, yet whether a drag pans it is `native`. A member that carries a
-state's number, a placement a layout reads, or a report fed back into a
-state, such as `panXChannel`, `area` or `frame`, is
-`structure`.
+of options is `structure`, data the host lays into its control. A component's
+`Map` is a provider's, yet whether a drag pans it is `native`. A member that
+carries a state's number, a placement a layout reads, or a report fed back
+into a state, such as `panXChannel`, `area` or `frame`, is `structure`.
 
 ## Choosing a layer
 

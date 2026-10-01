@@ -26,7 +26,6 @@ Label.minimumHeight: ✅
 Label.minimumWidth: ✅
 Line.opacity: ✅
 Line.translationY: 🔌 read translationY of Line: the host's own transform, checked against the layer it composed itself
-Map.scaleX: not realized
 Path.rotationX: 🔌 read rotationX of Path: the host's own transform, checked against the layer it composed itself
 Picker.pivotX: 🔌 read pivotX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.automationExcludedWithChildren: ✅

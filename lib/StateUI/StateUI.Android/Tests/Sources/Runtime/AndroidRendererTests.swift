@@ -84,7 +84,7 @@ final class AndroidRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onMainActor {
-            let host = AndroidRenderer.running { VStack { Map() } }
+            let host = AndroidRenderer.running { VStack { Dial() } }
 
             XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported Map"])
         }
@@ -132,7 +132,7 @@ final class AndroidRendererTests: XCTestCase {
 
             XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
             XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
-            XCTAssertFalse(HostBoundary.realizes(MapContract.self))
+            XCTAssertFalse(HostBoundary.realizes(DialContract.self))
         }
     }
 
@@ -197,4 +197,16 @@ private struct TitledWindowPage: ContentView {
         let title = self.title
         return Label(title).onCreated { window.title = title }
     }
+}
+
+/// An element no registration answers - a component's, whose backend the application did not register.
+private enum DialContract: ElementContract {
+    static let nodeType: NodeType = "Dial"
+    static let layer: ElementLayer = .provider
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let members: [any ContractMember] = []
+}
+
+private struct Dial: View {
+    var node = Node(contract: DialContract.self)
 }

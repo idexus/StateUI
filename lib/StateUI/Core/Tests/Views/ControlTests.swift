@@ -302,31 +302,6 @@ final class ControlTests: XCTestCase {
                     .onEndReached(within: 5) {}
                     .body.built),
 
-            // Both halves of a map: the control, and the pins on it. A Pin is
-            // not a control of its own - it is a marker on the map - so this
-            // case is where its modifiers are exercised as well. Where the
-            // map LOOKS is an act (moveToRegion), checked with the other acts
-            // in ActCallShapeTests rather than here.
-            ControlCase("Map", source: "Map.swift",
-                Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
-                    .mapType(.hybrid)
-                    .isScrollEnabled(true)
-                    .isZoomEnabled(true)
-                    .isTrafficEnabled(false)
-                    .showsUserLocation(false)
-                    .pins {
-                        Pin("Royal Castle")
-                            .address("Plac Zamkowy 4")
-                            .type(.place)
-                            .location(latitude: 52.2479, longitude: 21.0155)
-                            .onPinClicked {}
-                            .onPinDetailsClicked {}
-
-                        Pin("Second")
-                            .label("Lazienki Park")
-                            .location(latitude: 52.2151, longitude: 21.0355)
-                    }
-                    .onMapClicked { _ in }),
 
 
             // The shapes. What they share is the Shape tier, covered once by the
@@ -571,7 +546,7 @@ final class ControlTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(checked, 45, "the cases rendered almost nothing")
+        XCTAssertGreaterThan(checked, 44, "the cases rendered almost nothing")
     }
 
     /// Every member name a contract lets its element carry: its own, and its
@@ -678,7 +653,7 @@ final class ControlTests: XCTestCase {
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
     /// lanes where a plain value is one - and the tiers no view wears: a page,
-    /// a bar, a menu item, a map's own flags.
+    /// a bar, a menu item.
     func testEveryValueModifierHasABindingTwin() throws {
         let allowed: Set<String> = [
             // Named rather than valued.
@@ -690,9 +665,8 @@ final class ControlTests: XCTestCase {
             "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "area",
             // Tiers no view wears.
-            "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
-            "isZoomEnabled", "isTrafficEnabled", "showsUserLocation", "isDestructive", "title",
-            "mapType", "avoidsSafeArea",
+            "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle",
+            "isDestructive", "title", "avoidsSafeArea",
         ]
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -802,7 +776,7 @@ final class ControlTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
+        XCTAssertGreaterThan(read, 29, "the scan read almost nothing")
     }
 
     /// The shared tier, deliberately covered in one place rather than in every
@@ -1104,8 +1078,8 @@ final class ControlTests: XCTestCase {
     /// The same promise on the non-view items, which each carry their typed
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
-    /// composes" stood written on Button. A ToolbarItem and a Pin
-    /// stand for the family - MenuItem is the same two lines.
+    /// composes" stood written on Button. A ToolbarItem stands for the
+    /// family - MenuItem is the same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
 
@@ -1117,17 +1091,6 @@ final class ControlTests: XCTestCase {
                 .body)
 
         renders.fire(handler(bar, "clicked"))
-
-        XCTAssertEqual(seen, ["first", "second"])
-
-        seen = []
-        let pin = renders.render(
-            Pin("Office")
-                .onPinClicked { seen.append("first") }
-                .onPinClicked { seen.append("second") }
-                .body)
-
-        renders.fire(handler(pin, "pinClicked"))
 
         XCTAssertEqual(seen, ["first", "second"])
     }

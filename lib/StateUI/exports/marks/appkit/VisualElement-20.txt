@@ -21,11 +21,6 @@ Label.accessibilityHint: ✅
 Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
-Map.frameChanged: not realized
-Map.maximumHeight: not realized
-Map.maximumWidth: not realized
-Map.minimumHeight: not realized
-Map.minimumWidth: not realized
 Path.opacity: ✅
 Path.translationY: 🔌 read translationY of Path: the host's own transform, checked against the layer it composed itself
 Picker.scaleX: 🔌 read scaleX of Picker: the host's own transform, checked against the layer it composed itself

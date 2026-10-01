@@ -359,7 +359,7 @@ final class NativeProjectTests: XCTestCase {
                 families.insert((text as NSString).substring(with: match.range(at: 1)))
             }
         }
-        XCTAssertGreaterThanOrEqual(families.count, 70, "the walk found almost no family")
+        XCTAssertGreaterThanOrEqual(families.count, 69, "the walk found almost no family")
 
         let lib = repository.appendingPathComponent("lib")
         // A component runs its own family, and the tiers' for its element: not every host's whole list.

@@ -740,15 +740,11 @@ enum SourceTree {
     /// the entries in it are the menu bar's, already here. Covered by
     /// ContextMenuTests rather than by a control case, for the reason the
     /// toolbar's are: there is no control to build one on.
-    /// A Pin is a map's marker - a label, an address and a point - so it
-    /// cannot be built alone or styled, and its modifiers are exercised by the
-    /// Map case, which builds both.
     static let notViews: Set<String> = [
         "Spans", "Span",
         "ToolbarItems", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
         "MenuItem", "MenuSeparator",
         "ContextMenu",
-        "Pin",
     ]
 
     /// The files of the shared view tier: the tiers every view wears, whose

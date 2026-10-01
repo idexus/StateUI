@@ -14,7 +14,6 @@ ItemsView.ignoresInput: ✅
 Label.isEnabled: not realized
 Label.zIndex: not realized
 Line.scaleY: 🔌 read scaleY of Line: the host's own transform, checked against the layer it composed itself
-Map.rotationY: not realized
 Path.pivotY: 🔌 read pivotY of Path: the host's own transform, checked against the layer it composed itself
 Picker.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
 Polygon.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level

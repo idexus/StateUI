@@ -116,7 +116,6 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(
             CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4).propValue,
             .numbers([1, 2, 3, 4]))
-        XCTAssertEqual(MapRegion(latitude: 52, longitude: 21, radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
 
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
@@ -157,8 +156,6 @@ final class ContractTests: XCTestCase {
             SafeAreaEdges.uniform(.all),
             SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
-            MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
-            Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
@@ -168,11 +165,11 @@ final class ContractTests: XCTestCase {
             Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
             InputPurpose(rawValue: 1)!, ReturnKey(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
-            PinType(rawValue: 1)!, Aspect(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
+            Aspect(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!,
+            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!,
             GesturePhase.running,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center,

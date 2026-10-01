@@ -42,7 +42,6 @@ Label.dropCompleted: not realized
 Label.frameChanged: ✅
 Label.margin: ✅
 Line.pinchUpdated: 🔌 pinch on Line: handed to the host's recognizer or handler, no NSEvent sent
-Map.panYChannel: not realized
 Path.tapCount: 🔌 tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapped: 🔌 tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.frameChanged: ✅

@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
+@_spi(Host) import StateUIConformance
+import StateUIMap
 
 /// `MapContract` on a host: a map shows the region the tree gives it and the one an act moves it to, the kind of map
 /// and what the user may do with it as the tree says, and a click on it heard where it fell.
@@ -64,5 +65,12 @@
             Aspects.holds(MapContract.isTrafficEnabled, on: "Map", false, then: true),
             Aspects.holds(MapContract.showsUserLocation, on: "Map", false, then: true),
         ]
+    }
+}
+
+extension MapTests {
+    /// Adds the map to the specimens, so the families of the tiers it wears make their cases for it.
+    @MainActor public static func addSpecimen() {
+        Specimens.add(MapContract.self, view: Map.self) { $0.dress(Map()) }
     }
 }

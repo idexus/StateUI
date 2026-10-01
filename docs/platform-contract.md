@@ -103,7 +103,6 @@ of its members each meets, and why a cell is empty.
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Label](controls/Label.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Map](controls/Map.md) | provider |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -114,7 +113,6 @@ of its members each meets, and why a cell is empty.
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [Pin](controls/Pin.md) | provider |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -221,7 +219,6 @@ may still choose another class that preserves the same contract.
 | `Canvas` | custom `NSView` drawing | `UIView` `draw(_:)` | `View` `onDraw(Canvas)` | Direct2D in a `SurfaceImageSource` | `GtkDrawingArea` | `<canvas>` |
 | `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
-| `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | libshumate `ShumateMap` / `ShumateMarker` | — |
 | `ItemsView` | `NSCollectionView` / `NSTableView` | `UICollectionView` | AndroidX `RecyclerView` | `ItemsView` | `GtkListView` / `GtkGridView` | semantic list or grid |
 | `TitleView` | structure | structure | structure | structure | structure | structure |
 
@@ -246,7 +243,6 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TimePicker`: GTK 4 has no time picker; its host sets a time as GNOME's applications do, with spin buttons.
 - `Switch`: Web has no switch element.
 - `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
-- `Map` / `Pin`: Web has no map element; Android Views, WinUI 3, and GTK 4 depend on Google Play services, a map service, and libshumate.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
 
 ## Shared state, patch, and motion capabilities
@@ -318,7 +314,6 @@ the tier.
 | `prompt` | [Application](controls/Application.md) |
 | `utcOffset` | [Application](controls/Application.md) |
 | `scrollTo` | [ItemsView](controls/ItemsView.md) |
-| `moveToRegion` | [Map](controls/Map.md) |
 <!-- acts:end -->
 
 ## Shared view members
@@ -428,7 +423,6 @@ Every control, and every part an application, its windows and its pages are made
 | [ItemsView](controls/ItemsView.md) | 76 | 33 ✅ · 1 ☑️ | 29 ✅ · 3 – | 60 ✅ · 1 ☑️ | 60 ✅ | 51 ✅ · 1 – |  |
 | [Label](controls/Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 52 ✅ · 4 – |  |
 | [Line](controls/Line.md) | 80 | 29 ✅ · 1 ☑️ · 3 – | 30 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 48 ✅ · 4 – |  |
-| [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 45 ✅ · 4 – |  |
 | [Picker](controls/Picker.md) | 82 | 38 ✅ · 1 ☑️ | 25 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 65 ✅ | 49 ✅ · 7 – |  |
 | [Polygon](controls/Polygon.md) | 78 | 27 ✅ · 1 ☑️ · 3 – | 28 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 46 ✅ · 4 – |  |
@@ -446,7 +440,7 @@ Every control, and every part an application, its windows and its pages are made
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ | 49 ✅ · 1 – |  |
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅ and – | 2370 | 1005 of 2370 met | 1006 of 2370 met | 1706 of 2370 met | 1819 of 2370 met | 1508 of 2370 met |  |
+| **Met** - ✅ and – | 2296 | 1005 of 2296 met | 1006 of 2296 met | 1706 of 2296 met | 1819 of 2296 met | 1508 of 2296 met |  |
 
 ### Application structure
 
@@ -462,7 +456,6 @@ Every control, and every part an application, its windows and its pages are made
 | [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 8 ✅ · 1 – |  |
-| [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
@@ -472,7 +465,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |
-| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 106 of 125 met |  |
+| **Met** - ✅ and – | 119 | 63 of 119 met | 74 of 119 met | 52 of 119 met | 113 of 119 met | 106 of 119 met |  |
 <!-- dictionary:end -->
 
 ### Components
@@ -482,6 +475,7 @@ A component is a library of its own beside StateUI, which an application imports
 <!-- components:begin -->
 | Component | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Map](../lib/Controls/Map/README.md) | 17 |  |  |  |  |  |  |
 | [WebView](../lib/Controls/WebView/README.md) | 78 |  |  |  |  | 53 ✅ · 1 – |  |
 <!-- components:end -->
 
@@ -536,7 +530,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectionChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ | 5 ✅ | 8 ✅ | 9 ✅ | 9 ✅ |  |
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |  |
-| [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 |  |  | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [ModalStack](controls/ModalStack.md) | `popped` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
@@ -544,7 +537,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | 10 | 7 ✅ | 9 ✅ | 7 ✅ | 8 ✅ | 7 ✅ |  |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | 7 | 3 ✅ |  | 2 ✅ | 7 ✅ | 3 ✅ · 4 – |  |
-| [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
@@ -584,17 +576,17 @@ realizes the element and each of its members.
 
 `ActivityIndicator`, `Application`, `Button`, `Canvas`, `CheckBox`, `ColorBox`,
 `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ItemsView`,
-`Label`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`,
-`ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
-`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`,
-`ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`,
-`Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `VStack`, `Window`, `ZStack`.
+`Label`, `Line`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`,
+`ProgressBar`, `RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
+`Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`, `TabbedView`,
+`TextEditor`, `TextField`, `TimePicker`, `TitleView`, `ToolbarItem`,
+`ToolbarItems`, `VStack`, `Window`, `ZStack`.
 
 ### Properties
 
 `accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityIdentifier`,
-`accessibilityLabel`, `address`, `allowDrop`, `area`, `aspect`,
+`accessibilityLabel`, `allowDrop`, `area`, `aspect`,
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
 `barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
@@ -608,26 +600,24 @@ realizes the element and each of its members.
 `iconPosition`, `iconSpacing`, `ignoresInput`, `inputPurpose`,
 `isAccessibilityHidden`, `isAnimating`, `isDestructive`, `isEnabled`,
 `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
-`isRunning`, `isScrollEnabled`, `isSidebarVisible`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isTrafficEnabled`, `isTranslucent`, `isVisible`,
-`isZoomEnabled`, `items`, `itemsLayout`, `label`, `layoutDirection`,
-`letsInputThrough`, `lineBreak`, `lineHeight`, `location`, `mapType`, `margin`,
+`isRunning`, `isSidebarVisible`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isTranslucent`, `isVisible`, `items`, `itemsLayout`,
+`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `margin`,
 `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
 `maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
 `opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
 `panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
-`placeholderColor`, `placement`, `points`, `progress`, `region`,
-`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
-`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
-`selectedItems`, `selectionLength`, `selectionMode`, `shape`,
-`showsClearButton`, `showsText`, `showsUserLocation`, `side`, `source`,
-`spacing`, `step`, `stroke`, `strokeDashOffset`, `strokeDashPattern`,
-`strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
-`swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
-`textDecorations`, `time`, `tint`, `title`, `translationX`, `translationY`,
-`type`, `value`, `verticalAlignment`, `verticalScrollBarVisibility`,
-`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
-`y`, `y1`, `y2`, `zIndex`.
+`placeholderColor`, `placement`, `points`, `progress`, `renderTransform`,
+`returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`,
+`scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`, `selectedItems`,
+`selectionLength`, `selectionMode`, `shape`, `showsClearButton`, `showsText`,
+`side`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
+`strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
+`strokeWidth`, `style`, `swipeDirection`, `swipeThreshold`, `tapCount`, `text`,
+`textCase`, `textColor`, `textDecorations`, `time`, `tint`, `title`,
+`translationX`, `translationY`, `value`, `verticalAlignment`,
+`verticalScrollBarVisibility`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 
@@ -635,19 +625,18 @@ realizes the element and each of its members.
 `dateChanged`, `deactivated`, `destroying`, `disappearing`, `dragCompleted`,
 `dragged`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`, `drop`,
 `dropCompleted`, `endReached`, `frameChanged`, `isFocusedChanged`,
-`isSidebarVisibleChanged`, `itemActivated`, `mapClicked`, `navigatedFrom`,
-`navigatedTo`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
-`pinClicked`, `pinDetailsClicked`, `pointerEntered`, `pointerExited`,
-`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`realizedChanged`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
-`scrollYChanged`, `selectedIndexChanged`, `selectionChanged`, `stopped`,
-`submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`, `toggled`,
-`valueChanged`, `windowClosed`, `windowRestored`.
+`isSidebarVisibleChanged`, `itemActivated`, `navigatedFrom`, `navigatedTo`,
+`navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`,
+`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
+`pressed`, `realizedChanged`, `released`, `resumed`, `scrollStopped`,
+`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `selectionChanged`,
+`stopped`, `submitted`, `swiped`, `tapped`, `textChanged`, `timeChanged`,
+`toggled`, `valueChanged`, `windowClosed`, `windowRestored`.
 
 ### Acts
 
 `alert`, `announce`, `chooseAction`, `confirm`, `currentTime`,
 `currentTimeZone`, `focus`, `handlerFailed`, `hideOnScreenKeyboard`,
-`moveToRegion`, `persistSceneValue`, `persistValue`, `prompt`, `scrollTo`,
-`unfocus`, `utcOffset`.
+`persistSceneValue`, `persistValue`, `prompt`, `scrollTo`, `unfocus`,
+`utcOffset`.
 <!-- vocabulary:end -->

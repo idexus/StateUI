@@ -47,9 +47,6 @@ Line.pointerExited: 🔌 hover on Line: handed to the host's recognizer or handl
 Line.pointerMoved: 🔌 hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerPressed: 🔌 hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerReleased: 🔌 hover on Line: handed to the host's recognizer or handler, no NSEvent sent
-Map.swipeDirection: not realized
-Map.swipeThreshold: not realized
-Map.swiped: not realized
 Path.panTouchCount: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panUpdated: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panXChannel: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
