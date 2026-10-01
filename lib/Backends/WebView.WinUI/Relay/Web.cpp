@@ -20,6 +20,7 @@
 #include <shlwapi.h>
 
 #include <winrt/Microsoft.UI.Dispatching.h>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
 
@@ -93,7 +94,7 @@ namespace {
     /// place - once its CoreWebView2 stands.
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
-        page.HistoryChanged([view](core::CoreWebView2 const &sender, IInspectable const &) {
+        page.HistoryChanged([view](core::CoreWebView2 const &sender, winrt::Windows::Foundation::IInspectable const &) {
             callbacks.history(view, sender.CanGoBack(), sender.CanGoForward());
         });
         page.WebResourceRequested([view](core::CoreWebView2 const &sender,
