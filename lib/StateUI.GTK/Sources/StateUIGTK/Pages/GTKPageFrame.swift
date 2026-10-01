@@ -101,10 +101,12 @@ final class GTKPageFrame {
         self.chrome = chrome
     }
 
-    /// Paints the header bar and what stands on it, as a class of the host's style sheet; nil keeps the platform's.
+    /// Paints the header bar and what stands on it - in the colour written, else light on a dark band and dark on a
+    /// light one (`BandWords`) - as a class of the host's style sheet; nil keeps the platform's.
     private func paintBar(background: HostValue?, foreground: HostValue?) {
         let painted = GTKStyleSheet.bar(
-            background: GTKBrush(background).firstColor, foreground: foreground.flatMap(GTKBrush.rgba))
+            background: GTKBrush(background).firstColor,
+            foreground: BandWords.color(on: background, written: foreground).flatMap(GTKBrush.rgba))
         for bar in [header] + (tabsBar.map { [$0] } ?? []) {
             if let barClass { gtk_widget_remove_css_class(bar, barClass) }
             if let painted { gtk_widget_add_css_class(bar, painted) }

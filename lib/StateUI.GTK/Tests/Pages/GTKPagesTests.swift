@@ -154,6 +154,28 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
+    func testABarsWordsFollowHowDarkItIs() throws {
+        try onUIThread {
+            for (band, words) in [("#000080", Color(red: 255, green: 255, blue: 255)), ("#FFFF00", Color(red: 0, green: 0, blue: 0))] {
+                let host = GTKRenderer.running {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        TitledPage(title: "Painted")
+                    } destination: { _ in TitledPage(title: "Next") }
+                    .barBackgroundColor(Color(band))
+                }
+                let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+                host.layOut()
+
+                var color = GdkRGBA()
+                gtk_widget_get_color(frame.header, &color)
+                let shade = { (value: Float) in Int((value * 255).rounded()) }
+                XCTAssertEqual(
+                    Color(red: shade(color.red), green: shade(color.green), blue: shade(color.blue)), words, band)
+            }
+        }
+    }
+
     /// A header bar takes the colours the window's page declares around the page it shows.
     func testAHeaderBarTakesTheColoursItsPathDeclares() throws {
         try onUIThread {

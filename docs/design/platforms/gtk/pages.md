@@ -49,7 +49,9 @@ every render, and written on the header bar of each page shown:
 - the bar's colours: a page's header bar is painted in the colours its path
   declares, the nearest arrangement's (`barColors`), and what stands on it -
   the title, the way back, the toggles and the switcher's captions - in its
-  foreground, as a class of the host's style sheet ([a widget's own
+  foreground, else light on a dark band and dark on a light one ([words on
+  a painted band](../../host/layout.md#words-on-a-painted-band)), as a class
+  of the host's style sheet ([a widget's own
   box](drawing.md#a-widgets-own-box)); a bar no arrangement colours keeps
   the platform's.
 
