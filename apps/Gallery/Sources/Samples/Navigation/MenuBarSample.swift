@@ -1,12 +1,12 @@
 import StateUI
 
-/// The window's menus on every page, and a page's own joining them: an entry standing in the place of the window's,
-/// a section of the page's own after a line, and a menu of its own.
+/// A page's own menus: File joined by its identity with the platform's where it has one, an entry that comes and
+/// goes with the state, and a menu of its own.
 struct MenuBarSample: SampleContent, ExampleContent {
     @State private var saved = 0
     @State private var exported = 0
 
-    /// Whether this page saves: its Save then stands in the place of the window's.
+    /// Whether this page saves: its File menu then holds Save.
     @State private var pageSaves = false
 
     /// Whether this page adds a menu of its own.
@@ -14,7 +14,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     static let id = "menuBar"
     static let title = "Menu bar"
-    static let summary = "The window's menus on every page, and a page's own joining them."
+    static let summary = "A page's own menus, joined with the platform's by identity."
 
     static let code = """
         @State private var saved = 0
@@ -39,8 +39,8 @@ struct MenuBarSample: SampleContent, ExampleContent {
                     Label("A menu of its own")
                 }
             }
-            // Joins the window's File menu by its identity: Save stands in the
-            // place of the window's, the export after a line.
+            // File, joined by its identity with the platform's own where it has
+            // one: this page's entries are a section of their own.
             .menuBar {
                 Menu("File") {
                     if pageSaves {
@@ -81,8 +81,8 @@ struct MenuBarSample: SampleContent, ExampleContent {
             switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
         }
         .spacing(12)
-        // Joins the window's File menu by its identity: Save stands in the
-        // place of the window's, the export after a line.
+        // File, joined by its identity with the platform's own where it has
+        // one: this page's entries are a section of their own.
         .menuBar {
             Menu("File") {
                 if pageSaves {
@@ -123,13 +123,13 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Label("The window declares File with a disabled Save around every page. While this "
-                + "page saves, its own Save stands in that place; Export… is this page's section, "
-                + "after a line. Going to another page takes both away.")
+            Label("This page declares File: Save while it saves, and Export…. On the Mac it joins the "
+                + "system's own File menu, its entries a section after a line. Going to another page "
+                + "takes them away.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A menu of its own stands after the window's, before the platform's Window and "
+            Label("A menu of its own stands after File, before the platform's Window and "
                 + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
                 + "puts the menus behind the bar's overflow; an iPhone shows none.")
                 .fontSize(12)

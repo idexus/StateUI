@@ -89,8 +89,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
             }
-            // The desktop File menu: this Save stands in the window's place,
-            // and the recent files follow the state they list.
+            // The desktop File menu: Save, and the recent files following the
+            // state they list.
             .menuBar {
                 Menu("File") {
                     MenuItem("Save")
@@ -164,8 +164,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .isEnabled(saved > 0)
                 .onClicked { saved = 0 }
         }
-        // The desktop File menu, declared the same way: this Save stands in
-        // the place of the window's, and the recent files follow the state.
+        // The desktop File menu, declared the same way: Save, and the recent
+        // files following the state.
         .menuBar {
             Menu("File") {
                 MenuItem("Save")
@@ -218,9 +218,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Recent files live in the desktop File menu, after the window's entries: "
+            Label("Recent files live in the desktop File menu, after Save: "
                 + "Add puts one there, choosing one removes it, and an empty submenu disables "
-                + "itself. The page's Save stands in the place of the window's.")
+                + "itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

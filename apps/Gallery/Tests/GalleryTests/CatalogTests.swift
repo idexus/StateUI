@@ -1100,8 +1100,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],
                        "the two halves, then the gallery's own actions declared around every page")
-        XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay, .menuBar],
-                       "and its notice and menus")
+        XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
+                       "and its notice; a menu stands only where a sample declares one")
 
         let pane = try XCTUnwrap(flyout.children.first).built
 
