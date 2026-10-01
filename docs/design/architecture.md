@@ -11,13 +11,14 @@ the packages, what crosses between them, and where each part of the work runs.
   apps/<App>                              one Swift package per application
     Sources/                              views, @State, handlers, engines
     Platforms/AppKit                      the AppKit head: an executable
+    Platforms/UIKit                       the UIKit head: an application bundle
     Platforms/Android                     the Android head: Gradle and a Swift library
     Platforms/WinUI                       the WinUI head: an executable
     Platforms/GTK                         the GTK head: an executable
         |
         |  depends on
         v
-  StateUI  (lib/StateUI, a dynamic library; no Foundation; every platform)
+  StateUI  (lib/StateUI/Core, a dynamic library; no Foundation; every platform)
     Sources/Views, Types, Contracts       what an application writes with
     Sources/Core                          state, keys, diffing, cycles, the typed boundary
         |
@@ -28,20 +29,28 @@ the packages, what crosses between them, and where each part of the work runs.
         |
         |  typed HostRender / HostPatch
         v
-  StateUI.AppKit (lib/StateUI/StateUI.AppKit)          StateUI.Android (lib/StateUI/StateUI.Android)
-    Swift, in the application's process          Swift, in the application's process,
-    over AppKit                                  Java beneath it through JNI
+  StateUI.AppKit (lib/StateUI/StateUI.AppKit)    StateUI.UIKit (lib/StateUI/StateUI.UIKit)
+    Swift over AppKit                            Swift over UIKit
         |                                             |
         v                                             v
-    AppKit views                                  Android views
+    AppKit views                                  UIKit views
 
-  StateUI.WinUI (lib/StateUI/StateUI.WinUI)            StateUI.GTK (lib/StateUI/StateUI.GTK)
-    Swift, in the application's process,         Swift, in the application's process,
-    C++/WinRT beneath it behind a C ABI          over GTK 4's and libadwaita's C API
+  StateUI.Android (lib/StateUI/StateUI.Android)  StateUI.WinUI (lib/StateUI/StateUI.WinUI)
+    Swift, Java beneath it through JNI           Swift, C++/WinRT beneath it behind a C ABI
         |                                             |
         v                                             v
-    WinUI 3 elements                              GTK widgets
+    Android views                                 WinUI 3 elements
 
+  StateUI.GTK (lib/StateUI/StateUI.GTK)
+    Swift over GTK 4's and libadwaita's C API
+        |
+        v
+    GTK widgets
+
+  lib/Backends/<Element>.<Host>           a backend: one element on one host, its engine a
+                                          library the platform does not ship - WebView.GTK,
+                                          WebView.WinUI - registered by the application's head
+  lib/StateUI/StateUI.Conformance         the conformance families every host's tests run
   lib/StateUI.VSCode                      the editor extension: new application,
                                           build, run and debug for every head
 ```
