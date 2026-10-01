@@ -42,8 +42,8 @@ Label.scaleX: ✅
 Line.ignoresInput: not realized
 Line.layoutDirection: not realized
 Line.translationY: ✅
-Map.rotation: not realized
-Map.style: not realized
+Map.rotation: 🧩
+Map.style: 🧩
 Path.accessibilityHeadingLevel: ✅
 Path.opacity: ✅
 Path.scale: ✅

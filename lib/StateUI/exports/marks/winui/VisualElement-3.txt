@@ -42,9 +42,9 @@ Label.layoutDirection: not realized
 Label.translationY: ✅
 Line.rotation: ✅
 Line.style: ✅
-Map.accessibilityHeadingLevel: not realized
-Map.opacity: not realized
-Map.scale: not realized
+Map.accessibilityHeadingLevel: 🧩
+Map.opacity: 🧩
+Map.scale: 🧩
 Path.background: not realized
 Path.frameChanged: ✅
 Path.maximumHeight: ✅

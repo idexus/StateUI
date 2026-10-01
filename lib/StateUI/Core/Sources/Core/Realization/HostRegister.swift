@@ -18,15 +18,21 @@
     /// The elements the host's family will never have - each meeting the contract there - with why.
     public let notPlanned: [String: String]
 
+    /// The elements the host leaves to the application, which registers its own backend for each - a map, where the
+    /// platform has none of its own.
+    public let byApplication: Set<String>
+
     /// A register of `records`, written before anything a runtime adds; the elements realized none of, shown with no
-    /// view, and never had.
+    /// view, never had, and left to the application.
     public init(
-        records: [HostRecord], unrealized: Set<String>, viewless: Set<String>, notPlanned: [String: String] = [:]
+        records: [HostRecord], unrealized: Set<String>, viewless: Set<String>, notPlanned: [String: String] = [:],
+        byApplication: Set<String> = []
     ) {
         self.records = records
         self.unrealized = unrealized
         self.viewless = viewless
         self.notPlanned = notPlanned
+        self.byApplication = byApplication
     }
 
     /// This register with what the host's runtime realizes behind it. What is written comes first: a runtime says
@@ -39,7 +45,8 @@
                 && !records.contains { $0.member == record.member && Self.wears(record.owner, $0.owner) }
         }
         return HostRegister(
-            records: records + realized, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned)
+            records: records + realized, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned,
+            byApplication: byApplication)
     }
 
     /// This register with a host's declaration of what its runtime realizes behind it.
@@ -53,6 +60,7 @@
         switch judgement(ofElement: element) {
         case nil: return nil
         case .notPlanned(let reason)?: return .notPlanned(reason: reason)
+        case .byApplication?: return .byApplication
         default: break
         }
 
@@ -63,10 +71,11 @@
         return nil
     }
 
-    /// What the host says of `element` itself: never, with why, where its family never has it; made where it
-    /// realizes it; nil where it realizes none of it.
+    /// What the host says of `element` itself: never, with why, where its family never has it; the application's
+    /// where the application registers its own; made where it realizes it; nil where it realizes none of it.
     public func judgement(ofElement element: String) -> HostRecord.Judgement? {
         if let reason = notPlanned[element] { return .notPlanned(reason: reason) }
+        if byApplication.contains(element) { return .byApplication }
         return unrealized.contains(element) ? nil : .complete
     }
 
@@ -74,7 +83,7 @@
     public func realizes(_ member: String, on element: String, from tier: String?) -> Bool {
         switch judgement(of: member, on: element, from: tier) {
         case .complete?, .partial?: true
-        case .notPlanned?, .unrealized?, nil: false
+        case .notPlanned?, .unrealized?, .byApplication?, nil: false
         }
     }
 
@@ -104,6 +113,13 @@
         for (element, reason) in notPlanned.sorted(by: { $0.key < $1.key }) {
             if reason.isEmpty { problems.append("\(element) is never and says no reason") }
             if unrealized.contains(element) { problems.append("\(element) is both unrealized and never") }
+            if byApplication.contains(element) { problems.append("\(element) is both the application's and never") }
+        }
+        for element in byApplication.sorted() {
+            if unrealized.contains(element) { problems.append("\(element) is both unrealized and the application's") }
+            if !LibraryContracts.elements.contains(where: { $0.nodeType.name == element }) {
+                problems.append("\(element) is left to the application, and the library declares no such element")
+            }
         }
         return problems
     }

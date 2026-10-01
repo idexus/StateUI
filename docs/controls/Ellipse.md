@@ -20,6 +20,7 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
 | – | Never on that host's family, which meets the contract there. |
+| 🧩 | Left to the application, which registers its own backend for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
 | 🔌 | Proven only through the host's own entry or record, not the toolkit's. |

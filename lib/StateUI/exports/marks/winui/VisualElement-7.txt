@@ -42,9 +42,9 @@ Label.rotationX: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: not realized
 Line.scaleX: ✅
-Map.ignoresInput: not realized
-Map.layoutDirection: not realized
-Map.translationY: not realized
+Map.ignoresInput: 🧩
+Map.layoutDirection: 🧩
+Map.translationY: 🧩
 Path.rotation: ✅
 Path.style: ✅
 Picker.accessibilityHeadingLevel: ✅

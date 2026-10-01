@@ -44,9 +44,9 @@ Label.pivotX: ✅
 Label.zIndex: not realized
 Line.accessibilityLabel: ✅
 Line.rotationX: not realized
-Map.isAccessibilityHidden: not realized
-Map.isEnabled: not realized
-Map.scaleX: not realized
+Map.isAccessibilityHidden: 🧩
+Map.isEnabled: 🧩
+Map.scaleX: 🧩
 Path.ignoresInput: not realized
 Path.layoutDirection: not realized
 Path.translationY: ✅

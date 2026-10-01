@@ -93,10 +93,10 @@ Line.dragOver: not realized
 Line.drop: not realized
 Line.frameChanged: ✅
 Line.panYChannel: ✅
-Map.frameChanged: not realized
-Map.gridColumnSpan: not realized
-Map.gridRowSpan: not realized
-Map.pinchUpdated: not realized
+Map.frameChanged: 🧩
+Map.gridColumnSpan: 🧩
+Map.gridRowSpan: 🧩
+Map.pinchUpdated: 🧩
 Path.canDrag: not realized
 Path.dragStarting: not realized
 Path.dragText: not realized

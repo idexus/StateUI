@@ -91,15 +91,15 @@ Line.gridRow: ✅
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
-Map.frameChanged: not realized
-Map.margin: not realized
-Map.pointerEntered: not realized
-Map.pointerExited: not realized
-Map.pointerMoved: not realized
-Map.pointerPressed: not realized
-Map.pointerReleased: not realized
-Map.tapCount: not realized
-Map.tapped: not realized
+Map.frameChanged: 🧩
+Map.margin: 🧩
+Map.pointerEntered: 🧩
+Map.pointerExited: 🧩
+Map.pointerMoved: 🧩
+Map.pointerPressed: 🧩
+Map.pointerReleased: 🧩
+Map.tapCount: 🧩
+Map.tapped: 🧩
 Path.allowDrop: not realized
 Path.area: ✅
 Path.dragLeave: not realized

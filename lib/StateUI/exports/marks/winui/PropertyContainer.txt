@@ -12,7 +12,7 @@ Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
 Label.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
-Map.accessibilityIdentifier: not realized
+Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅

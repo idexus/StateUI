@@ -92,12 +92,12 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.verticalAlignment: ✅
-Map.frameChanged: not realized
-Map.gridColumn: not realized
-Map.gridRow: not realized
-Map.swipeDirection: not realized
-Map.swipeThreshold: not realized
-Map.swiped: not realized
+Map.frameChanged: 🧩
+Map.gridColumn: 🧩
+Map.gridRow: 🧩
+Map.swipeDirection: 🧩
+Map.swipeThreshold: 🧩
+Map.swiped: 🧩
 Path.frameChanged: ✅
 Path.margin: ✅
 Path.pointerEntered: ✅

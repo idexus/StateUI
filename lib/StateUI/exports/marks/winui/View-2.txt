@@ -96,13 +96,13 @@ Line.pointerPressed: ✅
 Line.pointerReleased: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
-Map.allowDrop: not realized
-Map.area: not realized
-Map.dragLeave: not realized
-Map.dragOver: not realized
-Map.drop: not realized
-Map.frameChanged: not realized
-Map.panYChannel: not realized
+Map.allowDrop: 🧩
+Map.area: 🧩
+Map.dragLeave: 🧩
+Map.dragOver: 🧩
+Map.drop: 🧩
+Map.frameChanged: 🧩
+Map.panYChannel: 🧩
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅

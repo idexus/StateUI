@@ -44,6 +44,19 @@ final class HostRegisterTests: XCTestCase {
         XCTAssertFalse(register.realizes("text", on: "Map", from: nil))
     }
 
+    /// An element left to the application is the application's on itself and on every member, and the host realizes
+    /// none of it.
+    func testAnElementLeftToTheApplicationIsItsOnEveryMember() {
+        let register = HostRegister(
+            records: [.complete("VisualElement", "opacity")], unrealized: [], viewless: [], byApplication: ["Map"])
+
+        XCTAssertEqual(register.judgement(ofElement: "Map"), .byApplication)
+        XCTAssertEqual(register.judgement(of: "region", on: "Map", from: nil), .byApplication)
+        XCTAssertEqual(register.judgement(of: "opacity", on: "Map", from: "VisualElement"), .byApplication)
+        XCTAssertFalse(register.realizes("region", on: "Map", from: nil))
+        XCTAssertEqual(register.and([.complete("Button", "text")]).byApplication, ["Map"], "kept with the runtime's")
+    }
+
     /// A tier's record reaches every wearer, and each wearer's test is its own.
     func testATiersRecordReachesEveryWearer() {
         let register = HostRegister(records: [.complete("TextElement", "text")], unrealized: [], viewless: [])
@@ -113,6 +126,19 @@ final class HostRegisterTests: XCTestCase {
             "TextElement.text is unrealized on a tier, which only an element's record says",
             "Map is both unrealized and never",
             "MenuBar is never and says no reason",
+        ])
+    }
+
+    /// An element left to the application is neither unrealized nor never, and is one the library declares.
+    func testWhatIsLeftToTheApplicationIsNamedOnce() {
+        let register = HostRegister(
+            records: [], unrealized: ["Map"], viewless: [], notPlanned: ["Pin": "No pins."],
+            byApplication: ["Map", "Pin", "Globe"])
+
+        XCTAssertEqual(register.problems, [
+            "Pin is both the application's and never",
+            "Globe is left to the application, and the library declares no such element",
+            "Map is both unrealized and the application's",
         ])
     }
 }

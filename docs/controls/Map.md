@@ -32,6 +32,7 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
 | – | Never on that host's family, which meets the contract there. |
+| 🧩 | Left to the application, which registers its own backend for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
 | 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
@@ -46,9 +47,9 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| Android Views |  |  | the application's own, registered | not realized |
-| WinUI 3 |  |  | the application's own, registered | not realized |
-| GTK 4 |  |  | the application's own, registered | not realized |
+| Android Views | 🧩 | 74 🧩 | the application's own, registered | the application registers its own backend |
+| WinUI 3 | 🧩 | 74 🧩 | the application's own, registered | the application registers its own backend |
+| GTK 4 | 🧩 | 74 🧩 | the application's own, registered | the application registers its own backend |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.swift`.
@@ -57,14 +58,14 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isScrollEnabled` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isTrafficEnabled` | property | `Bool` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isZoomEnabled` | property | `Bool` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onMapClicked` (`mapClicked`) | event | `Location` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `mapType` | property | `MapType` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `region` | property | `MapRegion` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `showsUserLocation` | property | `Bool` | provider |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `isScrollEnabled` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isTrafficEnabled` | property | `Bool` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isZoomEnabled` | property | `Bool` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onMapClicked` (`mapClicked`) | event | `Location` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `mapType` | property | `MapType` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `region` | property | `MapRegion` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `showsUserLocation` | property | `Bool` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -72,7 +73,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `accessibilityIdentifier` | property | `String` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -80,39 +81,39 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `accessibilityHint` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `accessibilityLabel` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `automationExcludedWithChildren` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `background` | property | `Background` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `focus` | act | `() -> Bool` |  |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `frame` | property | `Rect` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `height` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `ignoresInput` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isEnabled` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isFocusedChanged` | event | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isVisible` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `layoutDirection` | property | `LayoutDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `maximumHeight` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `maximumWidth` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `minimumHeight` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `minimumWidth` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `opacity` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `pivotX` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `pivotY` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `rotation` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `rotationX` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `rotationY` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `scale` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `scaleX` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `scaleY` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `style` | property | `Name` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `translationX` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `translationY` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `width` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `accessibilityHint` | property | `String` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `accessibilityLabel` | property | `String` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `automationExcludedWithChildren` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `background` | property | `Background` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `focus` | act | `() -> Bool` |  |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `frame` | property | `Rect` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `height` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `ignoresInput` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isAccessibilityHidden` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isEnabled` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isFocusedChanged` | event | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `isVisible` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `layoutDirection` | property | `LayoutDirection` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `maximumHeight` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `maximumWidth` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `minimumHeight` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `minimumWidth` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `opacity` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `pivotX` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `pivotY` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `rotation` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `rotationX` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `rotationY` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `scale` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `scaleX` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `scaleY` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `style` | property | `Name` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `translationX` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `translationY` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `unfocus` | act | `() -> Void` |  |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `width` | property | `Double` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `zIndex` | property | `Int` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
 
 ## From [View](tiers/View.md)
 
@@ -120,35 +121,35 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `allowDrop` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `area` | property | `Area` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `canDrag` | property | `Bool` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragStarting` | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `dragText` | property | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDrop` (`drop`) | event | `String` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `gridColumn` | property | `Int` | stateUI |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `gridColumnSpan` | property | `Int` | stateUI |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `gridRow` | property | `Int` | stateUI |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `gridRowSpan` | property | `Int` | stateUI |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `horizontalAlignment` | property | `Alignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `margin` | property | `Insets` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `panTouchCount` | property | `Int` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `panXChannel` | property | `Int` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `panYChannel` | property | `Int` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPointerExited` (`pointerExited`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `swipeDirection` | property | `SwipeDirection` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `swipeThreshold` | property | `Double` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `tapCount` | property | `Int` | structure |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `onTapped` (`tapped`) | event |  | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `verticalAlignment` | property | `Alignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
+| `allowDrop` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `area` | property | `Area` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `canDrag` | property | `Bool` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onDragLeave` (`dragLeave`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onDragOver` (`dragOver`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `dragStarting` | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `dragText` | property | `String` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onDrop` (`drop`) | event | `String` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `gridColumn` | property | `Int` | stateUI |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `gridColumnSpan` | property | `Int` | stateUI |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `gridRow` | property | `Int` | stateUI |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `gridRowSpan` | property | `Int` | stateUI |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `horizontalAlignment` | property | `Alignment` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `margin` | property | `Insets` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `panTouchCount` | property | `Int` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `panXChannel` | property | `Int` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `panYChannel` | property | `Int` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPointerExited` (`pointerExited`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `swipeDirection` | property | `SwipeDirection` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `swipeThreshold` | property | `Double` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `tapCount` | property | `Int` | structure |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `onTapped` (`tapped`) | event |  | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `verticalAlignment` | property | `Alignment` | native |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |

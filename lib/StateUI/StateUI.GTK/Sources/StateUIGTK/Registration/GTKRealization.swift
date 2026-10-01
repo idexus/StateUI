@@ -9,9 +9,11 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: Set<String> = [
-        "Map", "Pin",
-    ]
+    static let unrealized: Set<String> = []
+
+    /// The entries this host leaves to the application, which registers its own backend for each: the platform has
+    /// no map of its own, and a map needs a provider and its key.
+    static let byApplication: Set<String> = ["Map", "Pin"]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.
@@ -133,6 +135,9 @@ enum GTKRealization {
 
     /// What GTK realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {
-        HostRegister(records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned).and(declaration)
+        HostRegister(
+            records: records, unrealized: unrealized, viewless: viewless, notPlanned: notPlanned,
+            byApplication: byApplication
+        ).and(declaration)
     }
 }

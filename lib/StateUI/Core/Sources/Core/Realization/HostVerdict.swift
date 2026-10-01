@@ -26,6 +26,9 @@
         /// 🔌: its cases passed only through the host's own entry or record - an act handed past the toolkit's
         /// input, a read of what the host keeps rather than what the toolkit holds; which, and why.
         case byHost(String)
+
+        /// 🧩: the host leaves it to the application, which registers its own backend for it there.
+        case byApplication
     }
 
     /// The element.
@@ -61,6 +64,7 @@
         case .failed(let message): "\(subject): ❌ \(message)"
         case .partly(let why): "\(subject): ◐ \(why)"
         case .byHost(let why): "\(subject): 🔌 \(why)"
+        case .byApplication: "\(subject): 🧩"
         }
     }
 
@@ -96,16 +100,19 @@
             mark = .partly(why)
         } else if let why = text(after: "🔌"), !why.isEmpty {
             mark = .byHost(why)
+        } else if said == "🧩" {
+            mark = .byApplication
         } else {
             return nil
         }
         self.init(element: String(parts[0]), member: parts.count == 2 ? String(parts[1]) : nil, mark: mark)
     }
 
-    /// Whether the dictionary counts the verdict as met: proven whole, or never on the host's family.
+    /// Whether the dictionary counts the verdict as met: proven whole, never on the host's family, or left to the
+    /// application's own backend.
     public var meets: Bool {
         switch mark {
-        case .proven, .notPlanned: true
+        case .proven, .notPlanned, .byApplication: true
         case .partial, .notRealized, .cannot, .waiting, .failed, .partly, .byHost: false
         }
     }
@@ -113,7 +120,7 @@
     /// Whether a case proving the subject passed: proved whole or in part, or never had by the host's family.
     private var passed: Bool {
         switch mark {
-        case .proven, .partial, .notPlanned, .byHost: true
+        case .proven, .partial, .notPlanned, .byHost, .byApplication: true
         case .notRealized, .cannot, .waiting, .failed, .partly: false
         }
     }

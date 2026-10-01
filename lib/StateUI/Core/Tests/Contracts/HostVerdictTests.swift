@@ -19,6 +19,7 @@ final class HostVerdictTests: XCTestCase {
             HostVerdict(element: "Switch", member: "toggled", mark: .failed("true expected, false came")),
             HostVerdict(element: "Label", member: "text", mark: .partly("cannot read text of Label - Hidden.")),
             HostVerdict(element: "Label", member: "tapped", mark: .byHost("tap on Label: the recognizer is handed it")),
+            HostVerdict(element: "Pin", member: "label", mark: .byApplication),
         ]
 
         for verdict in verdicts {
@@ -116,15 +117,15 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertTrue(HostVerdict.isStale(nil, family: "Slider", on: "gtk", in: revisions), "no file")
     }
 
-    /// Met is proven whole or never had; the rest is not met.
-    func testMetIsProvenOrNever() {
+    /// Met is proven whole, never had, or left to the application's own backend; the rest is not met.
+    func testMetIsProvenNeverOrTheApplications() {
         let marks: [HostVerdict.Mark] = [
             .proven, .partial(missing: "m"), .notPlanned(reason: "r"), .notRealized, .cannot("c"), .waiting(on: "w"),
-            .failed("f"), .partly("p"), .byHost("b"),
+            .failed("f"), .partly("p"), .byHost("b"), .byApplication,
         ]
 
         XCTAssertEqual(
             marks.map { HostVerdict(element: "Label", member: "text", mark: $0).meets },
-            [true, false, true, false, false, false, false, false, false])
+            [true, false, true, false, false, false, false, false, false, true])
     }
 }

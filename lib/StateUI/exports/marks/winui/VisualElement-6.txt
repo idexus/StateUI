@@ -42,13 +42,13 @@ Label.style: ✅
 Line.accessibilityHeadingLevel: ✅
 Line.opacity: ✅
 Line.scale: ✅
-Map.background: not realized
-Map.frameChanged: not realized
-Map.maximumHeight: not realized
-Map.maximumWidth: not realized
-Map.minimumHeight: not realized
-Map.minimumWidth: not realized
-Map.translationX: not realized
+Map.background: 🧩
+Map.frameChanged: 🧩
+Map.maximumHeight: 🧩
+Map.maximumWidth: 🧩
+Map.minimumHeight: 🧩
+Map.minimumWidth: 🧩
+Map.translationX: 🧩
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.pivotY: ✅

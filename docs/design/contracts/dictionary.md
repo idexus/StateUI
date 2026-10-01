@@ -92,6 +92,8 @@ a host writes by hand and what its runtime registers - and by the case:
   Button.clicked: ✅               a passing case proved it
   DatePicker.format: ☑️ <missing>  proved, while the register says what is missing
   Map: – <why>                     the host's family never has it
+  Pin.label: 🧩                    the host leaves it to the application, which
+                                   registers its own backend for it
   Line.x1: not realized            empty: the host has no realization yet
   TextField.submitted: cannot ...  empty: the driver cannot do or read it, and why
   SplitView: waits on <member>     empty: realized, its case stopped by a member
@@ -101,7 +103,11 @@ a host writes by hand and what its runtime registers - and by the case:
 ```
 
 A case runs only where the host realizes every member it covers; a member
-the register calls never is marked – without the case running. The element
+the register calls never is marked – without the case running, and one of an
+element the register leaves to the application (`byApplication`) - a map on
+a platform with none of its own - is marked 🧩 so. Both count as met: the
+host has done all it will, and the contract is kept there by the family's
+nature or by the application's own backend. The element
 itself has a verdict of its own, `Button: ✅`: the creation table's mark, and
 the "Created" cell of the hosts table that opens the element's page, above
 its own members and then its tiers'. Every view has one case that proves it

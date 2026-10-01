@@ -12,7 +12,7 @@ Image.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a Gt
 ItemsView.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Label.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 Line.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
-Map.accessibilityIdentifier: not realized
+Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 ModalStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
 NavigationStack.accessibilityIdentifier: – GTK 4 gives an accessible the identifier a GtkBuilder file names alone: none is set on a widget made in code.
