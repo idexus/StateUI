@@ -97,6 +97,13 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class showing what stands under a list or a grid behind its rows: the theme paints a view's own.
+    static var clear: String {
+        let name = "stateui-clear"
+        write(name, "background: none;")
+        return name
+    }
+
     /// The class giving typed words their look - the font's size, weight, slant and family and the words' colour -
     /// and the placeholder its colour, in a field's own text or as an editor's label; nil where nothing is given.
     static func words(_ look: TextLook, placeholder: GdkRGBA?) -> String? {

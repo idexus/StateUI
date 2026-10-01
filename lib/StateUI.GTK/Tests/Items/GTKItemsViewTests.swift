@@ -26,6 +26,25 @@ final class GTKItemsViewTests: XCTestCase {
 }
 
 extension GTKItemsViewTests {
+    /// A collection paints nothing behind its rows of its own, a list and a grid alike: what stands under it shows.
+    func testACollectionShowsWhatStandsUnderIt() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    ItemsView(0..<1) { Label("Item \($0)").padding(12) }.width(300).height(200)
+                    ItemsView(0..<1) { Label("Tile \($0)").padding(12) }.itemsLayout(.grid(minimumItemWidth: 100)).width(300).height(200)
+                }
+            }
+            let collections = host.views(GTKItemsView.self)
+            host.settle { collections.allSatisfy { $0.shownRows.count == 1 } }
+
+            for collection in collections {
+                let pixel = try XCTUnwrap(collection.pixels(at: [(150, 190)]).first)
+                XCTAssertEqual(pixel >> 24, 0, "nothing painted beneath the rows: \(String(pixel, radix: 16))")
+            }
+        }
+    }
+
     /// A row is named by what its entry says (`MountedElement.spokenWords`): the screen reader reads a row by its
     /// name alone.
     func testARowIsNamedByWhatItsEntrySays() throws {

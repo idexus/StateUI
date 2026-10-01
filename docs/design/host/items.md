@@ -2,7 +2,8 @@
 
 What a platform's collection holds of one ItemsView, and what it tells the
 tree, is decided once in the host layer (`ItemsCells`); a backend is the
-toolkit's collection and its calls.
+toolkit's collection and its calls. A collection paints nothing behind its
+rows on any host: what it stands on shows through.
 
 The entries cross as one property, every identity in order. A backend takes
 them as they change (`takeEntries`) and shows one cell for each. When the

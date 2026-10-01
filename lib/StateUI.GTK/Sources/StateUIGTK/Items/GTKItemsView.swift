@@ -126,6 +126,9 @@ final class GTKItemsView: GTKLayoutView {
         } else {
             gtk_scrollable_set_vscroll_policy(made.opaque, GTK_SCROLL_NATURAL)
         }
+        // What stands under the collection shows behind its rows, as on every host.
+        // Design: docs/design/platforms/gtk/items.md#behind-the-rows
+        gtk_widget_add_css_class(made, GTKStyleSheet.clear)
         connectSignal(UnsafeMutableRawPointer(made), "activate", number: number) { (_: UnsafeMutableRawPointer?, place: UInt32, data: gpointer?) in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.activated(Int(place)) }
         }

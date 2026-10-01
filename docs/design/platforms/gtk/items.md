@@ -32,6 +32,13 @@ a header or a footer takes a cell of a grid as an item does, and each
 cell's margins are its entry's room. A grid's columns follow the width the
 list is given.
 
+## Behind the rows
+
+A collection paints nothing of its own behind its rows, as on every host:
+what it stands on shows through, so a list matches the page or the card
+around it. GTK's theme paints a list view in its own view colour, so the
+list and the grid wear a class of the host's style sheet that takes it away.
+
 ## A cell
 
 A cell is a StateUI panel GTK places, so it answers GTK's measure with the
