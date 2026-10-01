@@ -184,9 +184,9 @@ them and restarts the server, for an index a failed build left inconsistent.
 **StateUI: Check Toolchain** looks for what this machine needs to build and run
 the hosts it runs, as [Requirements](#requirements) and the handbook's host pages
 say - Swift 6.4; Xcode 27, an iOS simulator runtime and the Android SDK, NDK,
-JDK and Swift SDK on macOS; Visual Studio's C++ tools and the Windows SDK on
-Windows; GTK, libadwaita, gdk-pixbuf's SVG loader and a desktop session on
-Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
+JDK and Swift SDK on macOS; Visual Studio's C++ tools, the Windows SDK and the
+WebView2 runtime on Windows; GTK, libadwaita, WebKitGTK, gdk-pixbuf's SVG
+loader and a desktop session on Linux; `lldb-dap` and the LLDB DAP extension for a Debug launch; and Node.js
 for this extension's own build. The **StateUI Toolchain** output lists each
 with what was found - a version older than the one required marked as too old - and
 for each not found what to install. It looks where the build scripts look
@@ -226,11 +226,14 @@ launch file at all:
   `~/Library/Android/sdk`. The scripts fetch Gradle themselves.
 - For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds the
   head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the Windows
-  SDK; and the `lldb-dap` extension. The scripts fetch C++/WinRT and the
-  Windows App SDK themselves.
+  SDK; the WebView2 runtime for the web view's backend (Windows 11 has it);
+  and the `lldb-dap` extension. The scripts fetch C++/WinRT and the Windows
+  App SDK themselves.
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
-  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
+  headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); WebKitGTK 6.0 with
+  its headers for the web view's backend and the host's tests
+  (`libwebkitgtk-6.0-dev` on Ubuntu, `webkitgtk-6.0` on Arch); gdk-pixbuf's SVG
   loader (`librsvg2-common`, or glycin's loaders where gdk-pixbuf 2.44 and
   newer read through glycin, as on Arch); and the `lldb-dap` extension, with
   a toolchain `lldb-dap` that starts - on a distribution other than the one

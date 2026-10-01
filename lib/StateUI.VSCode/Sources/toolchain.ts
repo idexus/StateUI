@@ -217,6 +217,11 @@ function linuxChecks(): Check[] {
         module("gtk4", "GTK", "4.14", "libgtk-4-dev"),
         module("libadwaita-1", "libadwaita", "1.5", "libadwaita-1-dev"),
         {
+            component: "WebKitGTK 6.0, with its headers", neededBy: "GTK's web view (lib/Backends/WebView.GTK), the GTK host's tests included",
+            advice: "Install libwebkitgtk-6.0-dev on Ubuntu, webkitgtk-6.0 on Arch: the web view's backend links it.",
+            look: async () => served((await run("pkg-config", ["--modversion", "webkitgtk-6.0"]))?.trim(), "2.40"),
+        },
+        {
             component: "gdk-pixbuf's SVG loader", neededBy: "GTK's pictures",
             advice: "Install librsvg2-common - or, where gdk-pixbuf reads through glycin, glycin's loaders (glycin on Arch):"
                 + " without one GTK draws no SVG picture.",
@@ -386,6 +391,17 @@ function windowsChecks(): Check[] {
                 const vswhere = path.join(programs, "Microsoft Visual Studio", "Installer", "vswhere.exe");
                 const version = (await run(vswhere, ["-latest", "-products", "*", "-requires", tools, "-property", "installationVersion"]))?.trim();
                 return served(versionIn(version ?? ""), "18");
+            },
+        },
+        {
+            component: "the WebView2 runtime", neededBy: "WinUI's web view (lib/Backends/WebView.WinUI)",
+            advice: "Install the Evergreen WebView2 Runtime from https://developer.microsoft.com/microsoft-edge/webview2 -"
+                + " Windows 11 has it.",
+            look: async () => {
+                const application = path.join(programs, "Microsoft", "EdgeWebView", "Application");
+                const version = fs.existsSync(application)
+                    ? fs.readdirSync(application).filter((each) => /^\d+\./.test(each)).sort(compareVersions).pop() : undefined;
+                return version && path.join(application, version);
             },
         },
         {
