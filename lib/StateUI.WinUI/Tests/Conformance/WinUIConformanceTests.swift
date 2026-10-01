@@ -41,7 +41,6 @@ final class WinUIConformanceTests: XCTestCase {
     func testTextField() { conform(TextFieldTests.self) }
     func testTimePicker() { conform(TimePickerTests.self) }
     func testVStack() { conform(VStackTests.self) }
-    func testWebView() { conform(WebViewTests.self) }
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }

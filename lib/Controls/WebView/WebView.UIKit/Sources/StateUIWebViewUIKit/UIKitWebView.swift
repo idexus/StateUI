@@ -4,11 +4,11 @@
 #if os(iOS)
 import UIKit
 import WebKit
-@_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
+import StateUIWebView
+@_spi(Host) import StateUIWebViewHost
 
-/// A WebView: WebKit's own web view. What the page does comes back as the element's events - a navigation as it
-/// starts and ends, with why; a history flag only when it changes; the web process dying.
+/// A WebView on UIKit: WebKit's own web view. What the page does comes back as the element's events - a navigation as
+/// it starts and ends, with why; a history flag only when it changes; the web process dying.
 /// Design: docs/design/platforms/uikit/controls.md#a-web-view
 @MainActor
 final class UIKitWebView: WKWebView, WKNavigationDelegate {
@@ -32,6 +32,9 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
     /// The page last asked for by its address.
     private var shown: URLRequest?
 
+    /// A page asked for and not loaded yet: loaded once the element's values are all applied.
+    private var pending: WebViewSource?
+
     /// The history as last said: whether there was a page behind and ahead.
     private var said = (back: false, forward: false)
 
@@ -45,25 +48,36 @@ final class UIKitWebView: WKWebView, WKNavigationDelegate {
         fatalError("UIKitWebView is made in code")
     }
 
-    /// Shows the page at an address, or a document written in place, asking as `agent` - the platform's own where
-    /// none; no source leaves the page as it is. A document with no address of its own is gone to as a `data:`
-    /// address, which WebKit keeps in the page's history as it keeps any other.
-    func show(_ source: WebViewSource?, userAgent agent: String?) {
-        customUserAgent = agent
+    /// What the view calls itself to the servers it asks; nil for WebKit's own.
+    var agent: String? {
+        get { customUserAgent }
+        set { customUserAgent = newValue }
+    }
+
+    /// Shows the page at an address, or a document written in place - once the element's other values, its agent
+    /// among them, are applied; no source leaves the page as it is. A document with no address of its own is gone
+    /// to at its `data:` address (`WebDocument`).
+    func show(_ source: WebViewSource?) {
+        guard let source else { return }
+        if pending == nil { Task { @MainActor [weak self] in self?.loadPending() } }
+        pending = source
+    }
+
+    /// Loads the page asked for last.
+    private func loadPending() {
+        guard let source = pending else { return }
+        pending = nil
         switch source {
-        case .url(let address)?:
+        case .url(let address):
             guard let url = URL(string: address) else { return }
             shown = URLRequest(url: url)
             load(URLRequest(url: url))
-        case .html(let document, let base?)?:
+        case .html(let document, let base?):
             loadHTMLString(document, baseURL: URL(string: base))
-        case .html(let document, nil)?:
-            guard let url = URL(string: "data:text/html;charset=utf-8;base64," + Data(document.utf8).base64EncodedString())
-            else { return }
+        case .html(let document, nil):
+            guard let url = URL(string: WebDocument.address(of: document)) else { return }
             shown = URLRequest(url: url)
             load(URLRequest(url: url))
-        case nil:
-            break
         }
     }
 

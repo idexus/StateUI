@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A web view: WinUI's WebView2 over the system's WebView2 runtime. What the
-// page does is told through the callbacks - a navigation starting and
-// ending, the way back and forward, the web process ending; a script answers
-// through `answered` under its ticket, as the JSON its value is written in. A
-// document written in place is what its address answers, served by the view.
+// The web view's WinUI relay: WinUI's WebView2 over the system's WebView2
+// runtime. What the page does is told through the callbacks - a navigation
+// starting and ending, the way back and forward, the web process ending; a
+// script answers through `answered` under its ticket, as the JSON its value is
+// written in. A document written in place is what its address answers, served
+// by the view.
 // Design: docs/design/platforms/winui/controls.md#a-web-view
 
 #include "Relay.h"
@@ -22,7 +23,9 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
 
-using namespace stateui;
+using namespace webview;
+
+WebViewWinUICallbacks webview::callbacks{};
 namespace core = winrt::Microsoft::Web::WebView2::Core;
 namespace streams = winrt::Windows::Storage::Streams;
 
@@ -91,7 +94,7 @@ namespace {
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
         page.HistoryChanged([view](core::CoreWebView2 const &sender, IInspectable const &) {
-            callbacks.webHistory(view, sender.CanGoBack(), sender.CanGoForward());
+            callbacks.history(view, sender.CanGoBack(), sender.CanGoForward());
         });
         page.WebResourceRequested([view](core::CoreWebView2 const &sender,
                                          core::CoreWebView2WebResourceRequestedEventArgs const &args) {
@@ -117,7 +120,7 @@ namespace {
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_web_make(int64_t view) {
+extern "C" WebViewObjectRef stateui_webview_winui_make(int64_t view) {
     try {
         controls::WebView2 web;
         web.CoreWebView2Initialized([view](controls::WebView2 const &sender, auto const &) {
@@ -125,17 +128,17 @@ extern "C" StateUIObjectRef stateui_winui_web_make(int64_t view) {
         });
         web.NavigationStarting([view](controls::WebView2 const &,
                                       core::CoreWebView2NavigationStartingEventArgs const &args) {
-            callbacks.webNavigating(view, told(args.NavigationKind()), winrt::to_string(args.Uri()).c_str());
+            callbacks.navigating(view, told(args.NavigationKind()), winrt::to_string(args.Uri()).c_str());
         });
         web.NavigationCompleted([view](controls::WebView2 const &sender,
                                        core::CoreWebView2NavigationCompletedEventArgs const &args) {
-            callbacks.webNavigated(view, ended(args.IsSuccess(), args.WebErrorStatus()), addressOf(sender).c_str());
+            callbacks.navigated(view, ended(args.IsSuccess(), args.WebErrorStatus()), addressOf(sender).c_str());
         });
         web.CoreProcessFailed([view](controls::WebView2 const &, core::CoreWebView2ProcessFailedEventArgs const &args) {
             auto kind = args.ProcessFailedKind();
             if (kind == core::CoreWebView2ProcessFailedKind::RenderProcessExited ||
                 kind == core::CoreWebView2ProcessFailedKind::BrowserProcessExited)
-                callbacks.webEnded(view);
+                callbacks.ended(view);
         });
         return detach(web);
     } catch (...) {
@@ -144,10 +147,10 @@ extern "C" StateUIObjectRef stateui_winui_web_make(int64_t view) {
     }
 }
 
-extern "C" void stateui_winui_web_show(StateUIObjectRef handle, int64_t view, char const *address,
+extern "C" void stateui_webview_winui_show(WebViewObjectRef handle, int64_t view, char const *address,
                                        char const *document, char const *agent) {
     try {
-        auto web = borrow<controls::WebView2>(handle);
+        auto web = as<controls::WebView2>(handle);
         auto at = text(address);
         auto held = document ? std::make_shared<std::string>(document) : nullptr;
         auto asking = text(agent);
@@ -165,26 +168,32 @@ extern "C" void stateui_winui_web_show(StateUIObjectRef handle, int64_t view, ch
     }
 }
 
-extern "C" void stateui_winui_web_release(int64_t view) {
+extern "C" void stateui_webview_winui_set_callbacks(WebViewWinUICallbacks const *given) {
+    callbacks = *given;
+}
+
+extern "C" void stateui_webview_winui_release(WebViewObjectRef handle, int64_t view) {
     try {
         served.erase(view);
         ownAgents.erase(view);
+        winrt::Windows::Foundation::IInspectable object{nullptr};
+        winrt::attach_abi(object, handle);
     } catch (...) {
-        report("letting go of a web view's documents");
+        report("letting go of a web view");
     }
 }
 
-extern "C" void stateui_winui_web_set_agent(StateUIObjectRef handle, int64_t view, char const *agent) {
+extern "C" void stateui_webview_winui_set_agent(WebViewObjectRef handle, int64_t view, char const *agent) {
     try {
-        if (auto page = borrow<controls::WebView2>(handle).CoreWebView2()) name(page, view, text(agent));
+        if (auto page = as<controls::WebView2>(handle).CoreWebView2()) name(page, view, text(agent));
     } catch (...) {
         report("naming a web view's agent");
     }
 }
 
-extern "C" void stateui_winui_web_step(StateUIObjectRef handle, int32_t step) {
+extern "C" void stateui_webview_winui_step(WebViewObjectRef handle, int32_t step) {
     try {
-        auto web = borrow<controls::WebView2>(handle);
+        auto web = as<controls::WebView2>(handle);
         if (step == 1) web.GoBack();
         else if (step == 2) web.GoForward();
         else web.Reload();
@@ -193,9 +202,9 @@ extern "C" void stateui_winui_web_step(StateUIObjectRef handle, int32_t step) {
     }
 }
 
-extern "C" void stateui_winui_web_evaluate(StateUIObjectRef handle, char const *script, int64_t ticket) {
+extern "C" void stateui_webview_winui_evaluate(WebViewObjectRef handle, char const *script, int64_t ticket) {
     try {
-        auto web = borrow<controls::WebView2>(handle);
+        auto web = as<controls::WebView2>(handle);
         auto queue = web.DispatcherQueue();
         web.ExecuteScriptAsync(text(script)).Completed(
             [ticket, queue](auto const &operation, winrt::Windows::Foundation::AsyncStatus status) {
@@ -211,11 +220,11 @@ extern "C" void stateui_winui_web_evaluate(StateUIObjectRef handle, char const *
     }
 }
 
-extern "C" int32_t stateui_winui_web_read(
-    StateUIObjectRef handle, int64_t view, char const *what, char *utf8, int32_t capacity
+extern "C" int32_t stateui_webview_winui_read(
+    WebViewObjectRef handle, int64_t view, char const *what, char *utf8, int32_t capacity
 ) {
     try {
-        auto web = borrow<controls::WebView2>(handle);
+        auto web = as<controls::WebView2>(handle);
         std::string_view asked(what ? what : "");
         auto address = addressOf(web);
         std::string read = asked == "address" ? address
@@ -234,10 +243,10 @@ extern "C" int32_t stateui_winui_web_read(
     }
 }
 
-extern "C" bool stateui_winui_web_end_content(StateUIObjectRef handle) {
+extern "C" bool stateui_webview_winui_end_content(WebViewObjectRef handle) {
     try {
         // What the system does to a web process it ends: each process drawing pages, ended from outside.
-        auto page = borrow<controls::WebView2>(handle).CoreWebView2();
+        auto page = as<controls::WebView2>(handle).CoreWebView2();
         if (!page) return false;
         bool ended = false;
         for (auto const &process : page.Environment().GetProcessInfos()) {

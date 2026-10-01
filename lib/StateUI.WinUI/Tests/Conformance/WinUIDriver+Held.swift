@@ -27,8 +27,6 @@ extension WinUIDriver {
         case .window:
             if let held = try windowHolds(property.name, element) { return held }
             throw cannot
-        case .webView:
-            if let web = view as? WinUIWebView, let held = try webHolds(property.name, element, web) { return held }
         case .page, .navigationStack, .splitView, .tabbedView, .modalStack:
             if let held = try pageHolds(property.name, element, view) { return held }
         case .button where property.name == "icon":
@@ -506,25 +504,6 @@ extension WinUIDriver {
     static func picture(_ shown: String, named element: MountedElement, by member: Prop = .icon) -> HostValue {
         let named = element.value(member)?.string ?? ""
         return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
-    }
-
-    /// A web view's: the page it shows - the document written in place its address answers, where the tree wrote
-    /// that one, else the address - and what it calls itself.
-    private func webHolds(_ name: String, _ element: MountedElement, _ web: WinUIWebView) throws -> HostValue? {
-        let read = { (what: String) in
-            WinUIStrings.read { stateui_winui_web_read(web.handle, web.number, what, $0, $1) }
-        }
-        switch name {
-        case "source":
-            let shown = read("document")
-            if let written = element.value(.source).flatMap(WebViewSource.init(propValue:)),
-               case .html(let document, _) = written, !shown.isEmpty, shown == document {
-                return written.propValue
-            }
-            return WebViewSource.url(read("address")).propValue
-        case "userAgent": return .string(read("agent"))
-        default: return nil
-        }
     }
 
     /// The place of the toolbar's item among the actions the chrome shows, as its chrome chooses them.

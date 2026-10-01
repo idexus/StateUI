@@ -166,19 +166,6 @@ typedef struct {
 
     /// An ItemsView's view changed: the places of the first and the last entry in it.
     void (*itemsShowing)(int64_t view, int32_t first, int32_t last);
-
-    /// A web view's page began to be gone to, for the reason the platform says (StateUI's WebNavigationEvent), at
-    /// `address`.
-    void (*webNavigating)(int64_t view, int32_t told, char const *address);
-
-    /// Its navigation ended (StateUI's WebNavigationResult) at `address`.
-    void (*webNavigated)(int64_t view, int32_t result, char const *address);
-
-    /// Its history changed: whether there is a page behind and ahead.
-    void (*webHistory)(int64_t view, bool back, bool forward);
-
-    /// Its web process ended, leaving it blank.
-    void (*webEnded)(int64_t view);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -741,25 +728,6 @@ void stateui_winui_title_bar_set_title_view(StateUIObjectRef bar, StateUIObjectR
 StateUIObjectRef stateui_winui_split_make(int64_t view, double expandsAt);
 void stateui_winui_split_set(StateUIObjectRef split, StateUIObjectRef pane, StateUIObjectRef content,
                              StateUIObjectRef row, bool open);
-
-/// A web view: WinUI's WebView2. It goes to `address` asking as `agent` - the runtime's own for an empty one -
-/// where `document` is given, that is what the address answers whenever the view asks for it, and nothing is
-/// fetched; its core stands a moment after it is first asked. A step goes back (1), forward (2) or loads the page
-/// again; a script answers through `answered` under `ticket`, with the JSON its value is written in. Its documents
-/// are let go of with the view `view`.
-StateUIObjectRef stateui_winui_web_make(int64_t view);
-void stateui_winui_web_show(StateUIObjectRef web, int64_t view, char const *address, char const *document,
-                            char const *agent);
-void stateui_winui_web_release(int64_t view);
-void stateui_winui_web_set_agent(StateUIObjectRef web, int64_t view, char const *agent);
-void stateui_winui_web_step(StateUIObjectRef web, int32_t step);
-void stateui_winui_web_evaluate(StateUIObjectRef web, char const *script, int64_t ticket);
-/// What a test reads of the web view `view` - "address" the page's, "document" the one written in place it
-/// shows there, "agent" what it calls itself - in UTF-8; the length.
-int32_t stateui_winui_web_read(StateUIObjectRef web, int64_t view, char const *what, char *utf8, int32_t capacity);
-/// Ends the processes drawing its pages, as the system ends a web process; whether any was ended. What a test
-/// does.
-bool stateui_winui_web_end_content(StateUIObjectRef web);
 
 /// Whether a window's content shows the keys it takes - the way back's, Escape's - in a tip over everything it
 /// holds: what a test reads.

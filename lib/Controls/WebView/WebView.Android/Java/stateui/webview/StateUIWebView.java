@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-package stateui.android;
+package stateui.webview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,7 +11,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.MotionEvent;
 import android.widget.FrameLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +23,7 @@ import java.util.Objects;
  * the web process dying - and back, forward, reload and a script run on its behalf. The web view stands in
  * this holder, which makes it again, blank, where its web process died.
  */
-final class StateUIWebView extends FrameLayout {
+public final class StateUIWebView extends FrameLayout {
     /** Why a navigation happens, as StateUI numbers it. */
     private static final int BACK = 1, FORWARD = 2, NEW_PAGE = 3, REFRESH = 4;
 
@@ -38,8 +37,6 @@ final class StateUIWebView extends FrameLayout {
     private String userAgent;
 
     /** What sees the page's touches and hovering first: its element's gestures. */
-    private final StateUIWatch watch = new StateUIWatch();
-
     /** Why the next navigation happens, and how the one under way failed - none yet. */
     private int cause = NEW_PAGE;
     /** Why the navigation under way began. */
@@ -116,7 +113,7 @@ final class StateUIWebView extends FrameLayout {
 
     /** Runs `script` in the page; what it evaluated to answers `ticket`, as text. */
     void evaluate(String script, long ticket) {
-        web.evaluateJavascript(script, value -> StateUIHost.answered(ticket, true, text(value)));
+        web.evaluateJavascript(script, value -> StateUIWebViewNatives.answered(ticket, text(value)));
     }
 
     /** The web view let go of: nothing it holds calls back any more. */
@@ -146,7 +143,7 @@ final class StateUIWebView extends FrameLayout {
         failure = 0;
         navigating = cause;
         cause = NEW_PAGE;
-        StateUIHost.webNavigating(view, navigating, address);
+        StateUIWebViewNatives.navigating(view, navigating, address);
     }
 
     void failed(int error) {
@@ -154,34 +151,19 @@ final class StateUIWebView extends FrameLayout {
     }
 
     void finished(String address) {
-        StateUIHost.webNavigated(view, failure == 0 ? SUCCESS : failure, navigating, address);
+        StateUIWebViewNatives.navigated(view, failure == 0 ? SUCCESS : failure, navigating, address);
         historyChanged();
     }
 
     void historyChanged() {
-        StateUIHost.webHistory(view, web.canGoBack(), web.canGoForward());
+        StateUIWebViewNatives.history(view, web.canGoBack(), web.canGoForward());
     }
 
     void processGone() {
         release();
         make();
-        StateUIHost.webProcessGone(view);
+        StateUIWebViewNatives.processGone(view);
         historyChanged();
-    }
-
-    /** Lets `listener`'s gestures see what the page gets. */
-    void watch(StateUIListener listener) {
-        watch.watch(listener);
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        return watch.touch(this, event, super::dispatchTouchEvent);
-    }
-
-    @Override
-    public boolean dispatchGenericMotionEvent(MotionEvent event) {
-        return watch.hover(this, event, super::dispatchGenericMotionEvent);
     }
 
     private final class Client extends WebViewClient {

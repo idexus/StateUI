@@ -7,7 +7,7 @@ import CStateUIWinUI
 
 /// WinUI's part of the acts every host performs (`HostActPerformer`): the clock and the zones as ICU has them, a
 /// question in WinUI's own dialog over the window the user is in, a word to Narrator, the focus, a value kept, a
-/// list scrolled to an item, a web view's steps and scripts, and the application's own acts.
+/// list scrolled to an item, and the application's own acts.
 /// Design: docs/design/host/runtime.md#acts
 @MainActor
 final class WinUIActToolkit: ActToolkit {
@@ -19,10 +19,6 @@ final class WinUIActToolkit: ActToolkit {
     /// The next dialog's ticket: one number across the process, so an answer arriving after its renderer has gone
     /// answers nothing of another's.
     private static var nextTicket: Int64 = 1
-
-    /// The scripts not answered yet, by ticket; a script's tickets count down from -1, so none is a dialog's.
-    private var scripts: [Int64: HostActCall] = [:]
-    private static var nextScriptTicket: Int64 = -1
 
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
@@ -83,11 +79,6 @@ final class WinUIActToolkit: ActToolkit {
 
     /// The dialog under `ticket` was answered: accepted or not, and the words chosen or typed.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
-        if let call = scripts.removeValue(forKey: ticket) {
-            let core = renderer.runtime.core
-            guard accepted else { return core.fail(call, "the script did not run", log: { WinUIRenderer.log.error($0) }) }
-            return core.reply(call, [ScriptAnswer.text(json: words).propValue])
-        }
         dialogs.removeValue(forKey: ticket)?(accepted, words)
     }
 
@@ -130,11 +121,10 @@ final class WinUIActToolkit: ActToolkit {
 
     /// An ItemsView's scroll to an item.
     func performOwn(_ call: HostActCall) -> Bool {
-        guard [.goBack, .goForward, .reload, .evaluateJavaScript, .scrollTo].contains(call.act) else { return false }
+        guard call.act == .scrollTo else { return false }
         let core = renderer.runtime.core
         do {
             let element = try renderer.runtime.tree.aimed(call)
-            if call.act != .scrollTo { return performWeb(call, on: element) }
             guard let items = (element.native as? WinUIElement)?.view as? WinUIItemsView else {
                 core.fail(call, "scrollTo is an act of an ItemsView", log: { WinUIRenderer.log.error($0) })
                 return true
@@ -146,28 +136,6 @@ final class WinUIActToolkit: ActToolkit {
         } catch {
             core.fail(call, error.reason, log: { WinUIRenderer.log.error($0) })
         }
-        return true
-    }
-
-    /// A web view's act: a step back or forward, the page again, or a script, which answers by its ticket.
-    private func performWeb(_ call: HostActCall, on element: MountedElement) -> Bool {
-        let core = renderer.runtime.core
-        guard let web = (element.native as? WinUIElement)?.view as? WinUIWebView else {
-            core.fail(call, "\(call.act.name) is an act of a web view", log: { WinUIRenderer.log.error($0) })
-            return true
-        }
-        switch call.act {
-        case .goBack: web.step(.back)
-        case .goForward: web.step(.forward)
-        case .reload: web.step(.refresh)
-        default:
-            let ticket = Self.nextScriptTicket
-            Self.nextScriptTicket -= 1
-            scripts[ticket] = call
-            web.evaluate(call.arguments.value(1)?.string ?? "", ticket: ticket)
-            return true
-        }
-        core.reply(call, [])
         return true
     }
 

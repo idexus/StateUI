@@ -338,7 +338,10 @@ let go (`preserveAspectRatio="none"`).
 
 ## A web view
 
-A WebView is WinUI's `WebView2`, over the system's WebView2 runtime: the
+A WebView is a component's: its WinUI backend (`WebView.WinUI`) is WinUI's
+`WebView2`, made by the backend's own C++/WinRT relay through the host's
+registration of an application's own controls, its page asked for once the
+element's values are applied. It runs over the system's WebView2 runtime: the
 WebView2 package's component and loader stand beside the application, as
 the Windows App SDK's runtime does. Its core stands a moment after it is
 first asked for a page, so a page asked for before then is gone to once it

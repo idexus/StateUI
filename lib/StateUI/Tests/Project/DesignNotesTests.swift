@@ -15,6 +15,8 @@ final class DesignNotesTests: XCTestCase {
         "lib/StateUI.WinUI/Sources", "lib/StateUI.GTK/Sources", "lib/StateUI.Conformance/Sources",
         "lib/Controls/WebView/Core/Sources", "lib/Controls/WebView/WebView.Host/Sources",
         "lib/Controls/WebView/WebView.Conformance/Sources", "lib/Controls/WebView/WebView.GTK/Sources",
+        "lib/Controls/WebView/WebView.UIKit/Sources", "lib/Controls/WebView/WebView.Android/Sources",
+        "lib/Controls/WebView/WebView.WinUI/Sources",
     ]
 
     /// Every `Design:` reference in a source names a note and a heading that exist.

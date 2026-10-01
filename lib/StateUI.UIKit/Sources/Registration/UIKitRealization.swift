@@ -95,7 +95,7 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + UIKitRegistrations.webActs + UIKitRegistrations.itemsActs).map(\.name))
+            acts: (HostActs.performed + UIKitRegistrations.itemsActs).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

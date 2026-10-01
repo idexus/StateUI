@@ -42,12 +42,16 @@ var targets: [Target] = [
 // library the platform loads. StateUIHead brings the host; the gallery's cube
 // adds a native module to three of them.
 let head: [Target.Dependency] = ["GalleryUI", .product(name: "StateUIHead", package: "StateUIHead")]
+// The web view's backend for the head's host, which the head registers: every host but AppKit has one.
+let webBackend: [Target.Dependency] = host.flatMap { host in
+    host == "AppKit" ? nil : [.product(name: "StateUIWebView\(host)", package: "StateUIWebView\(host)")]
+} ?? []
 switch host {
 case "Android"?:
     products.append(.library(name: "GalleryAndroid", type: .dynamic, targets: ["GalleryAndroid"]))
     targets.append(contentsOf: [
         .target(
-            name: "GalleryAndroid", dependencies: head + ["CGalleryGLES"],
+            name: "GalleryAndroid", dependencies: head + webBackend + ["CGalleryGLES"],
             path: "Platforms/Android/Swift", swiftSettings: settings),
         // OpenGL ES 3.0 for the cube: EGL, GLES3 and the NDK's window of a Java Surface.
         .systemLibrary(name: "CGalleryGLES", path: "Platforms/Android/GLES"),
@@ -55,7 +59,7 @@ case "Android"?:
 case "WinUI"?:
     targets.append(contentsOf: [
         .executableTarget(
-            name: "GalleryWinUI", dependencies: head + ["CGalleryWinUI"],
+            name: "GalleryWinUI", dependencies: head + webBackend + ["CGalleryWinUI"],
             path: "Platforms/WinUI", exclude: ["Relay"], swiftSettings: settings),
         // The gallery's own WinUI elements, C++/WinRT behind C functions: the traffic light, the rating bar, the
         // cube Direct3D 11.1 draws, and the battery. It includes the projection the WinUI host generated.
@@ -75,14 +79,14 @@ case "GTK"?:
     targets.append(contentsOf: [
         .executableTarget(
             name: "GalleryGTK",
-            dependencies: head + ["CGalleryOpenGL", .product(name: "StateUIWebViewGTK", package: "StateUIWebViewGTK")],
+            dependencies: head + webBackend + ["CGalleryOpenGL"],
             path: "Platforms/GTK", exclude: ["OpenGL"], swiftSettings: settings),
         // OpenGL for the cube, through libepoxy - the loader GTK itself draws with.
         .systemLibrary(name: "CGalleryOpenGL", path: "Platforms/GTK/OpenGL", pkgConfig: "epoxy"),
     ])
 case let host?:
     targets.append(.executableTarget(
-        name: "Gallery\(host)", dependencies: head, path: "Platforms/\(host)", swiftSettings: settings))
+        name: "Gallery\(host)", dependencies: head + webBackend, path: "Platforms/\(host)", swiftSettings: settings))
 case nil:
     break
 }
@@ -99,8 +103,9 @@ let package = Package(
     // The StateUI checkout: the library at its root, and a head's host.
     dependencies: [.package(path: "../.."), .package(name: "StateUIWebView", path: "../../lib/Controls/WebView")]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
-        // The web view's backend for the head's host.
-        + (host == "GTK" ? [.package(name: "StateUIWebViewGTK", path: "../../lib/Controls/WebView/WebView.GTK")] : []),
+        + (webBackend.isEmpty ? [] : host.map { host in
+            [.package(name: "StateUIWebView\(host)", path: "../../lib/Controls/WebView/WebView.\(host)")]
+        } ?? []),
     targets: targets,
     cxxLanguageStandard: .cxx20
 )

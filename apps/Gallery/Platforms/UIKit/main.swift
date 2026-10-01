@@ -3,6 +3,7 @@
 
 import GalleryUI
 import StateUIUIKit
+import StateUIWebViewUIKit
 
 stateui_app_register()
 
@@ -12,5 +13,7 @@ stateui_app_register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
+// The components the gallery shows, each realized by its UIKit backend.
+StateUIWebViewUIKit.register()
 
 StateUIUIKit.run()

@@ -139,14 +139,6 @@ final class WinUIDriver: HostDriver {
             view.heard(.pinch(.completed, scale: 1, at: point))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
-        case (.endContent, let web as WinUIWebView):
-            // The processes drawing its pages stand a moment after the view is asked for a page.
-            var tries = 0
-            while !stateui_winui_web_end_content(web.handle) {
-                tries += 1
-                guard tries < 200 else { throw DriverCannot(act, on: element) }
-                WinUITestHost.pump(0.1)
-            }
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
