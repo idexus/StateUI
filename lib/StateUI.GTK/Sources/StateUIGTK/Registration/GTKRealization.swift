@@ -26,6 +26,7 @@ enum GTKRealization {
         // MARK: Tiers - a member every wearer realizes alike
         .complete("BarElement", "barBackgroundColor"),
         .complete("BarElement", "barForegroundColor"),
+        .complete("BarElement", "barSubtitle"),
         .notPlanned("BarElement", "barIcon",
                     reason: "A GNOME header bar is its page's own and shows no application's mark."),
         .notPlanned("BarElement", "barTitle",
@@ -57,7 +58,9 @@ enum GTKRealization {
         .complete("SplitView", "isSidebarVisible"),
         .complete("TabbedView", "currentPage"),
         .complete("ToolbarItem", "placement"),
+        .complete("ToolbarItem", "showsText"),
         .complete("ToolbarItems", "order"),
+        .complete("ToolbarItems", "side"),
     ]
 
     /// What GTK's registry says it realizes: the export's content.

@@ -21,30 +21,37 @@ of it go once the slide is over.
 The chrome is composed by one function from what the window shows, after
 every render, and written on the header bar of each page shown:
 
-- the page's title, at the middle of its bar, or its title view in its place,
-  where an application puts its search;
-- the page's actions, at the bar's end in their priority's order, those it
-  places in overflow behind the bar's menu. An action with a picture stands
-  on the bar as an icon, the way a header bar's buttons stand, its title its
-  tooltip and its name to assistive technology; one whose picture the
-  application does not hold shows its title, and the overflow's menu shows
-  titles. So the bar's own buttons never read as one more choice of a
-  tabbed view's switcher beside them;
+- the page's title, at the middle of its bar, with the line under it its
+  path declares (`barSubtitle`) - libadwaita's window title holds both - or
+  its title view in its place, where an application puts its search. A
+  header bar names its page: the application's own name and mark
+  (`barTitle`, `barIcon`) stand on no GNOME header bar;
+- the groups of actions its path declares, composed by the host layer
+  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)): the
+  leading groups at the bar's start, after the sidebar's toggle, the
+  trailing ones at its end, each group a box of its own, apart from the
+  next by twice the room between two buttons of a group - a header bar
+  draws no shared background - and the actions placed in overflow behind
+  the bar's menu at the very end. An action with a picture stands on the
+  bar as an icon, the way a header bar's buttons stand, its title its
+  tooltip and its name to assistive technology; one that shows its words
+  stands with its picture before them, as libadwaita's button content
+  does; one whose picture the application does not hold shows its title,
+  and the overflow's menu shows titles. So the bar's own buttons never read
+  as one more choice of a tabbed view's switcher beside them;
 - the way back, the bar's own back button, which libadwaita shows while the
   page has one below it and the page does not refuse it;
 - no bar at all, for a page that hides its navigation bar;
 - a split view's sidebar toggle, at the start of the bar of the page the user
   sees in its detail, pressed in while the sidebar shows;
-- for a tabbed view, its switcher in the middle, over the chosen tab's page's
-  actions;
-- the bar's colours: a page's header bar is painted in the bar colour of the
-  nearest stack or tabbed view around it, and what stands on it - the title,
-  the way back, the toggles and the switcher's captions - in the nearest
-  stack's foreground, as a class of the host's style sheet
-  ([a widget's own box](drawing.md#a-widgets-own-box)). The window's title
-  bar has no place of its own on a desktop of header bars: its colours paint
-  every header bar no arrangement colours - a split view's sidebar among
-  them - and a bar neither colours keeps the platform's.
+- for a tabbed view, its switcher beneath the bar, under the chosen tab's
+  page's chrome;
+- the bar's colours: a page's header bar is painted in the colours its path
+  declares, the nearest arrangement's (`barColors`), and what stands on it -
+  the title, the way back, the toggles and the switcher's captions - in its
+  foreground, as a class of the host's style sheet ([a widget's own
+  box](drawing.md#a-widgets-own-box)); a bar no arrangement colours keeps
+  the platform's.
 
 The page the user sees names the window, for the desktop's switcher and dock;
 a page with no title leaves the window's own.

@@ -105,12 +105,12 @@ of its members each meets, and why a cell is empty.
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Map](controls/Map.md) | provider |  |  |  |  |  |  |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
-| [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
+| [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ |  |  |
-| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
-| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
-| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ⌛ |  |
+| [ModalStack](controls/ModalStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -127,20 +127,20 @@ of its members each meets, and why a cell is empty.
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Span](controls/Span.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Spans](controls/Spans.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
+| [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TabbedView](controls/TabbedView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ |  |  |
-| [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
-| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ✅ | ⌛ |  |
-| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ✅ | ⌛ |  |
+| [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |
+| [ToolbarItem](controls/ToolbarItem.md) | structure | 🔌 | ✅ | ✅ | ✅ | ✅ |  |
+| [ToolbarItems](controls/ToolbarItems.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [WebView](controls/WebView.md) | native |  | ✅ | ✅ | ✅ |  |  |
-| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ⌛ |  |
-| [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ◐ |  |
+| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ⏸ |  |
+| [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ✅ |  |
 <!-- creation:end -->
 
 The AppKit split view uses `NSSplitViewController`.
@@ -430,11 +430,11 @@ Every control, and every part an application, its windows and its pages are made
 | [ColorBox](controls/ColorBox.md) | 68 | 27 ✅ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 20 ✅ |  |
 | [DatePicker](controls/DatePicker.md) | 80 | 35 ✅ · 1 ☑️ | 29 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ |  |  |
 | [Ellipse](controls/Ellipse.md) | 76 | 25 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 49 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 20 ✅ |  |
-| [Grid](controls/Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 25 ✅ |  |
-| [HStack](controls/HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
+| [Grid](controls/Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 26 ✅ |  |
+| [HStack](controls/HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [Image](controls/Image.md) | 69 | 27 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 20 ✅ |  |
 | [ItemsView](controls/ItemsView.md) | 76 | 33 ✅ · 1 ☑️ | 29 ✅ · 3 – | 60 ✅ · 1 ☑️ | 60 ✅ | 23 ✅ |  |
-| [Label](controls/Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 21 ✅ |  |
+| [Label](controls/Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 22 ✅ |  |
 | [Line](controls/Line.md) | 80 | 29 ✅ · 1 ☑️ · 3 – | 30 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 20 ✅ |  |
 | [Map](controls/Map.md) | 74 |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 20 ✅ |  |
@@ -453,10 +453,10 @@ Every control, and every part an application, its windows and its pages are made
 | [TextEditor](controls/TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 23 ✅ |  |
 | [TextField](controls/TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 23 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
-| [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
+| [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
-| [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 585 of 2521 met |  |
+| [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 22 ✅ |  |
+| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 590 of 2521 met |  |
 
 ### Application structure
 
@@ -469,20 +469,20 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ |  |  |
-| [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 3 ✅ · 2 – |  |
 | [Overlay](controls/Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 3 ✅ |  |
 | [Pin](controls/Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
 | [Span](controls/Span.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ |  |  |
-| [TabbedView](controls/TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ |  |  |
+| [SplitView](controls/SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 3 ✅ · 2 – |  |
+| [TabbedView](controls/TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 3 ✅ · 2 – |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ |  |  |
-| [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 6 ✅ |  |
+| [ToolbarItems](controls/ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](controls/Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ |  |  |
-| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 6 of 125 met |  |
+| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 29 of 125 met |  |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -563,8 +563,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ | 2 ✅ | 2 ✅ | 1 ☑️ | 1 ✅ |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 |  | 2 ✅ |  | 2 ✅ |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ |  |  |
-| [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `showsText` | 2 |  |  |  | 2 ✅ | 2 ✅ |  |
+| [ToolbarItems](controls/ToolbarItems.md) | `order`, `side` | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 |  | 3 ✅ | 2 ✅ | 7 ✅ |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ |  |  |
 <!-- members:end -->

@@ -43,7 +43,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 8 ✅ · 2 – | `UISplitViewController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `ViewGroup`: a drawer where narrow, beside where wide |  |
 | WinUI 3 | ✅ | 10 ✅ | `SplitView` |  |
-| GTK 4 | ⌛ |  | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
+| GTK 4 | ✅ | 3 ✅ · 2 – | `GtkPaned`; libadwaita `AdwOverlaySplitView` |  |
 | Web |  |  | `<aside>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -52,8 +52,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/SplitViewContract
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ | 🔌 | ✅ | ⌛ |  | Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it |
-| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🔌 | ✅ | ⌛ |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ | 🔌 | ✅ | · |  | Android Views: only through the host's own: read isSidebarVisible of SplitView: the split's own flag; the drawer slides on it; GTK 4: cannot read isSidebarVisible of SplitView - GTK's driver has no path for it yet |
+| `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ | 🔌 | ✅ |  |  | Android Views: only through the host's own: toggle on SplitView: the host's own entry the scrim's tap and the bar's button call; GTK 4: not realized |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -69,11 +69,11 @@ What an arrangement declares of the bar while it stands on the visible path: its
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · | ✅ |  |  | cannot read barForegroundColor of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of SplitView - Android's driver has no path for it yet |
-| `barIcon` | property | `ImageSource` | adaptive | · | – | – | ✅ |  |  | cannot read barIcon of SplitView - AppKit's driver has no path for it yet; UIKit: A UIKit bar is each page's own: it shows that page's title, and no application's mark.; Android Views: An Android bar is its stack's own: it shows its page's title, and no application's mark. |
-| `barSubtitle` | property | `String` | adaptive | ✅ | ✅ | ✅ | ✅ |  |  |  |
-| `barTitle` | property | `String` | adaptive | ✅ | – | – | ✅ |  |  | UIKit: A UIKit bar is each page's own and names that page; an application names itself in none.; Android Views: An Android bar is its stack's own and names its page; an application names itself in none. |
+| `barBackgroundColor` | property | `Color` | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `barForegroundColor` | property | `Color` | adaptive | · | ✅ | · | ✅ | ✅ |  | cannot read barForegroundColor of SplitView - AppKit's driver has no path for it yet; Android Views: cannot read barForegroundColor of SplitView - Android's driver has no path for it yet |
+| `barIcon` | property | `ImageSource` | adaptive | · | – | – | ✅ | – |  | cannot read barIcon of SplitView - AppKit's driver has no path for it yet; UIKit: A UIKit bar is each page's own: it shows that page's title, and no application's mark.; Android Views: An Android bar is its stack's own: it shows its page's title, and no application's mark.; GTK 4: A GNOME header bar is its page's own and shows no application's mark. |
+| `barSubtitle` | property | `String` | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `barTitle` | property | `String` | adaptive | ✅ | – | – | ✅ | – |  | UIKit: A UIKit bar is each page's own and names that page; an application names itself in none.; Android Views: An Android bar is its stack's own and names its page; an application names itself in none.; GTK 4: A GNOME header bar is its page's own and names that page; an application names itself in none. |
 
 ## From [PageElement](tiers/PageElement.md)
 

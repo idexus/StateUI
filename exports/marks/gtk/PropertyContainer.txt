@@ -14,6 +14,7 @@ Label.accessibilityIdentifier: not realized
 Line.accessibilityIdentifier: not realized
 Map.accessibilityIdentifier: not realized
 MenuItem.accessibilityIdentifier: not realized
+ModalStack.accessibilityIdentifier: not realized
 NavigationStack.accessibilityIdentifier: not realized
 Path.accessibilityIdentifier: not realized
 Picker.accessibilityIdentifier: not realized

@@ -35,11 +35,11 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ColorBox](ColorBox.md) | 68 | 27 ✅ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 20 ✅ |  |
 | [DatePicker](DatePicker.md) | 80 | 35 ✅ · 1 ☑️ | 29 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 63 ✅ · 1 ☑️ |  |  |
 | [Ellipse](Ellipse.md) | 76 | 25 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 49 ✅ · 1 ☑️ · 3 – | 58 ✅ · 3 – | 20 ✅ |  |
-| [Grid](Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 25 ✅ |  |
-| [HStack](HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
+| [Grid](Grid.md) | 77 | 32 ✅ · 3 – | 34 ✅ · 3 – | 55 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 26 ✅ |  |
+| [HStack](HStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [Image](Image.md) | 69 | 27 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 20 ✅ |  |
 | [ItemsView](ItemsView.md) | 76 | 33 ✅ · 1 ☑️ | 29 ✅ · 3 – | 60 ✅ · 1 ☑️ | 60 ✅ | 23 ✅ |  |
-| [Label](Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 21 ✅ |  |
+| [Label](Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 22 ✅ |  |
 | [Line](Line.md) | 80 | 29 ✅ · 1 ☑️ · 3 – | 30 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 20 ✅ |  |
 | [Map](Map.md) | 74 |  |  |  |  |  |  |
 | [Path](Path.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 20 ✅ |  |
@@ -58,10 +58,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TextEditor](TextEditor.md) | 87 | 46 ✅ · 1 ☑️ | 46 ✅ | 65 ✅ · 1 ☑️ · 1 – | 70 ✅ | 23 ✅ |  |
 | [TextField](TextField.md) | 90 | 42 ✅ · 1 ☑️ | 46 ✅ | 66 ✅ · 1 ☑️ · 1 – | 69 ✅ · 1 ☑️ | 23 ✅ |  |
 | [TimePicker](TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ |  |  |
-| [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 22 ✅ |  |
+| [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [WebView](WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
-| [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 21 ✅ |  |
-| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 585 of 2521 met |  |
+| [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 22 ✅ |  |
+| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 590 of 2521 met |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -78,20 +78,20 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 6 | 3 ✅ · 1 ☑️ | 6 ✅ | 4 ✅ · 2 – | 6 ✅ |  |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 7 | 4 ✅ | 4 ✅ · 2 – | 3 ✅ · 2 – | 6 ✅ |  |  |
-| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ |  |  |
+| [NavigationStack](NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 3 ✅ · 2 – |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 3 ✅ |  |
 | [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ |  |  |
 | [Span](Span.md) | 12 |  |  |  | 9 ✅ |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ |  |  |
-| [TabbedView](TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ |  |  |
+| [SplitView](SplitView.md) | 10 | 6 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 3 ✅ · 2 – |  |
+| [TabbedView](TabbedView.md) | 10 | 5 ✅ | 8 ✅ · 2 – | 3 ✅ · 2 – | 10 ✅ | 3 ✅ · 2 – |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ |  |  |
-| [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 6 ✅ |  |
+| [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ |  |  |
-| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 6 of 125 met |  |
+| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 29 of 125 met |  |
 <!-- structure:end -->
 
 ## Tiers

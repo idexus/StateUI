@@ -1,3 +1,21 @@
-# revision 1.1
-NavigationStack.barBackgroundColor: not realized
-TabbedView.barBackgroundColor: not realized
+# revision 2.1
+ModalStack.barBackgroundColor: not realized
+ModalStack.barForegroundColor: not realized
+ModalStack.barIcon: not realized
+ModalStack.barSubtitle: not realized
+ModalStack.barTitle: not realized
+NavigationStack.barBackgroundColor: ✅
+NavigationStack.barForegroundColor: ✅
+NavigationStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
+NavigationStack.barSubtitle: ✅
+NavigationStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+SplitView.barBackgroundColor: ✅
+SplitView.barForegroundColor: ✅
+SplitView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
+SplitView.barSubtitle: ✅
+SplitView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+TabbedView.barBackgroundColor: ✅
+TabbedView.barForegroundColor: ✅
+TabbedView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
+TabbedView.barSubtitle: ✅
+TabbedView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.

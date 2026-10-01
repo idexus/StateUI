@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ |  | structure |  |
 | Android Views | ✅ |  | structure |  |
 | WinUI 3 | ✅ |  | structure |  |
-| GTK 4 | ⌛ |  | structure |  |
+| GTK 4 | ✅ |  | structure |  |
 | Web |  |  | structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Slots/TitleViewContract.swift`.

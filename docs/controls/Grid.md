@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 34 ✅ · 3 – | composed by StateUI |  |
 | Android Views | ✅ | 55 ✅ · 1 ☑️ · 3 – | composed by StateUI |  |
 | WinUI 3 | ✅ | 59 ✅ · 3 – | composed by StateUI |  |
-| GTK 4 | ✅ | 25 ✅ | composed by StateUI |  |
+| GTK 4 | ✅ | 26 ✅ | composed by StateUI |  |
 | Web |  |  | composed by StateUI | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/GridContract.swift`.
@@ -81,7 +81,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | ⏸ |  | Grid takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Grid takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Grid takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Grid takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Grid.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read what reaches Grid - Android's driver has no path for it yet; GTK 4: cannot read what reaches Grid - GTK's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read what reaches Grid - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Grid - GTK's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – |  |  | Grid takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: Grid takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Grid takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: Grid takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
@@ -154,7 +154,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  | · |  |  |  |  | not realized; UIKit: cannot read avoidsSafeArea of Grid - UIKit's view places its children where StateUI's layout says; their frames prove it; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `clipsContent` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read clipsContent of Grid - GTK's driver has no path for it yet |
-| `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  |  | · |  | cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read letsInputThrough of Grid - GTK's driver has no path for it yet |
+| `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  |  | ◐ |  | cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read letsInputThrough of Grid - GTK's driver has no path for it yet |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 

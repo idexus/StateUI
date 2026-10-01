@@ -1,3 +1,5 @@
-# revision 1.1
-ToolbarItem.clicked: cannot activate on ToolbarItem - GTK's driver has no path for it yet
-ToolbarItems: cannot activate on ToolbarItem - GTK's driver has no path for it yet
+# revision 2.1
+ToolbarItem.clicked: ✅
+ToolbarItems: ✅
+ToolbarItems.order: ✅
+ToolbarItems.side: ✅

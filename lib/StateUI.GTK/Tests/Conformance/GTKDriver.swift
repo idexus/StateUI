@@ -60,7 +60,7 @@ final class GTKDriver: HostDriver {
         cannot[ability] ?? "GTK's driver has no path for it yet"
     }
 
-    private var renderer: GTKRenderer?
+    private(set) var renderer: GTKRenderer?
 
     var register: HostRegister { GTKRealization.register }
 
@@ -83,9 +83,11 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
         let view = (element.native as? GTKElement)?.view
         switch (act, view) {
-        case (.activate, let button as GTKButtonView): button.click()
+        // GTK lets a click reach no button that cannot be chosen.
+        case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
         case (.toggle, let toggle as GTKSwitchView): gtk_switch_set_active(toggle.widget.opaque, toggle.isOn ? 0 : 1)
         case (.toggle, let check as GTKCheckView): gtk_widget_activate(check.widget)
         case (.slide(let value), let slider as GTKSliderView): gtk_range_set_value(slider.widget.of(GtkRange.self), value)
@@ -106,6 +108,10 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        if element.type == .toolbarItem { return try actionHolds(property, element) }
+        if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
+            return try barHolds(property, element)
+        }
         let view = (element.native as? GTKElement)?.view
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
@@ -127,11 +133,28 @@ final class GTKDriver: HostDriver {
             guard let model = gtk_drop_down_get_model(picker.widget.opaque) else { return [String]().propValue }
             return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
                 .propValue
-        case (.isVisible, let view?): return (gtk_widget_get_visible(view.widget) != 0).propValue
+        // Shown in its window: GTK maps a widget only while it and everything around it show there.
+        case (.isVisible, let view?): return (gtk_widget_get_mapped(view.widget) != 0).propValue
         case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
         default: throw DriverCannot(reading: property, of: element)
         }
+    }
+
+    /// Whether a press at `point` reaches `element`: what GTK picks there in the window - through everything laid
+    /// over it - is its view or stands in it.
+    func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
+        guard let view = (element.native as? GTKElement)?.view, let root = gtk_widget_get_root(view.widget) else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
+        renderer?.layOut()
+        let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
+        var from = graphene_point_t(x: Float(point.x), y: Float(point.y))
+        var at = graphene_point_t()
+        guard gtk_widget_compute_point(view.widget, window, &from, &at) != 0,
+              let picked = gtk_widget_pick(window, Double(at.x), Double(at.y), GTK_PICK_DEFAULT)
+        else { return false }
+        return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
     }
 
     /// Moves the scrolled window in `view` to `offset`, as a wheel does: through its adjustments, which hold it

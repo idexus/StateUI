@@ -42,23 +42,17 @@ extension GTKElement {
 
         var chrome = GTKPageChrome()
         chrome.title = value(.title)?.string ?? ""
+        chrome.subtitle = element.titleArea?.subtitle
         chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.showsBar = value(.hasNavigationBar)?.bool != false
         chrome.offersBack = value(.hasBackButton)?.bool != false
         (chrome.barBackground, chrome.barForeground) = element.barColors
 
         let actions = element.chromeActions
-        chrome.actions = actions.primary.map(Self.action)
-        chrome.overflow = actions.overflow.map(Self.action)
+        chrome.leading = actions.leading.map { $0.map(GTKToolbarAction.init) }
+        chrome.trailing = actions.trailing.map { $0.map(GTKToolbarAction.init) }
+        chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
         return chrome
-    }
-
-    /// A page's action as a button of its header bar.
-    private static func action(_ item: MountedElement) -> GTKToolbarAction {
-        GTKToolbarAction(
-            title: item.value(.text)?.string ?? "", icon: item.value(.icon)?.string,
-            isEnabled: item.value(.isEnabled)?.bool ?? true,
-            perform: { [weak item] in item?.gtk.send(.clicked, []) })
     }
 
     /// Writes each framed element's chrome on its header bar, through this arrangement and every one it holds;

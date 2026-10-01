@@ -68,14 +68,23 @@ final class GTKButtonView: GTKView {
         boxClass = drawn
     }
 
-    /// A picture in place of the caption, `size` logical pixels across; the caption stays the button's name to
-    /// assistive technology and its tooltip. Whether there was such a picture.
+    /// A picture in place of the caption, `size` logical pixels across - or before it, where `showsCaption` - the
+    /// caption the button's name to assistive technology, and its tooltip while it is not shown. Whether there was
+    /// such a picture.
     @discardableResult
-    func setIcon(_ name: String, size: Int32, caption: String) -> Bool {
+    func setIcon(_ name: String, size: Int32, caption: String, showsCaption: Bool = false) -> Bool {
         guard let image = GTKPictures.icon(named: name, size: size) else { return false }
-        gtk_button_set_child(widget.of(GtkButton.self), image)
-        gtk_widget_add_css_class(widget, "image-button")
-        gtk_widget_set_tooltip_text(widget, caption)
+        if showsCaption {
+            let content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
+            gtk_box_append(content.of(GtkBox.self), image)
+            gtk_box_append(content.of(GtkBox.self), gtk_label_new(caption))
+            gtk_button_set_child(widget.of(GtkButton.self), content)
+            gtk_widget_add_css_class(widget, "image-text-button")
+        } else {
+            gtk_button_set_child(widget.of(GtkButton.self), image)
+            gtk_widget_add_css_class(widget, "image-button")
+            gtk_widget_set_tooltip_text(widget, caption)
+        }
 
         var property = GTK_ACCESSIBLE_PROPERTY_LABEL
         var name = GValue()

@@ -63,8 +63,8 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | – | ✅ |  |  | cannot read icon of MenuItem - AppKit's driver has no path for it yet; Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.; GTK 4: not realized |
 | `isDestructive` | property | `Bool` | adaptive | · | ✅ | ✅ | ✅ |  |  | cannot read isDestructive of MenuItem - AppKit's driver has no path for it yet; GTK 4: not realized |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 | `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |

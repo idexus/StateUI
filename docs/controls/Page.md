@@ -52,10 +52,10 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/PageContract.swift
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
+| `appearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
 | `backButtonTitle` | property | `String` | adaptive | · |  |  |  |  |  | cannot read backButtonTitle of Page - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `background` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
-| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ⌛ |  |  |
+| `disappearing` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ◐ |  | GTK 4: waits on ModalStack |
 | `hasBackButton` | property | `Bool` | adaptive | · | ✅ | · |  |  |  | cannot read hasBackButton of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasBackButton of Page - Android's driver has no path for it yet; WinUI 3: not realized; GTK 4: not realized |
 | `hasNavigationBar` | property | `Bool` | adaptive | · | ✅ | · | ✅ | · |  | cannot read hasNavigationBar of Page - AppKit's driver has no path for it yet; Android Views: cannot read hasNavigationBar of Page - Android's driver has no path for it yet; GTK 4: cannot read hasNavigationBar of Page - GTK's driver has no path for it yet |
 | `navigatedFrom` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -70,4 +70,4 @@ What a page shows about itself where another container presents it as an item - 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of Page - AppKit's driver has no path for it yet; Android Views: cannot read icon of Page - Android's driver has no path for it yet; GTK 4: not realized |
-| `title` | property | `String` | native | ◐ | ✅ | · | ✅ | ⌛ |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet |
+| `title` | property | `String` | native | ◐ | ✅ | · | ✅ | · |  | cannot read title of Page - AppKit's driver has no path for it yet; Android Views: cannot read title of Page - Android's driver has no path for it yet; GTK 4: cannot read title of Page - GTK's driver has no path for it yet |

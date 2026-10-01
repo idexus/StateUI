@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 30 ✅ · 3 – | custom `UIView` |  |
 | Android Views | ◐ | 51 ✅ · 1 ☑️ · 3 – | custom `ViewGroup` | cannot read what reaches ColorBox - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 55 ✅ · 3 – | `Canvas` |  |
-| GTK 4 | ◐ | 21 ✅ | `GtkFixed` | cannot read what reaches ColorBox - GTK's driver has no path for it yet |
+| GTK 4 | ✅ | 22 ✅ | `GtkFixed` |  |
 | Web |  |  | `position: absolute` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ZStackContract.swift`.
@@ -70,7 +70,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | – | – | – | – | ⏸ |  | ZStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on ZStack.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read what reaches ZStack - Android's driver has no path for it yet; GTK 4: cannot read what reaches ZStack - GTK's driver has no path for it yet |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read what reaches ZStack - Android's driver has no path for it yet |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of ZStack - GTK's driver has no path for it yet |
 | `isEnabled` | property | `Bool` | native |  |  |  |  | ✅ |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized |
 | `isFocusedChanged` | event | `Bool` | native | – | – | – | – |  |  | ZStack takes no keyboard focus here: it refuses it, and nothing is heard; UIKit: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; WinUI 3: ZStack takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
@@ -143,7 +143,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |  | · |  |  |  |  | not realized; UIKit: cannot read avoidsSafeArea of ZStack - UIKit's view places its children where StateUI's layout says; their frames prove it; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `clipsContent` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read clipsContent of ZStack - GTK's driver has no path for it yet |
-| `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  |  | · |  | cannot read letsInputThrough of ZStack - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of ZStack - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read letsInputThrough of ZStack - GTK's driver has no path for it yet |
+| `letsInputThrough` | property | `Bool` | native | ◐ | ◐ |  |  | ◐ |  | cannot read letsInputThrough of ZStack - AppKit's driver has no path for it yet; UIKit: cannot read letsInputThrough of ZStack - UIKit's driver has no path for it yet; Android Views: not realized; WinUI 3: not realized; GTK 4: cannot read letsInputThrough of ZStack - GTK's driver has no path for it yet |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 

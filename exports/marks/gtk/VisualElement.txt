@@ -246,7 +246,7 @@ Grid.focus: waits on Grid.isFocusedChanged
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
-Grid.ignoresInput: cannot read what reaches Grid - GTK's driver has no path for it yet
+Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: cannot read isAccessibilityHidden of Grid - GTK's driver has no path for it yet
 Grid.isEnabled: ✅
 Grid.isFocusedChanged: not realized
@@ -280,7 +280,7 @@ HStack.focus: waits on HStack.isFocusedChanged
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
-HStack.ignoresInput: cannot read what reaches HStack - GTK's driver has no path for it yet
+HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: cannot read isAccessibilityHidden of HStack - GTK's driver has no path for it yet
 HStack.isEnabled: ✅
 HStack.isFocusedChanged: not realized
@@ -1028,7 +1028,7 @@ VStack.focus: waits on VStack.isFocusedChanged
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
-VStack.ignoresInput: cannot read what reaches VStack - GTK's driver has no path for it yet
+VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: cannot read isAccessibilityHidden of VStack - GTK's driver has no path for it yet
 VStack.isEnabled: ✅
 VStack.isFocusedChanged: not realized
@@ -1096,7 +1096,7 @@ ZStack.focus: waits on ZStack.isFocusedChanged
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
-ZStack.ignoresInput: cannot read what reaches ZStack - GTK's driver has no path for it yet
+ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: cannot read isAccessibilityHidden of ZStack - GTK's driver has no path for it yet
 ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: not realized

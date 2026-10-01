@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 2 ✅ | `UIBarButtonItem` |  |
 | Android Views | ◐ | 1 – | `Toolbar` `MenuItem` | cannot read the bar of Page - Android's driver has no path for it yet |
 | WinUI 3 | ✅ | 2 ✅ | `CommandBar` `AppBarButton` |  |
-| GTK 4 | ⌛ |  | `GtkButton` in `GtkHeaderBar` |  |
+| GTK 4 | ✅ | 2 ✅ | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.swift`.
@@ -53,5 +53,5 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemsContract.s
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `order` | property | `Int` | stateUI | ✅ | ✅ | · | ✅ |  |  | Android Views: cannot read the bar of Page - Android's driver has no path for it yet |
-| `side` | property | `ToolbarSide` | adaptive | ✅ | ✅ | – | ✅ |  |  | Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions. |
+| `order` | property | `Int` | stateUI | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read the bar of Page - Android's driver has no path for it yet |
+| `side` | property | `ToolbarSide` | adaptive | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions. |

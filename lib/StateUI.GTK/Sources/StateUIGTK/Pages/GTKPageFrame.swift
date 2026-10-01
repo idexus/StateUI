@@ -21,7 +21,17 @@ final class GTKPageFrame {
 
     let header: GTKWidget
     private let heading: GTKWidget
-    private let actionsBox: GTKWidget
+
+    /// The bar's start - the sidebar's toggle, then the leading groups - and its end - the trailing groups, then the
+    /// overflow's menu.
+    private let startBox: GTKWidget
+    private let endBox: GTKWidget
+
+    /// The groups of actions at each edge, a box each.
+    let leadingGroups: GTKWidget
+    let trailingGroups: GTKWidget
+
+    /// The actions' buttons on the bar, in reading order: the leading groups', then the trailing groups'.
     private(set) var buttons: [GTKButtonView] = []
     private var sidebarButton: GTKButtonView?
     private var overflowButton: GTKWidget?
@@ -43,8 +53,14 @@ final class GTKPageFrame {
         heading = adw_window_title_new("", nil)!
         g_object_ref_sink(heading)
         adw_header_bar_set_title_widget(header.opaque, heading)
-        actionsBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
-        adw_header_bar_pack_end(header.opaque, actionsBox)
+        startBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
+        leadingGroups = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, Self.groupSpacing)!
+        gtk_box_append(startBox.of(GtkBox.self), leadingGroups)
+        adw_header_bar_pack_start(header.opaque, startBox)
+        endBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
+        trailingGroups = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, Self.groupSpacing)!
+        gtk_box_append(endBox.of(GtkBox.self), trailingGroups)
+        adw_header_bar_pack_end(header.opaque, endBox)
         adw_toolbar_view_add_top_bar(widget.opaque, header)
         if let previous = gtk_widget_get_parent(page.widget),
            g_type_check_instance_is_a(previous.of(GTypeInstance.self), adw_toolbar_view_get_type()) != 0 {
@@ -60,9 +76,13 @@ final class GTKPageFrame {
         g_object_unref(widget)
     }
 
+    /// What parts one group of actions from the next: twice the room between two buttons of a group.
+    private static let groupSpacing: Int32 = 12
+
     /// Shows `chrome` on the header bar, writing only what differs from what it shows.
     func show(_ chrome: GTKPageChrome) {
         if chrome.title != self.chrome.title { adw_window_title_set_title(heading.opaque, chrome.title) }
+        if chrome.subtitle != self.chrome.subtitle { adw_window_title_set_subtitle(heading.opaque, chrome.subtitle ?? "") }
         if chrome.titleView !== self.chrome.titleView {
             adw_header_bar_set_title_widget(header.opaque, chrome.titleView?.widget ?? heading)
         }
@@ -76,7 +96,7 @@ final class GTKPageFrame {
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
-        showActions(chrome.actions, overflow: chrome.overflow)
+        showActions(leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow)
         showSidebarButton(chrome.sidebar)
         self.chrome = chrome
     }
@@ -119,7 +139,7 @@ final class GTKPageFrame {
     /// The sidebar's toggle at the bar's start, pressed in while the sidebar shows, while the page offers it.
     private func showSidebarButton(_ sidebar: (shows: Bool, toggle: () -> Void)?) {
         guard let sidebar else {
-            if let sidebarButton { adw_header_bar_remove(header.opaque, sidebarButton.widget) }
+            if let sidebarButton { gtk_box_remove(startBox.of(GtkBox.self), sidebarButton.widget) }
             sidebarButton = nil
             return
         }
@@ -127,7 +147,7 @@ final class GTKPageFrame {
             let button = GTKButtonView(toggles: true)
             gtk_button_set_icon_name(button.widget.of(GtkButton.self), "sidebar-show-symbolic")
             gtk_widget_set_tooltip_text(button.widget, "Toggle Sidebar")
-            adw_header_bar_pack_start(header.opaque, button.widget)
+            gtk_box_prepend(startBox.of(GtkBox.self), button.widget)
             sidebarButton = button
         }
         sidebarButton?.onClicked = sidebar.toggle
@@ -137,23 +157,43 @@ final class GTKPageFrame {
     /// The sidebar's toggle, where the bar shows one.
     var sidebarToggle: GTKButtonView? { sidebarButton }
 
-    /// The page's actions as buttons at the bar's end, in order, and the overflow behind a menu after them.
-    private func showActions(_ actions: [GTKToolbarAction], overflow: [GTKToolbarAction]) {
-        let same = actions.count == chrome.actions.count && zip(actions, chrome.actions).allSatisfy { $0.draws(like: $1) }
-            && overflow.count == chrome.overflow.count && zip(overflow, chrome.overflow).allSatisfy { $0.draws(like: $1) }
-        guard !same else {
-            for (button, action) in zip(buttons, actions) { button.onClicked = action.perform }
+    /// The groups of actions as buttons at each edge, a group a box of its own, and the overflow behind a menu at the
+    /// bar's end.
+    /// Design: docs/design/platforms/gtk/pages.md#the-chrome
+    private func showActions(
+        leading: [[GTKToolbarAction]], trailing: [[GTKToolbarAction]], overflow: [GTKToolbarAction]
+    ) {
+        let drawsLike = { (new: [GTKToolbarAction], old: [GTKToolbarAction]) in
+            new.count == old.count && zip(new, old).allSatisfy { $0.draws(like: $1) }
+        }
+        let groupsLike = { (new: [[GTKToolbarAction]], old: [[GTKToolbarAction]]) in
+            new.count == old.count && zip(new, old).allSatisfy(drawsLike)
+        }
+        let onBar = (leading + trailing).flatMap { $0 }
+        guard !groupsLike(leading, chrome.leading) || !groupsLike(trailing, chrome.trailing)
+            || !drawsLike(overflow, chrome.overflow)
+        else {
+            for (button, action) in zip(buttons, onBar) { button.onClicked = action.perform }
             for (button, action) in zip(overflowButtons, overflow) { button.onClicked = closingOverflow(action) }
             return
         }
 
-        for button in buttons { gtk_box_remove(actionsBox.of(GtkBox.self), button.widget) }
-        buttons = actions.map { action in
-            let button = GTKButtonView.action(action)
-            gtk_box_append(actionsBox.of(GtkBox.self), button.widget)
-            return button
+        for edge in [leadingGroups, trailingGroups] {
+            while let group = gtk_widget_get_first_child(edge) { gtk_box_remove(edge.of(GtkBox.self), group) }
         }
-        if let overflowButton { gtk_box_remove(actionsBox.of(GtkBox.self), overflowButton) }
+        buttons = []
+        for (edge, groups) in [(leadingGroups, leading), (trailingGroups, trailing)] {
+            for group in groups {
+                let box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
+                for action in group {
+                    let button = GTKButtonView.action(action)
+                    gtk_box_append(box.of(GtkBox.self), button.widget)
+                    buttons.append(button)
+                }
+                gtk_box_append(edge.of(GtkBox.self), box)
+            }
+        }
+        if let overflowButton { gtk_box_remove(endBox.of(GtkBox.self), overflowButton) }
         overflowButton = nil
         overflowPopover = nil
         overflowButtons = []
@@ -173,7 +213,7 @@ final class GTKPageFrame {
         let menu = gtk_menu_button_new()!
         gtk_menu_button_set_icon_name(menu.opaque, "view-more-symbolic")
         gtk_menu_button_set_popover(menu.opaque, popover)
-        gtk_box_append(actionsBox.of(GtkBox.self), menu)
+        gtk_box_append(endBox.of(GtkBox.self), menu)
         overflowButton = menu
     }
 }
@@ -189,14 +229,15 @@ extension GTKPageFrame {
 }
 
 extension GTKButtonView {
-    /// A button performing `action`: on the header bar its picture as an icon, else its title; in the overflow's
-    /// menu its title.
+    /// A button performing `action`: on the header bar its picture as an icon - its title beside it where it says
+    /// so - else its title; in the overflow's menu its title.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     static func action(_ action: GTKToolbarAction, inMenu: Bool = false) -> GTKButtonView {
         let button = GTKButtonView()
-        if inMenu || action.icon.map({ button.setIcon($0, size: 16, caption: action.title) }) != true {
-            button.setText(action.title)
-        }
+        let pictured = !inMenu && action.icon.map {
+            button.setIcon($0, size: 16, caption: action.title, showsCaption: action.showsTitle)
+        } == true
+        if !pictured { button.setText(action.title) }
         button.setEnabled(action.isEnabled)
         button.onClicked = action.perform
         return button
