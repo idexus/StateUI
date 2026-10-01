@@ -17,8 +17,8 @@ final class GTKItemsView: GTKLayoutView {
     private let scroller = GTKWidgetView { gtk_scrolled_window_new() }
 
     /// The list view or the grid view, and the choice over the identities it shows.
-    private var list: GTKWidget?
-    private var selection: OpaquePointer?
+    private(set) var list: GTKWidget?
+    private(set) var selection: OpaquePointer?
 
     /// The identities, as GTK's string list, and the factory the rows come from.
     private let model: OpaquePointer
@@ -205,11 +205,16 @@ final class GTKItemsView: GTKLayoutView {
         }
     }
 
-    /// Selects what the tree says is chosen, as the program: nothing is told back.
+    /// Selects what the tree says is chosen, as the program: nothing is told back. A single choice is its model's
+    /// own: GTK's single selection takes no set of items to stand chosen.
     private func select(_ chosen: [String]) {
         guard let selection, mode != .none else { return }
         let wanted = Set(chosen)
         let count = g_list_model_get_n_items(model)
+        if mode == .single {
+            let place = (0..<count).first { wanted.contains(identity(at: $0)) } ?? guint.max
+            return ProgramWrite.perform { gtk_single_selection_set_selected(selection, place) }
+        }
         let selected = gtk_bitset_new_empty()
         let every = gtk_bitset_new_range(0, count)
         defer {
@@ -341,7 +346,7 @@ final class GTKItemsView: GTKLayoutView {
     }
 
     /// The identity at `place` of the string list.
-    private func identity(at place: guint) -> String {
+    func identity(at place: guint) -> String {
         gtk_string_list_get_string(model, place).map { String(cString: $0) } ?? ""
     }
 

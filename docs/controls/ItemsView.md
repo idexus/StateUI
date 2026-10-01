@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 29 ✅ · 3 – | `UICollectionView` |  |
 | Android Views | ✅ | 60 ✅ · 1 ☑️ | AndroidX `RecyclerView` |  |
 | WinUI 3 | ✅ | 60 ✅ | `ItemsView` |  |
-| GTK 4 | ✅ | 23 ✅ | `GtkListView` / `GtkGridView` |  |
+| GTK 4 | ✅ | 26 ✅ | `GtkListView` / `GtkGridView` |  |
 | Web |  |  | semantic list or grid | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -50,9 +50,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/ItemsViewContrac
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `items` | property | `ItemsEntries` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `itemsLayout` | property | `ItemsLayout` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read where Label stands - GTK's driver has no path for it yet |
-| `selectionMode` | property | `SelectionMode` | native | 🔌 | 🔌 | 🔌 | ✅ | · |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack; GTK 4: cannot read selectionMode of ItemsView - GTK's driver has no path for it yet |
-| `selectedItems` | property | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; GTK 4: cannot read selectionMode of ItemsView - GTK's driver has no path for it yet |
-| `selectionChanged` | event | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; GTK 4: cannot read selectionMode of ItemsView - GTK's driver has no path for it yet |
+| `selectionMode` | property | `SelectionMode` | native | 🔌 | 🔌 | 🔌 | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch; Android Views: only through the host's own: read selectionMode of ItemsView: the mode the relay keeps, which its cells tell TalkBack |
+| `selectedItems` | property | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
+| `selectionChanged` | event | `[String]` | native | 🔌 | 🔌 | ✅ | ✅ | ✅ |  | only through the host's own: choose on ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: choose on ItemsView: the collection's delegate told, no touch |
 | `itemActivated` | event | `String` | adaptive | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: activate on an item of ItemsView: the collection's delegate told, no click; UIKit: only through the host's own: activate on an item of ItemsView: the collection's delegate told, no touch; GTK 4: cannot activate on Label - GTK's driver has no path for it yet |
 | `endReachedWithin` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `endReached` | event |  | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

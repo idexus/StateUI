@@ -103,6 +103,7 @@ final class GTKDriver: HostDriver {
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
+        case (.choose(let place), let items as GTKItemsView): try choose(place, in: items, on: element)
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -134,6 +135,8 @@ final class GTKDriver: HostDriver {
             return (0..<g_list_model_get_n_items(model)).map { String(cString: gtk_string_list_get_string(model, $0)) }
                 .propValue
         // Shown in its window: GTK maps a widget only while it and everything around it show there.
+        case (.selectionMode, let items as GTKItemsView): return items.choiceMode.map { $0.propValue }
+        case (.selectedItems, let items as GTKItemsView): return items.chosenIdentities.propValue
         case (.isVisible, let view?): return (gtk_widget_get_mapped(view.widget) != 0).propValue
         case (.opacity, let view?): return gtk_widget_get_opacity(view.widget).propValue
         case (.isEnabled, let view?): return (gtk_widget_get_sensitive(view.widget) != 0).propValue
@@ -155,6 +158,17 @@ final class GTKDriver: HostDriver {
               let picked = gtk_widget_pick(window, Double(at.x), Double(at.y), GTK_PICK_DEFAULT)
         else { return false }
         return picked == view.widget || gtk_widget_is_ancestor(picked, view.widget) != 0
+    }
+
+    /// Chooses the item at `place` as the user's click does, through the list's own `list.select-item`: alone where
+    /// one may be chosen, beside those chosen - as a Ctrl click - where many may.
+    private func choose(_ place: Int, in items: GTKItemsView, on element: MountedElement) throws {
+        guard let list = items.list, let mode = items.choiceMode, mode != .none else {
+            throw DriverCannot(.choose(place), on: element)
+        }
+        var parts = [g_variant_new_uint32(guint32(place)), g_variant_new_boolean(mode == .multiple ? 1 : 0),
+                     g_variant_new_boolean(0)]
+        _ = gtk_widget_activate_action_variant(list, "list.select-item", g_variant_new_tuple(&parts, 3))
     }
 
     /// Moves the scrolled window in `view` to `offset`, as a wheel does: through its adjustments, which hold it
@@ -181,5 +195,23 @@ final class GTKDriver: HostDriver {
             input.select(start: kept.unicodeScalars.count, length: 0)
         }
         GTKTestHost.emit(keys, "insert-at-cursor", words: String(words.dropFirst(kept.count)))
+    }
+}
+
+extension GTKItemsView {
+    /// How many items GTK's choice model lets the user choose, by its kind; nil before there is a list.
+    var choiceMode: SelectionMode? {
+        guard let selection else { return nil }
+        let held = UnsafeMutablePointer<GTypeInstance>(selection)
+        if g_type_check_instance_is_a(held, gtk_single_selection_get_type()) != 0 { return .single }
+        if g_type_check_instance_is_a(held, gtk_multi_selection_get_type()) != 0 { return .multiple }
+        return SelectionMode.none
+    }
+
+    /// The identities GTK's choice model holds chosen, in the order the list shows them.
+    var chosenIdentities: [String] {
+        guard let selection else { return [] }
+        let count = g_list_model_get_n_items(selection)
+        return (0..<count).filter { gtk_selection_model_is_selected(selection, $0) != 0 }.map { identity(at: $0) }
     }
 }
