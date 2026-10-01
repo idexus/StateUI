@@ -41,7 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ |  | pass-through `NSView` above the page |  |
 | UIKit | ✅ |  | pass-through `UIView` above the page |  |
 | Android Views | ◐ |  | top child of a `FrameLayout` | cannot read what reaches Label - Android's driver has no path for it yet |
-| WinUI 3 | ⌛ |  | top layer of a root `Grid` |  |
+| WinUI 3 | ✅ |  | top layer of a root `Grid` |  |
 | GTK 4 | ⌛ |  | `GtkOverlay` |  |
 | Web |  |  | positioned element above the page | no host yet |
 

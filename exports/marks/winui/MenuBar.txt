@@ -1,5 +1,6 @@
-# revision 1.1
+# revision 2.1
 Menu.text: ✅
 MenuBar: ✅
+MenuBar.order: ✅
 MenuItem.clicked: ✅
 MenuItem.isEnabled: ✅

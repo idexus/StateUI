@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ |  | `NSMenu` / `NSMenuItem` |  |
 | UIKit | ✅ |  | `UIMenu` / `UIAction` |  |
 | Android Views | ✅ | 1 ✅ | `PopupMenu` / `MenuItem`; no menu bar |  |
-| WinUI 3 | ⌛ |  | `MenuFlyout` / `MenuBar` |  |
+| WinUI 3 | ✅ | 1 ✅ | `MenuFlyout` / `MenuBar` |  |
 | GTK 4 | ⌛ |  | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` |  |
 | Web |  |  | ARIA `menu` / `menubar` (?) | no host yet |
 
@@ -50,4 +50,4 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuBarContract.swift`
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `order` | property | `Int` | stateUI | 🔌 | 🔌 | ✅ |  |  |  | only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu; UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu |
+| `order` | property | `Int` | stateUI | 🔌 | 🔌 | ✅ | ✅ |  |  | only through the host's own: read the menu of Window: menu items built from the tree at the read, not the main menu; UIKit: only through the host's own: read the menu of Window: the host's menu bar entries, not UIKit's main menu |

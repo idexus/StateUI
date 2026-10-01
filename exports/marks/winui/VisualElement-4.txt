@@ -104,11 +104,13 @@ TextField.unfocus: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.isVisible: ✅
 TimePicker.rotationY: not realized
-VStack.frame: ✅
-VStack.pivotX: ✅
-VStack.zIndex: not realized
-WebView.accessibilityLabel: ✅
-WebView.rotationX: not realized
-ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: not realized
-ZStack.scaleX: ✅
+VStack.automationExcludedWithChildren: ✅
+VStack.frameChanged: ✅
+VStack.height: ✅
+VStack.scaleY: ✅
+VStack.width: ✅
+WebView.frame: ✅
+WebView.pivotX: ✅
+WebView.zIndex: not realized
+ZStack.accessibilityLabel: ✅
+ZStack.rotationX: not realized

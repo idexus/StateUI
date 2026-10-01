@@ -1,3 +1,21 @@
-# revision 1.1
-NavigationStack.barBackgroundColor: not realized
-TabbedView.barBackgroundColor: not realized
+# revision 2.1
+ModalStack.barBackgroundColor: ✅
+ModalStack.barForegroundColor: ✅
+ModalStack.barIcon: ✅
+ModalStack.barSubtitle: ✅
+ModalStack.barTitle: ✅
+NavigationStack.barBackgroundColor: ✅
+NavigationStack.barForegroundColor: ✅
+NavigationStack.barIcon: ✅
+NavigationStack.barSubtitle: ✅
+NavigationStack.barTitle: ✅
+SplitView.barBackgroundColor: ✅
+SplitView.barForegroundColor: ✅
+SplitView.barIcon: ✅
+SplitView.barSubtitle: ✅
+SplitView.barTitle: ✅
+TabbedView.barBackgroundColor: ✅
+TabbedView.barForegroundColor: ✅
+TabbedView.barIcon: ✅
+TabbedView.barSubtitle: ✅
+TabbedView.barTitle: ✅

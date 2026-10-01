@@ -104,11 +104,11 @@ TextField.width: ✅
 TimePicker.frame: ✅
 TimePicker.pivotX: ✅
 TimePicker.zIndex: not realized
-VStack.isAccessibilityHidden: ✅
-VStack.isEnabled: not realized
-VStack.scaleX: ✅
-WebView.ignoresInput: not realized
-WebView.layoutDirection: not realized
-WebView.translationY: ✅
-ZStack.rotation: ✅
-ZStack.style: ✅
+VStack.accessibilityLabel: ✅
+VStack.rotationX: not realized
+WebView.isAccessibilityHidden: ✅
+WebView.isEnabled: not realized
+WebView.scaleX: ✅
+ZStack.ignoresInput: ✅
+ZStack.layoutDirection: not realized
+ZStack.translationY: ✅

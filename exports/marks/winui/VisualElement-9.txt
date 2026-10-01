@@ -104,17 +104,15 @@ TextField.scaleX: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.layoutDirection: not realized
 TimePicker.translationY: ✅
-VStack.accessibilityHeadingLevel: ✅
-VStack.opacity: ✅
-VStack.scale: ✅
-WebView.background: not realized
-WebView.frameChanged: ✅
-WebView.maximumHeight: ✅
-WebView.maximumWidth: ✅
-WebView.minimumHeight: ✅
-WebView.minimumWidth: ✅
-WebView.translationX: ✅
-ZStack.focus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.isFocusedChanged: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
-ZStack.pivotY: ✅
-ZStack.unfocus: – ZStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.rotation: ✅
+VStack.style: ✅
+WebView.accessibilityHeadingLevel: ✅
+WebView.opacity: ✅
+WebView.scale: ✅
+ZStack.background: ✅
+ZStack.frameChanged: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.translationX: ✅

@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | AppKit | ✅ |  | structure |  |
 | UIKit | ✅ |  | structure |  |
 | Android Views | ✅ |  | structure |  |
-| WinUI 3 | ⌛ |  | structure |  |
+| WinUI 3 | ✅ |  | structure |  |
 | GTK 4 | ⌛ |  | structure |  |
 | Web |  |  | structure | no host yet |
 

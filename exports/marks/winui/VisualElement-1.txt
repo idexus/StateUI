@@ -104,13 +104,14 @@ TimePicker.focus: ✅
 TimePicker.isFocusedChanged: ✅
 TimePicker.pivotY: ✅
 TimePicker.unfocus: ✅
-VStack.automationExcludedWithChildren: ✅
-VStack.frameChanged: ✅
-VStack.height: ✅
-VStack.scaleY: ✅
-VStack.width: ✅
-WebView.frame: ✅
-WebView.pivotX: ✅
-WebView.zIndex: not realized
-ZStack.accessibilityLabel: ✅
-ZStack.rotationX: not realized
+VStack.accessibilityHint: ✅
+VStack.isVisible: ✅
+VStack.rotationY: not realized
+WebView.automationExcludedWithChildren: ✅
+WebView.frameChanged: ✅
+WebView.height: ✅
+WebView.scaleY: ✅
+WebView.width: ✅
+ZStack.frame: ✅
+ZStack.pivotX: ✅
+ZStack.zIndex: not realized

@@ -104,14 +104,15 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.translationX: ✅
-VStack.accessibilityHint: ✅
-VStack.isVisible: ✅
-VStack.rotationY: not realized
-WebView.automationExcludedWithChildren: ✅
-WebView.frameChanged: ✅
-WebView.height: ✅
-WebView.scaleY: ✅
-WebView.width: ✅
-ZStack.frame: ✅
-ZStack.pivotX: ✅
-ZStack.zIndex: not realized
+VStack.focus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.isFocusedChanged: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+VStack.pivotY: ✅
+VStack.unfocus: – VStack takes no keyboard focus here: it refuses it, and nothing is heard
+WebView.accessibilityHint: ✅
+WebView.isVisible: ✅
+WebView.rotationY: not realized
+ZStack.automationExcludedWithChildren: ✅
+ZStack.frameChanged: ✅
+ZStack.height: ✅
+ZStack.scaleY: ✅
+ZStack.width: ✅
