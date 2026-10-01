@@ -157,20 +157,21 @@ struct MainWindow: Window {
     /// `TabbedView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
+    @PageBuilder
     func detail() -> any Page {
         if case .tabs = nav.section {
-            return tabs()
+            tabs()
+        } else {
+            NavigationStack(nav.$path) {
+                root()
+            } destination: { route in
+                page(for: route, path: nav.$path)
+            }
+            // The bar belongs to the navigation arrangement, not one page on it.
+            // Its foreground stays white against the gallery accent in both themes.
+            .barBackgroundColor(barColour)
+            .barForegroundColor(Palette.onBrand)
         }
-
-        return NavigationStack(nav.$path) {
-            root()
-        } destination: { route in
-            page(for: route, path: nav.$path)
-        }
-        // The bar belongs to the navigation arrangement, not one page on it.
-        // Its foreground stays white against the gallery accent in both themes.
-        .barBackgroundColor(barColour)
-        .barForegroundColor(Palette.onBrand)
     }
 
     /// The page under everything, for the section the menu chose.
@@ -180,17 +181,18 @@ struct MainWindow: Window {
     /// group each. The user's way back out of anything is therefore the
     /// platform's own back button, all the way to the run of group cards the
     /// gallery opens with.
-    func root() -> any View {
+    @PageBuilder
+    func root() -> any Page {
         switch nav.section {
         case .home:
-            return HomePage(catalog: catalog, nav: nav)
+            HomePage(catalog: catalog, nav: nav)
 
         case .hidden:
-            return HiddenPage(nav: nav)
+            HiddenPage(nav: nav)
 
         case .tabs:
             // Answered by `tabs()` above, which is what that section is for.
-            return HomePage(catalog: catalog, nav: nav)
+            HomePage(catalog: catalog, nav: nav)
         }
     }
 
@@ -203,30 +205,31 @@ struct MainWindow: Window {
     /// - Parameter route: which page the stack asked for.
     /// - Parameter path: the stack this page is ON, so a page that pushes or
     ///   pops writes the array it is a member of - the main one, or the tab's.
+    @PageBuilder
     func page(for route: Route, path: Binding<[Route]>) -> any Page {
         switch route {
         case .group(let route):
-            guard let group = catalog.groups.first(where: { $0.route == route }) else {
-                return MissingPage(id: route, nav: nav, path: path)
+            if let group = catalog.groups.first(where: { $0.route == route }) {
+                GroupPage(group: group, nav: nav)
+            } else {
+                MissingPage(id: route, nav: nav, path: path)
             }
-
-            return GroupPage(group: group, nav: nav)
 
         case .sample(let id):
-            guard let sample = catalog.sample(id: id) else {
-                return MissingPage(id: id, nav: nav, path: path)
+            if let sample = catalog.sample(id: id) {
+                SamplePage.shown(sample, nav: nav, bar: barColour)
+            } else {
+                MissingPage(id: id, nav: nav, path: path)
             }
 
-            return SamplePage.shown(sample, nav: nav, bar: barColour)
-
         case .level(let level):
-            return LevelPage(level: level, nav: nav, path: path)
+            LevelPage(level: level, nav: nav, path: path)
 
         case .item(let item):
-            return ItemPage(item: item, nav: nav, path: path)
+            ItemPage(item: item, nav: nav, path: path)
 
         case .layer(let depth):
-            return ToolbarLayerPage(depth: depth, path: path)
+            ToolbarLayerPage(depth: depth, path: path)
         }
     }
 
@@ -239,7 +242,7 @@ struct MainWindow: Window {
         TabbedView(nav.tabs) { which in
             switch which {
             case .stack:
-                return NavigationStack(nav.$tabsPath) {
+                NavigationStack(nav.$tabsPath) {
                     TabsPage(nav: nav, path: nav.$tabsPath)
                 } destination: { route in
                     page(for: route, path: nav.$tabsPath)
@@ -254,10 +257,10 @@ struct MainWindow: Window {
                 .barForegroundColor(Palette.onBrand)
 
             case .second:
-                return SecondTabPage(nav: nav)
+                SecondTabPage(nav: nav)
 
             case .extra(let number):
-                return TabsExtraPage(nav: nav, number: number)
+                TabsExtraPage(nav: nav, number: number)
             }
         }
         .selection(nav.$tab)

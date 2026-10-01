@@ -50,7 +50,7 @@
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
 /// sidebar page must have a title.
-public struct SplitView: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
+public struct SplitView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -66,8 +66,8 @@ public struct SplitView: Page, ModifiableElement, BarElement, PageElement, PageA
     /// - Parameter detail: the page beside it, which is the application.
     public init(
         _ isSidebarVisible: Binding<Bool>,
-        sidebar: () -> any Page,
-        detail: () -> any Page
+        @PageBuilder sidebar: () -> any Page,
+        @PageBuilder detail: () -> any Page
     ) {
         node = Node(
             contract: SplitViewContract.self,

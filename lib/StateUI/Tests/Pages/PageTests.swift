@@ -161,6 +161,28 @@ private struct Renaming: ContentView {
 }
 
 final class PageTests: XCTestCase {
+    /// A page position takes a branch as a page of its own: swapped for the other branch of the same view type,
+    /// the page is made anew - created again, its session fresh - as two branches in a container are two elements.
+    func testAPageSwappedForABranchOfTheSameTypeIsANewPage() {
+        let first = State(wrappedValue: true)
+        let log = State(wrappedValue: [String]())
+        @PageBuilder func shown() -> any Page {
+            if first.wrappedValue {
+                Created(name: "one", log: log.projectedValue)
+            } else {
+                Created(name: "two", log: log.projectedValue)
+            }
+        }
+        let renders = Renders()
+
+        renders.settled(Node.page(shown()))
+        first.wrappedValue = false
+        let swapped = renders.settled(Node.page(shown()), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertTrue(swapped.replace, "the page went on as the other branch")
+        XCTAssertEqual(log.wrappedValue, ["created one", "created two"])
+    }
+
     // MARK: - A view shown as a page
 
     /// The page holds its session while the same view stands on it: the parent
@@ -653,5 +675,15 @@ final class PageTests: XCTestCase {
         ])
         XCTAssertEqual(window.eventNames, HostPatch.windowEvents)
         XCTAssertEqual(window.children.map(\.type), [.page])
+    }
+}
+
+/// A page saying when it is made, by its name.
+private struct Created: ContentView {
+    let name: String
+    @Binding var log: [String]
+
+    var content: some View {
+        Label(name).onCreated { log.append("created \(name)") }
     }
 }

@@ -98,10 +98,11 @@ final class WinUIPagesTests: XCTestCase {
     func testATabsPictureStandsAsTallAsTheThemesTabIcons() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                VStack {
-                    TabbedView([0, 1]) { tab -> any Page in
-                        tab == 0 ? SessionPage { page, _ in page.title = "Wide"; page.icon = "test_wide.png" }
-                            : SessionPage { page, _ in page.title = "Plain" }
+                TabbedView([0, 1]) { tab in
+                    if tab == 0 {
+                        SessionPage { page, _ in page.title = "Wide"; page.icon = "test_wide.png" }
+                    } else {
+                        SessionPage { page, _ in page.title = "Plain" }
                     }
                 }
             }

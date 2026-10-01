@@ -68,8 +68,9 @@ public protocol Application {
 public protocol Window: Element, Scene {
     /// What the window shows: a `NavigationStack`, a `TabbedView`, a
     /// `SplitView`, or any other view - usually a `ContentView` of the
-    /// application's own. Read again when a state it read changes.
-    var page: any Page { get }
+    /// application's own. Read again when a state it read changes. An
+    /// `if`/`else` or a `switch` chooses among pages, each a page of its own.
+    @PageBuilder var page: any Page { get }
 }
 
 extension Window {
@@ -164,18 +165,18 @@ extension Node {
 /// arrangement is told its title and icon by modifier, from `PageElement`.
 public protocol Page: Element {}
 
-/// An arrangement: a page this library declares, shown as it is.
-protocol PageArrangement: Page {}
-
 extension Node {
     /// A view shown as a screen: an arrangement as it is, any other view on a
-    /// page element of its own, which holds the view's `PageSession`.
+    /// page element of its own, which holds the view's `PageSession`. Told by
+    /// the node it builds, so a branch's page is told the same way; the branch
+    /// is part of what the page is.
     /// Design: docs/design/views/pages.md#a-page-around-a-view
     static func page(_ shown: any Page) -> Node {
-        if shown is any PageArrangement { return shown.body }
-
         let content = shown.body
+        if arrangements.contains(content.type) { return content }
+
         let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
+            + (content.key.map { "@\($0)" } ?? "")
         let request = ElementSession(PageSession.self) { PageSession() }
 
         var node = composed(ShownView(content: content), type: "StateUI.Page(\(kind))") {
@@ -185,6 +186,12 @@ extension Node {
         node.session = request
         return node
     }
+
+    /// The node types of the arrangements: pages this library declares.
+    private static let arrangements: Set<NodeType> = [
+        NavigationStackContract.nodeType, TabbedViewContract.nodeType, SplitViewContract.nodeType,
+        ModalStackContract.nodeType,
+    ]
 
     /// The page: the session's properties around its content.
     private static func page(around content: Node, session: PageSession) -> Node {

@@ -1,8 +1,10 @@
 # Builders
 
 A result builder turns the statements of a closure into what a container
-holds, or into one view. StateUI has one for views, and one each for menu
-entries, toolbar items, text runs, pins, windows, window groups and styles. The
+holds, or into one view. StateUI has one for views, one for the page a page
+position shows (`PageBuilder`: one page, an `if`/`else` or `switch` keying
+each branch, no `if` without `else`), and one each for menu entries, toolbar
+items, text runs, pins, windows, window groups and styles. The
 view builder also gives every view it collects a key.
 
 ## The result says what was written

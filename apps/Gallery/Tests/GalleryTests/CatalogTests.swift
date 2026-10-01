@@ -1074,7 +1074,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
 
         XCTAssertEqual(place.section.wrappedValue, .home)
-        XCTAssertTrue(window(place.nav).root() is HomePage)
+        XCTAssertEqual(window(place.nav).root().body.stateful?.viewType, String(reflecting: HomePage.self))
     }
 
     /// The gallery is a menu over a stack, and both halves are pages.

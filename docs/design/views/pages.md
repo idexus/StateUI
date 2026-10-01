@@ -115,7 +115,10 @@ can differ between two instances within one run.
 
 A view shown as a screen gets a page element around it (`Node.page`). The page
 holds the view's `PageSession` for its life: kept while the same view stands
-there - the same kind under the same explicit id - and made afresh for another.
+there - the same kind under the same explicit id, from the same branch - and
+made afresh for another. A page position takes its page through `PageBuilder`,
+so an `if`/`else` or a `switch` there keys each branch, and two branches of
+the same view are two pages, as two branches in a container are two elements.
 The view stays the element it is, one level down, with its state, its inputs
 and whatever was written on it, so a write to the session builds the page again
 and carries the view whole.
@@ -127,10 +130,11 @@ built with its parent and the view is compared on its own.
 
 ## Arrangements are pages
 
-`NavigationStack`, `TabbedView` and `SplitView` conform to `Page` and not to
-`View`, so an arrangement stands only where a page stands: a stack written
-inside a `VStack` does not compile. An arrangement is a page already and is
-shown as it is, with no page element around it.
+`NavigationStack`, `TabbedView`, `SplitView` and `ModalStack` conform to `Page`
+and not to `View`, so an arrangement stands only where a page stands: a stack
+written inside a `VStack` does not compile. An arrangement is a page already
+and is shown as it is, with no page element around it - told by the node it
+builds, so one a branch chose is told the same way.
 
 What a screen is - its title, its buttons - is its page's session. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same

@@ -63,7 +63,7 @@
 /// `.onChanged(path)` observes every committed arrival and departure. The
 /// title on the bar belongs to the top page; `.title` and `.icon` on the
 /// stack name the whole stack where another container presents it.
-public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
+public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -78,8 +78,8 @@ public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement,
     /// - Parameter destination: the page for one route, asked in path order.
     public init<Route: Hashable>(
         _ path: Binding<[Route]>,
-        root: () -> any Page,
-        destination: (Route) -> any Page
+        @PageBuilder root: () -> any Page,
+        @PageBuilder destination: (Route) -> any Page
     ) {
         var children: [Node] = [Self.identified(Node.page(root()), as: Self.rootIdentity)]
 

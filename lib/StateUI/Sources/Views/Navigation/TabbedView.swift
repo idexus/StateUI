@@ -48,7 +48,7 @@
 /// Each tab must be a distinct value whose values describe differently
 /// (`String(describing:)`). A page is keyed by its tab alone, so tabs can be
 /// reordered without their pages being rebuilt.
-public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
+public struct TabbedView: Page, ModifiableElement, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -66,7 +66,7 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, Page
     /// - Parameter destination: the page for one tab.
     public init<Tabs: RandomAccessCollection>(
         _ tabs: Tabs,
-        destination: (Tabs.Element) -> any Page
+        @PageBuilder destination: (Tabs.Element) -> any Page
     ) where Tabs.Element: Hashable {
         let ordered = Array(tabs)
         self.tabs = ordered.map { AnyHashable($0) }

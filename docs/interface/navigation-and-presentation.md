@@ -42,6 +42,11 @@ path = []               // return to root
 
 The root always exists. Each destination is identified by its route and stack
 depth, so the same route may appear more than once without sharing page state.
+A page position - a window's page, a stack's root and destinations, a tab,
+either half of a split view, a sheet - shows one page: an `if`/`else` or a
+`switch` there chooses among pages, each a page of its own, so swapping
+branches makes the page anew even where both are the same view. An `if` with
+no `else` does not compile there: a position always shows a page.
 A committed native back action truncates the bound path. A cancelled
 interactive gesture changes neither the path nor the tree.
 

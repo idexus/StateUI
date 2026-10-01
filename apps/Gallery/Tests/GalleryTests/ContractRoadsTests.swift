@@ -204,6 +204,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = VStack { TextSpan("Hi") }"#,
             contract: #"_ = VStack { Label().spans { TextSpan("Hi") } }"#),
         Road(
+            name: "a page position that may show no page",
+            removed: "struct Lone: Window { var page: any Page { if Bool.random() { Label(\"a\") } } }",
+            contract: "struct Lone: Window { var page: any Page { if Bool.random() { Label(\"a\") } else { Label(\"b\") } } }"),
+        Road(
             name: "a composed view's content as an existential",
             removed: "struct Old: ContentView { var content: any View { Label(\"a\") } }",
             contract: "struct New: ContentView { var content: some View { Label(\"a\") } }"),

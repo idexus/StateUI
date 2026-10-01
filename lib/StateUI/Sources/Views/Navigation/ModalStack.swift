@@ -29,7 +29,7 @@
 /// a sheet the user dismisses shortens the array itself. The page presented
 /// needs the binding too, to close itself; the host picks the platform's own
 /// modal presentation.
-public struct ModalStack: Page, ModifiableElement, BarElement, PageArrangement {
+public struct ModalStack: Page, ModifiableElement, BarElement {
     /// The node this stack describes.
     public var node: Node
 
@@ -46,8 +46,8 @@ public struct ModalStack: Page, ModifiableElement, BarElement, PageArrangement {
     ///   - destination: the page for one element, asked in stack order.
     public init<Sheet: Hashable>(
         _ sheets: Binding<[Sheet]>,
-        root: () -> any Page,
-        destination: (Sheet) -> any Page
+        @PageBuilder root: () -> any Page,
+        @PageBuilder destination: (Sheet) -> any Page
     ) {
         var root = Node.page(root())
         root.id = Self.rootIdentity

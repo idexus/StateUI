@@ -60,7 +60,13 @@
                 Label("Sidebar")
             } detail: { stack() })
         case "TabbedView":
-            return dressing.wear(TabbedView([0, 1]) { tab -> any Page in tab == 0 ? stack() : Label("Other") })
+            return dressing.wear(TabbedView([0, 1]) { tab in
+                if tab == 0 {
+                    stack()
+                } else {
+                    Label("Other")
+                }
+            })
         case "ModalStack":
             return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
                 stack()

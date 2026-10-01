@@ -21,7 +21,7 @@ and this table maps the two.
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
 | Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
-| arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
+| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
 | arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView`, `SplitView` and `ModalStack`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |
 | session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
