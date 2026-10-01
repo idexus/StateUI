@@ -50,6 +50,17 @@ typealias GTKPositionHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32,
 /// A signal naming a run of places in a list: a selection model's changed choice.
 typealias GTKRangeHandler = @convention(c) (UnsafeMutableRawPointer?, UInt32, UInt32, gpointer?) -> Void
 
+/// A signal whose handler answers whether it took what the signal asks: a window's request to close.
+typealias GTKAnswerHandler = @convention(c) (UnsafeMutableRawPointer?, gpointer?) -> gboolean
+
+/// Connects `handler` to `signal` of `instance`, handing it `number`; the handler answers whether it took it.
+@discardableResult
+func connectAnswering(
+    _ instance: UnsafeMutableRawPointer, _ signal: String, number: Int64, _ handler: GTKAnswerHandler
+) -> gulong {
+    connect(instance, signal, number, unsafeBitCast(handler, to: GCallback.self))
+}
+
 /// Connects `handler` to `signal` of `instance`, handing it `number`.
 /// Design: docs/design/platforms/gtk/c-api.md#signals
 @discardableResult

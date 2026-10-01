@@ -42,11 +42,27 @@ final class GTKRenderer {
         g_application_get_application_id(application.of(GApplication.self)).map { String(cString: $0) } ?? ""
     }
 
-    /// The window the first window element shows in; nil before it says it is there.
-    private(set) var window: GTKWindow?
+    /// The windows the tree holds, each with its controller, in the tree's order.
+    private let roster = WindowRoster<GTKWindowController>()
 
-    /// What the window shows, by the host layer's rule: its arrangement of pages, its overlays, and that it was made.
-    private let presentation = WindowPresentation()
+    /// A controller for each window element the tree holds, in the tree's order.
+    var windows: [GTKWindowController] {
+        roster.controllers
+    }
+
+    /// The first window - the scene's main one; nil before there is one.
+    var window: GTKWindow? {
+        windows.first?.window
+    }
+
+    /// The window the user is in: the one activated last, else the first.
+    var userWindow: GTKWindow? {
+        let front = runtime.lifecycle.activatedLast(among: roster.windows.map(\.element))
+        return front.flatMap { roster.controller(of: $0)?.window } ?? window
+    }
+
+    /// What is kept of the scenes for the next start: the desktop restores no windows.
+    let scenes = SceneKeeper()
 
     /// Whether the screen the window stands on has been told.
     private var reportedDisplay = false
@@ -97,13 +113,14 @@ final class GTKRenderer {
         return renderer
     }
 
-    /// Renders the application whole, connecting its scene first, told what the host stands on.
+    /// Renders the application whole, told what the host stands on: the scenes kept for this start come back, else
+    /// one new scene.
+    /// Design: docs/design/host/runtime.md#kept-scenes
     func show() {
         GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
         GTKKeptValues.restore(into: runtime.core, applicationID: applicationID)
         GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
-        runtime.core.connectScene()
-        runtime.pump.turn()
+        scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime)
     }
 
     /// The desktop's style turned dark or light: the core hears it, and renders what it changed.
@@ -112,78 +129,64 @@ final class GTKRenderer {
         runtime.pump.turn()
     }
 
-    /// Shows the first window's arrangement of pages in a GTK window - a page by itself in a frame of its own - its
-    /// pages hearing that they show, and tells the window it was made, once, in its turn.
+    /// Shows every window element in a GTK window of its own, in the tree's order - a window the tree no longer
+    /// holds closes - each page hearing that it shows, each window told once, in its turn, that it was made.
     /// Design: docs/design/platforms/gtk/runtime.md#the-window
-    private func showWindow() {
-        guard let element = runtime.tree.root?.first(type: .window) else { return }
-
-        let window = self.window ?? GTKWindow(application: application)
-        if self.window == nil {
-            self.window = window
-            frameClock.widget = window.widget
+    private func showWindows() {
+        roster.update(
+            root: runtime.tree.root, make: { [application] in GTKWindowController($0, application: application) },
+            close: { $0.window.close() })
+        if let window, frameClock.widget != window.widget { frameClock.widget = window.widget }
+        for (element, controller) in roster.windows {
+            controller.present(element, in: runtime, windowOf: { [roster] in roster.controller(of: $0)?.window })
         }
-        if !reportedDisplay, gtk_widget_get_realized(window.widget) != 0 {
+        if !reportedDisplay, let window, gtk_widget_get_realized(window.widget) != 0 {
             reportedDisplay = true
             GTKEnvironment.reportDisplay(to: runtime.core, window: window.widget)
         }
-        window.setSize(width: element.value(.width)?.number, height: element.value(.height)?.number)
-        window.setMinimumSize(width: element.value(.minimumWidth)?.number, height: element.value(.minimumHeight)?.number)
-
-        let changes = presentation.show(element, in: runtime.lifecycle)
-        if let (_, arrangement) = changes.arrangement {
-            if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
-                window.show(page: arrangement.gtk.view)
-            } else {
-                window.show(arrangement?.gtk.view)
-            }
-        }
-        if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
         refreshChrome()
     }
 
-    /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
+    /// Writes every window's chrome again from what it shows now.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     func refreshChrome() {
-        guard let window, let element = runtime.tree.root?.first(type: .window)?.gtk else { return }
-
-        let arrangement = presentation.arrangement?.gtk
-        if let arrangement, GTKElement.framedTypes.contains(arrangement.type) {
-            window.pageFrame?.show(arrangement.chrome)
-        }
-        arrangement?.composeChrome()
-        adaptSplitViews(in: window)
-        let title = WindowChrome(window: element.element, arrangement: presentation.arrangement).title
-        window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+        for controller in windows { controller.refreshChrome() }
     }
 
-    /// Collapses the window's split view where the window is narrow.
-    private func adaptSplitViews(in window: GTKWindow) {
-        guard let split = presentation.arrangement?.gtk, split.type == .splitView, let view = split.view as? GTKSplitView
-        else { return }
-
-        view.adapt(in: window.widget)
-    }
-
-    /// Goes the way back the window offers (`WindowPresentation.wayBack`), as the user does: a stack's top page goes
-    /// in GTK first, the path then told; a sheet goes through the host layer. Whether there was one.
-    /// Design: docs/design/host/pages.md#the-way-back
+    /// Goes the way back the window the user is in offers, as the user does; whether there was one.
     func goBack() -> Bool {
-        guard let way = presentation.wayBack else { return false }
-        switch way {
-        case .pop(let stack):
-            return (stack.gtk.view as? GTKNavigationView)?.popByUser() ?? false
-        case .dismissSheet:
-            guard let window = runtime.tree.root?.first(type: .window) else { return false }
-            runtime.goBack(way, in: window)
-            return true
-        }
+        let front = runtime.lifecycle.activatedLast(among: roster.windows.map(\.element))
+        let controller = front.flatMap { roster.controller(of: $0) } ?? windows.first
+        return controller?.goBack(in: runtime) ?? false
+    }
+
+    /// The window numbered `number` turned active or not, minimized or not: the host layer settles what that means
+    /// for the application, its scenes and its windows.
+    /// Design: docs/design/platforms/gtk/runtime.md#a-windows-life
+    func windowStateChanged(number: Int64) {
+        guard let controller = windows.first(where: { $0.window.number == number }), !controller.window.isClosed,
+              let element = controller.element
+        else { return }
+        runtime.windowStateChanged(element, minimized: controller.window.isMinimized, activated: controller.window.isActive)
+    }
+
+    /// The window numbered `number` went: one the tree closed tells nothing; one the user closed is heard by it and
+    /// its scene.
+    /// Design: docs/design/host/runtime.md#a-window-the-user-closes
+    func windowClosed(number: Int64) {
+        guard let controller = windows.first(where: { $0.window.number == number }), !controller.window.isClosed
+        else { return }
+        controller.window.closed()
+        if let element = controller.element { runtime.userClosed(element) }
     }
 }
 
 extension GTKRenderer: TurnPresenter {
     func presentRendered() {
-        showWindow()
+        showWindows()
+        if let text = scenes.changed(root: runtime.tree.root) {
+            GTKKeptValues.writeScenes(text, applicationID: applicationID)
+        }
     }
 
     func perform(_ call: HostActCall) {
@@ -202,7 +205,7 @@ extension GTKRenderer: FramePresenter {
 
     /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
-        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindow() }
+        if runtime.tree.present(states: states, properties: properties).windowChrome { showWindows() }
     }
 
     func renderIfNeeded() {

@@ -5,6 +5,7 @@ import CStateUIGTK
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
+import StateUIConformance
 import XCTest
 
 /// A page and its counter: a click raises the count, and the caption reads it.
@@ -105,4 +106,123 @@ private struct SizedPage: ContentView {
             window.minimumWidth = 400
         }
     }
+}
+
+extension GTKRendererTests {
+    /// A window the tree closes tells nothing: GTK says it went, and that is the tree's own closing.
+    func testAWindowTheTreeClosesTellsNothing() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { PhasePage() }
+            let window = try XCTUnwrap(host.window)
+            host.settle { host.views(GTKLabelView.self).first?.text.hasSuffix("activated") == true }
+            let before = host.views(GTKLabelView.self).map(\.text)
+
+            window.close()
+            for _ in 0..<10 { host.step() }
+
+            XCTAssertEqual(host.views(GTKLabelView.self).map(\.text), before, "no phase, no going")
+        }
+    }
+
+    /// A window the user closes - its close button, Alt+F4 - hears it is going.
+    func testAWindowTheUserClosesIsHeard() throws {
+        try onUIThread {
+            let gone = Received<String>()
+            let host = GTKRenderer.running(application: { GoingApplication(gone: gone) })
+            let window = try XCTUnwrap(host.window)
+
+            gtk_window_close(window.widget.of(GtkWindow.self))
+            host.settle { gone.values.contains("window") }
+
+            XCTAssertEqual(gone.values, ["window"])
+        }
+    }
+
+    /// A window of a kind of its own belongs to its scene's main window, as a tool window does on GNOME: above it, and
+    /// gone with it; the main window belongs to none.
+    func testAWindowOfItsOwnBelongsToTheMainWindow() throws {
+        try onUIThread {
+            let host = GTKRenderer.running(application: { ToolApplication() })
+            try XCTUnwrap(host.views(GTKButtonView.self).first).click()
+            host.settle { host.windows.count == 2 }
+
+            XCTAssertEqual(host.windows.count, 2)
+            let (main, tool) = (host.windows[0].window, host.windows[1].window)
+            XCTAssertTrue(gtk_window_get_transient_for(tool.widget.of(GtkWindow.self)) == main.widget.of(GtkWindow.self))
+            XCTAssertNil(gtk_window_get_transient_for(main.widget.of(GtkWindow.self)))
+        }
+    }
+}
+
+/// A page saying the application's phase and its window's.
+private struct PhasePage: ContentView {
+    @Environment private var application: ApplicationSession
+    @Environment private var window: WindowSession
+
+    var content: some View {
+        Label("\(application.phase) \(window.phase)")
+    }
+}
+
+/// An application whose window says when it is going.
+private struct GoingApplication: Application {
+    let gone: Received<String>
+
+    var scene: any Scene { GoingScene(gone: gone) }
+}
+
+private struct GoingScene: Scene {
+    let gone: Received<String>
+
+    var windows: Windows {
+        let gone = self.gone
+        return Windows(main: { GoingWindow(gone: gone) })
+    }
+}
+
+private struct GoingWindow: Window {
+    let gone: Received<String>
+
+    var page: any Page { GoingPage(gone: gone) }
+}
+
+/// A page hearing its window go.
+private struct GoingPage: ContentView {
+    let gone: Received<String>
+    @Environment private var window: WindowSession
+
+    var content: some View {
+        let gone = self.gone
+        let window = self.window
+        return Label("going")
+            .onChanged(window.phase) { if window.phase == .destroying { gone.values.append("window") } }
+    }
+}
+
+/// An application whose main window opens a tool window of its scene.
+private struct ToolApplication: Application {
+    var scene: any Scene { ToolScene() }
+}
+
+private struct ToolScene: Scene {
+    var windows: Windows {
+        Windows({ WindowGroup(WindowType("renderer.tool")) { ToolWindow() } }, main: { ToolMainWindow() })
+    }
+}
+
+private struct ToolMainWindow: Window {
+    var page: any Page { ToolOpeningPage() }
+}
+
+private struct ToolOpeningPage: ContentView {
+    @Environment private var scene: SceneSession
+
+    var content: some View {
+        let scene = self.scene
+        return Button("Tool").onClicked { try await scene.openWindow(WindowType("renderer.tool")) }
+    }
+}
+
+private struct ToolWindow: Window {
+    var page: any Page { Label("A tool") }
 }

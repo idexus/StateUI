@@ -69,8 +69,8 @@ final class GTKInputViewTests: XCTestCase {
     }
 
     /// A field's placeholder, coloured or not, stands across the field where its words do.
-    func testAPlaceholderStandsWhereTheWordsDo() throws {
-        try onUIThread {
+    func testAPlaceholderStandsWhereTheWordsDo() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).placeholder("Scan")

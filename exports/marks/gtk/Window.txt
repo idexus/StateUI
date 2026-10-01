@@ -1,24 +1,24 @@
 # revision 2.1
-Window: waits on Window.created
-Window.activated: not realized
-Window.created: not realized
-Window.deactivated: not realized
-Window.destroying: not realized
-Window.floatsOnTop: not realized
-Window.height: not realized
-Window.hidesWhenInactive: not realized
+Window: ✅
+Window.activated: ◐ cannot switchAway on Window - GTK's driver has no path for it yet
+Window.created: ✅
+Window.deactivated: cannot switchAway on Window - GTK's driver has no path for it yet
+Window.destroying: ✅
+Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
+Window.height: ✅
+Window.hidesWhenInactive: cannot start an application - GTK's driver has no path for it yet
 Window.isMaximizable: not realized
 Window.isMinimizable: not realized
 Window.isTranslucent: not realized
-Window.maximumHeight: not realized
-Window.maximumWidth: not realized
-Window.minimumHeight: not realized
-Window.minimumWidth: not realized
-Window.resumed: not realized
-Window.stopped: not realized
-Window.title: not realized
-Window.width: not realized
-Window.windowType: not realized
-Window.windowValue: not realized
-Window.x: not realized
-Window.y: not realized
+Window.maximumHeight: – GTK 4 bounds no window from above.
+Window.maximumWidth: – GTK 4 bounds no window from above.
+Window.minimumHeight: ✅
+Window.minimumWidth: ✅
+Window.resumed: cannot minimize on Window - GTK's driver has no path for it yet
+Window.stopped: cannot minimize on Window - GTK's driver has no path for it yet
+Window.title: ✅
+Window.width: ✅
+Window.windowType: cannot start an application - GTK's driver has no path for it yet
+Window.windowValue: cannot start an application - GTK's driver has no path for it yet
+Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
+Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.

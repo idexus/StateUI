@@ -113,12 +113,24 @@ extension XCTestCase {
 }
 
 extension GTKRenderer {
-    /// A host showing `page` in a window of its own, laid out, on `clock` where one is given.
+    /// A host showing `page` in a window of its own, laid out, on `clock` where one is given: a first launch, which
+    /// finds nothing an earlier host kept.
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
     ) -> GTKRenderer {
-        stateUIUseApp(OneWindowApplication(page: page))
+        running(clock: clock, reducesMotion: reducesMotion, application: { OneWindowApplication(page: page) })
+    }
+
+    /// A host running `application`, its windows laid out, on `clock` where one is given: a first launch, which finds
+    /// nothing an earlier host kept.
+    static func running(
+        clock: TestClock? = nil, reducesMotion: Bool = false,
+        application: @escaping @Sendable () -> any Application
+    ) -> GTKRenderer {
+        stateUIUseApp(application())
         let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
+        unlink(GTKKeptValues.file(for: renderer.applicationID))
+        unlink(GTKKeptValues.scenesFile(for: renderer.applicationID))
         renderer.show()
         GTKTestHost.pump(0.02)
         renderer.layOut()
@@ -137,8 +149,15 @@ extension GTKRenderer {
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
         GTKPictures.folder = GTKTestHost.pictures
         GTKKeptValues.folder = String(cString: g_get_tmp_dir()) + "/stateui-gtk-tests"
-        shared?.runtime.tree.root?.leave()
-        shared?.window?.close()
+        // The host before this one presents nothing more: what it was told late - a window's state - settles into
+        // no window of the next test's.
+        if let previous = shared {
+            previous.runtime.tree.root?.leave()
+            previous.runtime.pump.presenter = nil
+            previous.runtime.displayCycle.presenter = nil
+            previous.frameClock.widget = nil
+            for controller in previous.windows { controller.window.close() }
+        }
         GTKTestHost.window.show(nil)
 
         let renderer = GTKRenderer(

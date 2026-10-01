@@ -35,20 +35,45 @@ enum GTKKeptValues {
         if !write(kept, to: file) { GTKRenderer.log.error("the kept values could not be written") }
     }
 
+    /// The application's scenes as they stood, for the next start: the desktop restores no windows.
+    static func readScenes(applicationID: String) -> KeptScenes {
+        KeptScenes(text(of: scenesFile(for: applicationID)))
+    }
+
+    /// Writes the scenes' text whole in place of the file.
+    static func writeScenes(_ text: String, applicationID: String) {
+        if !write(text, to: scenesFile(for: applicationID)) { GTKRenderer.log.error("the kept scenes could not be written") }
+    }
+
+    /// The file the application's scenes stand in.
+    static func scenesFile(for applicationID: String) -> String {
+        (folder ?? String(cString: g_get_user_state_dir()) + "/" + applicationID) + "/kept scenes.txt"
+    }
+
     /// Writes `kept` whole to `file`, aside and then in its place; whether it was written.
     static func write(_ kept: KeptValuesText, to file: String) -> Bool {
+        write(kept.text, to: file)
+    }
+
+    /// Writes `text` whole to `file`, aside and then in its place; whether it was written.
+    private static func write(_ text: String, to file: String) -> Bool {
         if let folder = g_path_get_dirname(file) {
             g_mkdir_with_parents(folder, 0o700)
             g_free(folder)
         }
-        return g_file_set_contents(file, kept.text, -1, nil) != 0
+        return g_file_set_contents(file, text, -1, nil) != 0
     }
 
     /// What `file` holds; nothing where there is no such file.
     static func read(_ file: String) -> KeptValuesText {
+        KeptValuesText(text(of: file))
+    }
+
+    /// The text `file` holds; none where there is no such file.
+    private static func text(of file: String) -> String {
         var contents: UnsafeMutablePointer<gchar>?
-        guard g_file_get_contents(file, &contents, nil, nil) != 0, let contents else { return KeptValuesText("") }
+        guard g_file_get_contents(file, &contents, nil, nil) != 0, let contents else { return "" }
         defer { g_free(contents) }
-        return KeptValuesText(String(cString: contents))
+        return String(cString: contents)
     }
 }

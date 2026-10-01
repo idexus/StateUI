@@ -8,7 +8,7 @@ Application.currentTime: ✅
 Application.currentTimeZone: ✅
 Application.handlerFailed: cannot read the log - GTK's driver has no path for it yet
 Application.hideOnScreenKeyboard: cannot focus on TextField - GTK's driver has no path for it yet
-Application.persistSceneValue: not realized
+Application.persistSceneValue: cannot read what is kept - GTK's driver has no path for it yet
 Application.persistValue: cannot read what is kept - GTK's driver has no path for it yet
 Application.prompt: cannot read a question - GTK's driver has no path for it yet
 Application.utcOffset: ✅

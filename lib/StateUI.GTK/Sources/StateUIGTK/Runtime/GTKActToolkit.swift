@@ -6,8 +6,8 @@
 import CStateUIGTK
 
 /// GTK's part of the acts every host performs (`HostActPerformer`): the clock and the zones as GLib has them, a
-/// question in libadwaita's alert dialog over the window, a word to the screen reader, the focus, a value kept, a
-/// list scrolled to an item, and the application's own acts.
+/// question in libadwaita's alert dialog over the window the user is in, a word to the screen reader, the focus, a
+/// value kept, a list scrolled to an item, and the application's own acts.
 /// Design: docs/design/host/runtime.md#acts
 @MainActor
 final class GTKActToolkit: ActToolkit {
@@ -51,13 +51,13 @@ final class GTKActToolkit: ActToolkit {
 
     /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
     func show(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) -> Bool {
-        guard let window = renderer.window else { return false }
+        guard let window = renderer.userWindow else { return false }
         GTKQuestion(question, answered: answered).show(over: window)
         return true
     }
 
     func announce(_ words: String) {
-        guard let window = renderer.window, Self.reachesAScreenReader(window.widget) else { return }
+        guard let window = renderer.userWindow, Self.reachesAScreenReader(window.widget) else { return }
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
 
@@ -82,8 +82,17 @@ final class GTKActToolkit: ActToolkit {
     }
 
     func keep(_ call: HostActCall) -> Bool {
-        guard call.act == .persistValue else { return false }
-        GTKKeptValues.keep(call, core: renderer.runtime.core, applicationID: renderer.applicationID)
+        switch call.act {
+        case .persistValue:
+            GTKKeptValues.keep(call, core: renderer.runtime.core, applicationID: renderer.applicationID)
+        case .persistSceneValue:
+            let scenes = renderer.scenes
+            if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {
+                GTKKeptValues.writeScenes(text, applicationID: renderer.applicationID)
+            }
+        default:
+            return false
+        }
         return true
     }
 

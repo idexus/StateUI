@@ -2,4 +2,4 @@
 Label.frameChanged: ✅
 NavigationStack: ✅
 NavigationStack.popped: ✅
-Page.title: cannot read title of Window - GTK's driver has no path for it yet
+Page.title: ✅

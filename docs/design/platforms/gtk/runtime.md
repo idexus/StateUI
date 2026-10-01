@@ -61,15 +61,39 @@ monotonic clock, in milliseconds.
 
 ## The window
 
-The first window element's arrangement of pages is the content of an
-`AdwApplicationWindow`: a page shown by itself in a frame whose header bar is
-the window's title bar, an arrangement as it stands, its pages carrying their
-own ([pages](pages.md)). The window is presented the first time it shows
-something, and told it was made once, in its turn. It opens at 560 by 440, as
-a desktop host's window does, or at the size the window element says, which a
-window already open takes too; the user may make it no smaller than the
-element's smallest size, or GNOME's own - 360 by 294 - where it says none.
-GTK 4 gives a window no largest size.
+Every window element the tree holds is shown in an `AdwApplicationWindow` of
+its own, in the tree's order, by the host layer's roster (`WindowRoster`): a
+window new in the tree opens, one gone from it closes. Its arrangement of
+pages is the window's content: a page shown by itself in a frame whose header
+bar is the window's title bar, an arrangement as it stands, its pages
+carrying their own ([pages](pages.md)). A window is presented the first time
+it shows something while its scene shows it, and told it was made once, in
+its turn. A window of a kind of its own belongs to its scene's main window -
+GTK's transient window, above it and gone with it - and a window its scene
+hides while another is in front is hidden. A question, a word to the screen
+reader and the way back go to the window the user is in: the one activated
+last.
+
+## A window's frame
+
+A window opens at 560 by 440, as a desktop host's window does, or at the size
+the window element says, which a window already open takes too. Its place is
+the desktop's: GNOME places its windows itself, and GTK 4 asks no place of
+it. The user may make it no smaller than the element's smallest size, or
+GNOME's own - 360 by 294 - where it says none. GTK 4 gives a window no
+largest size.
+
+## A window's life
+
+What GTK tells of a window goes to the host layer, which settles what it means
+for the application, its scenes and its windows ([the application's
+phase](../../host/runtime.md#the-applications-phase)): whether the window is
+active, and whether it stands minimized - a Wayland desktop says nothing of
+that. A window the user closes - its close button, Alt+F4, GTK's close request
+- is heard by it and its scene as it goes ([a window the user
+closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
+host closes tells nothing. A window let go of tells nobody it went: its
+handlers leave before GTK destroys it.
 
 ## The environment
 
@@ -120,5 +144,8 @@ layer's text ([kept values](../../host/runtime.md#kept-values)). Every key
 the application lists is read before the first scene connects and handed to
 the core ahead of the first view; a key's new value writes the whole file
 again, beside the old one and then in its place, so a failed write leaves
-the old.
+the old. The desktop restores no windows, so the application's scenes are
+kept beside them, in `kept scenes.txt` ([kept
+scenes](../../host/runtime.md#kept-scenes)): each comes back at the next start
+with its values, and is offered the windows it had open.
 

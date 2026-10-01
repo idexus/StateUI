@@ -329,6 +329,7 @@ ZStack
   focus()
   handlerFailed()
   hideOnScreenKeyboard()
+  persistSceneValue()
   persistValue()
   prompt()
   scrollTo()

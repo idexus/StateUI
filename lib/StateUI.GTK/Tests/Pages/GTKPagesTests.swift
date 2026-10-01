@@ -187,8 +187,8 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A page that refuses the way back offers none: the host's way back leaves it, as the bar shows no back button.
-    func testAPageRefusingTheWayBackKeepsItsPlace() throws {
-        try onUIThread {
+    func testAPageRefusingTheWayBackKeepsItsPlace() {
+        onUIThread {
             let path = State(wrappedValue: [1])
             let host = GTKRenderer.running {
                 NavigationStack(path.projectedValue) {
