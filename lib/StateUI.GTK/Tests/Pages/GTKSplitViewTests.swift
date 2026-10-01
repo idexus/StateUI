@@ -55,6 +55,44 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
+    /// A sidebar the user closed takes no focus: Tab from the detail's field goes round the window and never reaches
+    /// what the sidebar holds - until the sidebar shows again.
+    func testAClosedSidebarTakesNoFocus() throws {
+        try onUIThread {
+            let open = State(wrappedValue: true)
+            let host = GTKRenderer.running {
+                SplitView(open.projectedValue) {
+                    VStack { Button("Sign out") }
+                } detail: {
+                    VStack { TextField(State(wrappedValue: "").projectedValue) }
+                }
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let leave = try XCTUnwrap(host.views(GTKButtonView.self).first { $0.text == "Sign out" })
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            host.settle { split.isPresented }
+            try XCTUnwrap(split.detailFrame?.sidebarToggle ?? nil).click()
+            host.settle { !split.isPresented }
+            XCTAssertFalse(open.wrappedValue)
+            host.layOut()
+
+            let window = try XCTUnwrap(host.window).widget
+            let reaches = { () -> Bool in
+                _ = gtk_widget_grab_focus(field.widget)
+                for _ in 0..<12 {
+                    _ = gtk_widget_child_focus(window, GTK_DIR_TAB_FORWARD)
+                    if gtk_widget_has_focus(leave.widget) != 0 { return true }
+                }
+                return false
+            }
+            XCTAssertFalse(reaches(), "the closed sidebar's button")
+
+            try XCTUnwrap(split.detailFrame?.sidebarToggle ?? nil).click()
+            host.settle { split.isPresented }
+            XCTAssertTrue(reaches(), "open again, it takes the focus")
+        }
+    }
+
     /// The detail's header bar carries the sidebar's toggle, pressed in while it shows; the user hides the sidebar
     /// with it and the binding hears the user, then shows it again.
     func testTheDetailsToggleHidesAndShowsTheSidebar() throws {

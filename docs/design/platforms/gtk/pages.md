@@ -83,6 +83,13 @@ layer's rule ([a sidebar on the first room](../../host/pages.md#a-sidebar-on-the
 wide enough for both panes - 400sp at the desktop's text scale - it opens
 with the sidebar shown, said once GTK has laid the frame out.
 
+A closed sidebar is out of reach: libadwaita slides it past the split's edge
+and keeps it shown there, where Tab and a screen reader would still find
+what it holds. While it is closed the sidebar takes no focus - GTK's
+`can-focus` keeps the focus out of a widget and everything in it - and is
+hidden from assistive technology; both come back as it shows, so its slide
+stays libadwaita's own.
+
 ## Tabs
 
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,

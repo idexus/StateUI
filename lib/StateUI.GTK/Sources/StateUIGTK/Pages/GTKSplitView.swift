@@ -61,8 +61,24 @@ final class GTKSplitView: GTKLayoutView {
         detailFrame = frame(views.dropFirst().first, framed: framedPanes.dropFirst().first == true, keeping: detailFrame)
         adw_overlay_split_view_set_sidebar(native, sidebarFrame?.widget ?? views.first?.widget)
         adw_overlay_split_view_set_content(native, detailFrame?.widget ?? views.dropFirst().first?.widget)
+        keepTheClosedSidebarOutOfReach()
         invalidateMeasurements()
         return true
+    }
+
+    /// A closed sidebar takes no focus and is read by nobody: libadwaita slides it past the split's edge and keeps it
+    /// shown there, where Tab and a screen reader would still reach what it holds.
+    /// Design: docs/design/platforms/gtk/pages.md#a-split-view
+    private func keepTheClosedSidebarOutOfReach() {
+        guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
+        let shows = adw_overlay_split_view_get_show_sidebar(native) != 0
+        gtk_widget_set_can_focus(sidebar, shows ? 1 : 0)
+        var state = GTK_ACCESSIBLE_STATE_HIDDEN
+        var hidden = GValue()
+        g_value_init(&hidden, g_type_from_name("gboolean"))
+        g_value_set_boolean(&hidden, shows ? 0 : 1)
+        gtk_accessible_update_state_value(OpaquePointer(sidebar), 1, &state, &hidden)
+        g_value_unset(&hidden)
     }
 
     /// A frame around `view`, the one it stands in already where it does.
@@ -77,8 +93,9 @@ final class GTKSplitView: GTKLayoutView {
         ProgramWrite.perform { adw_overlay_split_view_set_show_sidebar(native, shows ? 1 : 0) }
     }
 
-    /// The sidebar showed or hid of its own accord: said, where it was not the program's.
+    /// The sidebar showed or hid: out of reach while closed, and said where it was not the program's move.
     private func sidebarMoved() {
+        keepTheClosedSidebarOutOfReach()
         let shows = adw_overlay_split_view_get_show_sidebar(native) != 0
         guard !ProgramWrite.isWriting, shows != isPresented else { return }
         isPresented = shows
