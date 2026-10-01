@@ -65,25 +65,32 @@ namespace {
                 static_cast<uint8_t>(argb)};
     }
 
-    /// The title bar's right header: the page's actions.
-    controls::StackPanel rightHeader(controls::TitleBar const &bar) {
-        return bar.RightHeader().as<controls::StackPanel>();
+    /// A command bar for the actions at one of the bar's edges, on the bar's own background.
+    controls::CommandBar actionBar() {
+        controls::CommandBar actions;
+        actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
+        actions.Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
+        actions.VerticalAlignment(xaml::VerticalAlignment::Center);
+        return actions;
     }
 
-    /// The actions on the bar stand in its words' colour where the tree gives one, "more" among them; a destructive
-    /// one keeps the theme's critical colour, and one behind "more" the menu's colours, on the menu's own background.
+    /// The actions on the bar stand in its words' colour where the tree gives one, "more" and the lines between
+    /// groups among them; a destructive one keeps the theme's critical colour, and one behind "more" the menu's
+    /// colours, on the menu's own background.
     void paintActions(controls::TitleBar const &bar) {
-        auto actions = rightHeader(bar).Children().GetAt(0).as<controls::CommandBar>();
         bool given = bar.ReadLocalValue(controls::Control::ForegroundProperty()) != xaml::DependencyProperty::UnsetValue();
         auto paint = [&](controls::Control const &control) {
             if (given) control.Foreground(bar.Foreground());
             else control.ClearValue(controls::Control::ForegroundProperty());
         };
-        paint(actions);
-        for (auto const &command : actions.PrimaryCommands())
-            if (auto button = command.try_as<controls::AppBarButton>();
-                button && !isDestructive(button, L"AppBarButtonForeground"))
-                paint(button);
+        for (auto const &actions : {leadingActions(bar), trailingActions(bar)}) {
+            paint(actions);
+            for (auto const &command : actions.PrimaryCommands()) {
+                auto button = command.try_as<controls::AppBarButton>();
+                if (button && isDestructive(button, L"AppBarButtonForeground")) continue;
+                if (auto control = command.try_as<controls::Control>()) paint(control);
+            }
+        }
     }
 
     /// The place on the bar a title view stands in: no stop of Tab's itself, as the view in it may be.
@@ -130,14 +137,11 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
             capCaptionRoom(sender.as<controls::TitleBar>());
         });
 
-        controls::CommandBar actions;
-        actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
-        actions.Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-        actions.VerticalAlignment(xaml::VerticalAlignment::Center);
-        controls::StackPanel right;
-        right.Orientation(controls::Orientation::Horizontal);
-        right.Children().Append(actions);
-        bar.RightHeader(right);
+        // The leading edge's actions stand after the way back and the toggle; it shows only while it holds some.
+        auto leading = actionBar();
+        leading.Visibility(xaml::Visibility::Collapsed);
+        bar.LeftHeader(leading);
+        bar.RightHeader(actionBar());
         return detach(bar);
     } catch (...) {
         report("making a title bar");
@@ -194,16 +198,21 @@ extern "C" int32_t stateui_winui_title_bar_words(StateUIObjectRef handle) {
 
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
-    bool const *words, bool const *destructive, bool const *overflows, bool const *enabled, int32_t count
+    bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+    int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
         auto view = winrt::unbox_value<int64_t>(bar.Tag());
-        auto actions = rightHeader(bar).Children().GetAt(0).as<controls::CommandBar>();
-        actions.PrimaryCommands().Clear();
-        actions.SecondaryCommands().Clear();
+        auto leading = leadingActions(bar), trailing = trailingActions(bar);
+        for (auto const &actions : {leading, trailing}) {
+            actions.PrimaryCommands().Clear();
+            actions.SecondaryCommands().Clear();
+        }
         for (int32_t index = 0; index < count; ++index) {
             controls::AppBarButton button;
+            // Its place in the list, which a press tells and a reader names it by.
+            button.Tag(winrt::box_value(index));
             button.Label(text(texts[index]));
             button.IsEnabled(enabled[index]);
             if (identifiers[index] && *identifiers[index]) {
@@ -224,8 +233,18 @@ extern "C" void stateui_winui_title_bar_set_actions(
             button.Click([view, index](IInspectable const &, xaml::RoutedEventArgs const &) {
                 callbacks.chosen(view, index);
             });
-            (overflows[index] ? actions.SecondaryCommands() : actions.PrimaryCommands()).Append(button);
+            if (groups[index] < 0) {
+                trailing.SecondaryCommands().Append(button);
+                continue;
+            }
+            // A group stands apart from the one before it at its edge by WinUI's own line between commands.
+            auto commands = (groups[index] < leadingGroups ? leading : trailing).PrimaryCommands();
+            if (index > 0 && groups[index - 1] >= 0 && groups[index - 1] != groups[index] && commands.Size() > 0)
+                commands.Append(controls::AppBarSeparator());
+            commands.Append(button);
         }
+        auto shown = leading.PrimaryCommands().Size() > 0 ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
+        if (leading.Visibility() != shown) leading.Visibility(shown);
         paintActions(bar);
     } catch (...) {
         report("setting a title bar's actions");

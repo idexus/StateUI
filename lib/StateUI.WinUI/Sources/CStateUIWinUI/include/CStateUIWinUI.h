@@ -706,8 +706,8 @@ void stateui_winui_items_name(StateUIObjectRef items, int64_t cell, char const *
 /// What a test reads: what Narrator calls the row holding the cell numbered `cell`; the length it needs.
 int32_t stateui_winui_items_row_name(StateUIObjectRef items, int64_t cell, char *utf8, int32_t capacity);
 
-/// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions on it or
-/// in its overflow, and three slots - leading, centre, trailing. The way back is chosen as -1, the toggle as -2, an
+/// A window's chrome: WinUI's TitleBar, its way back and its sidebar's toggle, the title, the page's actions at its
+/// edges or in its overflow, and the title view in its middle. The way back is chosen as -1, the toggle as -2, an
 /// action by its place.
 StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 /// `foreground` is the colour of the words on a bar the tree paints, its title's and its actions' alike; `words`
@@ -715,14 +715,15 @@ StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
                                  bool back, bool paneToggle, bool hasBackground, uint32_t background,
                                  bool hasForeground, uint32_t foreground, int32_t words);
-/// The page's actions on a window's chrome: each one's words, the identifier automation finds it by (empty for
-/// none), the files its picture may stand in - each ended by a line feed, empty for none - whether its words stand
-/// beside its picture, whether choosing it destroys something, whether it stands in the overflow, and whether it
-/// can be chosen.
+/// The page's actions on a window's chrome, in reading order: each one's words, the identifier automation finds it
+/// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
+/// words stand beside its picture, whether choosing it destroys something, its group's place - the first
+/// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - and whether it
+/// can be chosen. A group stands apart from the one before it; a press tells the action's place in the list.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons, bool const *words,
-                                         bool const *destructive, bool const *overflows, bool const *enabled,
-                                         int32_t count);
+                                         bool const *destructive, int32_t const *groups, int32_t leadingGroups,
+                                         bool const *enabled, int32_t count);
 
 /// What a test reads: whether a title bar's words stand light (1), dark (2), or as the theme has them (0).
 int32_t stateui_winui_title_bar_words(StateUIObjectRef bar);

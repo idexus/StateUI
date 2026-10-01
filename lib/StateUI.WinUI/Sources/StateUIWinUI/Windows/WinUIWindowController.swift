@@ -99,7 +99,8 @@ final class WinUIWindowController {
             }
         }
         chrome.center = composed.center?.winUI.view
-        chrome.actions = composed.actions.primary.map(Self.action)
+        chrome.leading = composed.actions.leading.map { $0.map(Self.action) }
+        chrome.trailing = composed.actions.trailing.map { $0.map(Self.action) }
         chrome.overflow = composed.actions.overflow.map(Self.action)
         chrome.background = composed.background
         chrome.foreground = composed.foreground
@@ -119,7 +120,7 @@ final class WinUIWindowController {
             identifier: item.value(.accessibilityIdentifier)?.string,
             icon: item.value(.icon)?.string.flatMap { $0.isEmpty ? nil : PictureArithmetic.files(for: $0) } ?? [],
             isDestructive: item.value(.isDestructive)?.bool == true, showsWords: item.showsActionWords,
-            perform: { [weak item] in item?.winUI.send(.clicked, []) })
+            mount: item.mount, perform: { [weak item] in item?.winUI.send(.clicked, []) })
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window - and the split view

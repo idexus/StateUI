@@ -199,6 +199,14 @@ namespace stateui {
         return nullptr;
     }
 
+    /// The command bar holding the page's actions at a title bar's leading edge, and the one at its trailing edge.
+    inline controls::CommandBar leadingActions(controls::TitleBar const &bar) {
+        return bar.LeftHeader().as<controls::CommandBar>();
+    }
+    inline controls::CommandBar trailingActions(controls::TitleBar const &bar) {
+        return bar.RightHeader().as<controls::CommandBar>();
+    }
+
     /// Whether `element` is one of a window's layers over its rows - its sheets or its overlays - and no row's own.
     inline bool isLayer(xaml::FrameworkElement const &element) {
         auto name = winrt::unbox_value_or<winrt::hstring>(element.Tag(), L"");

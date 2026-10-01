@@ -313,7 +313,7 @@ extension WinUIDriver {
         case ("hasNavigationBar", _):
             let bar = try window().titleBar
             let back = try read(bar, "back") == "1"
-            let actions = try read(bar, "actions") != "|"
+            let actions = try read(bar, "actions") != "||"
             return (back || actions).propValue
         case ("barBackgroundColor", _): return try Self.color(read(window().titleBar, "background")).map { $0.propValue }
         case ("barForegroundColor", _): return try Self.color(read(window().titleBar, "foreground")).map { $0.propValue }
@@ -425,31 +425,80 @@ extension WinUIDriver {
     /// A toolbar's item, as the window's chrome shows it: its words, whether it can be chosen, where it stands,
     /// its place in its row, and whether its words stand beside its picture.
     private func actionHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
-        let caption = element.value(.text)?.string ?? ""
-        let rows = try read(window().titleBar, "actions").split(separator: "|", omittingEmptySubsequences: false)
-        let bar = rows.first.map { $0.split(separator: ";").map(String.init) } ?? []
-        let overflow = rows.count > 1 ? rows[1].split(separator: ";").map(String.init) : []
-        let row = bar.contains { $0 == caption || $0 == "!" + caption } ? bar : overflow
-        guard let index = row.firstIndex(where: { $0 == caption || $0 == "!" + caption }) else { return nil }
+        let titleBar = try window(of: element).titleBar
+        guard let place = try actionPlace(of: element),
+              let said = try Self.saidActions(read(titleBar, "bar")).first(where: { $0.place == place })
+        else { return nil }
+        let action = { (what: String) in try self.read(titleBar, "action \(place) \(what)") }
         switch name {
-        case "text": return .string(caption)
-        case "isEnabled": return (!row[index].hasPrefix("!")).propValue
-        case "placement": return (row == bar ? ToolbarItemPlacement.bar : .overflow).propValue
-        case "accessibilityIdentifier", "icon", "isDestructive", "showsText":
-            let read = ["icon": "actionIcons", "isDestructive": "actionDestructive", "showsText": "actionWordsShown"][name]
-                ?? "actionIdentifiers"
-            let rows = try self.read(window().titleBar, read).split(separator: "|", omittingEmptySubsequences: false)
-            let values = (row == bar ? rows.first : rows.last).map {
-                $0.split(separator: ";", omittingEmptySubsequences: false).map(String.init)
-            } ?? []
-            guard values.indices.contains(index) else { return nil }
-            switch name {
-            case "icon": return Self.picture(values[index], named: element)
-            case "isDestructive", "showsText": return (values[index] == "1").propValue
-            default: return .string(values[index])
-            }
+        case "text": return .string(titleBar.drawn[place].title)
+        case "isEnabled": return said.enabled.propValue
+        case "placement": return (said.edge == .overflow ? ToolbarItemPlacement.overflow : .bar).propValue
+        case "icon": return Self.picture(try action("icon"), named: element)
+        case "isDestructive": return (try action("destructive") == "1").propValue
+        case "showsText": return (try action("wordsShown") == "1").propValue
+        case "accessibilityIdentifier": return .string(try action("identifier"))
         default: return nil
         }
+    }
+
+    /// The bar `page`'s window shows: its groups at each edge and what stands behind "more", each action by its
+    /// item's id, else its words (`BarWords`).
+    func bar(of page: MountedElement) throws -> String {
+        let titleBar = try window(of: page).titleBar
+        var root = page
+        while let parent = root.parent { root = parent }
+        let read = Self.saidActions(try self.read(titleBar, "bar"))
+        let word = { (said: SaidAction) -> String? in
+            guard let mount = titleBar.drawn[said.place].mount, let item = Self.element(mounted: mount, in: root)
+            else { return nil }
+            return BarWords.word(item, enabled: said.enabled)
+        }
+        let groups = { (edge: SaidAction.Edge) -> [[String]] in
+            let atEdge = read.filter { $0.edge == edge }
+            let places = Set(atEdge.map(\.group)).sorted()
+            return places.map { group in atEdge.filter { $0.group == group }.compactMap(word) }.filter { !$0.isEmpty }
+        }
+        return BarWords.said(
+            leading: groups(.leading), trailing: groups(.trailing),
+            overflow: read.filter { $0.edge == SaidAction.Edge.overflow }.compactMap(word))
+    }
+
+    /// An action as the chrome's reader says it: its place in the list the chrome was given, its edge, its group
+    /// in reading order there, and whether it can be chosen.
+    struct SaidAction {
+        enum Edge { case leading, trailing, overflow }
+        let place: Int
+        let edge: Edge
+        let group: Int
+        let enabled: Bool
+    }
+
+    /// The chrome's "bar" read: leading, "|", trailing, "|", overflow - groups apart by a space, a group's actions
+    /// by a comma, "!" before one that cannot be chosen.
+    static func saidActions(_ words: String) -> [SaidAction] {
+        let edges: [SaidAction.Edge] = [.leading, .trailing, .overflow]
+        let parts = words.split(separator: "|", omittingEmptySubsequences: false)
+        var said: [SaidAction] = []
+        for (edge, part) in zip(edges, parts) {
+            for (group, run) in part.split(separator: " ").enumerated() {
+                for one in run.split(separator: ",") {
+                    let enabled = !one.hasPrefix("!")
+                    guard let place = Int(one.drop { $0 == "!" }) else { continue }
+                    said.append(SaidAction(place: place, edge: edge, group: group, enabled: enabled))
+                }
+            }
+        }
+        return said
+    }
+
+    /// The element of `mount` in the tree under `root`, its slots included.
+    static func element(mounted mount: UInt64, in root: MountedElement) -> MountedElement? {
+        if root.mount == mount { return root }
+        for child in root.children + root.slots {
+            if let found = element(mounted: mount, in: child) { return found }
+        }
+        return nil
     }
 
     /// The picture a file shown stands for: the one the tree named - `element`'s `member` - where it is one of the
@@ -480,10 +529,7 @@ extension WinUIDriver {
 
     /// The place of the toolbar's item among the actions the chrome shows, as its chrome chooses them.
     func actionPlace(of element: MountedElement) throws -> Int? {
-        let caption = element.value(.text)?.string ?? ""
-        let rows = try read(window().titleBar, "actions").split(separator: "|", omittingEmptySubsequences: false)
-        let all = rows.flatMap { $0.split(separator: ";").map(String.init) }
-        return all.firstIndex { $0 == caption || $0 == "!" + caption }
+        try window(of: element).titleBar.drawn.firstIndex { $0.mount == element.mount }
     }
 
     // MARK: - Words as WinUI's reader writes them

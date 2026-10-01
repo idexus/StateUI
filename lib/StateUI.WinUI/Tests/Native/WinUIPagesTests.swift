@@ -193,7 +193,7 @@ final class WinUIPagesTests: XCTestCase {
                     return written.map { stack.barForegroundColor($0) } ?? stack
                 }
                 let bar = try XCTUnwrap(host.window).titleBar
-                host.settle { Self.words(bar, "actions") == "Scan|" }
+                host.settle { Self.words(bar, "actions") == "|Scan|" }
                 XCTAssertEqual(Self.words(bar, "actionWords"), words, "written \(String(describing: written))")
             }
         }
@@ -214,7 +214,7 @@ final class WinUIPagesTests: XCTestCase {
                         .barForegroundColor(Color(red: 255, green: 230, blue: 0))
                 }
                 let bar = try XCTUnwrap(host.window).titleBar
-                host.settle { Self.words(bar, "actions") == "Scan;Delete|" }
+                host.settle { Self.words(bar, "actions") == "|Scan;Delete|" }
                 let words = Self.words(bar, "actionWords").split(separator: ";").map(String.init)
                 XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' colour")
                 let argb = try XCTUnwrap(words.count == 2 ? UInt32(words[1].dropFirst(), radix: 16) : nil)

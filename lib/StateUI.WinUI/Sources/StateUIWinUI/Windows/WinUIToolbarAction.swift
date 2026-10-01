@@ -9,10 +9,11 @@ struct WinUIToolbarAction {
     var identifier: String?
     /// The files its picture may stand in, in order (`PictureArithmetic.files`); none for words alone.
     var icon: [String] = []
-    /// Whether performing it destroys something.
     var isDestructive = false
     /// Whether its words stand beside its picture (`MountedElement.showsActionWords`).
     var showsWords = true
+    /// The mount of the toolbar item it stands for; none for the way back.
+    var mount: UInt64?
     let perform: () -> Void
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.

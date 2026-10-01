@@ -81,6 +81,7 @@ enum WinUIRealization {
         .partial("TimePicker", "format", missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItems", "order"),
+        .complete("ToolbarItems", "side"),
         .complete("ToolbarItem", "showsText"),
         .notPlanned("WebView", "panTouchCount", reason: webViewTakesTheHand),
         .notPlanned("WebView", "panUpdated", reason: webViewTakesTheHand),

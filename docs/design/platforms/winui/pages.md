@@ -22,9 +22,14 @@ that the application may not render for - a tab chosen, the sidebar shown:
   top page can go back;
 - a split view adds the chrome's pane toggle, which shows and hides its
   sidebar;
-- the visible page's actions stand on a command bar at the chrome's trailing
-  side, in their priority's order, those it places in overflow behind the
-  bar's own "more"; an action with a picture - the first of the files its
+- the groups of actions the visible path declares
+  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)) stand
+  on a command bar at the chrome's edge they declare - the leading one in its
+  left header, after the way back and the toggle, shown only while it holds
+  an action; the trailing one in its right header - each group apart from the
+  one before it by WinUI's own line between commands (`AppBarSeparator`),
+  and those placed in overflow behind the trailing bar's own "more"; an
+  action with a picture - the first of the files its
   name stands for that the application's pictures hold
   ([pictures](controls.md#pictures)) - shows its words at the picture's
   right where it `showsText`, the command bar's own place for them, and
@@ -62,10 +67,9 @@ window's scale, whenever the bar is loaded or changes size; a column WinUI
 sizes right stays as it is. The drag column WinUI keeps beside the buttons
 stays too.
 
-The leading, centre and trailing places are content controls, which Tab
-stops at by default though they show nothing of their own: each is no stop,
-so Tab walks the chrome's buttons and what the places hold, and never lands
-where nothing shows.
+The title view's place is a content control, which Tab stops at by default
+though it shows nothing of its own: it is no stop, so Tab walks the chrome's
+buttons and what the place holds, and never lands where nothing shows.
 
 ## A navigation stack
 

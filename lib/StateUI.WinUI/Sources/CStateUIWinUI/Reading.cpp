@@ -222,8 +222,45 @@ namespace {
         return std::nullopt;
     }
 
-    /// What a window's chrome holds: its title, its way back, its toggle, its colours and its actions - each action
-    /// by its label, "!" before one that cannot be chosen, the overflow's after "|".
+    /// The page's action at `place` in the list the chrome was given, at either edge or behind "more".
+    controls::AppBarButton action(controls::TitleBar const &bar, int32_t place) {
+        for (auto const &commands :
+             {leadingActions(bar).PrimaryCommands(), trailingActions(bar).PrimaryCommands(),
+              trailingActions(bar).SecondaryCommands()})
+            for (auto const &command : commands)
+                if (auto button = command.try_as<controls::AppBarButton>();
+                    button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
+                    return button;
+        return nullptr;
+    }
+
+    /// The actions at the leading edge, "|", those at the trailing edge, "|", those behind "more" - each by `said`,
+    /// "!" before one that cannot be chosen, `apart` between two groups and `among` between two of one group.
+    template <typename Said>
+    std::string actions(controls::TitleBar const &bar, Said said, char const *apart, char const *among) {
+        auto listed = [&](auto const &commands) {
+            std::string words;
+            bool parted = false;
+            for (auto const &command : commands) {
+                if (command.template try_as<controls::AppBarSeparator>()) {
+                    parted = true;
+                    continue;
+                }
+                auto button = command.template try_as<controls::AppBarButton>();
+                if (!button) continue;
+                if (!words.empty()) words += parted ? apart : among;
+                parted = false;
+                words += std::string(button.IsEnabled() ? "" : "!") + said(button);
+            }
+            return words;
+        };
+        return listed(leadingActions(bar).PrimaryCommands()) + "|" + listed(trailingActions(bar).PrimaryCommands()) +
+               "|" + listed(trailingActions(bar).SecondaryCommands());
+    }
+
+    /// What a window's chrome holds: its title, its way back, its toggle, its colours, its actions by their labels
+    /// ("actions") or by their places, a group apart from the next by a space ("bar"), the colours of the words of
+    /// those on it ("actionWords"), and one action's own ("action <place> <what>").
     std::optional<std::string> chrome(controls::TitleBar const &bar, std::string_view what) {
         if (what == "title") return narrow(bar.Title());
         if (what == "back") return flag(bar.IsBackButtonVisible());
@@ -232,59 +269,32 @@ namespace {
         if (what == "icon") return winrt::to_string(sourceFile(bar.IconSource()));
         if (what == "background") return colour(bar.Background());
         if (what == "foreground") return colour(bar.Foreground());
-        if (what == "actions") {
-            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
-            auto listed = [](auto const &commands) {
-                std::string words;
-                for (auto const &command : commands) {
-                    auto button = command.template try_as<controls::AppBarButton>();
-                    if (!button) continue;
-                    words += (words.empty() ? "" : ";") + std::string(button.IsEnabled() ? "" : "!") +
-                             narrow(button.Label());
-                }
-                return words;
-            };
-            return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
+        if (what == "actions") return actions(bar, [](auto const &button) { return narrow(button.Label()); }, ";", ";");
+        if (what == "bar") {
+            return actions(bar, [](auto const &button) {
+                return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
+            }, " ", ",");
         }
         if (what == "actionWords") {
-            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
             std::string colours;
-            for (auto const &command : actions.PrimaryCommands())
-                if (auto button = command.try_as<controls::AppBarButton>())
-                    colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
+            for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
+                for (auto const &command : actions.PrimaryCommands())
+                    if (auto button = command.try_as<controls::AppBarButton>())
+                        colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
             return colours;
         }
-        if (what == "actionIcons" || what == "actionDestructive" || what == "actionWordsShown") {
-            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
-            auto listed = [what](auto const &commands) {
-                std::string held;
-                bool first = true;
-                for (auto const &command : commands) {
-                    auto button = command.template try_as<controls::AppBarButton>();
-                    if (!button) continue;
-                    held += first ? "" : ";";
-                    first = false;
-                    if (what == "actionIcons") held += winrt::to_string(iconFile(button.Icon()));
-                    else if (what == "actionWordsShown")
-                        held += button.LabelPosition() == controls::CommandBarLabelPosition::Collapsed ? "0" : "1";
-                    else held += isDestructive(button, L"AppBarButtonForeground") ? "1" : "0";
-                }
-                return held;
-            };
-            return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
-        }
-        if (what == "actionIdentifiers") {
-            auto actions = bar.RightHeader().as<controls::StackPanel>().Children().GetAt(0).as<controls::CommandBar>();
-            auto listed = [](auto const &commands) {
-                std::string words;
-                for (auto const &command : commands) {
-                    auto button = command.template try_as<controls::AppBarButton>();
-                    if (!button) continue;
-                    words += (words.empty() ? "" : ";") + narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
-                }
-                return words;
-            };
-            return listed(actions.PrimaryCommands()) + "|" + listed(actions.SecondaryCommands());
+        if (what.starts_with("action ")) {
+            auto rest = what.substr(7);
+            auto space = rest.find(' ');
+            if (space == std::string_view::npos) return std::nullopt;
+            auto button = action(bar, std::stoi(std::string(rest.substr(0, space))));
+            if (!button) return std::nullopt;
+            auto held = rest.substr(space + 1);
+            if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
+            if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
+            if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
+            if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+            return std::nullopt;
         }
         return std::nullopt;
     }

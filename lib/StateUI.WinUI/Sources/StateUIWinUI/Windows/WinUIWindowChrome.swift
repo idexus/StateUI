@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// What a window's chrome shows, composed from the visible arrangement: the title or the title area its path
-/// declares, the way back and the sidebar's toggle, the page's actions and those in overflow, its title view, the
-/// bar's colours, and the page's menus beneath.
+/// declares, the way back and the sidebar's toggle, the path's groups of actions at each edge and those in overflow,
+/// its title view, the bar's colours, and the page's menus beneath.
 /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
 @MainActor
 struct WinUIWindowChrome {
@@ -16,7 +16,8 @@ struct WinUIWindowChrome {
     var back: WinUIToolbarAction?
     var sidebarToggle: (() -> Void)?
     var center: WinUIView?
-    var actions: [WinUIToolbarAction] = []
+    var leading: [[WinUIToolbarAction]] = []
+    var trailing: [[WinUIToolbarAction]] = []
     var overflow: [WinUIToolbarAction] = []
     var background: HostValue?
     var foreground: HostValue?
