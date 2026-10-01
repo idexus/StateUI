@@ -23,10 +23,24 @@ extension MountedElement {
     /// The arrangements around this element on its path, the outermost first: up to its window, a split view's
     /// sidebar and a sheet stopping at theirs.
     var arrangementsAround: [MountedElement] {
+        arrangements(sidebarWearsItsSplitView: false)
+    }
+
+    /// The arrangements whose bar this element's bar wears, the outermost first: those around it on its path, and a
+    /// sidebar's own split view, whose bar is both its panes'.
+    /// Design: docs/design/host/pages.md#the-bar-a-path-declares
+    var barArrangements: [MountedElement] {
+        arrangements(sidebarWearsItsSplitView: true)
+    }
+
+    private func arrangements(sidebarWearsItsSplitView: Bool) -> [MountedElement] {
         var arrangements: [MountedElement] = []
         var (child, each) = (self, parent)
         while let element = each, element.type != .window {
-            if element.type == .splitView, element.children.first === child { break }
+            if element.type == .splitView, element.children.first === child {
+                if sidebarWearsItsSplitView { arrangements.insert(element, at: 0) }
+                break
+            }
             if element.type == .modalStack, element.children.first !== child { break }
             if NodeType.pageTypes.contains(element.type) { arrangements.insert(element, at: 0) }
             (child, each) = (element, element.parent)

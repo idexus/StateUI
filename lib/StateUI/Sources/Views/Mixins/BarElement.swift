@@ -18,7 +18,9 @@
 ///     .barTitle("Notes")
 ///     .barSubtitle(folder.name)
 ///
-/// A sidebar and a sheet take nothing from around them.
+/// A split view's bar is both its panes': a sidebar with a bar of its own
+/// wears what its split view declares, and nothing from around it. A sheet
+/// takes nothing from around it.
 public protocol BarElement: PropertyContainer {}
 
 extension BarElement {

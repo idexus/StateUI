@@ -425,8 +425,9 @@ final class PagesTests: XCTestCase {
     }
 
     /// The bar a path declares is its nearest arrangement's, one value at a time: the window's page names the
-    /// application, a stack further in paints its own bar and says its own line. A sidebar and a sheet take nothing
-    /// from around them; an empty picture is none, and a page with nothing declared shows no title area.
+    /// application, a stack further in paints its own bar and says its own line. A sidebar wears its own split view's
+    /// bar and nothing from around it, a sheet nothing from around it; an empty picture is none, and a page with
+    /// nothing declared shows no title area.
     func testTheBarAPathDeclaresIsItsNearest() throws {
         let runtime = runtime(node("window", .window, children: [
             node("modal", .modalStack, [
@@ -450,12 +451,15 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(chrome.background, .string("stack"))
         XCTAssertEqual(chrome.foreground, .string("split"))
 
-        for alone in ["menu", "sheet"] {
-            let page = try XCTUnwrap(root.first(id: .manual(alone)))
-            XCTAssertNil(page.titleArea, alone)
-            XCTAssertNil(page.barColors.background, alone)
-            XCTAssertNil(page.barColors.foreground, alone)
-        }
+        let menu = try XCTUnwrap(root.first(id: .manual("menu")))
+        XCTAssertEqual(menu.barColors.foreground, .string("split"), "the sidebar wears its split view's bar")
+        XCTAssertNil(menu.barColors.background, "and nothing from around the split view")
+        XCTAssertNil(menu.titleArea, "nothing from around the split view")
+
+        let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
+        XCTAssertNil(sheet.titleArea)
+        XCTAssertNil(sheet.barColors.background)
+        XCTAssertNil(sheet.barColors.foreground)
 
         let bare = self.runtime(node("window", .window, children: [node("page", .page)])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)

@@ -98,6 +98,10 @@ struct MainWindow: Window {
             .barTitle("StateUI")
             .barSubtitle(bar.subtitle)
             .barIcon("stateui_mark.png")
+            // The bars of both panes, in the gallery's accent; their foreground
+            // stays white against it in both themes.
+            .barBackgroundColor(barColour)
+            .barForegroundColor(Palette.onBrand)
             // The window's notice, over every page while the gallery says so.
             .overlays {
                 if nav.windowNotice {
@@ -167,10 +171,6 @@ struct MainWindow: Window {
             } destination: { route in
                 page(for: route, path: nav.$path)
             }
-            // The bar belongs to the navigation arrangement, not one page on it.
-            // Its foreground stays white against the gallery accent in both themes.
-            .barBackgroundColor(barColour)
-            .barForegroundColor(Palette.onBrand)
         }
     }
 
@@ -235,9 +235,6 @@ struct MainWindow: Window {
 
     /// The one section that is not a stack: a `TabbedView` over the author's own
     /// enum, with a stack inside the first tab.
-    ///
-    /// Its own flat bar background, which the native selector's selected and
-    /// unselected tabs read on.
     func tabs() -> any Page {
         TabbedView(nav.tabs) { which in
             switch which {
@@ -253,8 +250,6 @@ struct MainWindow: Window {
                 // at all.
                 .title("Stack")
                 .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
-                .barBackgroundColor(barColour)
-                .barForegroundColor(Palette.onBrand)
 
             case .second:
                 SecondTabPage(nav: nav)
@@ -264,7 +259,6 @@ struct MainWindow: Window {
             }
         }
         .selection(nav.$tab)
-        .barBackgroundColor(barColour)
     }
 
     // MARK: - The window's own chrome

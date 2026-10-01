@@ -47,8 +47,9 @@ extension MountedElement {
         return area.title == nil && area.subtitle == nil && area.icon == nil ? nil : area
     }
 
-    /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's around it.
+    /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's whose bar it
+    /// wears - around it, and a sidebar's own split view.
     public func barValue(_ member: Prop) -> HostValue? {
-        ([self] + arrangementsAround.reversed()).lazy.compactMap { $0.value(member) }.first
+        ([self] + barArrangements.reversed()).lazy.compactMap { $0.value(member) }.first
     }
 }

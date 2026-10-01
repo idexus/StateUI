@@ -136,8 +136,11 @@ name, the line under the title and its mark - is a value on the arrangement
 (`BarElement`), not a declaration: each value of a page's bar is the nearest
 on its path, its own arrangement included (`barValue`), so a stack further in
 paints its own bar and the window's page still names the application. The
-path is the declarations' (`arrangementsAround`): a sidebar and a sheet take
-nothing from around them. The colours are `barColors`; the name, the line and
+path is the declarations' (`arrangementsAround`), but for a split view's
+sidebar, which wears its own split view's bar - a split view's bar is both its
+panes', so its colours paint a sidebar's own bar where a platform draws one
+(`barArrangements`) - and nothing from around the split view; a sheet takes
+nothing from around it. The colours are `barColors`; the name, the line and
 the mark are the title area (`titleArea`), none where none is declared, an
 empty line or picture none. A host shows the title area where its platform
 names the application - a desktop's window chrome - and the line under the

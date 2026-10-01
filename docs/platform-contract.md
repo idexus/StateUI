@@ -149,7 +149,9 @@ Every arrangement exposes an optional flat `barBackgroundColor` and a
 `barForegroundColor` for its bar's title and native action affordances, and the
 application's name, the line under the title and its mark (`barTitle`,
 `barSubtitle`, `barIcon`); a page's bar takes each from the nearest arrangement
-around it that declares one. A tab selector keeps the toolkit's selected and unselected
+around it that declares one. A split view's bar is both its panes': a sidebar
+with a bar of its own wears what its split view declares, and nothing from
+around the split view. A tab selector keeps the toolkit's selected and unselected
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
 

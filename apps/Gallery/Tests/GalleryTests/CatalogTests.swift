@@ -1093,6 +1093,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(flyout.type, "SplitView")
         XCTAssertEqual(flyout.props["isSidebarVisible"], .bool(false))
+        XCTAssertNotNil(flyout.props["barBackgroundColor"], "both panes' bars are left to the platform")
+        XCTAssertNotNil(flyout.props["barForegroundColor"])
         XCTAssertNotNil(flyout.events["isSidebarVisibleChanged"],
                         "a native presentation change would not reach the binding")
 
@@ -1116,8 +1118,6 @@ final class CatalogTests: XCTestCase {
         let detail = flyout.children[1].built
 
         XCTAssertEqual(detail.type, "NavigationStack")
-        XCTAssertNotNil(detail.props["barBackgroundColor"], "the bar is left to the platform")
-        XCTAssertNotNil(detail.props["barForegroundColor"])
         XCTAssertNotNil(detail.events["popped"], "a back gesture would not reach the path")
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }

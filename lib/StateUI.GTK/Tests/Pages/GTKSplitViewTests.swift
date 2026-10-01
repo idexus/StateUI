@@ -33,6 +33,28 @@ final class GTKSplitViewTests: XCTestCase {
         }
     }
 
+    /// A split view's bar colours paint both panes' header bars, the sidebar's as the detail's.
+    func testBothPanesHeaderBarsWearTheSplitViewsColours() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                SplitView(State(wrappedValue: true).projectedValue) {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TitledPage(title: "Detail")
+                }
+                .barBackgroundColor(Color("#FF0000"))
+                .barForegroundColor(Color("#FFFFFF"))
+            }
+            let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
+            let sidebar = try XCTUnwrap(split.sidebarFrame)
+            let detail = try XCTUnwrap(split.detailFrame)
+            host.layOut()
+
+            XCTAssertEqual(GTKTestHost.pixels(of: sidebar.header, at: [(4, 4)]), [0xFFFF_0000], "the sidebar's")
+            XCTAssertEqual(GTKTestHost.pixels(of: detail.header, at: [(4, 4)]), [0xFFFF_0000], "the detail's")
+        }
+    }
+
     /// The detail's header bar carries the sidebar's toggle, pressed in while it shows; the user hides the sidebar
     /// with it and the binding hears the user, then shows it again.
     func testTheDetailsToggleHidesAndShowsTheSidebar() throws {
