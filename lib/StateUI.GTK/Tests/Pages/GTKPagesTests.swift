@@ -154,6 +154,38 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// Another kind of view made at a stack's root stands there as its page, shown and named; the first kind comes
+    /// back the same way.
+    func testAnotherViewAtAStacksRootIsShown() throws {
+        try onUIThread {
+            let searching = State(wrappedValue: false)
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    if searching.wrappedValue {
+                        SearchingPage()
+                    } else {
+                        TitledPage(title: "Reader")
+                    }
+                } destination: { _ in TitledPage(title: "Next") }
+            }
+            let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
+            XCTAssertEqual(navigation.visiblePageTitle, "Reader")
+
+            searching.wrappedValue = true
+            host.settle { navigation.visiblePageTitle == "Search" }
+            XCTAssertEqual(navigation.visiblePageTitle, "Search")
+            XCTAssertEqual(navigation.frames.map(\.chrome.title), ["Search"])
+            XCTAssertNotNil(host.views(GTKTextFieldView.self).first.flatMap { gtk_widget_get_mapped($0.widget) != 0 ? $0 : nil },
+                            "its title view shows")
+            XCTAssertEqual(host.windowTitle, "Search")
+
+            searching.wrappedValue = false
+            host.settle { navigation.visiblePageTitle == "Reader" }
+            XCTAssertEqual(navigation.frames.map(\.chrome.title), ["Reader"])
+            XCTAssertEqual(host.windowTitle, "Reader")
+        }
+    }
+
     /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {

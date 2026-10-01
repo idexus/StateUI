@@ -68,6 +68,28 @@ final class GTKInputViewTests: XCTestCase {
         }
     }
 
+    /// A field's placeholder, coloured or not, stands across the field where its words do.
+    func testAPlaceholderStandsWhereTheWordsDo() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    TextField(State(wrappedValue: "").projectedValue).placeholder("Scan")
+                        .placeholderColor(Color("#FF0000")).horizontalTextAlignment(.center).width(300)
+                    TextField(State(wrappedValue: "").projectedValue).placeholder("Name").horizontalTextAlignment(.end)
+                        .width(300)
+                }
+            }
+            host.layOut()
+            // The placeholder is a label across the field's words; where its words stand in it is its alignment.
+            let placed = host.views(GTKTextFieldView.self).map { field -> Float? in
+                GTKTestHost.descendants(of: field.widget).first {
+                    GTKTestHost.holds($0, gtk_label_get_type()) && gtk_widget_get_mapped($0) != 0
+                }.map { gtk_label_get_xalign($0.opaque) }
+            }
+            XCTAssertEqual(placed, [0.5, 1], "the centred field's, the end-aligned field's")
+        }
+    }
+
     /// Words the program writes into a field or an editor stand there and are heard by nobody: only the user's are.
     func testTheProgramsWordsAreHeardByNobody() throws {
         try onUIThread {

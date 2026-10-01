@@ -41,6 +41,30 @@ final class GTKButtonViewTests: XCTestCase {
         }
     }
 
+    /// A see-through button draws its outline alone: nothing inside it, neither a fill nor a shadow.
+    func testASeeThroughButtonDrawsOnlyItsOutline() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("Quiet")
+                        .background(Color(red: 0, green: 0, blue: 0, alpha: 0))
+                        .stroke(Color("#FFFFFF"))
+                        .strokeWidth(2)
+                        .shape(.roundedRectangle(8))
+                        .padding(16, 11)
+                }
+            }
+            let button = try XCTUnwrap(host.views(GTKButtonView.self).first)
+            host.layOut()
+            let height = button.frame.height
+
+            let (edge, inside) = try (XCTUnwrap(button.pixels(at: [(0.5, height / 2)]).first),
+                                      XCTUnwrap(button.pixels(at: [(6, height / 2)]).first))
+            XCTAssertTrue(near(edge, 0xFFFF_FFFF), "its outline: \(String(edge, radix: 16))")
+            XCTAssertEqual(inside >> 24, 0, "nothing inside: \(String(inside, radix: 16))")
+        }
+    }
+
     /// A button the tree says nothing of stands as the platform's own.
     func testAButtonWithNothingSaidIsThePlatformsOwn() throws {
         try onUIThread {
