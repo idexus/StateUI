@@ -46,8 +46,26 @@ extension GTKView {
         let moved = gsk_transform_translate(nil, &corner)
         let drawn = transform.under(placedDrawing)
         guard !drawn.isIdentity else { return moved }
-        var matrix = Self.graphene(drawn.matrix(width: width, height: height))
-        return gsk_transform_matrix(moved, &matrix)
+        let matrix = drawn.matrix(width: width, height: height)
+        let plane = [matrix.m13, matrix.m14, matrix.m23, matrix.m24, matrix.m31, matrix.m32, matrix.m34, matrix.m43]
+            .allSatisfy { $0 == 0 } && matrix.m33 == 1 && matrix.m44 == 1
+        if plane, let flat = Self.flat([matrix.m11, matrix.m12, matrix.m21, matrix.m22, matrix.m41, matrix.m42]) {
+            defer { gsk_transform_unref(flat) }
+            return gsk_transform_transform(moved, flat)
+        }
+        var native = Self.graphene(matrix)
+        return gsk_transform_matrix(moved, &native)
+    }
+
+    /// The transform in the plane whose matrix is `a, b, c, d, e, f` - x to `a x + c y + e`, y to `b x + d y + f` -
+    /// said to GSK as one in the plane: its cairo renderer, without GL, draws a matrix of no known kind as hot pink.
+    /// Nil for numbers that are not six, or not finite.
+    /// Design: docs/design/platforms/gtk/motion.md#moved-turned-and-scaled
+    static func flat(_ entries: [Double]) -> OpaquePointer? {
+        guard entries.count == 6, entries.allSatisfy(\.isFinite) else { return nil }
+        var parsed: OpaquePointer?
+        let said = "matrix(" + entries.map { "\($0)" }.joined(separator: ", ") + ")"
+        return gsk_transform_parse(said, &parsed) != 0 ? parsed : nil
     }
 
     /// The core's matrix as graphene's: both act on row vectors, entry for entry.

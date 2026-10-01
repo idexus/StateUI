@@ -157,4 +157,26 @@ final class GTKMotionTests: XCTestCase {
             XCTAssertEqual(label.drawn((0, 0)).x - place.x, 100, accuracy: 0.01)
         }
     }
+
+    /// A view moved, turned or scaled draws its own colour wherever GSK renders it - the cairo renderer, without GL,
+    /// draws a transform of no known kind as hot pink.
+    func testAMovedViewDrawsItsOwnColour() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    ZStack {
+                        ColorBox(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            .translationX(30).translationY(30)
+                        ColorBox(.blue).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                            .translationX(60).rotation(45)
+                    }.width(100).height(100).id("room")
+                }.horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+            let room = try XCTUnwrap(host.view(id: .manual("room")))
+
+            XCTAssertEqual(room.pixels(at: [(40, 40)]), [0xFFFF_0000], "moved")
+            XCTAssertEqual(room.pixels(at: [(70, 10)]), [0xFF00_00FF], "moved and turned")
+        }
+    }
 }
