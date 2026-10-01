@@ -28,7 +28,7 @@ import { editorCommandLine, reinstallSteps } from "../Sources/reinstall";
 import { rebuildSteps } from "../Sources/conformance";
 import {
     atLeast, checkToolchain, debuggerFinding, isSwiftOrgBuild, ndkRevisionIn, newestIOSRuntime, report, svgLoaderIn,
-    xcodeVersion,
+    svgLoaderInGlycin, xcodeVersion,
 } from "../Sources/toolchain";
 
 const started = Date.now();
@@ -661,6 +661,9 @@ export async function run(): Promise<void> {
                     { platform: "iOS", version: "26.0", isAvailable: true }, { platform: "iOS", version: "26.2", isAvailable: true },
                     { platform: "watchOS", version: "27.0", isAvailable: true }] })) === "26.2"
                 && svgLoaderIn(loaders(true)) === "libpixbufloader-svg.so" && svgLoaderIn(loaders(false)) === undefined
+                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n\n"
+                    + "[loader:image/svg+xml]\nExec = /usr/libexec/glycin-loaders/2+/glycin-svg\n") === "glycin-svg"
+                && svgLoaderInGlycin("[loader:image/png]\nExec = /usr/libexec/glycin-loaders/2+/glycin-image-rs\n") === undefined
                 && debuggerFinding(["lldb-dap"]).found !== undefined && debuggerFinding(["node"]).found === undefined
                 && ndkRevisionIn("Pkg.Desc = Android NDK\nPkg.Revision = 30.0.16248370\n") === "30.0.16248370"
                 && report([{ component: "Node.js 20 or newer", neededBy: "it", tooOld: "19.4.0", advice: "Install it." }])[0]

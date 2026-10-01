@@ -37,7 +37,9 @@ The host builds on Linux, on arm64 or x64:
 - GTK 4.14 and libadwaita 1.5 or newer, with their headers and pkg-config -
   on Ubuntu 24.04 or newer, `libgtk-4-dev` and `libadwaita-1-dev`;
 - gdk-pixbuf's SVG loader, through which GTK reads a vector picture -
-  `librsvg2-common`, which a desktop has and a minimal system may not;
+  `librsvg2-common`, which a desktop has and a minimal system may not; from
+  gdk-pixbuf 2.44, which reads pictures through glycin, glycin's loaders
+  (the `glycin` package on Arch);
 - a desktop session to show the windows in, the test suite's included.
 
 ## The head

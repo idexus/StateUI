@@ -103,6 +103,33 @@ export function svgLoaderIn(cache: string): string | undefined {
     return undefined;
 }
 
+/** The loader a glycin loader's config names for SVG pictures - its `[loader:image/svg+xml]` - or undefined where it names none. */
+export function svgLoaderInGlycin(config: string): string | undefined {
+    const section = config.split(/\r?\n(?=\s*\[)/).find((part) => /^\s*\[loader:image\/svg\+xml\]/.test(part));
+    const exec = section?.match(/^\s*Exec\s*=\s*(.+?)\s*$/m)?.[1];
+    return exec ? path.basename(exec) : undefined;
+}
+
+/** glycin's SVG loader, among the loader configs of the data folders - where gdk-pixbuf 2.44 and newer read pictures
+ *  through glycin - or undefined. */
+function glycinSVGLoader(): string | undefined {
+    const folders = (process.env.XDG_DATA_DIRS || "/usr/local/share:/usr/share").split(":")
+        .concat(process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share"));
+    for (const folder of folders.filter((each) => each.length > 0)) {
+        const loaders = path.join(folder, "glycin-loaders");
+        for (const version of fs.existsSync(loaders) ? fs.readdirSync(loaders) : []) {
+            const configs = path.join(loaders, version, "conf.d");
+            for (const file of fs.existsSync(configs) ? fs.readdirSync(configs).filter((each) => each.endsWith(".conf")) : []) {
+                const loader = svgLoaderInGlycin(fs.readFileSync(path.join(configs, file), "utf8"));
+                if (loader) {
+                    return `glycin's ${loader}`;
+                }
+            }
+        }
+    }
+    return undefined;
+}
+
 /** The output of `command` run with `args` - its standard output and error together - or undefined where it did not run. */
 function run(command: string, args: readonly string[]): Promise<string | undefined> {
     return new Promise((resolve) => {
@@ -191,11 +218,13 @@ function linuxChecks(): Check[] {
         module("libadwaita-1", "libadwaita", "1.5", "libadwaita-1-dev"),
         {
             component: "gdk-pixbuf's SVG loader", neededBy: "GTK's pictures",
-            advice: "Install librsvg2-common: without it GTK draws no SVG picture.",
+            advice: "Install librsvg2-common - or, where gdk-pixbuf reads through glycin, glycin's loaders (glycin on Arch):"
+                + " without one GTK draws no SVG picture.",
             look: async () => {
                 const cache = process.env.GDK_PIXBUF_MODULE_FILE
                     || (await run("pkg-config", ["--variable=gdk_pixbuf_cache_file", "gdk-pixbuf-2.0"]))?.trim();
-                return cache && fs.existsSync(cache) ? svgLoaderIn(fs.readFileSync(cache, "utf8")) : undefined;
+                return (cache && fs.existsSync(cache) ? svgLoaderIn(fs.readFileSync(cache, "utf8")) : undefined)
+                    ?? glycinSVGLoader();
             },
         },
         {

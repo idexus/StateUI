@@ -231,7 +231,8 @@ launch file at all:
 - For GTK: Linux and a StateUI checkout, whose `.scripts/GTK` builds the head;
   Swift 6.4 from swift.org; GTK 4.14 and libadwaita 1.5 or newer with their
   headers (`libgtk-4-dev`, `libadwaita-1-dev` on Ubuntu); gdk-pixbuf's SVG
-  loader (`librsvg2-common`); and the `lldb-dap` extension.
+  loader (`librsvg2-common`, or glycin's loaders where gdk-pixbuf 2.44 and
+  newer read through glycin, as on Arch); and the `lldb-dap` extension.
 
 Do not set `STATEUI_HOST` in `swift.swiftEnvironmentVariables`: that setting
 is laid over the host chosen here, and the extension offers to remove it.
