@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A StateUI layout over the relay's panel: WinUI asks it to measure and arrange, and the core's arithmetic answers.
+/// A StateUI layout over the relay's panel: WinUI asks it to measure and arrange, and the host layer's arithmetic answers.
 /// Design: docs/design/platforms/winui/layout.md#a-layout-is-a-panel
 @MainActor
 class WinUILayoutView: WinUIView {

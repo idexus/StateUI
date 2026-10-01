@@ -6,7 +6,7 @@ import XCTest
 
 /// The handbook's Swift examples compile.
 ///
-/// Every fenced `swift` block in README.md, docs and each component's README is type-checked against the
+/// Every fenced `swift` block in README.md and docs is type-checked against the
 /// library this package just built. A listing that names a removed member,
 /// misspells a modifier, or hands over the wrong value fails with its document
 /// and line.

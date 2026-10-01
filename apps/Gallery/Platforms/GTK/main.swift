@@ -12,6 +12,6 @@ stateui_app_register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
-// The components the Gallery shows, each realized by its GTK backend.
+// The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 StateUIWebViewGTK.register()
 StateUIGTK.run(applicationID: "com.stateui.gallery")

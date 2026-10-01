@@ -15,7 +15,7 @@
         /// Not realized on this element, though a tier's record reaches it; why.
         case unrealized(why: String)
 
-        /// Left to the application, which registers its own backend for the element with the host.
+        /// Left to the application, which registers its own control for the element with the host.
         case byApplication
     }
 

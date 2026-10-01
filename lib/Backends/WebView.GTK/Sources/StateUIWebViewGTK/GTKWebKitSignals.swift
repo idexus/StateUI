@@ -12,15 +12,15 @@ import CWebKitGTK
 enum GTKWebKitSignals {
     /// The view a signal reaches, while it lives.
     final class Link {
-        weak var view: GTKWebKitView?
+        weak var view: GTKWebView?
 
-        init(_ view: GTKWebKitView) {
+        init(_ view: GTKWebView) {
             self.view = view
         }
     }
 
     /// Connects WebKit's signals of `view`'s web view, and of its list of pages, to `view`.
-    static func connect(_ view: GTKWebKitView) {
+    static func connect(_ view: GTKWebView) {
         let link = Link(view)
         let decided: @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, Int32, UnsafeMutableRawPointer?)
             -> Int32 = { _, decision, type, data in
@@ -62,7 +62,7 @@ enum GTKWebKitSignals {
     }
 
     /// Loads `view`'s page once GLib's loop is idle: after the element's values are all applied.
-    static func whenIdle(_ view: GTKWebKitView) {
+    static func whenIdle(_ view: GTKWebView) {
         let load: @convention(c) (UnsafeMutableRawPointer?) -> Int32 = { data in
             MainActor.assumeIsolated { Unmanaged<Link>.fromOpaque(data!).takeUnretainedValue().view?.loadPending() }
             return 0
@@ -73,7 +73,7 @@ enum GTKWebKitSignals {
     }
 
     /// Runs `script` in `view`'s page, answering what it evaluated to as text; throws what WebKit says went wrong.
-    static func evaluate(_ script: String, in view: GTKWebKitView) async throws -> String? {
+    static func evaluate(_ script: String, in view: GTKWebView) async throws -> String? {
         try await withCheckedThrowingContinuation { (answer: CheckedContinuation<String?, any Error>) in
             let done: @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?)
                 -> Void = { source, result, data in
@@ -111,7 +111,7 @@ enum GTKWebKitSignals {
     }
 
     /// The view `data`, a link, reaches; nil once it is gone.
-    private static func reached(_ data: UnsafeMutableRawPointer?) -> GTKWebKitView? {
+    private static func reached(_ data: UnsafeMutableRawPointer?) -> GTKWebView? {
         data.flatMap { Unmanaged<Link>.fromOpaque($0).takeUnretainedValue().view }
     }
 

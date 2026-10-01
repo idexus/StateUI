@@ -87,7 +87,7 @@ display cycle, in this order, in every runtime:
 A user's own change drains steps 2 to 4 and 6 at once, so the followers and
 the engines move on the user's frame.
 
-In step 4 a backend only presents each element's moved values; what they ask
+In step 4 a host only presents each element's moved values; what they ask
 of the elements around it is decided once, for every host
 (`MountedElement.presentFrame`): the element presents itself again; its
 parent arranges again where a value that places it moved, or where it shows
@@ -186,7 +186,7 @@ native half is made, and presents a turn's and a frame's end.
 
 ## The host layer
 
-The toolkit-neutral elements live once, in the core, because every Swift host
+The toolkit-neutral elements live once, in the host layer, because every Swift host
 would otherwise carry its own copy of the same arithmetic and rules: the
 mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
@@ -197,8 +197,8 @@ part by part. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter` and a turn through
 `TurnPresenter`, and hands
-`LayoutMotion` the views it places as `PlacedView`. The core suite tests them
-on every platform the core builds on, and `RuntimeArchitectureTests` holds
+`LayoutMotion` the views it places as `PlacedView`. The host layer's own suite
+tests them on every platform it builds on, and `RuntimeArchitectureTests` holds
 every Swift runtime to them: only `Animator` samples a timing law, only
 `DisplayCycle` advances the animator and runs the core's cycle, only `Pump`
 renders and takes the acts, only `CoreLink`

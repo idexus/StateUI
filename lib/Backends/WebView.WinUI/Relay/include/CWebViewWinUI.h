@@ -38,7 +38,7 @@ typedef struct {
 void stateui_webview_winui_set_callbacks(WebViewWinUICallbacks const *callbacks);
 
 /// A web view: it goes to `address` asking as `agent` - the runtime's own for an empty one - where `document` is
-/// given, that is what the address answers whenever the view asks for it, and nothing is fetched; its core stands a
+/// given, that is what the address answers whenever the view asks for it, and nothing is fetched; its CoreWebView2 stands a
 /// moment after it is first asked. A step goes back (1), forward (2) or loads the page again. Let go of, with its
 /// documents, by `stateui_webview_winui_release`.
 WebViewObjectRef stateui_webview_winui_make(int64_t view);

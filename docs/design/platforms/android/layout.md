@@ -1,7 +1,7 @@
 # Layout on Android
 
 StateUI owns layout on Android as it does on every host: a layout's children
-are measured and placed by the core's arithmetic
+are measured and placed by the host layer's arithmetic
 ([layout](../../host/layout.md)), and the toolkit contributes only what a
 child measures natively.
 

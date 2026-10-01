@@ -117,7 +117,7 @@ final class HostVerdictTests: XCTestCase {
         XCTAssertTrue(HostVerdict.isStale(nil, family: "Slider", on: "gtk", in: revisions), "no file")
     }
 
-    /// Met is proven whole, never had, or left to the application's own backend; the rest is not met.
+    /// Met is proven whole, never had, or left to the application's own registration; the rest is not met.
     func testMetIsProvenNeverOrTheApplications() {
         let marks: [HostVerdict.Mark] = [
             .proven, .partial(missing: "m"), .notPlanned(reason: "r"), .notRealized, .cannot("c"), .waiting(on: "w"),

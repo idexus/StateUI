@@ -1,12 +1,12 @@
 # Layout on GTK
 
-StateUI's layouts place their children by the core's arithmetic
+StateUI's layouts place their children by the host layer's arithmetic
 ([layout](../../host/layout.md)); GTK measures and draws each widget.
 
 ## A layout is a panel
 
 Every StateUI layout is a `StateUIPanel`, a widget subclass whose measure and
-allocate call the host, which answers with the core's arithmetic and measures
+allocate call the host, which answers with the host layer's arithmetic and measures
 and places each child. GTK lays out by asking: a child is allocated only
 inside its parent's allocation, so a layout never places a child outside the
 pass GTK runs. A child's size is whole logical pixels, and never less than the

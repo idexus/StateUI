@@ -71,7 +71,7 @@ namespace {
     /// The documents each web view shows written in place, by its number and the address each is shown at.
     std::unordered_map<int64_t, std::unordered_map<std::wstring, std::shared_ptr<std::string>>> served;
 
-    /// The agent each web view's runtime names itself by, as its core stood: what an agent taken away gives back.
+    /// The agent each web view's runtime names itself by, as its CoreWebView2 stood: what an agent taken away gives back.
     std::unordered_map<int64_t, winrt::hstring> ownAgents;
 
     /// Names the view `view` by `agent`, or by the runtime's own for an empty one.
@@ -90,7 +90,7 @@ namespace {
     }
 
     /// Hears the history of the web view `view` shows, and answers what it asks for with its documents written in
-    /// place - once its core stands.
+    /// place - once its CoreWebView2 stands.
     void hear(core::CoreWebView2 const &page, int64_t view) {
         ownAgents[view] = page.Settings().UserAgent();
         page.HistoryChanged([view](core::CoreWebView2 const &sender, IInspectable const &) {
@@ -155,7 +155,7 @@ extern "C" void stateui_webview_winui_show(WebViewObjectRef handle, int64_t view
         auto held = document ? std::make_shared<std::string>(document) : nullptr;
         auto asking = text(agent);
         if (auto page = web.CoreWebView2()) return go(page, view, at, held, asking);
-        // Its core stands a moment after it is asked for: the page is gone to then, in the order asked.
+        // Its CoreWebView2 stands a moment after it is asked for: the page is gone to then, in the order asked.
         auto token = std::make_shared<winrt::event_token>();
         *token = web.CoreWebView2Initialized(
             [token, view, at, held, asking](controls::WebView2 const &sender, auto const &) {

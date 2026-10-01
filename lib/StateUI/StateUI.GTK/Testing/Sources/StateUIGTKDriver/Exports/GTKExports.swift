@@ -9,13 +9,7 @@ import XCTest
 /// What this host's runs write into the library's `exports` folder: what its runtime realizes, and what its passing
 /// tests proved - held to the file, or written into it on a run with STATEUI_UPDATE_EXPORTS=1, then read in the
 /// diff.
-struct GTKExports {
-    /// The folder the files stand in.
-    let folder: URL
-
-    /// The revisions the families' verdicts stand at: each file's lines, read together.
-    let revisionFiles: [URL]
-
+enum GTKExports {
     /// The repository, seven folders above this file's.
     static let repository = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()    // Exports
@@ -27,36 +21,37 @@ struct GTKExports {
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository
 
-    /// The library's: `lib/StateUI/exports`, at the revisions of `lib/StateUI/StateUI.Conformance/revisions.txt`.
-    static let library = GTKExports(
-        folder: repository.appendingPathComponent("lib/StateUI/exports"),
-        revisionFiles: [repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")])
+    /// The folder the files stand in: `lib/StateUI/exports`.
+    static let folder = repository.appendingPathComponent("lib/StateUI/exports")
+
+    /// The revisions the families' verdicts stand at.
+    static let revisionFile = repository.appendingPathComponent("lib/StateUI/StateUI.Conformance/revisions.txt")
 
     /// The revision `family`'s verdicts on this host stand at.
     /// Design: docs/design/contracts/dictionary.md#fresh-verdicts
-    func revision(of family: String) -> String {
+    static func revision(of family: String) -> String {
         HostVerdict.revision(of: family, on: "gtk", in: revisions)
     }
 
     /// Whether the run leaves `family` out: it is asked for the stale families alone (STATEUI_STALE_ONLY=1), and
     /// the verdict file at `path` here stands at the family's revision.
-    func skips(_ family: String, at path: String) -> Bool {
+    static func skips(_ family: String, at path: String) -> Bool {
         guard ProcessInfo.processInfo.environment["STATEUI_STALE_ONLY"] == "1" else { return false }
         let held = try? String(contentsOf: folder.appendingPathComponent(path), encoding: .utf8)
         return !HostVerdict.isStale(held, family: family, on: "gtk", in: revisions)
     }
 
-    /// The revision files' lines, read together.
-    private var revisions: String {
-        revisionFiles.map { url in
-            // No file is no revision: every family would read as standing at 1, whatever was raised.
-            guard let text = try? String(contentsOf: url, encoding: .utf8) else { preconditionFailure("no \(url.path)") }
-            return text
-        }.joined(separator: "\n")
+    /// The revision file's lines.
+    private static var revisions: String {
+        // No file is no revision: every family would read as standing at 1, whatever was raised.
+        guard let text = try? String(contentsOf: revisionFile, encoding: .utf8) else {
+            preconditionFailure("no \(revisionFile.path)")
+        }
+        return text
     }
 
     /// Holds `text` to `path` here - or writes it there, where the run is asked to.
-    func hold(_ text: String, at path: String, file: StaticString = #filePath, line: UInt = #line) throws {
+    static func hold(_ text: String, at path: String, file: StaticString = #filePath, line: UInt = #line) throws {
         let url = folder.appendingPathComponent(path)
         if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
             try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -74,7 +69,7 @@ struct GTKExports {
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks here.
     @MainActor
-    func conform(_ family: any ConformanceFamily.Type, file: StaticString = #filePath, line: UInt = #line) {
+    static func conform(_ family: any ConformanceFamily.Type, file: StaticString = #filePath, line: UInt = #line) {
         let path = "marks/gtk/\(family.name).txt"
         guard !skips(family.name, at: path) else { return }
         let verdicts = Conformance.run(

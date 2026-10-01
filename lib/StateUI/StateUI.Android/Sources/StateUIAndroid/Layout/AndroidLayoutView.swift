@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A StateUI layout over a `StateUIViewGroup`: Android asks it to measure and place, and the core's arithmetic answers.
+/// A StateUI layout over a `StateUIViewGroup`: Android asks it to measure and place, and the host layer's arithmetic answers.
 /// Design: docs/design/platforms/android/layout.md#a-layout-is-a-view-group
 @MainActor
 class AndroidLayoutView: AndroidView {

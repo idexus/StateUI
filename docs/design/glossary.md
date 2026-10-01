@@ -105,9 +105,11 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| host | platform backend | the code that shows StateUI with one toolkit |
-| runtime | backend runtime | a host's elements: the host layer and its toolkit half |
-| host layer | shared backend code | the toolkit-neutral elements in `lib/StateUI/StateUI.Host`, the module `StateUIHost` |
+| host | platform layer | the package that shows StateUI with one toolkit, `lib/StateUI/StateUI.<Host>` |
+| runtime | platform runtime | a host's elements: the host layer and its toolkit half |
+| host layer | shared platform code | the toolkit-neutral elements in `lib/StateUI/StateUI.Host`, the module `StateUIHost` |
+| backend | plug-in | a package of its own, `lib/Backends/<Element>.<Host>`, realizing one library element on one host where its engine is a library the platform does not ship; the application's head registers it |
+| the application's (`byApplication`, 🧩) | application-provided | an element a host leaves to a control the application registers itself - a map where the platform has none |
 | display cycle, cycle | frame update | the ordered work of one display frame |
 | frame clock | display link, vsync | what ticks once per display frame while something holds it |
 | doorbell | wake-up thread | a thread parked until the core has work, which then wakes the UI thread |

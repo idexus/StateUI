@@ -18,7 +18,7 @@
     /// The elements the host's family will never have - each meeting the contract there - with why.
     public let notPlanned: [String: String]
 
-    /// The elements the host leaves to the application, which registers its own backend for each - a map, where the
+    /// The elements the host leaves to the application, which registers its own control for each - a map, where the
     /// platform has none of its own.
     public let byApplication: Set<String>
 

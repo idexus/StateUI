@@ -90,6 +90,6 @@ final class GTKConformanceTests: XCTestCase {
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.
     private func conform(_ family: any ConformanceFamily.Type) {
-        onUIThread { GTKExports.library.conform(family) }
+        onUIThread { GTKExports.conform(family) }
     }
 }

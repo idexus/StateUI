@@ -25,7 +25,7 @@ Inherits nothing: every member below is its own.
 | ✅ | Proven by every test of it that ran on that host. |
 | ☑️ | Proven, the host recording what is missing. |
 | – | Never on that host's family, which meets the contract there. |
-| 🧩 | Left to the application, which registers its own backend for it with that host. |
+| 🧩 | Left to the application, which registers its own control for it with that host. |
 | ❌ | A test of it failed. |
 | ◐ | Some of its tests proved it, another could not run or read. |
 | 🔌 | Proven only through the host's own entry or record, not the toolkit's. |
@@ -40,9 +40,9 @@ See [the dictionary](README.md) for how a mark is given.
 | --- | :---: | --- | --- | --- |
 | AppKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
 | UIKit |  |  | `MKMapView` / `MKAnnotation` | not realized |
-| Android Views | 🧩 | 6 🧩 | the application's own, registered | the application registers its own backend |
-| WinUI 3 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own backend |
-| GTK 4 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own backend |
+| Android Views | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
+| WinUI 3 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
+| GTK 4 | 🧩 | 6 🧩 | the application's own, registered | the application registers its own control |
 | Web |  |  | no honest native counterpart | no host yet |
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.swift`.
@@ -51,9 +51,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PinContract.sw
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `address` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
-| `label` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
-| `location` | property | `Location` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
-| `onPinClicked` (`pinClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
-| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
-| `type` | property | `PinType` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own backend; WinUI 3: the application registers its own backend; GTK 4: the application registers its own backend |
+| `address` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `label` | property | `String` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `location` | property | `Location` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `onPinClicked` (`pinClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `onPinDetailsClicked` (`pinDetailsClicked`) | event |  | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |
+| `type` | property | `PinType` | provider |  |  | 🧩 | 🧩 | 🧩 |  | not realized; UIKit: not realized; Android Views: the application registers its own control; WinUI 3: the application registers its own control; GTK 4: the application registers its own control |

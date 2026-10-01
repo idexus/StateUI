@@ -72,10 +72,16 @@ export function findSuites(root: string, host: Host | undefined): Suite[] {
         // A label reads the same on every platform: a path written with forward slashes.
         const name = directory === root ? path.basename(root) : path.relative(root, directory).split(path.sep).join("/");
         const owner = path.basename(directory) === "Testing" ? path.dirname(directory) : directory;
-        const hostPackage = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
-        if (hostPackage && hostPackage !== host) {
+        const forHost = path.basename(owner).match(/\.(AppKit|UIKit|Android|WinUI|GTK)$/)?.[1]?.toLowerCase();
+        if (forHost && forHost !== host) {
             continue;
         }
+        // A backend - lib/Backends/<Element>.<Host> - runs for its host by swift test, never as the host's own package.
+        if (forHost && path.basename(path.dirname(owner)) === "Backends") {
+            suites.push({ label: name, detail: `swift test - a backend for the ${describe(forHost as Host).label} host`, command: "swift", args: ["test", "--package-path", directory], env: {} });
+            continue;
+        }
+        const hostPackage = forHost;
 
         const base = ["test", "--package-path", directory];
         const winUITests = path.join(root, ".scripts", "WinUI", "test-winui.ps1");

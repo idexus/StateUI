@@ -7,7 +7,7 @@ import StateUI
 @_spi(Host) import StateUIHost
 
 /// A WebView on WinUI: WinUI's WebView2, made by the backend's relay. What the page does comes back as the element's
-/// events - why a navigation began and when a way back or forward opens, by the web view host layer's rules.
+/// events - why a navigation began and when a way back or forward opens, by the host layer's web rules.
 /// Design: docs/design/platforms/winui/controls.md#a-web-view
 @MainActor
 final class WinUIWebView: WinUIControl {

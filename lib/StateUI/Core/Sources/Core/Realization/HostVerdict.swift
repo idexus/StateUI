@@ -27,7 +27,7 @@
         /// input, a read of what the host keeps rather than what the toolkit holds; which, and why.
         case byHost(String)
 
-        /// 🧩: the host leaves it to the application, which registers its own backend for it there.
+        /// 🧩: the host leaves it to the application, which registers its own control for it there.
         case byApplication
     }
 
@@ -109,7 +109,7 @@
     }
 
     /// Whether the dictionary counts the verdict as met: proven whole, never on the host's family, or left to the
-    /// application's own backend.
+    /// application's own registration.
     public var meets: Bool {
         switch mark {
         case .proven, .notPlanned, .byApplication: true

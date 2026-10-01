@@ -1,18 +1,18 @@
 # Items
 
 What a platform's collection holds of one ItemsView, and what it tells the
-tree, is decided once in the host layer (`ItemsCells`); a backend is the
+tree, is decided once in the host layer (`ItemsCells`); a host's half is the
 toolkit's collection and its calls. A collection paints nothing behind its
 rows on any host: what it stands on shows through.
 
-The entries cross as one property, every identity in order. A backend takes
+The entries cross as one property, every identity in order. A host takes
 them as they change (`takeEntries`) and shows one cell for each. When the
 collection asks a cell for an entry (`hold`) that the tree has not built,
 the host tells the tree which entries to build - the ItemsView's
 `realizedChanged` - and the turn that follows builds them as children of the
 list before the call returns: the cell shows its subtree at once. Asked
 while a turn is under way - the toolkit calling back from inside a patch -
-the entry arrives with that turn instead, and the backend puts it in its
+the entry arrives with that turn instead, and the host puts it in its
 cell as it appears.
 
 What the user chooses is told in the order the items show, and a choice the

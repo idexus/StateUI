@@ -274,7 +274,7 @@ answered all the same.
 
 ## A web view
 
-The web view is a component's: its GTK backend (`WebView.GTK`) is WebKitGTK
+The web view on GTK is a backend, `lib/Backends/WebView.GTK`: WebKitGTK
 6.0's web view, made through the GTK host's registration of an
 application's own controls, so an application that shows none links no
 WebKit. A page at an address is loaded; a document written in place is shown

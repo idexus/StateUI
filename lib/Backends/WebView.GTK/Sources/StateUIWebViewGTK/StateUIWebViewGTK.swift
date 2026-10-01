@@ -14,8 +14,8 @@ public enum StateUIWebViewGTK {
     ///     StateUIWebViewGTK.register()
     ///     exit(StateUIGTK.run(applicationID: "com.example.App"))
     public static func register() {
-        StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebKitView in
-            let web = GTKWebKitView()
+        StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebView in
+            let web = GTKWebView()
             web.onNavigating = { event, address in reports.raise(WebViewContract.navigating, event, address) }
             web.onNavigated = { result, event, address in
                 reports.raise(WebViewContract.navigated, result, event, address)
@@ -33,10 +33,10 @@ public enum StateUIWebViewGTK {
             web.raises(WebViewContract.canGoForwardChanged)
             web.raises(WebViewContract.processTerminated)
         }
-        StateUIActs.add(WebViewContract.goBack, on: GTKWebKitView.self) { web in web.step(.back) }
-        StateUIActs.add(WebViewContract.goForward, on: GTKWebKitView.self) { web in web.step(.forward) }
-        StateUIActs.add(WebViewContract.reload, on: GTKWebKitView.self) { web in web.step(.refresh) }
-        StateUIActs.add(WebViewContract.evaluateJavaScript, on: GTKWebKitView.self) { web, script in
+        StateUIActs.add(WebViewContract.goBack, on: GTKWebView.self) { web in web.step(.back) }
+        StateUIActs.add(WebViewContract.goForward, on: GTKWebView.self) { web in web.step(.forward) }
+        StateUIActs.add(WebViewContract.reload, on: GTKWebView.self) { web in web.step(.refresh) }
+        StateUIActs.add(WebViewContract.evaluateJavaScript, on: GTKWebView.self) { web, script in
             try await web.evaluate(script)
         }
     }

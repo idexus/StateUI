@@ -13,7 +13,7 @@
     /// The members the host does not realize yet: the case does not run, and each stays empty.
     public let notRealized: [Covered]
 
-    /// The members the host leaves to the application's own backend: the case does not run, and each is marked 🧩.
+    /// The members the host leaves to the application's own registration: the case does not run, and each is marked 🧩.
     public let byApplication: [Covered]
 
     /// What the register says of each member the case covers, where the host realizes it.
@@ -85,7 +85,7 @@
         if let (covered, reason) = notPlanned.min(by: { $0.key.description < $1.key.description }) {
             return "not planned - \(covered): \(reason)"
         }
-        if let covered = byApplication.first { return "the application's - \(covered) is its own backend's" }
+        if let covered = byApplication.first { return "the application's - \(covered) is the application's to register" }
         if let covered = notRealized.first ?? gaps.first { return "a gap - \(covered) is not realized" }
         return nil
     }

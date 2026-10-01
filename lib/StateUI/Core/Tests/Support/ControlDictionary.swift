@@ -53,7 +53,7 @@ struct ControlDictionary {
         ("✅", "Proven by every test of it that ran on that host."),
         ("☑️", "Proven, the host recording what is missing."),
         ("–", "Never on that host's family, which meets the contract there."),
-        ("🧩", "Left to the application, which registers its own backend for it with that host."),
+        ("🧩", "Left to the application, which registers its own control for it with that host."),
         ("❌", "A test of it failed."),
         ("◐", "Some of its tests proved it, another could not run or read."),
         ("🔌", "Proven only through the host's own entry or record, not the toolkit's."),
@@ -115,7 +115,7 @@ struct ControlDictionary {
             case .failed(let message)?: ("❌", message)
             case .partly(let why)?: ("◐", why)
             case .byHost(let why)?: ("🔌", "only through the host's own: \(why)")
-            case .byApplication?: ("🧩", "the application registers its own backend")
+            case .byApplication?: ("🧩", "the application registers its own control")
             case .cannot(let why)?: ("·", "cannot \(why)")
             case .waiting(let gap)?: ("⏸", "waits on \(gap), not realized yet")
             case .notRealized?: ("", "not realized")
@@ -144,7 +144,7 @@ struct ControlDictionary {
         var byApplication = 0
 
         /// The members the host meets the contract on: realized in full, not planned for its family, or left to the
-        /// application's own backend.
+        /// application's own registration.
         var met: Int { done + notPlanned + byApplication }
     }
 

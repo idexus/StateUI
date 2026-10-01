@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The panel every StateUI layout is: WinUI asks it to measure and arrange, and
-// the host answers with the core's arithmetic.
+// the host answers with the host layer's arithmetic.
 // Design: docs/design/platforms/winui/layout.md#a-layout-is-a-panel
 
 #include "Relay.h"

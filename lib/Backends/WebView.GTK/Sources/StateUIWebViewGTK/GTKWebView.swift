@@ -7,10 +7,10 @@ import StateUIGTK
 import StateUI
 @_spi(Host) import StateUIHost
 
-/// A WebView on GTK: WebKitGTK's own web view, telling what its page does by the web view host layer's rules.
+/// A WebView on GTK: WebKitGTK's own web view, telling what its page does by the host layer's web rules.
 /// Design: docs/design/platforms/gtk/controls.md#a-web-view
 @MainActor
-final class GTKWebKitView: GTKControl {
+final class GTKWebView: GTKControl {
     let widget: UnsafeMutablePointer<GtkWidget>
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its

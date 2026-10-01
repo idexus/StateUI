@@ -12,5 +12,6 @@ stateui_app_register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
+// The backends the Gallery shows a library element through: the web view, over WebView2.
 StateUIWebViewWinUI.register()
 StateUIWinUI.run()

@@ -52,9 +52,9 @@ A host moves frame by frame only what its views present and whose values
 travel: `TransitionSurface` names them, element type by element type - a
 view's opacity, background, size and transform; a colour box's colour and
 corners; a label's size and colour of type; a layout's padding and spacing;
-a shape's fill and stroke; a window's place. A backend answers
+a shape's fill and stroke; a window's place. A host's element answers
 `animates(_:)` from it, and the host layer then walks the value and hands
-the backend each frame's. Every other pair arrives at once, rather than
+it each frame's. Every other pair arrives at once, rather than
 keeping a motion alive that nothing shows: a host that answers no pair
 animates nothing, however the tree asks.
 

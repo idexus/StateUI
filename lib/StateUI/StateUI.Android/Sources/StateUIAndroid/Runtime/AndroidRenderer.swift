@@ -86,7 +86,7 @@ final class AndroidRenderer {
         let core = renderer.runtime.core
         core.setRealization(
             AndroidRegistrations.registry.realization,
-            unrealized: AndroidRealization.unrealized.union(AndroidRealization.byApplication))
+            unrealized: AndroidRealization.unmade)
         AndroidEnvironment.report(to: core, activity: context.reference)
         if previous == nil { AndroidPersistence.restore(into: core, context: context.reference) }
         renderer.show(connectingScene: !sceneStands)

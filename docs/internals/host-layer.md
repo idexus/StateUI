@@ -1,6 +1,6 @@
 # Host layer
 
-A host - the platform backend that shows StateUI with one toolkit - is Swift in
+A host - the platform package that shows StateUI with one toolkit - is Swift in
 the application's process, and most of what it does is the same on every
 platform. That part is the host layer: the toolkit-neutral half of every
 runtime, in `lib/StateUI/StateUI.Host` - the module `StateUIHost`, a library of its own
@@ -32,6 +32,8 @@ lib/StateUI/StateUI.Host/Sources/
   Input/         the user's changes, gestures, scrolling, typed words, ranges
   Motion/        the animator, the state channels, described and layout motion
   Acts/          answering acts, questions for the user, the application's acts
+  Items/         what a platform's collection holds of an ItemsView, and tells back
+  Web/           the web view's rules: its history, a script's answer, a document's address
   Environment/   the machine a host stands on, in the core's terms
 ```
 

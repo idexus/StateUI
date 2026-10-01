@@ -11,12 +11,12 @@ enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = []
 
-    /// The entries this host leaves to the application, which registers its own backend for each: the platform has
+    /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
     static let byApplication: Set<String> = ["Map", "Pin"]
 
-    /// The entries a backend realizes on this host - a package of its own, for what WinUI does not ship - which the
-    /// application's head registers: WebView2's web view. Realized none of until it is registered.
+    /// The entries a backend realizes on this host - a package of its own, for a library WinUI does not ship - which
+    /// the application's head registers: WebView2's web view. Realized none of until it is registered.
     static let backends: Set<String> = ["WebView"]
 
     /// What the running host realizes none of: what it never makes, what it leaves to the application, and each

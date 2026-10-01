@@ -1,8 +1,8 @@
 // swift-tools-version:6.4
 import PackageDescription
 
-// The host layer: the half of every StateUI runtime no toolkit decides, which every host - AppKit, Android Views,
-// WinUI, GTK - stands on. A dynamic library, as the core is, so a process holds one copy of its types.
+// The host layer: the half of every StateUI runtime no toolkit decides, which every host - AppKit, UIKit, Android
+// Views, WinUI, GTK - stands on. A dynamic library, as the core is, so a process holds one copy of its types.
 let package = Package(
     name: "StateUIHost",
     platforms: [

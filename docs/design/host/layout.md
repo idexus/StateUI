@@ -25,7 +25,8 @@ says how a child travels to the place this arithmetic gives it.
                                    there through LayoutMotion
 ```
 
-A layout's values are read off the element once, by the core, so every host
+A layout's values are read off the element once, by the host layer
+(`MountedElement.layoutValues`), so every host
 reads the same margin, alignment and stated size. The toolkit supplies only
 what it alone knows: whether the child is shown, and how big its view is for a
 width it is offered - a label wraps, an image keeps its ratio. The arithmetic

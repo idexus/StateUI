@@ -1,12 +1,12 @@
 # Layout on WinUI
 
-StateUI's layouts place their children by the core's arithmetic
+StateUI's layouts place their children by the host layer's arithmetic
 ([layout](../../host/layout.md)); WinUI measures and draws each child.
 
 ## A layout is a panel
 
 Every StateUI layout is the relay's panel, a `Panel` whose `MeasureOverride`
-and `ArrangeOverride` call the host, which answers with the core's arithmetic
+and `ArrangeOverride` call the host, which answers with the host layer's arithmetic
 and measures and places each child through the relay. WinUI lays out by
 asking: a child is placed only inside its parent's arrangement
 ([a place between passes](#a-place-between-passes)).
@@ -65,7 +65,7 @@ WinUI arranges an element at no less than the size it last asked for in
 than its content would be laid out at its content's size and clipped, where
 StateUI places it at its place and lets it draw past its edges. A StateUI
 layout that another StateUI layout places therefore asks WinUI for no room:
-its parent reads its size from the core's arithmetic (`naturalSize`), and
+its parent reads its size from the host layer's arithmetic (`naturalSize`), and
 WinUI arranges it exactly where the parent puts it. A layout WinUI itself
 places - the window's content, a scroller's document - answers with the room
 its children take, within the room offered. A native control keeps its own

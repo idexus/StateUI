@@ -66,7 +66,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .height(56)
 
                 // The one shape that is whatever you can write down: SVG path
-                // syntax, normalized by StateUI for every native backend.
+                // syntax, normalized by StateUI for every native host.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
                     .width(56)

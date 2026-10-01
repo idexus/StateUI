@@ -11,7 +11,7 @@ enum GTKRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = []
 
-    /// The entries this host leaves to the application, which registers its own backend for each: the platform has
+    /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
     static let byApplication: Set<String> = ["Map", "Pin"]
 

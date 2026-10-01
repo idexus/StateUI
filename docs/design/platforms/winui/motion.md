@@ -1,6 +1,6 @@
 # Motion on WinUI
 
-How the WinUI host moves what the core's motion elements say
+How the WinUI host moves what the host layer's motion elements say
 ([motion](../../host/motion.md)): which properties it draws on the way, how an
 element is moved, turned and scaled, and when every animation arrives at
 once. The frames come from `CompositionTarget.Rendering`

@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A StateUI layout over a panel: GTK asks it to measure and allocate, and the core's arithmetic answers; it draws
+/// A StateUI layout over a panel: GTK asks it to measure and allocate, and the host layer's arithmetic answers; it draws
 /// its own box behind its children.
 /// Design: docs/design/platforms/gtk/layout.md#a-layout-is-a-panel
 @MainActor

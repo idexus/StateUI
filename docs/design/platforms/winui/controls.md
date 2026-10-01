@@ -338,12 +338,12 @@ let go (`preserveAspectRatio="none"`).
 
 ## A web view
 
-A WebView is a component's: its WinUI backend (`WebView.WinUI`) is WinUI's
+A WebView on WinUI is a backend, `lib/Backends/WebView.WinUI`: WinUI's
 `WebView2`, made by the backend's own C++/WinRT relay through the host's
 registration of an application's own controls, its page asked for once the
 element's values are applied. It runs over the system's WebView2 runtime: the
 WebView2 package's component and loader stand beside the application, as
-the Windows App SDK's runtime does. Its core stands a moment after it is
+the Windows App SDK's runtime does. Its `CoreWebView2` stands a moment after it is
 first asked for a page, so a page asked for before then is gone to once it
 stands, in the order asked. What the page does comes back as the element's
 events: a navigation as it starts and as it ends, why it began by the host
@@ -355,7 +355,7 @@ asked for again instead. A script's answer is the JSON WebView2 writes its
 value in, read by the host layer's rule, and the end of the page's web
 process is heard as WebView2 tells it. The agent it names itself by is the
 tree's, and the runtime's own where the tree gives none, taken back from
-when its core stood. Its page takes the user's hand: a web view hears none
+when its `CoreWebView2` stood. Its page takes the user's hand: a web view hears none
 of it as a view does - WebView2, listened to by WinUI, ends the process - so
 its taps, pans, swipes, pinch and pointer are none on WinUI.
 

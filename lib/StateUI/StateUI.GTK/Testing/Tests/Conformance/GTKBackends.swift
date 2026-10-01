@@ -16,7 +16,7 @@ enum GTKBackends {
         GTKDriver.backends[WebViewContract.nodeType] = GTKBackendDriving(
             contract: WebViewContract.self,
             held: { property, view in
-                guard let web = (view as? GTKHostedView<GTKWebKitView>)?.control else { return nil }
+                guard let web = (view as? GTKHostedView<GTKWebView>)?.control else { return nil }
                 switch property {
                 case WebViewContract.source.token: return .some(web.source?.propValue)
                 case WebViewContract.userAgent.token: return .some(web.userAgent.map { .string($0) })
@@ -24,7 +24,7 @@ enum GTKBackends {
                 }
             },
             perform: { act, view in
-                guard act == .endContent, let web = (view as? GTKHostedView<GTKWebKitView>)?.control else { return false }
+                guard act == .endContent, let web = (view as? GTKHostedView<GTKWebView>)?.control else { return false }
                 web.endWebProcess()
                 return true
             },

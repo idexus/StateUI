@@ -11,9 +11,14 @@ enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = []
 
-    /// The entries this host leaves to the application, which registers its own backend for each: the platform has
+    /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
     static let byApplication: Set<String> = ["Map", "Pin"]
+
+    /// What the running host realizes none of: what it never makes, and what it leaves to the application.
+    static var unmade: Set<String> {
+        unrealized.union(byApplication)
+    }
 
     /// The entries this host presents with no view of their own - a span is a run of its label's text - so
     /// no tier's record reaches them: only a member the entry's own records name is realized.
