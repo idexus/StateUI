@@ -14,7 +14,7 @@ enum GTKPictures {
 
     /// The file `name` names (`PictureArithmetic.files`): a PNG the folder holds as an SVG is the SVG. Nil for none.
     static func path(of name: String) -> String? {
-        PictureArithmetic.files(for: name).map { folder + "/" + $0 }.first { g_file_test($0, G_FILE_TEST_IS_REGULAR) != 0 }
+        PictureArithmetic.files(for: name).map { folder + "/" + $0 }.first { g_file_test($0, STATEUI_FILE_TEST_IS_REGULAR) != 0 }
     }
 
     /// An image showing the picture `name` names as an icon `size` logical pixels across, which GTK draws at the

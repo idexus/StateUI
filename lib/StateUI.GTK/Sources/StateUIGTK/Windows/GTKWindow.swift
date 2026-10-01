@@ -56,9 +56,9 @@ final class GTKWindow {
     /// A window let go of tells nobody it went: its handlers leave before GTK destroys it.
     isolated deinit {
         let data = UnsafeMutableRawPointer(bitPattern: Int(number))
-        g_signal_handlers_disconnect_matched(UnsafeMutableRawPointer(widget), G_SIGNAL_MATCH_DATA, 0, 0, nil, nil, data)
+        g_signal_handlers_disconnect_matched(UnsafeMutableRawPointer(widget), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil, data)
         if let surface = gtk_native_get_surface(widget.opaque) {
-            g_signal_handlers_disconnect_matched(UnsafeMutableRawPointer(surface), G_SIGNAL_MATCH_DATA, 0, 0, nil, nil, data)
+            g_signal_handlers_disconnect_matched(UnsafeMutableRawPointer(surface), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil, data)
         }
         gtk_window_destroy(widget.of(GtkWindow.self))
         g_object_unref(layers)

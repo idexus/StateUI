@@ -49,7 +49,7 @@ final class GTKSheet {
 
     isolated deinit {
         g_signal_handlers_disconnect_matched(
-            UnsafeMutableRawPointer(dialog), G_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
+            UnsafeMutableRawPointer(dialog), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
             UnsafeMutableRawPointer(bitPattern: Int(number)))
         adw_dialog_set_child(dialog, nil)
         g_object_unref(UnsafeMutableRawPointer(dialog))

@@ -113,7 +113,7 @@ final class OpenGLCube3DWidget: GTKControl {
     isolated deinit {
         if tick != 0 { gtk_widget_remove_tick_callback(widget, tick) }
         g_signal_handlers_disconnect_matched(
-            UnsafeMutableRawPointer(widget), G_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
+            UnsafeMutableRawPointer(widget), STATEUI_SIGNAL_MATCH_DATA, 0, 0, nil, nil,
             Unmanaged.passUnretained(self).toOpaque())
         g_object_unref(widget)
     }

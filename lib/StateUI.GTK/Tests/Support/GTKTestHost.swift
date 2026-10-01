@@ -24,7 +24,7 @@ enum GTKTestHost {
         g_object_set_property(
             gtk_settings_get_default().map { UnsafeMutablePointer<GObject>($0) }, "gtk-enable-animations", &animates)
         g_value_unset(&animates)
-        let application = adw_application_new("com.stateui.GTKTests", G_APPLICATION_NON_UNIQUE)!
+        let application = adw_application_new("com.stateui.GTKTests", STATEUI_APPLICATION_NON_UNIQUE)!
         precondition(
             g_application_register(application.of(GApplication.self), nil, nil) != 0,
             "the test application could not register")

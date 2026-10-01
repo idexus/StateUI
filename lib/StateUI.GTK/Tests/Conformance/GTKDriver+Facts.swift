@@ -116,7 +116,7 @@ extension GTKDriver {
             UnsafeMutableRawPointer($0)
         }].compactMap({ $0 }) {
             g_signal_handlers_block_matched(
-                instance, GSignalMatchType(rawValue: G_SIGNAL_MATCH_ID.rawValue | G_SIGNAL_MATCH_DATA.rawValue),
+                instance, GSignalMatchType(rawValue: STATEUI_SIGNAL_MATCH_ID.rawValue | STATEUI_SIGNAL_MATCH_DATA.rawValue),
                 g_signal_lookup("notify", g_object_get_type()), 0, nil, nil, data)
         }
     }
