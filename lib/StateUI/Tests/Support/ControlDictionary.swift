@@ -153,6 +153,9 @@ struct ControlDictionary {
     /// The hosts' columns, each what its runs said.
     let columns: [Column]
 
+    /// Each component under `lib/Controls`, by its folder's name, and the hosts' columns of what its runs said.
+    let components: [(name: String, columns: [Column])]
+
     /// The `on…` spellings each event is heard through.
     let spellings: [String: Set<String>]
 
@@ -173,6 +176,7 @@ struct ControlDictionary {
         elements = LibraryContracts.elements.sorted { $0.name < $1.name }
         tiers = LibraryContracts.tiers
         self.columns = try columns ?? Self.columns()
+        components = try Self.componentColumns()
         spellings = try Self.handlerSpellings()
         mapping = try Self.nativeMapping()
         layers = try Self.layers()
@@ -401,6 +405,7 @@ struct ControlDictionary {
                 + summary(of: split.controls, heading: "Control", linking: "controls/")
                 + "\n\n### Application structure\n\n"
                 + summary(of: split.structure, heading: "Part", linking: "controls/"),
+            "components": componentTable(),
             "creation": creationTable(),
             "members": memberTable(),
             "shared": sharedTable(),
@@ -623,6 +628,34 @@ struct ControlDictionary {
         return lines.joined(separator: "\n")
     }
 
+    /// A row per component, linked to its handbook: how many members its runs judged, and how many each host realizes -
+    /// the fresh verdicts of its own family and of its element's tiers.
+    func componentTable() -> String {
+        var lines = [
+            "| Component | Members | " + Self.platforms.joined(separator: " | ") + " |",
+            "| --- | ---: | " + Self.platforms.map { _ in ":---:" }.joined(separator: " | ") + " |",
+        ]
+        for component in components {
+            let subjects = Set(component.columns.flatMap(\.verdicts.keys))
+            let cells = Self.platforms.map { platform -> String in
+                guard let column = component.columns.first(where: { $0.host == platform }) else { return "" }
+                var marks = Marks()
+                for (subject, verdict) in column.verdicts where !column.stale.contains(subject) {
+                    switch verdict.mark {
+                    case .proven: marks.done += 1
+                    case .partial: marks.partial += 1
+                    case .notPlanned: marks.notPlanned += 1
+                    default: break
+                    }
+                }
+                return Self.counted(marks)
+            }
+            lines.append("| [\(component.name)](../lib/Controls/\(component.name)/README.md) | \(subjects.count) | "
+                + cells.joined(separator: " | ") + " |")
+        }
+        return lines.joined(separator: "\n")
+    }
+
     /// One host's marks on one element, counted: each kind it has, in the legend's order.
     static func counted(_ marks: Marks) -> String {
         [(marks.done, "✅"), (marks.partial, "☑️"), (marks.notPlanned, "–")]
@@ -670,6 +703,44 @@ struct ControlDictionary {
                 verdicts[verdict.subject] = verdict
             }
             return Column(host: host, verdicts: verdicts, stale: stale)
+        }
+    }
+
+    /// Each component under `lib/Controls` - a folder of its own holding `exports/marks` - and every host's column of
+    /// its runs: stale where a file names another revision than the library's families, or the component's own in its
+    /// `<Name>.Conformance/revisions.txt`, stand at.
+    static func componentColumns() throws -> [(name: String, columns: [Column])] {
+        let controls = SourceTree.repository.appendingPathComponent("lib/Controls")
+        guard let names = try? FileManager.default.contentsOfDirectory(atPath: controls.path) else { return [] }
+        return try names.sorted().compactMap { name -> (name: String, columns: [Column])? in
+            let marks = controls.appendingPathComponent("\(name)/exports/marks")
+            guard FileManager.default.fileExists(atPath: marks.path) else { return nil }
+            let own = try String(
+                contentsOf: controls.appendingPathComponent("\(name)/\(name).Conformance/revisions.txt"), encoding: .utf8)
+            let revisions = own + "\n" + Self.revisions
+            let columns = try folders.sorted { $0.key < $1.key }.map { host, folder in
+                var verdicts: [String: HostVerdict] = [:]
+                var stale: Set<String> = []
+                var all: [HostVerdict] = []
+                let url = marks.appendingPathComponent(folder)
+                let files = FileManager.default.fileExists(atPath: url.path)
+                    ? try SourceTree.files(under: url, entering: { _ in false }).sorted().filter { $0.hasSuffix(".txt") }
+                    : []
+                for file in files {
+                    let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
+                    guard let read = HostVerdict.read(text) else {
+                        throw Unreadable(description: "lib/Controls/\(name)/exports/marks/\(folder)/\(file) holds a line "
+                            + "that is no verdict.")
+                    }
+                    all += read
+                    if HostVerdict.isStale(text, family: family(ofFile: file), on: folder, in: revisions) {
+                        stale.formUnion(read.map(\.subject))
+                    }
+                }
+                for verdict in HostVerdict.merged(all) { verdicts[verdict.subject] = verdict }
+                return Column(host: host, verdicts: verdicts, stale: stale)
+            }
+            return (name, columns)
         }
     }
 

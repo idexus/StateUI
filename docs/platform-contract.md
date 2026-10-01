@@ -475,6 +475,16 @@ Every control, and every part an application, its windows and its pages are made
 | **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 106 of 125 met |  |
 <!-- dictionary:end -->
 
+### Components
+
+A component is a library of its own beside StateUI, which an application imports only where it shows one - `lib/Controls/<Component>`, each backend a package of its own. Its marks stand in its own exports, its family's and its element's tiers', and its handbook is its README.
+
+<!-- components:begin -->
+| Component | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
+| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [WebView](../lib/Controls/WebView/README.md) | 78 |  |  |  |  | 53 ✅ · 1 – |  |
+<!-- components:end -->
+
 ## Contract members
 
 A row per contract with properties or events - the tiers, then the elements -

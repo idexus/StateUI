@@ -6,7 +6,7 @@ import XCTest
 
 /// The handbook's Swift examples compile.
 ///
-/// Every fenced `swift` block in README.md and docs is type-checked against the
+/// Every fenced `swift` block in README.md, docs and each component's README is type-checked against the
 /// library this package just built. A listing that names a removed member,
 /// misspells a modifier, or hands over the wrong value fails with its document
 /// and line.
@@ -161,6 +161,12 @@ final class DocumentationExamplesTests: XCTestCase {
     /// the design notes, which hold no application code.
     private static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
+        // Each component's handbook is its README.
+        let controls = repository.appendingPathComponent("lib/Controls")
+        for component in (try? FileManager.default.contentsOfDirectory(atPath: controls.path))?.sorted() ?? [] {
+            let readme = controls.appendingPathComponent("\(component)/README.md")
+            if FileManager.default.fileExists(atPath: readme.path) { found.append(("lib/Controls/\(component)/README.md", readme)) }
+        }
         let directory = repository.appendingPathComponent("docs")
         var pending = [""]
         var names: [String] = []
