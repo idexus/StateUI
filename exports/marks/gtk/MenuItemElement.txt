@@ -6,6 +6,6 @@ MenuItem.isEnabled: ✅
 MenuItem.text: ✅
 ToolbarItem.clicked: ✅
 ToolbarItem.icon: ✅
-ToolbarItem.isDestructive: not realized
+ToolbarItem.isDestructive: ✅
 ToolbarItem.isEnabled: ✅
 ToolbarItem.text: ✅

@@ -20,6 +20,12 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class writing a flat button's words in the theme's colour for destroying something.
+    static var destructiveWords: String {
+        write("stateui-destructive", "color: @destructive_color;")
+        return "stateui-destructive"
+    }
+
     /// The class painting a bar in `background`, what stands on it in `foreground`; nil where neither is given.
     static func bar(background: GdkRGBA?, foreground: GdkRGBA?) -> String? {
         guard background != nil || foreground != nil else { return nil }

@@ -88,6 +88,7 @@ enum GTKRealization {
         .complete("TabbedView", "currentPageChanged"),
         .partial("TimePicker", "format",
                  missing: "GTK writes hours and minutes in the user's own clock, whatever the format asks: no seconds, no pattern."),
+        .complete("ToolbarItem", "isDestructive"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "showsText"),
         .complete("ToolbarItems", "order"),

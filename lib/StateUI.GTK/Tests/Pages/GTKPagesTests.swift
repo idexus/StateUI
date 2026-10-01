@@ -134,6 +134,32 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A destructive action is libadwaita's destructive button on the header bar; in the overflow's flat menu its
+    /// words take the theme's destructive colour, not the white that button writes on its red fill.
+    func testADestructiveActionWearsTheThemesDestructiveColour() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                TitledPage(title: "Notes", actions: [
+                    ToolbarItem("Remove").isDestructive(true),
+                    ToolbarItem("Clear").isDestructive(true).placement(.overflow),
+                    ToolbarItem("Later").placement(.overflow),
+                ])
+            }
+            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let remove = try XCTUnwrap(frame.buttons.first)
+            XCTAssertNotEqual(gtk_widget_has_css_class(remove.widget, "destructive-action"), 0)
+
+            let colors = frame.overflowButtons.map { button in
+                var color = GdkRGBA()
+                gtk_widget_get_color(button.widget, &color)
+                return color
+            }
+            XCTAssertEqual(colors.count, 2)
+            XCTAssertGreaterThan(colors[0].red - max(colors[0].green, colors[0].blue), 0.3, "Clear's words are red")
+            XCTAssertLessThan(abs(colors[1].red - colors[1].green), 0.1, "Later's words are the menu's own")
+        }
+    }
+
     /// A stack's bar colours paint the header bar of every page on it, and what stands on the bar.
     func testAStacksBarColoursPaintItsPagesHeaderBars() throws {
         try onUIThread {

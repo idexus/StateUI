@@ -18,6 +18,9 @@ struct GTKToolbarAction {
     var showsTitle = false
     let isEnabled: Bool
 
+    /// Whether the action destroys something: libadwaita's `destructive-action` colours its button.
+    let isDestructive: Bool
+
     /// The action of `item` as its bar's button shows it.
     init(_ item: MountedElement) {
         self.item = item
@@ -25,6 +28,7 @@ struct GTKToolbarAction {
         icon = item.value(.icon)?.string
         showsTitle = item.showsActionWords
         isEnabled = item.value(.isEnabled)?.bool ?? true
+        isDestructive = item.value(.isDestructive)?.bool == true
     }
 
     /// Tells the item it was chosen.
@@ -35,6 +39,7 @@ struct GTKToolbarAction {
     /// Whether two actions draw the same button. The item an action stands for is taken again on every composition.
     func draws(like other: GTKToolbarAction) -> Bool {
         title == other.title && icon == other.icon && showsTitle == other.showsTitle && isEnabled == other.isEnabled
+            && isDestructive == other.isDestructive
     }
 }
 

@@ -210,7 +210,6 @@ final class GTKPageFrame {
         overflowPopover = popover
         overflowButtons = overflow.map { action in
             let button = GTKButtonView.action(action, inMenu: true)
-            gtk_widget_add_css_class(button.widget, "flat")
             button.onClicked = closingOverflow(action)
             gtk_box_append(list.of(GtkBox.self), button.widget)
             return button
@@ -253,7 +252,7 @@ extension GTKPageFrame {
 
 extension GTKButtonView {
     /// A button performing `action`: on the header bar its picture as an icon - its title beside it where it says
-    /// so - else its title; in the overflow's menu its title.
+    /// so - else its title; in the overflow's menu its title, flat; coloured where it destroys something.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     static func action(_ action: GTKToolbarAction, inMenu: Bool = false) -> GTKButtonView {
         let button = GTKButtonView()
@@ -262,6 +261,11 @@ extension GTKButtonView {
         } == true
         if !pictured { button.setText(action.title) }
         button.setEnabled(action.isEnabled)
+        if inMenu { gtk_widget_add_css_class(button.widget, "flat") }
+        if action.isDestructive {
+            gtk_widget_add_css_class(button.widget, "destructive-action")
+            if inMenu { gtk_widget_add_css_class(button.widget, GTKStyleSheet.destructiveWords) }
+        }
         button.onClicked = action.perform
         return button
     }

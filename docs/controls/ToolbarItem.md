@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 6 ✅ | `UIBarButtonItem` |  |
 | Android Views | ✅ | 4 ✅ · 1 – | `Toolbar` `MenuItem` |  |
 | WinUI 3 | ✅ | 8 ✅ | `CommandBar` `AppBarButton` |  |
-| GTK 4 | ✅ | 6 ✅ | `GtkButton` in `GtkHeaderBar` |  |
+| GTK 4 | ✅ | 7 ✅ | `GtkButton` in `GtkHeaderBar` |  |
 | Web |  |  | `<button>` in an ARIA `toolbar` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/ToolbarItemContract.swift`.
@@ -73,6 +73,6 @@ What every item a user chooses from has - a menu's entry, a toolbar's item: a ca
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClicked` (`clicked`) | event |  | native | 🔌 | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ | ✅ |  | cannot read icon of ToolbarItem - AppKit's driver has no path for it yet; Android Views: cannot read a picture's name - Android's item keeps its picture, not its name |
-| `isDestructive` | property | `Bool` | adaptive |  | ✅ | ✅ | ✅ |  |  | not realized; GTK 4: not realized |
+| `isDestructive` | property | `Bool` | adaptive |  | ✅ | ✅ | ✅ | ✅ |  | not realized |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `text` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |

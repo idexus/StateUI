@@ -38,7 +38,12 @@ every render, and written on the header bar of each page shown:
   stands with its picture before them, as libadwaita's button content
   does; one whose picture the application does not hold shows its title,
   and the overflow's menu shows titles. So the bar's own buttons never read
-  as one more choice of a tabbed view's switcher beside them;
+  as one more choice of a tabbed view's switcher beside them. An action
+  that destroys something is libadwaita's `destructive-action` button on
+  the bar; in the overflow's flat menu that class writes its words in the
+  white meant for its red fill, so its words there take the theme's
+  `@destructive_color`, as libadwaita writes a destructive answer of an
+  alert;
 - the way back, the bar's own back button, which libadwaita shows while the
   page has one below it and the page does not refuse it;
 - no bar at all, for a page that hides its navigation bar;
