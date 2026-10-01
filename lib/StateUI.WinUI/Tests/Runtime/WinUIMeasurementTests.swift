@@ -11,7 +11,7 @@ private func nest(_ depth: Int, _ words: String) -> Node {
     guard depth > 0 else { return Label(words).margin(2).body }
 
     return Grid {
-        nest(depth - 1, words)
+        ModifiedContent(node: nest(depth - 1, words))
         Label("beside \(depth)").gridRow(1)
         VStack {
             Label("a \(depth)")
