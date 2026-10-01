@@ -249,9 +249,13 @@ final class GTKPagesTests: XCTestCase {
             let controller = try XCTUnwrap(host.windows.first)
             host.settle { controller.sheets.count == 2 }
             XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 1", "Sheet 2"])
-            XCTAssertNotEqual(gtk_widget_get_mapped(controller.sheets[1].sheet.page.widget), 0, "the top sheet shows")
+            let window = controller.window.widget.of(AdwApplicationWindow.self)
+            XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
+                          "the top sheet shows")
 
-            adw_dialog_close(controller.sheets[1].sheet.dialog)
+            // libadwaita says a dialog closed once its sheet has gone, which a window behind another, drawn no
+            // frames, never gets to by itself: the close is told as libadwaita tells it.
+            GTKTestHost.emit(OpaquePointer(controller.sheets[1].sheet.dialog), "closed")
             host.settle { sheets.wrappedValue == [1] }
             XCTAssertEqual(sheets.wrappedValue, [1], "the user's close")
 
