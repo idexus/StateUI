@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 final class GTKStackViewTests: XCTestCase {

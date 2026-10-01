@@ -11,6 +11,8 @@ let package = Package(
     name: "StateUIGTK",
     products: [
         .library(name: "StateUIGTK", type: .dynamic, targets: ["StateUIGTK"]),
+        // What runs the conformance families on GTK - this package's tests, and a component's.
+        .library(name: "StateUIGTKDriver", targets: ["StateUIGTKDriver"]),
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
@@ -27,17 +29,28 @@ let package = Package(
             path: "Sources/StateUIGTK",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
-        // GTK's checks of what an accessible holds, for the tests: GTK declares them with arguments Swift cannot pass.
-        .systemLibrary(name: "CGTKTesting", path: "Tests/CGTKTesting"),
-        .testTarget(
-            name: "StateUIGTKTests",
+        // GTK's checks of what an accessible holds, for the driver: GTK declares them with arguments Swift cannot pass.
+        .systemLibrary(name: "CGTKTesting", path: "Sources/CGTKTesting"),
+        // The driver reads the host's own views, so it is built where the host is built for testing: by `swift test`.
+        .target(
+            name: "StateUIGTKDriver",
             dependencies: [
                 "StateUIGTK", "CStateUIGTK", "CGTKTesting", .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
             ],
+            path: "Sources/StateUIGTKDriver",
+            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        ),
+        .testTarget(
+            name: "StateUIGTKTests",
+            dependencies: [
+                "StateUIGTK", "StateUIGTKDriver", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot"),
+                .product(name: "StateUIHost", package: "StateUIHost"),
+                .product(name: "StateUIConformance", package: "StateUIConformance"),
+            ],
             path: "Tests",
-            exclude: ["Resources", "CGTKTesting"],
+            exclude: ["Resources"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

@@ -5,6 +5,7 @@ import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 /// A group whose words for assistive technology a button takes away.

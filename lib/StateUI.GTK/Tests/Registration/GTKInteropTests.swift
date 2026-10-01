@@ -5,6 +5,7 @@ import CStateUIGTK
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 /// An application's own acts and events - the ones with no control behind

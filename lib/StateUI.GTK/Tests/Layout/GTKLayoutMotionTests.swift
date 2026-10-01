@@ -4,6 +4,7 @@
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import CStateUIGTK
 import StateUIConformance
 import XCTest

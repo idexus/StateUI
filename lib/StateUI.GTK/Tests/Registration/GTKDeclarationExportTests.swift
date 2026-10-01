@@ -8,6 +8,7 @@ import Foundation
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 final class GTKDeclarationExportTests: XCTestCase {

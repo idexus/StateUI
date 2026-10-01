@@ -5,6 +5,7 @@ import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 /// A page that asks the host the time of day, its zone, and zones' distances from UTC on a winter's and a summer's

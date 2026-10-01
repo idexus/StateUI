@@ -5,6 +5,7 @@ import CStateUIGTK
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIGTK
+@testable import StateUIGTKDriver
 import XCTest
 
 /// A page whose note a click takes away.

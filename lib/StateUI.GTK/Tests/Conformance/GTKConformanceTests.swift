@@ -5,6 +5,7 @@
 @_spi(Host) import StateUIHost
 @_spi(Host) import StateUIConformance
 import Foundation
+@testable import StateUIGTKDriver
 import XCTest
 
 /// The conformance suite on GTK: a family a contract, each one test, its verdicts GTK's column of the

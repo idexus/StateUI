@@ -76,7 +76,7 @@ the host realizes, and proves the member there.
 
 ## The driver
 
-Each host's test target supplies a driver: how its toolkit starts a page,
+Each host supplies a driver: how its toolkit starts a page,
 turns, steps and draws a frame, what a user's act is through its toolkit's
 own input path, and what a native control holds of a member, as the contract
 writes the value. A driver reads through the element a case found by its
@@ -93,6 +93,11 @@ control's look - the host's log and what it keeps; each read a host does not
 have yet is its driver's "cannot". A case's first start of an application is
 its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
+
+A host's driver is a library of its host's package, beside the host - the
+GTK host's `StateUIGTKDriver` - so the host's own tests and a component's
+both run the families through it. It reads the host's own views, so it is
+built where the host is built for testing: a debug build, `swift test`.
 
 ## A session
 

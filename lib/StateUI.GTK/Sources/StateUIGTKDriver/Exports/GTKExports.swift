@@ -11,8 +11,9 @@ import XCTest
 enum GTKExports {
     /// `exports`, beside `lib`.
     static let folder = URL(fileURLWithPath: #filePath)
-        .deletingLastPathComponent()    // Support
-        .deletingLastPathComponent()    // Tests
+        .deletingLastPathComponent()    // Exports
+        .deletingLastPathComponent()    // StateUIGTKDriver
+        .deletingLastPathComponent()    // Sources
         .deletingLastPathComponent()    // StateUI.GTK
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository

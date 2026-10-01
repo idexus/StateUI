@@ -31,11 +31,11 @@ enum GTKTestHost {
         return application.of(GtkApplication.self)
     }()
 
-    /// Tests/Resources/Images, beside this file's folder.
+    /// The package's Tests/Resources/Images.
     static let pictures: String = {
         var path = #filePath
-        for _ in 0..<2 { path = String(path[..<(path.lastIndex(of: "/") ?? path.endIndex)]) }
-        return path + "/Resources/Images"
+        for _ in 0..<4 { path = String(path[..<(path.lastIndex(of: "/") ?? path.endIndex)]) }
+        return path + "/Tests/Resources/Images"
     }()
 
     /// The window a bare host's root stands in, made once.
