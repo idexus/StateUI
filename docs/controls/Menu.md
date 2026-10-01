@@ -4,6 +4,20 @@
 
 A menu: a caption and the entries it opens - on the menu bar, or one level down inside another menu.
 
+```swift
+@State var order = "Name"
+
+Label("Sorted by \(order)")
+    .menuBar {
+        Menu("View") {
+            Menu("Sort by") {
+                MenuItem("Name").onClicked { order = "Name" }
+                MenuItem("Date").onClicked { order = "Date" }
+            }
+        }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

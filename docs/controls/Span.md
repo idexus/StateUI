@@ -4,6 +4,16 @@
 
 One run of text inside a label, with its own colour, size and weight.
 
+```swift
+Label()
+    .spans {
+        TextSpan("Sold out")
+            .textColor(.firebrick)
+            .background(.yellow)
+        TextSpan(" until Monday")
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)

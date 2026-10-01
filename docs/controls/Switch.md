@@ -4,6 +4,13 @@
 
 An on/off toggle.
 
+```swift
+@State var soundOn = true
+
+Switch($soundOn)
+    .tint(.green)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)

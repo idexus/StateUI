@@ -4,6 +4,16 @@
 
 A line between entries, grouping the ones above it apart from the ones below.
 
+```swift
+Label("Report.pdf")
+    .contextMenu {
+        MenuItem("Open")
+        MenuItem("Rename")
+        MenuSeparator()
+        MenuItem("Delete").isDestructive(true)
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

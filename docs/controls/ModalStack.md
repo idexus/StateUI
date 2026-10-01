@@ -4,6 +4,20 @@
 
 An arrangement presenting pages over the page it holds: its first child is that page, the others the sheets over it, the last on top.
 
+```swift
+struct MainWindow: Window {
+    @State private var sheets: [String] = []
+
+    var page: any Page {
+        ModalStack($sheets) {
+            Button("Settings").onClicked { sheets.append("Settings") }
+        } destination: { sheet in
+            Button("Close \(sheet)").onClicked { sheets.removeLast() }
+        }
+    }
+}
+```
+
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md)

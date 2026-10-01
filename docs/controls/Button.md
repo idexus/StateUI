@@ -4,6 +4,13 @@
 
 A button with a caption, and a handler for the press.
 
+```swift
+@State var count = 0
+
+Button("Pressed \(count) times")
+    .onClicked { count += 1 }
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md)

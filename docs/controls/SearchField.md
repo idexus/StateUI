@@ -4,6 +4,16 @@
 
 A text field for what to search for, shown as the platform's search field.
 
+```swift
+@State var query = ""
+
+SearchField($query)
+    .placeholder("Search notes")
+    .onSubmitted {
+        if query.isEmpty { query = "All notes" }
+    }
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [InputView](tiers/InputView.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md)

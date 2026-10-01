@@ -4,6 +4,12 @@
 
 An open outline through a list of points - a chart line, a signature, a zigzag.
 
+```swift
+Polyline([Point(0, 30), Point(20, 5), Point(40, 25), Point(60, 0)])
+    .stroke(.cornflowerBlue)
+    .strokeWidth(2)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

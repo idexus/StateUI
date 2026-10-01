@@ -4,6 +4,11 @@
 
 A closed outline through a list of points.
 
+```swift
+Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
+    .fill(.steelBlue)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

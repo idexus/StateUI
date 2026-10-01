@@ -4,6 +4,12 @@
 
 How a picture fills the room it was given.
 
+```swift
+Button(icon: "trash.png")
+    .aspect(.fit)
+    .accessibilityLabel("Delete")
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [Image](../Image.md)

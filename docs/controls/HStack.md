@@ -4,6 +4,14 @@
 
 Stacks its children left to right, each as wide as it asks to be.
 
+```swift
+HStack {
+    Image("home.png")
+    Label("Home")
+}
+.spacing(8)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

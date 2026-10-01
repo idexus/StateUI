@@ -4,6 +4,17 @@
 
 One entry in a menu.
 
+```swift
+@State var archived = false
+
+Label("Report.pdf")
+    .contextMenu {
+        MenuItem(archived ? "Unarchive" : "Archive")
+            .icon("archive.png")
+            .onClicked { archived.toggle() }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)

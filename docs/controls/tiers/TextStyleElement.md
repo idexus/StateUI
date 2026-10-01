@@ -4,6 +4,12 @@
 
 How text looks wherever it is drawn: its colour and the space between its letters.
 
+```swift
+Label("Overdue")
+    .textColor(.firebrick)
+    .characterSpacing(1.5)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Label](../Label.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md)

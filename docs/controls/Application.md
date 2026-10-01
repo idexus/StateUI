@@ -4,6 +4,19 @@
 
 The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the clock and the time zone, the screen reader, what is kept.
 
+```swift
+struct NotesApp: Application {
+    var scene: any Scene { NotesWindow() }
+}
+
+struct NotesWindow: Window {
+    var page: any Page {
+        Button("About")
+            .onClicked { try await Dialogs.alert("Notes", message: "Version 1.0") }
+    }
+}
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

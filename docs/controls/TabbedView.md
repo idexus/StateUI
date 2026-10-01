@@ -4,6 +4,22 @@
 
 A page showing several pages, one at a time, with a bar to choose between them.
 
+```swift
+struct Tab: ContentView {
+    let name: String
+    @Environment private var page: PageSession
+
+    var content: some View {
+        Label("Nothing in \(name)").onCreated { page.title = name }
+    }
+}
+
+@State var shown = "Today"
+
+TabbedView(["Today", "Archive"]) { name in Tab(name: name) }
+    .selection($shown)
+```
+
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)

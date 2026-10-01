@@ -4,6 +4,14 @@
 
 A value picked by dragging a thumb along a native track.
 
+```swift
+@State var volume = 50.0
+
+Slider($volume)
+    .minimum(0)
+    .maximum(100)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)

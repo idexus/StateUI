@@ -4,6 +4,20 @@
 
 A page holding a native stack of pages, with a bar and a back affordance.
 
+```swift
+struct MainWindow: Window {
+    @State private var path: [Int] = []
+
+    var page: any Page {
+        NavigationStack($path) {
+            Button("Open note 1").onClicked { path.append(1) }
+        } destination: { note in
+            Label("Note \(note)")
+        }
+    }
+}
+```
+
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)

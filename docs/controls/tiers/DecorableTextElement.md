@@ -4,6 +4,11 @@
 
 The lines drawn through or under text.
 
+```swift
+Label("Was 20, now 15")
+    .textDecorations(.strikethrough)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Label](../Label.md) · [Span](../Span.md)

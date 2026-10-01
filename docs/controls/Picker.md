@@ -4,6 +4,14 @@
 
 One choice out of a list.
 
+```swift
+@State var size = 1
+
+Picker(["Small", "Medium", "Large"])
+    .selectedIndex($size)
+    .title("Size")
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md)

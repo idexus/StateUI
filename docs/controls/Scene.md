@@ -4,6 +4,27 @@
 
 One session of the application: its main window, the windows it opens beside it, and the state they share.
 
+```swift
+extension WindowType {
+    static let inspector = WindowType("notes.inspector")
+}
+
+struct NoteWindow: Window {
+    let title: String
+    var page: any Page { Label(title) }
+}
+
+struct NotesScene: Scene {
+    var windows: Windows {
+        Windows {
+            WindowGroup(.inspector) { NoteWindow(title: "Inspector") }
+        } main: {
+            NoteWindow(title: "Notes")
+        }
+    }
+}
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

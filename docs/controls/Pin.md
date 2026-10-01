@@ -4,6 +4,18 @@
 
 A pin on the map.
 
+```swift
+@State var chosen = ""
+
+Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+    .pins {
+        Pin("Royal Castle")
+            .address("Plac Zamkowy 4")
+            .location(latitude: 52.2479, longitude: 21.0155)
+            .onPinClicked { chosen = "castle" }
+    }
+```
+
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
 Inherits nothing: every member below is its own.

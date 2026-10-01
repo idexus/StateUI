@@ -4,6 +4,22 @@
 
 Arranges its children in rows and columns.
 
+```swift
+@State var name = ""
+
+Grid {
+    Label("Name")
+    TextField($name)
+        .gridColumn(1)
+    Button("Save")
+        .gridRow(1)
+        .gridColumnSpan(2)
+}
+.rows(.auto, .auto)
+.columns(.auto, .fill)
+.columnSpacing(12)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

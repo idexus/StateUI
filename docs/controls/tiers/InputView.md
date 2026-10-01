@@ -4,6 +4,15 @@
 
 What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 
+```swift
+@State var email = ""
+
+TextField($email)
+    .placeholder("name@example.com")
+    .inputPurpose(.email)
+    .maximumLength(80)
+```
+
 Wears: [View](View.md)
 
 Worn by: [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)

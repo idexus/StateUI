@@ -4,6 +4,12 @@
 
 Whatever an outline can be, written in SVG path syntax.
 
+```swift
+Path("M 0,40 L 20,0 L 40,40 Z")
+    .fill(.gold)
+    .aspect(.fit)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

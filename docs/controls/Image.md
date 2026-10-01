@@ -4,6 +4,13 @@
 
 A picture from the application's resources.
 
+```swift
+Image("avatar.png")
+    .aspect(.fill)
+    .width(64)
+    .height(64)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [ImageElement](tiers/ImageElement.md)

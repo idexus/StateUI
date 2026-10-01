@@ -4,6 +4,13 @@
 
 A time of day, chosen from the platform's own clock.
 
+```swift
+@State var alarm = ClockTime(hour: 7, minute: 0)
+
+TimePicker($alarm)
+    .format("t")
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md)

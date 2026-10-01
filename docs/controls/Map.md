@@ -4,6 +4,14 @@
 
 A map of the world, with pins on it.
 
+```swift
+@State var tapped = "nowhere yet"
+
+Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+    .mapType(.hybrid)
+    .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
+```
+
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

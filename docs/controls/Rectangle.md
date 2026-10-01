@@ -4,6 +4,13 @@
 
 A rectangle, drawn as a shape - with square corners, or rounded ones.
 
+```swift
+Rectangle()
+    .fill(.cornflowerBlue)
+    .cornerRadius(8)
+    .height(60)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

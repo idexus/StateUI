@@ -4,6 +4,14 @@
 
 A text field of several lines.
 
+```swift
+@State var notes = ""
+
+TextEditor($notes)
+    .placeholder("Anything worth remembering")
+    .growsWithText(true)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [InputView](tiers/InputView.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md)

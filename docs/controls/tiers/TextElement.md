@@ -4,6 +4,11 @@
 
 What every element showing words has: the words, and the case they are drawn in.
 
+```swift
+Button("Continue")
+    .textCase(.uppercase)
+```
+
 Wears: [TextStyleElement](TextStyleElement.md)
 
 Worn by: [Button](../Button.md) · [Label](../Label.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)

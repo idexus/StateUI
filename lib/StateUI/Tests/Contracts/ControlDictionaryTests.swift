@@ -66,6 +66,21 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
+    /// Every element and every tier has one example to open its page, and an example belongs to a contract that
+    /// has a page: a contract with none or two, or an example with no page, fails here.
+    func testEveryContractHasOneExample() {
+        let library = LibraryContracts.all.map(ObjectIdentifier.init)
+        let examples = ControlDictionary.examples.map { ObjectIdentifier($0.contract) }
+
+        for contract in LibraryContracts.all {
+            let count = examples.filter { $0 == ObjectIdentifier(contract) }.count
+            XCTAssertEqual(count, 1, "\(contract.name) has \(count) examples in ControlDictionaryExamples.swift")
+        }
+        for (contract, _) in ControlDictionary.examples where !library.contains(ObjectIdentifier(contract)) {
+            XCTFail("\(contract.name) has an example in ControlDictionaryExamples.swift, and no page")
+        }
+    }
+
     /// The index and the platform contract carry the rendered tables, each
     /// between its markers.
     func testTheIndexAndThePlatformContractCarryTheRenderedTables() throws {

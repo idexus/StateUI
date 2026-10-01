@@ -4,6 +4,18 @@
 
 The menu a view offers where the user asks for one - a secondary click, a long press.
 
+```swift
+@State var title = "Groceries"
+
+Label(title)
+    .contextMenu {
+        MenuItem("Rename").onClicked { title = "Shopping" }
+        MenuItem("Clear")
+            .isDestructive(true)
+            .onClicked { title = "" }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

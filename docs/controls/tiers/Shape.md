@@ -4,6 +4,15 @@
 
 What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
 
+```swift
+Rectangle()
+    .fill(.gold)
+    .stroke(.black)
+    .strokeWidth(2)
+    .strokeDashPattern([4, 2])
+    .height(40)
+```
+
 Wears: [View](View.md)
 
 Worn by: [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)

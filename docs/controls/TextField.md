@@ -4,6 +4,16 @@
 
 A native single-line text field.
 
+```swift
+@State var name = ""
+@State var greeting = ""
+
+TextField($name)
+    .placeholder("Your name")
+    .showsClearButton(true)
+    .onSubmitted { greeting = "Hello, \(name)" }
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [InputView](tiers/InputView.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md)

@@ -4,6 +4,20 @@
 
 A page holding two: a sidebar at the side and the page beside it.
 
+```swift
+struct MainWindow: Window {
+    @State private var showsFolders = true
+
+    var page: any Page {
+        SplitView($showsFolders) {
+            Label("Folders")
+        } detail: {
+            Label("Notes")
+        }
+    }
+}
+```
+
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)

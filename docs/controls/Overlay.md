@@ -4,6 +4,19 @@
 
 A view shown above a window's page, over everything else it holds.
 
+```swift
+@State var offline = true
+
+Switch($offline)
+    .overlays {
+        if offline {
+            Label("Working offline")
+                .horizontalAlignment(.center)
+                .verticalAlignment(.start)
+        }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

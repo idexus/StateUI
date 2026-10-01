@@ -4,6 +4,14 @@
 
 A straight line between two points, in device units from the top left of the space the line is given.
 
+```swift
+Line()
+    .x1(0).y1(0)
+    .x2(240).y2(0)
+    .stroke(.lightGray)
+    .strokeWidth(1)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

@@ -4,6 +4,18 @@
 
 The menus a page or an arrangement declares for the menu bar, joining the menus of the same id declared around it.
 
+```swift
+@State var saved = false
+
+Label(saved ? "Saved" : "Not saved")
+    .menuBar {
+        Menu("File") {
+            MenuItem("Save").onClicked { saved = true }
+        }
+        .id(StandardMenu.file)
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

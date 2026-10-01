@@ -4,6 +4,19 @@
 
 A scrollable container.
 
+```swift
+@State var offset = Point.zero
+
+ScrollView {
+    VStack {
+        ForEach(1...100) { row in
+            Label("Row \(row)")
+        }
+    }
+}
+.scrollOffset($offset)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

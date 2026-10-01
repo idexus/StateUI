@@ -4,6 +4,12 @@
 
 The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
+```swift
+Label("Total")
+    .fontSize(20)
+    .fontAttributes(.bold)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Label](../Label.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md)

@@ -4,6 +4,21 @@
 
 A group of actions a page or an arrangement declares for its bar: one shared background where the platform draws one, joined by the groups of the same id declared further in.
 
+```swift
+@State var edited = false
+
+TextEditor()
+    .onTextChanged { _ in edited = true }
+    .toolbar(.leading) {
+        ToolbarItem("New")
+    }
+    .toolbar {
+        ToolbarItem("Save")
+            .isEnabled(edited)
+            .onClicked { edited = false }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

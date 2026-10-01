@@ -4,6 +4,15 @@
 
 The runs a label is made of, in order.
 
+```swift
+Label()
+    .spans {
+        TextSpan("let ").textColor(.purple)
+        TextSpan("count").fontAttributes(.bold)
+        TextSpan(" = 0")
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

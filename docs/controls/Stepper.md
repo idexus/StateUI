@@ -4,6 +4,15 @@
 
 A number changed one step at a time, by two buttons.
 
+```swift
+@State var servings = 4.0
+
+Stepper($servings)
+    .minimum(1)
+    .maximum(12)
+    .step(1)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

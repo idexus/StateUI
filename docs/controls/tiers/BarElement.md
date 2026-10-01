@@ -4,6 +4,23 @@
 
 What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
 
+```swift
+struct MainWindow: Window {
+    @State private var path: [Int] = []
+
+    var page: any Page {
+        NavigationStack($path) {
+            Label("Inbox")
+        } destination: { message in
+            Label("Message \(message)")
+        }
+        .barTitle("Mail")
+        .barBackgroundColor(.cornflowerBlue)
+        .barForegroundColor(.white)
+    }
+}
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabbedView](../TabbedView.md)

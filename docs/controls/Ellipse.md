@@ -4,6 +4,13 @@
 
 An oval filling the room it is given - a circle when that room is square.
 
+```swift
+Ellipse()
+    .fill(.tomato)
+    .width(48)
+    .height(48)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Shape](tiers/Shape.md)

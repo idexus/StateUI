@@ -4,6 +4,15 @@
 
 What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 
+```swift
+VStack {
+    Label("Edge to edge")
+}
+.background(.steelBlue)
+.avoidsSafeArea(.none)
+.clipsContent(true)
+```
+
 Wears: [View](View.md) · [PaddingElement](PaddingElement.md) · [BorderElement](BorderElement.md)
 
 Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)

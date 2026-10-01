@@ -4,6 +4,16 @@
 
 What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
+```swift
+@State var busy = false
+
+Button("Send")
+    .isEnabled(!busy)
+    .opacity(busy ? 0.5 : 1)
+    .width(120)
+    .accessibilityHint("Sends the message")
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [ColorBox](../ColorBox.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Label](../Label.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [PositionIndicator](../PositionIndicator.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)

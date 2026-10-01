@@ -4,6 +4,17 @@
 
 What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
 
+```swift
+VStack {
+    Label("Cheese")
+    Label("Aged twelve months")
+}
+.padding(14)
+.shape(.roundedRectangle(8))
+.stroke(.lightGray)
+.strokeWidth(1)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)

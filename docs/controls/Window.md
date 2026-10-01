@@ -4,6 +4,24 @@
 
 A window onto a page.
 
+```swift
+struct MainWindow: Window {
+    var page: any Page { MainPage() }
+}
+
+struct MainPage: ContentView {
+    @Environment private var window: WindowSession
+
+    var content: some View {
+        Label("Hello")
+            .onCreated {
+                window.title = "Notes"
+                window.minimumWidth = 480
+            }
+    }
+}
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

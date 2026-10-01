@@ -4,6 +4,18 @@
 
 What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
 
+```swift
+@State var saved = false
+
+Label(saved ? "Saved" : "Draft")
+    .toolbar {
+        ToolbarItem("Save")
+            .icon("save.png")
+            .isEnabled(!saved)
+            .onClicked { saved = true }
+    }
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)

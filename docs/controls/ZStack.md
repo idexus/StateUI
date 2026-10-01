@@ -4,6 +4,16 @@
 
 Lays its children one over another, each in the whole room or in the area it names.
 
+```swift
+ZStack {
+    ColorBox(.cornflowerBlue)
+    Label("Bottom right")
+        .horizontalAlignment(.end)
+        .verticalAlignment(.end)
+}
+.height(160)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

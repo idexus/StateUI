@@ -4,6 +4,13 @@
 
 A control's one accent colour.
 
+```swift
+@State var on = true
+
+Switch($on)
+    .tint(.green)
+```
+
 Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [ActivityIndicator](../ActivityIndicator.md) · [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Switch](../Switch.md)

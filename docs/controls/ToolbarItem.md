@@ -4,6 +4,22 @@
 
 An action in the page's native navigation or toolbar surface.
 
+```swift
+@State var count = 0
+
+Label("\(count) items")
+    .toolbar {
+        ToolbarItem("Add")
+            .icon("add.png")
+            .showsText(true)
+            .onClicked { count += 1 }
+        ToolbarItem("Clear")
+            .placement(.overflow)
+            .isDestructive(true)
+            .onClicked { count = 0 }
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)

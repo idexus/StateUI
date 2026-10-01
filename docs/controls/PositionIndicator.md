@@ -4,6 +4,15 @@
 
 The row of dots under a run of cards, saying how many there are and which one is showing.
 
+```swift
+@State var shown = 0
+
+PositionIndicator()
+    .count(5)
+    .position(shown)
+    .selectedIndicatorColor(.cornflowerBlue)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

@@ -4,6 +4,15 @@
 
 Stacks its children top to bottom, each as tall as it asks to be.
 
+```swift
+VStack {
+    Label("One")
+    Label("Two")
+}
+.spacing(12)
+.padding(24)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [Layout](tiers/Layout.md) · [StackBase](tiers/StackBase.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

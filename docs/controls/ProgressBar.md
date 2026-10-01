@@ -4,6 +4,13 @@
 
 How far along something is, from 0 to 1.
 
+```swift
+@State var done = 0.4
+
+ProgressBar(done)
+    .tint(.firebrick)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)

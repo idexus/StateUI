@@ -4,6 +4,15 @@
 
 The view a page shows in its bar in place of its title.
 
+```swift
+@State var query = ""
+
+Label("Results for \(query)")
+    .titleView {
+        SearchField($query).placeholder("Search")
+    }
+```
+
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.

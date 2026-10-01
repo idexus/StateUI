@@ -4,6 +4,13 @@
 
 The spinner shown while something is happening that has no measurable length.
 
+```swift
+@State var loading = true
+
+ActivityIndicator(loading)
+    .tint(.firebrick)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)

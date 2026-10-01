@@ -4,6 +4,21 @@
 
 One choice out of several, where picking one clears the rest.
 
+```swift
+@State var size = "Medium"
+
+VStack {
+    ForEach(["Small", "Medium", "Large"]) { option in
+        RadioButton(option)
+            .groupName("size")
+            .isOn(option == size)
+            .onToggled { checked in
+                if checked { size = option }
+            }
+    }
+}
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)

@@ -4,6 +4,22 @@
 
 A view showing web content - a page fetched by URL, or HTML written here.
 
+```swift
+@Aim(WebView.self) var browser
+@State var canGoBack = false
+
+Grid {
+    Button("Back")
+        .isEnabled(canGoBack)
+        .onClicked { try await browser.goBack() }
+    WebView("https://example.com")
+        .canGoBack($canGoBack)
+        .aim(browser)
+        .gridRow(1)
+}
+.rows(.auto, .fill)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

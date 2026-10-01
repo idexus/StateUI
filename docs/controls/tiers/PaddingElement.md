@@ -4,6 +4,11 @@
 
 The space kept inside an element, around what it holds.
 
+```swift
+Button("Save")
+    .padding(18, 10)
+```
+
 Wears: [VisualElement](VisualElement.md)
 
 Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Label](../Label.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)

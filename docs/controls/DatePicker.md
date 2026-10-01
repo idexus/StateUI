@@ -4,6 +4,14 @@
 
 A day, chosen from the platform's own calendar.
 
+```swift
+@State var birthday = CalendarDate(year: 1990, month: 6, day: 1)
+
+DatePicker($birthday)
+    .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
+    .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md)

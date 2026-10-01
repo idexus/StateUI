@@ -4,6 +4,16 @@
 
 A box that is ticked or not.
 
+```swift
+@State var agreed = false
+
+HStack {
+    CheckBox($agreed)
+    Label("I agree to the terms")
+}
+.spacing(8)
+```
+
 Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TintElement](tiers/TintElement.md)

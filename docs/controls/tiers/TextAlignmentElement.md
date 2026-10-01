@@ -4,6 +4,13 @@
 
 Where text sits inside the space its own element was given.
 
+```swift
+Label("In the middle")
+    .horizontalTextAlignment(.center)
+    .verticalTextAlignment(.center)
+    .height(80)
+```
+
 Wears: [VisualElement](VisualElement.md)
 
 Worn by: [Label](../Label.md) · [Picker](../Picker.md) · [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)

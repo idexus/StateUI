@@ -10,6 +10,7 @@ declarations, so the handbook cannot drift from the code.
 ```text
   an element contract
       first paragraph of its doc  ------------->  the opening of its page
+      its example  ---------------------------->  a Swift block under that paragraph
       layer  ---------------------------------->  the "Layer:" line; the meaning comes
                                                   from ElementLayer's case docs
       tiers, as worn  ------------------------->  "Inherits:", and a table per tier
@@ -20,6 +21,7 @@ declarations, so the handbook cannot drift from the code.
                                                   there, why a mark is empty
   a tier contract
       first paragraph  ------------------------>  the tier's page
+      its example  ---------------------------->  a Swift block under that paragraph
       first sentence  ------------------------->  the tier list, and the line over the
                                                   tier's table on every element page
   each host's written declaration + its export  ->  the marks and their notes
@@ -39,8 +41,35 @@ opens the element's page, and a tier's first sentence stands alone in the
 tier list and above the tier's table on every element page that wears it.
 So a contract's first paragraph says what the element is, in plain words, to
 someone reading the dictionary: no example, no reference, and a first
-sentence that stands on its own. Detail and examples belong to the view's
-own documentation.
+sentence that stands on its own. Detail belongs to the view's own
+documentation, and the page's example to the dictionary (Examples).
+
+## Examples
+
+Every page shows its contract in use right under its first paragraph: a
+short Swift block, before the hosts and the members. An element's example
+declares it as an application does - a control with its purpose value and a
+modifier or two, a structure part through the modifier or the arrangement
+that declares it (`.toolbar { }`, `.overlays { }`, `ModalStack`); a tier's
+example writes its members on one of the elements wearing it.
+
+The examples are written once, in the dictionary's own source,
+`ControlDictionaryExamples.swift` beside `ControlDictionary.swift` in the
+core's tests: one entry per contract, keyed by the contract type, so an
+example of a contract that is gone does not compile.
+`ControlDictionaryTests` refuses a contract with no example or with two, and
+an example of a contract with no page. The renderer copies each into its
+page, and the Gallery's `DocumentationExamplesTests` compiles each block of
+the pages as it compiles every block of the handbook - against the public
+module, `import StateUI`, as an application is compiled. The core's own
+tests import the library `@testable`, where an internal member compiles
+too, so the examples are held as text there and proved where the handbook
+is.
+
+An example is self-contained: it declares the state it reads, as a
+function body - `@State var count = 0` beside the control - or as the types
+of a small application where its contract is one (`Application`, `Scene`,
+`Window`, an arrangement).
 
 ## Marks
 
@@ -149,6 +178,6 @@ case judges stays empty with why.
 pages and the matrix's blocks again. Without the variable, the suite refuses
 a document that differs from what the contracts render, a line that is no
 verdict, and a verdict on what no contract of its element declares. A change
-to a contract's first paragraph, a member or a layer is committed together
+to a contract's first paragraph, its example, a member or a layer is committed together
 with the pages it renders; a host's verdicts are written again through that
 host's own suite, with `STATEUI_UPDATE_EXPORTS=1`, and the pages after them.

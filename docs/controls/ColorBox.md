@@ -4,6 +4,12 @@
 
 A host-native rectangle of colour.
 
+```swift
+ColorBox(.cornflowerBlue)
+    .cornerRadius(8)
+    .height(40)
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

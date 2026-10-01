@@ -4,6 +4,14 @@
 
 What both stacks have: the space between their children.
 
+```swift
+HStack {
+    Button("Cancel")
+    Button("Save")
+}
+.spacing(8)
+```
+
 Wears: [Layout](Layout.md)
 
 Worn by: [HStack](../HStack.md) · [VStack](../VStack.md)

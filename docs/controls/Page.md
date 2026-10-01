@@ -4,6 +4,20 @@
 
 What a container shows as a screen: a window's page, a stack's root and destinations, a tab, either half of a split view, a sheet.
 
+```swift
+struct NotePage: ContentView {
+    @Environment private var page: PageSession
+
+    var content: some View {
+        Label("Nothing written yet.")
+            .onCreated {
+                page.title = "Note"
+                page.hasBackButton = true
+            }
+    }
+}
+```
+
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
 Inherits: [PageElement](tiers/PageElement.md)

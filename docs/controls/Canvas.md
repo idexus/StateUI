@@ -4,6 +4,17 @@
 
 A canvas to draw on, one instruction at a time.
 
+```swift
+@State var dot = Point(40, 40)
+
+Canvas {
+    Draw.fillColor(.cornflowerBlue)
+    Draw.fillEllipse(x: dot.x - 8, y: dot.y - 8, width: 16, height: 16)
+}
+.height(120)
+.onPressed { point in dot = point }
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

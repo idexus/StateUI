@@ -71,7 +71,7 @@ final class DocumentationExamplesTests: XCTestCase {
 
     func testEveryDocumentationExampleCompiles() throws {
         let documents = try Self.documents()
-        for topic in ["concepts", "interface", "internals", "hosts"] {
+        for topic in ["concepts", "interface", "internals", "hosts", "controls"] {
             XCTAssertTrue(documents.contains { $0.0.hasPrefix("docs/\(topic)/") }, "docs/\(topic) was not read")
         }
         let examples = try documents.flatMap { document, url in
@@ -157,8 +157,8 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     /// README followed by every handbook document in path order: docs and each
-    /// of its topics' folders - not the design notes or the rendered control
-    /// dictionary, which hold no application code.
+    /// of its topics' folders, the control dictionary's examples included - not
+    /// the design notes, which hold no application code.
     private static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
         let directory = repository.appendingPathComponent("docs")
@@ -169,9 +169,9 @@ final class DocumentationExamplesTests: XCTestCase {
             for name in try FileManager.default.contentsOfDirectory(atPath: url.path) {
                 let relative = folder.isEmpty ? name : "\(folder)/\(name)"
                 var isFolder: ObjCBool = false
-                FileManager.default.fileExists(atPath: url.appendingPathComponent(name).path, isDirectory: &isFolder)
-                if isFolder.boolValue {
-                    if !["design", "controls", "assets"].contains(relative) { pending.append(relative) }
+                let path = url.appendingPathComponent(name).path
+                if FileManager.default.fileExists(atPath: path, isDirectory: &isFolder), isFolder.boolValue {
+                    if !["design", "assets"].contains(relative) { pending.append(relative) }
                 } else if name.hasSuffix(".md") {
                     names.append(relative)
                 }

@@ -4,6 +4,16 @@
 
 The platform's own collection of items: StateUI says which items there are, in order, and builds the one the platform asks for; the platform scrolls them, holds each in a cell it reuses, lets the user choose and open one, and tells assistive technology about them.
 
+```swift
+@State var chosen: String? = nil
+
+ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
+    Label(fruit).padding(14, 10)
+}
+.selection($chosen)
+.onItemActivated { fruit in chosen = fruit }
+```
+
 Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)

@@ -3,7 +3,8 @@
 
 // The control dictionary - docs/controls - as the library's contracts and the
 // hosts' test runs say it is. A page per element contract and per tier,
-// rendered whole: the contract's doc, what it wears, and a row per member with
+// rendered whole: the contract's doc, its example (ControlDictionaryExamples.swift),
+// what it wears, and a row per member with
 // its kind, its value, its layer and a mark for every host. The index and the
 // platform contract are written by hand around the tables rendered here, which
 // stand between `<!-- name:begin -->` and `<!-- name:end -->`.
@@ -255,6 +256,7 @@ struct ControlDictionary {
             Self.rendered, "",
             "# \(name)", "",
             doc(of: element), "",
+        ] + Self.exampleBlock(of: element) + [
             "Layer: `\(element.layer)`. " + meaning(of: element.layer), "",
             worn.isEmpty
                 ? "Inherits nothing: every member below is its own."
@@ -303,7 +305,7 @@ struct ControlDictionary {
         let wearers = elements.filter { element in
             element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(tier) }
         }
-        var body = [Self.rendered, "", "# \(tier.name)", "", doc(of: tier), ""]
+        var body = [Self.rendered, "", "# \(tier.name)", "", doc(of: tier), ""] + Self.exampleBlock(of: tier)
 
         if !tier.tiers.isEmpty {
             body += ["Wears: " + tier.tiers.map { "[\($0.name)](\($0.name).md)" }.joined(separator: " · "), ""]
@@ -348,6 +350,11 @@ struct ControlDictionary {
         case let native? where !native.isEmpty: native
         default: "no native counterpart is named yet"
         }
+    }
+
+    /// A contract's example as a Swift block and the empty line after it; nothing where it has none.
+    static func exampleBlock(of contract: any Contract.Type) -> [String] {
+        example(of: contract).map { ["```swift", $0, "```", ""] } ?? []
     }
 
     /// A contract's doc.
