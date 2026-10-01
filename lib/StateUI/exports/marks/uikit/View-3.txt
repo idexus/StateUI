@@ -43,6 +43,7 @@ Line.dragText: not realized
 Line.dropCompleted: not realized
 Line.frameChanged: ✅
 Line.margin: ✅
+Map.pinchUpdated: not realized
 Path.panYChannel: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.tapCount: 🔌 tap on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.tapped: 🔌 tap on Picker: the view's listening handed the recognizer's states, no touch sent

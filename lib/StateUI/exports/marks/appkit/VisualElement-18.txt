@@ -13,6 +13,8 @@ Image.background: ☑️ AppKit paints a colour on this view; a brush is drawn o
 ItemsView.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Label.style: ✅
 Line.ignoresInput: ✅
+Map.isEnabled: not realized
+Map.zIndex: not realized
 Path.scaleY: 🔌 read scaleY of Path: the host's own transform, checked against the layer it composed itself
 Picker.rotationY: 🔌 read rotationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotY: 🔌 read pivotY of Polygon: the host's own transform, checked against the layer it composed itself

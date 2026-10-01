@@ -41,6 +41,7 @@ extension NodeType {
     static let itemsView = ItemsViewContract.nodeType
     static let label = LabelContract.nodeType
     static let line = LineContract.nodeType
+    static let map = MapContract.nodeType
     static let menu = MenuContract.nodeType
     static let menuBar = MenuBarContract.nodeType
     static let menuItem = MenuItemContract.nodeType
@@ -51,6 +52,7 @@ extension NodeType {
     static let overlay = OverlayContract.nodeType
     static let path = PathContract.nodeType
     static let picker = PickerContract.nodeType
+    static let pin = PinContract.nodeType
     static let polygon = PolygonContract.nodeType
     static let polyline = PolylineContract.nodeType
     static let progressBar = ProgressBarContract.nodeType
@@ -77,6 +79,7 @@ extension NodeType {
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
+    static let address = PinContract.address.token
     static let allowDrop = ViewContract.allowDrop.token
     static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
@@ -151,13 +154,20 @@ extension NodeType {
     static let isSidebarVisible = SplitViewContract.isSidebarVisible.token
     static let isReadOnly = InputViewContract.isReadOnly.token
     static let isRunning = ActivityIndicatorContract.isRunning.token
+    static let isScrollEnabled = MapContract.isScrollEnabled.token
+    static let showsUserLocation = MapContract.showsUserLocation.token
     static let isSpellCheckEnabled = InputViewContract.isSpellCheckEnabled.token
     static let isTextPredictionEnabled = InputViewContract.isTextPredictionEnabled.token
+    static let isTrafficEnabled = MapContract.isTrafficEnabled.token
     static let isVisible = VisualElementContract.isVisible.token
+    static let isZoomEnabled = MapContract.isZoomEnabled.token
     static let options = PickerContract.options.token
     static let inputPurpose = InputViewContract.inputPurpose.token
+    static let label = PinContract.label.token
     static let lineBreak = ButtonContract.lineBreak.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
+    static let location = PinContract.location.token
+    static let mapType = MapContract.mapType.token
     static let margin = ViewContract.margin.token
     static let maximum = SliderContract.maximum.token
     static let maximumDate = DatePickerContract.maximumDate.token
@@ -184,6 +194,7 @@ extension NodeType {
     static let placeholderColor = InputViewContract.placeholderColor.token
     static let points = PolygonContract.points.token
     static let progress = ProgressBarContract.progress.token
+    static let region = MapContract.region.token
     static let renderTransform = ShapeContract.renderTransform.token
     static let returnKey = SearchFieldContract.returnKey.token
     static let rotation = VisualElementContract.rotation.token
@@ -220,6 +231,7 @@ extension NodeType {
     static let title = PageElementContract.title.token
     static let translationX = VisualElementContract.translationX.token
     static let translationY = VisualElementContract.translationY.token
+    static let type = PinContract.type.token
 
     static let value = SliderContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
@@ -245,6 +257,8 @@ extension NodeType {
     static let dateChanged = DatePickerContract.dateChanged.token
     static let endReached = ItemsViewContract.endReached.token
     static let itemActivated = ItemsViewContract.itemActivated.token
+    static let pinClicked = PinContract.pinClicked.token
+    static let pinDetailsClicked = PinContract.pinDetailsClicked.token
     static let realizedChanged = ItemsViewContract.realizedChanged.token
     static let selectionChanged = ItemsViewContract.selectionChanged.token
     static let submitted = SearchFieldContract.submitted.token
@@ -264,6 +278,7 @@ extension NodeType {
     static let frameChanged = ViewContract.frameChanged.token
     static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
     static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
+    static let mapClicked = MapContract.mapClicked.token
     static let navigatedFrom = PageContract.navigatedFrom.token
     static let navigatedTo = PageContract.navigatedTo.token
     static let navigatingFrom = PageContract.navigatingFrom.token
@@ -298,6 +313,7 @@ extension NodeType {
     static let focus = VisualElementContract.focus.token
     static let scrollTo = ItemsViewContract.scrollTo.token
     static let unfocus = VisualElementContract.unfocus.token
+    static let moveToRegion = MapContract.moveToRegion.token
     static let hideOnScreenKeyboard = ApplicationContract.hideOnScreenKeyboard.token
     static let alert = ApplicationContract.alert.token
     static let confirm = ApplicationContract.confirm.token

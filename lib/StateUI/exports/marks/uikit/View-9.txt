@@ -41,6 +41,9 @@ Label.swiped: 🔌 pan on Label: the view's listening handed the recognizer's st
 Line.panTouchCount: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panUpdated: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panXChannel: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
+Map.frameChanged: not realized
+Map.gridColumnSpan: not realized
+Map.gridRowSpan: not realized
 Path.area: ✅
 Path.frameChanged: ✅
 Picker.canDrag: not realized

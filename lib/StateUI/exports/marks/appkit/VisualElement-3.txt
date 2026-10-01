@@ -14,6 +14,7 @@ Image.scaleY: 🔌 read scaleY of Image: the host's own transform, checked again
 ItemsView.rotationY: 🔌 read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.pivotY: 🔌 read pivotY of Label: the host's own transform, checked against the layer it composed itself
 Line.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
+Map.accessibilityHeadingLevel: not realized
 Path.style: ✅
 Picker.ignoresInput: ✅
 Polygon.isEnabled: not realized

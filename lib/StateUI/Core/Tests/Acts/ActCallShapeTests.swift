@@ -165,6 +165,15 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// A map slides on three numbers after the view: latitude, longitude, and
+    /// the radius in METERS.
+    func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
+        try await check("moveToRegion", [.string("map"), .number(52.2297), .number(21.0122), .number(3000)]) {
+            try await named("map", Map.self).moveToRegion(
+                latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+        }
+    }
+
     func testAskingTheTimeCrossesWithItsArgumentsInPlace() async throws {
         try await check("currentTime", []) {
             _ = try? await ClockTime.now()
@@ -245,7 +254,7 @@ final class ActCallShapeTests: XCTestCase {
             contract.members.filter { ($0 as? any DeclaredMember)?.facts.kind == .act }.map { $0.name }
         }
 
-        XCTAssertGreaterThan(acts.count, 14, "the contracts declare almost no acts")
+        XCTAssertGreaterThan(acts.count, 15, "the contracts declare almost no acts")
         XCTAssertEqual(Set(acts).subtracting(checked).sorted(), [], "an act no test here checks")
     }
 }

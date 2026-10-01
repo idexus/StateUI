@@ -23,6 +23,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testImage() { conform(ImageTests.self) }
     @MainActor func testLabel() { conform(LabelTests.self) }
     @MainActor func testLine() { conform(LineTests.self) }
+    @MainActor func testMap() { conform(MapTests.self) }
     @MainActor func testPath() { conform(PathTests.self) }
     @MainActor func testPicker() { conform(PickerTests.self) }
     @MainActor func testPolygon() { conform(PolygonTests.self) }
@@ -51,6 +52,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
     @MainActor func testPage() { conform(PageTests.self) }
+    @MainActor func testPin() { conform(PinTests.self) }
     @MainActor func testScene() { conform(SceneTests.self) }
     @MainActor func testSpan() { conform(SpanTests.self) }
     @MainActor func testSpans() { conform(SpansTests.self) }

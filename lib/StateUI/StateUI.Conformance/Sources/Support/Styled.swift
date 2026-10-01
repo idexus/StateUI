@@ -27,6 +27,7 @@ enum Styled {
             dimmed(Image.self)
             dimmed(Label.self)
             dimmed(Line.self)
+            dimmed(Map.self)
             dimmed(Path.self)
             dimmed(Picker.self)
             dimmed(Polygon.self)

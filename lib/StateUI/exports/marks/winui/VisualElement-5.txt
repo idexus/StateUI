@@ -48,6 +48,11 @@ Label.unfocus: – Label takes no keyboard focus here: it refuses it, and nothin
 Line.accessibilityHint: ✅
 Line.isVisible: ✅
 Line.rotationY: not realized
+Map.automationExcludedWithChildren: not realized
+Map.frameChanged: not realized
+Map.height: not realized
+Map.scaleY: not realized
+Map.width: not realized
 Path.frame: ✅
 Path.pivotX: ✅
 Path.zIndex: not realized

@@ -38,6 +38,9 @@ ItemsView.pinchUpdated: 🔌 pinch on ItemsView: handed to the host's recognizer
 Label.panYChannel: 🔌 pan on Label: handed to the host's recognizer or handler, no NSEvent sent
 Line.tapCount: 🔌 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.tapped: 🔌 tap on Line: handed to the host's recognizer or handler, no NSEvent sent
+Map.frameChanged: not realized
+Map.gridColumn: not realized
+Map.gridRow: not realized
 Path.allowDrop: not realized
 Path.dragLeave: not realized
 Path.dragOver: not realized

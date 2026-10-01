@@ -42,6 +42,7 @@ Label.dropCompleted: not realized
 Label.frameChanged: ✅
 Label.margin: ✅
 Line.pinchUpdated: 🔌 pinch on Line: the view's listening handed the recognizer's states, no touch sent
+Map.panYChannel: not realized
 Path.tapCount: 🔌 tap on Path: the view's listening handed the recognizer's states, no touch sent
 Path.tapped: 🔌 tap on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.frameChanged: ✅

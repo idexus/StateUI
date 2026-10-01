@@ -159,21 +159,9 @@ final class AppKitInteropTests: XCTestCase {
 
         XCTAssertTrue(HostBoundary.realizes(LabelContract.self))
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
-        XCTAssertFalse(HostBoundary.realizes(DialContract.self))
+        XCTAssertFalse(HostBoundary.realizes(MapContract.self))
         XCTAssertNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.spoke.name))
         XCTAssertNotNil(HostRealizations.unraised(owner: InteropTestContract.name, event: InteropTestContract.unheard.name))
     }
-}
-
-/// An element no registration answers - a component's, whose backend the application did not register.
-private enum DialContract: ElementContract {
-    static let nodeType: NodeType = "Dial"
-    static let layer: ElementLayer = .provider
-    static let tiers: [any Contract.Type] = [ViewContract.self]
-    static let members: [any ContractMember] = []
-}
-
-private struct Dial: View {
-    var node = Node(contract: DialContract.self)
 }
 #endif

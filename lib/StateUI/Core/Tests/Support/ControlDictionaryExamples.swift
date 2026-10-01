@@ -145,6 +145,14 @@ extension ControlDictionary {
                 .strokeWidth(1)
             """#),
 
+        (MapContract.self, #"""
+            @State var tapped = "nowhere yet"
+
+            Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+                .mapType(.hybrid)
+                .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
+            """#),
+
         (MenuContract.self, #"""
             @State var order = "Name"
 
@@ -259,6 +267,18 @@ extension ControlDictionary {
             Picker(["Small", "Medium", "Large"])
                 .selectedIndex($size)
                 .title("Size")
+            """#),
+
+        (PinContract.self, #"""
+            @State var chosen = ""
+
+            Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+                .pins {
+                    Pin("Royal Castle")
+                        .address("Plac Zamkowy 4")
+                        .location(latitude: 52.2479, longitude: 21.0155)
+                        .onPinClicked { chosen = "castle" }
+                }
             """#),
 
         (PolygonContract.self, #"""

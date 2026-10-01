@@ -54,7 +54,7 @@ test of the direction could tell from a real one.
 Some modifiers write a child rather than a property: `.contextMenu` appends a
 context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
 title place, `.overlays` the views laid over the window, `.visualState`
-appends states and a component's `Map.pins` writes pins. On an arrangement the child follows its
+appends states and `Map.pins` writes pins. On an arrangement the child follows its
 pages, and the host keeps it apart from them.
 They sit after whatever the view lays out, so the view's own children keep the
 positions the differ gave them, and the host finds each by type and leaves it

@@ -43,6 +43,9 @@ Label.pointerReleased: 🔌 hover on Label: the view's listening handed the reco
 Line.swipeDirection: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.swipeThreshold: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.swiped: 🔌 pan on Line: the view's listening handed the recognizer's states, no touch sent
+Map.panTouchCount: not realized
+Map.panUpdated: not realized
+Map.panXChannel: not realized
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅

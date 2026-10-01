@@ -32,7 +32,7 @@ final class DesignNotesTests: XCTestCase {
 
     /// Every component's part is held, so a new one keeps the rule from its first source.
     func testEveryComponentsSourcesAreHeld() {
-        XCTAssertTrue(Self.held.contains("lib/Controls/Map/Core/Sources"))
+        XCTAssertTrue(Self.held.contains("lib/Controls/WebView/Core/Sources"))
         XCTAssertTrue(Self.held.contains("lib/Controls/WebView/WebView.GTK/Sources"))
         XCTAssertTrue(Self.held.contains("lib/Controls/WebView/WebView.Conformance/Sources"))
     }

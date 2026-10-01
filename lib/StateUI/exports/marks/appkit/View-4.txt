@@ -45,6 +45,11 @@ Line.drop: not realized
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.verticalAlignment: ✅
+Map.pointerEntered: not realized
+Map.pointerExited: not realized
+Map.pointerMoved: not realized
+Map.pointerPressed: not realized
+Map.pointerReleased: not realized
 Path.swipeDirection: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swipeThreshold: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swiped: 🔌 pan on Path: handed to the host's recognizer or handler, no NSEvent sent

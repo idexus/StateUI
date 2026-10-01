@@ -45,6 +45,11 @@ Line.drop: not realized
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.verticalAlignment: ✅
+Map.pointerEntered: not realized
+Map.pointerExited: not realized
+Map.pointerMoved: not realized
+Map.pointerPressed: not realized
+Map.pointerReleased: not realized
 Path.swipeDirection: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swipeThreshold: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swiped: 🔌 pan on Path: the view's listening handed the recognizer's states, no touch sent

@@ -193,6 +193,8 @@ enum PatchDump {
             return spelled(member, as: Aspect.self)
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
+        case Prop.type.name:
+            return spelled(member, as: PinType.self)
         case Prop.avoidsSafeArea.name:
             return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
@@ -221,6 +223,8 @@ enum PatchDump {
             return spelled(member, as: LineJoin.self)
         case Prop.fillRule.name:
             return spelled(member, as: FillRule.self)
+        case Prop.mapType.name:
+            return spelled(member, as: MapType.self)
 
         // The bit sets: an OptionSet's members are static properties nothing
         // can enumerate, so their names are written out here.

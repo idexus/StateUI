@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import StateUI
-
 /// A map of the world, with pins on it.
 public enum MapContract: ElementContract {
     /// The node type the contract declares.

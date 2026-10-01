@@ -48,6 +48,9 @@ Line.focus: – Line takes no keyboard focus here: it refuses it, and nothing is
 Line.isFocusedChanged: – Line takes no keyboard focus here: it refuses it, and nothing is heard
 Line.pivotY: ✅
 Line.unfocus: – Line takes no keyboard focus here: it refuses it, and nothing is heard
+Map.accessibilityHint: not realized
+Map.isVisible: not realized
+Map.rotationY: not realized
 Path.automationExcludedWithChildren: ✅
 Path.frameChanged: ✅
 Path.height: ✅

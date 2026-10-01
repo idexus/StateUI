@@ -208,6 +208,14 @@ final class HostContractTests: XCTestCase {
         XCTAssertNil(Self.layer(of: NodeType("Composed")), "the differ's placeholder has a contract again")
     }
 
+    func testProviderSurfaceDoesNotBecomeABaseHostRequirement() {
+        XCTAssertEqual(Self.layer(of: NodeType.map), .provider)
+        XCTAssertEqual(Self.layer(of: NodeType.pin), .provider)
+        XCTAssertEqual(Self.layer(of: Prop.mapType), .provider)
+        XCTAssertEqual(Self.layer(of: Prop.region), .provider)
+        XCTAssertEqual(Self.layer(of: Event.mapClicked), .provider)
+    }
+
     func testPlatformContractNamesEveryBuiltInTokenAndTargetHost() throws {
         let document = try String(
             contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"),
@@ -438,7 +446,7 @@ final class HostContractTests: XCTestCase {
 
         XCTAssertTrue(properties.isSuperset(of: [
             "step", "options", "isAnimating", "rows", "columns",
-            "area", "placement", "isOn",
+            "area", "showsUserLocation", "placement", "isOn",
         ]))
         XCTAssertTrue(
             properties.isDisjoint(with: former),
@@ -656,7 +664,9 @@ final class HostContractTests: XCTestCase {
         let events = declaredNames(of: "Event", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
-        XCTAssertTrue(events.isSuperset(of: ["dateChanged", "timeChanged"]))
+        XCTAssertTrue(events.isSuperset(of: [
+            "dateChanged", "timeChanged", "pinClicked", "pinDetailsClicked",
+        ]))
         XCTAssertTrue(
             events.isDisjoint(with: [
                 "dateSelected", "timeSelected", "refreshing", "markerClicked", "infoWindowClicked",

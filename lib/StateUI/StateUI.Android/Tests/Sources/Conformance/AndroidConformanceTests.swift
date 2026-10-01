@@ -25,6 +25,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testImage", testImage),
             ("testLabel", testLabel),
             ("testLine", testLine),
+            ("testMap", testMap),
             ("testPath", testPath),
             ("testPicker", testPicker),
             ("testPolygon", testPolygon),
@@ -53,6 +54,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
             ("testPage", testPage),
+            ("testPin", testPin),
             ("testScene", testScene),
             ("testSpan", testSpan),
             ("testSpans", testSpans),
@@ -97,6 +99,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testImage() throws { try conform(ImageTests.self) }
     func testLabel() throws { try conform(LabelTests.self) }
     func testLine() throws { try conform(LineTests.self) }
+    func testMap() throws { try conform(MapTests.self) }
     func testPath() throws { try conform(PathTests.self) }
     func testPicker() throws { try conform(PickerTests.self) }
     func testPolygon() throws { try conform(PolygonTests.self) }
@@ -125,6 +128,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
     func testPage() throws { try conform(PageTests.self) }
+    func testPin() throws { try conform(PinTests.self) }
     func testScene() throws { try conform(SceneTests.self) }
     func testSpan() throws { try conform(SpanTests.self) }
     func testSpans() throws { try conform(SpansTests.self) }

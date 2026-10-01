@@ -9,7 +9,9 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: Set<String> = []
+    static let unrealized: Set<String> = [
+        "Map", "Pin",
+    ]
 
     /// The entries this host presents with no view of their own - a span is a run of its label's words - so no
     /// tier's record reaches them: only a member the entry's own records name is realized.

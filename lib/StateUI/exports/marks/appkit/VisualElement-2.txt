@@ -20,6 +20,7 @@ Image.scaleX: 🔌 read scaleX of Image: the host's own transform, checked again
 ItemsView.rotationX: 🔌 read rotationX of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.pivotX: 🔌 read pivotX of Label: the host's own transform, checked against the layer it composed itself
 Line.automationExcludedWithChildren: ✅
+Map.accessibilityHint: not realized
 Path.focus: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.isFocusedChanged: – Path takes no keyboard focus here: it refuses it, and nothing is heard
 Path.unfocus: – Path takes no keyboard focus here: it refuses it, and nothing is heard

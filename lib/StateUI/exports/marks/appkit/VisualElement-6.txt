@@ -14,6 +14,7 @@ Image.zIndex: not realized
 ItemsView.scaleY: 🔌 read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.rotationY: 🔌 read rotationY of Label: the host's own transform, checked against the layer it composed itself
 Line.pivotY: 🔌 read pivotY of Line: the host's own transform, checked against the layer it composed itself
+Map.background: not realized
 Path.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Picker.style: ✅
 Polygon.ignoresInput: ✅

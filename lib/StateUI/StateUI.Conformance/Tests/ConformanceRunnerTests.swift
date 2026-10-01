@@ -77,7 +77,7 @@ final class ConformanceRunnerTests: XCTestCase {
         let register = HostRegister(
             records: [.complete("Switch", "isOn"), .partial("Switch", "toggled", missing: "A sound."),
                       .notPlanned("Stepper", "step", reason: "No steps here.")],
-            unrealized: ["Canvas"], viewless: [], notPlanned: ["MenuBar": "No bar here."])
+            unrealized: ["Map"], viewless: [], notPlanned: ["MenuBar": "No bar here."])
 
         XCTAssertTrue(Outcome(proving: [Covered(SwitchContract.isOn), Covered(SwitchContract.toggled)], on: register).runs)
         let never = Outcome(proving: [Covered(StepperContract.step), Covered(SwitchContract.isOn)], on: register)
@@ -94,8 +94,8 @@ final class ConformanceRunnerTests: XCTestCase {
                 HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
                 HostVerdict(element: "Switch", member: "toggled", mark: .waiting(on: "Stepper.value")),
             ], "what the host realizes waits on what it does not")
-        XCTAssertEqual(Outcome(proving: [Covered(CanvasContract.self)], on: register).facts, [
-            HostVerdict(element: "Canvas", member: nil, mark: .notRealized),
+        XCTAssertEqual(Outcome(proving: [Covered(MapContract.self)], on: register).facts, [
+            HostVerdict(element: "Map", member: nil, mark: .notRealized),
         ])
         XCTAssertEqual(Outcome(proving: [Covered(MenuBarContract.self)], on: register).facts, [
             HostVerdict(element: "MenuBar", member: nil, mark: .notPlanned(reason: "No bar here.")),

@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import StateUI
-
 /// Collects the pins of a map written as consecutive statements.
 ///
 ///     Map(latitude: 52.23, longitude: 21.01, radiusMeters: 2_000).pins {

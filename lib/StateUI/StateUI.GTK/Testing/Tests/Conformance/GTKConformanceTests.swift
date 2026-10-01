@@ -23,6 +23,7 @@ final class GTKConformanceTests: XCTestCase {
     func testImage() { conform(ImageTests.self) }
     func testLabel() { conform(LabelTests.self) }
     func testLine() { conform(LineTests.self) }
+    func testMap() { conform(MapTests.self) }
     func testPath() { conform(PathTests.self) }
     func testPicker() { conform(PickerTests.self) }
     func testPolygon() { conform(PolygonTests.self) }
@@ -51,6 +52,7 @@ final class GTKConformanceTests: XCTestCase {
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
     func testPage() { conform(PageTests.self) }
+    func testPin() { conform(PinTests.self) }
     func testScene() { conform(SceneTests.self) }
     func testSpan() { conform(SpanTests.self) }
     func testSpans() { conform(SpansTests.self) }

@@ -38,9 +38,9 @@ A member found as a leading-dot member of its own type cannot be paired with a
 single-value payload by the compiler, so nothing is declared for that spelling.
 The public API has no road by token.
 
-An element that wears no tier - a component's `Pin`, which stands only among
-its map's pins - carries no modifiers but its own. It writes a member on its
-node, `node.write(PinContract.label, value)`, and hears one,
+An element that wears no tier - a map's `Pin`, which stands only among its
+map's pins - carries no modifiers but its own. It writes a member on its node,
+`node.write(PinContract.label, value)`, and hears one,
 `node.addHandler(PinContract.pinClicked, handler)`: the same typed members a
 view's `setValue` and `onEvent` are written over, so the compiler still pairs
 each member with its value.

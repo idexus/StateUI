@@ -40,6 +40,12 @@ Label.gridColumnSpan: ✅
 Label.gridRowSpan: ✅
 Line.area: ✅
 Line.frameChanged: ✅
+Map.canDrag: not realized
+Map.dragStarting: not realized
+Map.dragText: not realized
+Map.dropCompleted: not realized
+Map.frameChanged: not realized
+Map.margin: not realized
 Path.pinchUpdated: 🔌 pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panYChannel: 🔌 pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.tapCount: 🔌 tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent

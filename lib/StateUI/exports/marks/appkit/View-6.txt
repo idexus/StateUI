@@ -40,6 +40,13 @@ Label.tapped: 🔌 tap on Label: handed to the host's recognizer or handler, no 
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
+Map.allowDrop: not realized
+Map.dragLeave: not realized
+Map.dragOver: not realized
+Map.drop: not realized
+Map.frameChanged: not realized
+Map.horizontalAlignment: not realized
+Map.verticalAlignment: not realized
 Path.pointerEntered: 🔌 hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerExited: 🔌 hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerMoved: 🔌 hover on Path: handed to the host's recognizer or handler, no NSEvent sent

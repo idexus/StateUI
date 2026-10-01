@@ -16,6 +16,7 @@ Image.scale: 🔌 read scale of Image: the host's own transform, checked against
 ItemsView.rotation: 🔌 read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.layoutDirection: not realized
 Line.isAccessibilityHidden: ✅
+Map.accessibilityLabel: not realized
 Path.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅

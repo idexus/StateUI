@@ -24,6 +24,7 @@ Image.translationY: 🔌 read translationY of Image: the host's own transform, c
 ItemsView.scaleX: 🔌 read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself
 Label.rotationX: 🔌 read rotationX of Label: the host's own transform, checked against the layer it composed itself
 Line.pivotX: 🔌 read pivotX of Line: the host's own transform, checked against the layer it composed itself
+Map.automationExcludedWithChildren: not realized
 Path.accessibilityHint: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅

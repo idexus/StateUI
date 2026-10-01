@@ -41,6 +41,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [ItemsView](ItemsView.md) | 76 | 33 ✅ · 1 ☑️ | 29 ✅ · 3 – | 60 ✅ · 1 ☑️ | 60 ✅ | 51 ✅ · 1 – |  |
 | [Label](Label.md) | 81 | 38 ✅ · 1 ☑️ · 3 – | 39 ✅ · 3 – | 61 ✅ · 1 ☑️ · 3 – | 63 ✅ · 3 – | 52 ✅ · 4 – |  |
 | [Line](Line.md) | 80 | 29 ✅ · 1 ☑️ · 3 – | 30 ✅ · 3 – | 53 ✅ · 1 ☑️ · 3 – | 62 ✅ · 3 – | 48 ✅ · 4 – |  |
+| [Map](Map.md) | 74 |  |  |  |  |  |  |
 | [Path](Path.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 45 ✅ · 4 – |  |
 | [Picker](Picker.md) | 82 | 38 ✅ · 1 ☑️ | 25 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 65 ✅ | 49 ✅ · 7 – |  |
 | [Polygon](Polygon.md) | 78 | 27 ✅ · 1 ☑️ · 3 – | 28 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 46 ✅ · 4 – |  |
@@ -58,7 +59,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [TimePicker](TimePicker.md) | 78 | 33 ✅ · 1 ☑️ | 30 ✅ | 53 ✅ · 1 ☑️ · 3 – | 58 ✅ | 49 ✅ · 1 – |  |
 | [VStack](VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 44 ✅ · 4 – |  |
 | [ZStack](ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 43 ✅ · 4 – |  |
-| **Met** - ✅ and – | 2296 | 1005 of 2296 met | 1006 of 2296 met | 1706 of 2296 met | 1819 of 2296 met | 1508 of 2296 met |  |
+| **Met** - ✅ and – | 2370 | 1005 of 2370 met | 1006 of 2370 met | 1706 of 2370 met | 1819 of 2370 met | 1508 of 2370 met |  |
 <!-- controls:end -->
 
 ## Application structure
@@ -78,6 +79,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [NavigationStack](NavigationStack.md) | 9 | 4 ✅ | 7 ✅ · 2 – | 3 ✅ · 2 – | 9 ✅ | 5 ✅ · 4 – |  |
 | [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |
 | [Page](Page.md) | 12 | 7 ✅ | 11 ✅ | 7 ✅ | 10 ✅ | 8 ✅ · 1 – |  |
+| [Pin](Pin.md) | 6 |  |  |  |  |  |  |
 | [Scene](Scene.md) | 6 | 6 ✅ | 4 ✅ | 4 ✅ | 6 ✅ | 6 ✅ |  |
 | [Span](Span.md) | 12 |  |  |  | 9 ✅ | 9 ✅ |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |
@@ -87,7 +89,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarItem](ToolbarItem.md) | 8 | 2 ✅ | 6 ✅ | 4 ✅ · 1 – | 8 ✅ | 7 ✅ · 1 – |  |
 | [ToolbarItems](ToolbarItems.md) | 2 | 2 ✅ | 2 ✅ | 1 – | 2 ✅ | 2 ✅ |  |
 | [Window](Window.md) | 22 | 15 ✅ | 3 ✅ | 2 ✅ | 22 ✅ | 8 ✅ · 8 – |  |
-| **Met** - ✅ and – | 119 | 63 of 119 met | 74 of 119 met | 52 of 119 met | 113 of 119 met | 106 of 119 met |  |
+| **Met** - ✅ and – | 125 | 63 of 125 met | 74 of 125 met | 52 of 125 met | 113 of 125 met | 106 of 125 met |  |
 <!-- structure:end -->
 
 ## Tiers

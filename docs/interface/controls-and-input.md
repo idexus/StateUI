@@ -269,24 +269,34 @@ them; one lone dot is hidden unless `hideSingle(false)` asks for it;
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
 
+## Provisional native surfaces
+
+The following declarations express a candidate semantic contract but are not
+part of the usable base surface until the platform matrix records a verified
+host. Their presence in the Swift module is not a support claim:
+
+| Surface | Semantic contract under evaluation |
+| --- | --- |
+| `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
+
+`Map` is provider-owned because credentials, map engines, permissions, and
+feature sets are not one base-platform primitive. The other candidates enter
+the base contract only if the target native toolkits can preserve the stated
+ownership, input, accessibility, and lifecycle semantics without growing a
+second UI system in the host. A surface that cannot meet that bar is removed
+vertically from API, vocabulary, tests, Gallery, and documentation.
+
+The intended source/event/aim shapes above keep design review explicit; they do
+not authorize production use on an unmarked host.
+
 ## Components
 
 A control that pulls in a large engine of its platform is a component: a
 library of its own beside StateUI, which an application imports only where it
 shows one, so an application without it links neither the component nor the
-engine. An application that shows one also registers the component's backend
-for its host in its head, and the component's README is its handbook:
-
-| Component | Imported as | What it shows |
-| --- | --- | --- |
-| [`WebView`](../../lib/Controls/WebView/README.md) | `StateUIWebView` | a page of the web, fetched or written in place |
-| [`Map`](../../lib/Controls/Map/README.md) | `StateUIMap` | the platform's own map, with pins |
-
-`Map` is provider-owned: credentials, map engines, permissions, and feature
-sets are not one base-platform primitive. Until a host has a backend for it,
-its contract - the region it opens on, pins and tap reports, later moves
-through an aim - is a candidate, and its declaration is no support claim. A
-contract no native map can keep is removed vertically, from the API to the
+engine. `WebView` is one - `lib/Controls/WebView`, imported as
+`StateUIWebView` - and an application that shows a web page also registers the
+web view's backend for its host in its head. The component's README is its
 handbook.
 
 ## Collections

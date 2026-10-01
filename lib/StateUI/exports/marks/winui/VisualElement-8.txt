@@ -46,6 +46,9 @@ Line.frameChanged: ✅
 Line.height: ✅
 Line.scaleY: ✅
 Line.width: ✅
+Map.frame: not realized
+Map.pivotX: not realized
+Map.zIndex: not realized
 Path.accessibilityLabel: ✅
 Path.rotationX: not realized
 Picker.isAccessibilityHidden: ✅

@@ -415,6 +415,38 @@ Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Map.allowDrop: not realized
+Map.area: not realized
+Map.canDrag: not realized
+Map.dragLeave: not realized
+Map.dragOver: not realized
+Map.dragStarting: not realized
+Map.dragText: not realized
+Map.drop: not realized
+Map.dropCompleted: not realized
+Map.frameChanged: not realized
+Map.gridColumn: not realized
+Map.gridColumnSpan: not realized
+Map.gridRow: not realized
+Map.gridRowSpan: not realized
+Map.horizontalAlignment: not realized
+Map.margin: not realized
+Map.panTouchCount: not realized
+Map.panUpdated: not realized
+Map.panXChannel: not realized
+Map.panYChannel: not realized
+Map.pinchUpdated: not realized
+Map.pointerEntered: not realized
+Map.pointerExited: not realized
+Map.pointerMoved: not realized
+Map.pointerPressed: not realized
+Map.pointerReleased: not realized
+Map.swipeDirection: not realized
+Map.swipeThreshold: not realized
+Map.swiped: not realized
+Map.tapCount: not realized
+Map.tapped: not realized
+Map.verticalAlignment: not realized
 Path.allowDrop: not realized
 Path.area: ✅
 Path.canDrag: not realized
