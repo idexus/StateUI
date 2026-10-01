@@ -7,9 +7,9 @@ Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
 Window.height: ✅
 Window.hidesWhenInactive: 🔌 bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
-Window.isMaximizable: not realized
-Window.isMinimizable: not realized
-Window.isTranslucent: not realized
+Window.isMaximizable: – The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone.
+Window.isMinimizable: – GTK 4 asks the desktop to keep no window from being put away.
+Window.isTranslucent: – GNOME draws its windows opaque: no material shows through one.
 Window.maximumHeight: – GTK 4 bounds no window from above.
 Window.maximumWidth: – GTK 4 bounds no window from above.
 Window.minimumHeight: ✅

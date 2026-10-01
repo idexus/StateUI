@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 25 ✅ · 3 – | pop-up `UIButton` menu |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
-| GTK 4 | ✅ | 49 ✅ · 5 – | `GtkDropDown` |  |
+| GTK 4 | ✅ | 49 ✅ · 6 – | `GtkDropDown` |  |
 | Web |  |  | `<select>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -167,7 +167,7 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ |  | · | ✅ |  |  | UIKit: not realized; Android Views: cannot read horizontalTextAlignment of Picker - Android's driver has no path for it yet; GTK 4: not realized |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ |  | · | ✅ | – |  | UIKit: not realized; Android Views: cannot read horizontalTextAlignment of Picker - Android's driver has no path for it yet; GTK 4: GTK's drop-down draws its choice with the factory that draws its list: the choice alone takes no alignment without redrawing GNOME's list. |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
 
 ## From [TintElement](tiers/TintElement.md)

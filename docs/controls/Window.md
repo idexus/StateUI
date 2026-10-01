@@ -47,7 +47,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 3 ✅ | `UIWindow` |  |
 | Android Views | ✅ | 2 ✅ | `Activity` |  |
 | WinUI 3 | ✅ | 22 ✅ | `Window` |  |
-| GTK 4 | ✅ | 8 ✅ · 5 – | `GtkApplicationWindow` |  |
+| GTK 4 | ✅ | 8 ✅ · 8 – | `GtkApplicationWindow` |  |
 | Web |  |  | browser `window` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -63,9 +63,9 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/WindowContract.swi
 | `floatsOnTop` | property | `Bool` | adaptive | 🔌 |  |  | ✅ | – |  | only through the host's own: bringToFront on Window: the notification AppKit would post, posted by the driver; the window does not move; UIKit: not realized; Android Views: not realized; GTK 4: GTK 4 keeps no window above the others: the desktop stacks them. |
 | `height` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: not realized; Android Views: not realized |
 | `hidesWhenInactive` | property | `Bool` | adaptive | · |  |  | ✅ | 🔌 |  | cannot read isVisible of Window - AppKit's driver has no path for it yet; UIKit: not realized; Android Views: not realized; GTK 4: only through the host's own: bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows |
-| `isMaximizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `isMinimizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
-| `isTranslucent` | property | `Bool` | adaptive | ✅ |  |  | ✅ |  |  | UIKit: not realized; Android Views: not realized; GTK 4: not realized |
+| `isMaximizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ | – |  | UIKit: not realized; Android Views: not realized; GTK 4: The desktop fills the screen with any GTK 4 window it can resize: none forbids that alone. |
+| `isMinimizable` | property | `Bool` | adaptive | ✅ |  |  | ✅ | – |  | UIKit: not realized; Android Views: not realized; GTK 4: GTK 4 asks the desktop to keep no window from being put away. |
+| `isTranslucent` | property | `Bool` | adaptive | ✅ |  |  | ✅ | – |  | UIKit: not realized; Android Views: not realized; GTK 4: GNOME draws its windows opaque: no material shows through one. |
 | `maximumHeight` | property | `Double` | native | ✅ |  |  | ✅ | – |  | UIKit: not realized; Android Views: not realized; GTK 4: GTK 4 bounds no window from above. |
 | `maximumWidth` | property | `Double` | native | ✅ |  |  | ✅ | – |  | UIKit: not realized; Android Views: not realized; GTK 4: GTK 4 bounds no window from above. |
 | `minimumHeight` | property | `Double` | native | ✅ |  |  | ✅ | ✅ |  | UIKit: not realized; Android Views: not realized |
