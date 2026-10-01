@@ -1,0 +1,4 @@
+module CGTKTesting [system] {
+    header "CGTKTesting.h"
+    export *
+}

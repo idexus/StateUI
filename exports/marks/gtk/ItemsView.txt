@@ -3,7 +3,7 @@ ItemsView: ✅
 ItemsView.endReached: ✅
 ItemsView.endReachedWithin: ✅
 ItemsView.frameChanged: ✅
-ItemsView.itemActivated: cannot activate on Label - GTK's driver has no path for it yet
+ItemsView.itemActivated: ✅
 ItemsView.items: ✅
 ItemsView.itemsLayout: ✅
 ItemsView.realizedChanged: ✅

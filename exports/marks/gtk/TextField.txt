@@ -2,8 +2,8 @@
 Label.text: ✅
 TextField: ✅
 TextField.frameChanged: ✅
-TextField.isPassword: cannot read isPassword of TextField - GTK's driver has no path for it yet
+TextField.isPassword: ✅
 TextField.returnKey: not realized
 TextField.showsClearButton: not realized
 TextField.submitted: ✅
-TextField.text: ◐ cannot read isPassword of TextField - GTK's driver has no path for it yet
+TextField.text: ✅

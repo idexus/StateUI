@@ -1,8 +1,8 @@
 # revision 1.1
 Stepper: ✅
 Stepper.frameChanged: ✅
-Stepper.maximum: ◐ cannot read maximum of Stepper - GTK's driver has no path for it yet
-Stepper.minimum: ◐ cannot read minimum of Stepper - GTK's driver has no path for it yet
-Stepper.step: ◐ cannot read step of Stepper - GTK's driver has no path for it yet
-Stepper.value: ◐ cannot read maximum of Stepper - GTK's driver has no path for it yet
-Stepper.valueChanged: ◐ cannot read minimum of Stepper - GTK's driver has no path for it yet
+Stepper.maximum: ✅
+Stepper.minimum: ✅
+Stepper.step: ✅
+Stepper.value: ✅
+Stepper.valueChanged: ✅

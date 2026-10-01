@@ -41,6 +41,8 @@ final class GTKDriver: HostDriver {
                     "StateUI draws a shape on GTK's snapshot, which holds none of its \(member); its drawing proves it"
             }
         }
+        none["read background of Page"] =
+            "StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it"
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             for member in ["background", "stroke", "strokeWidth", "shape"] {
                 none["read \(member) of \(layout)"] =
@@ -63,8 +65,15 @@ final class GTKDriver: HostDriver {
 
     /// What the driver reaches past GTK, through the host's own entry or record - 🔌.
     func byHost(_ ability: String) -> String? {
-        Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
+        if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
+        if let member = Self.recordedMembers.first(where: { ability.hasPrefix("read \($0) of ") }) {
+            return "the class of the host's style sheet the widget wears: GTK reads back no \(member)"
+        }
+        return Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
     }
+
+    /// The members read from the classes of the host's style sheet a widget wears.
+    private static let recordedMembers = ["padding", "background", "stroke", "strokeWidth", "shape", "placeholderColor"]
 
     private static let byHostReasons = [
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
@@ -81,6 +90,8 @@ final class GTKDriver: HostDriver {
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "minimize": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "restore": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
+        "read windowType of Window": "the scenes the host keeps for the next start",
+        "read windowValue of Window": "the scenes the host keeps for the next start",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
@@ -128,7 +139,13 @@ final class GTKDriver: HostDriver {
         }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, perform(act, on: picker) { return }
-        if let view, !(view is GTKCanvasView), input(act, on: view) { return }
+        if let canvas = view as? GTKCanvasView, ["pressDown", "drag", "lift"].contains(act.description) {
+            try press(act, on: canvas, element)
+            _ = input(act, on: canvas)
+            return
+        }
+        if let view, input(act, on: view) { return }
+        if act == .activate, let items = element.enclosing(type: .itemsView), try activateItem(element, in: items) { return }
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
@@ -150,6 +167,7 @@ final class GTKDriver: HostDriver {
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
         case (.choose(let place), let picker as GTKPickerView): gtk_drop_down_set_selected(picker.widget.opaque, guint(place))
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
+        case (.scroll(let offset), let scrollView as GTKScrollView): try scroll(scrollView, to: offset, on: element, act)
         case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
              (.lift, let canvas as GTKCanvasView):
             try press(act, on: canvas, element)
@@ -167,6 +185,8 @@ final class GTKDriver: HostDriver {
         }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, let value = held(property, on: picker) { return value }
+        if let value = try recorded(property, on: element, view: view) { return value }
+        if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
@@ -231,7 +251,7 @@ final class GTKDriver: HostDriver {
     }
 
     /// How a label's words break, as it wraps them or cuts them.
-    private static func lineBreak(of label: OpaquePointer) -> LineBreak {
+    static func lineBreak(of label: OpaquePointer) -> LineBreak {
         if gtk_label_get_wrap(label) != 0 {
             return gtk_label_get_wrap_mode(label) == PANGO_WRAP_CHAR ? .characterWrap : .wordWrap
         }

@@ -79,21 +79,21 @@ Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
 Canvas.horizontalAlignment: ✅
 Canvas.margin: ✅
-Canvas.panTouchCount: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.panUpdated: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.panXChannel: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.panYChannel: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.pinchUpdated: cannot pinch on Canvas - GTK's driver has no path for it yet
-Canvas.pointerEntered: cannot hover on Canvas - GTK's driver has no path for it yet
-Canvas.pointerExited: cannot hover on Canvas - GTK's driver has no path for it yet
-Canvas.pointerMoved: cannot hover on Canvas - GTK's driver has no path for it yet
-Canvas.pointerPressed: cannot hover on Canvas - GTK's driver has no path for it yet
-Canvas.pointerReleased: cannot hover on Canvas - GTK's driver has no path for it yet
-Canvas.swipeDirection: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.swipeThreshold: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.swiped: cannot pan on Canvas - GTK's driver has no path for it yet
-Canvas.tapCount: cannot tap on Canvas - GTK's driver has no path for it yet
-Canvas.tapped: cannot tap on Canvas - GTK's driver has no path for it yet
+Canvas.panTouchCount: ✅
+Canvas.panUpdated: ✅
+Canvas.panXChannel: ✅
+Canvas.panYChannel: ✅
+Canvas.pinchUpdated: 🔌 pinch on Canvas: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Canvas.pointerMoved: ✅
+Canvas.pointerPressed: ✅
+Canvas.pointerReleased: ✅
+Canvas.swipeDirection: ✅
+Canvas.swipeThreshold: ✅
+Canvas.swiped: ✅
+Canvas.tapCount: ✅
+Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 CheckBox.allowDrop: not realized
 CheckBox.area: ✅

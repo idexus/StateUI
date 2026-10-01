@@ -27,15 +27,17 @@ let package = Package(
             path: "Sources/StateUIGTK",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
+        // GTK's checks of what an accessible holds, for the tests: GTK declares them with arguments Swift cannot pass.
+        .systemLibrary(name: "CGTKTesting", path: "Tests/CGTKTesting"),
         .testTarget(
             name: "StateUIGTKTests",
             dependencies: [
-                "StateUIGTK", "CStateUIGTK", .product(name: "StateUI", package: "StateUIRoot"),
+                "StateUIGTK", "CStateUIGTK", "CGTKTesting", .product(name: "StateUI", package: "StateUIRoot"),
                 .product(name: "StateUIHost", package: "StateUIHost"),
                 .product(name: "StateUIConformance", package: "StateUIConformance"),
             ],
             path: "Tests",
-            exclude: ["Resources"],
+            exclude: ["Resources", "CGTKTesting"],
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),
     ]

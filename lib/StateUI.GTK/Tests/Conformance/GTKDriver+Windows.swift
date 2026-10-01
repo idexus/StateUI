@@ -28,6 +28,8 @@ extension GTKDriver {
         case .width, .height:
             gtk_window_get_default_size(window.widget.of(GtkWindow.self), &size.width, &size.height)
             return Double(property == .width ? size.width : size.height).propValue
+        case .isVisible: return (gtk_widget_get_visible(window.widget) != 0).propValue
+        case .windowType, .windowValue: return try recorded(property, on: element, view: nil) ?? nil
         case .minimumWidth, .minimumHeight:
             gtk_widget_get_size_request(window.widget, &size.width, &size.height)
             return Double(property == .minimumWidth ? size.width : size.height).propValue

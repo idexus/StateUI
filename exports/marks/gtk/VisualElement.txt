@@ -1,15 +1,15 @@
 # revision 1.1
-ActivityIndicator.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.accessibilityHint: cannot read accessibilityHint of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.accessibilityLabel: cannot read accessibilityLabel of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ActivityIndicator - GTK's driver has no path for it yet
+ActivityIndicator.accessibilityHeadingLevel: ✅
+ActivityIndicator.accessibilityHint: ✅
+ActivityIndicator.accessibilityLabel: ✅
+ActivityIndicator.automationExcludedWithChildren: ✅
 ActivityIndicator.background: not realized
 ActivityIndicator.focus: waits on ActivityIndicator.isFocusedChanged
 ActivityIndicator.frame: ✅
 ActivityIndicator.frameChanged: ✅
 ActivityIndicator.height: ✅
 ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.isAccessibilityHidden: cannot read isAccessibilityHidden of ActivityIndicator - GTK's driver has no path for it yet
+ActivityIndicator.isAccessibilityHidden: ✅
 ActivityIndicator.isEnabled: ✅
 ActivityIndicator.isFocusedChanged: not realized
 ActivityIndicator.isVisible: ✅
@@ -19,31 +19,31 @@ ActivityIndicator.maximumWidth: ✅
 ActivityIndicator.minimumHeight: ✅
 ActivityIndicator.minimumWidth: ✅
 ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: cannot read pivotX of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.pivotY: cannot read pivotY of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.rotation: cannot read rotation of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.rotationX: cannot read rotationX of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.rotationY: cannot read rotationY of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.scale: cannot read scale of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.scaleX: cannot read scaleX of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.scaleY: cannot read scaleY of ActivityIndicator - GTK's driver has no path for it yet
+ActivityIndicator.pivotX: 🔌 read pivotX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.pivotY: 🔌 read pivotY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotation: 🔌 read rotation of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotationX: 🔌 read rotationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.rotationY: 🔌 read rotationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scale: 🔌 read scale of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scaleX: 🔌 read scaleX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.scaleY: 🔌 read scaleY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.style: ✅
-ActivityIndicator.translationX: cannot read translationX of ActivityIndicator - GTK's driver has no path for it yet
-ActivityIndicator.translationY: cannot read translationY of ActivityIndicator - GTK's driver has no path for it yet
+ActivityIndicator.translationX: 🔌 read translationX of ActivityIndicator: the host's own transform: GTK reads back no part of one
+ActivityIndicator.translationY: 🔌 read translationY of ActivityIndicator: the host's own transform: GTK reads back no part of one
 ActivityIndicator.unfocus: waits on ActivityIndicator.isFocusedChanged
 ActivityIndicator.width: ✅
 ActivityIndicator.zIndex: not realized
-Button.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Button - GTK's driver has no path for it yet
-Button.accessibilityHint: cannot read accessibilityHint of Button - GTK's driver has no path for it yet
-Button.accessibilityLabel: cannot read accessibilityLabel of Button - GTK's driver has no path for it yet
-Button.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Button - GTK's driver has no path for it yet
-Button.background: cannot read background of Button - GTK's driver has no path for it yet
+Button.accessibilityHeadingLevel: ✅
+Button.accessibilityHint: ✅
+Button.accessibilityLabel: ✅
+Button.automationExcludedWithChildren: ✅
+Button.background: 🔌 read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background
 Button.focus: waits on Button.isFocusedChanged
 Button.frame: ✅
 Button.frameChanged: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
-Button.isAccessibilityHidden: cannot read isAccessibilityHidden of Button - GTK's driver has no path for it yet
+Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
 Button.isFocusedChanged: not realized
 Button.isVisible: ✅
@@ -53,31 +53,31 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.opacity: ✅
-Button.pivotX: cannot read pivotX of Button - GTK's driver has no path for it yet
-Button.pivotY: cannot read pivotY of Button - GTK's driver has no path for it yet
-Button.rotation: cannot read rotation of Button - GTK's driver has no path for it yet
-Button.rotationX: cannot read rotationX of Button - GTK's driver has no path for it yet
-Button.rotationY: cannot read rotationY of Button - GTK's driver has no path for it yet
-Button.scale: cannot read scale of Button - GTK's driver has no path for it yet
-Button.scaleX: cannot read scaleX of Button - GTK's driver has no path for it yet
-Button.scaleY: cannot read scaleY of Button - GTK's driver has no path for it yet
+Button.pivotX: 🔌 read pivotX of Button: the host's own transform: GTK reads back no part of one
+Button.pivotY: 🔌 read pivotY of Button: the host's own transform: GTK reads back no part of one
+Button.rotation: 🔌 read rotation of Button: the host's own transform: GTK reads back no part of one
+Button.rotationX: 🔌 read rotationX of Button: the host's own transform: GTK reads back no part of one
+Button.rotationY: 🔌 read rotationY of Button: the host's own transform: GTK reads back no part of one
+Button.scale: 🔌 read scale of Button: the host's own transform: GTK reads back no part of one
+Button.scaleX: 🔌 read scaleX of Button: the host's own transform: GTK reads back no part of one
+Button.scaleY: 🔌 read scaleY of Button: the host's own transform: GTK reads back no part of one
 Button.style: ✅
-Button.translationX: cannot read translationX of Button - GTK's driver has no path for it yet
-Button.translationY: cannot read translationY of Button - GTK's driver has no path for it yet
+Button.translationX: 🔌 read translationX of Button: the host's own transform: GTK reads back no part of one
+Button.translationY: 🔌 read translationY of Button: the host's own transform: GTK reads back no part of one
 Button.unfocus: waits on Button.isFocusedChanged
 Button.width: ✅
 Button.zIndex: not realized
-Canvas.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Canvas - GTK's driver has no path for it yet
-Canvas.accessibilityHint: cannot read accessibilityHint of Canvas - GTK's driver has no path for it yet
-Canvas.accessibilityLabel: cannot read accessibilityLabel of Canvas - GTK's driver has no path for it yet
-Canvas.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Canvas - GTK's driver has no path for it yet
+Canvas.accessibilityHeadingLevel: ✅
+Canvas.accessibilityHint: ✅
+Canvas.accessibilityLabel: ✅
+Canvas.automationExcludedWithChildren: ✅
 Canvas.background: not realized
 Canvas.focus: waits on Canvas.isFocusedChanged
 Canvas.frame: ✅
 Canvas.frameChanged: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
-Canvas.isAccessibilityHidden: cannot read isAccessibilityHidden of Canvas - GTK's driver has no path for it yet
+Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
 Canvas.isFocusedChanged: not realized
 Canvas.isVisible: ✅
@@ -87,31 +87,31 @@ Canvas.maximumWidth: ✅
 Canvas.minimumHeight: ✅
 Canvas.minimumWidth: ✅
 Canvas.opacity: ✅
-Canvas.pivotX: cannot read pivotX of Canvas - GTK's driver has no path for it yet
-Canvas.pivotY: cannot read pivotY of Canvas - GTK's driver has no path for it yet
-Canvas.rotation: cannot read rotation of Canvas - GTK's driver has no path for it yet
-Canvas.rotationX: cannot read rotationX of Canvas - GTK's driver has no path for it yet
-Canvas.rotationY: cannot read rotationY of Canvas - GTK's driver has no path for it yet
-Canvas.scale: cannot read scale of Canvas - GTK's driver has no path for it yet
-Canvas.scaleX: cannot read scaleX of Canvas - GTK's driver has no path for it yet
-Canvas.scaleY: cannot read scaleY of Canvas - GTK's driver has no path for it yet
+Canvas.pivotX: 🔌 read pivotX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.pivotY: 🔌 read pivotY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotation: 🔌 read rotation of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotationX: 🔌 read rotationX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.rotationY: 🔌 read rotationY of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scale: 🔌 read scale of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scaleX: 🔌 read scaleX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.scaleY: 🔌 read scaleY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.style: ✅
-Canvas.translationX: cannot read translationX of Canvas - GTK's driver has no path for it yet
-Canvas.translationY: cannot read translationY of Canvas - GTK's driver has no path for it yet
+Canvas.translationX: 🔌 read translationX of Canvas: the host's own transform: GTK reads back no part of one
+Canvas.translationY: 🔌 read translationY of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.unfocus: waits on Canvas.isFocusedChanged
 Canvas.width: ✅
 Canvas.zIndex: not realized
-CheckBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of CheckBox - GTK's driver has no path for it yet
-CheckBox.accessibilityHint: cannot read accessibilityHint of CheckBox - GTK's driver has no path for it yet
-CheckBox.accessibilityLabel: cannot read accessibilityLabel of CheckBox - GTK's driver has no path for it yet
-CheckBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of CheckBox - GTK's driver has no path for it yet
+CheckBox.accessibilityHeadingLevel: ✅
+CheckBox.accessibilityHint: ✅
+CheckBox.accessibilityLabel: ✅
+CheckBox.automationExcludedWithChildren: ✅
 CheckBox.background: not realized
 CheckBox.focus: waits on CheckBox.isFocusedChanged
 CheckBox.frame: ✅
 CheckBox.frameChanged: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
-CheckBox.isAccessibilityHidden: cannot read isAccessibilityHidden of CheckBox - GTK's driver has no path for it yet
+CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isFocusedChanged: not realized
 CheckBox.isVisible: ✅
@@ -121,31 +121,31 @@ CheckBox.maximumWidth: ✅
 CheckBox.minimumHeight: ✅
 CheckBox.minimumWidth: ✅
 CheckBox.opacity: ✅
-CheckBox.pivotX: cannot read pivotX of CheckBox - GTK's driver has no path for it yet
-CheckBox.pivotY: cannot read pivotY of CheckBox - GTK's driver has no path for it yet
-CheckBox.rotation: cannot read rotation of CheckBox - GTK's driver has no path for it yet
-CheckBox.rotationX: cannot read rotationX of CheckBox - GTK's driver has no path for it yet
-CheckBox.rotationY: cannot read rotationY of CheckBox - GTK's driver has no path for it yet
-CheckBox.scale: cannot read scale of CheckBox - GTK's driver has no path for it yet
-CheckBox.scaleX: cannot read scaleX of CheckBox - GTK's driver has no path for it yet
-CheckBox.scaleY: cannot read scaleY of CheckBox - GTK's driver has no path for it yet
+CheckBox.pivotX: 🔌 read pivotX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.pivotY: 🔌 read pivotY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotation: 🔌 read rotation of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotationX: 🔌 read rotationX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.rotationY: 🔌 read rotationY of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scale: 🔌 read scale of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scaleX: 🔌 read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.scaleY: 🔌 read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.style: ✅
-CheckBox.translationX: cannot read translationX of CheckBox - GTK's driver has no path for it yet
-CheckBox.translationY: cannot read translationY of CheckBox - GTK's driver has no path for it yet
+CheckBox.translationX: 🔌 read translationX of CheckBox: the host's own transform: GTK reads back no part of one
+CheckBox.translationY: 🔌 read translationY of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.unfocus: waits on CheckBox.isFocusedChanged
 CheckBox.width: ✅
 CheckBox.zIndex: not realized
-ColorBox.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ColorBox - GTK's driver has no path for it yet
-ColorBox.accessibilityHint: cannot read accessibilityHint of ColorBox - GTK's driver has no path for it yet
-ColorBox.accessibilityLabel: cannot read accessibilityLabel of ColorBox - GTK's driver has no path for it yet
-ColorBox.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ColorBox - GTK's driver has no path for it yet
+ColorBox.accessibilityHeadingLevel: ✅
+ColorBox.accessibilityHint: ✅
+ColorBox.accessibilityLabel: ✅
+ColorBox.automationExcludedWithChildren: ✅
 ColorBox.background: not realized
 ColorBox.focus: waits on ColorBox.isFocusedChanged
 ColorBox.frame: ✅
 ColorBox.frameChanged: ✅
 ColorBox.height: ✅
 ColorBox.ignoresInput: not realized
-ColorBox.isAccessibilityHidden: cannot read isAccessibilityHidden of ColorBox - GTK's driver has no path for it yet
+ColorBox.isAccessibilityHidden: ✅
 ColorBox.isEnabled: ✅
 ColorBox.isFocusedChanged: not realized
 ColorBox.isVisible: ✅
@@ -155,31 +155,31 @@ ColorBox.maximumWidth: ✅
 ColorBox.minimumHeight: ✅
 ColorBox.minimumWidth: ✅
 ColorBox.opacity: ✅
-ColorBox.pivotX: cannot read pivotX of ColorBox - GTK's driver has no path for it yet
-ColorBox.pivotY: cannot read pivotY of ColorBox - GTK's driver has no path for it yet
-ColorBox.rotation: cannot read rotation of ColorBox - GTK's driver has no path for it yet
-ColorBox.rotationX: cannot read rotationX of ColorBox - GTK's driver has no path for it yet
-ColorBox.rotationY: cannot read rotationY of ColorBox - GTK's driver has no path for it yet
-ColorBox.scale: cannot read scale of ColorBox - GTK's driver has no path for it yet
-ColorBox.scaleX: cannot read scaleX of ColorBox - GTK's driver has no path for it yet
-ColorBox.scaleY: cannot read scaleY of ColorBox - GTK's driver has no path for it yet
+ColorBox.pivotX: 🔌 read pivotX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.pivotY: 🔌 read pivotY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotation: 🔌 read rotation of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotationX: 🔌 read rotationX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.rotationY: 🔌 read rotationY of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scale: 🔌 read scale of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scaleX: 🔌 read scaleX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.scaleY: 🔌 read scaleY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.style: ✅
-ColorBox.translationX: cannot read translationX of ColorBox - GTK's driver has no path for it yet
-ColorBox.translationY: cannot read translationY of ColorBox - GTK's driver has no path for it yet
+ColorBox.translationX: 🔌 read translationX of ColorBox: the host's own transform: GTK reads back no part of one
+ColorBox.translationY: 🔌 read translationY of ColorBox: the host's own transform: GTK reads back no part of one
 ColorBox.unfocus: waits on ColorBox.isFocusedChanged
 ColorBox.width: ✅
 ColorBox.zIndex: not realized
-DatePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of DatePicker - GTK's driver has no path for it yet
-DatePicker.accessibilityHint: cannot read accessibilityHint of DatePicker - GTK's driver has no path for it yet
-DatePicker.accessibilityLabel: cannot read accessibilityLabel of DatePicker - GTK's driver has no path for it yet
-DatePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of DatePicker - GTK's driver has no path for it yet
+DatePicker.accessibilityHeadingLevel: ✅
+DatePicker.accessibilityHint: ✅
+DatePicker.accessibilityLabel: ✅
+DatePicker.automationExcludedWithChildren: ✅
 DatePicker.background: not realized
 DatePicker.focus: waits on DatePicker.isFocusedChanged
 DatePicker.frame: ✅
 DatePicker.frameChanged: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
-DatePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of DatePicker - GTK's driver has no path for it yet
+DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isFocusedChanged: not realized
 DatePicker.isVisible: ✅
@@ -189,31 +189,31 @@ DatePicker.maximumWidth: ✅
 DatePicker.minimumHeight: ✅
 DatePicker.minimumWidth: ✅
 DatePicker.opacity: ✅
-DatePicker.pivotX: cannot read pivotX of DatePicker - GTK's driver has no path for it yet
-DatePicker.pivotY: cannot read pivotY of DatePicker - GTK's driver has no path for it yet
-DatePicker.rotation: cannot read rotation of DatePicker - GTK's driver has no path for it yet
-DatePicker.rotationX: cannot read rotationX of DatePicker - GTK's driver has no path for it yet
-DatePicker.rotationY: cannot read rotationY of DatePicker - GTK's driver has no path for it yet
-DatePicker.scale: cannot read scale of DatePicker - GTK's driver has no path for it yet
-DatePicker.scaleX: cannot read scaleX of DatePicker - GTK's driver has no path for it yet
-DatePicker.scaleY: cannot read scaleY of DatePicker - GTK's driver has no path for it yet
+DatePicker.pivotX: 🔌 read pivotX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.pivotY: 🔌 read pivotY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotation: 🔌 read rotation of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotationX: 🔌 read rotationX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.rotationY: 🔌 read rotationY of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scale: 🔌 read scale of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scaleX: 🔌 read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.scaleY: 🔌 read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.style: ✅
-DatePicker.translationX: cannot read translationX of DatePicker - GTK's driver has no path for it yet
-DatePicker.translationY: cannot read translationY of DatePicker - GTK's driver has no path for it yet
+DatePicker.translationX: 🔌 read translationX of DatePicker: the host's own transform: GTK reads back no part of one
+DatePicker.translationY: 🔌 read translationY of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.unfocus: waits on DatePicker.isFocusedChanged
 DatePicker.width: ✅
 DatePicker.zIndex: not realized
-Ellipse.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Ellipse - GTK's driver has no path for it yet
-Ellipse.accessibilityHint: cannot read accessibilityHint of Ellipse - GTK's driver has no path for it yet
-Ellipse.accessibilityLabel: cannot read accessibilityLabel of Ellipse - GTK's driver has no path for it yet
-Ellipse.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Ellipse - GTK's driver has no path for it yet
+Ellipse.accessibilityHeadingLevel: ✅
+Ellipse.accessibilityHint: ✅
+Ellipse.accessibilityLabel: ✅
+Ellipse.automationExcludedWithChildren: ✅
 Ellipse.background: not realized
 Ellipse.focus: waits on Ellipse.isFocusedChanged
 Ellipse.frame: ✅
 Ellipse.frameChanged: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.isAccessibilityHidden: cannot read isAccessibilityHidden of Ellipse - GTK's driver has no path for it yet
+Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
 Ellipse.isFocusedChanged: not realized
 Ellipse.isVisible: ✅
@@ -223,31 +223,31 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.opacity: ✅
-Ellipse.pivotX: cannot read pivotX of Ellipse - GTK's driver has no path for it yet
-Ellipse.pivotY: cannot read pivotY of Ellipse - GTK's driver has no path for it yet
-Ellipse.rotation: cannot read rotation of Ellipse - GTK's driver has no path for it yet
-Ellipse.rotationX: cannot read rotationX of Ellipse - GTK's driver has no path for it yet
-Ellipse.rotationY: cannot read rotationY of Ellipse - GTK's driver has no path for it yet
-Ellipse.scale: cannot read scale of Ellipse - GTK's driver has no path for it yet
-Ellipse.scaleX: cannot read scaleX of Ellipse - GTK's driver has no path for it yet
-Ellipse.scaleY: cannot read scaleY of Ellipse - GTK's driver has no path for it yet
+Ellipse.pivotX: 🔌 read pivotX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.pivotY: 🔌 read pivotY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotation: 🔌 read rotation of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotationX: 🔌 read rotationX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.rotationY: 🔌 read rotationY of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scale: 🔌 read scale of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scaleX: 🔌 read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.scaleY: 🔌 read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.style: ✅
-Ellipse.translationX: cannot read translationX of Ellipse - GTK's driver has no path for it yet
-Ellipse.translationY: cannot read translationY of Ellipse - GTK's driver has no path for it yet
+Ellipse.translationX: 🔌 read translationX of Ellipse: the host's own transform: GTK reads back no part of one
+Ellipse.translationY: 🔌 read translationY of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.unfocus: waits on Ellipse.isFocusedChanged
 Ellipse.width: ✅
 Ellipse.zIndex: not realized
-Grid.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Grid - GTK's driver has no path for it yet
-Grid.accessibilityHint: cannot read accessibilityHint of Grid - GTK's driver has no path for it yet
-Grid.accessibilityLabel: cannot read accessibilityLabel of Grid - GTK's driver has no path for it yet
-Grid.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Grid - GTK's driver has no path for it yet
+Grid.accessibilityHeadingLevel: ✅
+Grid.accessibilityHint: ✅
+Grid.accessibilityLabel: ✅
+Grid.automationExcludedWithChildren: ✅
 Grid.background: cannot read background of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 Grid.focus: waits on Grid.isFocusedChanged
 Grid.frame: ✅
 Grid.frameChanged: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
-Grid.isAccessibilityHidden: cannot read isAccessibilityHidden of Grid - GTK's driver has no path for it yet
+Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
 Grid.isFocusedChanged: not realized
 Grid.isVisible: ✅
@@ -257,31 +257,31 @@ Grid.maximumWidth: ✅
 Grid.minimumHeight: ✅
 Grid.minimumWidth: ✅
 Grid.opacity: ✅
-Grid.pivotX: cannot read pivotX of Grid - GTK's driver has no path for it yet
-Grid.pivotY: cannot read pivotY of Grid - GTK's driver has no path for it yet
-Grid.rotation: cannot read rotation of Grid - GTK's driver has no path for it yet
-Grid.rotationX: cannot read rotationX of Grid - GTK's driver has no path for it yet
-Grid.rotationY: cannot read rotationY of Grid - GTK's driver has no path for it yet
-Grid.scale: cannot read scale of Grid - GTK's driver has no path for it yet
-Grid.scaleX: cannot read scaleX of Grid - GTK's driver has no path for it yet
-Grid.scaleY: cannot read scaleY of Grid - GTK's driver has no path for it yet
+Grid.pivotX: 🔌 read pivotX of Grid: the host's own transform: GTK reads back no part of one
+Grid.pivotY: 🔌 read pivotY of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotation: 🔌 read rotation of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotationX: 🔌 read rotationX of Grid: the host's own transform: GTK reads back no part of one
+Grid.rotationY: 🔌 read rotationY of Grid: the host's own transform: GTK reads back no part of one
+Grid.scale: 🔌 read scale of Grid: the host's own transform: GTK reads back no part of one
+Grid.scaleX: 🔌 read scaleX of Grid: the host's own transform: GTK reads back no part of one
+Grid.scaleY: 🔌 read scaleY of Grid: the host's own transform: GTK reads back no part of one
 Grid.style: ✅
-Grid.translationX: cannot read translationX of Grid - GTK's driver has no path for it yet
-Grid.translationY: cannot read translationY of Grid - GTK's driver has no path for it yet
+Grid.translationX: 🔌 read translationX of Grid: the host's own transform: GTK reads back no part of one
+Grid.translationY: 🔌 read translationY of Grid: the host's own transform: GTK reads back no part of one
 Grid.unfocus: waits on Grid.isFocusedChanged
 Grid.width: ✅
 Grid.zIndex: not realized
-HStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of HStack - GTK's driver has no path for it yet
-HStack.accessibilityHint: cannot read accessibilityHint of HStack - GTK's driver has no path for it yet
-HStack.accessibilityLabel: cannot read accessibilityLabel of HStack - GTK's driver has no path for it yet
-HStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of HStack - GTK's driver has no path for it yet
+HStack.accessibilityHeadingLevel: ✅
+HStack.accessibilityHint: ✅
+HStack.accessibilityLabel: ✅
+HStack.automationExcludedWithChildren: ✅
 HStack.background: cannot read background of HStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 HStack.focus: waits on HStack.isFocusedChanged
 HStack.frame: ✅
 HStack.frameChanged: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
-HStack.isAccessibilityHidden: cannot read isAccessibilityHidden of HStack - GTK's driver has no path for it yet
+HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
 HStack.isFocusedChanged: not realized
 HStack.isVisible: ✅
@@ -291,31 +291,31 @@ HStack.maximumWidth: ✅
 HStack.minimumHeight: ✅
 HStack.minimumWidth: ✅
 HStack.opacity: ✅
-HStack.pivotX: cannot read pivotX of HStack - GTK's driver has no path for it yet
-HStack.pivotY: cannot read pivotY of HStack - GTK's driver has no path for it yet
-HStack.rotation: cannot read rotation of HStack - GTK's driver has no path for it yet
-HStack.rotationX: cannot read rotationX of HStack - GTK's driver has no path for it yet
-HStack.rotationY: cannot read rotationY of HStack - GTK's driver has no path for it yet
-HStack.scale: cannot read scale of HStack - GTK's driver has no path for it yet
-HStack.scaleX: cannot read scaleX of HStack - GTK's driver has no path for it yet
-HStack.scaleY: cannot read scaleY of HStack - GTK's driver has no path for it yet
+HStack.pivotX: 🔌 read pivotX of HStack: the host's own transform: GTK reads back no part of one
+HStack.pivotY: 🔌 read pivotY of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotation: 🔌 read rotation of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotationX: 🔌 read rotationX of HStack: the host's own transform: GTK reads back no part of one
+HStack.rotationY: 🔌 read rotationY of HStack: the host's own transform: GTK reads back no part of one
+HStack.scale: 🔌 read scale of HStack: the host's own transform: GTK reads back no part of one
+HStack.scaleX: 🔌 read scaleX of HStack: the host's own transform: GTK reads back no part of one
+HStack.scaleY: 🔌 read scaleY of HStack: the host's own transform: GTK reads back no part of one
 HStack.style: ✅
-HStack.translationX: cannot read translationX of HStack - GTK's driver has no path for it yet
-HStack.translationY: cannot read translationY of HStack - GTK's driver has no path for it yet
+HStack.translationX: 🔌 read translationX of HStack: the host's own transform: GTK reads back no part of one
+HStack.translationY: 🔌 read translationY of HStack: the host's own transform: GTK reads back no part of one
 HStack.unfocus: waits on HStack.isFocusedChanged
 HStack.width: ✅
 HStack.zIndex: not realized
-Image.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Image - GTK's driver has no path for it yet
-Image.accessibilityHint: cannot read accessibilityHint of Image - GTK's driver has no path for it yet
-Image.accessibilityLabel: cannot read accessibilityLabel of Image - GTK's driver has no path for it yet
-Image.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Image - GTK's driver has no path for it yet
+Image.accessibilityHeadingLevel: ✅
+Image.accessibilityHint: ✅
+Image.accessibilityLabel: ✅
+Image.automationExcludedWithChildren: ✅
 Image.background: not realized
 Image.focus: waits on Image.isFocusedChanged
 Image.frame: ✅
 Image.frameChanged: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
-Image.isAccessibilityHidden: cannot read isAccessibilityHidden of Image - GTK's driver has no path for it yet
+Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
 Image.isFocusedChanged: not realized
 Image.isVisible: ✅
@@ -325,31 +325,31 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.opacity: ✅
-Image.pivotX: cannot read pivotX of Image - GTK's driver has no path for it yet
-Image.pivotY: cannot read pivotY of Image - GTK's driver has no path for it yet
-Image.rotation: cannot read rotation of Image - GTK's driver has no path for it yet
-Image.rotationX: cannot read rotationX of Image - GTK's driver has no path for it yet
-Image.rotationY: cannot read rotationY of Image - GTK's driver has no path for it yet
-Image.scale: cannot read scale of Image - GTK's driver has no path for it yet
-Image.scaleX: cannot read scaleX of Image - GTK's driver has no path for it yet
-Image.scaleY: cannot read scaleY of Image - GTK's driver has no path for it yet
+Image.pivotX: 🔌 read pivotX of Image: the host's own transform: GTK reads back no part of one
+Image.pivotY: 🔌 read pivotY of Image: the host's own transform: GTK reads back no part of one
+Image.rotation: 🔌 read rotation of Image: the host's own transform: GTK reads back no part of one
+Image.rotationX: 🔌 read rotationX of Image: the host's own transform: GTK reads back no part of one
+Image.rotationY: 🔌 read rotationY of Image: the host's own transform: GTK reads back no part of one
+Image.scale: 🔌 read scale of Image: the host's own transform: GTK reads back no part of one
+Image.scaleX: 🔌 read scaleX of Image: the host's own transform: GTK reads back no part of one
+Image.scaleY: 🔌 read scaleY of Image: the host's own transform: GTK reads back no part of one
 Image.style: ✅
-Image.translationX: cannot read translationX of Image - GTK's driver has no path for it yet
-Image.translationY: cannot read translationY of Image - GTK's driver has no path for it yet
+Image.translationX: 🔌 read translationX of Image: the host's own transform: GTK reads back no part of one
+Image.translationY: 🔌 read translationY of Image: the host's own transform: GTK reads back no part of one
 Image.unfocus: waits on Image.isFocusedChanged
 Image.width: ✅
 Image.zIndex: not realized
-ItemsView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ItemsView - GTK's driver has no path for it yet
-ItemsView.accessibilityHint: cannot read accessibilityHint of ItemsView - GTK's driver has no path for it yet
-ItemsView.accessibilityLabel: cannot read accessibilityLabel of ItemsView - GTK's driver has no path for it yet
-ItemsView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ItemsView - GTK's driver has no path for it yet
+ItemsView.accessibilityHeadingLevel: ✅
+ItemsView.accessibilityHint: ✅
+ItemsView.accessibilityLabel: ✅
+ItemsView.automationExcludedWithChildren: ✅
 ItemsView.background: not realized
 ItemsView.focus: waits on ItemsView.isFocusedChanged
 ItemsView.frame: ✅
 ItemsView.frameChanged: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
-ItemsView.isAccessibilityHidden: cannot read isAccessibilityHidden of ItemsView - GTK's driver has no path for it yet
+ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
 ItemsView.isFocusedChanged: not realized
 ItemsView.isVisible: ✅
@@ -359,31 +359,31 @@ ItemsView.maximumWidth: ✅
 ItemsView.minimumHeight: ✅
 ItemsView.minimumWidth: ✅
 ItemsView.opacity: ✅
-ItemsView.pivotX: cannot read pivotX of ItemsView - GTK's driver has no path for it yet
-ItemsView.pivotY: cannot read pivotY of ItemsView - GTK's driver has no path for it yet
-ItemsView.rotation: cannot read rotation of ItemsView - GTK's driver has no path for it yet
-ItemsView.rotationX: cannot read rotationX of ItemsView - GTK's driver has no path for it yet
-ItemsView.rotationY: cannot read rotationY of ItemsView - GTK's driver has no path for it yet
-ItemsView.scale: cannot read scale of ItemsView - GTK's driver has no path for it yet
-ItemsView.scaleX: cannot read scaleX of ItemsView - GTK's driver has no path for it yet
-ItemsView.scaleY: cannot read scaleY of ItemsView - GTK's driver has no path for it yet
+ItemsView.pivotX: 🔌 read pivotX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.pivotY: 🔌 read pivotY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotation: 🔌 read rotation of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotationX: 🔌 read rotationX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.rotationY: 🔌 read rotationY of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scale: 🔌 read scale of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scaleX: 🔌 read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.scaleY: 🔌 read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.style: not realized
-ItemsView.translationX: cannot read translationX of ItemsView - GTK's driver has no path for it yet
-ItemsView.translationY: cannot read translationY of ItemsView - GTK's driver has no path for it yet
+ItemsView.translationX: 🔌 read translationX of ItemsView: the host's own transform: GTK reads back no part of one
+ItemsView.translationY: 🔌 read translationY of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.unfocus: waits on ItemsView.isFocusedChanged
 ItemsView.width: ✅
 ItemsView.zIndex: not realized
-Label.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Label - GTK's driver has no path for it yet
-Label.accessibilityHint: cannot read accessibilityHint of Label - GTK's driver has no path for it yet
-Label.accessibilityLabel: cannot read accessibilityLabel of Label - GTK's driver has no path for it yet
-Label.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Label - GTK's driver has no path for it yet
-Label.background: cannot read background of Label - GTK's driver has no path for it yet
+Label.accessibilityHeadingLevel: ✅
+Label.accessibilityHint: ✅
+Label.accessibilityLabel: ✅
+Label.automationExcludedWithChildren: ✅
+Label.background: 🔌 read background of Label: the class of the host's style sheet the widget wears: GTK reads back no background
 Label.focus: waits on Label.isFocusedChanged
 Label.frame: ✅
 Label.frameChanged: ✅
 Label.height: ✅
 Label.ignoresInput: not realized
-Label.isAccessibilityHidden: cannot read isAccessibilityHidden of Label - GTK's driver has no path for it yet
+Label.isAccessibilityHidden: ✅
 Label.isEnabled: ✅
 Label.isFocusedChanged: not realized
 Label.isVisible: ✅
@@ -393,31 +393,31 @@ Label.maximumWidth: ✅
 Label.minimumHeight: ✅
 Label.minimumWidth: ✅
 Label.opacity: ✅
-Label.pivotX: cannot read pivotX of Label - GTK's driver has no path for it yet
-Label.pivotY: cannot read pivotY of Label - GTK's driver has no path for it yet
-Label.rotation: cannot read rotation of Label - GTK's driver has no path for it yet
-Label.rotationX: cannot read rotationX of Label - GTK's driver has no path for it yet
-Label.rotationY: cannot read rotationY of Label - GTK's driver has no path for it yet
-Label.scale: cannot read scale of Label - GTK's driver has no path for it yet
-Label.scaleX: cannot read scaleX of Label - GTK's driver has no path for it yet
-Label.scaleY: cannot read scaleY of Label - GTK's driver has no path for it yet
+Label.pivotX: 🔌 read pivotX of Label: the host's own transform: GTK reads back no part of one
+Label.pivotY: 🔌 read pivotY of Label: the host's own transform: GTK reads back no part of one
+Label.rotation: 🔌 read rotation of Label: the host's own transform: GTK reads back no part of one
+Label.rotationX: 🔌 read rotationX of Label: the host's own transform: GTK reads back no part of one
+Label.rotationY: 🔌 read rotationY of Label: the host's own transform: GTK reads back no part of one
+Label.scale: 🔌 read scale of Label: the host's own transform: GTK reads back no part of one
+Label.scaleX: 🔌 read scaleX of Label: the host's own transform: GTK reads back no part of one
+Label.scaleY: 🔌 read scaleY of Label: the host's own transform: GTK reads back no part of one
 Label.style: ✅
-Label.translationX: cannot read translationX of Label - GTK's driver has no path for it yet
-Label.translationY: cannot read translationY of Label - GTK's driver has no path for it yet
+Label.translationX: 🔌 read translationX of Label: the host's own transform: GTK reads back no part of one
+Label.translationY: 🔌 read translationY of Label: the host's own transform: GTK reads back no part of one
 Label.unfocus: waits on Label.isFocusedChanged
 Label.width: ✅
 Label.zIndex: not realized
-Line.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Line - GTK's driver has no path for it yet
-Line.accessibilityHint: cannot read accessibilityHint of Line - GTK's driver has no path for it yet
-Line.accessibilityLabel: cannot read accessibilityLabel of Line - GTK's driver has no path for it yet
-Line.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Line - GTK's driver has no path for it yet
+Line.accessibilityHeadingLevel: ✅
+Line.accessibilityHint: ✅
+Line.accessibilityLabel: ✅
+Line.automationExcludedWithChildren: ✅
 Line.background: not realized
 Line.focus: waits on Line.isFocusedChanged
 Line.frame: ✅
 Line.frameChanged: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
-Line.isAccessibilityHidden: cannot read isAccessibilityHidden of Line - GTK's driver has no path for it yet
+Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
 Line.isFocusedChanged: not realized
 Line.isVisible: ✅
@@ -427,17 +427,17 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.opacity: ✅
-Line.pivotX: cannot read pivotX of Line - GTK's driver has no path for it yet
-Line.pivotY: cannot read pivotY of Line - GTK's driver has no path for it yet
-Line.rotation: cannot read rotation of Line - GTK's driver has no path for it yet
-Line.rotationX: cannot read rotationX of Line - GTK's driver has no path for it yet
-Line.rotationY: cannot read rotationY of Line - GTK's driver has no path for it yet
-Line.scale: cannot read scale of Line - GTK's driver has no path for it yet
-Line.scaleX: cannot read scaleX of Line - GTK's driver has no path for it yet
-Line.scaleY: cannot read scaleY of Line - GTK's driver has no path for it yet
+Line.pivotX: 🔌 read pivotX of Line: the host's own transform: GTK reads back no part of one
+Line.pivotY: 🔌 read pivotY of Line: the host's own transform: GTK reads back no part of one
+Line.rotation: 🔌 read rotation of Line: the host's own transform: GTK reads back no part of one
+Line.rotationX: 🔌 read rotationX of Line: the host's own transform: GTK reads back no part of one
+Line.rotationY: 🔌 read rotationY of Line: the host's own transform: GTK reads back no part of one
+Line.scale: 🔌 read scale of Line: the host's own transform: GTK reads back no part of one
+Line.scaleX: 🔌 read scaleX of Line: the host's own transform: GTK reads back no part of one
+Line.scaleY: 🔌 read scaleY of Line: the host's own transform: GTK reads back no part of one
 Line.style: ✅
-Line.translationX: cannot read translationX of Line - GTK's driver has no path for it yet
-Line.translationY: cannot read translationY of Line - GTK's driver has no path for it yet
+Line.translationX: 🔌 read translationX of Line: the host's own transform: GTK reads back no part of one
+Line.translationY: 🔌 read translationY of Line: the host's own transform: GTK reads back no part of one
 Line.unfocus: waits on Line.isFocusedChanged
 Line.width: ✅
 Line.zIndex: not realized
@@ -475,17 +475,17 @@ Map.translationY: not realized
 Map.unfocus: not realized
 Map.width: not realized
 Map.zIndex: not realized
-Path.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Path - GTK's driver has no path for it yet
-Path.accessibilityHint: cannot read accessibilityHint of Path - GTK's driver has no path for it yet
-Path.accessibilityLabel: cannot read accessibilityLabel of Path - GTK's driver has no path for it yet
-Path.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Path - GTK's driver has no path for it yet
+Path.accessibilityHeadingLevel: ✅
+Path.accessibilityHint: ✅
+Path.accessibilityLabel: ✅
+Path.automationExcludedWithChildren: ✅
 Path.background: not realized
 Path.focus: waits on Path.isFocusedChanged
 Path.frame: ✅
 Path.frameChanged: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
-Path.isAccessibilityHidden: cannot read isAccessibilityHidden of Path - GTK's driver has no path for it yet
+Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.isFocusedChanged: not realized
 Path.isVisible: ✅
@@ -495,31 +495,31 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.opacity: ✅
-Path.pivotX: cannot read pivotX of Path - GTK's driver has no path for it yet
-Path.pivotY: cannot read pivotY of Path - GTK's driver has no path for it yet
-Path.rotation: cannot read rotation of Path - GTK's driver has no path for it yet
-Path.rotationX: cannot read rotationX of Path - GTK's driver has no path for it yet
-Path.rotationY: cannot read rotationY of Path - GTK's driver has no path for it yet
-Path.scale: cannot read scale of Path - GTK's driver has no path for it yet
-Path.scaleX: cannot read scaleX of Path - GTK's driver has no path for it yet
-Path.scaleY: cannot read scaleY of Path - GTK's driver has no path for it yet
+Path.pivotX: 🔌 read pivotX of Path: the host's own transform: GTK reads back no part of one
+Path.pivotY: 🔌 read pivotY of Path: the host's own transform: GTK reads back no part of one
+Path.rotation: 🔌 read rotation of Path: the host's own transform: GTK reads back no part of one
+Path.rotationX: 🔌 read rotationX of Path: the host's own transform: GTK reads back no part of one
+Path.rotationY: 🔌 read rotationY of Path: the host's own transform: GTK reads back no part of one
+Path.scale: 🔌 read scale of Path: the host's own transform: GTK reads back no part of one
+Path.scaleX: 🔌 read scaleX of Path: the host's own transform: GTK reads back no part of one
+Path.scaleY: 🔌 read scaleY of Path: the host's own transform: GTK reads back no part of one
 Path.style: ✅
-Path.translationX: cannot read translationX of Path - GTK's driver has no path for it yet
-Path.translationY: cannot read translationY of Path - GTK's driver has no path for it yet
+Path.translationX: 🔌 read translationX of Path: the host's own transform: GTK reads back no part of one
+Path.translationY: 🔌 read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.unfocus: waits on Path.isFocusedChanged
 Path.width: ✅
 Path.zIndex: not realized
-Picker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Picker - GTK's driver has no path for it yet
-Picker.accessibilityHint: cannot read accessibilityHint of Picker - GTK's driver has no path for it yet
-Picker.accessibilityLabel: cannot read accessibilityLabel of Picker - GTK's driver has no path for it yet
-Picker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Picker - GTK's driver has no path for it yet
+Picker.accessibilityHeadingLevel: ✅
+Picker.accessibilityHint: ✅
+Picker.accessibilityLabel: ✅
+Picker.automationExcludedWithChildren: ✅
 Picker.background: not realized
 Picker.focus: waits on Picker.isFocusedChanged
 Picker.frame: ✅
 Picker.frameChanged: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
-Picker.isAccessibilityHidden: cannot read isAccessibilityHidden of Picker - GTK's driver has no path for it yet
+Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
 Picker.isFocusedChanged: not realized
 Picker.isVisible: ✅
@@ -529,31 +529,31 @@ Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅
 Picker.minimumWidth: ✅
 Picker.opacity: ✅
-Picker.pivotX: cannot read pivotX of Picker - GTK's driver has no path for it yet
-Picker.pivotY: cannot read pivotY of Picker - GTK's driver has no path for it yet
-Picker.rotation: cannot read rotation of Picker - GTK's driver has no path for it yet
-Picker.rotationX: cannot read rotationX of Picker - GTK's driver has no path for it yet
-Picker.rotationY: cannot read rotationY of Picker - GTK's driver has no path for it yet
-Picker.scale: cannot read scale of Picker - GTK's driver has no path for it yet
-Picker.scaleX: cannot read scaleX of Picker - GTK's driver has no path for it yet
-Picker.scaleY: cannot read scaleY of Picker - GTK's driver has no path for it yet
+Picker.pivotX: 🔌 read pivotX of Picker: the host's own transform: GTK reads back no part of one
+Picker.pivotY: 🔌 read pivotY of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotation: 🔌 read rotation of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotationX: 🔌 read rotationX of Picker: the host's own transform: GTK reads back no part of one
+Picker.rotationY: 🔌 read rotationY of Picker: the host's own transform: GTK reads back no part of one
+Picker.scale: 🔌 read scale of Picker: the host's own transform: GTK reads back no part of one
+Picker.scaleX: 🔌 read scaleX of Picker: the host's own transform: GTK reads back no part of one
+Picker.scaleY: 🔌 read scaleY of Picker: the host's own transform: GTK reads back no part of one
 Picker.style: ✅
-Picker.translationX: cannot read translationX of Picker - GTK's driver has no path for it yet
-Picker.translationY: cannot read translationY of Picker - GTK's driver has no path for it yet
+Picker.translationX: 🔌 read translationX of Picker: the host's own transform: GTK reads back no part of one
+Picker.translationY: 🔌 read translationY of Picker: the host's own transform: GTK reads back no part of one
 Picker.unfocus: waits on Picker.isFocusedChanged
 Picker.width: ✅
 Picker.zIndex: not realized
-Polygon.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polygon - GTK's driver has no path for it yet
-Polygon.accessibilityHint: cannot read accessibilityHint of Polygon - GTK's driver has no path for it yet
-Polygon.accessibilityLabel: cannot read accessibilityLabel of Polygon - GTK's driver has no path for it yet
-Polygon.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polygon - GTK's driver has no path for it yet
+Polygon.accessibilityHeadingLevel: ✅
+Polygon.accessibilityHint: ✅
+Polygon.accessibilityLabel: ✅
+Polygon.automationExcludedWithChildren: ✅
 Polygon.background: not realized
 Polygon.focus: waits on Polygon.isFocusedChanged
 Polygon.frame: ✅
 Polygon.frameChanged: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
-Polygon.isAccessibilityHidden: cannot read isAccessibilityHidden of Polygon - GTK's driver has no path for it yet
+Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
 Polygon.isFocusedChanged: not realized
 Polygon.isVisible: ✅
@@ -563,31 +563,31 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polygon.opacity: ✅
-Polygon.pivotX: cannot read pivotX of Polygon - GTK's driver has no path for it yet
-Polygon.pivotY: cannot read pivotY of Polygon - GTK's driver has no path for it yet
-Polygon.rotation: cannot read rotation of Polygon - GTK's driver has no path for it yet
-Polygon.rotationX: cannot read rotationX of Polygon - GTK's driver has no path for it yet
-Polygon.rotationY: cannot read rotationY of Polygon - GTK's driver has no path for it yet
-Polygon.scale: cannot read scale of Polygon - GTK's driver has no path for it yet
-Polygon.scaleX: cannot read scaleX of Polygon - GTK's driver has no path for it yet
-Polygon.scaleY: cannot read scaleY of Polygon - GTK's driver has no path for it yet
+Polygon.pivotX: 🔌 read pivotX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.pivotY: 🔌 read pivotY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotation: 🔌 read rotation of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotationX: 🔌 read rotationX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.rotationY: 🔌 read rotationY of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scale: 🔌 read scale of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scaleX: 🔌 read scaleX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.scaleY: 🔌 read scaleY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.style: ✅
-Polygon.translationX: cannot read translationX of Polygon - GTK's driver has no path for it yet
-Polygon.translationY: cannot read translationY of Polygon - GTK's driver has no path for it yet
+Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform: GTK reads back no part of one
+Polygon.translationY: 🔌 read translationY of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.unfocus: waits on Polygon.isFocusedChanged
 Polygon.width: ✅
 Polygon.zIndex: not realized
-Polyline.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Polyline - GTK's driver has no path for it yet
-Polyline.accessibilityHint: cannot read accessibilityHint of Polyline - GTK's driver has no path for it yet
-Polyline.accessibilityLabel: cannot read accessibilityLabel of Polyline - GTK's driver has no path for it yet
-Polyline.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Polyline - GTK's driver has no path for it yet
+Polyline.accessibilityHeadingLevel: ✅
+Polyline.accessibilityHint: ✅
+Polyline.accessibilityLabel: ✅
+Polyline.automationExcludedWithChildren: ✅
 Polyline.background: not realized
 Polyline.focus: waits on Polyline.isFocusedChanged
 Polyline.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
-Polyline.isAccessibilityHidden: cannot read isAccessibilityHidden of Polyline - GTK's driver has no path for it yet
+Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
 Polyline.isFocusedChanged: not realized
 Polyline.isVisible: ✅
@@ -597,31 +597,31 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.opacity: ✅
-Polyline.pivotX: cannot read pivotX of Polyline - GTK's driver has no path for it yet
-Polyline.pivotY: cannot read pivotY of Polyline - GTK's driver has no path for it yet
-Polyline.rotation: cannot read rotation of Polyline - GTK's driver has no path for it yet
-Polyline.rotationX: cannot read rotationX of Polyline - GTK's driver has no path for it yet
-Polyline.rotationY: cannot read rotationY of Polyline - GTK's driver has no path for it yet
-Polyline.scale: cannot read scale of Polyline - GTK's driver has no path for it yet
-Polyline.scaleX: cannot read scaleX of Polyline - GTK's driver has no path for it yet
-Polyline.scaleY: cannot read scaleY of Polyline - GTK's driver has no path for it yet
+Polyline.pivotX: 🔌 read pivotX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.pivotY: 🔌 read pivotY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotation: 🔌 read rotation of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotationX: 🔌 read rotationX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.rotationY: 🔌 read rotationY of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scale: 🔌 read scale of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scaleX: 🔌 read scaleX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.scaleY: 🔌 read scaleY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.style: ✅
-Polyline.translationX: cannot read translationX of Polyline - GTK's driver has no path for it yet
-Polyline.translationY: cannot read translationY of Polyline - GTK's driver has no path for it yet
+Polyline.translationX: 🔌 read translationX of Polyline: the host's own transform: GTK reads back no part of one
+Polyline.translationY: 🔌 read translationY of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.unfocus: waits on Polyline.isFocusedChanged
 Polyline.width: ✅
 Polyline.zIndex: not realized
-ProgressBar.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.accessibilityHint: cannot read accessibilityHint of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.accessibilityLabel: cannot read accessibilityLabel of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ProgressBar - GTK's driver has no path for it yet
+ProgressBar.accessibilityHeadingLevel: ✅
+ProgressBar.accessibilityHint: ✅
+ProgressBar.accessibilityLabel: ✅
+ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.background: not realized
 ProgressBar.focus: waits on ProgressBar.isFocusedChanged
 ProgressBar.frame: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
-ProgressBar.isAccessibilityHidden: cannot read isAccessibilityHidden of ProgressBar - GTK's driver has no path for it yet
+ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.isFocusedChanged: not realized
 ProgressBar.isVisible: ✅
@@ -631,31 +631,31 @@ ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
 ProgressBar.opacity: ✅
-ProgressBar.pivotX: cannot read pivotX of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.pivotY: cannot read pivotY of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.rotation: cannot read rotation of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.rotationX: cannot read rotationX of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.rotationY: cannot read rotationY of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.scale: cannot read scale of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.scaleX: cannot read scaleX of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.scaleY: cannot read scaleY of ProgressBar - GTK's driver has no path for it yet
+ProgressBar.pivotX: 🔌 read pivotX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.pivotY: 🔌 read pivotY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotation: 🔌 read rotation of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotationX: 🔌 read rotationX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.rotationY: 🔌 read rotationY of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scale: 🔌 read scale of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scaleX: 🔌 read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.scaleY: 🔌 read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.style: ✅
-ProgressBar.translationX: cannot read translationX of ProgressBar - GTK's driver has no path for it yet
-ProgressBar.translationY: cannot read translationY of ProgressBar - GTK's driver has no path for it yet
+ProgressBar.translationX: 🔌 read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
+ProgressBar.translationY: 🔌 read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.unfocus: waits on ProgressBar.isFocusedChanged
 ProgressBar.width: ✅
 ProgressBar.zIndex: not realized
-RadioButton.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of RadioButton - GTK's driver has no path for it yet
-RadioButton.accessibilityHint: cannot read accessibilityHint of RadioButton - GTK's driver has no path for it yet
-RadioButton.accessibilityLabel: cannot read accessibilityLabel of RadioButton - GTK's driver has no path for it yet
-RadioButton.automationExcludedWithChildren: cannot read automationExcludedWithChildren of RadioButton - GTK's driver has no path for it yet
+RadioButton.accessibilityHeadingLevel: ✅
+RadioButton.accessibilityHint: ✅
+RadioButton.accessibilityLabel: ✅
+RadioButton.automationExcludedWithChildren: ✅
 RadioButton.background: not realized
 RadioButton.focus: waits on RadioButton.isFocusedChanged
 RadioButton.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅
 RadioButton.ignoresInput: not realized
-RadioButton.isAccessibilityHidden: cannot read isAccessibilityHidden of RadioButton - GTK's driver has no path for it yet
+RadioButton.isAccessibilityHidden: ✅
 RadioButton.isEnabled: ✅
 RadioButton.isFocusedChanged: not realized
 RadioButton.isVisible: ✅
@@ -665,31 +665,31 @@ RadioButton.maximumWidth: ✅
 RadioButton.minimumHeight: ✅
 RadioButton.minimumWidth: ✅
 RadioButton.opacity: ✅
-RadioButton.pivotX: cannot read pivotX of RadioButton - GTK's driver has no path for it yet
-RadioButton.pivotY: cannot read pivotY of RadioButton - GTK's driver has no path for it yet
-RadioButton.rotation: cannot read rotation of RadioButton - GTK's driver has no path for it yet
-RadioButton.rotationX: cannot read rotationX of RadioButton - GTK's driver has no path for it yet
-RadioButton.rotationY: cannot read rotationY of RadioButton - GTK's driver has no path for it yet
-RadioButton.scale: cannot read scale of RadioButton - GTK's driver has no path for it yet
-RadioButton.scaleX: cannot read scaleX of RadioButton - GTK's driver has no path for it yet
-RadioButton.scaleY: cannot read scaleY of RadioButton - GTK's driver has no path for it yet
+RadioButton.pivotX: 🔌 read pivotX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.pivotY: 🔌 read pivotY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotation: 🔌 read rotation of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotationX: 🔌 read rotationX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.rotationY: 🔌 read rotationY of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scale: 🔌 read scale of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scaleX: 🔌 read scaleX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.scaleY: 🔌 read scaleY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.style: ✅
-RadioButton.translationX: cannot read translationX of RadioButton - GTK's driver has no path for it yet
-RadioButton.translationY: cannot read translationY of RadioButton - GTK's driver has no path for it yet
+RadioButton.translationX: 🔌 read translationX of RadioButton: the host's own transform: GTK reads back no part of one
+RadioButton.translationY: 🔌 read translationY of RadioButton: the host's own transform: GTK reads back no part of one
 RadioButton.unfocus: waits on RadioButton.isFocusedChanged
 RadioButton.width: ✅
 RadioButton.zIndex: not realized
-Rectangle.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Rectangle - GTK's driver has no path for it yet
-Rectangle.accessibilityHint: cannot read accessibilityHint of Rectangle - GTK's driver has no path for it yet
-Rectangle.accessibilityLabel: cannot read accessibilityLabel of Rectangle - GTK's driver has no path for it yet
-Rectangle.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Rectangle - GTK's driver has no path for it yet
+Rectangle.accessibilityHeadingLevel: ✅
+Rectangle.accessibilityHint: ✅
+Rectangle.accessibilityLabel: ✅
+Rectangle.automationExcludedWithChildren: ✅
 Rectangle.background: not realized
 Rectangle.focus: waits on Rectangle.isFocusedChanged
 Rectangle.frame: ✅
 Rectangle.frameChanged: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.isAccessibilityHidden: cannot read isAccessibilityHidden of Rectangle - GTK's driver has no path for it yet
+Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
 Rectangle.isFocusedChanged: not realized
 Rectangle.isVisible: ✅
@@ -699,31 +699,31 @@ Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
 Rectangle.minimumWidth: ✅
 Rectangle.opacity: ✅
-Rectangle.pivotX: cannot read pivotX of Rectangle - GTK's driver has no path for it yet
-Rectangle.pivotY: cannot read pivotY of Rectangle - GTK's driver has no path for it yet
-Rectangle.rotation: cannot read rotation of Rectangle - GTK's driver has no path for it yet
-Rectangle.rotationX: cannot read rotationX of Rectangle - GTK's driver has no path for it yet
-Rectangle.rotationY: cannot read rotationY of Rectangle - GTK's driver has no path for it yet
-Rectangle.scale: cannot read scale of Rectangle - GTK's driver has no path for it yet
-Rectangle.scaleX: cannot read scaleX of Rectangle - GTK's driver has no path for it yet
-Rectangle.scaleY: cannot read scaleY of Rectangle - GTK's driver has no path for it yet
+Rectangle.pivotX: 🔌 read pivotX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.pivotY: 🔌 read pivotY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotation: 🔌 read rotation of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotationX: 🔌 read rotationX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.rotationY: 🔌 read rotationY of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scale: 🔌 read scale of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scaleX: 🔌 read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.scaleY: 🔌 read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.style: ✅
-Rectangle.translationX: cannot read translationX of Rectangle - GTK's driver has no path for it yet
-Rectangle.translationY: cannot read translationY of Rectangle - GTK's driver has no path for it yet
+Rectangle.translationX: 🔌 read translationX of Rectangle: the host's own transform: GTK reads back no part of one
+Rectangle.translationY: 🔌 read translationY of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.unfocus: waits on Rectangle.isFocusedChanged
 Rectangle.width: ✅
 Rectangle.zIndex: not realized
-ScrollView.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ScrollView - GTK's driver has no path for it yet
-ScrollView.accessibilityHint: cannot read accessibilityHint of ScrollView - GTK's driver has no path for it yet
-ScrollView.accessibilityLabel: cannot read accessibilityLabel of ScrollView - GTK's driver has no path for it yet
-ScrollView.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ScrollView - GTK's driver has no path for it yet
+ScrollView.accessibilityHeadingLevel: ✅
+ScrollView.accessibilityHint: ✅
+ScrollView.accessibilityLabel: ✅
+ScrollView.automationExcludedWithChildren: ✅
 ScrollView.background: cannot read background of ScrollView - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ScrollView.focus: waits on ScrollView.isFocusedChanged
 ScrollView.frame: ✅
 ScrollView.frameChanged: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
-ScrollView.isAccessibilityHidden: cannot read isAccessibilityHidden of ScrollView - GTK's driver has no path for it yet
+ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
 ScrollView.isFocusedChanged: not realized
 ScrollView.isVisible: ✅
@@ -733,31 +733,31 @@ ScrollView.maximumWidth: ✅
 ScrollView.minimumHeight: ✅
 ScrollView.minimumWidth: ✅
 ScrollView.opacity: ✅
-ScrollView.pivotX: cannot read pivotX of ScrollView - GTK's driver has no path for it yet
-ScrollView.pivotY: cannot read pivotY of ScrollView - GTK's driver has no path for it yet
-ScrollView.rotation: cannot read rotation of ScrollView - GTK's driver has no path for it yet
-ScrollView.rotationX: cannot read rotationX of ScrollView - GTK's driver has no path for it yet
-ScrollView.rotationY: cannot read rotationY of ScrollView - GTK's driver has no path for it yet
-ScrollView.scale: cannot read scale of ScrollView - GTK's driver has no path for it yet
-ScrollView.scaleX: cannot read scaleX of ScrollView - GTK's driver has no path for it yet
-ScrollView.scaleY: cannot read scaleY of ScrollView - GTK's driver has no path for it yet
+ScrollView.pivotX: 🔌 read pivotX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.pivotY: 🔌 read pivotY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotation: 🔌 read rotation of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotationX: 🔌 read rotationX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.rotationY: 🔌 read rotationY of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scale: 🔌 read scale of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scaleX: 🔌 read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.scaleY: 🔌 read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.style: ✅
-ScrollView.translationX: cannot read translationX of ScrollView - GTK's driver has no path for it yet
-ScrollView.translationY: cannot read translationY of ScrollView - GTK's driver has no path for it yet
+ScrollView.translationX: 🔌 read translationX of ScrollView: the host's own transform: GTK reads back no part of one
+ScrollView.translationY: 🔌 read translationY of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.unfocus: waits on ScrollView.isFocusedChanged
 ScrollView.width: ✅
 ScrollView.zIndex: not realized
-SearchField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of SearchField - GTK's driver has no path for it yet
-SearchField.accessibilityHint: cannot read accessibilityHint of SearchField - GTK's driver has no path for it yet
-SearchField.accessibilityLabel: cannot read accessibilityLabel of SearchField - GTK's driver has no path for it yet
-SearchField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of SearchField - GTK's driver has no path for it yet
+SearchField.accessibilityHeadingLevel: ✅
+SearchField.accessibilityHint: ✅
+SearchField.accessibilityLabel: ✅
+SearchField.automationExcludedWithChildren: ✅
 SearchField.background: not realized
 SearchField.focus: waits on SearchField.isFocusedChanged
 SearchField.frame: ✅
 SearchField.frameChanged: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
-SearchField.isAccessibilityHidden: cannot read isAccessibilityHidden of SearchField - GTK's driver has no path for it yet
+SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
 SearchField.isFocusedChanged: not realized
 SearchField.isVisible: ✅
@@ -767,31 +767,31 @@ SearchField.maximumWidth: ✅
 SearchField.minimumHeight: ✅
 SearchField.minimumWidth: ✅
 SearchField.opacity: ✅
-SearchField.pivotX: cannot read pivotX of SearchField - GTK's driver has no path for it yet
-SearchField.pivotY: cannot read pivotY of SearchField - GTK's driver has no path for it yet
-SearchField.rotation: cannot read rotation of SearchField - GTK's driver has no path for it yet
-SearchField.rotationX: cannot read rotationX of SearchField - GTK's driver has no path for it yet
-SearchField.rotationY: cannot read rotationY of SearchField - GTK's driver has no path for it yet
-SearchField.scale: cannot read scale of SearchField - GTK's driver has no path for it yet
-SearchField.scaleX: cannot read scaleX of SearchField - GTK's driver has no path for it yet
-SearchField.scaleY: cannot read scaleY of SearchField - GTK's driver has no path for it yet
+SearchField.pivotX: 🔌 read pivotX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.pivotY: 🔌 read pivotY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotation: 🔌 read rotation of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotationX: 🔌 read rotationX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.rotationY: 🔌 read rotationY of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scale: 🔌 read scale of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scaleX: 🔌 read scaleX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.scaleY: 🔌 read scaleY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.style: ✅
-SearchField.translationX: cannot read translationX of SearchField - GTK's driver has no path for it yet
-SearchField.translationY: cannot read translationY of SearchField - GTK's driver has no path for it yet
+SearchField.translationX: 🔌 read translationX of SearchField: the host's own transform: GTK reads back no part of one
+SearchField.translationY: 🔌 read translationY of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.unfocus: waits on SearchField.isFocusedChanged
 SearchField.width: ✅
 SearchField.zIndex: not realized
-Slider.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Slider - GTK's driver has no path for it yet
-Slider.accessibilityHint: cannot read accessibilityHint of Slider - GTK's driver has no path for it yet
-Slider.accessibilityLabel: cannot read accessibilityLabel of Slider - GTK's driver has no path for it yet
-Slider.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Slider - GTK's driver has no path for it yet
+Slider.accessibilityHeadingLevel: ✅
+Slider.accessibilityHint: ✅
+Slider.accessibilityLabel: ✅
+Slider.automationExcludedWithChildren: ✅
 Slider.background: not realized
 Slider.focus: waits on Slider.isFocusedChanged
 Slider.frame: ✅
 Slider.frameChanged: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
-Slider.isAccessibilityHidden: cannot read isAccessibilityHidden of Slider - GTK's driver has no path for it yet
+Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
 Slider.isFocusedChanged: not realized
 Slider.isVisible: ✅
@@ -801,31 +801,31 @@ Slider.maximumWidth: ✅
 Slider.minimumHeight: ✅
 Slider.minimumWidth: ✅
 Slider.opacity: ✅
-Slider.pivotX: cannot read pivotX of Slider - GTK's driver has no path for it yet
-Slider.pivotY: cannot read pivotY of Slider - GTK's driver has no path for it yet
-Slider.rotation: cannot read rotation of Slider - GTK's driver has no path for it yet
-Slider.rotationX: cannot read rotationX of Slider - GTK's driver has no path for it yet
-Slider.rotationY: cannot read rotationY of Slider - GTK's driver has no path for it yet
-Slider.scale: cannot read scale of Slider - GTK's driver has no path for it yet
-Slider.scaleX: cannot read scaleX of Slider - GTK's driver has no path for it yet
-Slider.scaleY: cannot read scaleY of Slider - GTK's driver has no path for it yet
+Slider.pivotX: 🔌 read pivotX of Slider: the host's own transform: GTK reads back no part of one
+Slider.pivotY: 🔌 read pivotY of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotation: 🔌 read rotation of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotationX: 🔌 read rotationX of Slider: the host's own transform: GTK reads back no part of one
+Slider.rotationY: 🔌 read rotationY of Slider: the host's own transform: GTK reads back no part of one
+Slider.scale: 🔌 read scale of Slider: the host's own transform: GTK reads back no part of one
+Slider.scaleX: 🔌 read scaleX of Slider: the host's own transform: GTK reads back no part of one
+Slider.scaleY: 🔌 read scaleY of Slider: the host's own transform: GTK reads back no part of one
 Slider.style: ✅
-Slider.translationX: cannot read translationX of Slider - GTK's driver has no path for it yet
-Slider.translationY: cannot read translationY of Slider - GTK's driver has no path for it yet
+Slider.translationX: 🔌 read translationX of Slider: the host's own transform: GTK reads back no part of one
+Slider.translationY: 🔌 read translationY of Slider: the host's own transform: GTK reads back no part of one
 Slider.unfocus: waits on Slider.isFocusedChanged
 Slider.width: ✅
 Slider.zIndex: not realized
-Stepper.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Stepper - GTK's driver has no path for it yet
-Stepper.accessibilityHint: cannot read accessibilityHint of Stepper - GTK's driver has no path for it yet
-Stepper.accessibilityLabel: cannot read accessibilityLabel of Stepper - GTK's driver has no path for it yet
-Stepper.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Stepper - GTK's driver has no path for it yet
+Stepper.accessibilityHeadingLevel: ✅
+Stepper.accessibilityHint: ✅
+Stepper.accessibilityLabel: ✅
+Stepper.automationExcludedWithChildren: ✅
 Stepper.background: not realized
 Stepper.focus: waits on Stepper.isFocusedChanged
 Stepper.frame: ✅
 Stepper.frameChanged: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
-Stepper.isAccessibilityHidden: cannot read isAccessibilityHidden of Stepper - GTK's driver has no path for it yet
+Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
 Stepper.isFocusedChanged: not realized
 Stepper.isVisible: ✅
@@ -835,31 +835,31 @@ Stepper.maximumWidth: ✅
 Stepper.minimumHeight: ✅
 Stepper.minimumWidth: ✅
 Stepper.opacity: ✅
-Stepper.pivotX: cannot read pivotX of Stepper - GTK's driver has no path for it yet
-Stepper.pivotY: cannot read pivotY of Stepper - GTK's driver has no path for it yet
-Stepper.rotation: cannot read rotation of Stepper - GTK's driver has no path for it yet
-Stepper.rotationX: cannot read rotationX of Stepper - GTK's driver has no path for it yet
-Stepper.rotationY: cannot read rotationY of Stepper - GTK's driver has no path for it yet
-Stepper.scale: cannot read scale of Stepper - GTK's driver has no path for it yet
-Stepper.scaleX: cannot read scaleX of Stepper - GTK's driver has no path for it yet
-Stepper.scaleY: cannot read scaleY of Stepper - GTK's driver has no path for it yet
+Stepper.pivotX: 🔌 read pivotX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.pivotY: 🔌 read pivotY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotation: 🔌 read rotation of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotationX: 🔌 read rotationX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.rotationY: 🔌 read rotationY of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scale: 🔌 read scale of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scaleX: 🔌 read scaleX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.scaleY: 🔌 read scaleY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.style: ✅
-Stepper.translationX: cannot read translationX of Stepper - GTK's driver has no path for it yet
-Stepper.translationY: cannot read translationY of Stepper - GTK's driver has no path for it yet
+Stepper.translationX: 🔌 read translationX of Stepper: the host's own transform: GTK reads back no part of one
+Stepper.translationY: 🔌 read translationY of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.unfocus: waits on Stepper.isFocusedChanged
 Stepper.width: ✅
 Stepper.zIndex: not realized
-Switch.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of Switch - GTK's driver has no path for it yet
-Switch.accessibilityHint: cannot read accessibilityHint of Switch - GTK's driver has no path for it yet
-Switch.accessibilityLabel: cannot read accessibilityLabel of Switch - GTK's driver has no path for it yet
-Switch.automationExcludedWithChildren: cannot read automationExcludedWithChildren of Switch - GTK's driver has no path for it yet
+Switch.accessibilityHeadingLevel: ✅
+Switch.accessibilityHint: ✅
+Switch.accessibilityLabel: ✅
+Switch.automationExcludedWithChildren: ✅
 Switch.background: not realized
 Switch.focus: waits on Switch.isFocusedChanged
 Switch.frame: ✅
 Switch.frameChanged: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
-Switch.isAccessibilityHidden: cannot read isAccessibilityHidden of Switch - GTK's driver has no path for it yet
+Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
 Switch.isFocusedChanged: not realized
 Switch.isVisible: ✅
@@ -869,31 +869,31 @@ Switch.maximumWidth: ✅
 Switch.minimumHeight: ✅
 Switch.minimumWidth: ✅
 Switch.opacity: ✅
-Switch.pivotX: cannot read pivotX of Switch - GTK's driver has no path for it yet
-Switch.pivotY: cannot read pivotY of Switch - GTK's driver has no path for it yet
-Switch.rotation: cannot read rotation of Switch - GTK's driver has no path for it yet
-Switch.rotationX: cannot read rotationX of Switch - GTK's driver has no path for it yet
-Switch.rotationY: cannot read rotationY of Switch - GTK's driver has no path for it yet
-Switch.scale: cannot read scale of Switch - GTK's driver has no path for it yet
-Switch.scaleX: cannot read scaleX of Switch - GTK's driver has no path for it yet
-Switch.scaleY: cannot read scaleY of Switch - GTK's driver has no path for it yet
+Switch.pivotX: 🔌 read pivotX of Switch: the host's own transform: GTK reads back no part of one
+Switch.pivotY: 🔌 read pivotY of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotation: 🔌 read rotation of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotationX: 🔌 read rotationX of Switch: the host's own transform: GTK reads back no part of one
+Switch.rotationY: 🔌 read rotationY of Switch: the host's own transform: GTK reads back no part of one
+Switch.scale: 🔌 read scale of Switch: the host's own transform: GTK reads back no part of one
+Switch.scaleX: 🔌 read scaleX of Switch: the host's own transform: GTK reads back no part of one
+Switch.scaleY: 🔌 read scaleY of Switch: the host's own transform: GTK reads back no part of one
 Switch.style: ✅
-Switch.translationX: cannot read translationX of Switch - GTK's driver has no path for it yet
-Switch.translationY: cannot read translationY of Switch - GTK's driver has no path for it yet
+Switch.translationX: 🔌 read translationX of Switch: the host's own transform: GTK reads back no part of one
+Switch.translationY: 🔌 read translationY of Switch: the host's own transform: GTK reads back no part of one
 Switch.unfocus: waits on Switch.isFocusedChanged
 Switch.width: ✅
 Switch.zIndex: not realized
-TextEditor.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextEditor - GTK's driver has no path for it yet
-TextEditor.accessibilityHint: cannot read accessibilityHint of TextEditor - GTK's driver has no path for it yet
-TextEditor.accessibilityLabel: cannot read accessibilityLabel of TextEditor - GTK's driver has no path for it yet
-TextEditor.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextEditor - GTK's driver has no path for it yet
+TextEditor.accessibilityHeadingLevel: ✅
+TextEditor.accessibilityHint: ✅
+TextEditor.accessibilityLabel: ✅
+TextEditor.automationExcludedWithChildren: ✅
 TextEditor.background: not realized
 TextEditor.focus: waits on TextEditor.isFocusedChanged
 TextEditor.frame: ✅
 TextEditor.frameChanged: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
-TextEditor.isAccessibilityHidden: cannot read isAccessibilityHidden of TextEditor - GTK's driver has no path for it yet
+TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isFocusedChanged: not realized
 TextEditor.isVisible: ✅
@@ -903,31 +903,31 @@ TextEditor.maximumWidth: ✅
 TextEditor.minimumHeight: ✅
 TextEditor.minimumWidth: ✅
 TextEditor.opacity: ✅
-TextEditor.pivotX: cannot read pivotX of TextEditor - GTK's driver has no path for it yet
-TextEditor.pivotY: cannot read pivotY of TextEditor - GTK's driver has no path for it yet
-TextEditor.rotation: cannot read rotation of TextEditor - GTK's driver has no path for it yet
-TextEditor.rotationX: cannot read rotationX of TextEditor - GTK's driver has no path for it yet
-TextEditor.rotationY: cannot read rotationY of TextEditor - GTK's driver has no path for it yet
-TextEditor.scale: cannot read scale of TextEditor - GTK's driver has no path for it yet
-TextEditor.scaleX: cannot read scaleX of TextEditor - GTK's driver has no path for it yet
-TextEditor.scaleY: cannot read scaleY of TextEditor - GTK's driver has no path for it yet
+TextEditor.pivotX: 🔌 read pivotX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.pivotY: 🔌 read pivotY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotation: 🔌 read rotation of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotationX: 🔌 read rotationX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.rotationY: 🔌 read rotationY of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scale: 🔌 read scale of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scaleX: 🔌 read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.scaleY: 🔌 read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.style: ✅
-TextEditor.translationX: cannot read translationX of TextEditor - GTK's driver has no path for it yet
-TextEditor.translationY: cannot read translationY of TextEditor - GTK's driver has no path for it yet
+TextEditor.translationX: 🔌 read translationX of TextEditor: the host's own transform: GTK reads back no part of one
+TextEditor.translationY: 🔌 read translationY of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.unfocus: waits on TextEditor.isFocusedChanged
 TextEditor.width: ✅
 TextEditor.zIndex: not realized
-TextField.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TextField - GTK's driver has no path for it yet
-TextField.accessibilityHint: cannot read accessibilityHint of TextField - GTK's driver has no path for it yet
-TextField.accessibilityLabel: cannot read accessibilityLabel of TextField - GTK's driver has no path for it yet
-TextField.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TextField - GTK's driver has no path for it yet
+TextField.accessibilityHeadingLevel: ✅
+TextField.accessibilityHint: ✅
+TextField.accessibilityLabel: ✅
+TextField.automationExcludedWithChildren: ✅
 TextField.background: not realized
 TextField.focus: waits on TextField.isFocusedChanged
 TextField.frame: ✅
 TextField.frameChanged: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
-TextField.isAccessibilityHidden: cannot read isAccessibilityHidden of TextField - GTK's driver has no path for it yet
+TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
 TextField.isFocusedChanged: not realized
 TextField.isVisible: ✅
@@ -937,31 +937,31 @@ TextField.maximumWidth: ✅
 TextField.minimumHeight: ✅
 TextField.minimumWidth: ✅
 TextField.opacity: ✅
-TextField.pivotX: cannot read pivotX of TextField - GTK's driver has no path for it yet
-TextField.pivotY: cannot read pivotY of TextField - GTK's driver has no path for it yet
-TextField.rotation: cannot read rotation of TextField - GTK's driver has no path for it yet
-TextField.rotationX: cannot read rotationX of TextField - GTK's driver has no path for it yet
-TextField.rotationY: cannot read rotationY of TextField - GTK's driver has no path for it yet
-TextField.scale: cannot read scale of TextField - GTK's driver has no path for it yet
-TextField.scaleX: cannot read scaleX of TextField - GTK's driver has no path for it yet
-TextField.scaleY: cannot read scaleY of TextField - GTK's driver has no path for it yet
+TextField.pivotX: 🔌 read pivotX of TextField: the host's own transform: GTK reads back no part of one
+TextField.pivotY: 🔌 read pivotY of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotation: 🔌 read rotation of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotationX: 🔌 read rotationX of TextField: the host's own transform: GTK reads back no part of one
+TextField.rotationY: 🔌 read rotationY of TextField: the host's own transform: GTK reads back no part of one
+TextField.scale: 🔌 read scale of TextField: the host's own transform: GTK reads back no part of one
+TextField.scaleX: 🔌 read scaleX of TextField: the host's own transform: GTK reads back no part of one
+TextField.scaleY: 🔌 read scaleY of TextField: the host's own transform: GTK reads back no part of one
 TextField.style: ✅
-TextField.translationX: cannot read translationX of TextField - GTK's driver has no path for it yet
-TextField.translationY: cannot read translationY of TextField - GTK's driver has no path for it yet
+TextField.translationX: 🔌 read translationX of TextField: the host's own transform: GTK reads back no part of one
+TextField.translationY: 🔌 read translationY of TextField: the host's own transform: GTK reads back no part of one
 TextField.unfocus: waits on TextField.isFocusedChanged
 TextField.width: ✅
 TextField.zIndex: not realized
-TimePicker.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of TimePicker - GTK's driver has no path for it yet
-TimePicker.accessibilityHint: cannot read accessibilityHint of TimePicker - GTK's driver has no path for it yet
-TimePicker.accessibilityLabel: cannot read accessibilityLabel of TimePicker - GTK's driver has no path for it yet
-TimePicker.automationExcludedWithChildren: cannot read automationExcludedWithChildren of TimePicker - GTK's driver has no path for it yet
+TimePicker.accessibilityHeadingLevel: ✅
+TimePicker.accessibilityHint: ✅
+TimePicker.accessibilityLabel: ✅
+TimePicker.automationExcludedWithChildren: ✅
 TimePicker.background: not realized
 TimePicker.focus: waits on TimePicker.isFocusedChanged
 TimePicker.frame: ✅
 TimePicker.frameChanged: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
-TimePicker.isAccessibilityHidden: cannot read isAccessibilityHidden of TimePicker - GTK's driver has no path for it yet
+TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isFocusedChanged: not realized
 TimePicker.isVisible: ✅
@@ -971,31 +971,31 @@ TimePicker.maximumWidth: ✅
 TimePicker.minimumHeight: ✅
 TimePicker.minimumWidth: ✅
 TimePicker.opacity: ✅
-TimePicker.pivotX: cannot read pivotX of TimePicker - GTK's driver has no path for it yet
-TimePicker.pivotY: cannot read pivotY of TimePicker - GTK's driver has no path for it yet
-TimePicker.rotation: cannot read rotation of TimePicker - GTK's driver has no path for it yet
-TimePicker.rotationX: cannot read rotationX of TimePicker - GTK's driver has no path for it yet
-TimePicker.rotationY: cannot read rotationY of TimePicker - GTK's driver has no path for it yet
-TimePicker.scale: cannot read scale of TimePicker - GTK's driver has no path for it yet
-TimePicker.scaleX: cannot read scaleX of TimePicker - GTK's driver has no path for it yet
-TimePicker.scaleY: cannot read scaleY of TimePicker - GTK's driver has no path for it yet
+TimePicker.pivotX: 🔌 read pivotX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.pivotY: 🔌 read pivotY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotation: 🔌 read rotation of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotationX: 🔌 read rotationX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.rotationY: 🔌 read rotationY of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scale: 🔌 read scale of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scaleX: 🔌 read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.scaleY: 🔌 read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.style: ✅
-TimePicker.translationX: cannot read translationX of TimePicker - GTK's driver has no path for it yet
-TimePicker.translationY: cannot read translationY of TimePicker - GTK's driver has no path for it yet
+TimePicker.translationX: 🔌 read translationX of TimePicker: the host's own transform: GTK reads back no part of one
+TimePicker.translationY: 🔌 read translationY of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.unfocus: waits on TimePicker.isFocusedChanged
 TimePicker.width: ✅
 TimePicker.zIndex: not realized
-VStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of VStack - GTK's driver has no path for it yet
-VStack.accessibilityHint: cannot read accessibilityHint of VStack - GTK's driver has no path for it yet
-VStack.accessibilityLabel: cannot read accessibilityLabel of VStack - GTK's driver has no path for it yet
-VStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of VStack - GTK's driver has no path for it yet
+VStack.accessibilityHeadingLevel: ✅
+VStack.accessibilityHint: ✅
+VStack.accessibilityLabel: ✅
+VStack.automationExcludedWithChildren: ✅
 VStack.background: cannot read background of VStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 VStack.focus: waits on VStack.isFocusedChanged
 VStack.frame: ✅
 VStack.frameChanged: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
-VStack.isAccessibilityHidden: cannot read isAccessibilityHidden of VStack - GTK's driver has no path for it yet
+VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
 VStack.isFocusedChanged: not realized
 VStack.isVisible: ✅
@@ -1005,17 +1005,17 @@ VStack.maximumWidth: ✅
 VStack.minimumHeight: ✅
 VStack.minimumWidth: ✅
 VStack.opacity: ✅
-VStack.pivotX: cannot read pivotX of VStack - GTK's driver has no path for it yet
-VStack.pivotY: cannot read pivotY of VStack - GTK's driver has no path for it yet
-VStack.rotation: cannot read rotation of VStack - GTK's driver has no path for it yet
-VStack.rotationX: cannot read rotationX of VStack - GTK's driver has no path for it yet
-VStack.rotationY: cannot read rotationY of VStack - GTK's driver has no path for it yet
-VStack.scale: cannot read scale of VStack - GTK's driver has no path for it yet
-VStack.scaleX: cannot read scaleX of VStack - GTK's driver has no path for it yet
-VStack.scaleY: cannot read scaleY of VStack - GTK's driver has no path for it yet
+VStack.pivotX: 🔌 read pivotX of VStack: the host's own transform: GTK reads back no part of one
+VStack.pivotY: 🔌 read pivotY of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotation: 🔌 read rotation of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotationX: 🔌 read rotationX of VStack: the host's own transform: GTK reads back no part of one
+VStack.rotationY: 🔌 read rotationY of VStack: the host's own transform: GTK reads back no part of one
+VStack.scale: 🔌 read scale of VStack: the host's own transform: GTK reads back no part of one
+VStack.scaleX: 🔌 read scaleX of VStack: the host's own transform: GTK reads back no part of one
+VStack.scaleY: 🔌 read scaleY of VStack: the host's own transform: GTK reads back no part of one
 VStack.style: ✅
-VStack.translationX: cannot read translationX of VStack - GTK's driver has no path for it yet
-VStack.translationY: cannot read translationY of VStack - GTK's driver has no path for it yet
+VStack.translationX: 🔌 read translationX of VStack: the host's own transform: GTK reads back no part of one
+VStack.translationY: 🔌 read translationY of VStack: the host's own transform: GTK reads back no part of one
 VStack.unfocus: waits on VStack.isFocusedChanged
 VStack.width: ✅
 VStack.zIndex: not realized
@@ -1053,17 +1053,17 @@ WebView.translationY: not realized
 WebView.unfocus: not realized
 WebView.width: not realized
 WebView.zIndex: not realized
-ZStack.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ZStack - GTK's driver has no path for it yet
-ZStack.accessibilityHint: cannot read accessibilityHint of ZStack - GTK's driver has no path for it yet
-ZStack.accessibilityLabel: cannot read accessibilityLabel of ZStack - GTK's driver has no path for it yet
-ZStack.automationExcludedWithChildren: cannot read automationExcludedWithChildren of ZStack - GTK's driver has no path for it yet
+ZStack.accessibilityHeadingLevel: ✅
+ZStack.accessibilityHint: ✅
+ZStack.accessibilityLabel: ✅
+ZStack.automationExcludedWithChildren: ✅
 ZStack.background: cannot read background of ZStack - StateUI draws a layout's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ZStack.focus: waits on ZStack.isFocusedChanged
 ZStack.frame: ✅
 ZStack.frameChanged: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
-ZStack.isAccessibilityHidden: cannot read isAccessibilityHidden of ZStack - GTK's driver has no path for it yet
+ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
 ZStack.isFocusedChanged: not realized
 ZStack.isVisible: ✅
@@ -1073,17 +1073,17 @@ ZStack.maximumWidth: ✅
 ZStack.minimumHeight: ✅
 ZStack.minimumWidth: ✅
 ZStack.opacity: ✅
-ZStack.pivotX: cannot read pivotX of ZStack - GTK's driver has no path for it yet
-ZStack.pivotY: cannot read pivotY of ZStack - GTK's driver has no path for it yet
-ZStack.rotation: cannot read rotation of ZStack - GTK's driver has no path for it yet
-ZStack.rotationX: cannot read rotationX of ZStack - GTK's driver has no path for it yet
-ZStack.rotationY: cannot read rotationY of ZStack - GTK's driver has no path for it yet
-ZStack.scale: cannot read scale of ZStack - GTK's driver has no path for it yet
-ZStack.scaleX: cannot read scaleX of ZStack - GTK's driver has no path for it yet
-ZStack.scaleY: cannot read scaleY of ZStack - GTK's driver has no path for it yet
+ZStack.pivotX: 🔌 read pivotX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.pivotY: 🔌 read pivotY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotation: 🔌 read rotation of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotationX: 🔌 read rotationX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.rotationY: 🔌 read rotationY of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scale: 🔌 read scale of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scaleX: 🔌 read scaleX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.scaleY: 🔌 read scaleY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.style: ✅
-ZStack.translationX: cannot read translationX of ZStack - GTK's driver has no path for it yet
-ZStack.translationY: cannot read translationY of ZStack - GTK's driver has no path for it yet
+ZStack.translationX: 🔌 read translationX of ZStack: the host's own transform: GTK reads back no part of one
+ZStack.translationY: 🔌 read translationY of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.unfocus: waits on ZStack.isFocusedChanged
 ZStack.width: ✅
 ZStack.zIndex: not realized

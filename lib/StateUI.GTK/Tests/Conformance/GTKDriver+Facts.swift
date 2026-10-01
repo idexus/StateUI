@@ -85,6 +85,9 @@ extension GTKDriver {
     /// Performs a window's act: its question answered, or its life as the desktop would tell it - the driver tells
     /// what GTK's notices would, since a desktop moves no window a test shows; false for an act it is not.
     func windowAct(_ act: UserAct, on element: MountedElement) throws -> Bool {
+        // The driver stands for the desktop: what GTK itself tells of the windows the driver moves is let go of, so
+        // a test window's own focus says nothing over it.
+        for controller in renderer?.windows ?? [] { Self.quiet(controller.window) }
         let tell = { (window: MountedElement, minimized: Bool, activated: Bool) in
             self.renderer?.runtime.windowStateChanged(window, minimized: minimized, activated: activated)
         }
@@ -102,6 +105,20 @@ extension GTKDriver {
         }
         step()
         return true
+    }
+}
+
+extension GTKDriver {
+    /// Stops the window's own notices of its activity and its state reaching the host; its close still does.
+    fileprivate static func quiet(_ window: GTKWindow) {
+        let data = UnsafeMutableRawPointer(bitPattern: Int(window.number))
+        for instance in [UnsafeMutableRawPointer(window.widget), gtk_native_get_surface(window.widget.opaque).map {
+            UnsafeMutableRawPointer($0)
+        }].compactMap({ $0 }) {
+            g_signal_handlers_block_matched(
+                instance, GSignalMatchType(rawValue: G_SIGNAL_MATCH_ID.rawValue | G_SIGNAL_MATCH_DATA.rawValue),
+                g_signal_lookup("notify", g_object_get_type()), 0, nil, nil, data)
+        }
     }
 }
 

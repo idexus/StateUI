@@ -1,7 +1,7 @@
 # revision 1.1
-Button.shape: cannot read shape of Button - GTK's driver has no path for it yet
-Button.stroke: cannot read stroke of Button - GTK's driver has no path for it yet
-Button.strokeWidth: cannot read strokeWidth of Button - GTK's driver has no path for it yet
+Button.shape: 🔌 read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape
+Button.stroke: 🔌 read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke
+Button.strokeWidth: 🔌 read strokeWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no strokeWidth
 Grid.shape: cannot read shape of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its shape; its drawing proves it
 Grid.stroke: cannot read stroke of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its stroke; its drawing proves it
 Grid.strokeWidth: cannot read strokeWidth of Grid - StateUI draws a layout's box on GTK's snapshot, which holds none of its strokeWidth; its drawing proves it

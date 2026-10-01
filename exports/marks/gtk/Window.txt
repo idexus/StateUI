@@ -6,7 +6,7 @@ Window.deactivated: 🔌 switchAway on Window: the notice GTK's window would giv
 Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
 Window.height: ✅
-Window.hidesWhenInactive: cannot read isVisible of Window - GTK's driver has no path for it yet
+Window.hidesWhenInactive: 🔌 bringToFront on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.isMaximizable: not realized
 Window.isMinimizable: not realized
 Window.isTranslucent: not realized
@@ -18,7 +18,7 @@ Window.resumed: 🔌 minimize on Window: the notice GTK's window would give, tol
 Window.stopped: 🔌 minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.title: ✅
 Window.width: ✅
-Window.windowType: cannot read windowValue of Window - GTK's driver has no path for it yet
-Window.windowValue: cannot read windowValue of Window - GTK's driver has no path for it yet
+Window.windowType: 🔌 read windowType of Window: the scenes the host keeps for the next start
+Window.windowValue: 🔌 read windowValue of Window: the scenes the host keeps for the next start
 Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
 Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.

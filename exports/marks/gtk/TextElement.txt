@@ -7,7 +7,7 @@ RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
-Span.text: cannot read text of Span - GTK's driver has no path for it yet
+Span.text: ◐ waits on Span.textCase
 Span.textCase: not realized
 TextEditor.text: ✅
 TextEditor.textCase: ✅

@@ -1,9 +1,9 @@
 # revision 1.1
-Button.padding: cannot read padding of Button - GTK's driver has no path for it yet
+Button.padding: 🔌 read padding of Button: the class of the host's style sheet the widget wears: GTK reads back no padding
 Grid.padding: ✅
 HStack.padding: ✅
-Label.padding: cannot read padding of Label - GTK's driver has no path for it yet
-RadioButton.padding: cannot read padding of RadioButton - GTK's driver has no path for it yet
+Label.padding: 🔌 read padding of Label: the class of the host's style sheet the widget wears: GTK reads back no padding
+RadioButton.padding: 🔌 read padding of RadioButton: the class of the host's style sheet the widget wears: GTK reads back no padding
 ScrollView.padding: ✅
 VStack.padding: ✅
 ZStack.padding: ✅

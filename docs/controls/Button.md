@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 41 ✅ · 3 – | `UIButton` |  |
 | Android Views | ✅ | 59 ✅ · 1 ☑️ · 3 – | `Button` |  |
 | WinUI 3 | ✅ | 71 ✅ | `Button` |  |
-| GTK 4 | ✅ | 42 ✅ | `GtkButton` |  |
+| GTK 4 | ✅ | 51 ✅ | `GtkButton` |  |
 | Web |  |  | `<button>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -67,16 +67,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | · |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; GTK 4: cannot read accessibilityHeadingLevel of Button - GTK's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityHint of Button - GTK's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Button - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of Button - GTK's driver has no path for it yet |
-| `background` | property | `Background` | native | ☑️ | ✅ | · | ✅ | · |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet; GTK 4: cannot read background of Button - GTK's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | ✅ |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `background` | property | `Background` | native | ☑️ | ✅ | · | ✅ | 🔌 |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; Android Views: cannot read a background of no one colour - Android's driver has no path for it yet; GTK 4: only through the host's own: read background of Button: the class of the host's style sheet the widget wears: GTK reads back no background |
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Button.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Button - GTK's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -86,17 +86,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotX of Button - GTK's driver has no path for it yet |
-| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotY of Button - GTK's driver has no path for it yet |
-| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read rotation of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read rotation of Button - GTK's driver has no path for it yet |
-| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Button: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationX of Button - GTK's driver has no path for it yet |
-| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Button: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationY of Button - GTK's driver has no path for it yet |
-| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scale of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scale of Button - GTK's driver has no path for it yet |
-| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleX of Button - GTK's driver has no path for it yet |
-| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleY of Button - GTK's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of Button: the host's own transform: GTK reads back no part of one |
+| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of Button: the host's own transform: GTK reads back no part of one |
+| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read rotation of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of Button: the host's own transform: GTK reads back no part of one |
+| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Button: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationX of Button: the host's own transform: GTK reads back no part of one |
+| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Button: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationY of Button: the host's own transform: GTK reads back no part of one |
+| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scale of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of Button: the host's own transform: GTK reads back no part of one |
+| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of Button: the host's own transform: GTK reads back no part of one |
+| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of Button: the host's own transform: GTK reads back no part of one |
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationX of Button - GTK's driver has no path for it yet |
-| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationY of Button - GTK's driver has no path for it yet |
+| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of Button: the host's own transform: GTK reads back no part of one |
+| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of Button: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Button: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of Button: the host's own transform: GTK reads back no part of one |
 | `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Button takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Button.isFocusedChanged, not realized yet |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -156,7 +156,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  | ✅ |  |  |  |  | not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read textColor of Button - GTK's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -164,10 +164,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read fontAttributes of Button - GTK's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read a family - Android's typeface keeps no family's name; GTK 4: cannot read fontFamily of Button - GTK's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read fontSize of Button - GTK's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read a family - Android's typeface keeps no family's name |
+| `fontSize` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -175,7 +175,7 @@ The space kept inside an element, around what it holds.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | `Insets` | native | · | ✅ | ✅ | ✅ | · |  | cannot read padding of Button - AppKit's driver has no path for it yet; GTK 4: cannot read padding of Button - GTK's driver has no path for it yet |
+| `padding` | property | `Insets` | native | · | ✅ | ✅ | ✅ | 🔌 |  | cannot read padding of Button - AppKit's driver has no path for it yet; GTK 4: only through the host's own: read padding of Button: the class of the host's style sheet the widget wears: GTK reads back no padding |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
@@ -183,9 +183,9 @@ What an element draws of its own box: the shape its background, its outline and 
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `shape` | property | `ContainerShape` | stateUI | · | ✅ | · | ✅ | · |  | cannot read shape of a box shorter than its radius - AppKit's layer holds the radius it draws, at most half the box's shorter side; Android Views: cannot read shape of Button - Android's driver has no path for it yet; GTK 4: cannot read shape of Button - GTK's driver has no path for it yet |
-| `stroke` | property | `Brush` | stateUI | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read stroke of Button - Android's driver has no path for it yet; GTK 4: cannot read stroke of Button - GTK's driver has no path for it yet |
-| `strokeWidth` | property | `Double` | stateUI | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read strokeWidth of Button - Android's driver has no path for it yet; GTK 4: cannot read strokeWidth of Button - GTK's driver has no path for it yet |
+| `shape` | property | `ContainerShape` | stateUI | · | ✅ | · | ✅ | 🔌 |  | cannot read shape of a box shorter than its radius - AppKit's layer holds the radius it draws, at most half the box's shorter side; Android Views: cannot read shape of Button - Android's driver has no path for it yet; GTK 4: only through the host's own: read shape of Button: the class of the host's style sheet the widget wears: GTK reads back no shape |
+| `stroke` | property | `Brush` | stateUI | ✅ | ✅ | · | ✅ | 🔌 |  | Android Views: cannot read stroke of Button - Android's driver has no path for it yet; GTK 4: only through the host's own: read stroke of Button: the class of the host's style sheet the widget wears: GTK reads back no stroke |
+| `strokeWidth` | property | `Double` | stateUI | ✅ | ✅ | · | ✅ | 🔌 |  | Android Views: cannot read strokeWidth of Button - Android's driver has no path for it yet; GTK 4: only through the host's own: read strokeWidth of Button: the class of the host's style sheet the widget wears: GTK reads back no strokeWidth |
 
 ## From [ImageElement](tiers/ImageElement.md)
 

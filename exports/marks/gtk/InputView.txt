@@ -1,37 +1,37 @@
 # revision 1.1
-SearchField.cursorPosition: cannot read cursorPosition of SearchField - GTK's driver has no path for it yet
-SearchField.inputPurpose: cannot read inputPurpose of SearchField - GTK's driver has no path for it yet
+SearchField.cursorPosition: ❌ 2 expected, 7 came - the value the tree gave
+SearchField.inputPurpose: ✅
 SearchField.isEnabled: ✅
-SearchField.isReadOnly: ◐ cannot read isReadOnly of SearchField - GTK's driver has no path for it yet
-SearchField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of SearchField - GTK's driver has no path for it yet
-SearchField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of SearchField - GTK's driver has no path for it yet
+SearchField.isReadOnly: ✅
+SearchField.isSpellCheckEnabled: ✅
+SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
-SearchField.placeholder: cannot read placeholder of SearchField - GTK's driver has no path for it yet
-SearchField.placeholderColor: cannot read placeholderColor of SearchField - GTK's driver has no path for it yet
-SearchField.selectionLength: cannot read selectionLength of SearchField - GTK's driver has no path for it yet
+SearchField.placeholder: ✅
+SearchField.placeholderColor: 🔌 read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+SearchField.selectionLength: ❌ 3 expected, 7 came - the value the tree gave
 SearchField.text: ✅
 SearchField.textChanged: ✅
-TextEditor.cursorPosition: cannot read cursorPosition of TextEditor - GTK's driver has no path for it yet
-TextEditor.inputPurpose: cannot read inputPurpose of TextEditor - GTK's driver has no path for it yet
+TextEditor.cursorPosition: ✅
+TextEditor.inputPurpose: ✅
 TextEditor.isEnabled: ✅
-TextEditor.isReadOnly: ◐ cannot read isReadOnly of TextEditor - GTK's driver has no path for it yet
-TextEditor.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextEditor - GTK's driver has no path for it yet
-TextEditor.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextEditor - GTK's driver has no path for it yet
+TextEditor.isReadOnly: ✅
+TextEditor.isSpellCheckEnabled: ✅
+TextEditor.isTextPredictionEnabled: ✅
 TextEditor.maximumLength: ✅
-TextEditor.placeholder: cannot read placeholder of TextEditor - GTK's driver has no path for it yet
-TextEditor.placeholderColor: cannot read placeholderColor of TextEditor - GTK's driver has no path for it yet
-TextEditor.selectionLength: cannot read selectionLength of TextEditor - GTK's driver has no path for it yet
+TextEditor.placeholder: ✅
+TextEditor.placeholderColor: 🔌 read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextEditor.selectionLength: ✅
 TextEditor.text: ✅
 TextEditor.textChanged: ✅
-TextField.cursorPosition: cannot read cursorPosition of TextField - GTK's driver has no path for it yet
-TextField.inputPurpose: cannot read inputPurpose of TextField - GTK's driver has no path for it yet
+TextField.cursorPosition: ❌ 2 expected, 7 came - the value the tree gave
+TextField.inputPurpose: ✅
 TextField.isEnabled: ✅
-TextField.isReadOnly: ◐ cannot read isReadOnly of TextField - GTK's driver has no path for it yet
-TextField.isSpellCheckEnabled: cannot read isSpellCheckEnabled of TextField - GTK's driver has no path for it yet
-TextField.isTextPredictionEnabled: cannot read isTextPredictionEnabled of TextField - GTK's driver has no path for it yet
+TextField.isReadOnly: ✅
+TextField.isSpellCheckEnabled: ✅
+TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
-TextField.placeholder: cannot read placeholder of TextField - GTK's driver has no path for it yet
-TextField.placeholderColor: cannot read placeholderColor of TextField - GTK's driver has no path for it yet
-TextField.selectionLength: cannot read selectionLength of TextField - GTK's driver has no path for it yet
+TextField.placeholder: ✅
+TextField.placeholderColor: 🔌 read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
+TextField.selectionLength: ❌ 3 expected, 7 came - the value the tree gave
 TextField.text: ✅
 TextField.textChanged: ✅

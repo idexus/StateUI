@@ -1,13 +1,13 @@
 # revision 1.1
 Grid.avoidsSafeArea: not realized
-Grid.clipsContent: ◐ cannot read clipsContent of Grid - GTK's driver has no path for it yet
-Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - GTK's driver has no path for it yet
+Grid.clipsContent: ✅
+Grid.letsInputThrough: ✅
 HStack.avoidsSafeArea: not realized
-HStack.clipsContent: ◐ cannot read clipsContent of HStack - GTK's driver has no path for it yet
-HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - GTK's driver has no path for it yet
+HStack.clipsContent: ✅
+HStack.letsInputThrough: ✅
 VStack.avoidsSafeArea: not realized
-VStack.clipsContent: ◐ cannot read clipsContent of VStack - GTK's driver has no path for it yet
-VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - GTK's driver has no path for it yet
+VStack.clipsContent: ✅
+VStack.letsInputThrough: ✅
 ZStack.avoidsSafeArea: not realized
-ZStack.clipsContent: ◐ cannot read clipsContent of ZStack - GTK's driver has no path for it yet
-ZStack.letsInputThrough: ◐ cannot read letsInputThrough of ZStack - GTK's driver has no path for it yet
+ZStack.clipsContent: ✅
+ZStack.letsInputThrough: ✅

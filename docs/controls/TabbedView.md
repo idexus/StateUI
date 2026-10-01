@@ -45,7 +45,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 8 ✅ · 2 – | `UITabBarController` |  |
 | Android Views | ✅ | 3 ✅ · 2 – | custom `LinearLayout` tab row |  |
 | WinUI 3 | ✅ | 10 ✅ | `NavigationView` with a top pane |  |
-| GTK 4 | ✅ | 3 ✅ · 2 – | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
+| GTK 4 | ✅ | 6 ✅ · 2 – | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` |  |
 | Web |  |  | ARIA `tablist` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContract.swift`.
@@ -54,8 +54,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Navigation/TabbedViewContrac
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property | `Int` | structure | 🔌 | ✅ | · | ✅ | · |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot read currentPage of TabbedView - GTK's driver has no path for it yet |
-| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet; GTK 4: cannot read currentPage of TabbedView - GTK's driver has no path for it yet |
+| `currentPage` | property | `Int` | structure | 🔌 | ✅ | · | ✅ | ✅ |  | only through the host's own: read currentPage of TabbedView: the host's tab choice, not the tab view's; Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
+| `currentPageChanged` | event | `Int` | adaptive | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot choose on TabbedView - Android's driver has no path for it yet |
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
@@ -84,4 +84,4 @@ What a page shows about itself where another container presents it as an item - 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `icon` | property | `ImageSource` | adaptive | · | ✅ | · | ✅ |  |  | cannot read icon of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read icon of TabbedView - Android's driver has no path for it yet; GTK 4: not realized |
-| `title` | property | `String` | native | · | ✅ | · | ✅ | · |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read title of TabbedView - Android's driver has no path for it yet; GTK 4: cannot read title of TabbedView - GTK's driver has no path for it yet |
+| `title` | property | `String` | native | · | ✅ | · | ✅ | ✅ |  | cannot read title of TabbedView - AppKit's driver has no path for it yet; Android Views: cannot read title of TabbedView - Android's driver has no path for it yet |

@@ -5,4 +5,4 @@ Scene.deactivated: ✅
 Scene.destroying: ✅
 Scene.stopped: ✅
 Scene.windowClosed: ✅
-Scene.windowRestored: cannot read windowValue of Window - GTK's driver has no path for it yet
+Scene.windowRestored: ✅

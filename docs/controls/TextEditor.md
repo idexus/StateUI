@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 46 ✅ | `UITextView` |  |
 | Android Views | ✅ | 65 ✅ · 1 ☑️ · 1 – | multi-line `EditText` |  |
 | WinUI 3 | ✅ | 70 ✅ | multi-line `TextBox` |  |
-| GTK 4 | ✅ | 39 ✅ | `GtkTextView` |  |
+| GTK 4 | ✅ | 56 ✅ | `GtkTextView` |  |
 | Web |  |  | `<textarea>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -62,16 +62,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | · |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; GTK 4: cannot read accessibilityHeadingLevel of TextEditor - GTK's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityHint of TextEditor - GTK's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityLabel of TextEditor - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of TextEditor - GTK's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | ✅ |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ | ✅ | ✅ | ⏸ |  | GTK 4: waits on TextEditor.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of TextEditor - GTK's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: waits on TextEditor.isReadOnly |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ | ✅ | ✅ |  |  | GTK 4: not realized |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -81,17 +81,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotX of TextEditor - GTK's driver has no path for it yet |
-| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotY of TextEditor - GTK's driver has no path for it yet |
-| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read rotation of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read rotation of TextEditor - GTK's driver has no path for it yet |
-| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationX of TextEditor - GTK's driver has no path for it yet |
-| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationY of TextEditor - GTK's driver has no path for it yet |
-| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scale of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scale of TextEditor - GTK's driver has no path for it yet |
-| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleX of TextEditor - GTK's driver has no path for it yet |
-| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleY of TextEditor - GTK's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of TextEditor: the host's own transform: GTK reads back no part of one |
+| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of TextEditor: the host's own transform: GTK reads back no part of one |
+| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read rotation of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of TextEditor: the host's own transform: GTK reads back no part of one |
+| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationX of TextEditor: the host's own transform: GTK reads back no part of one |
+| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of TextEditor: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationY of TextEditor: the host's own transform: GTK reads back no part of one |
+| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scale of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of TextEditor: the host's own transform: GTK reads back no part of one |
+| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of TextEditor: the host's own transform: GTK reads back no part of one |
+| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of TextEditor: the host's own transform: GTK reads back no part of one |
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationX of TextEditor - GTK's driver has no path for it yet |
-| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationY of TextEditor - GTK's driver has no path for it yet |
+| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of TextEditor: the host's own transform: GTK reads back no part of one |
+| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of TextEditor: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of TextEditor: the host's own transform: GTK reads back no part of one |
 | `unfocus` | act | `() -> Void` |  | ✅ | ✅ | ✅ | ✅ | ⏸ |  | GTK 4: waits on TextEditor.isFocusedChanged, not realized yet |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -141,15 +141,15 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `cursorPosition` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read cursorPosition of TextEditor - GTK's driver has no path for it yet |
-| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ | ✅ | · |  | only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks; GTK 4: cannot read inputPurpose of TextEditor - GTK's driver has no path for it yet |
-| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ◐ |  | Android Views: not realized; GTK 4: cannot read isReadOnly of TextEditor - GTK's driver has no path for it yet |
-| `isSpellCheckEnabled` | property | `Bool` | native | ✅ | ✅ | – | ✅ | · |  | Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off.; GTK 4: cannot read isSpellCheckEnabled of TextEditor - GTK's driver has no path for it yet |
-| `isTextPredictionEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isTextPredictionEnabled of TextEditor - GTK's driver has no path for it yet |
+| `cursorPosition` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `inputPurpose` | property | `InputPurpose` | adaptive | 🔌 | ✅ | ✅ | ✅ | ✅ |  | only through the host's own: read inputPurpose of TextEditor: the traits the host keeps; a Mac shows no keys a purpose picks |
+| `isReadOnly` | property | `Bool` | native | ✅ | ✅ |  | ✅ | ✅ |  | Android Views: not realized |
+| `isSpellCheckEnabled` | property | `Bool` | native | ✅ | ✅ | – | ✅ | ✅ |  | Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which `isTextPredictionEnabled` turns off. |
+| `isTextPredictionEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `maximumLength` | property | `Int` | native | ✅ | ✅ | ◐ | ✅ | ✅ |  | Android Views: cannot read maximumLength of TextEditor - Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it |
-| `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholder of TextEditor - GTK's driver has no path for it yet |
-| `placeholderColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read placeholderColor of TextEditor - GTK's driver has no path for it yet |
-| `selectionLength` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read selectionLength of TextEditor - GTK's driver has no path for it yet |
+| `placeholder` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `placeholderColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | 🔌 |  | GTK 4: only through the host's own: read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor |
+| `selectionLength` | property | `Int` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `onTextChanged` (`textChanged`) | event | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
@@ -168,7 +168,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read textColor of TextEditor - GTK's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -176,10 +176,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read fontAttributes of TextEditor - GTK's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native | ✅ | ✅ | · | ✅ | · |  | Android Views: cannot read a family - Android's typeface keeps no family's name; GTK 4: cannot read fontFamily of TextEditor - GTK's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read fontSize of TextEditor - GTK's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ | · | ✅ | ✅ |  | Android Views: cannot read a family - Android's typeface keeps no family's name |
+| `fontSize` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -187,5 +187,5 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read horizontalTextAlignment of TextEditor - GTK's driver has no path for it yet |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `verticalTextAlignment` | property | `TextAlignment` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |

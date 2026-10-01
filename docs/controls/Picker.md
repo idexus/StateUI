@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 25 ✅ · 3 – | pop-up `UIButton` menu |  |
 | Android Views | ✅ | 52 ✅ · 1 ☑️ · 3 – | `Spinner` |  |
 | WinUI 3 | ✅ | 65 ✅ | `ComboBox` |  |
-| GTK 4 | ✅ | 37 ✅ · 5 – | `GtkDropDown` |  |
+| GTK 4 | ✅ | 46 ✅ · 5 – | `GtkDropDown` |  |
 | Web |  |  | `<select>` | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -68,16 +68,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | · |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level; GTK 4: cannot read accessibilityHeadingLevel of Picker - GTK's driver has no path for it yet |
-| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityHint of Picker - GTK's driver has no path for it yet |
-| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read accessibilityLabel of Picker - GTK's driver has no path for it yet |
-| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read automationExcludedWithChildren of Picker - GTK's driver has no path for it yet |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | · | · | · | ✅ | ✅ |  | cannot read a heading's level - AppKit marks a heading, not its level; UIKit: cannot read a heading's level - UIKit marks a heading, not its level; Android Views: cannot read a heading's level - Android marks a heading, not its level |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `background` | property | `Background` | native | ☑️ |  | ✅ |  |  |  | AppKit paints a colour on this view; a brush is drawn only by a layout.; UIKit: not realized; WinUI 3: not realized; GTK 4: not realized |
 | `focus` | act | `() -> Bool` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Picker.isFocusedChanged, not realized yet |
 | `frame` | property | `Rect` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  | UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | · |  | GTK 4: cannot read isAccessibilityHidden of Picker - GTK's driver has no path for it yet |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isEnabled` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | – | – | ✅ |  |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: not realized |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
@@ -87,17 +87,17 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `minimumHeight` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `minimumWidth` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `opacity` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotX of Picker - GTK's driver has no path for it yet |
-| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read pivotY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read pivotY of Picker - GTK's driver has no path for it yet |
-| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read rotation of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read rotation of Picker - GTK's driver has no path for it yet |
-| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Picker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationX of Picker - GTK's driver has no path for it yet |
-| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | · |  | only through the host's own: read rotationY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Picker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: cannot read rotationY of Picker - GTK's driver has no path for it yet |
-| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scale of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scale of Picker - GTK's driver has no path for it yet |
-| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleX of Picker - GTK's driver has no path for it yet |
-| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read scaleY of Picker - GTK's driver has no path for it yet |
+| `pivotX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotX of Picker: the host's own transform: GTK reads back no part of one |
+| `pivotY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read pivotY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read pivotY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read pivotY of Picker: the host's own transform: GTK reads back no part of one |
+| `rotation` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read rotation of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotation of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read rotation of Picker: the host's own transform: GTK reads back no part of one |
+| `rotationX` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationX of Picker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationX of Picker: the host's own transform: GTK reads back no part of one |
+| `rotationY` | property | `Double` | native | 🔌 | 🔌 | ✅ |  | 🔌 |  | only through the host's own: read rotationY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read rotationY of Picker: the host's own transform, checked against the layer it composed itself; WinUI 3: not realized; GTK 4: only through the host's own: read rotationY of Picker: the host's own transform: GTK reads back no part of one |
+| `scale` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scale of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scale of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scale of Picker: the host's own transform: GTK reads back no part of one |
+| `scaleX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleX of Picker: the host's own transform: GTK reads back no part of one |
+| `scaleY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read scaleY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read scaleY of Picker: the host's own transform: GTK reads back no part of one |
 | `style` | property | `Name` | structure | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
-| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationX of Picker - GTK's driver has no path for it yet |
-| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | · |  | only through the host's own: read translationY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: cannot read translationY of Picker - GTK's driver has no path for it yet |
+| `translationX` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationX of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationX of Picker: the host's own transform: GTK reads back no part of one |
+| `translationY` | property | `Double` | native | 🔌 | 🔌 | ✅ | ✅ | 🔌 |  | only through the host's own: read translationY of Picker: the host's own transform, checked against the layer it composed itself; UIKit: only through the host's own: read translationY of Picker: the host's own transform, checked against the layer it composed itself; GTK 4: only through the host's own: read translationY of Picker: the host's own transform: GTK reads back no part of one |
 | `unfocus` | act | `() -> Void` |  | ✅ | – | – | ✅ | ⏸ |  | UIKit: Picker takes no keyboard focus here: it refuses it, and nothing is heard; Android Views: Picker takes no keyboard focus here: it refuses it, and nothing is heard; GTK 4: waits on Picker.isFocusedChanged, not realized yet |
 | `width` | property | `Double` | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `zIndex` | property | `Int` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
@@ -148,7 +148,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `textColor` | property | `Color` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read textColor of Picker - Android's driver has no path for it yet; GTK 4: cannot read textColor of Picker - GTK's driver has no path for it yet |
+| `textColor` | property | `Color` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read textColor of Picker - Android's driver has no path for it yet |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -156,10 +156,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontAttributes of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontAttributes of Picker - GTK's driver has no path for it yet |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontAttributes of Picker - Android's driver has no path for it yet |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive |  |  |  |  |  |  | not realized; UIKit: not realized; Android Views: not realized; WinUI 3: not realized; GTK 4: not realized |
-| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontFamily of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontFamily of Picker - GTK's driver has no path for it yet |
-| `fontSize` | property | `Double` | native | ✅ |  | · | ✅ | · |  | UIKit: not realized; Android Views: cannot read fontSize of Picker - Android's driver has no path for it yet; GTK 4: cannot read fontSize of Picker - GTK's driver has no path for it yet |
+| `fontFamily` | property | `Name` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontFamily of Picker - Android's driver has no path for it yet |
+| `fontSize` | property | `Double` | native | ✅ |  | · | ✅ | ✅ |  | UIKit: not realized; Android Views: cannot read fontSize of Picker - Android's driver has no path for it yet |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 

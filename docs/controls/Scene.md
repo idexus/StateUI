@@ -50,7 +50,7 @@ See [the dictionary](README.md) for how a mark is given.
 | UIKit | ✅ | 4 ✅ | `UIApplication` / `UIWindowScene` |  |
 | Android Views | ✅ | 4 ✅ | `Application` / structure |  |
 | WinUI 3 | ✅ | 6 ✅ | `Application` / structure |  |
-| GTK 4 | ✅ | 5 ✅ | `GtkApplication` / structure |  |
+| GTK 4 | ✅ | 6 ✅ | `GtkApplication` / structure |  |
 | Web |  |  | `document` / structure | no host yet |
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -64,4 +64,4 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Structure/SceneContract.swif
 | `destroying` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `stopped` | event |  | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ |  |  |
 | `windowClosed` | event | `String` | adaptive | ✅ | ⏸ |  | ✅ | ✅ |  | UIKit: waits on Window.windowType, not realized yet; Android Views: not realized |
-| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ | · |  | UIKit: not realized; Android Views: not realized; GTK 4: cannot read windowValue of Window - GTK's driver has no path for it yet |
+| `windowRestored` | event | `(String, String?)` | adaptive | ✅ |  |  | ✅ | ✅ |  | UIKit: not realized; Android Views: not realized |
