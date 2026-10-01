@@ -63,9 +63,6 @@ Polygon.pivotX: ✅
 Polygon.zIndex: not realized
 Polyline.accessibilityLabel: ✅
 Polyline.rotationX: not realized
-PositionIndicator.isAccessibilityHidden: not realized
-PositionIndicator.isEnabled: not realized
-PositionIndicator.scaleX: not realized
 ProgressBar.ignoresInput: not realized
 ProgressBar.layoutDirection: not realized
 ProgressBar.translationY: ✅

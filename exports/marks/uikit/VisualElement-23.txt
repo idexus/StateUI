@@ -31,7 +31,6 @@ Picker.opacity: ✅
 Picker.translationY: 🔌 read translationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.scaleX: 🔌 read scaleX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.rotationX: 🔌 read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.pivotX: not realized
 ProgressBar.automationExcludedWithChildren: ✅
 RadioButton.accessibilityHint: ✅
 Rectangle.focus: – Rectangle takes no keyboard focus here: it refuses it, and nothing is heard

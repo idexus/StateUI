@@ -29,7 +29,6 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testPicker() { conform(PickerTests.self) }
     @MainActor func testPolygon() { conform(PolygonTests.self) }
     @MainActor func testPolyline() { conform(PolylineTests.self) }
-    @MainActor func testPositionIndicator() { conform(PositionIndicatorTests.self) }
     @MainActor func testProgressBar() { conform(ProgressBarTests.self) }
     @MainActor func testRadioButton() { conform(RadioButtonTests.self) }
     @MainActor func testRectangle() { conform(RectangleTests.self) }

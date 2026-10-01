@@ -611,40 +611,6 @@ Polyline.translationY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.width: ✅
 Polyline.zIndex: not realized
-PositionIndicator.accessibilityHeadingLevel: not realized
-PositionIndicator.accessibilityHint: not realized
-PositionIndicator.accessibilityLabel: not realized
-PositionIndicator.automationExcludedWithChildren: not realized
-PositionIndicator.background: not realized
-PositionIndicator.focus: not realized
-PositionIndicator.frame: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.height: not realized
-PositionIndicator.ignoresInput: not realized
-PositionIndicator.isAccessibilityHidden: not realized
-PositionIndicator.isEnabled: not realized
-PositionIndicator.isFocusedChanged: not realized
-PositionIndicator.isVisible: not realized
-PositionIndicator.layoutDirection: not realized
-PositionIndicator.maximumHeight: not realized
-PositionIndicator.maximumWidth: not realized
-PositionIndicator.minimumHeight: not realized
-PositionIndicator.minimumWidth: not realized
-PositionIndicator.opacity: not realized
-PositionIndicator.pivotX: not realized
-PositionIndicator.pivotY: not realized
-PositionIndicator.rotation: not realized
-PositionIndicator.rotationX: not realized
-PositionIndicator.rotationY: not realized
-PositionIndicator.scale: not realized
-PositionIndicator.scaleX: not realized
-PositionIndicator.scaleY: not realized
-PositionIndicator.style: not realized
-PositionIndicator.translationX: not realized
-PositionIndicator.translationY: not realized
-PositionIndicator.unfocus: not realized
-PositionIndicator.width: not realized
-PositionIndicator.zIndex: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read a heading's level - Android marks a heading, not its level
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅

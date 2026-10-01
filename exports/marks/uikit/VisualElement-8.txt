@@ -37,8 +37,6 @@ Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
-PositionIndicator.opacity: not realized
-PositionIndicator.translationY: not realized
 ProgressBar.scaleX: 🔌 read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.rotationX: 🔌 read rotationX of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotX: 🔌 read pivotX of Rectangle: the host's own transform, checked against the layer it composed itself

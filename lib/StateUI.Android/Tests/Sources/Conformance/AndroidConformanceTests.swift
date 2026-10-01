@@ -30,7 +30,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testPicker", testPicker),
             ("testPolygon", testPolygon),
             ("testPolyline", testPolyline),
-            ("testPositionIndicator", testPositionIndicator),
             ("testProgressBar", testProgressBar),
             ("testRadioButton", testRadioButton),
             ("testRectangle", testRectangle),
@@ -106,7 +105,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testPicker() throws { try conform(PickerTests.self) }
     func testPolygon() throws { try conform(PolygonTests.self) }
     func testPolyline() throws { try conform(PolylineTests.self) }
-    func testPositionIndicator() throws { try conform(PositionIndicatorTests.self) }
     func testProgressBar() throws { try conform(ProgressBarTests.self) }
     func testRadioButton() throws { try conform(RadioButtonTests.self) }
     func testRectangle() throws { try conform(RectangleTests.self) }

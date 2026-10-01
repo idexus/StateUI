@@ -160,6 +160,14 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = Button("Save").cornerRadius(8)"#,
             contract: #"_ = Button("Save").shape(.roundedRectangle(8))"#),
         Road(
+            name: "the withdrawn style of the composed PositionIndicator",
+            removed: "_ = Style<PositionIndicator>().selectedIndicatorColor(.red)",
+            contract: "_ = PositionIndicator().selectedIndicatorColor(.red)"),
+        Road(
+            name: "the withdrawn PositionIndicatorContract",
+            removed: "_ = PositionIndicator().setValue(PositionIndicatorContract.count, 3)",
+            contract: "_ = PositionIndicator().count(3)"),
+        Road(
             name: "the withdrawn Border",
             removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
             contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),

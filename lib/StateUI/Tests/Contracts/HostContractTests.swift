@@ -168,7 +168,7 @@ final class HostContractTests: XCTestCase {
     func testDerivedLayoutsAndControlsBelongToStateUI() {
         for type in [
             NodeType.checkBox, .ellipse, .grid,
-            .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
+            .line, .path, .polygon, .polyline, .radioButton,
             .rectangle,
         ] {
             XCTAssertEqual(Self.layer(of: type), .stateUI)
@@ -277,6 +277,16 @@ final class HostContractTests: XCTestCase {
         }
     }
 
+    /// The dots beside a run of cards are StateUI's own composition of colour
+    /// boxes: no host receives a position indicator, so no contract declares one.
+    func testThePositionIndicatorIsComposedNotDeclared() {
+        XCTAssertNil(Self.layer(of: NodeType("PositionIndicator")), "PositionIndicator has a contract again")
+        for name in ["count", "indicatorColor", "selectedIndicatorColor", "indicatorSize", "indicatorsShape",
+                     "maximumVisible", "hideSingle"] {
+            XCTAssertNil(Self.facts(of: name, kind: .property), "the composed indicator's \(name) is a member again")
+        }
+    }
+
     /// Every view speaks in plain words: the size it asks for is its width and
     /// height, how it sits in its space is its alignment, and what it does with
     /// input, direction, clipping, its pivot and its context menu is said the
@@ -380,9 +390,8 @@ final class HostContractTests: XCTestCase {
     }
 
     /// Every control speaks in plain words: a box of colour is a `ColorBox`, a
-    /// drawing surface a `Canvas`, the dots beside a carousel a
-    /// `PositionIndicator`, and a menu is a `Menu` at any depth - on the bar or
-    /// inside another - holding `MenuItem`s and `MenuSeparator`s.
+    /// drawing surface a `Canvas`, and a menu is a `Menu` at any depth - on the
+    /// bar or inside another - holding `MenuItem`s and `MenuSeparator`s.
     func testControlsSpeakInPlainWords() throws {
         let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
@@ -394,7 +403,7 @@ final class HostContractTests: XCTestCase {
         ]
 
         XCTAssertTrue(controls.isSuperset(of: [
-            "ColorBox", "Canvas", "PositionIndicator",
+            "ColorBox", "Canvas",
             "Menu", "MenuBar", "MenuItem", "MenuSeparator",
         ]))
         XCTAssertTrue(controls.isDisjoint(with: former), "a control keeps its former name")

@@ -249,10 +249,6 @@ enum AppStyles {
                     .tint(Palette.disabled)
                 }
 
-            Style<PositionIndicator>()
-                .indicatorColor(Palette.outline)
-                .selectedIndicatorColor(Palette.accent)
-
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any

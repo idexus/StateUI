@@ -57,9 +57,6 @@ Polygon.pointerReleased: 🔌 hover on Polygon: the view's listening handed the 
 Polyline.swipeDirection: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.swipeThreshold: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.swiped: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.panTouchCount: not realized
-PositionIndicator.panUpdated: not realized
-PositionIndicator.panXChannel: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅

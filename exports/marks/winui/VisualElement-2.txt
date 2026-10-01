@@ -64,9 +64,6 @@ Polygon.rotationX: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: not realized
 Polyline.scaleX: ✅
-PositionIndicator.ignoresInput: not realized
-PositionIndicator.layoutDirection: not realized
-PositionIndicator.translationY: not realized
 ProgressBar.rotation: ✅
 ProgressBar.style: ✅
 RadioButton.accessibilityHeadingLevel: ✅

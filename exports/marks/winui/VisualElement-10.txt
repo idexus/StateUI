@@ -61,11 +61,6 @@ Polygon.unfocus: – Polygon takes no keyboard focus here: it refuses it, and no
 Polyline.accessibilityHint: ✅
 Polyline.isVisible: ✅
 Polyline.rotationY: not realized
-PositionIndicator.automationExcludedWithChildren: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.height: not realized
-PositionIndicator.scaleY: not realized
-PositionIndicator.width: not realized
 ProgressBar.frame: ✅
 ProgressBar.pivotX: ✅
 ProgressBar.zIndex: not realized

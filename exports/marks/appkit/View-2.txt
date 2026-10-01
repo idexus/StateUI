@@ -64,7 +64,6 @@ Polyline.dragText: not realized
 Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
-PositionIndicator.pinchUpdated: not realized
 ProgressBar.panYChannel: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 RadioButton.tapCount: 🔌 tap on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 RadioButton.tapped: 🔌 tap on RadioButton: handed to the host's recognizer or handler, no NSEvent sent

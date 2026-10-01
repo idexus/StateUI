@@ -64,8 +64,6 @@ Polygon.width: ✅
 Polyline.frame: ✅
 Polyline.pivotX: ✅
 Polyline.zIndex: not realized
-PositionIndicator.accessibilityLabel: not realized
-PositionIndicator.rotationX: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: not realized
 ProgressBar.scaleX: ✅

@@ -223,8 +223,6 @@ enum PatchDump {
             return spelled(member, as: LineJoin.self)
         case Prop.fillRule.name:
             return spelled(member, as: FillRule.self)
-        case Prop.indicatorsShape.name:
-            return spelled(member, as: IndicatorShape.self)
         case Prop.mapType.name:
             return spelled(member, as: MapType.self)
 

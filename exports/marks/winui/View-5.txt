@@ -127,15 +127,6 @@ Polyline.gridRow: ✅
 Polyline.swipeDirection: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
-PositionIndicator.frameChanged: not realized
-PositionIndicator.margin: not realized
-PositionIndicator.pointerEntered: not realized
-PositionIndicator.pointerExited: not realized
-PositionIndicator.pointerMoved: not realized
-PositionIndicator.pointerPressed: not realized
-PositionIndicator.pointerReleased: not realized
-PositionIndicator.tapCount: not realized
-PositionIndicator.tapped: not realized
 ProgressBar.allowDrop: not realized
 ProgressBar.area: ✅
 ProgressBar.dragLeave: not realized

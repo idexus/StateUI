@@ -41,7 +41,7 @@
         MenuContract.self, MenuItemContract.self, MenuSeparatorContract.self, ModalStackContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, PinContract.self, PolygonContract.self, PolylineContract.self,
-        PositionIndicatorContract.self, ProgressBarContract.self, RadioButtonContract.self,
+        ProgressBarContract.self, RadioButtonContract.self,
         RectangleContract.self, SceneContract.self, ScrollViewContract.self,
         SearchFieldContract.self, SliderContract.self, SpanContract.self,
         SpansContract.self, SplitViewContract.self, StepperContract.self, SwitchContract.self,

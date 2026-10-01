@@ -25,8 +25,6 @@ Polygon.frame: ✅
 Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.width: ✅
-PositionIndicator.isVisible: not realized
-PositionIndicator.translationX: not realized
 ProgressBar.scale: 🔌 read scale of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.rotation: 🔌 read rotation of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.layoutDirection: not realized

@@ -128,12 +128,6 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.verticalAlignment: ✅
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumn: not realized
-PositionIndicator.gridRow: not realized
-PositionIndicator.swipeDirection: not realized
-PositionIndicator.swipeThreshold: not realized
-PositionIndicator.swiped: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.margin: ✅
 ProgressBar.pointerEntered: ✅

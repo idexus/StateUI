@@ -129,10 +129,6 @@ Polyline.dragOver: not realized
 Polyline.drop: not realized
 Polyline.frameChanged: ✅
 Polyline.panYChannel: ✅
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumnSpan: not realized
-PositionIndicator.gridRowSpan: not realized
-PositionIndicator.pinchUpdated: not realized
 ProgressBar.canDrag: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized

@@ -59,9 +59,6 @@ Polygon.layoutDirection: not realized
 Polygon.translationY: ✅
 Polyline.rotation: ✅
 Polyline.style: ✅
-PositionIndicator.accessibilityHeadingLevel: not realized
-PositionIndicator.opacity: not realized
-PositionIndicator.scale: not realized
 ProgressBar.background: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.maximumHeight: ✅

@@ -60,9 +60,9 @@ final class WinUIRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onUIThread {
-            let host = WinUIRenderer.running { VStack { PositionIndicator() } }
+            let host = WinUIRenderer.running { VStack { Map() } }
 
-            XCTAssertEqual(host.views(WinUIUnsupportedView.self).map(\.text), ["WinUI: unsupported PositionIndicator"])
+            XCTAssertEqual(host.views(WinUIUnsupportedView.self).map(\.text), ["WinUI: unsupported Map"])
         }
     }
 

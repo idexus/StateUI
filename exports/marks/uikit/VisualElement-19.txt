@@ -23,7 +23,6 @@ Path.translationX: 🔌 read translationX of Path: the host's own transform, che
 Picker.scale: 🔌 read scale of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotation: 🔌 read rotation of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.layoutDirection: not realized
-PositionIndicator.isAccessibilityHidden: not realized
 ProgressBar.accessibilityLabel: ✅
 RadioButton.frame: ✅
 Rectangle.frameChanged: ✅

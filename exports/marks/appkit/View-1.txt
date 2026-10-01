@@ -60,9 +60,6 @@ Polyline.pointerExited: 🔌 hover on Polyline: handed to the host's recognizer 
 Polyline.pointerMoved: 🔌 hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.pointerPressed: 🔌 hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.pointerReleased: 🔌 hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-PositionIndicator.swipeDirection: not realized
-PositionIndicator.swipeThreshold: not realized
-PositionIndicator.swiped: not realized
 ProgressBar.panTouchCount: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.panUpdated: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.panXChannel: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent

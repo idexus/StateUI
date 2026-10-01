@@ -61,8 +61,6 @@ Polygon.panXChannel: 🔌 pan on Polygon: the view's listening handed the recogn
 Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
-PositionIndicator.area: not realized
-PositionIndicator.frameChanged: not realized
 ProgressBar.canDrag: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized

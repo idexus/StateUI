@@ -99,6 +99,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 PositionIndicator()
                     .count(cards.count)
                     .position(shown)
+                    .indicatorColor(Palette.outline)
+                    .selectedIndicatorColor(Palette.accent)
 
                 Label("\\(cards[min(max(shown, 0), cards.count - 1)].name) · "
                     + "card \\(shown + 1) of \\(cards.count) · \\(opened)")

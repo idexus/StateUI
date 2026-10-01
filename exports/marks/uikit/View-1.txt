@@ -60,9 +60,6 @@ Polyline.pointerExited: 🔌 hover on Polyline: the view's listening handed the 
 Polyline.pointerMoved: 🔌 hover on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.pointerPressed: 🔌 hover on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.pointerReleased: 🔌 hover on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.swipeDirection: not realized
-PositionIndicator.swipeThreshold: not realized
-PositionIndicator.swiped: not realized
 ProgressBar.panTouchCount: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.panUpdated: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.panXChannel: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent

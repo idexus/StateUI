@@ -32,7 +32,6 @@ Picker.minimumWidth: ✅
 Polygon.opacity: ✅
 Polygon.translationY: 🔌 read translationY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.scaleX: 🔌 read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.rotationX: not realized
 ProgressBar.pivotX: 🔌 read pivotX of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.automationExcludedWithChildren: ✅
 Rectangle.accessibilityHint: ✅

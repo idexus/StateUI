@@ -61,12 +61,6 @@ Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polyline.area: ✅
 Polyline.frameChanged: ✅
-PositionIndicator.canDrag: not realized
-PositionIndicator.dragStarting: not realized
-PositionIndicator.dragText: not realized
-PositionIndicator.dropCompleted: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.margin: not realized
 ProgressBar.pinchUpdated: 🔌 pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 RadioButton.panYChannel: 🔌 pan on RadioButton: the view's listening handed the recognizer's states, no touch sent
 Rectangle.tapCount: 🔌 tap on Rectangle: the view's listening handed the recognizer's states, no touch sent

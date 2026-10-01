@@ -242,6 +242,33 @@ one with a caption - the same outline, shape and pressed state - with
 `aspect` for how its picture fills it. A picture alone gives it no name for a
 screen reader, so it carries a `accessibilityLabel`.
 
+## A place in a sequence
+
+`PositionIndicator` is a row of dots saying how many there are and which one
+is current - the dots under a run of cards, the steps of a short sequence:
+
+```swift
+@State var step = 0
+
+VStack {
+    PositionIndicator()
+        .count(4)
+        .position(step)
+        .selectedIndicatorColor(.cornflowerBlue)
+
+    Button("Next")
+        .onClicked { step = (step + 1) % 4 }
+}
+```
+
+StateUI composes it of colour boxes in a row, so it looks and behaves the same
+on every platform. `maximumVisible` caps the dots, the current one kept among
+them; one lone dot is hidden unless `hideSingle(false)` asks for it;
+`indicatorsShape(.square)` draws squares. Given items,
+`PositionIndicator(items) { … }` shows each item's own mark, the current one
+whole and the others faded. Its look is written on it: being StateUI's own
+composition, it takes no `Style`.
+
 ## Provisional native surfaces
 
 The following declarations express a candidate semantic contract but are not
@@ -252,7 +279,6 @@ host. Their presence in the Swift module is not a support claim:
 | --- | --- |
 | `WebView` | URL or inline-HTML source; back/forward capability feeds; navigation reports; aimed back, forward, reload, and script actions |
 | `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
-| `PositionIndicator` | display-only count and current position with native indicator appearance |
 
 `Map` is provider-owned because credentials, map engines, permissions, and
 feature sets are not one base-platform primitive. The other candidates enter

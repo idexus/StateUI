@@ -23,7 +23,6 @@ Path.scale: 🔌 read scale of Path: the host's own transform, checked against t
 Picker.rotation: 🔌 read rotation of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.layoutDirection: not realized
 Polyline.isAccessibilityHidden: ✅
-PositionIndicator.accessibilityLabel: not realized
 ProgressBar.frame: ✅
 RadioButton.frameChanged: ✅
 RadioButton.height: ✅

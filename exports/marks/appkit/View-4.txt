@@ -61,12 +61,6 @@ Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polyline.area: ✅
 Polyline.frameChanged: ✅
-PositionIndicator.canDrag: not realized
-PositionIndicator.dragStarting: not realized
-PositionIndicator.dragText: not realized
-PositionIndicator.dropCompleted: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.margin: not realized
 ProgressBar.pinchUpdated: 🔌 pinch on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 RadioButton.panYChannel: 🔌 pan on RadioButton: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.tapCount: 🔌 tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent

@@ -39,7 +39,6 @@ extension NodeType {
     static let hStack = HStackContract.nodeType
     static let image = ImageContract.nodeType
     static let itemsView = ItemsViewContract.nodeType
-    static let positionIndicator = PositionIndicatorContract.nodeType
     static let label = LabelContract.nodeType
     static let line = LineContract.nodeType
     static let map = MapContract.nodeType
@@ -114,7 +113,6 @@ extension NodeType {
     static let iconPosition = ButtonContract.iconPosition.token
     static let iconSpacing = ButtonContract.iconSpacing.token
     static let cornerRadius = ColorBoxContract.cornerRadius.token
-    static let count = PositionIndicatorContract.count.token
     static let currentPage = TabbedViewContract.currentPage.token
     static let cursorPosition = InputViewContract.cursorPosition.token
     static let data = PathContract.data.token
@@ -138,15 +136,11 @@ extension NodeType {
     static let gridRowSpan = ViewContract.gridRowSpan.token
     static let groupName = RadioButtonContract.groupName.token
     static let height = VisualElementContract.height.token
-    static let hideSingle = PositionIndicatorContract.hideSingle.token
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
     static let horizontalScrollBarVisibility = ScrollViewContract.horizontalScrollBarVisibility.token
     static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
     static let icon = MenuItemElementContract.icon.token
     static let step = StepperContract.step.token
-    static let indicatorColor = PositionIndicatorContract.indicatorColor.token
-    static let indicatorSize = PositionIndicatorContract.indicatorSize.token
-    static let indicatorsShape = PositionIndicatorContract.indicatorsShape.token
     static let ignoresInput = VisualElementContract.ignoresInput.token
     static let isAnimating = ImageContract.isAnimating.token
     static let isOn = CheckBoxContract.isOn.token
@@ -179,7 +173,6 @@ extension NodeType {
     static let maximum = SliderContract.maximum.token
     static let maximumDate = DatePickerContract.maximumDate.token
     static let maximumHeight = VisualElementContract.maximumHeight.token
-    static let maximumVisible = PositionIndicatorContract.maximumVisible.token
     static let maximumWidth = VisualElementContract.maximumWidth.token
     static let maximumLength = InputViewContract.maximumLength.token
     static let maximumLines = LabelContract.maximumLines.token
@@ -201,7 +194,6 @@ extension NodeType {
     static let placeholder = InputViewContract.placeholder.token
     static let placeholderColor = InputViewContract.placeholderColor.token
     static let points = PolygonContract.points.token
-    static let position = PositionIndicatorContract.position.token
     static let progress = ProgressBarContract.progress.token
     static let region = MapContract.region.token
     static let renderTransform = ShapeContract.renderTransform.token
@@ -216,7 +208,6 @@ extension NodeType {
     static let scaleY = VisualElementContract.scaleY.token
     static let scrollOffset = ScrollViewContract.scrollOffset.token
     static let selectedIndex = PickerContract.selectedIndex.token
-    static let selectedIndicatorColor = PositionIndicatorContract.selectedIndicatorColor.token
     static let selectionLength = InputViewContract.selectionLength.token
     static let side = ToolbarItemsContract.side.token
     static let source = ImageContract.source.token

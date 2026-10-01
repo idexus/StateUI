@@ -53,13 +53,6 @@ Polygon.tapped: 🔌 tap on Polygon: handed to the host's recognizer or handler,
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
-PositionIndicator.allowDrop: not realized
-PositionIndicator.dragLeave: not realized
-PositionIndicator.dragOver: not realized
-PositionIndicator.drop: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.horizontalAlignment: not realized
-PositionIndicator.verticalAlignment: not realized
 ProgressBar.pointerEntered: 🔌 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerExited: 🔌 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerMoved: 🔌 hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent

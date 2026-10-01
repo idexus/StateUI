@@ -57,9 +57,6 @@ Polygon.pointerReleased: 🔌 hover on Polygon: handed to the host's recognizer 
 Polyline.swipeDirection: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.swipeThreshold: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.swiped: 🔌 pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-PositionIndicator.panTouchCount: not realized
-PositionIndicator.panUpdated: not realized
-PositionIndicator.panXChannel: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅

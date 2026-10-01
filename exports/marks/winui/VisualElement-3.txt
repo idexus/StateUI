@@ -64,9 +64,6 @@ Polyline.frameChanged: ✅
 Polyline.height: ✅
 Polyline.scaleY: ✅
 Polyline.width: ✅
-PositionIndicator.frame: not realized
-PositionIndicator.pivotX: not realized
-PositionIndicator.zIndex: not realized
 ProgressBar.accessibilityLabel: ✅
 ProgressBar.rotationX: not realized
 RadioButton.isAccessibilityHidden: ✅

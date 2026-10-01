@@ -31,7 +31,6 @@ Path.scaleX: 🔌 read scaleX of Path: the host's own transform, checked against
 Picker.rotationX: 🔌 read rotationX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotX: 🔌 read pivotX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.automationExcludedWithChildren: ✅
-PositionIndicator.accessibilityHint: not realized
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.unfocus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard

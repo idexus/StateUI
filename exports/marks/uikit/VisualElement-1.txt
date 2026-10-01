@@ -24,7 +24,6 @@ Picker.width: ✅
 Polygon.isVisible: ✅
 Polygon.translationX: 🔌 read translationX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.scale: 🔌 read scale of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.rotation: not realized
 ProgressBar.layoutDirection: not realized
 RadioButton.isAccessibilityHidden: ✅
 Rectangle.accessibilityLabel: ✅

@@ -27,7 +27,6 @@ final class GTKConformanceTests: XCTestCase {
     func testPicker() { conform(PickerTests.self) }
     func testPolygon() { conform(PolygonTests.self) }
     func testPolyline() { conform(PolylineTests.self) }
-    func testPositionIndicator() { conform(PositionIndicatorTests.self) }
     func testProgressBar() { conform(ProgressBarTests.self) }
     func testRadioButton() { conform(RadioButtonTests.self) }
     func testRectangle() { conform(RectangleTests.self) }

@@ -62,10 +62,6 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.translationX: ✅
-PositionIndicator.focus: not realized
-PositionIndicator.isFocusedChanged: not realized
-PositionIndicator.pivotY: not realized
-PositionIndicator.unfocus: not realized
 ProgressBar.accessibilityHint: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.rotationY: not realized

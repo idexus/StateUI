@@ -117,7 +117,6 @@ of its members each meets, and why a cell is empty.
 | [Pin](controls/Pin.md) | provider |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
-| [PositionIndicator](controls/PositionIndicator.md) | stateUI |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [RadioButton](controls/RadioButton.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ |  |
@@ -223,7 +222,6 @@ may still choose another class that preserves the same contract.
 | `Canvas` | custom `NSView` drawing | `UIView` `draw(_:)` | `View` `onDraw(Canvas)` | Direct2D in a `SurfaceImageSource` | `GtkDrawingArea` | `<canvas>` |
 | `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | `GskPath` in a snapshot | inline SVG |
-| `PositionIndicator` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `WebView` | `WKWebView` | `WKWebView` | `WebView` | `WebView2` | WebKitGTK `WebKitWebView` | `<iframe>` (?) |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | libshumate `ShumateMap` / `ShumateMarker` | — |
 | `ItemsView` | `NSCollectionView` / `NSTableView` | `UICollectionView` | AndroidX `RecyclerView` | `ItemsView` | `GtkListView` / `GtkGridView` | semantic list or grid |
@@ -250,7 +248,6 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TimePicker`: GTK 4 has no time picker; its host sets a time as GNOME's applications do, with spin buttons.
 - `Switch`: Web has no switch element.
 - `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
-- `PositionIndicator`: AppKit, Android Views, and Web have no page indicator.
 - `WebView`: GTK 4 depends on WebKitGTK; Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
 - `Map` / `Pin`: Web has no map element; Android Views, WinUI 3, and GTK 4 depend on Google Play services, a map service, and libshumate.
 - `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
@@ -443,7 +440,6 @@ Every control, and every part an application, its windows and its pages are made
 | [Picker](controls/Picker.md) | 82 | 38 ✅ · 1 ☑️ | 25 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 65 ✅ | 23 ✅ · 5 – |  |
 | [Polygon](controls/Polygon.md) | 78 | 27 ✅ · 1 ☑️ · 3 – | 28 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 27 ✅ |  |
 | [Polyline](controls/Polyline.md) | 78 | 27 ✅ · 1 ☑️ · 3 – | 28 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 60 ✅ · 3 – | 27 ✅ |  |
-| [PositionIndicator](controls/PositionIndicator.md) | 74 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 68 | 26 ✅ · 1 ☑️ · 3 – | 26 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 50 ✅ · 3 – | 21 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | 81 | 38 ✅ · 1 ☑️ | 34 ✅ · 3 – | 59 ✅ · 1 ☑️ · 3 – | 63 ✅ | 25 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | 77 | 26 ✅ · 1 ☑️ · 3 – | 27 ✅ · 3 – | 50 ✅ · 1 ☑️ · 3 – | 59 ✅ · 3 – | 26 ✅ |  |
@@ -458,7 +454,7 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 74 | 29 ✅ · 3 – | 31 ✅ · 3 – | 52 ✅ · 1 ☑️ · 3 – | 56 ✅ · 3 – | 23 ✅ |  |
 | [WebView](controls/WebView.md) | 77 |  | 34 ✅ | 54 ✅ · 1 ☑️ · 3 – | 44 ✅ · 18 – |  |  |
 | [ZStack](controls/ZStack.md) | 73 | 28 ✅ · 3 – | 30 ✅ · 3 – | 51 ✅ · 1 ☑️ · 3 – | 55 ✅ · 3 – | 22 ✅ |  |
-| **Met** - ✅ and – | 2521 | 1005 of 2521 met | 1040 of 2521 met | 1763 of 2521 met | 1881 of 2521 met | 725 of 2521 met |  |
+| **Met** - ✅ and – | 2447 | 1005 of 2447 met | 1040 of 2447 met | 1763 of 2447 met | 1881 of 2447 met | 725 of 2447 met |  |
 
 ### Application structure
 
@@ -549,7 +545,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | 6 |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |  |
-| [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` | 8 |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
 | [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | 3 | 3 ✅ | 2 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |  |
@@ -590,11 +585,10 @@ realizes the element and each of its members.
 `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ItemsView`,
 `Label`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`,
 `ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
-`Polygon`, `Polyline`, `PositionIndicator`, `ProgressBar`, `RadioButton`,
-`Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`,
-`SplitView`, `Stepper`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
-`TimePicker`, `TitleView`, `ToolbarItem`, `ToolbarItems`, `VStack`, `WebView`,
-`Window`, `ZStack`.
+`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `Scene`,
+`ScrollView`, `SearchField`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`,
+`Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleView`,
+`ToolbarItem`, `ToolbarItems`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
 
@@ -603,38 +597,36 @@ realizes the element and each of its members.
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `barIcon`,
 `barSubtitle`, `barTitle`, `canDrag`, `characterSpacing`, `clipsContent`,
-`color`, `columns`, `columnSpacing`, `cornerRadius`, `count`, `currentPage`,
+`color`, `columns`, `columnSpacing`, `cornerRadius`, `currentPage`,
 `cursorPosition`, `data`, `date`, `dragText`, `drawable`, `endReachedWithin`,
 `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`,
 `fontFamily`, `fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
 `gridRow`, `gridRowSpan`, `groupName`, `growsWithText`, `hasBackButton`,
-`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
-`horizontalAlignment`, `horizontalScrollBarVisibility`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
-`inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
-`isEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`,
-`isReadOnly`, `isRunning`, `isScrollEnabled`, `isSidebarVisible`,
-`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isTrafficEnabled`,
-`isTranslucent`, `isVisible`, `isZoomEnabled`, `items`, `itemsLayout`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `location`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumVisible`, `maximumWidth`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `opacity`, `options`, `order`, `orientation`,
-`padding`, `panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `placement`, `points`, `position`,
-`progress`, `region`, `renderTransform`, `returnKey`, `rotation`, `rotationX`,
-`rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
-`selectedIndex`, `selectedIndicatorColor`, `selectedItems`, `selectionLength`,
-`selectionMode`, `shape`, `showsClearButton`, `showsText`, `showsUserLocation`,
-`side`, `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`,
-`strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
-`strokeWidth`, `style`, `swipeDirection`, `swipeThreshold`, `tapCount`, `text`,
-`textCase`, `textColor`, `textDecorations`, `time`, `tint`, `title`,
-`translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`hasNavigationBar`, `height`, `hidesWhenInactive`, `horizontalAlignment`,
+`horizontalScrollBarVisibility`, `horizontalTextAlignment`, `icon`,
+`iconPosition`, `iconSpacing`, `ignoresInput`, `inputPurpose`,
+`isAccessibilityHidden`, `isAnimating`, `isDestructive`, `isEnabled`,
+`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isReadOnly`,
+`isRunning`, `isScrollEnabled`, `isSidebarVisible`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isTrafficEnabled`, `isTranslucent`, `isVisible`,
+`isZoomEnabled`, `items`, `itemsLayout`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreak`, `lineHeight`, `location`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
+`opacity`, `options`, `order`, `orientation`, `padding`, `panTouchCount`,
+`panXChannel`, `panYChannel`, `pivotX`, `pivotY`, `placeholder`,
+`placeholderColor`, `placement`, `points`, `progress`, `region`,
+`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`, `selectedIndex`,
+`selectedItems`, `selectionLength`, `selectionMode`, `shape`,
+`showsClearButton`, `showsText`, `showsUserLocation`, `side`, `source`,
+`spacing`, `step`, `stroke`, `strokeDashOffset`, `strokeDashPattern`,
+`strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
+`swipeDirection`, `swipeThreshold`, `tapCount`, `text`, `textCase`, `textColor`,
+`textDecorations`, `time`, `tint`, `title`, `translationX`, `translationY`,
+`type`, `userAgent`, `value`, `verticalAlignment`,
+`verticalScrollBarVisibility`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

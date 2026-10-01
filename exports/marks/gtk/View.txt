@@ -575,38 +575,6 @@ Polyline.swiped: cannot pan on Polyline - GTK's driver has no path for it yet
 Polyline.tapCount: cannot tap on Polyline - GTK's driver has no path for it yet
 Polyline.tapped: cannot tap on Polyline - GTK's driver has no path for it yet
 Polyline.verticalAlignment: ✅
-PositionIndicator.allowDrop: not realized
-PositionIndicator.area: not realized
-PositionIndicator.canDrag: not realized
-PositionIndicator.dragLeave: not realized
-PositionIndicator.dragOver: not realized
-PositionIndicator.dragStarting: not realized
-PositionIndicator.dragText: not realized
-PositionIndicator.drop: not realized
-PositionIndicator.dropCompleted: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumn: not realized
-PositionIndicator.gridColumnSpan: not realized
-PositionIndicator.gridRow: not realized
-PositionIndicator.gridRowSpan: not realized
-PositionIndicator.horizontalAlignment: not realized
-PositionIndicator.margin: not realized
-PositionIndicator.panTouchCount: not realized
-PositionIndicator.panUpdated: not realized
-PositionIndicator.panXChannel: not realized
-PositionIndicator.panYChannel: not realized
-PositionIndicator.pinchUpdated: not realized
-PositionIndicator.pointerEntered: not realized
-PositionIndicator.pointerExited: not realized
-PositionIndicator.pointerMoved: not realized
-PositionIndicator.pointerPressed: not realized
-PositionIndicator.pointerReleased: not realized
-PositionIndicator.swipeDirection: not realized
-PositionIndicator.swipeThreshold: not realized
-PositionIndicator.swiped: not realized
-PositionIndicator.tapCount: not realized
-PositionIndicator.tapped: not realized
-PositionIndicator.verticalAlignment: not realized
 ProgressBar.allowDrop: not realized
 ProgressBar.area: ✅
 ProgressBar.canDrag: not realized

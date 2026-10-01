@@ -241,25 +241,6 @@ final class ControlTests: XCTestCase {
                 ColorBox(.cornflowerBlue)
                     .cornerRadius(8)),
 
-            ControlCase("PositionIndicator", source: "PositionIndicator.swift",
-                PositionIndicator()
-                    .count(3)
-                    .position(1)
-                    .indicatorColor(.lightGray)
-                    .selectedIndicatorColor(.cornflowerBlue)
-                    .indicatorSize(8)
-                    .maximumVisible(5)
-                    .indicatorsShape(.square)
-                    .hideSingle(false)),
-
-            // The dots as VIEWS - the second shape the same control takes:
-            // the items run the template here, and the host counts them itself.
-            ControlCase("IndicatorDots", source: "PositionIndicator.swift",
-                PositionIndicator(["one", "two", "three"]) { name in
-                    Label("*").id(name)
-                }
-                .position(1)),
-
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
                     Label("Top left")
@@ -604,7 +585,7 @@ final class ControlTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(checked, 50, "the cases rendered almost nothing")
+        XCTAssertGreaterThan(checked, 45, "the cases rendered almost nothing")
     }
 
     /// Every member name a contract lets its element carry: its own, and its
@@ -766,7 +747,7 @@ final class ControlTests: XCTestCase {
             .filter { !twins.contains($0) && !allowed.contains(String($0.split(separator: ":")[0])) }
             .sorted()
 
-        XCTAssertGreaterThan(values.count, 140, "the scan read almost nothing")
+        XCTAssertGreaterThan(values.count, 130, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These value modifiers have no binding twin - write one beside \
             its value form, with the other twins of its type:

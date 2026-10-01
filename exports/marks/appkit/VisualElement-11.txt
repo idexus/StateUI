@@ -33,11 +33,6 @@ Polygon.accessibilityHint: ✅
 Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-PositionIndicator.frameChanged: not realized
-PositionIndicator.maximumHeight: not realized
-PositionIndicator.maximumWidth: not realized
-PositionIndicator.minimumHeight: not realized
-PositionIndicator.minimumWidth: not realized
 ProgressBar.opacity: ✅
 ProgressBar.translationY: 🔌 read translationY of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.scaleX: 🔌 read scaleX of RadioButton: the host's own transform, checked against the layer it composed itself

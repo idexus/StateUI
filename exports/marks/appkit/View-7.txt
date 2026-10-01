@@ -53,9 +53,6 @@ Picker.pinchUpdated: 🔌 pinch on Picker: handed to the host's recognizer or ha
 Polygon.panYChannel: 🔌 pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.tapCount: 🔌 tap on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.tapped: 🔌 tap on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumn: not realized
-PositionIndicator.gridRow: not realized
 ProgressBar.allowDrop: not realized
 ProgressBar.dragLeave: not realized
 ProgressBar.dragOver: not realized

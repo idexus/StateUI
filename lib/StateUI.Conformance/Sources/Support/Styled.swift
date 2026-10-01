@@ -32,7 +32,6 @@ enum Styled {
             dimmed(Picker.self)
             dimmed(Polygon.self)
             dimmed(Polyline.self)
-            dimmed(PositionIndicator.self)
             dimmed(ProgressBar.self)
             dimmed(RadioButton.self)
             dimmed(Rectangle.self)

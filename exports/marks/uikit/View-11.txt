@@ -58,7 +58,6 @@ Polygon.dropCompleted: not realized
 Polygon.frameChanged: ✅
 Polygon.margin: ✅
 Polyline.pinchUpdated: 🔌 pinch on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.panYChannel: not realized
 ProgressBar.tapCount: 🔌 tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapped: 🔌 tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 RadioButton.frameChanged: ✅

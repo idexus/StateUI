@@ -127,16 +127,6 @@ Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
 Polyline.pinchUpdated: ✅
-PositionIndicator.canDrag: not realized
-PositionIndicator.dragStarting: not realized
-PositionIndicator.dragText: not realized
-PositionIndicator.dropCompleted: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.horizontalAlignment: not realized
-PositionIndicator.panTouchCount: not realized
-PositionIndicator.panUpdated: not realized
-PositionIndicator.panXChannel: not realized
-PositionIndicator.verticalAlignment: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅

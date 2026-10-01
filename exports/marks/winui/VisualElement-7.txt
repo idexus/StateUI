@@ -61,9 +61,6 @@ Polyline.focus: – Polyline takes no keyboard focus here: it refuses it, and no
 Polyline.isFocusedChanged: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
 Polyline.pivotY: ✅
 Polyline.unfocus: – Polyline takes no keyboard focus here: it refuses it, and nothing is heard
-PositionIndicator.accessibilityHint: not realized
-PositionIndicator.isVisible: not realized
-PositionIndicator.rotationY: not realized
 ProgressBar.automationExcludedWithChildren: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅

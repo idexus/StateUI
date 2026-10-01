@@ -57,11 +57,6 @@ Polyline.drop: not realized
 Polyline.frameChanged: ✅
 Polyline.horizontalAlignment: ✅
 Polyline.verticalAlignment: ✅
-PositionIndicator.pointerEntered: not realized
-PositionIndicator.pointerExited: not realized
-PositionIndicator.pointerMoved: not realized
-PositionIndicator.pointerPressed: not realized
-PositionIndicator.pointerReleased: not realized
 ProgressBar.swipeDirection: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swipeThreshold: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swiped: 🔌 pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent

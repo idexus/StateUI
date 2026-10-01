@@ -58,13 +58,6 @@ Polygon.style: ✅
 Polyline.accessibilityHeadingLevel: ✅
 Polyline.opacity: ✅
 Polyline.scale: ✅
-PositionIndicator.background: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.maximumHeight: not realized
-PositionIndicator.maximumWidth: not realized
-PositionIndicator.minimumHeight: not realized
-PositionIndicator.minimumWidth: not realized
-PositionIndicator.translationX: not realized
 ProgressBar.focus: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.isFocusedChanged: – ProgressBar takes no keyboard focus here: it refuses it, and nothing is heard
 ProgressBar.pivotY: ✅

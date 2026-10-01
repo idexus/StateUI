@@ -19,8 +19,6 @@ Path.background: ☑️ AppKit paints a colour on this view; a brush is drawn on
 Picker.accessibilityHeadingLevel: cannot read a heading's level - AppKit marks a heading, not its level
 Polygon.style: ✅
 Polyline.ignoresInput: ✅
-PositionIndicator.isEnabled: not realized
-PositionIndicator.zIndex: not realized
 ProgressBar.scaleY: 🔌 read scaleY of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.rotationY: 🔌 read rotationY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.pivotY: 🔌 read pivotY of Rectangle: the host's own transform, checked against the layer it composed itself

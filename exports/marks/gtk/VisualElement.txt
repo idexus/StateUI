@@ -611,40 +611,6 @@ Polyline.translationY: cannot read translationY of Polyline - GTK's driver has n
 Polyline.unfocus: waits on Polyline.isFocusedChanged
 Polyline.width: ✅
 Polyline.zIndex: not realized
-PositionIndicator.accessibilityHeadingLevel: not realized
-PositionIndicator.accessibilityHint: not realized
-PositionIndicator.accessibilityLabel: not realized
-PositionIndicator.automationExcludedWithChildren: not realized
-PositionIndicator.background: not realized
-PositionIndicator.focus: not realized
-PositionIndicator.frame: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.height: not realized
-PositionIndicator.ignoresInput: not realized
-PositionIndicator.isAccessibilityHidden: not realized
-PositionIndicator.isEnabled: not realized
-PositionIndicator.isFocusedChanged: not realized
-PositionIndicator.isVisible: not realized
-PositionIndicator.layoutDirection: not realized
-PositionIndicator.maximumHeight: not realized
-PositionIndicator.maximumWidth: not realized
-PositionIndicator.minimumHeight: not realized
-PositionIndicator.minimumWidth: not realized
-PositionIndicator.opacity: not realized
-PositionIndicator.pivotX: not realized
-PositionIndicator.pivotY: not realized
-PositionIndicator.rotation: not realized
-PositionIndicator.rotationX: not realized
-PositionIndicator.rotationY: not realized
-PositionIndicator.scale: not realized
-PositionIndicator.scaleX: not realized
-PositionIndicator.scaleY: not realized
-PositionIndicator.style: not realized
-PositionIndicator.translationX: not realized
-PositionIndicator.translationY: not realized
-PositionIndicator.unfocus: not realized
-PositionIndicator.width: not realized
-PositionIndicator.zIndex: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read accessibilityHeadingLevel of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.accessibilityHint: cannot read accessibilityHint of ProgressBar - GTK's driver has no path for it yet
 ProgressBar.accessibilityLabel: cannot read accessibilityLabel of ProgressBar - GTK's driver has no path for it yet

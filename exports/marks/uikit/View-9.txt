@@ -54,8 +54,6 @@ Picker.frameChanged: ✅
 Picker.margin: ✅
 Polygon.pinchUpdated: 🔌 pinch on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polyline.panYChannel: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.tapCount: not realized
-PositionIndicator.tapped: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅

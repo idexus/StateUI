@@ -31,7 +31,6 @@ Path.translationY: 🔌 read translationY of Path: the host's own transform, che
 Picker.scaleX: 🔌 read scaleX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotationX: 🔌 read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.pivotX: 🔌 read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.automationExcludedWithChildren: not realized
 ProgressBar.accessibilityHint: ✅
 RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 RadioButton.isFocusedChanged: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard

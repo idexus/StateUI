@@ -64,7 +64,6 @@ Polyline.dragText: not realized
 Polyline.dropCompleted: not realized
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
-PositionIndicator.pinchUpdated: not realized
 ProgressBar.panYChannel: 🔌 pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 RadioButton.tapCount: 🔌 tap on RadioButton: the view's listening handed the recognizer's states, no touch sent
 RadioButton.tapped: 🔌 tap on RadioButton: the view's listening handed the recognizer's states, no touch sent

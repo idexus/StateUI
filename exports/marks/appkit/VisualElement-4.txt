@@ -26,7 +26,6 @@ Polygon.height: ✅
 Polygon.width: ✅
 Polyline.isVisible: ✅
 Polyline.translationX: 🔌 read translationX of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.scale: not realized
 ProgressBar.rotation: 🔌 read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.layoutDirection: not realized
 Rectangle.isAccessibilityHidden: ✅

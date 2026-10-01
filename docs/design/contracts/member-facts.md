@@ -22,8 +22,8 @@ StateUI knows are meaningless out of the patch.
 
 ```text
   a place or a count       gridRow, gridColumn and their spans, tapCount, panTouchCount,
-                           selectedIndex, currentPage, position, count, maximumVisible,
-                           cursorPosition, selectionLength, maximumLength, maximumLines, zIndex
+                           selectedIndex, currentPage, cursorPosition, selectionLength,
+                           maximumLength, maximumLines, zIndex
   a range or a region      a slider's and a stepper's minimum and maximum, a stepper's step,
                            a map's region, a pin's location
   a placement              area: the layout's own

@@ -20,7 +20,6 @@ Picker.style: ✅
 Polygon.ignoresInput: not realized
 Polyline.isEnabled: not realized
 Polyline.zIndex: not realized
-PositionIndicator.scaleY: not realized
 ProgressBar.rotationY: 🔌 read rotationY of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.pivotY: 🔌 read pivotY of RadioButton: the host's own transform, checked against the layer it composed itself
 Rectangle.background: not realized

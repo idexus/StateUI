@@ -53,9 +53,6 @@ Picker.pinchUpdated: 🔌 pinch on Picker: the view's listening handed the recog
 Polygon.panYChannel: 🔌 pan on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polyline.tapCount: 🔌 tap on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.tapped: 🔌 tap on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumn: not realized
-PositionIndicator.gridRow: not realized
 ProgressBar.allowDrop: not realized
 ProgressBar.dragLeave: not realized
 ProgressBar.dragOver: not realized

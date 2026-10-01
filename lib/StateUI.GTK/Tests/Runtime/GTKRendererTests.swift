@@ -50,9 +50,9 @@ final class GTKRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onUIThread {
-            let host = GTKRenderer.running { VStack { PositionIndicator() } }
+            let host = GTKRenderer.running { VStack { Map() } }
 
-            XCTAssertEqual(host.views(GTKUnsupportedView.self).map(\.text), ["GTK: unsupported PositionIndicator"])
+            XCTAssertEqual(host.views(GTKUnsupportedView.self).map(\.text), ["GTK: unsupported Map"])
         }
     }
 

@@ -19,7 +19,6 @@ Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅
-PositionIndicator.accessibilityIdentifier: not realized
 ProgressBar.accessibilityIdentifier: ✅
 RadioButton.accessibilityIdentifier: ✅
 Rectangle.accessibilityIdentifier: ✅

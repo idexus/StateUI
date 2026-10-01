@@ -64,8 +64,6 @@ Polygon.scaleX: ✅
 Polyline.ignoresInput: not realized
 Polyline.layoutDirection: not realized
 Polyline.translationY: ✅
-PositionIndicator.rotation: not realized
-PositionIndicator.style: not realized
 ProgressBar.accessibilityHeadingLevel: ✅
 ProgressBar.opacity: ✅
 ProgressBar.scale: ✅

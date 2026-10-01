@@ -23,7 +23,6 @@ Path.rotation: 🔌 read rotation of Path: the host's own transform, checked aga
 Picker.layoutDirection: not realized
 Polygon.isAccessibilityHidden: ✅
 Polyline.accessibilityLabel: ✅
-PositionIndicator.frame: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.height: ✅
 ProgressBar.width: ✅

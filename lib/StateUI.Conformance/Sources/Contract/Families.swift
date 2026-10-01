@@ -24,7 +24,6 @@
         PickerTests.self,
         PolygonTests.self,
         PolylineTests.self,
-        PositionIndicatorTests.self,
         ProgressBarTests.self,
         RadioButtonTests.self,
         RectangleTests.self,

@@ -61,8 +61,6 @@ Polygon.panXChannel: 🔌 pan on Polygon: handed to the host's recognizer or han
 Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
-PositionIndicator.area: not realized
-PositionIndicator.frameChanged: not realized
 ProgressBar.canDrag: not realized
 ProgressBar.dragStarting: not realized
 ProgressBar.dragText: not realized

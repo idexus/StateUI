@@ -23,9 +23,6 @@ Path.layoutDirection: not realized
 Picker.isAccessibilityHidden: ✅
 Polygon.accessibilityLabel: ✅
 Polyline.frame: ✅
-PositionIndicator.frameChanged: not realized
-PositionIndicator.height: not realized
-PositionIndicator.width: not realized
 ProgressBar.isVisible: ✅
 ProgressBar.translationX: 🔌 read translationX of ProgressBar: the host's own transform, checked against the layer it composed itself
 RadioButton.scale: 🔌 read scale of RadioButton: the host's own transform, checked against the layer it composed itself

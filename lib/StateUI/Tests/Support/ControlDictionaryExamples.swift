@@ -292,15 +292,6 @@ extension ControlDictionary {
                 .strokeWidth(2)
             """#),
 
-        (PositionIndicatorContract.self, #"""
-            @State var shown = 0
-
-            PositionIndicator()
-                .count(5)
-                .position(shown)
-                .selectedIndicatorColor(.cornflowerBlue)
-            """#),
-
         (ProgressBarContract.self, #"""
             @State var done = 0.4
 

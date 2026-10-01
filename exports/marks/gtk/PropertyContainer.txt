@@ -20,7 +20,6 @@ Path.accessibilityIdentifier: not realized
 Picker.accessibilityIdentifier: not realized
 Polygon.accessibilityIdentifier: not realized
 Polyline.accessibilityIdentifier: not realized
-PositionIndicator.accessibilityIdentifier: not realized
 ProgressBar.accessibilityIdentifier: not realized
 RadioButton.accessibilityIdentifier: not realized
 Rectangle.accessibilityIdentifier: not realized

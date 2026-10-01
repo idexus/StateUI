@@ -19,7 +19,6 @@ Path.zIndex: not realized
 Picker.scaleY: 🔌 read scaleY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.rotationY: 🔌 read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.pivotY: 🔌 read pivotY of Polyline: the host's own transform, checked against the layer it composed itself
-PositionIndicator.background: not realized
 ProgressBar.accessibilityHeadingLevel: cannot read a heading's level - UIKit marks a heading, not its level
 RadioButton.style: ✅
 Rectangle.ignoresInput: not realized

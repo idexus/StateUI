@@ -59,9 +59,6 @@ Polygon.swiped: 🔌 pan on Polygon: the view's listening handed the recognizer'
 Polyline.panTouchCount: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.panUpdated: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.panXChannel: 🔌 pan on Polyline: the view's listening handed the recognizer's states, no touch sent
-PositionIndicator.frameChanged: not realized
-PositionIndicator.gridColumnSpan: not realized
-PositionIndicator.gridRowSpan: not realized
 ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 RadioButton.canDrag: not realized

@@ -132,13 +132,6 @@ Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
-PositionIndicator.allowDrop: not realized
-PositionIndicator.area: not realized
-PositionIndicator.dragLeave: not realized
-PositionIndicator.dragOver: not realized
-PositionIndicator.drop: not realized
-PositionIndicator.frameChanged: not realized
-PositionIndicator.panYChannel: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅

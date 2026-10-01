@@ -84,9 +84,9 @@ final class AndroidRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onMainActor {
-            let host = AndroidRenderer.running { VStack { PositionIndicator() } }
+            let host = AndroidRenderer.running { VStack { Map() } }
 
-            XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported PositionIndicator"])
+            XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported Map"])
         }
     }
 

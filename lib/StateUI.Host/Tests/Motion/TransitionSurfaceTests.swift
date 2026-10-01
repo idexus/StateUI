@@ -23,7 +23,7 @@ final class TransitionSurfaceTests: XCTestCase {
 
         XCTAssertFalse(TransitionSurface.presents(.rotationX, on: .label))
         XCTAssertFalse(TransitionSurface.presents(.value, on: .stepper))
-        XCTAssertFalse(TransitionSurface.presents(.opacity, on: .positionIndicator))
+        XCTAssertFalse(TransitionSurface.presents(.opacity, on: .map))
         XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .label))
     }
 

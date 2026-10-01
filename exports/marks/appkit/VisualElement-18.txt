@@ -19,7 +19,6 @@ Path.scaleY: 🔌 read scaleY of Path: the host's own transform, checked against
 Picker.rotationY: 🔌 read rotationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotY: 🔌 read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
 Polyline.background: ☑️ AppKit paints a colour on this view; a brush is drawn only by a layout.
-PositionIndicator.accessibilityHeadingLevel: not realized
 ProgressBar.style: ✅
 RadioButton.ignoresInput: ✅
 Rectangle.isEnabled: not realized

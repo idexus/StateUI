@@ -31,9 +31,6 @@ Path.rotationX: 🔌 read rotationX of Path: the host's own transform, checked a
 Picker.pivotX: 🔌 read pivotX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.automationExcludedWithChildren: ✅
 Polyline.accessibilityHint: ✅
-PositionIndicator.focus: not realized
-PositionIndicator.isFocusedChanged: not realized
-PositionIndicator.unfocus: not realized
 ProgressBar.frameChanged: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
