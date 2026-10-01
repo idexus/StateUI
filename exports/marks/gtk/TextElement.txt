@@ -7,8 +7,8 @@ RadioButton.text: ✅
 RadioButton.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
-Span.text: ◐ waits on Span.textCase
-Span.textCase: not realized
+Span.text: ✅
+Span.textCase: ✅
 TextEditor.text: ✅
 TextEditor.textCase: ✅
 TextField.text: ✅

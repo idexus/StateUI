@@ -159,23 +159,21 @@ extension GTKDriver {
             guard end <= words.count else { return nil }
             return String(decoding: words[start..<end], as: UTF8.self).propValue
         }
-        return PangoRun(gtk_label_get_attributes(label), at: UInt32(start)).holds(property)
+        let run = PangoRun(gtk_label_get_attributes(label), at: UInt32(start))
+        if property == .characterSpacing { return run.holds(property) ?? 0.0.propValue }
+        return run.holds(property)
     }
 
-    /// The label a span runs in, and the bytes of its words there: the spans before it, each its words.
+    /// The label a span runs in, and the bytes of its words there: the runs before it, each its words in their case.
     private static func run(of span: MountedElement) -> (OpaquePointer, Int, Int)? {
         var holder = span.parent
         while let each = holder, !((each.native as? GTKElement)?.view is GTKTextView) { holder = each.parent }
-        guard let label = (holder?.native as? GTKElement)?.view?.widget.opaque, let spans = span.parent?.children else {
-            return nil
-        }
-        var start = 0
-        for each in spans {
-            let length = (each.value(.text)?.string ?? "").utf8.count
-            if each === span { return (label, start, start + length) }
-            start += length
-        }
-        return nil
+        guard let holder, let label = (holder.native as? GTKElement)?.view?.widget.opaque, let runs = holder.textRuns,
+              let index = span.parent?.children.filter({ $0.type == .span }).firstIndex(where: { $0 === span }),
+              runs.indices.contains(index)
+        else { return nil }
+        let start = runs[..<index].reduce(0) { $0 + $1.text.utf8.count }
+        return (label, start, start + runs[index].text.utf8.count)
     }
 
     /// The child label GTK shows a check button's caption in.

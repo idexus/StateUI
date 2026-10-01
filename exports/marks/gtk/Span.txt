@@ -1,4 +1,4 @@
 # revision 1.1
 Span: ✅
-Span.background: 🔌 read background of Span: the class of the host's style sheet the widget wears: GTK reads back no background
+Span.background: ✅
 Span.text: ✅

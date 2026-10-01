@@ -25,7 +25,7 @@ SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
 Span.fontAttributes: ✅
 Span.fontAutoScalingEnabled: not realized
-Span.fontFamily: not realized
+Span.fontFamily: ✅
 Span.fontSize: ✅
 TextEditor.fontAttributes: ✅
 TextEditor.fontAutoScalingEnabled: not realized

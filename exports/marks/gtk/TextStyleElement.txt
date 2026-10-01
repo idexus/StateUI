@@ -11,7 +11,7 @@ RadioButton.characterSpacing: not realized
 RadioButton.textColor: ✅
 SearchField.characterSpacing: not realized
 SearchField.textColor: ✅
-Span.characterSpacing: not realized
+Span.characterSpacing: ✅
 Span.textColor: ✅
 TextEditor.characterSpacing: not realized
 TextEditor.textColor: ✅
