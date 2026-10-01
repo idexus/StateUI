@@ -49,10 +49,13 @@ export function editorCommandLine(appRoot: string, platform: NodeJS.Platform = p
     return file;
 }
 
-/** The steps that build the extension in `checkout` and install it with `editor`, the editor's command line. */
-export function reinstallSteps(checkout: string, editor: string): Step[] {
+/**
+ * The steps that build the extension in `checkout` and install it with `editor`, the editor's command line. Windows
+ * runs npm by its `npm.cmd`: a terminal's PowerShell takes `npm.ps1` first, which its default policy refuses.
+ */
+export function reinstallSteps(checkout: string, editor: string, platform: NodeJS.Platform = process.platform): Step[] {
     return [
-        { command: "npm", args: ["run", "package"], cwd: extensionSources(checkout) },
+        { command: platform === "win32" ? "npm.cmd" : "npm", args: ["run", "package"], cwd: extensionSources(checkout) },
         { command: editor, args: ["--install-extension", packedExtension(checkout), "--force"], cwd: checkout },
     ];
 }

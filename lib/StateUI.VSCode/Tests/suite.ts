@@ -520,7 +520,8 @@ export async function run(): Promise<void> {
             const location = process.env.STATEUI_TEST_GROUPS ?? fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "stateui-groups-")));
             const taken = ["LocalGroup", "ReleaseGroup"].map((each) => path.join(location, each)).filter((each) => fs.existsSync(each));
             check(`the groups are made where nothing is yet${taken.length > 0 ? ` - remove ${taken.join(", ")} first` : ""}`, taken.length === 0);
-            const same = (a: string | undefined, b: string): boolean => a !== undefined && fs.realpathSync(a) === fs.realpathSync(b);
+            // The system's own spelling: the editor names a Windows folder `c:\…`, a resolved path `C:\…`.
+            const same = (a: string | undefined, b: string): boolean => a !== undefined && fs.realpathSync.native(a) === fs.realpathSync.native(b);
             const builds = (application: string): boolean => {
                 const appKit = process.platform === "darwin";
                 const name = path.basename(application);
@@ -609,13 +610,15 @@ export async function run(): Promise<void> {
         // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
         {
             const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8")).version;
-            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code");
+            const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code", "linux");
             check("Reinstall VS Code Extension packs it with npm in lib/StateUI.VSCode, then installs artifacts/stateui-<version>.vsix with --force",
                 commands.includes("stateui.reinstallExtension") && steps.length === 2
                 && `${steps[0].command} ${steps[0].args.join(" ")}` === "npm run package"
                 && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
                 && steps[1].command === "/Editor/bin/code"
                 && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
+            check("on Windows it packs with npm.cmd, which a terminal whose policy refuses scripts (npm.ps1) still runs",
+                reinstallSteps(root.uri.fsPath, "C:\\Editor\\bin\\code.cmd", "win32")[0].command === "npm.cmd");
             check("the command line that installs it is the running editor's own, where its platform keeps it",
                 fs.existsSync(editorCommandLine(vscode.env.appRoot)));
         }
