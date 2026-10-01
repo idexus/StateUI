@@ -97,10 +97,15 @@ enum GTKStyleSheet {
         return name
     }
 
-    /// The class showing what stands under a list or a grid behind its rows: the theme paints a view's own.
-    static var clear: String {
-        let name = "stateui-clear"
-        write(name, "background: none;")
+    /// The class of a list or a grid: what stands under it shows behind its rows, and an item chosen is shaded in
+    /// the colour of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page.
+    static var collection: String {
+        let name = "stateui-collection"
+        let chosen = [".\(name) > row:selected", ".\(name) > child:selected"]
+        write(name, "background: none;",
+              states: chosen.joined(separator: ", ") + " { background-color: alpha(currentColor, 0.1); }\n"
+                + chosen.map { $0 + ":hover" }.joined(separator: ", ")
+                + " { background-color: alpha(currentColor, 0.13); }\n")
         return name
     }
 

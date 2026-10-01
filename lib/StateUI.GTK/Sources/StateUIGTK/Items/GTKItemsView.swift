@@ -128,7 +128,7 @@ final class GTKItemsView: GTKLayoutView {
         }
         // What stands under the collection shows behind its rows, as on every host.
         // Design: docs/design/platforms/gtk/items.md#behind-the-rows
-        gtk_widget_add_css_class(made, GTKStyleSheet.clear)
+        gtk_widget_add_css_class(made, GTKStyleSheet.collection)
         connectSignal(UnsafeMutableRawPointer(made), "activate", number: number) { (_: UnsafeMutableRawPointer?, place: UInt32, data: gpointer?) in
             MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.activated(Int(place)) }
         }

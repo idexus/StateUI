@@ -45,6 +45,31 @@ extension GTKItemsViewTests {
         }
     }
 
+    /// The item chosen is shaded in the colour of the words around it, a list's row and a grid's tile alike: no hue
+    /// of its own beside the page it stands on.
+    func testTheChosenItemIsShadedInItsWordsColour() throws {
+        try onUIThread {
+            let (row, tile) = (State<Int?>(wrappedValue: 1), State<Int?>(wrappedValue: 1))
+            let host = GTKRenderer.running {
+                VStack {
+                    ItemsView(0..<3) { Label("Item \($0)").padding(12) }.selection(row.projectedValue)
+                        .width(300).height(200)
+                    ItemsView(0..<3) { Label("Tile \($0)").padding(12) }.selection(tile.projectedValue)
+                        .itemsLayout(.grid(minimumItemWidth: 100)).width(300).height(200)
+                }
+            }
+            let collections = host.views(GTKItemsView.self)
+            host.settle { collections.allSatisfy { $0.shownRows.count == 3 } }
+
+            for (collection, point) in zip(collections, [(150.0, 69.0), (150.0, 24.0)]) {
+                let pixel = try XCTUnwrap(collection.pixels(at: [point]).first)
+                let (red, green, blue) = (pixel >> 16 & 0xFF, pixel >> 8 & 0xFF, pixel & 0xFF)
+                XCTAssertGreaterThan(pixel >> 24, 0, "shaded: \(String(pixel, radix: 16))")
+                XCTAssertTrue(red == green && green == blue, "in the words' colour: \(String(pixel, radix: 16))")
+            }
+        }
+    }
+
     /// A row is named by what its entry says (`MountedElement.spokenWords`): the screen reader reads a row by its
     /// name alone.
     func testARowIsNamedByWhatItsEntrySays() throws {
