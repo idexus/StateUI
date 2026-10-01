@@ -7,7 +7,7 @@ import PackageDescription
 // one dynamic StateUI runtime is linked into the application rather than
 // copied into a second library in the same process. It builds on Linux, where
 // pkg-config finds libadwaita and the GTK it needs. Its tests, and the driver
-// a conformance run on GTK goes through, stand in ../StateUI.GTK.Testing.
+// a conformance run on GTK goes through, stand in the package in Testing.
 let package = Package(
     name: "StateUIGTK",
     products: [

@@ -104,9 +104,9 @@ have yet is its driver's "cannot". A case's first start of an application is
 its first launch: the driver forgets what the host's stores keep, and a
 start after it in the same case is the next launch, which finds them.
 
-A host's driver is a library of a package beside the host's, which also holds
-the host's own suite - the GTK host's `StateUIGTKDriver`, in
-`StateUI.GTK.Testing` - so the host's tests and a component's both run the
+A host's driver is a library of a package of its own inside the host's folder,
+`Testing`, which also holds the host's own suite - the GTK host's
+`StateUIGTKDriver` - so the host's tests and a component's both run the
 families through it, and every one of them links the host's one dynamic
 library: a driver in the host's own package would carry a second copy of the
 host into a component's tests. It reads the host's own views, so it is built

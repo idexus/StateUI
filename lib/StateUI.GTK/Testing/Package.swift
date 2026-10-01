@@ -13,10 +13,10 @@ let package = Package(
         .library(name: "StateUIGTKDriver", targets: ["StateUIGTKDriver"]),
     ],
     dependencies: [
-        .package(name: "StateUIRoot", path: "../.."),
-        .package(name: "StateUIHost", path: "../StateUI.Host"),
-        .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
-        .package(name: "StateUIGTK", path: "../StateUI.GTK"),
+        .package(name: "StateUIRoot", path: "../../.."),
+        .package(name: "StateUIHost", path: "../../StateUI.Host"),
+        .package(name: "StateUIConformance", path: "../../StateUI.Conformance"),
+        .package(name: "StateUIGTK", path: ".."),
     ],
     targets: [
         // GTK's checks of what an accessible holds, for the driver: GTK declares them with arguments Swift cannot pass.

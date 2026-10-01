@@ -13,7 +13,7 @@ lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
 lib/StateUI.WinUI/                 WinUI host package, its C++/WinRT relay and tests
 lib/StateUI.GTK/                   GTK host package, Swift over GTK's C API
-lib/StateUI.GTK.Testing/           its tests, and the driver its conformance runs go through
+lib/StateUI.GTK/Testing/           its tests, and the driver its conformance runs go through
 lib/Controls/                      components an application imports apart - WebView
 lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling
@@ -228,7 +228,7 @@ The GTK host's suite runs on Linux, in a desktop session whose display shows
 its windows:
 
 ```bash
-swift test --package-path lib/StateUI.GTK.Testing
+swift test --package-path lib/StateUI.GTK/Testing
 ```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a

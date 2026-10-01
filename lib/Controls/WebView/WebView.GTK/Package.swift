@@ -25,7 +25,7 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../../.."),
         .package(name: "StateUIWebView", path: ".."),
         .package(name: "StateUIGTK", path: "../../../StateUI.GTK"),
-        .package(name: "StateUIGTKTesting", path: "../../../StateUI.GTK.Testing"),
+        .package(name: "StateUIGTKTesting", path: "../../../StateUI.GTK/Testing"),
         .package(name: "StateUIWebViewHost", path: "../WebView.Host"),
         .package(name: "StateUIWebViewConformance", path: "../WebView.Conformance"),
         .package(name: "StateUIConformance", path: "../../../StateUI.Conformance"),

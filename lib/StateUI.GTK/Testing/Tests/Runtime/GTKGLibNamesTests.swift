@@ -15,7 +15,7 @@ final class GTKGLibNamesTests: XCTestCase {
     func testSwiftNamesNoGLibFlag() throws {
         let tests = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
         let testing = tests.deletingLastPathComponent()
-        let host = testing.deletingLastPathComponent().appendingPathComponent("StateUI.GTK")
+        let host = testing.deletingLastPathComponent()
         let roots = [host.appendingPathComponent("Sources"), testing.appendingPathComponent("Sources"), tests,
                      host.appendingPathComponent("../../apps/Gallery/Platforms/GTK").standardized,
                      host.appendingPathComponent("../../apps/Gallery/Sources").standardized,

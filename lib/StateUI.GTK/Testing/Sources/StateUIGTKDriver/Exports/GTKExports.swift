@@ -16,12 +16,13 @@ struct GTKExports {
     /// The revisions the families' verdicts stand at: each file's lines, read together.
     let revisionFiles: [URL]
 
-    /// The repository, five folders above this file's.
+    /// The repository, six folders above this file's.
     static let repository = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()    // Exports
         .deletingLastPathComponent()    // StateUIGTKDriver
         .deletingLastPathComponent()    // Sources
-        .deletingLastPathComponent()    // StateUI.GTK.Testing
+        .deletingLastPathComponent()    // Testing
+        .deletingLastPathComponent()    // StateUI.GTK
         .deletingLastPathComponent()    // lib
         .deletingLastPathComponent()    // the repository
 
