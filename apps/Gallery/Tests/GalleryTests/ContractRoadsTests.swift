@@ -168,6 +168,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: "_ = PositionIndicator().setValue(PositionIndicatorContract.count, 3)",
             contract: "_ = PositionIndicator().count(3)"),
         Road(
+            name: "WebView, a component an application imports apart",
+            removed: #"_ = WebView()"#,
+            contract: #"_ = Image()"#),
+        Road(
             name: "the withdrawn Border",
             removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
             contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),

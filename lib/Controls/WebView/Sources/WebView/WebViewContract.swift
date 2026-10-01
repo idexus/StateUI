@@ -8,8 +8,8 @@ public enum WebViewContract: ElementContract {
     /// The node type the contract declares.
     public static let nodeType: NodeType = "WebView"
 
-    /// Every base host presents it with its native control.
-    public static let layer: ElementLayer = .native
+    /// A component's: each host's backend, registered by the application, presents it with its platform's web view.
+    public static let layer: ElementLayer = .provider
 
     /// A web view is a view.
     public static let tiers: [any Contract.Type] = [ViewContract.self]
