@@ -406,6 +406,14 @@ actions. An iPhone shows no menu bar. `Menu`
 holds only `MenuItem`, `Menu` and `MenuSeparator`, and a menu bar only `Menu`:
 anything else does not compile.
 
+A menu bar stands only while something declares a menu. On WinUI and GTK a
+window shows its menu bar while its page, or an arrangement around that page,
+declares one, and none at all otherwise; macOS and iPadOS always keep the
+platform's own menus, which a declared menu joins. So declare a menu where its
+entries act - File on the page that saves - and around every page only what
+every page offers: a menu declared on the window's page stands over every
+page, even where it holds nothing the page can do.
+
 The same item vocabulary can be attached to any view as a context menu:
 
 ```swift quote
